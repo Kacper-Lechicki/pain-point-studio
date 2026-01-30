@@ -1,0 +1,38 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Next.js build output
+.next
+dist
+out
+build
+
+# Package Managers
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Testing
+coverage
+playwright-report
+test-results
+blob-report
+playwright/.cache
+
+# Vercel
+.vercel
+
+# Public assets & Generated files
+public/
+next-env.d.ts
+
+# Generated types
+types/supabase.ts
+
+# Misc
+.DS_Store
+*.pem
+Thumbs.db
+ehthumbs.db
+._*

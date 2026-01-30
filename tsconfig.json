@@ -1,0 +1,63 @@
+{
+  "compilerOptions": {
+    // Specifies the JavaScript version to compile to (ES2017)
+    "target": "ES2017",
+    // List of library files to be included in the compilation
+    "lib": ["dom", "dom.iterable", "esnext"],
+    // Allows JavaScript files to be compiled
+    "allowJs": true,
+    // Skips type checking of declaration files (.d.ts) for faster compilation
+    "skipLibCheck": true,
+    // Enables all strict type-checking options
+    "strict": true,
+    // Do not emit output files (handled by Next.js/bundler)
+    "noEmit": true,
+    // Enables interoperability between CommonJS and ES Modules
+    "esModuleInterop": true,
+    // Sets the module system for the program
+    "module": "esnext",
+    // Specifies how modules are resolved (optimized for bundlers)
+    "moduleResolution": "bundler",
+    // Allows importing .json files as modules
+    "resolveJsonModule": true,
+    // Ensures that each file can be transpiled safely in isolation
+    "isolatedModules": true,
+    // Controls how JSX constructs are emitted (React 17+ transform)
+    "jsx": "react-jsx",
+    // Enables incremental compilation for faster builds
+    "incremental": true,
+    // Adds undefined to type of un-accessed index signature properties
+    "noUncheckedIndexedAccess": true,
+    // Ensures 'override' modifier is used when overriding methods
+    "noImplicitOverride": true,
+    // Enforces optional properties to be strictly present or undefined (not missing)
+    "exactOptionalPropertyTypes": true,
+    // Ensures all code paths in a function return a value
+    "noImplicitReturns": true,
+    // Ensures switch statements don't fall through items
+    "noFallthroughCasesInSwitch": true,
+    // Disallows inconsistently-cased references to the same file
+    "forceConsistentCasingInFileNames": true,
+    // List of TypeScript plugins (e.g., for Next.js)
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    // Path aliases for imports
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  // Files to include in the compilation
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
+  ],
+  // Files to exclude from compilation
+  "exclude": ["node_modules", ".next", "out", "build", "coverage", "reports"]
+}
