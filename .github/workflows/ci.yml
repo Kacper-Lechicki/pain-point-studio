@@ -37,18 +37,18 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
+      # Install the pnpm package manager (must be before setup-node for caching to work)
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.0.0
+
       # Install Node.js with the specified version and enable pnpm caching
       - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: 'pnpm'
-
-      # Install the pnpm package manager
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.0.0
 
       # Install project dependencies using the lockfile to ensure reproducible builds
       - name: Install Dependencies
