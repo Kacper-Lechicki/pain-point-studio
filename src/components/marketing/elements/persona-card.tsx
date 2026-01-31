@@ -1,5 +1,7 @@
 import { Check, LucideIcon } from 'lucide-react';
 
+import { CardBody, CardContainer, CardItem } from '@/components/ui/3d-card';
+
 interface PersonaCardProps {
   icon: LucideIcon;
   title: string;
@@ -9,23 +11,36 @@ interface PersonaCardProps {
 
 const PersonaCard = ({ icon: Icon, title, description, features }: PersonaCardProps) => {
   return (
-    <div className="bg-card text-card-foreground hover:bg-accent/50 group flex flex-col rounded-2xl border p-8 shadow-sm transition-all">
-      <div className="bg-muted flex h-14 w-14 items-center justify-center rounded-full">
-        <Icon className="text-foreground h-7 w-7" />
-      </div>
+    <CardContainer containerClassName="py-0" className="w-full">
+      <CardBody className="bg-card text-card-foreground group/card hover:shadow-primary/5 flex h-full w-full flex-col rounded-2xl border p-8 shadow-sm transition-all hover:shadow-2xl">
+        <CardItem
+          translateZ="50"
+          className="bg-muted flex h-14 w-14 items-center justify-center rounded-full"
+        >
+          <Icon className="text-foreground h-7 w-7" />
+        </CardItem>
 
-      <h3 className="mt-6 text-xl font-bold">{title}</h3>
-      <p className="text-muted-foreground mt-4 flex-1 text-sm leading-relaxed">{description}</p>
+        <CardItem translateZ="60" as="h3" className="mt-6 text-xl font-bold">
+          {title}
+        </CardItem>
+        <CardItem
+          translateZ="40"
+          as="p"
+          className="text-muted-foreground mt-4 flex-1 text-sm leading-relaxed"
+        >
+          {description}
+        </CardItem>
 
-      <ul className="mt-8 space-y-3">
-        {features.map((feature) => (
-          <li key={feature} className="flex items-start gap-3 text-sm">
-            <Check className="text-primary mt-0.5 h-4 w-4 shrink-0" />
-            <span className="text-muted-foreground">{feature}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
+        <CardItem translateZ="20" as="ul" className="mt-8 w-full space-y-3">
+          {features.map((feature) => (
+            <li key={feature} className="flex items-start gap-3 text-sm">
+              <Check className="text-primary mt-0.5 h-4 w-4 shrink-0" />
+              <span className="text-muted-foreground">{feature}</span>
+            </li>
+          ))}
+        </CardItem>
+      </CardBody>
+    </CardContainer>
   );
 };
 

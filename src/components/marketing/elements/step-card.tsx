@@ -9,6 +9,7 @@ interface StepCardProps {
     description: string;
     visualIcon: React.ElementType;
     visualLabel: string;
+    visualChart?: React.ElementType;
     renderExtra?: () => React.ReactNode;
   };
   isReversed?: boolean;
@@ -29,7 +30,7 @@ const StepCard = ({ step, isReversed }: StepCardProps) => {
       </div>
 
       <div className={cn('relative', isReversed && 'lg:order-first')}>
-        <StepVisual icon={step.visualIcon} label={step.visualLabel} />
+        <StepVisual icon={step.visualIcon} label={step.visualLabel} chart={step.visualChart} />
       </div>
     </div>
   );

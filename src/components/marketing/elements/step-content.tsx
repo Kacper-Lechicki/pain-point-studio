@@ -22,6 +22,8 @@ const StepContent = ({ id, title, description, isReversed, children }: StepConte
           {id}
         </div>
 
+        <div className="border-border mx-2 hidden h-px flex-1 border-t border-dashed lg:block" />
+
         <h3 className="text-2xl font-bold tracking-tight">{title}</h3>
       </div>
 
