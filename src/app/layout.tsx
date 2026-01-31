@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Inter, JetBrains_Mono } from 'next/font/google';
 
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
@@ -8,13 +8,13 @@ import '@/lib/env';
 
 import './globals.css';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+const inter = Inter({
+  variable: '--font-sans',
   subsets: ['latin'],
 });
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+const jetbrainsMono = JetBrains_Mono({
+  variable: '--font-mono',
   subsets: ['latin'],
 });
 
@@ -33,12 +33,12 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale}>
+    <html lang={locale} className="dark" data-scroll-behavior="smooth">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} flex min-h-screen flex-col antialiased`}
+        className={`${inter.variable} ${jetbrainsMono.variable} flex min-h-screen flex-col antialiased`}
       >
         <NextIntlClientProvider messages={messages}>
-          <main className="flex-1">{children}</main>
+          <div className="flex-1">{children}</div>
         </NextIntlClientProvider>
       </body>
     </html>

@@ -1,0 +1,38 @@
+import StepContent from '@/components/marketing/elements/step-content';
+import StepVisual from '@/components/marketing/elements/step-visual';
+import { cn } from '@/lib/utils';
+
+interface StepCardProps {
+  step: {
+    id: number;
+    title: string;
+    description: string;
+    visualIcon: React.ElementType;
+    visualLabel: string;
+    renderExtra?: () => React.ReactNode;
+  };
+  isReversed?: boolean;
+}
+
+const StepCard = ({ step, isReversed }: StepCardProps) => {
+  return (
+    <div className="grid gap-8 sm:gap-12 lg:grid-cols-2 lg:items-center">
+      <div className={cn('flex min-w-0 flex-col gap-6', isReversed && 'lg:order-last')}>
+        <StepContent
+          id={step.id}
+          title={step.title}
+          description={step.description}
+          isReversed={isReversed}
+        >
+          {step.renderExtra && step.renderExtra()}
+        </StepContent>
+      </div>
+
+      <div className={cn('relative', isReversed && 'lg:order-first')}>
+        <StepVisual icon={step.visualIcon} label={step.visualLabel} />
+      </div>
+    </div>
+  );
+};
+
+export default StepCard;
