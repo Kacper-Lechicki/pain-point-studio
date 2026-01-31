@@ -10,7 +10,7 @@ interface ProblemCardProps {
 
 const ProblemCard = ({ icon: Icon, title, description }: ProblemCardProps) => {
   return (
-    <CardContainer containerClassName="py-0" className="w-full">
+    <CardContainer containerClassName="h-full py-0" className="h-full w-full">
       <CardBody className="bg-card text-card-foreground group/card hover:shadow-primary/5 flex h-full w-full flex-col items-start rounded-2xl border p-8 transition-all hover:shadow-2xl">
         <CardItem
           translateZ="50"

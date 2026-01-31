@@ -1,12 +1,18 @@
+'use client';
+
 import Link from 'next/link';
 
-import { Info, Send } from 'lucide-react';
+import { ChevronDown, Info, Send } from 'lucide-react';
+import { motion, useScroll, useTransform } from 'motion/react';
 
 import { BackgroundRippleEffect } from '@/components/ui/background-ripple-effect';
 import { Button } from '@/components/ui/button';
 import { TextGenerateEffect } from '@/components/ui/text-generate-effect';
 
 const Hero = () => {
+  const { scrollY } = useScroll();
+  const scrollIndicatorOpacity = useTransform(scrollY, [0, 200], [1, 0]);
+
   return (
     <section className="dark bg-background relative w-full overflow-hidden">
       <BackgroundRippleEffect rows={20} cols={50} />
@@ -21,6 +27,7 @@ const Hero = () => {
             <TextGenerateEffect
               words="Discover Real Problems Before Writing Code"
               className="text-4xl md:text-6xl"
+              duration={1.2}
             />
           </h1>
         </div>
@@ -50,6 +57,13 @@ const Hero = () => {
           <p className="text-muted-foreground text-xs select-text">No credit card required</p>
         </div>
       </div>
+
+      <motion.div
+        className="pointer-events-none absolute bottom-2 left-1/2 z-10 -translate-x-1/2"
+        style={{ opacity: scrollIndicatorOpacity }}
+      >
+        <ChevronDown className="text-foreground size-8" strokeWidth={2} />
+      </motion.div>
 
       <div className="from-background pointer-events-none absolute right-0 bottom-0 left-0 z-10 h-32 w-full bg-linear-to-t to-transparent" />
     </section>

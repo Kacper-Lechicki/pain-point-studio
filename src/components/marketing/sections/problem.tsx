@@ -19,7 +19,7 @@ const Problem = () => {
           </div>
 
           <div className="mx-auto mt-16 w-full sm:mt-20 lg:mt-24">
-            <dl className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+            <dl className="grid auto-rows-fr grid-cols-1 gap-8 lg:grid-cols-3">
               {problems.map((problem) => (
                 <ProblemCard
                   key={problem.title}

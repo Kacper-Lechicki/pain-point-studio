@@ -11,7 +11,7 @@ interface PersonaCardProps {
 
 const PersonaCard = ({ icon: Icon, title, description, features }: PersonaCardProps) => {
   return (
-    <CardContainer containerClassName="py-0" className="w-full">
+    <CardContainer containerClassName="h-full py-0" className="h-full w-full">
       <CardBody className="bg-card text-card-foreground group/card hover:shadow-primary/5 flex h-full w-full flex-col rounded-2xl border p-8 shadow-sm transition-all hover:shadow-2xl">
         <CardItem
           translateZ="50"

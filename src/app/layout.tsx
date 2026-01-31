@@ -4,6 +4,7 @@ import { Inter, JetBrains_Mono } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
 
+import { ScrollToTop } from '@/components/ui/scroll-to-top';
 import '@/lib/env';
 
 import './globals.css';
@@ -37,6 +38,7 @@ export default async function RootLayout({
       <body
         className={`${inter.variable} ${jetbrainsMono.variable} flex min-h-screen flex-col antialiased`}
       >
+        <ScrollToTop />
         <NextIntlClientProvider messages={messages}>
           <div className="flex-1">{children}</div>
         </NextIntlClientProvider>

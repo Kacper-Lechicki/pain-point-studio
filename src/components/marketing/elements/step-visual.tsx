@@ -8,9 +8,9 @@ interface StepVisualProps {
 
 const StepVisual = ({ icon: Icon, label, chart: Chart }: StepVisualProps) => {
   return (
-    <div className="bg-muted/50 relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-3xl border border-dashed text-center sm:aspect-2/1 lg:aspect-video">
+    <div className="bg-muted/50 relative flex min-h-[300px] w-full items-center justify-center overflow-hidden rounded-3xl border border-dashed text-center sm:aspect-video">
       {Chart ? (
-        <div className="absolute inset-0 flex items-center justify-center p-4 sm:p-6">
+        <div className="absolute inset-0 flex items-center justify-center p-2">
           <Chart />
         </div>
       ) : (

@@ -1,10 +1,10 @@
-import { BarChart3, Copy, Lightbulb, MessageSquare, Share2 } from 'lucide-react';
+import { BarChart3, Lightbulb, MessageSquare, Share2 } from 'lucide-react';
 
 import { IdeaTrendsChart } from '@/components/marketing/charts/idea-trends-chart';
 import { PainPointsChart } from '@/components/marketing/charts/pain-points-chart';
 import { QuestionEngagementChart } from '@/components/marketing/charts/question-engagement-chart';
 import { ResponsesGrowthChart } from '@/components/marketing/charts/responses-growth-chart';
-import { Button } from '@/components/ui/button';
+import { CopyableLink } from '@/components/marketing/elements/copyable-link';
 
 export interface Step {
   id: number;
@@ -68,23 +68,7 @@ export const steps: Step[] = [
     visualIcon: Share2,
     visualLabel: 'Share Research Interface',
     visualChart: ResponsesGrowthChart,
-    renderExtra: () => (
-      <div className="bg-card text-card-foreground mt-6 rounded-lg border p-4 text-left shadow-sm">
-        <label className="text-muted-foreground mb-2 block text-xs font-semibold tracking-wider uppercase">
-          Your Research Link
-        </label>
-
-        <div className="flex items-center gap-2">
-          <div className="bg-muted text-muted-foreground min-w-0 flex-1 truncate rounded-md border px-3 py-2 text-sm">
-            painpoint.studio/r/dev-productivity-2025
-          </div>
-
-          <Button variant="ghost" size="icon" className="h-9 w-9">
-            <Copy className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
-    ),
+    renderExtra: () => <CopyableLink link="painpoint.studio/r/dev-productivity-2025" />,
   },
   {
     id: 4,

@@ -29,7 +29,8 @@ export const TextGenerateEffect = ({
       },
       {
         duration: duration ? duration : 1,
-        delay: stagger(0.2),
+        delay: stagger(0.08),
+        ease: [0.25, 0.1, 0.25, 1.0],
       }
     );
   }, [animate, filter, duration]);
@@ -43,7 +44,7 @@ export const TextGenerateEffect = ({
               key={word + idx}
               className="opacity-0"
               style={{
-                filter: filter ? 'blur(10px)' : 'none',
+                filter: filter ? 'blur(4px)' : 'none',
               }}
             >
               {word}{' '}

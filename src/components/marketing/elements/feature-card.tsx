@@ -10,7 +10,7 @@ interface FeatureCardProps {
 
 const FeatureCard = ({ title, description, icon: Icon }: FeatureCardProps) => {
   return (
-    <CardContainer containerClassName="py-0" className="w-full">
+    <CardContainer containerClassName="h-full py-0" className="h-full w-full">
       <CardBody className="bg-card text-card-foreground group/card hover:shadow-primary/5 flex h-full w-full flex-col items-start gap-6 rounded-2xl border p-8 shadow-sm transition-all hover:shadow-2xl">
         <CardItem
           translateZ="50"

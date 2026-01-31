@@ -10,7 +10,7 @@ import { ScrollReveal } from '@/components/ui/scroll-reveal';
 
 const Cta = () => {
   return (
-    <HeroHighlight containerClassName="bg-background py-32 sm:py-48 min-h-[40rem] mb-16 sm:mb-24">
+    <HeroHighlight containerClassName="bg-background py-16 sm:py-24 mb-16 sm:mb-16">
       <ScrollReveal>
         <div className="relative z-10 container mx-auto px-6 sm:px-4 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
