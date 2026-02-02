@@ -5,47 +5,11 @@ import { useState } from 'react';
 import { Bar, BarChart, CartesianGrid, Rectangle, XAxis } from 'recharts';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from '@/components/ui/chart';
-
-interface ChartDataPoint {
-  painPoint: string;
-  intensity: number;
-  fill: string;
-}
-
-const chartData: ChartDataPoint[] = [
-  { painPoint: 'Price', intensity: 45, fill: '#22c55e' },
-  { painPoint: 'Speed', intensity: 80, fill: '#ef4444' },
-  { painPoint: 'UX', intensity: 65, fill: '#a855f7' },
-  { painPoint: 'Support', intensity: 30, fill: '#3b82f6' },
-];
-
-const chartConfig = {
-  price: {
-    label: 'Price High',
-    color: '#22c55e',
-  },
-  speed: {
-    label: 'Slow loading',
-    color: '#ef4444',
-  },
-  ux: {
-    label: 'Confusing UX',
-    color: '#a855f7',
-  },
-  support: {
-    label: 'Bad Support',
-    color: '#3b82f6',
-  },
-} satisfies ChartConfig;
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { PAIN_POINTS_CONFIG, PAIN_POINTS_DATA } from '@/config/marketing';
 
 const formatPainPointTick = (value: string): string => {
-  const config = chartConfig[value.toLowerCase() as keyof typeof chartConfig];
+  const config = PAIN_POINTS_CONFIG[value.toLowerCase() as keyof typeof PAIN_POINTS_CONFIG];
 
   return config?.label.split(' ')[0] ?? value;
 };
@@ -117,8 +81,12 @@ export function PainPointsChart() {
       </CardHeader>
 
       <CardContent className="flex-1 pb-0">
-        <ChartContainer id="pain-points" config={chartConfig} className="aspect-auto h-full w-full">
-          <BarChart data={chartData}>
+        <ChartContainer
+          id="pain-points"
+          config={PAIN_POINTS_CONFIG}
+          className="aspect-auto h-full w-full"
+        >
+          <BarChart data={PAIN_POINTS_DATA}>
             <CartesianGrid vertical={false} />
 
             <XAxis

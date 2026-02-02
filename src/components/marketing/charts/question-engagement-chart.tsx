@@ -5,47 +5,13 @@ import { useState } from 'react';
 import { Bar, BarChart, Rectangle, XAxis, YAxis } from 'recharts';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from '@/components/ui/chart';
-
-interface ChartDataPoint {
-  activity: string;
-  count: number;
-  fill: string;
-}
-
-const chartData: ChartDataPoint[] = [
-  { activity: 'form_fill', count: 320, fill: '#e11d48' },
-  { activity: 'scroll', count: 450, fill: '#f59e0b' },
-  { activity: 'click', count: 580, fill: '#10b981' },
-  { activity: 'view', count: 890, fill: '#3b82f6' },
-];
-
-const chartConfig = {
-  view: {
-    label: 'View',
-    color: '#3b82f6',
-  },
-  click: {
-    label: 'Click',
-    color: '#10b981',
-  },
-  scroll: {
-    label: 'Scroll',
-    color: '#f59e0b',
-  },
-  form_fill: {
-    label: 'Form Fill',
-    color: '#e11d48',
-  },
-} satisfies ChartConfig;
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { QUESTION_ENGAGEMENT_CONFIG, QUESTION_ENGAGEMENT_DATA } from '@/config/marketing';
 
 const formatActivityTick = (value: string): string => {
-  return chartConfig[value as keyof typeof chartConfig]?.label ?? value;
+  return (
+    QUESTION_ENGAGEMENT_CONFIG[value as keyof typeof QUESTION_ENGAGEMENT_CONFIG]?.label ?? value
+  );
 };
 
 interface CustomBarProps {
@@ -117,11 +83,11 @@ export function QuestionEngagementChart() {
       <CardContent className="flex-1 pb-0">
         <ChartContainer
           id="question-engagement"
-          config={chartConfig}
+          config={QUESTION_ENGAGEMENT_CONFIG}
           className="aspect-auto h-full w-full"
         >
           <BarChart
-            data={chartData}
+            data={QUESTION_ENGAGEMENT_DATA}
             layout="vertical"
             margin={{
               left: 0,

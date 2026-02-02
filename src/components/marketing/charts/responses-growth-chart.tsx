@@ -3,34 +3,8 @@
 import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from '@/components/ui/chart';
-
-interface ChartDataPoint {
-  day: string;
-  visitors: number;
-}
-
-const chartData: ChartDataPoint[] = [
-  { day: 'Mon', visitors: 10 },
-  { day: 'Tue', visitors: 25 },
-  { day: 'Wed', visitors: 45 },
-  { day: 'Thu', visitors: 80 },
-  { day: 'Fri', visitors: 140 },
-  { day: 'Sat', visitors: 210 },
-  { day: 'Sun', visitors: 350 },
-];
-
-const chartConfig = {
-  visitors: {
-    label: 'Responses',
-    color: '#ec4899',
-  },
-} satisfies ChartConfig;
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { RESPONSES_GROWTH_CONFIG, RESPONSES_GROWTH_DATA } from '@/config/marketing';
 
 const formatDayTick = (value: string): string => value.slice(0, 3);
 
@@ -45,12 +19,12 @@ export function ResponsesGrowthChart() {
       <CardContent className="flex-1 pb-0">
         <ChartContainer
           id="responses-growth"
-          config={chartConfig}
+          config={RESPONSES_GROWTH_CONFIG}
           className="aspect-auto h-full w-full"
         >
           <AreaChart
             accessibilityLayer
-            data={chartData}
+            data={RESPONSES_GROWTH_DATA}
             margin={{
               left: 12,
               right: 12,
@@ -60,8 +34,16 @@ export function ResponsesGrowthChart() {
           >
             <defs>
               <linearGradient id="fillVisitors" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={chartConfig.visitors.color} stopOpacity={0.8} />
-                <stop offset="95%" stopColor={chartConfig.visitors.color} stopOpacity={0.1} />
+                <stop
+                  offset="5%"
+                  stopColor={RESPONSES_GROWTH_CONFIG.visitors.color}
+                  stopOpacity={0.8}
+                />
+                <stop
+                  offset="95%"
+                  stopColor={RESPONSES_GROWTH_CONFIG.visitors.color}
+                  stopOpacity={0.1}
+                />
               </linearGradient>
             </defs>
 
@@ -81,7 +63,7 @@ export function ResponsesGrowthChart() {
               dataKey="visitors"
               type="natural"
               fill="url(#fillVisitors)"
-              stroke={chartConfig.visitors.color}
+              stroke={RESPONSES_GROWTH_CONFIG.visitors.color}
               strokeWidth={3}
             />
           </AreaChart>
