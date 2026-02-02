@@ -7,11 +7,8 @@ import { defaultLocale, locales } from '@/i18n/constants';
 import { PATHNAMES } from '@/i18n/pathnames';
 
 export const routing = defineRouting({
-  // A list of all locales that are supported
   locales,
-  // Used when no locale matches
   defaultLocale,
-  // Custom pathnames for localized routes
   pathnames: PATHNAMES,
 });
 

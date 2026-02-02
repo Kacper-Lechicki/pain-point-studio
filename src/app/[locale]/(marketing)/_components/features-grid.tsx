@@ -2,31 +2,34 @@
 
 import { useState } from 'react';
 
+import { useTranslations } from 'next-intl';
+
 import { PointerHighlight } from '@/components/ui/pointer-highlight';
 import { ScrollReveal } from '@/components/ui/scroll-reveal';
 import { GRID_FEATURES, GridFeature } from '@/config/marketing';
 
 const FeaturesGrid = () => {
+  const t = useTranslations();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
-  return (
-    <section className="bg-background border-t border-white/5 py-16 transition-colors duration-1000 sm:py-24">
-      <ScrollReveal>
-        <div className="container mx-auto px-6 sm:px-4 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              Everything You Need, Nothing You Don&apos;t
-            </h2>
+  const title = t('Marketing.featuresGrid.title');
+  const description = t('Marketing.featuresGrid.description');
 
-            <p className="text-muted-foreground mt-6 text-lg leading-8">
-              Focused tools that help you validate ideas without the bloat.
-            </p>
+  return (
+    <section className="bg-background section-padding border-t border-white/5 transition-colors duration-1000">
+      <ScrollReveal>
+        <div className="section-container">
+          <div className="section-content">
+            <h2 className="section-title">{title}</h2>
+            <p className="section-description">{description}</p>
           </div>
 
-          <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
+          <div className="cards-grid">
             <div className="grid auto-rows-fr grid-cols-1 gap-x-8 gap-y-12 lg:grid-cols-2">
               {GRID_FEATURES.map((feature: GridFeature, index: number) => {
                 const isActive = hoveredIndex === index;
+                const featureTitle = t(feature.titleKey);
+                const featureDescription = t(feature.descriptionKey);
 
                 return (
                   <div
@@ -35,19 +38,19 @@ const FeaturesGrid = () => {
                     onMouseEnter={() => setHoveredIndex(index)}
                     onMouseLeave={() => setHoveredIndex(null)}
                   >
-                    <div className="bg-primary text-primary-foreground flex h-12 w-12 shrink-0 items-center justify-center rounded-lg">
+                    <div className="icon-box-primary">
                       <feature.icon className="h-6 w-6" aria-hidden="true" />
                     </div>
 
                     <div className="flex-1">
                       <PointerHighlight active={isActive}>
                         <h3 className="text-foreground w-fit text-lg leading-8 font-semibold">
-                          {feature.title}
+                          {featureTitle}
                         </h3>
                       </PointerHighlight>
 
                       <p className="text-muted-foreground mt-1 text-base leading-7">
-                        {feature.description}
+                        {featureDescription}
                       </p>
                     </div>
                   </div>

@@ -1,17 +1,25 @@
+'use client';
+
 import { LucideIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { CardBody, CardContainer, CardItem } from '@/components/ui/3d-card';
 
 interface ProblemCardProps {
   icon: LucideIcon;
-  title: string;
-  description: string;
+  titleKey: string;
+  descriptionKey: string;
 }
 
-const ProblemCard = ({ icon: Icon, title, description }: ProblemCardProps) => {
+const ProblemCard = ({ icon: Icon, titleKey, descriptionKey }: ProblemCardProps) => {
+  const t = useTranslations();
+
+  const title = t(titleKey);
+  const description = t(descriptionKey);
+
   return (
     <CardContainer containerClassName="h-full py-0" className="h-full w-full">
-      <CardBody className="bg-card text-card-foreground group/card hover:shadow-primary/5 flex h-full w-full flex-col items-start rounded-2xl border p-8 transition-all hover:shadow-2xl">
+      <CardBody className="card-interactive group/card flex h-full w-full flex-col items-start">
         <CardItem
           translateZ="50"
           className="bg-primary/10 ring-ring/10 flex h-12 w-12 items-center justify-center rounded-lg ring-1"

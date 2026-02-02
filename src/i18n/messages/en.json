@@ -36,6 +36,151 @@
     "explore": "Explore",
     "product": "Product",
     "resources": "Resources",
-    "company": "Company"
+    "company": "Company",
+    "noCreditCard": "No credit card required",
+    "startResearch": "Start Your First Research",
+    "seeHowItWorks": "See How It Works"
+  },
+  "Marketing": {
+    "hero": {
+      "badge": "Stop Building Things Nobody Needs",
+      "title": "Discover Real Problems Before Writing Code",
+      "description": "Pain Point Studio helps solo developers validate ideas through structured customer research. Find out what people actually need in 15 minutes, not 3 months."
+    },
+    "problems": {
+      "title": "The Problem Most Developers Face",
+      "description": "70% of side projects are abandoned within 3 months. Not because of bad code, but because they solve problems that don't exist.",
+      "items": {
+        "vacuum": {
+          "title": "Building in a Vacuum",
+          "description": "You spend 3 months building a \"better bookmark manager\" only to discover nobody wants it. Your problem isn't everyone's problem."
+        },
+        "skills": {
+          "title": "No Research Skills",
+          "description": "You know you should talk to users, but you don't know what questions to ask or how to interpret the answers."
+        },
+        "access": {
+          "title": "No Access to Users",
+          "description": "Even with good questions, where do you find project managers or designers to interview? LinkedIn has 5% response rates."
+        }
+      }
+    },
+    "howItWorks": {
+      "title": "From Idea to Validated Problem in 15 Minutes",
+      "description": "Stop theorizing. Start collecting real data from real people.",
+      "steps": {
+        "research": {
+          "title": "Choose Your Research Area",
+          "description": "Pick any topic you're curious about. \"Productivity for ADHD\" or \"Developer Tools\" or \"Remote Team Management\". No perfect idea needed.",
+          "visualLabel": "Research Area Selection Interface",
+          "exampleTitle": "Example: Developer Productivity",
+          "exampleDescription": "Exploring pain points around focus, task management, and workflow optimization for software engineers."
+        },
+        "questions": {
+          "title": "Use Proven Questions",
+          "description": "We provide research-backed question templates. No guessing. No leading questions. Just proven patterns that uncover real pain points.",
+          "visualLabel": "Pre-Built Question Templates",
+          "question1": "Describe the last time you felt you lost control of your time at work. What happened?",
+          "question2": "What tools do you currently use? What frustrates you most about them?"
+        },
+        "share": {
+          "title": "Share & Collect Responses",
+          "description": "Get a simple link. Share it anywhere - Twitter, LinkedIn, Reddit, Discord. Zero friction for respondents. No login required. 10 minutes to complete.",
+          "visualLabel": "Share Research Interface"
+        },
+        "patterns": {
+          "title": "See Patterns Emerge",
+          "description": "After 10-20 responses, patterns become obvious. Either you see a clear problem worth solving, or you don't. No more analysis paralysis.",
+          "visualLabel": "Response Analysis Dashboard",
+          "responsesLabel": "Responses Collected",
+          "painPointsLabel": "Common Pain Points"
+        }
+      }
+    },
+    "minimalism": {
+      "title": "Built on Functional Minimalism",
+      "description": "Every feature must pass one test: Is it absolutely necessary to go from 'I don't know what to build' to 'I have a validated problem worth solving'?",
+      "items": {
+        "onboarding": {
+          "title": "No Complicated Onboarding",
+          "description": "See \"Start New Research\". Click it. Fill form. Get link. Send to people. Collect answers. That's it. 15 minutes from signup to first feedback."
+        },
+        "bloat": {
+          "title": "No Dashboard Bloat",
+          "description": "Your dashboard shows your research missions. Click one to see responses. No widgets. No graphs. No features that look impressive but distract from the goal."
+        },
+        "solo": {
+          "title": "Solo First, Social Optional",
+          "description": "Use it privately forever if you want. All social features are opt-in. Your research is private by default. Share only when you choose to."
+        },
+        "action": {
+          "title": "Action Over Analysis",
+          "description": "Stop spending months theorizing. Pick an area. Ask questions. Get data. Decide. One week of real research beats one month of planning."
+        }
+      }
+    },
+    "developers": {
+      "title": "Built for Different Types of Developers",
+      "description": "Whether you prefer working alone or finding collaborators, Pain Point Studio adapts to your style.",
+      "items": {
+        "solo": {
+          "title": "Solo Steve",
+          "description": "Just wants to validate ideas quietly. No social pressure. No public profiles. Private research forever.",
+          "features": [
+            "Private by default",
+            "No social features required",
+            "Focus on research only"
+          ]
+        },
+        "collaborative": {
+          "title": "Collaborative Chris",
+          "description": "Wants to find co-founders and team members. Share research publicly. Build together.",
+          "features": ["Public research sharing", "Find similar researchers", "Form teams easily"]
+        },
+        "learning": {
+          "title": "Learning Laura",
+          "description": "New to product development. Needs templates and guidance. Wants to learn by doing.",
+          "features": [
+            "Pre-built question templates",
+            "Guided research process",
+            "Learn customer development"
+          ]
+        }
+      }
+    },
+    "featuresGrid": {
+      "title": "Everything You Need, Nothing You Don't",
+      "description": "Focused tools that help you validate ideas without the bloat.",
+      "items": {
+        "templates": {
+          "title": "Research Templates",
+          "description": "Pre-built question sets for common research areas. Customer interviews, problem discovery, feature validation."
+        },
+        "sharing": {
+          "title": "Zero-Friction Sharing",
+          "description": "Simple link. No login required for respondents. Works on any device. 30-40% response rates vs industry 5-10%."
+        },
+        "patterns": {
+          "title": "Pattern Recognition",
+          "description": "Automatic highlighting of common themes across responses. See what problems appear repeatedly."
+        },
+        "privacy": {
+          "title": "Privacy First",
+          "description": "All research is private by default. Share publicly only when you choose. Full control over your data."
+        },
+        "community": {
+          "title": "Community Access",
+          "description": "Optional: Find other developers researching similar problems. Form teams. Share insights."
+        },
+        "setup": {
+          "title": "Fast Setup",
+          "description": "From signup to collecting your first response in under 15 minutes. No tutorials needed."
+        }
+      }
+    },
+    "cta": {
+      "title": "Stop Guessing. Start Knowing.",
+      "description": "Join developers who validate ideas before writing code. Your first 5 research missions are free."
+    }
   }
 }

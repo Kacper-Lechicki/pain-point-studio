@@ -1,18 +1,27 @@
+'use client';
+
 import { Check, LucideIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { CardBody, CardContainer, CardItem } from '@/components/ui/3d-card';
 
 interface PersonaCardProps {
   icon: LucideIcon;
-  title: string;
-  description: string;
-  features: string[];
+  titleKey: string;
+  descriptionKey: string;
+  featuresKey: string;
 }
 
-const PersonaCard = ({ icon: Icon, title, description, features }: PersonaCardProps) => {
+const PersonaCard = ({ icon: Icon, titleKey, descriptionKey, featuresKey }: PersonaCardProps) => {
+  const t = useTranslations();
+
+  const title = t(titleKey);
+  const description = t(descriptionKey);
+  const features = t.raw(featuresKey) as string[];
+
   return (
     <CardContainer containerClassName="h-full py-0" className="h-full w-full">
-      <CardBody className="bg-card text-card-foreground group/card hover:shadow-primary/5 flex h-full w-full flex-col rounded-2xl border p-8 shadow-sm transition-all hover:shadow-2xl">
+      <CardBody className="card-interactive group/card flex h-full w-full flex-col">
         <CardItem
           translateZ="50"
           className="bg-muted flex h-14 w-14 items-center justify-center rounded-full"

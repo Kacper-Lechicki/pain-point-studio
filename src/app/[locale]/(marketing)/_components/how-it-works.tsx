@@ -1,9 +1,17 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
+
 import StepCard from '@/components/marketing/elements/step-card';
 import { ScrollReveal } from '@/components/ui/scroll-reveal';
 import { HOW_IT_WORKS_STEPS, HowItWorksStep } from '@/config/marketing';
 
 const HowItWorks = () => {
+  const t = useTranslations();
   const [firstStep, ...otherSteps] = HOW_IT_WORKS_STEPS;
+
+  const title = t('Marketing.howItWorks.title');
+  const description = t('Marketing.howItWorks.description');
 
   if (!firstStep) {
     return null;
@@ -19,12 +27,8 @@ const HowItWorks = () => {
           <div className="container mx-auto px-6 pt-16 sm:px-4 sm:pt-24 lg:px-8">
             <ScrollReveal>
               <div className="mx-auto max-w-2xl text-center">
-                <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                  From Idea to Validated Problem in 15 Minutes
-                </h2>
-                <p className="text-muted-foreground mt-6 text-lg leading-8">
-                  Stop theorizing. Start collecting real data from real people.
-                </p>
+                <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">{title}</h2>
+                <p className="text-muted-foreground mt-6 text-lg leading-8">{description}</p>
               </div>
             </ScrollReveal>
           </div>

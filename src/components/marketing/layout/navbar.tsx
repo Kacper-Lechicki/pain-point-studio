@@ -20,6 +20,8 @@ const Navbar = () => {
 
   const brandName = t(BRAND.name);
   const copyrightText = getCopyrightText(t);
+  const signInLabel = t('Common.signIn');
+  const exploreLabel = t('Common.explore');
 
   if (isDesktop && isMobileMenuOpen) {
     setIsMobileMenuOpen(false);
@@ -83,14 +85,14 @@ const Navbar = () => {
           <div className="hidden items-center gap-4 lg:flex">
             <Button className="gap-2" asChild>
               <Link href={ROUTES.auth.signIn}>
-                {t('Common.signIn')}
+                {signInLabel}
                 <User className="h-4 w-4" aria-hidden="true" />
               </Link>
             </Button>
 
             <Button className="group gap-2" variant="secondary" asChild>
               <Link href={ROUTES.app.explore}>
-                {t('Common.explore')}
+                {exploreLabel}
                 <Globe
                   className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12"
                   aria-hidden="true"
@@ -128,14 +130,14 @@ const Navbar = () => {
           <div className="flex flex-col gap-4">
             <Button className="w-full justify-center gap-2" size="lg" asChild>
               <Link href={ROUTES.auth.signIn} onClick={() => setIsMobileMenuOpen(false)}>
-                {t('Common.signIn')}
+                {signInLabel}
                 <User className="h-4 w-4" aria-hidden="true" />
               </Link>
             </Button>
 
             <Button variant="secondary" className="w-full justify-center gap-2" size="lg" asChild>
               <Link href={ROUTES.app.explore} onClick={() => setIsMobileMenuOpen(false)}>
-                {t('Common.explore')}
+                {exploreLabel}
                 <Globe className="h-4 w-4" aria-hidden="true" />
               </Link>
             </Button>

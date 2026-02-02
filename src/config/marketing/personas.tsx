@@ -1,36 +1,26 @@
-import { GraduationCap, LucideIcon, User, Users } from 'lucide-react';
+import { GraduationCap, User, Users } from 'lucide-react';
 
-export interface DeveloperPersona {
-  icon: LucideIcon;
-  title: string;
-  description: string;
-  features: string[];
-}
+import { PersonaFeature } from '@/types';
+
+export type DeveloperPersona = PersonaFeature;
 
 export const DEVELOPER_PERSONAS: DeveloperPersona[] = [
   {
     icon: User,
-    title: 'Solo Steve',
-    description:
-      'Just wants to validate ideas quietly. No social pressure. No public profiles. Private research forever.',
-    features: ['Private by default', 'No social features required', 'Focus on research only'],
+    titleKey: 'Marketing.developers.items.solo.title',
+    descriptionKey: 'Marketing.developers.items.solo.description',
+    featuresKey: 'Marketing.developers.items.solo.features',
   },
   {
     icon: Users,
-    title: 'Collaborative Chris',
-    description:
-      'Wants to find co-founders and team members. Share research publicly. Build together.',
-    features: ['Public research sharing', 'Find similar researchers', 'Form teams easily'],
+    titleKey: 'Marketing.developers.items.collaborative.title',
+    descriptionKey: 'Marketing.developers.items.collaborative.description',
+    featuresKey: 'Marketing.developers.items.collaborative.features',
   },
   {
     icon: GraduationCap,
-    title: 'Learning Laura',
-    description:
-      'New to product development. Needs templates and guidance. Wants to learn by doing.',
-    features: [
-      'Pre-built question templates',
-      'Guided research process',
-      'Learn customer development',
-    ],
+    titleKey: 'Marketing.developers.items.learning.title',
+    descriptionKey: 'Marketing.developers.items.learning.description',
+    featuresKey: 'Marketing.developers.items.learning.features',
   },
 ];
