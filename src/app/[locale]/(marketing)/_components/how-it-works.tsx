@@ -2,9 +2,9 @@
 
 import { useTranslations } from 'next-intl';
 
-import StepCard from '@/components/marketing/elements/step-card';
 import { ScrollReveal } from '@/components/ui/scroll-reveal';
-import { HOW_IT_WORKS_STEPS, HowItWorksStep } from '@/config/marketing';
+import StepCard from '@/features/marketing/components/elements/step-card';
+import { HOW_IT_WORKS_STEPS, HowItWorksStep } from '@/features/marketing/config';
 
 const HowItWorks = () => {
   const t = useTranslations();
@@ -43,9 +43,8 @@ const HowItWorks = () => {
         </div>
 
         {otherSteps.map((step: HowItWorksStep, index: number) => {
-          const isOddStep = (index + 1) % 2 === 1;
-          const bgClass = isOddStep ? 'bg-[#1a1a1a]' : 'bg-background';
-          const isReversed = !isOddStep;
+          const bgClass = index % 2 === 0 ? 'bg-[#1a1a1a]' : 'bg-background';
+          const isReversed = step.id % 2 === 0;
 
           return (
             <div

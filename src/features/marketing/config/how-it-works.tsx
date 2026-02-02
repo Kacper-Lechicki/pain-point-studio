@@ -1,9 +1,9 @@
 import { BarChart3, Lightbulb, MessageSquare, Share2 } from 'lucide-react';
 
-import { IdeaTrendsChart } from '@/components/marketing/charts/idea-trends-chart';
-import { PainPointsChart } from '@/components/marketing/charts/pain-points-chart';
-import { QuestionEngagementChart } from '@/components/marketing/charts/question-engagement-chart';
-import { ResponsesGrowthChart } from '@/components/marketing/charts/responses-growth-chart';
+import { IdeaTrendsChart } from '@/features/marketing/components/charts/idea-trends-chart';
+import { PainPointsChart } from '@/features/marketing/components/charts/pain-points-chart';
+import { QuestionEngagementChart } from '@/features/marketing/components/charts/question-engagement-chart';
+import { ResponsesGrowthChart } from '@/features/marketing/components/charts/responses-growth-chart';
 
 export interface HowItWorksStep {
   id: number;

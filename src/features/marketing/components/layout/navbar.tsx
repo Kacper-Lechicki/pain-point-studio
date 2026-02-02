@@ -7,8 +7,8 @@ import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { BRAND, getCopyrightText } from '@/config/brand';
-import { NAV_LINKS, NavLink } from '@/config/marketing';
 import { ROUTES } from '@/config/routes';
+import { NAV_LINKS, NavLink } from '@/features/marketing/config';
 import { useBreakpoint } from '@/hooks/use-breakpoint';
 import { Link } from '@/i18n/routing';
 import { cn } from '@/lib/utils';

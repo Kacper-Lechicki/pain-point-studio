@@ -5,8 +5,8 @@ import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { BRAND, getCopyrightText } from '@/config/brand';
-import { FOOTER_SECTIONS, type FooterItem, type FooterSection } from '@/config/marketing';
 import { ROUTES } from '@/config/routes';
+import { FOOTER_SECTIONS, type FooterItem, type FooterSection } from '@/features/marketing/config';
 import { Link } from '@/i18n/routing';
 
 const Footer = () => {

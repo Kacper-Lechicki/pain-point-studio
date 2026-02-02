@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 
 import { PointerHighlight } from '@/components/ui/pointer-highlight';
 import { ScrollReveal } from '@/components/ui/scroll-reveal';
-import { GRID_FEATURES, GridFeature } from '@/config/marketing';
+import { GRID_FEATURES, GridFeature } from '@/features/marketing/config';
 
 const FeaturesGrid = () => {
   const t = useTranslations();

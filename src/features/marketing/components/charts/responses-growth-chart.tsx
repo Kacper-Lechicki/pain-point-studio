@@ -4,7 +4,7 @@ import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { RESPONSES_GROWTH_CONFIG, RESPONSES_GROWTH_DATA } from '@/config/marketing';
+import { RESPONSES_GROWTH_CONFIG, RESPONSES_GROWTH_DATA } from '@/features/marketing/config';
 
 const formatDayTick = (value: string): string => value.slice(0, 3);
 

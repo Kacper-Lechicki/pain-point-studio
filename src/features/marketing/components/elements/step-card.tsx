@@ -2,10 +2,10 @@
 
 import { useTranslations } from 'next-intl';
 
-import StepContent from '@/components/marketing/elements/step-content';
-import StepExtra from '@/components/marketing/elements/step-extra';
-import StepVisual from '@/components/marketing/elements/step-visual';
-import { HowItWorksStep } from '@/config/marketing';
+import StepContent from '@/features/marketing/components/elements/step-content';
+import StepExtra from '@/features/marketing/components/elements/step-extra';
+import StepVisual from '@/features/marketing/components/elements/step-visual';
+import { HowItWorksStep } from '@/features/marketing/config';
 import { cn } from '@/lib/utils';
 
 interface StepCardProps {

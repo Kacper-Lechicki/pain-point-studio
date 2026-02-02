@@ -1,6 +1,6 @@
 import { GraduationCap, User, Users } from 'lucide-react';
 
-import { PersonaFeature } from '@/types';
+import { PersonaFeature } from '@/features/marketing/types';
 
 export type DeveloperPersona = PersonaFeature;
 

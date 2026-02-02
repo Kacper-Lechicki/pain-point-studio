@@ -2,9 +2,9 @@
 
 import { useTranslations } from 'next-intl';
 
-import PersonaCard from '@/components/marketing/elements/persona-card';
 import { ScrollReveal } from '@/components/ui/scroll-reveal';
-import { DEVELOPER_PERSONAS, DeveloperPersona } from '@/config/marketing';
+import PersonaCard from '@/features/marketing/components/elements/persona-card';
+import { DEVELOPER_PERSONAS, DeveloperPersona } from '@/features/marketing/config';
 
 const Developers = () => {
   const t = useTranslations();

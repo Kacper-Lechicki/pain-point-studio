@@ -11,7 +11,7 @@ import {
   Zap,
 } from 'lucide-react';
 
-import { BaseFeature } from '@/types';
+import { BaseFeature } from '@/features/marketing/types';
 
 export type MinimalismFeature = BaseFeature;
 

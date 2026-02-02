@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
-import { CopyableLink } from '@/components/marketing/elements/copyable-link';
+import { CopyableLink } from '@/features/marketing/components/elements/copyable-link';
 
 interface StepExtraProps {
   type: 'example' | 'questions' | 'share' | 'stats';

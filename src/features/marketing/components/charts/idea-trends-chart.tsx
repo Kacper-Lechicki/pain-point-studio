@@ -10,7 +10,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { IDEA_TRENDS_CONFIG, IDEA_TRENDS_DATA } from '@/config/marketing';
+import { IDEA_TRENDS_CONFIG, IDEA_TRENDS_DATA } from '@/features/marketing/config';
 
 const formatMonthTick = (value: string): string => value.slice(0, 3);
 

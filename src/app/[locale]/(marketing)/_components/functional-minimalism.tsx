@@ -2,9 +2,9 @@
 
 import { useTranslations } from 'next-intl';
 
-import FeatureCard from '@/components/marketing/elements/feature-card';
 import { ScrollReveal } from '@/components/ui/scroll-reveal';
-import { MINIMALISM_FEATURES, MinimalismFeature } from '@/config/marketing';
+import FeatureCard from '@/features/marketing/components/elements/feature-card';
+import { MINIMALISM_FEATURES, MinimalismFeature } from '@/features/marketing/config';
 
 const FunctionalMinimalism = () => {
   const t = useTranslations();

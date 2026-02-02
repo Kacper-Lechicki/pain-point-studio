@@ -1,5 +1,5 @@
-import Footer from '@/components/marketing/layout/footer';
-import Navbar from '@/components/marketing/layout/navbar';
+import Footer from '@/features/marketing/components/layout/footer';
+import Navbar from '@/features/marketing/components/layout/navbar';
 
 interface MarketingLayoutProps {
   children: React.ReactNode;

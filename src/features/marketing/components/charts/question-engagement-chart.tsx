@@ -2,16 +2,16 @@
 
 import { useState } from 'react';
 
-import { Bar, BarChart, CartesianGrid, Rectangle, XAxis } from 'recharts';
+import { Bar, BarChart, Rectangle, XAxis, YAxis } from 'recharts';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { PAIN_POINTS_CONFIG, PAIN_POINTS_DATA } from '@/config/marketing';
+import { QUESTION_ENGAGEMENT_CONFIG, QUESTION_ENGAGEMENT_DATA } from '@/features/marketing/config';
 
-const formatPainPointTick = (value: string): string => {
-  const config = PAIN_POINTS_CONFIG[value.toLowerCase() as keyof typeof PAIN_POINTS_CONFIG];
-
-  return config?.label.split(' ')[0] ?? value;
+const formatActivityTick = (value: string): string => {
+  return (
+    QUESTION_ENGAGEMENT_CONFIG[value as keyof typeof QUESTION_ENGAGEMENT_CONFIG]?.label ?? value
+  );
 };
 
 interface CustomBarProps {
@@ -50,7 +50,7 @@ function CustomBar(props: CustomBarProps) {
       y={y}
       width={width}
       height={height}
-      radius={8}
+      radius={5}
       opacity={barOpacity}
       onMouseEnter={() => index !== undefined && onMouseEnter(index)}
       onMouseLeave={onMouseLeave}
@@ -59,7 +59,7 @@ function CustomBar(props: CustomBarProps) {
   );
 }
 
-export function PainPointsChart() {
+export function QuestionEngagementChart() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [isBarHovered, setIsBarHovered] = useState(false);
 
@@ -76,34 +76,44 @@ export function PainPointsChart() {
   return (
     <Card className="flex h-full w-full flex-col border-0 bg-transparent shadow-none">
       <CardHeader className="items-center pb-0">
-        <CardTitle>Identified Pain Points</CardTitle>
-        <CardDescription>Severity of user reported issues</CardDescription>
+        <CardTitle>Engagement Metrics</CardTitle>
+        <CardDescription>Interaction types by frequency</CardDescription>
       </CardHeader>
 
       <CardContent className="flex-1 pb-0">
         <ChartContainer
-          id="pain-points"
-          config={PAIN_POINTS_CONFIG}
+          id="question-engagement"
+          config={QUESTION_ENGAGEMENT_CONFIG}
           className="aspect-auto h-full w-full"
         >
-          <BarChart data={PAIN_POINTS_DATA}>
-            <CartesianGrid vertical={false} />
-
-            <XAxis
-              dataKey="painPoint"
+          <BarChart
+            data={QUESTION_ENGAGEMENT_DATA}
+            layout="vertical"
+            margin={{
+              left: 0,
+              right: 0,
+              top: 0,
+              bottom: 0,
+            }}
+          >
+            <YAxis
+              dataKey="activity"
+              type="category"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={formatPainPointTick}
+              tickFormatter={formatActivityTick}
             />
 
+            <XAxis dataKey="count" type="number" hide />
             <ChartTooltip
               cursor={false}
               content={isBarHovered ? <ChartTooltipContent hideLabel /> : () => null}
               allowEscapeViewBox={{ x: true, y: true }}
             />
             <Bar
-              dataKey="intensity"
+              dataKey="count"
+              layout="vertical"
               shape={
                 <CustomBar
                   activeIndex={activeIndex}
