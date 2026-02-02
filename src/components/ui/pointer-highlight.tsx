@@ -6,21 +6,28 @@ import { motion } from 'motion/react';
 
 import { cn } from '@/lib/utils';
 
+type Dimensions = {
+  width: number;
+  height: number;
+};
+
+type PointerHighlightProps = {
+  children: React.ReactNode;
+  active?: boolean;
+  rectangleClassName?: string;
+  pointerClassName?: string;
+  containerClassName?: string;
+};
+
 export function PointerHighlight({
   children,
   active = false,
   rectangleClassName,
   pointerClassName,
   containerClassName,
-}: {
-  children: React.ReactNode;
-  active?: boolean;
-  rectangleClassName?: string;
-  pointerClassName?: string;
-  containerClassName?: string;
-}) {
+}: PointerHighlightProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [dimensions, setDimensions] = useState<Dimensions>({ width: 0, height: 0 });
 
   useEffect(() => {
     const container = containerRef.current;
@@ -30,7 +37,7 @@ export function PointerHighlight({
       setDimensions({ width, height });
     }
 
-    const resizeObserver = new ResizeObserver((entries) => {
+    const resizeObserver = new ResizeObserver((entries: ResizeObserverEntry[]) => {
       for (const entry of entries) {
         const { width, height } = entry.contentRect;
         setDimensions({ width, height });
@@ -48,10 +55,13 @@ export function PointerHighlight({
     };
   }, []);
 
+  const hasValidDimensions = dimensions.width > 0 && dimensions.height > 0;
+
   return (
     <div className={cn('relative w-fit', containerClassName)} ref={containerRef}>
       {children}
-      {dimensions.width > 0 && dimensions.height > 0 && (
+
+      {hasValidDimensions && (
         <div className="pointer-events-none absolute inset-0">
           <motion.div
             className={cn(
@@ -83,7 +93,7 @@ export function PointerHighlight({
               ease: 'easeInOut',
             }}
           >
-            <Pointer className={cn('text-primary h-5 w-5', pointerClassName)} />
+            <Pointer className={cn('text-primary h-5 w-5', pointerClassName)} aria-hidden="true" />
           </motion.div>
         </div>
       )}
@@ -91,7 +101,9 @@ export function PointerHighlight({
   );
 }
 
-const Pointer = ({ ...props }: React.SVGProps<SVGSVGElement>) => {
+type PointerProps = React.SVGProps<SVGSVGElement>;
+
+const Pointer = ({ ...props }: PointerProps) => {
   return (
     <svg
       stroke="currentColor"

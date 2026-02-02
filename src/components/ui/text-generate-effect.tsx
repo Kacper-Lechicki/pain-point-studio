@@ -6,17 +6,19 @@ import { motion, stagger, useAnimate } from 'motion/react';
 
 import { cn } from '@/lib/utils';
 
+type TextGenerateEffectProps = {
+  words: string;
+  className?: string;
+  filter?: boolean;
+  duration?: number;
+};
+
 export const TextGenerateEffect = ({
   words,
   className,
   filter = true,
   duration = 0.5,
-}: {
-  words: string;
-  className?: string;
-  filter?: boolean;
-  duration?: number;
-}) => {
+}: TextGenerateEffectProps) => {
   const [scope, animate] = useAnimate();
   const wordsArray = words.split(' ');
 
@@ -37,7 +39,7 @@ export const TextGenerateEffect = ({
 
   const renderedWords = (
     <motion.div ref={scope}>
-      {wordsArray.map((word, idx: number) => {
+      {wordsArray.map((word: string, idx: number) => {
         return (
           <motion.span
             key={word + idx}

@@ -4,23 +4,32 @@ import React, { useMemo, useRef, useState } from 'react';
 
 import { cn } from '@/lib/utils';
 
+interface BackgroundRippleEffectProps {
+  rows?: number;
+  cols?: number;
+  cellSize?: number;
+  className?: string;
+}
+
+interface ClickedCell {
+  row: number;
+  col: number;
+}
+
 export const BackgroundRippleEffect = ({
   rows = 8,
   cols = 27,
   cellSize = 56,
   className,
-}: {
-  rows?: number;
-  cols?: number;
-  cellSize?: number;
-  className?: string;
-}) => {
-  const [clickedCell, setClickedCell] = useState<{
-    row: number;
-    col: number;
-  } | null>(null);
+}: BackgroundRippleEffectProps) => {
+  const [clickedCell, setClickedCell] = useState<ClickedCell | null>(null);
   const [rippleKey, setRippleKey] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
+
+  const handleCellClick = (row: number, col: number) => {
+    setClickedCell({ row, col });
+    setRippleKey((k: number) => k + 1);
+  };
 
   return (
     <div
@@ -34,6 +43,7 @@ export const BackgroundRippleEffect = ({
     >
       <div className="relative h-auto w-auto overflow-hidden">
         <div className="pointer-events-none absolute inset-0 z-2 h-full w-full overflow-hidden" />
+
         <DivGrid
           key={`base-${rippleKey}`}
           className="mask-radial-from-20% mask-radial-at-top opacity-600"
@@ -43,10 +53,7 @@ export const BackgroundRippleEffect = ({
           borderColor="var(--cell-border-color)"
           fillColor="var(--cell-fill-color)"
           clickedCell={clickedCell}
-          onCellClick={(row, col) => {
-            setClickedCell({ row, col });
-            setRippleKey((k) => k + 1);
-          }}
+          onCellClick={handleCellClick}
           interactive
         />
       </div>
@@ -54,17 +61,17 @@ export const BackgroundRippleEffect = ({
   );
 };
 
-type DivGridProps = {
+interface DivGridProps {
   className?: string;
   rows: number;
   cols: number;
-  cellSize: number; // in pixels
+  cellSize: number;
   borderColor: string;
   fillColor: string;
-  clickedCell: { row: number; col: number } | null;
+  clickedCell: ClickedCell | null;
   onCellClick?: (row: number, col: number) => void;
   interactive?: boolean;
-};
+}
 
 type CellStyle = React.CSSProperties & {
   ['--delay']?: string;
@@ -83,7 +90,7 @@ const DivGrid = ({
   interactive = true,
 }: DivGridProps) => {
   const cells = useMemo(
-    () => Array.from({ length: rows * cols }, (_, idx: number) => idx),
+    () => Array.from({ length: rows * cols }, (_: unknown, idx: number) => idx),
     [rows, cols]
   );
 
@@ -101,13 +108,15 @@ const DivGrid = ({
       {cells.map((idx: number) => {
         const rowIdx = Math.floor(idx / cols);
         const colIdx = idx % cols;
+
         const distance = clickedCell
           ? Math.hypot(clickedCell.row - rowIdx, clickedCell.col - colIdx)
           : 0;
-        const delay = clickedCell ? Math.max(0, distance * 55) : 0; // ms
-        const duration = 200 + distance * 80; // ms
 
-        const style: CellStyle = clickedCell
+        const delay = clickedCell ? Math.max(0, distance * 55) : 0;
+        const duration = 200 + distance * 80;
+
+        const cellStyle: CellStyle = clickedCell
           ? {
               '--delay': `${delay}ms`,
               '--duration': `${duration}ms`,
@@ -125,7 +134,7 @@ const DivGrid = ({
             style={{
               backgroundColor: fillColor,
               borderColor: borderColor,
-              ...style,
+              ...cellStyle,
             }}
             onClick={interactive ? () => onCellClick?.(rowIdx, colIdx) : undefined}
           />

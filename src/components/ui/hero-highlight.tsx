@@ -8,21 +8,18 @@ import { cn } from '@/lib/utils';
 
 const getEncodedPattern = (color: string) => {
   const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='16' height='24' fill='none'><circle fill='${color}' id='pattern-circle' cx='10' cy='10' r='2.5'></circle></svg>`;
-
   const base64 = typeof btoa !== 'undefined' ? btoa(svg) : Buffer.from(svg).toString('base64');
 
   return `url("data:image/svg+xml;base64,${base64}")`;
 };
 
-export const HeroHighlight = ({
-  children,
-  className,
-  containerClassName,
-}: {
+type HeroHighlightProps = {
   children: React.ReactNode;
   className?: string;
   containerClassName?: string;
-}) => {
+};
+
+export const HeroHighlight = ({ children, className, containerClassName }: HeroHighlightProps) => {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -37,7 +34,11 @@ export const HeroHighlight = ({
     },
   };
 
-  function handleMouseMove({ currentTarget, clientX, clientY }: React.MouseEvent<HTMLDivElement>) {
+  const handleMouseMove = ({
+    currentTarget,
+    clientX,
+    clientY,
+  }: React.MouseEvent<HTMLDivElement>) => {
     if (!currentTarget) {
       return;
     }
@@ -46,7 +47,7 @@ export const HeroHighlight = ({
 
     mouseX.set(clientX - left);
     mouseY.set(clientY - top);
-  }
+  };
 
   return (
     <div
@@ -119,13 +120,12 @@ export const HeroHighlight = ({
   );
 };
 
-export const Highlight = ({
-  children,
-  className,
-}: {
+type HighlightProps = {
   children: React.ReactNode;
   className?: string;
-}) => {
+};
+
+export const Highlight = ({ children, className }: HighlightProps) => {
   return (
     <motion.span
       initial={{

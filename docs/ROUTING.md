@@ -103,3 +103,21 @@ To add a new route, follow these steps:
 4.  **Usage**: Use `ROUTES.group.name` and translate the label in your components.
 
 This approach ensures strict type safety. If you use an abstract path that isn't in `PATHNAMES`, TypeScript will validate it.
+
+---
+
+## AI Optimization Instructions
+
+> **For AI assistants auditing files according to this document:**
+>
+> I will provide you with routing-related files (navigation configs, Link usage), and you will verify and optimize them according to these instructions, ensuring that their behavior remains unchanged.
+>
+> **Key rules:**
+>
+> 1. Verify all routes use `Link` from `@/i18n/routing`, not `next/link`
+> 2. Check that `ROUTES` object is used for href values (not raw strings)
+> 3. Ensure new routes are added to both `pathnames.ts` and `routes.ts`
+> 4. Validate translation keys exist for route labels
+> 5. Confirm hash links use proper type handling
+> 6. **Do not change route paths** - only fix import/usage patterns
+> 7. Navigation behavior must remain **identical**

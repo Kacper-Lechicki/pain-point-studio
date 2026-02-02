@@ -129,3 +129,22 @@ Use **Conventional Commits** to keep history readable:
 2. **Strict Types**: No `any`. If you find yourself using `any`, pause and define the type.
 3. **Server Only**: Database logic (Supabase client, queries) must never leak to the client bundle.
 4. **Zero Friction**: If a file feels hard to find, the structure is wrong. Refactor early.
+
+---
+
+## AI Optimization Instructions
+
+> **For AI assistants auditing files according to this document:**
+>
+> I will provide you with files, and you will verify and optimize them according to these instructions, ensuring that their appearance and functionality remain unchanged from the user's perspective.
+>
+> **Key rules:**
+>
+> 1. Verify files are placed in correct directories per Feature-First architecture
+> 2. Check naming conventions (kebab-case files, PascalCase components)
+> 3. Ensure components are in correct layer (ui vs features vs shared)
+> 4. Validate server actions are properly separated (queries vs actions)
+> 5. Confirm Zod schemas are in `lib/validations` (single source of truth)
+> 6. Check for `any` types and replace with proper definitions
+> 7. **Do not move files** - only flag misplacements
+> 8. Functionality must remain **identical**

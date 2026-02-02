@@ -5,19 +5,17 @@ import React, { createContext, useContext, useEffect, useRef, useState } from 'r
 import { BREAKPOINTS } from '@/config/breakpoints';
 import { cn } from '@/lib/utils';
 
-const MouseEnterContext = createContext<
-  [boolean, React.Dispatch<React.SetStateAction<boolean>>] | undefined
->(undefined);
+type MouseEnterContextValue = [boolean, React.Dispatch<React.SetStateAction<boolean>>];
 
-export const CardContainer = ({
-  children,
-  className,
-  containerClassName,
-}: {
+const MouseEnterContext = createContext<MouseEnterContextValue | undefined>(undefined);
+
+interface CardContainerProps {
   children?: React.ReactNode;
   className?: string;
   containerClassName?: string;
-}) => {
+}
+
+export const CardContainer = ({ children, className, containerClassName }: CardContainerProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isMouseEntered, setIsMouseEntered] = useState(false);
 
@@ -33,6 +31,7 @@ export const CardContainer = ({
     const { left, top, width, height } = containerRef.current.getBoundingClientRect();
     const x = (e.clientX - left - width / 2) / 25;
     const y = (e.clientY - top - height / 2) / 25;
+
     containerRef.current.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
   };
 
@@ -54,6 +53,7 @@ export const CardContainer = ({
     }
 
     setIsMouseEntered(false);
+
     containerRef.current.style.transform = `rotateY(0deg) rotateX(0deg)`;
   };
 
@@ -85,15 +85,29 @@ export const CardContainer = ({
   );
 };
 
-export const CardBody = ({
-  children,
-  className,
-}: {
+interface CardBodyProps {
   children: React.ReactNode;
   className?: string;
-}) => {
+}
+
+export const CardBody = ({ children, className }: CardBodyProps) => {
   return <div className={cn('transform-3d *:transform-3d', className)}>{children}</div>;
 };
+
+type TransformValue = number | string;
+
+interface CardItemProps {
+  as?: React.ElementType;
+  children: React.ReactNode;
+  className?: string;
+  translateX?: TransformValue;
+  translateY?: TransformValue;
+  translateZ?: TransformValue;
+  rotateX?: TransformValue;
+  rotateY?: TransformValue;
+  rotateZ?: TransformValue;
+  [key: string]: unknown;
+}
 
 export const CardItem = ({
   as: Tag = 'div',
@@ -106,18 +120,7 @@ export const CardItem = ({
   rotateY = 0,
   rotateZ = 0,
   ...rest
-}: {
-  as?: React.ElementType;
-  children: React.ReactNode;
-  className?: string;
-  translateX?: number | string;
-  translateY?: number | string;
-  translateZ?: number | string;
-  rotateX?: number | string;
-  rotateY?: number | string;
-  rotateZ?: number | string;
-  [key: string]: unknown;
-}) => {
+}: CardItemProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const [isMouseEntered] = useMouseEnter();
 
