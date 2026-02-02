@@ -7,7 +7,8 @@ import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { BRAND, getCopyrightText } from '@/config/brand';
-import { NAV_LINKS } from '@/config/marketing';
+import { NAV_LINKS, NavLink } from '@/config/marketing';
+import { ROUTES } from '@/config/routes';
 import { useBreakpoint } from '@/hooks/use-breakpoint';
 import { Link } from '@/i18n/routing';
 import { cn } from '@/lib/utils';
@@ -49,38 +50,47 @@ const Navbar = () => {
     >
       <div className="container mx-auto flex h-16 items-center px-6 sm:px-4 lg:px-8">
         <div className="flex flex-1 items-center justify-start">
-          <Link href="/" className="text-lg font-semibold tracking-tight">
+          <Link href={ROUTES.marketing.home} className="text-lg font-semibold tracking-tight">
             {brandName}
           </Link>
         </div>
 
         <div className="hidden flex-1 items-center justify-center lg:flex">
           <div className="flex items-center gap-6">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {link.label}
-              </Link>
-            ))}
+            {NAV_LINKS.map((link: NavLink) =>
+              link.disabled ? (
+                <span
+                  key={link.label}
+                  className="text-muted-foreground/50 cursor-not-allowed text-sm font-medium"
+                >
+                  {t(link.label)}
+                </span>
+              ) : (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {t(link.label)}
+                </Link>
+              )
+            )}
           </div>
         </div>
 
         <div className="flex flex-1 items-center justify-end gap-4">
           <div className="hidden items-center gap-4 lg:flex">
             <Button className="gap-2" asChild>
-              <Link href="/sign-in">
-                Sign In
+              <Link href={ROUTES.auth.signIn}>
+                {t('Common.signIn')}
                 <User className="h-4 w-4" />
               </Link>
             </Button>
 
             <Button className="group gap-2" variant="secondary" asChild>
-              <Link href="/explore">
-                Explore
+              <Link href={ROUTES.app.explore}>
+                {t('Common.explore')}
                 <Globe className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
               </Link>
             </Button>
@@ -110,31 +120,40 @@ const Navbar = () => {
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-4">
             <Button className="w-full justify-center gap-2" size="lg" asChild>
-              <Link href="/sign-in" onClick={() => setIsMobileMenuOpen(false)}>
-                Sign In
+              <Link href={ROUTES.auth.signIn} onClick={() => setIsMobileMenuOpen(false)}>
+                {t('Common.signIn')}
                 <User className="h-4 w-4" />
               </Link>
             </Button>
 
             <Button variant="secondary" className="w-full justify-center gap-2" size="lg" asChild>
-              <Link href="/explore" onClick={() => setIsMobileMenuOpen(false)}>
-                Explore
+              <Link href={ROUTES.app.explore} onClick={() => setIsMobileMenuOpen(false)}>
+                {t('Common.explore')}
                 <Globe className="h-4 w-4" />
               </Link>
             </Button>
           </div>
 
           <div className="flex flex-col items-start gap-4">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-muted-foreground hover:text-foreground py-2 text-lg font-medium transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {link.label}
-              </Link>
-            ))}
+            {NAV_LINKS.map((link: NavLink) =>
+              link.disabled ? (
+                <span
+                  key={link.label}
+                  className="text-muted-foreground/50 cursor-not-allowed py-2 text-lg font-medium"
+                >
+                  {t(link.label)}
+                </span>
+              ) : (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="text-muted-foreground hover:text-foreground py-2 text-lg font-medium transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {t(link.label)}
+                </Link>
+              )
+            )}
           </div>
         </div>
 

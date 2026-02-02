@@ -82,7 +82,10 @@ const DivGrid = ({
   onCellClick = () => {},
   interactive = true,
 }: DivGridProps) => {
-  const cells = useMemo(() => Array.from({ length: rows * cols }, (_, idx) => idx), [rows, cols]);
+  const cells = useMemo(
+    () => Array.from({ length: rows * cols }, (_, idx: number) => idx),
+    [rows, cols]
+  );
 
   const gridStyle: React.CSSProperties = {
     display: 'grid',
@@ -95,7 +98,7 @@ const DivGrid = ({
 
   return (
     <div className={cn('relative z-3', className)} style={gridStyle}>
-      {cells.map((idx) => {
+      {cells.map((idx: number) => {
         const rowIdx = Math.floor(idx / cols);
         const colIdx = idx % cols;
         const distance = clickedCell

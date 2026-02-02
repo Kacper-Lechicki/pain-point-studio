@@ -1,6 +1,6 @@
 import ProblemCard from '@/components/marketing/elements/problem-card';
 import { ScrollReveal } from '@/components/ui/scroll-reveal';
-import { problems } from '@/config/marketing';
+import { PROBLEMS, type Problem } from '@/config/marketing';
 
 const Problem = () => {
   return (
@@ -20,7 +20,7 @@ const Problem = () => {
 
           <div className="mx-auto mt-16 w-full sm:mt-20 lg:mt-24">
             <dl className="grid auto-rows-fr grid-cols-1 gap-8 lg:grid-cols-3">
-              {problems.map((problem) => (
+              {PROBLEMS.map((problem: Problem) => (
                 <ProblemCard
                   key={problem.title}
                   icon={problem.icon}

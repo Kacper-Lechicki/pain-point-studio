@@ -1,13 +1,13 @@
 'use client';
 
-import Link from 'next/link';
-
 import { ChevronDown, Info, Send } from 'lucide-react';
 import { motion, useScroll, useTransform } from 'motion/react';
 
 import { BackgroundRippleEffect } from '@/components/ui/background-ripple-effect';
 import { Button } from '@/components/ui/button';
 import { TextGenerateEffect } from '@/components/ui/text-generate-effect';
+import { ROUTES } from '@/config/routes';
+import { Link } from '@/i18n/routing';
 
 const Hero = () => {
   const { scrollY } = useScroll();
@@ -17,7 +17,7 @@ const Hero = () => {
     <section className="dark bg-background relative w-full overflow-hidden">
       <BackgroundRippleEffect rows={20} cols={50} />
 
-      <div className="pointer-events-none relative z-10 container mx-auto flex flex-col items-center gap-8 px-6 py-24 text-center sm:px-4 md:py-32 [&>*]:pointer-events-auto">
+      <div className="pointer-events-none relative z-10 container mx-auto flex flex-col items-center gap-8 px-6 py-24 text-center *:pointer-events-auto sm:px-4 md:py-32">
         <div className="bg-muted border-border inline-flex items-center rounded-full border px-4 py-1.5 text-sm font-medium select-text">
           Stop Building Things Nobody Needs
         </div>
@@ -40,14 +40,14 @@ const Hero = () => {
         <div className="flex flex-col items-center gap-4 max-sm:w-full max-sm:max-w-2xl">
           <div className="flex w-full flex-col gap-4 sm:flex-row sm:items-center">
             <Button className="h-11 gap-2 px-8 text-base" asChild>
-              <Link href="/start">
+              <Link href={ROUTES.marketing.start}>
                 Start Your First Research
                 <Send className="size-4" />
               </Link>
             </Button>
 
             <Button variant="secondary" className="h-11 gap-2 px-8 text-base" asChild>
-              <Link href="/how-it-works">
+              <Link href={ROUTES.marketing.howItWorks}>
                 See How It Works
                 <Info className="size-4" />
               </Link>

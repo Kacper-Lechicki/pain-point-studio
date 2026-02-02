@@ -6,7 +6,7 @@ import { QuestionEngagementChart } from '@/components/marketing/charts/question-
 import { ResponsesGrowthChart } from '@/components/marketing/charts/responses-growth-chart';
 import { CopyableLink } from '@/components/marketing/elements/copyable-link';
 
-export interface Step {
+export interface HowItWorksStep {
   id: number;
   title: string;
   description: string;
@@ -16,7 +16,7 @@ export interface Step {
   renderExtra?: () => React.ReactNode;
 }
 
-export const steps: Step[] = [
+export const HOW_IT_WORKS_STEPS: HowItWorksStep[] = [
   {
     id: 1,
     title: 'Choose Your Research Area',

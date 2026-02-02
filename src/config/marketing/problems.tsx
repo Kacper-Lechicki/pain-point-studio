@@ -1,6 +1,12 @@
-import { Code2, HelpCircle, Users } from 'lucide-react';
+import { Code2, HelpCircle, LucideIcon, Users } from 'lucide-react';
 
-export const problems = [
+export interface Problem {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+}
+
+export const PROBLEMS: Problem[] = [
   {
     icon: Code2,
     title: 'Building in a Vacuum',

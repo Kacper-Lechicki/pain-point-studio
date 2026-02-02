@@ -15,5 +15,27 @@
       "problem discovery",
       "developer tools"
     ]
+  },
+  "Common": {
+    "features": "Features",
+    "templates": "Templates",
+    "pricing": "Pricing",
+    "roadmap": "Roadmap",
+    "documentation": "Documentation",
+    "blog": "Blog",
+    "caseStudies": "Case Studies",
+    "community": "Community",
+    "about": "About",
+    "philosophy": "Philosophy",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "solutions": "Solutions",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "dashboard": "Dashboard",
+    "explore": "Explore",
+    "product": "Product",
+    "resources": "Resources",
+    "company": "Company"
   }
 }

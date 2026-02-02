@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import { PointerHighlight } from '@/components/ui/pointer-highlight';
 import { ScrollReveal } from '@/components/ui/scroll-reveal';
-import { gridFeatures } from '@/config/marketing';
+import { GRID_FEATURES, GridFeature } from '@/config/marketing';
 
 const FeaturesGrid = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -25,7 +25,7 @@ const FeaturesGrid = () => {
 
           <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
             <div className="grid auto-rows-fr grid-cols-1 gap-x-8 gap-y-12 lg:grid-cols-2">
-              {gridFeatures.map((feature, idx) => (
+              {GRID_FEATURES.map((feature: GridFeature, idx: number) => (
                 <div
                   key={feature.title}
                   className="flex flex-col gap-5 sm:flex-row"

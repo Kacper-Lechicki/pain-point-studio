@@ -1,12 +1,12 @@
 'use client';
 
-import Link from 'next/link';
-
 import { Send } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { HeroHighlight } from '@/components/ui/hero-highlight';
 import { ScrollReveal } from '@/components/ui/scroll-reveal';
+import { ROUTES } from '@/config/routes';
+import { Link } from '@/i18n/routing';
 
 const Cta = () => {
   return (
@@ -25,7 +25,7 @@ const Cta = () => {
 
             <div className="mt-10 flex flex-col items-center justify-center gap-4">
               <Button asChild size="lg" className="h-12 gap-2 px-8 text-base">
-                <Link href="/sign-in">
+                <Link href={ROUTES.auth.signIn}>
                   Start Your First Research
                   <Send className="size-4" />
                 </Link>

@@ -1,29 +1,43 @@
-export const footerSections = [
+import { AppRoute, ROUTES } from '@/config/routes';
+
+export interface FooterItem {
+  label: string;
+  href: AppRoute | '#';
+  disabled?: boolean;
+  external?: boolean;
+}
+
+export interface FooterSection {
+  title: string;
+  items: FooterItem[];
+}
+
+export const FOOTER_SECTIONS: FooterSection[] = [
   {
-    title: 'Product',
+    title: 'Common.product',
     items: [
-      { label: 'Features', href: '#' },
-      { label: 'Templates', href: '#' },
-      { label: 'Pricing', href: '#' },
-      { label: 'Roadmap', href: '#' },
+      { label: 'Common.features', href: ROUTES.marketing.features, disabled: true },
+      { label: 'Common.templates', href: '#', disabled: true },
+      { label: 'Common.pricing', href: ROUTES.marketing.pricing, disabled: true },
+      { label: 'Common.roadmap', href: '#', disabled: true },
     ],
   },
   {
-    title: 'Resources',
+    title: 'Common.resources',
     items: [
-      { label: 'Documentation', href: '#' },
-      { label: 'Blog', href: '#' },
-      { label: 'Case Studies', href: '#' },
-      { label: 'Community', href: '#' },
+      { label: 'Common.documentation', href: ROUTES.resources.docs, disabled: true },
+      { label: 'Common.blog', href: ROUTES.resources.blog, disabled: true },
+      { label: 'Common.caseStudies', href: ROUTES.resources.caseStudies, disabled: true },
+      { label: 'Common.community', href: ROUTES.resources.community, disabled: true },
     ],
   },
   {
-    title: 'Company',
+    title: 'Common.company',
     items: [
-      { label: 'About', href: '#' },
-      { label: 'Philosophy', href: '#' },
-      { label: 'Privacy', href: '#' },
-      { label: 'Terms', href: '#' },
+      { label: 'Common.about', href: ROUTES.marketing.about, disabled: true },
+      { label: 'Common.philosophy', href: '#', disabled: true },
+      { label: 'Common.privacy', href: ROUTES.legal.privacy, disabled: true },
+      { label: 'Common.terms', href: ROUTES.legal.terms, disabled: true },
     ],
   },
 ];

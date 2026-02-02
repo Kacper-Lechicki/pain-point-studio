@@ -1,6 +1,6 @@
 import PersonaCard from '@/components/marketing/elements/persona-card';
 import { ScrollReveal } from '@/components/ui/scroll-reveal';
-import { developerPersonas } from '@/config/marketing';
+import { DEVELOPER_PERSONAS, DeveloperPersona } from '@/config/marketing';
 
 const Developers = () => {
   return (
@@ -20,7 +20,7 @@ const Developers = () => {
 
           <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
             <div className="grid auto-rows-fr grid-cols-1 gap-8 lg:grid-cols-3">
-              {developerPersonas.map((persona) => (
+              {DEVELOPER_PERSONAS.map((persona: DeveloperPersona) => (
                 <PersonaCard key={persona.title} {...persona} />
               ))}
             </div>

@@ -1,9 +1,9 @@
 import StepCard from '@/components/marketing/elements/step-card';
 import { ScrollReveal } from '@/components/ui/scroll-reveal';
-import { steps } from '@/config/marketing';
+import { HOW_IT_WORKS_STEPS, HowItWorksStep } from '@/config/marketing';
 
 const HowItWorks = () => {
-  const [firstStep, ...otherSteps] = steps;
+  const [firstStep, ...otherSteps] = HOW_IT_WORKS_STEPS;
 
   if (!firstStep) {
     return null;
@@ -38,7 +38,7 @@ const HowItWorks = () => {
           </div>
         </div>
 
-        {otherSteps.map((step, index) => (
+        {otherSteps.map((step: HowItWorksStep, index: number) => (
           <div
             key={step.id}
             className={`border-t border-white/5 py-20 transition-colors duration-1000 sm:py-32 ${

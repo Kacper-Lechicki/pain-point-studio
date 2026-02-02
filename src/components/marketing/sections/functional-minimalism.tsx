@@ -1,6 +1,6 @@
 import FeatureCard from '@/components/marketing/elements/feature-card';
 import { ScrollReveal } from '@/components/ui/scroll-reveal';
-import { minimalismFeatures } from '@/config/marketing';
+import { MINIMALISM_FEATURES, MinimalismFeature } from '@/config/marketing';
 
 const FunctionalMinimalism = () => {
   return (
@@ -20,7 +20,7 @@ const FunctionalMinimalism = () => {
 
           <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
             <div className="grid auto-rows-fr grid-cols-1 gap-8 lg:grid-cols-2">
-              {minimalismFeatures.map((feature) => (
+              {MINIMALISM_FEATURES.map((feature: MinimalismFeature) => (
                 <FeatureCard
                   key={feature.title}
                   title={feature.title}

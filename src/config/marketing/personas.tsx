@@ -1,6 +1,13 @@
-import { GraduationCap, User, Users } from 'lucide-react';
+import { GraduationCap, LucideIcon, User, Users } from 'lucide-react';
 
-export const developerPersonas = [
+export interface DeveloperPersona {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  features: string[];
+}
+
+export const DEVELOPER_PERSONAS: DeveloperPersona[] = [
   {
     icon: User,
     title: 'Solo Steve',

@@ -4,6 +4,7 @@ import {
   Layout,
   Link2,
   Lock,
+  LucideIcon,
   MousePointer2,
   Shield,
   Sparkles,
@@ -11,7 +12,13 @@ import {
   Zap,
 } from 'lucide-react';
 
-export const minimalismFeatures = [
+export interface MinimalismFeature {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+}
+
+export const MINIMALISM_FEATURES: MinimalismFeature[] = [
   {
     icon: Sparkles,
     title: 'No Complicated Onboarding',
@@ -38,7 +45,13 @@ export const minimalismFeatures = [
   },
 ];
 
-export const gridFeatures = [
+export interface GridFeature {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+}
+
+export const GRID_FEATURES: GridFeature[] = [
   {
     icon: FileQuestion,
     title: 'Research Templates',
