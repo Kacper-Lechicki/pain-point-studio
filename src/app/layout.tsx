@@ -39,6 +39,7 @@ export default async function RootLayout({ children }: Readonly<RootLayoutProps>
         className={`${inter.variable} ${jetbrainsMono.variable} flex min-h-screen flex-col antialiased`}
       >
         <ScrollToTop />
+
         <NextIntlClientProvider messages={messages}>
           <div className="flex-1">{children}</div>
         </NextIntlClientProvider>

@@ -181,6 +181,27 @@
     "cta": {
       "title": "Stop Guessing. Start Knowing.",
       "description": "Join developers who validate ideas before writing code. Your first 5 research missions are free."
+    },
+    "trends": {
+      "title": "Trend Analysis",
+      "description": "Interest over last 6 months"
+    },
+    "painPoints": {
+      "title": "Identified Pain Points",
+      "description": "Severity of user reported issues"
+    },
+    "engagement": {
+      "title": "Engagement Metrics",
+      "description": "Interaction types by frequency"
+    },
+    "growth": {
+      "title": "Response Velocity",
+      "description": "Daily responses collected"
+    },
+    "copyableLink": {
+      "label": "Your Research Link",
+      "copy": "Copy link",
+      "copied": "Copied"
     }
   }
 }

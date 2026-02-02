@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 
+import { useTranslations } from 'next-intl';
 import { Bar, BarChart, Rectangle, XAxis, YAxis } from 'recharts';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -60,6 +61,10 @@ function CustomBar(props: CustomBarProps) {
 }
 
 export function QuestionEngagementChart() {
+  const t = useTranslations('Marketing.engagement');
+  const title = t('title');
+  const description = t('description');
+
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [isBarHovered, setIsBarHovered] = useState(false);
 
@@ -76,8 +81,8 @@ export function QuestionEngagementChart() {
   return (
     <Card className="flex h-full w-full flex-col border-0 bg-transparent shadow-none">
       <CardHeader className="items-center pb-0">
-        <CardTitle>Engagement Metrics</CardTitle>
-        <CardDescription>Interaction types by frequency</CardDescription>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{description}</CardDescription>
       </CardHeader>
 
       <CardContent className="flex-1 pb-0">
@@ -106,11 +111,13 @@ export function QuestionEngagementChart() {
             />
 
             <XAxis dataKey="count" type="number" hide />
+
             <ChartTooltip
               cursor={false}
               content={isBarHovered ? <ChartTooltipContent hideLabel /> : () => null}
               allowEscapeViewBox={{ x: true, y: true }}
             />
+
             <Bar
               dataKey="count"
               layout="vertical"

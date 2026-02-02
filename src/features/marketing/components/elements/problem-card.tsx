@@ -34,6 +34,7 @@ const ProblemCard = ({ icon: Icon, titleKey, descriptionKey }: ProblemCardProps)
         >
           {title}
         </CardItem>
+
         <CardItem
           as="dd"
           translateZ="40"

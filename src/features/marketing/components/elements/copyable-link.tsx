@@ -3,6 +3,7 @@
 import { useState } from 'react';
 
 import { Check, Copy } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 
@@ -11,6 +12,11 @@ interface CopyableLinkProps {
 }
 
 export const CopyableLink = ({ link }: CopyableLinkProps) => {
+  const t = useTranslations('Marketing.copyableLink');
+  const label = t('label');
+  const copyLabel = t('copy');
+  const copiedLabel = t('copied');
+
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -24,7 +30,7 @@ export const CopyableLink = ({ link }: CopyableLinkProps) => {
   return (
     <div className="bg-card text-card-foreground mt-6 rounded-lg border p-4 text-left shadow-sm">
       <label className="text-muted-foreground mb-2 block text-xs font-semibold tracking-wider uppercase">
-        Your Research Link
+        {label}
       </label>
 
       <div className="flex items-center gap-2">
@@ -38,7 +44,7 @@ export const CopyableLink = ({ link }: CopyableLinkProps) => {
             size="icon"
             className="h-9 w-9"
             onClick={handleCopy}
-            aria-label={copied ? 'Copied' : 'Copy link'}
+            aria-label={copied ? copiedLabel : copyLabel}
           >
             {copied ? (
               <Check className="h-4 w-4 text-green-500" aria-hidden="true" />
@@ -49,7 +55,7 @@ export const CopyableLink = ({ link }: CopyableLinkProps) => {
 
           {copied && (
             <div className="border-border/50 bg-background animate-in fade-in slide-in-from-bottom-1 pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 rounded-lg border px-2.5 py-1.5 text-xs whitespace-nowrap shadow-xl">
-              Copied
+              {copiedLabel}
             </div>
           )}
         </div>

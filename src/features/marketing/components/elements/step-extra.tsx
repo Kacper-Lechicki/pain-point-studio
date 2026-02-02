@@ -23,6 +23,7 @@ const StepExtra = ({ type, stepKey }: StepExtraProps) => {
           <div className="h-2 w-2 rounded-full bg-emerald-500" />
           {exampleTitle}
         </div>
+
         <p className="text-muted-foreground mt-2 leading-relaxed">{exampleDescription}</p>
       </div>
     );
@@ -54,6 +55,7 @@ const StepExtra = ({ type, stepKey }: StepExtraProps) => {
           <span className="text-sm font-medium">{responsesLabel}</span>
           <span className="text-xl font-bold">23</span>
         </div>
+
         <div className="card-static flex items-center justify-between">
           <span className="text-sm font-medium">{painPointsLabel}</span>
           <span className="text-xl font-bold">5</span>

@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { CartesianGrid, Line, LineChart, XAxis } from 'recharts';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,11 +16,15 @@ import { IDEA_TRENDS_CONFIG, IDEA_TRENDS_DATA } from '@/features/marketing/confi
 const formatMonthTick = (value: string): string => value.slice(0, 3);
 
 export function IdeaTrendsChart() {
+  const t = useTranslations('Marketing.trends');
+  const title = t('title');
+  const description = t('description');
+
   return (
     <Card className="flex h-full w-full flex-col border-0 bg-transparent shadow-none">
       <CardHeader className="items-center pb-0">
-        <CardTitle>Trend Analysis</CardTitle>
-        <CardDescription>Interest over last 6 months</CardDescription>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{description}</CardDescription>
       </CardHeader>
 
       <CardContent className="flex-1 pb-0">
@@ -39,6 +44,7 @@ export function IdeaTrendsChart() {
             }}
           >
             <CartesianGrid vertical={false} strokeDasharray="3 3" opacity={0.2} />
+
             <XAxis
               dataKey="month"
               tickLine={false}

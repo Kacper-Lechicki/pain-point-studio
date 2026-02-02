@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 
+import { useTranslations } from 'next-intl';
 import { Bar, BarChart, CartesianGrid, Rectangle, XAxis } from 'recharts';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -60,6 +61,10 @@ function CustomBar(props: CustomBarProps) {
 }
 
 export function PainPointsChart() {
+  const t = useTranslations('Marketing.painPoints');
+  const title = t('title');
+  const description = t('description');
+
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [isBarHovered, setIsBarHovered] = useState(false);
 
@@ -76,8 +81,8 @@ export function PainPointsChart() {
   return (
     <Card className="flex h-full w-full flex-col border-0 bg-transparent shadow-none">
       <CardHeader className="items-center pb-0">
-        <CardTitle>Identified Pain Points</CardTitle>
-        <CardDescription>Severity of user reported issues</CardDescription>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{description}</CardDescription>
       </CardHeader>
 
       <CardContent className="flex-1 pb-0">
@@ -102,6 +107,7 @@ export function PainPointsChart() {
               content={isBarHovered ? <ChartTooltipContent hideLabel /> : () => null}
               allowEscapeViewBox={{ x: true, y: true }}
             />
+
             <Bar
               dataKey="intensity"
               shape={

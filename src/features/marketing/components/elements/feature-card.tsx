@@ -31,6 +31,7 @@ const FeatureCard = ({ titleKey, descriptionKey, icon: Icon }: FeatureCardProps)
           <CardItem as="h3" translateZ="60" className="text-xl font-bold tracking-tight">
             {title}
           </CardItem>
+
           <CardItem
             as="p"
             translateZ="40"

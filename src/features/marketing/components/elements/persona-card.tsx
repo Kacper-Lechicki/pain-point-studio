@@ -32,6 +32,7 @@ const PersonaCard = ({ icon: Icon, titleKey, descriptionKey, featuresKey }: Pers
         <CardItem translateZ="60" as="h3" className="mt-6 text-xl font-bold">
           {title}
         </CardItem>
+
         <CardItem
           translateZ="40"
           as="p"

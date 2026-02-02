@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,11 +10,15 @@ import { RESPONSES_GROWTH_CONFIG, RESPONSES_GROWTH_DATA } from '@/features/marke
 const formatDayTick = (value: string): string => value.slice(0, 3);
 
 export function ResponsesGrowthChart() {
+  const t = useTranslations('Marketing.growth');
+  const title = t('title');
+  const description = t('description');
+
   return (
     <Card className="flex h-full w-full flex-col border-0 bg-transparent shadow-none">
       <CardHeader className="items-center pb-0">
-        <CardTitle>Response Velocity</CardTitle>
-        <CardDescription>Daily responses collected</CardDescription>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{description}</CardDescription>
       </CardHeader>
 
       <CardContent className="flex-1 pb-0">
@@ -39,6 +44,7 @@ export function ResponsesGrowthChart() {
                   stopColor={RESPONSES_GROWTH_CONFIG.visitors.color}
                   stopOpacity={0.8}
                 />
+
                 <stop
                   offset="95%"
                   stopColor={RESPONSES_GROWTH_CONFIG.visitors.color}
