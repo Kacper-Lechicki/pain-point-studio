@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { BRAND, getCopyrightText } from '@/config/brand';
-import { FOOTER_SECTIONS } from '@/config/marketing';
+import { FOOTER_SECTIONS, type FooterItem, type FooterSection } from '@/config/marketing';
 import { ROUTES } from '@/config/routes';
 import { Link } from '@/i18n/routing';
 
@@ -28,16 +28,16 @@ const Footer = () => {
             <p className="text-muted-foreground text-sm leading-relaxed">{brandTagline}</p>
           </div>
 
-          {FOOTER_SECTIONS.map((section) => (
+          {FOOTER_SECTIONS.map((section: FooterSection, sectionIndex: number) => (
             <div
-              key={section.title}
+              key={`footer-section-${sectionIndex}`}
               className="col-span-1 flex min-w-0 flex-col gap-4 py-8 last:pb-0 lg:py-0"
             >
               <h3 className="text-sm font-semibold">{t(section.title)}</h3>
 
               <ul className="flex flex-col gap-2">
-                {section.items.map((item) => (
-                  <li key={item.label}>
+                {section.items.map((item: FooterItem, itemIndex: number) => (
+                  <li key={`footer-item-${sectionIndex}-${itemIndex}`}>
                     {item.disabled ? (
                       <span className="text-muted-foreground/50 block cursor-not-allowed text-sm wrap-break-word">
                         {t(item.label)}
@@ -66,7 +66,7 @@ const Footer = () => {
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             aria-label="Scroll to top"
           >
-            <ArrowUp className="size-4" />
+            <ArrowUp className="size-4" aria-hidden="true" />
           </Button>
         </div>
       </div>

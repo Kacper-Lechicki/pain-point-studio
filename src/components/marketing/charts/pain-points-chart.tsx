@@ -12,7 +12,13 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 
-const chartData = [
+interface ChartDataPoint {
+  painPoint: string;
+  intensity: number;
+  fill: string;
+}
+
+const chartData: ChartDataPoint[] = [
   { painPoint: 'Price', intensity: 45, fill: '#22c55e' },
   { painPoint: 'Speed', intensity: 80, fill: '#ef4444' },
   { painPoint: 'UX', intensity: 65, fill: '#a855f7' },
@@ -37,6 +43,12 @@ const chartConfig = {
     color: '#3b82f6',
   },
 } satisfies ChartConfig;
+
+const formatPainPointTick = (value: string): string => {
+  const config = chartConfig[value.toLowerCase() as keyof typeof chartConfig];
+
+  return config?.label.split(' ')[0] ?? value;
+};
 
 interface CustomBarProps {
   fill?: string;
@@ -65,6 +77,8 @@ function CustomBar(props: CustomBarProps) {
     onMouseLeave,
   } = props;
 
+  const barOpacity = activeIndex === index && isBarHovered ? 0.8 : 1;
+
   return (
     <Rectangle
       fill={fill}
@@ -73,7 +87,7 @@ function CustomBar(props: CustomBarProps) {
       width={width}
       height={height}
       radius={8}
-      opacity={activeIndex === index && isBarHovered ? 0.8 : 1}
+      opacity={barOpacity}
       onMouseEnter={() => index !== undefined && onMouseEnter(index)}
       onMouseLeave={onMouseLeave}
       style={{ cursor: 'pointer' }}
@@ -112,10 +126,7 @@ export function PainPointsChart() {
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={(value) =>
-                chartConfig[value.toLowerCase() as keyof typeof chartConfig]?.label.split(' ')[0] ??
-                value
-              }
+              tickFormatter={formatPainPointTick}
             />
 
             <ChartTooltip

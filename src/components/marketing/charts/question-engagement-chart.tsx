@@ -12,7 +12,13 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 
-const chartData = [
+interface ChartDataPoint {
+  activity: string;
+  count: number;
+  fill: string;
+}
+
+const chartData: ChartDataPoint[] = [
   { activity: 'form_fill', count: 320, fill: '#e11d48' },
   { activity: 'scroll', count: 450, fill: '#f59e0b' },
   { activity: 'click', count: 580, fill: '#10b981' },
@@ -37,6 +43,10 @@ const chartConfig = {
     color: '#e11d48',
   },
 } satisfies ChartConfig;
+
+const formatActivityTick = (value: string): string => {
+  return chartConfig[value as keyof typeof chartConfig]?.label ?? value;
+};
 
 interface CustomBarProps {
   fill?: string;
@@ -65,6 +75,8 @@ function CustomBar(props: CustomBarProps) {
     onMouseLeave,
   } = props;
 
+  const barOpacity = activeIndex === index && isBarHovered ? 0.8 : 1;
+
   return (
     <Rectangle
       fill={fill}
@@ -73,7 +85,7 @@ function CustomBar(props: CustomBarProps) {
       width={width}
       height={height}
       radius={5}
-      opacity={activeIndex === index && isBarHovered ? 0.8 : 1}
+      opacity={barOpacity}
       onMouseEnter={() => index !== undefined && onMouseEnter(index)}
       onMouseLeave={onMouseLeave}
       style={{ cursor: 'pointer' }}
@@ -124,7 +136,7 @@ export function QuestionEngagementChart() {
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={(value) => chartConfig[value as keyof typeof chartConfig]?.label}
+              tickFormatter={formatActivityTick}
             />
 
             <XAxis dataKey="count" type="number" hide />

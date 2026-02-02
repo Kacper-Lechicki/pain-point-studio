@@ -17,7 +17,7 @@ const PersonaCard = ({ icon: Icon, title, description, features }: PersonaCardPr
           translateZ="50"
           className="bg-muted flex h-14 w-14 items-center justify-center rounded-full"
         >
-          <Icon className="text-foreground h-7 w-7" />
+          <Icon className="text-foreground h-7 w-7" aria-hidden="true" />
         </CardItem>
 
         <CardItem translateZ="60" as="h3" className="mt-6 text-xl font-bold">
@@ -32,9 +32,9 @@ const PersonaCard = ({ icon: Icon, title, description, features }: PersonaCardPr
         </CardItem>
 
         <CardItem translateZ="20" as="ul" className="mt-8 w-full space-y-3">
-          {features.map((feature) => (
-            <li key={feature} className="flex items-start gap-3 text-sm">
-              <Check className="text-primary mt-0.5 h-4 w-4 shrink-0" />
+          {features.map((feature: string, index: number) => (
+            <li key={`feature-${index}`} className="flex items-start gap-3 text-sm">
+              <Check className="text-primary mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
               <span className="text-muted-foreground">{feature}</span>
             </li>
           ))}

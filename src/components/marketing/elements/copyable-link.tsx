@@ -40,7 +40,11 @@ export const CopyableLink = ({ link }: CopyableLinkProps) => {
             onClick={handleCopy}
             aria-label={copied ? 'Copied' : 'Copy link'}
           >
-            {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+            {copied ? (
+              <Check className="h-4 w-4 text-green-500" aria-hidden="true" />
+            ) : (
+              <Copy className="h-4 w-4" aria-hidden="true" />
+            )}
           </Button>
 
           {copied && (

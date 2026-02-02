@@ -10,7 +10,12 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 
-const chartData = [
+interface ChartDataPoint {
+  day: string;
+  visitors: number;
+}
+
+const chartData: ChartDataPoint[] = [
   { day: 'Mon', visitors: 10 },
   { day: 'Tue', visitors: 25 },
   { day: 'Wed', visitors: 45 },
@@ -26,6 +31,8 @@ const chartConfig = {
     color: '#ec4899',
   },
 } satisfies ChartConfig;
+
+const formatDayTick = (value: string): string => value.slice(0, 3);
 
 export function ResponsesGrowthChart() {
   return (
@@ -65,7 +72,7 @@ export function ResponsesGrowthChart() {
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              tickFormatter={(value) => value.slice(0, 3)}
+              tickFormatter={formatDayTick}
             />
 
             <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" />} />

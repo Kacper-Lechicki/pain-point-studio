@@ -12,7 +12,13 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 
-const chartData = [
+interface ChartDataPoint {
+  month: string;
+  desktop: number;
+  mobile: number;
+}
+
+const chartData: ChartDataPoint[] = [
   { month: 'January', desktop: 186, mobile: 80 },
   { month: 'February', desktop: 305, mobile: 200 },
   { month: 'March', desktop: 237, mobile: 120 },
@@ -31,6 +37,8 @@ const chartConfig = {
     color: '#06b6d4',
   },
 } satisfies ChartConfig;
+
+const formatMonthTick = (value: string): string => value.slice(0, 3);
 
 export function IdeaTrendsChart() {
   return (
@@ -58,7 +66,7 @@ export function IdeaTrendsChart() {
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              tickFormatter={(value) => value.slice(0, 3)}
+              tickFormatter={formatMonthTick}
             />
 
             <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />

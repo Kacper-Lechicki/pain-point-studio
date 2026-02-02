@@ -57,17 +57,17 @@ const Navbar = () => {
 
         <div className="hidden flex-1 items-center justify-center lg:flex">
           <div className="flex items-center gap-6">
-            {NAV_LINKS.map((link: NavLink) =>
+            {NAV_LINKS.map((link: NavLink, index: number) =>
               link.disabled ? (
                 <span
-                  key={link.label}
+                  key={`nav-link-disabled-${index}`}
                   className="text-muted-foreground/50 cursor-not-allowed text-sm font-medium"
                 >
                   {t(link.label)}
                 </span>
               ) : (
                 <Link
-                  key={link.href}
+                  key={`nav-link-${index}`}
                   href={link.href}
                   className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors"
                   onClick={() => setIsMobileMenuOpen(false)}
@@ -84,14 +84,17 @@ const Navbar = () => {
             <Button className="gap-2" asChild>
               <Link href={ROUTES.auth.signIn}>
                 {t('Common.signIn')}
-                <User className="h-4 w-4" />
+                <User className="h-4 w-4" aria-hidden="true" />
               </Link>
             </Button>
 
             <Button className="group gap-2" variant="secondary" asChild>
               <Link href={ROUTES.app.explore}>
                 {t('Common.explore')}
-                <Globe className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
+                <Globe
+                  className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12"
+                  aria-hidden="true"
+                />
               </Link>
             </Button>
           </div>
@@ -103,7 +106,11 @@ const Navbar = () => {
               onClick={toggleMobileMenu}
               aria-label="Toggle menu"
             >
-              {isMobileMenuOpen ? <X className="size-6" /> : <Menu className="size-6" />}
+              {isMobileMenuOpen ? (
+                <X className="size-6" aria-hidden="true" />
+              ) : (
+                <Menu className="size-6" aria-hidden="true" />
+              )}
             </Button>
           </div>
         </div>
@@ -122,30 +129,30 @@ const Navbar = () => {
             <Button className="w-full justify-center gap-2" size="lg" asChild>
               <Link href={ROUTES.auth.signIn} onClick={() => setIsMobileMenuOpen(false)}>
                 {t('Common.signIn')}
-                <User className="h-4 w-4" />
+                <User className="h-4 w-4" aria-hidden="true" />
               </Link>
             </Button>
 
             <Button variant="secondary" className="w-full justify-center gap-2" size="lg" asChild>
               <Link href={ROUTES.app.explore} onClick={() => setIsMobileMenuOpen(false)}>
                 {t('Common.explore')}
-                <Globe className="h-4 w-4" />
+                <Globe className="h-4 w-4" aria-hidden="true" />
               </Link>
             </Button>
           </div>
 
           <div className="flex flex-col items-start gap-4">
-            {NAV_LINKS.map((link: NavLink) =>
+            {NAV_LINKS.map((link: NavLink, index: number) =>
               link.disabled ? (
                 <span
-                  key={link.label}
+                  key={`mobile-nav-disabled-${index}`}
                   className="text-muted-foreground/50 cursor-not-allowed py-2 text-lg font-medium"
                 >
                   {t(link.label)}
                 </span>
               ) : (
                 <Link
-                  key={link.href}
+                  key={`mobile-nav-${index}`}
                   href={link.href}
                   className="text-muted-foreground hover:text-foreground py-2 text-lg font-medium transition-colors"
                   onClick={() => setIsMobileMenuOpen(false)}
