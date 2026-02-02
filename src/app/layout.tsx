@@ -1,10 +1,10 @@
-import type { Metadata } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
 
 import { NextIntlClientProvider } from 'next-intl';
-import { getLocale, getMessages } from 'next-intl/server';
+import { getLocale, getMessages, getTranslations } from 'next-intl/server';
 
 import { ScrollToTop } from '@/components/ui/scroll-to-top';
+import { getAppMetadata } from '@/config/metadata';
 import '@/lib/env';
 
 import './globals.css';
@@ -19,11 +19,11 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
 });
 
-export const metadata: Metadata = {
-  title: 'Pain Point Studio',
-  description:
-    'Validate product ideas before writing code. A structured research platform for developers to uncover real user pain points.',
-};
+export async function generateMetadata() {
+  const t = await getTranslations();
+
+  return getAppMetadata(t);
+}
 
 export default async function RootLayout({
   children,

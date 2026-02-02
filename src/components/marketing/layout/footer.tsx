@@ -3,23 +3,29 @@
 import Link from 'next/link';
 
 import { ArrowUp } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
+import { BRAND, getCopyrightText } from '@/config/brand';
 import { footerSections } from '@/config/marketing';
 
 const Footer = () => {
+  const t = useTranslations();
+
+  const brandName = t(BRAND.name);
+  const brandTagline = t(BRAND.tagline);
+  const copyrightText = getCopyrightText(t);
+
   return (
     <footer className="bg-background border-t">
       <div className="container mx-auto px-6 py-12 sm:px-4 lg:px-8">
         <div className="divide-border flex flex-col divide-y lg:grid lg:grid-cols-5 lg:gap-8 lg:divide-y-0">
           <div className="col-span-2 flex flex-col gap-4 py-8 first:pt-0 lg:py-0">
             <Link href="/" className="text-lg font-semibold tracking-tight">
-              Pain Point Studio
+              {brandName}
             </Link>
 
-            <p className="text-muted-foreground text-sm leading-relaxed">
-              Validate ideas before writing code.
-            </p>
+            <p className="text-muted-foreground text-sm leading-relaxed">{brandTagline}</p>
           </div>
 
           {footerSections.map((section) => (
@@ -46,9 +52,8 @@ const Footer = () => {
         </div>
 
         <div className="mt-12 flex items-center justify-between border-t pt-8">
-          <p className="text-muted-foreground text-sm">
-            &copy; {new Date().getFullYear()} Pain Point Studio. All rights reserved.
-          </p>
+          <p className="text-muted-foreground text-sm">{copyrightText}</p>
+
           <Button
             variant="ghost"
             size="icon"

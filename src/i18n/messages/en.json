@@ -1,1 +1,19 @@
-{}
+{
+  "Brand": {
+    "name": "Pain Point Studio",
+    "tagline": "Validate ideas before writing code.",
+    "author": "Pain Point Studio",
+    "copyright": "© {year} {author}. All rights reserved."
+  },
+  "Metadata": {
+    "title": "Pain Point Studio",
+    "description": "Validate product ideas before writing code. A structured research platform for developers to uncover real user pain points.",
+    "keywords": [
+      "product validation",
+      "customer research",
+      "user interviews",
+      "problem discovery",
+      "developer tools"
+    ]
+  }
+}

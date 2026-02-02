@@ -3,16 +3,22 @@
 import { useEffect, useState } from 'react';
 
 import { Globe, Menu, User, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
+import { BRAND, getCopyrightText } from '@/config/brand';
 import { NAV_LINKS } from '@/config/marketing';
 import { useBreakpoint } from '@/hooks/use-breakpoint';
 import { Link } from '@/i18n/routing';
 import { cn } from '@/lib/utils';
 
 const Navbar = () => {
+  const t = useTranslations();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const isDesktop = useBreakpoint('lg');
+
+  const brandName = t(BRAND.name);
+  const copyrightText = getCopyrightText(t);
 
   if (isDesktop && isMobileMenuOpen) {
     setIsMobileMenuOpen(false);
@@ -44,7 +50,7 @@ const Navbar = () => {
       <div className="container mx-auto flex h-16 items-center px-6 sm:px-4 lg:px-8">
         <div className="flex flex-1 items-center justify-start">
           <Link href="/" className="text-lg font-semibold tracking-tight">
-            Pain Point Studio
+            {brandName}
           </Link>
         </div>
 
@@ -133,9 +139,7 @@ const Navbar = () => {
         </div>
 
         <div className="mt-auto border-t pt-6">
-          <p className="text-muted-foreground text-center text-sm">
-            &copy; {new Date().getFullYear()} Pain Point Studio. All rights reserved.
-          </p>
+          <p className="text-muted-foreground text-center text-sm">{copyrightText}</p>
         </div>
       </div>
     </nav>

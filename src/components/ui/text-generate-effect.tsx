@@ -35,29 +35,27 @@ export const TextGenerateEffect = ({
     );
   }, [animate, filter, duration]);
 
-  const renderWords = () => {
-    return (
-      <motion.div ref={scope}>
-        {wordsArray.map((word, idx) => {
-          return (
-            <motion.span
-              key={word + idx}
-              className="opacity-0"
-              style={{
-                filter: filter ? 'blur(4px)' : 'none',
-              }}
-            >
-              {word}{' '}
-            </motion.span>
-          );
-        })}
-      </motion.div>
-    );
-  };
+  const renderedWords = (
+    <motion.div ref={scope}>
+      {wordsArray.map((word, idx) => {
+        return (
+          <motion.span
+            key={word + idx}
+            className="opacity-0"
+            style={{
+              filter: filter ? 'blur(4px)' : 'none',
+            }}
+          >
+            {word}{' '}
+          </motion.span>
+        );
+      })}
+    </motion.div>
+  );
 
   return (
     <div className={cn('', className)}>
-      <div className="leading-snug tracking-wide">{renderWords()}</div>
+      <div className="leading-snug tracking-wide">{renderedWords}</div>
     </div>
   );
 };
