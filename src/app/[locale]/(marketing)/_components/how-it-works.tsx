@@ -38,20 +38,24 @@ const HowItWorks = () => {
           </div>
         </div>
 
-        {otherSteps.map((step: HowItWorksStep, index: number) => (
-          <div
-            key={step.id}
-            className={`border-t border-white/5 py-20 transition-colors duration-1000 sm:py-32 ${
-              (index + 1) % 2 === 1 ? 'bg-[#1a1a1a]' : 'bg-background'
-            }`}
-          >
-            <div className="container mx-auto px-6 sm:px-4 lg:px-8">
-              <ScrollReveal>
-                <StepCard step={step} isReversed={(index + 1) % 2 !== 0} />
-              </ScrollReveal>
+        {otherSteps.map((step: HowItWorksStep, index: number) => {
+          const isOddStep = (index + 1) % 2 === 1;
+          const bgClass = isOddStep ? 'bg-[#1a1a1a]' : 'bg-background';
+          const isReversed = !isOddStep;
+
+          return (
+            <div
+              key={step.id}
+              className={`border-t border-white/5 py-20 transition-colors duration-1000 sm:py-32 ${bgClass}`}
+            >
+              <div className="container mx-auto px-6 sm:px-4 lg:px-8">
+                <ScrollReveal>
+                  <StepCard step={step} isReversed={isReversed} />
+                </ScrollReveal>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </section>
   );

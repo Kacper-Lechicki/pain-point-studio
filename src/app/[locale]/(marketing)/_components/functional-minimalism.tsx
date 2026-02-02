@@ -20,9 +20,9 @@ const FunctionalMinimalism = () => {
 
           <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
             <div className="grid auto-rows-fr grid-cols-1 gap-8 lg:grid-cols-2">
-              {MINIMALISM_FEATURES.map((feature: MinimalismFeature) => (
+              {MINIMALISM_FEATURES.map((feature: MinimalismFeature, index: number) => (
                 <FeatureCard
-                  key={feature.title}
+                  key={`feature-${index}`}
                   title={feature.title}
                   description={feature.description}
                   icon={feature.icon}

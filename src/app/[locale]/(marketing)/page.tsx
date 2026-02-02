@@ -1,10 +1,10 @@
-import Cta from '@/components/marketing/sections/cta';
-import Developers from '@/components/marketing/sections/developers';
-import FeaturesGrid from '@/components/marketing/sections/features-grid';
-import FunctionalMinimalism from '@/components/marketing/sections/functional-minimalism';
-import Hero from '@/components/marketing/sections/hero';
-import HowItWorks from '@/components/marketing/sections/how-it-works';
-import Problem from '@/components/marketing/sections/problem';
+import Cta from '@/app/[locale]/(marketing)/_components/cta';
+import Developers from '@/app/[locale]/(marketing)/_components/developers';
+import FeaturesGrid from '@/app/[locale]/(marketing)/_components/features-grid';
+import FunctionalMinimalism from '@/app/[locale]/(marketing)/_components/functional-minimalism';
+import Hero from '@/app/[locale]/(marketing)/_components/hero';
+import HowItWorks from '@/app/[locale]/(marketing)/_components/how-it-works';
+import Problem from '@/app/[locale]/(marketing)/_components/problem';
 
 const HomePage = async () => {
   return (

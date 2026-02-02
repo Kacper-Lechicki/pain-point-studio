@@ -42,14 +42,14 @@ const Hero = () => {
             <Button className="h-11 gap-2 px-8 text-base" asChild>
               <Link href={ROUTES.marketing.start}>
                 Start Your First Research
-                <Send className="size-4" />
+                <Send className="size-4" aria-hidden="true" />
               </Link>
             </Button>
 
             <Button variant="secondary" className="h-11 gap-2 px-8 text-base" asChild>
               <Link href={ROUTES.marketing.howItWorks}>
                 See How It Works
-                <Info className="size-4" />
+                <Info className="size-4" aria-hidden="true" />
               </Link>
             </Button>
           </div>
@@ -62,7 +62,7 @@ const Hero = () => {
         className="pointer-events-none absolute bottom-2 left-1/2 z-10 -translate-x-1/2"
         style={{ opacity: scrollIndicatorOpacity }}
       >
-        <ChevronDown className="text-foreground size-8" strokeWidth={2} />
+        <ChevronDown className="text-foreground size-8" strokeWidth={2} aria-hidden="true" />
       </motion.div>
 
       <div className="from-background pointer-events-none absolute right-0 bottom-0 left-0 z-10 h-32 w-full bg-linear-to-t to-transparent" />

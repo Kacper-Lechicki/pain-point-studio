@@ -25,30 +25,34 @@ const FeaturesGrid = () => {
 
           <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
             <div className="grid auto-rows-fr grid-cols-1 gap-x-8 gap-y-12 lg:grid-cols-2">
-              {GRID_FEATURES.map((feature: GridFeature, idx: number) => (
-                <div
-                  key={feature.title}
-                  className="flex flex-col gap-5 sm:flex-row"
-                  onMouseEnter={() => setHoveredIndex(idx)}
-                  onMouseLeave={() => setHoveredIndex(null)}
-                >
-                  <div className="bg-primary text-primary-foreground flex h-12 w-12 shrink-0 items-center justify-center rounded-lg">
-                    <feature.icon className="h-6 w-6" aria-hidden="true" />
-                  </div>
+              {GRID_FEATURES.map((feature: GridFeature, index: number) => {
+                const isActive = hoveredIndex === index;
 
-                  <div className="flex-1">
-                    <PointerHighlight active={hoveredIndex === idx}>
-                      <h3 className="text-foreground w-fit text-lg leading-8 font-semibold">
-                        {feature.title}
-                      </h3>
-                    </PointerHighlight>
+                return (
+                  <div
+                    key={`grid-feature-${index}`}
+                    className="flex flex-col gap-5 sm:flex-row"
+                    onMouseEnter={() => setHoveredIndex(index)}
+                    onMouseLeave={() => setHoveredIndex(null)}
+                  >
+                    <div className="bg-primary text-primary-foreground flex h-12 w-12 shrink-0 items-center justify-center rounded-lg">
+                      <feature.icon className="h-6 w-6" aria-hidden="true" />
+                    </div>
 
-                    <p className="text-muted-foreground mt-1 text-base leading-7">
-                      {feature.description}
-                    </p>
+                    <div className="flex-1">
+                      <PointerHighlight active={isActive}>
+                        <h3 className="text-foreground w-fit text-lg leading-8 font-semibold">
+                          {feature.title}
+                        </h3>
+                      </PointerHighlight>
+
+                      <p className="text-muted-foreground mt-1 text-base leading-7">
+                        {feature.description}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>

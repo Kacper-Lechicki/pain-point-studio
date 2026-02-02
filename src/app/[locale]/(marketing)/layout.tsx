@@ -1,7 +1,11 @@
 import Footer from '@/components/marketing/layout/footer';
 import Navbar from '@/components/marketing/layout/navbar';
 
-const MarketingLayout = ({ children }: { children: React.ReactNode }) => {
+interface MarketingLayoutProps {
+  children: React.ReactNode;
+}
+
+const MarketingLayout = ({ children }: MarketingLayoutProps) => {
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />

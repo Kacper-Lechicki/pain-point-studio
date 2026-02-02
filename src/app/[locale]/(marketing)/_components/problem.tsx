@@ -20,9 +20,9 @@ const Problem = () => {
 
           <div className="mx-auto mt-16 w-full sm:mt-20 lg:mt-24">
             <dl className="grid auto-rows-fr grid-cols-1 gap-8 lg:grid-cols-3">
-              {PROBLEMS.map((problem: Problem) => (
+              {PROBLEMS.map((problem: Problem, index: number) => (
                 <ProblemCard
-                  key={problem.title}
+                  key={`problem-${index}`}
                   icon={problem.icon}
                   title={problem.title}
                   description={problem.description}

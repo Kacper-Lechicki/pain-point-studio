@@ -27,7 +27,7 @@ const Cta = () => {
               <Button asChild size="lg" className="h-12 gap-2 px-8 text-base">
                 <Link href={ROUTES.auth.signIn}>
                   Start Your First Research
-                  <Send className="size-4" />
+                  <Send className="size-4" aria-hidden="true" />
                 </Link>
               </Button>
 

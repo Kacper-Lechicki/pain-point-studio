@@ -20,8 +20,8 @@ const Developers = () => {
 
           <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
             <div className="grid auto-rows-fr grid-cols-1 gap-8 lg:grid-cols-3">
-              {DEVELOPER_PERSONAS.map((persona: DeveloperPersona) => (
-                <PersonaCard key={persona.title} {...persona} />
+              {DEVELOPER_PERSONAS.map((persona: DeveloperPersona, index: number) => (
+                <PersonaCard key={`persona-${index}`} {...persona} />
               ))}
             </div>
           </div>

@@ -25,16 +25,16 @@ export async function generateMetadata() {
   return getAppMetadata(t);
 }
 
-export default async function RootLayout({
-  children,
-}: Readonly<{
+interface RootLayoutProps {
   children: React.ReactNode;
-}>) {
+}
+
+export default async function RootLayout({ children }: Readonly<RootLayoutProps>) {
   const locale = await getLocale();
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className="dark" data-scroll-behavior="smooth">
+    <html lang={locale} className="dark" suppressHydrationWarning data-scroll-behavior="smooth">
       <body
         className={`${inter.variable} ${jetbrainsMono.variable} flex min-h-screen flex-col antialiased`}
       >
