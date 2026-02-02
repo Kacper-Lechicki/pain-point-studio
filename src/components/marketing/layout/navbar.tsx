@@ -2,16 +2,21 @@
 
 import { useEffect, useState } from 'react';
 
-import Link from 'next/link';
-
 import { Globe, Menu, User, X } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { NAV_LINKS } from '@/config/marketing';
+import { useBreakpoint } from '@/hooks/use-breakpoint';
+import { Link } from '@/i18n/routing';
 import { cn } from '@/lib/utils';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const isDesktop = useBreakpoint('lg');
+
+  if (isDesktop && isMobileMenuOpen) {
+    setIsMobileMenuOpen(false);
+  }
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen((prev) => !prev);
@@ -50,6 +55,7 @@ const Navbar = () => {
                 key={link.href}
                 href={link.href}
                 className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
               >
                 {link.label}
               </Link>
@@ -58,7 +64,7 @@ const Navbar = () => {
         </div>
 
         <div className="flex flex-1 items-center justify-end gap-4">
-          <div className="hidden items-center gap-4 sm:flex">
+          <div className="hidden items-center gap-4 lg:flex">
             <Button className="gap-2" asChild>
               <Link href="/sign-in">
                 Sign In
@@ -74,7 +80,7 @@ const Navbar = () => {
             </Button>
           </div>
 
-          <div className="flex sm:hidden">
+          <div className="flex lg:hidden">
             <Button
               variant="ghost"
               size="icon-lg"
@@ -89,7 +95,7 @@ const Navbar = () => {
 
       <div
         className={cn(
-          'bg-background fixed top-16 right-0 left-0 z-50 flex h-[calc(100dvh-4rem)] flex-col overflow-y-auto p-6 transition-all duration-300 ease-in-out sm:hidden',
+          'bg-background fixed top-16 right-0 left-0 z-50 flex h-[calc(100dvh-4rem)] flex-col overflow-y-auto p-6 transition-all duration-300 ease-in-out lg:hidden',
           isMobileMenuOpen
             ? 'pointer-events-auto translate-y-0 opacity-100'
             : 'pointer-events-none -translate-y-4 opacity-0'

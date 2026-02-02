@@ -5,7 +5,9 @@ import { steps } from '@/config/marketing';
 const HowItWorks = () => {
   const [firstStep, ...otherSteps] = steps;
 
-  if (!firstStep) return null;
+  if (!firstStep) {
+    return null;
+  }
 
   return (
     <section className="relative overflow-hidden border-t border-white/5 py-0">

@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 
+import { BREAKPOINTS } from '@/config/breakpoints';
 import { cn } from '@/lib/utils';
 
 const MouseEnterContext = createContext<
@@ -21,7 +22,14 @@ export const CardContainer = ({
   const [isMouseEntered, setIsMouseEntered] = useState(false);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!containerRef.current || typeof window === 'undefined' || window.innerWidth < 768) return;
+    if (
+      !containerRef.current ||
+      typeof window === 'undefined' ||
+      window.innerWidth < BREAKPOINTS.md
+    ) {
+      return;
+    }
+
     const { left, top, width, height } = containerRef.current.getBoundingClientRect();
     const x = (e.clientX - left - width / 2) / 25;
     const y = (e.clientY - top - height / 2) / 25;
@@ -29,14 +37,22 @@ export const CardContainer = ({
   };
 
   const handleMouseEnter = () => {
-    if (typeof window === 'undefined' || window.innerWidth < 768) return;
+    if (typeof window === 'undefined' || window.innerWidth < BREAKPOINTS.md) {
+      return;
+    }
+
     setIsMouseEntered(true);
 
-    if (!containerRef.current) return;
+    if (!containerRef.current) {
+      return;
+    }
   };
 
   const handleMouseLeave = () => {
-    if (!containerRef.current) return;
+    if (!containerRef.current) {
+      return;
+    }
+
     setIsMouseEntered(false);
     containerRef.current.style.transform = `rotateY(0deg) rotateX(0deg)`;
   };
@@ -106,7 +122,9 @@ export const CardItem = ({
   const [isMouseEntered] = useMouseEnter();
 
   const handleAnimations = React.useCallback(() => {
-    if (!ref.current) return;
+    if (!ref.current) {
+      return;
+    }
 
     if (isMouseEntered) {
       ref.current.style.transform = `translateX(${translateX}px) translateY(${translateY}px) translateZ(${translateZ}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) rotateZ(${rotateZ}deg)`;
