@@ -9,8 +9,8 @@ import { DEVELOPER_PERSONAS, DeveloperPersona } from '@/features/marketing/confi
 const Developers = () => {
   const t = useTranslations();
 
-  const title = t('Marketing.developers.title');
-  const description = t('Marketing.developers.description');
+  const title = t('marketing.personas.title');
+  const description = t('marketing.personas.description');
 
   return (
     <section className="section-padding border-t border-white/5 bg-[#1a1a1a] transition-colors duration-1000">

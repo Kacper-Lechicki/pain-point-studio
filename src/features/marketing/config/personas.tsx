@@ -7,20 +7,20 @@ export type DeveloperPersona = PersonaFeature;
 export const DEVELOPER_PERSONAS: DeveloperPersona[] = [
   {
     icon: User,
-    titleKey: 'Marketing.developers.items.solo.title',
-    descriptionKey: 'Marketing.developers.items.solo.description',
-    featuresKey: 'Marketing.developers.items.solo.features',
+    titleKey: 'marketing.personas.items.solo.title',
+    descriptionKey: 'marketing.personas.items.solo.description',
+    featuresKey: 'marketing.personas.items.solo.features',
   },
   {
     icon: Users,
-    titleKey: 'Marketing.developers.items.collaborative.title',
-    descriptionKey: 'Marketing.developers.items.collaborative.description',
-    featuresKey: 'Marketing.developers.items.collaborative.features',
+    titleKey: 'marketing.personas.items.collaborative.title',
+    descriptionKey: 'marketing.personas.items.collaborative.description',
+    featuresKey: 'marketing.personas.items.collaborative.features',
   },
   {
     icon: GraduationCap,
-    titleKey: 'Marketing.developers.items.learning.title',
-    descriptionKey: 'Marketing.developers.items.learning.description',
-    featuresKey: 'Marketing.developers.items.learning.features',
+    titleKey: 'marketing.personas.items.learning.title',
+    descriptionKey: 'marketing.personas.items.learning.description',
+    featuresKey: 'marketing.personas.items.learning.features',
   },
 ];

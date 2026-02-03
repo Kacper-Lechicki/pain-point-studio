@@ -1,7 +1,7 @@
 export const BRAND = {
-  name: 'Brand.name',
-  tagline: 'Brand.tagline',
-  author: 'Brand.author',
+  name: 'brand.name',
+  tagline: 'brand.tagline',
+  author: 'brand.author',
 } as const;
 
 export type BrandConfig = typeof BRAND;
@@ -12,7 +12,7 @@ export const getCopyrightText = (
 ): string => {
   const currentYear = year ?? new Date().getFullYear();
 
-  return t('Brand.copyright', {
+  return t('brand.copyright', {
     year: currentYear,
     author: t(BRAND.author),
   });

@@ -15,7 +15,7 @@ interface StepCardProps {
 
 const StepCard = ({ step, isReversed }: StepCardProps) => {
   const t = useTranslations();
-  const baseKey = `Marketing.howItWorks.steps.${step.stepKey}`;
+  const baseKey = `marketing.howItWorks.steps.${step.stepKey}`;
 
   const title = t(`${baseKey}.title`);
   const description = t(`${baseKey}.description`);

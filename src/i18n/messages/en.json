@@ -1,11 +1,11 @@
 {
-  "Brand": {
+  "brand": {
     "name": "Pain Point Studio",
     "tagline": "Validate ideas before writing code.",
     "author": "Pain Point Studio",
     "copyright": "© {year} {author}. All rights reserved."
   },
-  "Metadata": {
+  "metadata": {
     "title": "Pain Point Studio",
     "description": "Validate product ideas before writing code. A structured research platform for developers to uncover real user pain points.",
     "keywords": [
@@ -16,7 +16,7 @@
       "developer tools"
     ]
   },
-  "Common": {
+  "common": {
     "features": "Features",
     "templates": "Templates",
     "pricing": "Pricing",
@@ -41,7 +41,7 @@
     "startResearch": "Start Your First Research",
     "seeHowItWorks": "See How It Works"
   },
-  "Marketing": {
+  "marketing": {
     "hero": {
       "badge": "Stop Building Things Nobody Needs",
       "title": "Discover Real Problems Before Writing Code",
@@ -97,7 +97,7 @@
         }
       }
     },
-    "minimalism": {
+    "functionalMinimalism": {
       "title": "Built on Functional Minimalism",
       "description": "Every feature must pass one test: Is it absolutely necessary to go from 'I don't know what to build' to 'I have a validated problem worth solving'?",
       "items": {
@@ -119,7 +119,7 @@
         }
       }
     },
-    "developers": {
+    "personas": {
       "title": "Built for Different Types of Developers",
       "description": "Whether you prefer working alone or finding collaborators, Pain Point Studio adapts to your style.",
       "items": {
@@ -148,7 +148,7 @@
         }
       }
     },
-    "featuresGrid": {
+    "features": {
       "title": "Everything You Need, Nothing You Don't",
       "description": "Focused tools that help you validate ideas without the bloat.",
       "items": {
@@ -182,26 +182,57 @@
       "title": "Stop Guessing. Start Knowing.",
       "description": "Join developers who validate ideas before writing code. Your first 5 research missions are free."
     },
-    "trends": {
-      "title": "Trend Analysis",
-      "description": "Interest over last 6 months"
+    "charts": {
+      "ideaTrends": {
+        "title": "Trend Analysis",
+        "description": "Interest over last 6 months",
+        "chart": {
+          "desktop": "Desktop",
+          "mobile": "Mobile"
+        }
+      },
+      "painPoints": {
+        "title": "Identified Pain Points",
+        "description": "Severity of user reported issues",
+        "chart": {
+          "intensity": "Intensity",
+          "price": "Price High",
+          "speed": "Slow loading",
+          "ux": "Confusing UX",
+          "support": "Bad Support",
+          "tooltip": {
+            "price": "Price",
+            "speed": "Speed",
+            "ux": "UX",
+            "support": "Support"
+          }
+        }
+      },
+      "questionEngagement": {
+        "title": "Engagement Metrics",
+        "description": "Interaction types by frequency",
+        "chart": {
+          "count": "Count",
+          "view": "View",
+          "click": "Click",
+          "scroll": "Scroll",
+          "formFill": "Form Fill"
+        }
+      },
+      "responsesGrowth": {
+        "title": "Response Velocity",
+        "description": "Daily responses collected",
+        "chart": {
+          "visitors": "Responses "
+        }
+      }
     },
-    "painPoints": {
-      "title": "Identified Pain Points",
-      "description": "Severity of user reported issues"
-    },
-    "engagement": {
-      "title": "Engagement Metrics",
-      "description": "Interaction types by frequency"
-    },
-    "growth": {
-      "title": "Response Velocity",
-      "description": "Daily responses collected"
-    },
-    "copyableLink": {
-      "label": "Your Research Link",
-      "copy": "Copy link",
-      "copied": "Copied"
+    "components": {
+      "copyableLink": {
+        "label": "Your Research Link",
+        "copy": "Copy link",
+        "copied": "Copied"
+      }
     }
   }
 }

@@ -20,8 +20,8 @@ const Navbar = () => {
 
   const brandName = t(BRAND.name);
   const copyrightText = getCopyrightText(t);
-  const signInLabel = t('Common.signIn');
-  const exploreLabel = t('Common.explore');
+  const signInLabel = t('common.signIn');
+  const exploreLabel = t('common.explore');
 
   if (isDesktop && isMobileMenuOpen) {
     setIsMobileMenuOpen(false);

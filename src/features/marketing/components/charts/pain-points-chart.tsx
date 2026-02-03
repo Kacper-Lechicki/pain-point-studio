@@ -1,81 +1,34 @@
 'use client';
 
-import { useState } from 'react';
-
 import { useTranslations } from 'next-intl';
-import { Bar, BarChart, CartesianGrid, Rectangle, XAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { PAIN_POINTS_CONFIG, PAIN_POINTS_DATA } from '@/features/marketing/config';
 
-const formatPainPointTick = (value: string): string => {
-  const config = PAIN_POINTS_CONFIG[value.toLowerCase() as keyof typeof PAIN_POINTS_CONFIG];
-
-  return config?.label.split(' ')[0] ?? value;
-};
-
-interface CustomBarProps {
-  fill?: string;
-  x?: number;
-  y?: number;
-  width?: number;
-  height?: number;
-  index?: number;
-  activeIndex: number | null;
-  isBarHovered: boolean;
-  onMouseEnter: (index: number) => void;
-  onMouseLeave: () => void;
-}
-
-function CustomBar(props: CustomBarProps) {
-  const {
-    fill,
-    x = 0,
-    y = 0,
-    width = 0,
-    height = 0,
-    index,
-    activeIndex,
-    isBarHovered,
-    onMouseEnter,
-    onMouseLeave,
-  } = props;
-
-  const barOpacity = activeIndex === index && isBarHovered ? 0.8 : 1;
-
-  return (
-    <Rectangle
-      fill={fill}
-      x={x}
-      y={y}
-      width={width}
-      height={height}
-      radius={8}
-      opacity={barOpacity}
-      onMouseEnter={() => index !== undefined && onMouseEnter(index)}
-      onMouseLeave={onMouseLeave}
-      style={{ cursor: 'pointer' }}
-    />
-  );
-}
-
 export function PainPointsChart() {
-  const t = useTranslations('Marketing.painPoints');
+  const t = useTranslations('marketing.charts.painPoints');
   const title = t('title');
   const description = t('description');
 
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const [isBarHovered, setIsBarHovered] = useState(false);
-
-  const handleMouseEnter = (index: number) => {
-    setActiveIndex(index);
-    setIsBarHovered(true);
+  const chartConfig = {
+    ...PAIN_POINTS_CONFIG,
+    ...Object.fromEntries(
+      Object.entries(PAIN_POINTS_CONFIG).map(([key, value]) => [
+        key,
+        {
+          ...value,
+          label: value.label ? t(`chart.${value.label}`) : undefined,
+        },
+      ])
+    ),
   };
 
-  const handleMouseLeave = () => {
-    setIsBarHovered(false);
-    setActiveIndex(null);
+  const formatPainPointTick = (value: string): string => {
+    const config = chartConfig[value.toLowerCase() as keyof typeof chartConfig];
+
+    return config?.label?.split(' ')[0] ?? value;
   };
 
   return (
@@ -86,11 +39,7 @@ export function PainPointsChart() {
       </CardHeader>
 
       <CardContent className="flex-1 pb-0">
-        <ChartContainer
-          id="pain-points"
-          config={PAIN_POINTS_CONFIG}
-          className="aspect-auto h-full w-full"
-        >
+        <ChartContainer id="pain-points" config={chartConfig} className="aspect-auto h-full w-full">
           <BarChart data={PAIN_POINTS_DATA}>
             <CartesianGrid vertical={false} />
 
@@ -102,23 +51,9 @@ export function PainPointsChart() {
               tickFormatter={formatPainPointTick}
             />
 
-            <ChartTooltip
-              cursor={false}
-              content={isBarHovered ? <ChartTooltipContent hideLabel /> : () => null}
-              allowEscapeViewBox={{ x: true, y: true }}
-            />
+            <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
 
-            <Bar
-              dataKey="intensity"
-              shape={
-                <CustomBar
-                  activeIndex={activeIndex}
-                  isBarHovered={isBarHovered}
-                  onMouseEnter={handleMouseEnter}
-                  onMouseLeave={handleMouseLeave}
-                />
-              }
-            />
+            <Bar dataKey="intensity" radius={8} />
           </BarChart>
         </ChartContainer>
       </CardContent>

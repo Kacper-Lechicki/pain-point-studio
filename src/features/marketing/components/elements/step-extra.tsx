@@ -11,7 +11,7 @@ interface StepExtraProps {
 
 const StepExtra = ({ type, stepKey }: StepExtraProps) => {
   const t = useTranslations();
-  const baseKey = `Marketing.howItWorks.steps.${stepKey}`;
+  const baseKey = `marketing.howItWorks.steps.${stepKey}`;
 
   if (type === 'example') {
     const exampleTitle = t(`${baseKey}.exampleTitle`);

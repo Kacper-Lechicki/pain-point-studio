@@ -7,17 +7,17 @@ export type Problem = BaseFeature;
 export const PROBLEMS: Problem[] = [
   {
     icon: Code2,
-    titleKey: 'Marketing.problems.items.vacuum.title',
-    descriptionKey: 'Marketing.problems.items.vacuum.description',
+    titleKey: 'marketing.problems.items.vacuum.title',
+    descriptionKey: 'marketing.problems.items.vacuum.description',
   },
   {
     icon: HelpCircle,
-    titleKey: 'Marketing.problems.items.skills.title',
-    descriptionKey: 'Marketing.problems.items.skills.description',
+    titleKey: 'marketing.problems.items.skills.title',
+    descriptionKey: 'marketing.problems.items.skills.description',
   },
   {
     icon: Users,
-    titleKey: 'Marketing.problems.items.access.title',
-    descriptionKey: 'Marketing.problems.items.access.description',
+    titleKey: 'marketing.problems.items.access.title',
+    descriptionKey: 'marketing.problems.items.access.description',
   },
 ];

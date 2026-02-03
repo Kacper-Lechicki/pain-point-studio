@@ -15,12 +15,12 @@ const Hero = () => {
   const { scrollY } = useScroll();
   const scrollIndicatorOpacity = useTransform(scrollY, [0, 200], [1, 0]);
 
-  const badge = t('Marketing.hero.badge');
-  const title = t('Marketing.hero.title');
-  const description = t('Marketing.hero.description');
-  const startResearch = t('Common.startResearch');
-  const seeHowItWorks = t('Common.seeHowItWorks');
-  const noCreditCard = t('Common.noCreditCard');
+  const badge = t('marketing.hero.badge');
+  const title = t('marketing.hero.title');
+  const description = t('marketing.hero.description');
+  const startResearch = t('common.startResearch');
+  const seeHowItWorks = t('common.seeHowItWorks');
+  const noCreditCard = t('common.noCreditCard');
 
   return (
     <section className="dark bg-background relative w-full overflow-hidden">

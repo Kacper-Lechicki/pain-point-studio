@@ -10,8 +10,8 @@ const HowItWorks = () => {
   const t = useTranslations();
   const [firstStep, ...otherSteps] = HOW_IT_WORKS_STEPS;
 
-  const title = t('Marketing.howItWorks.title');
-  const description = t('Marketing.howItWorks.description');
+  const title = t('marketing.howItWorks.title');
+  const description = t('marketing.howItWorks.description');
 
   if (!firstStep) {
     return null;

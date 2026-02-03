@@ -12,10 +12,10 @@ import { Link } from '@/i18n/routing';
 const Cta = () => {
   const t = useTranslations();
 
-  const title = t('Marketing.cta.title');
-  const description = t('Marketing.cta.description');
-  const startResearch = t('Common.startResearch');
-  const noCreditCard = t('Common.noCreditCard');
+  const title = t('marketing.cta.title');
+  const description = t('marketing.cta.description');
+  const startResearch = t('common.startResearch');
+  const noCreditCard = t('common.noCreditCard');
 
   return (
     <HeroHighlight containerClassName="bg-background py-16 sm:py-24 mb-16 sm:mb-16">

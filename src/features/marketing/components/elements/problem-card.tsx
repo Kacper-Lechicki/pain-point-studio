@@ -28,18 +28,14 @@ const ProblemCard = ({ icon: Icon, titleKey, descriptionKey }: ProblemCardProps)
         </CardItem>
 
         <CardItem
-          as="dt"
+          as="h3"
           translateZ="60"
           className="mt-4 text-lg leading-7 font-semibold tracking-tight"
         >
           {title}
         </CardItem>
 
-        <CardItem
-          as="dd"
-          translateZ="40"
-          className="text-muted-foreground mt-2 text-base leading-7"
-        >
+        <CardItem as="p" translateZ="40" className="text-muted-foreground mt-2 text-base leading-7">
           {description}
         </CardItem>
       </CardBody>

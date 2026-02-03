@@ -9,8 +9,8 @@ import { MINIMALISM_FEATURES, MinimalismFeature } from '@/features/marketing/con
 const FunctionalMinimalism = () => {
   const t = useTranslations();
 
-  const title = t('Marketing.minimalism.title');
-  const description = t('Marketing.minimalism.description');
+  const title = t('marketing.functionalMinimalism.title');
+  const description = t('marketing.functionalMinimalism.description');
 
   return (
     <section className="bg-background section-padding border-t border-white/5 transition-colors duration-1000">

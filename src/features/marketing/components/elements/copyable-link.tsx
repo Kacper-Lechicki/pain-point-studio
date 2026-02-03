@@ -12,7 +12,7 @@ interface CopyableLinkProps {
 }
 
 export const CopyableLink = ({ link }: CopyableLinkProps) => {
-  const t = useTranslations('Marketing.copyableLink');
+  const t = useTranslations('marketing.components.copyableLink');
   const label = t('label');
   const copyLabel = t('copy');
   const copiedLabel = t('copied');

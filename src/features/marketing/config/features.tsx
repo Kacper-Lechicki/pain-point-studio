@@ -18,23 +18,23 @@ export type MinimalismFeature = BaseFeature;
 export const MINIMALISM_FEATURES: MinimalismFeature[] = [
   {
     icon: Sparkles,
-    titleKey: 'Marketing.minimalism.items.onboarding.title',
-    descriptionKey: 'Marketing.minimalism.items.onboarding.description',
+    titleKey: 'marketing.functionalMinimalism.items.onboarding.title',
+    descriptionKey: 'marketing.functionalMinimalism.items.onboarding.description',
   },
   {
     icon: Layout,
-    titleKey: 'Marketing.minimalism.items.bloat.title',
-    descriptionKey: 'Marketing.minimalism.items.bloat.description',
+    titleKey: 'marketing.functionalMinimalism.items.bloat.title',
+    descriptionKey: 'marketing.functionalMinimalism.items.bloat.description',
   },
   {
     icon: Shield,
-    titleKey: 'Marketing.minimalism.items.solo.title',
-    descriptionKey: 'Marketing.minimalism.items.solo.description',
+    titleKey: 'marketing.functionalMinimalism.items.solo.title',
+    descriptionKey: 'marketing.functionalMinimalism.items.solo.description',
   },
   {
     icon: MousePointer2,
-    titleKey: 'Marketing.minimalism.items.action.title',
-    descriptionKey: 'Marketing.minimalism.items.action.description',
+    titleKey: 'marketing.functionalMinimalism.items.action.title',
+    descriptionKey: 'marketing.functionalMinimalism.items.action.description',
   },
 ];
 
@@ -43,32 +43,32 @@ export type GridFeature = BaseFeature;
 export const GRID_FEATURES: GridFeature[] = [
   {
     icon: FileQuestion,
-    titleKey: 'Marketing.featuresGrid.items.templates.title',
-    descriptionKey: 'Marketing.featuresGrid.items.templates.description',
+    titleKey: 'marketing.features.items.templates.title',
+    descriptionKey: 'marketing.features.items.templates.description',
   },
   {
     icon: Link2,
-    titleKey: 'Marketing.featuresGrid.items.sharing.title',
-    descriptionKey: 'Marketing.featuresGrid.items.sharing.description',
+    titleKey: 'marketing.features.items.sharing.title',
+    descriptionKey: 'marketing.features.items.sharing.description',
   },
   {
     icon: BarChart3,
-    titleKey: 'Marketing.featuresGrid.items.patterns.title',
-    descriptionKey: 'Marketing.featuresGrid.items.patterns.description',
+    titleKey: 'marketing.features.items.patterns.title',
+    descriptionKey: 'marketing.features.items.patterns.description',
   },
   {
     icon: Lock,
-    titleKey: 'Marketing.featuresGrid.items.privacy.title',
-    descriptionKey: 'Marketing.featuresGrid.items.privacy.description',
+    titleKey: 'marketing.features.items.privacy.title',
+    descriptionKey: 'marketing.features.items.privacy.description',
   },
   {
     icon: Users,
-    titleKey: 'Marketing.featuresGrid.items.community.title',
-    descriptionKey: 'Marketing.featuresGrid.items.community.description',
+    titleKey: 'marketing.features.items.community.title',
+    descriptionKey: 'marketing.features.items.community.description',
   },
   {
     icon: Zap,
-    titleKey: 'Marketing.featuresGrid.items.setup.title',
-    descriptionKey: 'Marketing.featuresGrid.items.setup.description',
+    titleKey: 'marketing.features.items.setup.title',
+    descriptionKey: 'marketing.features.items.setup.description',
   },
 ];

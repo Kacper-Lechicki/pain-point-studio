@@ -12,8 +12,8 @@ const FeaturesGrid = () => {
   const t = useTranslations();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
-  const title = t('Marketing.featuresGrid.title');
-  const description = t('Marketing.featuresGrid.description');
+  const title = t('marketing.features.title');
+  const description = t('marketing.features.description');
 
   return (
     <section className="bg-background section-padding border-t border-white/5 transition-colors duration-1000">

@@ -1,6 +1,5 @@
 import { ChartConfig } from '@/components/ui/chart';
 
-// --- Idea Trends ---
 export interface IdeaTrendsDataPoint {
   month: string;
   desktop: number;
@@ -18,16 +17,15 @@ export const IDEA_TRENDS_DATA: IdeaTrendsDataPoint[] = [
 
 export const IDEA_TRENDS_CONFIG = {
   desktop: {
-    label: 'Desktop',
+    label: 'desktop',
     color: '#8b5cf6',
   },
   mobile: {
-    label: 'Mobile',
+    label: 'mobile',
     color: '#06b6d4',
   },
 } satisfies ChartConfig;
 
-// --- Pain Points ---
 export interface PainPointsDataPoint {
   painPoint: string;
   intensity: number;
@@ -42,25 +40,27 @@ export const PAIN_POINTS_DATA: PainPointsDataPoint[] = [
 ];
 
 export const PAIN_POINTS_CONFIG = {
+  intensity: {
+    label: 'intensity',
+  },
   price: {
-    label: 'Price High',
+    label: 'price',
     color: '#22c55e',
   },
   speed: {
-    label: 'Slow loading',
+    label: 'speed',
     color: '#ef4444',
   },
   ux: {
-    label: 'Confusing UX',
+    label: 'ux',
     color: '#a855f7',
   },
   support: {
-    label: 'Bad Support',
+    label: 'support',
     color: '#3b82f6',
   },
 } satisfies ChartConfig;
 
-// --- Question Engagement ---
 export interface QuestionEngagementDataPoint {
   activity: string;
   count: number;
@@ -75,25 +75,27 @@ export const QUESTION_ENGAGEMENT_DATA: QuestionEngagementDataPoint[] = [
 ];
 
 export const QUESTION_ENGAGEMENT_CONFIG = {
+  count: {
+    label: 'count',
+  },
   view: {
-    label: 'View',
+    label: 'view',
     color: '#3b82f6',
   },
   click: {
-    label: 'Click',
+    label: 'click',
     color: '#10b981',
   },
   scroll: {
-    label: 'Scroll',
+    label: 'scroll',
     color: '#f59e0b',
   },
   form_fill: {
-    label: 'Form Fill',
+    label: 'formFill',
     color: '#e11d48',
   },
 } satisfies ChartConfig;
 
-// --- Responses Growth ---
 export interface ResponsesGrowthDataPoint {
   day: string;
   visitors: number;
@@ -111,7 +113,7 @@ export const RESPONSES_GROWTH_DATA: ResponsesGrowthDataPoint[] = [
 
 export const RESPONSES_GROWTH_CONFIG = {
   visitors: {
-    label: 'Responses',
+    label: 'visitors',
     color: '#ec4899',
   },
 } satisfies ChartConfig;

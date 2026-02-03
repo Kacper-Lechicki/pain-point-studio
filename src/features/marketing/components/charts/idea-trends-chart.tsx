@@ -16,9 +16,22 @@ import { IDEA_TRENDS_CONFIG, IDEA_TRENDS_DATA } from '@/features/marketing/confi
 const formatMonthTick = (value: string): string => value.slice(0, 3);
 
 export function IdeaTrendsChart() {
-  const t = useTranslations('Marketing.trends');
+  const t = useTranslations('marketing.charts.ideaTrends');
   const title = t('title');
   const description = t('description');
+
+  const chartConfig = {
+    ...IDEA_TRENDS_CONFIG,
+    ...Object.fromEntries(
+      Object.entries(IDEA_TRENDS_CONFIG).map(([key, value]) => [
+        key,
+        {
+          ...value,
+          label: value.label ? t(`chart.${value.label}`) : undefined,
+        },
+      ])
+    ),
+  };
 
   return (
     <Card className="flex h-full w-full flex-col border-0 bg-transparent shadow-none">
@@ -28,11 +41,7 @@ export function IdeaTrendsChart() {
       </CardHeader>
 
       <CardContent className="flex-1 pb-0">
-        <ChartContainer
-          id="idea-trends"
-          config={IDEA_TRENDS_CONFIG}
-          className="aspect-auto h-full w-full"
-        >
+        <ChartContainer id="idea-trends" config={chartConfig} className="aspect-auto h-full w-full">
           <LineChart
             accessibilityLayer
             data={IDEA_TRENDS_DATA}
@@ -59,7 +68,7 @@ export function IdeaTrendsChart() {
             <Line
               dataKey="desktop"
               type="natural"
-              stroke={IDEA_TRENDS_CONFIG.desktop.color}
+              stroke={chartConfig.desktop.color}
               strokeWidth={3}
               dot={false}
               activeDot={{ r: 6 }}
@@ -68,7 +77,7 @@ export function IdeaTrendsChart() {
             <Line
               dataKey="mobile"
               type="natural"
-              stroke={IDEA_TRENDS_CONFIG.mobile.color}
+              stroke={chartConfig.mobile.color}
               strokeWidth={3}
               dot={false}
               activeDot={{ r: 6 }}

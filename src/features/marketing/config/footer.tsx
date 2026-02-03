@@ -14,30 +14,30 @@ export interface FooterSection {
 
 export const FOOTER_SECTIONS: FooterSection[] = [
   {
-    title: 'Common.product',
+    title: 'common.product',
     items: [
-      { label: 'Common.features', href: ROUTES.marketing.features, disabled: true },
-      { label: 'Common.templates', href: '#', disabled: true },
-      { label: 'Common.pricing', href: ROUTES.marketing.pricing, disabled: true },
-      { label: 'Common.roadmap', href: '#', disabled: true },
+      { label: 'common.features', href: ROUTES.marketing.features, disabled: true },
+      { label: 'common.templates', href: '#', disabled: true },
+      { label: 'common.pricing', href: ROUTES.marketing.pricing, disabled: true },
+      { label: 'common.roadmap', href: '#', disabled: true },
     ],
   },
   {
-    title: 'Common.resources',
+    title: 'common.resources',
     items: [
-      { label: 'Common.documentation', href: ROUTES.resources.docs, disabled: true },
-      { label: 'Common.blog', href: ROUTES.resources.blog, disabled: true },
-      { label: 'Common.caseStudies', href: ROUTES.resources.caseStudies, disabled: true },
-      { label: 'Common.community', href: ROUTES.resources.community, disabled: true },
+      { label: 'common.documentation', href: ROUTES.resources.docs, disabled: true },
+      { label: 'common.blog', href: ROUTES.resources.blog, disabled: true },
+      { label: 'common.caseStudies', href: ROUTES.resources.caseStudies, disabled: true },
+      { label: 'common.community', href: ROUTES.resources.community, disabled: true },
     ],
   },
   {
-    title: 'Common.company',
+    title: 'common.company',
     items: [
-      { label: 'Common.about', href: ROUTES.marketing.about, disabled: true },
-      { label: 'Common.philosophy', href: '#', disabled: true },
-      { label: 'Common.privacy', href: ROUTES.legal.privacy, disabled: true },
-      { label: 'Common.terms', href: ROUTES.legal.terms, disabled: true },
+      { label: 'common.about', href: ROUTES.marketing.about, disabled: true },
+      { label: 'common.philosophy', href: '#', disabled: true },
+      { label: 'common.privacy', href: ROUTES.legal.privacy, disabled: true },
+      { label: 'common.terms', href: ROUTES.legal.terms, disabled: true },
     ],
   },
 ];

@@ -10,9 +10,22 @@ import { RESPONSES_GROWTH_CONFIG, RESPONSES_GROWTH_DATA } from '@/features/marke
 const formatDayTick = (value: string): string => value.slice(0, 3);
 
 export function ResponsesGrowthChart() {
-  const t = useTranslations('Marketing.growth');
+  const t = useTranslations('marketing.charts.responsesGrowth');
   const title = t('title');
   const description = t('description');
+
+  const chartConfig = {
+    ...RESPONSES_GROWTH_CONFIG,
+    ...Object.fromEntries(
+      Object.entries(RESPONSES_GROWTH_CONFIG).map(([key, value]) => [
+        key,
+        {
+          ...value,
+          label: value.label ? t(`chart.${value.label}`) : undefined,
+        },
+      ])
+    ),
+  };
 
   return (
     <Card className="flex h-full w-full flex-col border-0 bg-transparent shadow-none">
@@ -24,7 +37,7 @@ export function ResponsesGrowthChart() {
       <CardContent className="flex-1 pb-0">
         <ChartContainer
           id="responses-growth"
-          config={RESPONSES_GROWTH_CONFIG}
+          config={chartConfig}
           className="aspect-auto h-full w-full"
         >
           <AreaChart
