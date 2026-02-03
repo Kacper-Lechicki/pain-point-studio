@@ -1,10 +1,22 @@
-import Cta from '@/app/[locale]/(marketing)/_components/cta';
-import Developers from '@/app/[locale]/(marketing)/_components/developers';
-import FeaturesGrid from '@/app/[locale]/(marketing)/_components/features-grid';
-import FunctionalMinimalism from '@/app/[locale]/(marketing)/_components/functional-minimalism';
+import dynamic from 'next/dynamic';
+
 import Hero from '@/app/[locale]/(marketing)/_components/hero';
-import HowItWorks from '@/app/[locale]/(marketing)/_components/how-it-works';
-import Problems from '@/app/[locale]/(marketing)/_components/problems';
+import { routing } from '@/i18n/routing';
+
+const Cta = dynamic(() => import('@/app/[locale]/(marketing)/_components/cta'));
+const Developers = dynamic(() => import('@/app/[locale]/(marketing)/_components/developers'));
+const FeaturesGrid = dynamic(() => import('@/app/[locale]/(marketing)/_components/features-grid'));
+
+const FunctionalMinimalism = dynamic(
+  () => import('@/app/[locale]/(marketing)/_components/functional-minimalism')
+);
+
+const HowItWorks = dynamic(() => import('@/app/[locale]/(marketing)/_components/how-it-works'));
+const Problems = dynamic(() => import('@/app/[locale]/(marketing)/_components/problems'));
+
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
 
 const HomePage = async () => {
   return (

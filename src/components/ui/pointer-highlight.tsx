@@ -1,8 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-
-import { motion } from 'motion/react';
+import { memo, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 
 import { cn } from '@/lib/utils';
 
@@ -19,7 +17,7 @@ type PointerHighlightProps = {
   containerClassName?: string;
 };
 
-export function PointerHighlight({
+export const PointerHighlight = memo(function PointerHighlight({
   children,
   active = false,
   rectangleClassName,
@@ -28,14 +26,19 @@ export function PointerHighlight({
 }: PointerHighlightProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState<Dimensions>({ width: 0, height: 0 });
+  const prefersReducedMotion = useSyncExternalStore(
+    (callback) => {
+      const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+      mediaQuery.addEventListener('change', callback);
+
+      return () => mediaQuery.removeEventListener('change', callback);
+    },
+    () => window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+    () => false
+  );
 
   useEffect(() => {
     const container = containerRef.current;
-
-    if (container) {
-      const { width, height } = container.getBoundingClientRect();
-      setDimensions({ width, height });
-    }
 
     const resizeObserver = new ResizeObserver((entries: ResizeObserverEntry[]) => {
       for (const entry of entries) {
@@ -56,6 +59,7 @@ export function PointerHighlight({
   }, []);
 
   const hasValidDimensions = dimensions.width > 0 && dimensions.height > 0;
+  const duration = prefersReducedMotion ? 0 : 0.3;
 
   return (
     <div className={cn('relative w-fit', containerClassName)} ref={containerRef}>
@@ -63,47 +67,41 @@ export function PointerHighlight({
 
       {hasValidDimensions && (
         <div className="pointer-events-none absolute inset-0">
-          <motion.div
+          <div
             className={cn(
-              'absolute inset-0 rounded-lg border border-neutral-800 dark:border-neutral-200',
+              'absolute origin-top-left rounded-lg border border-neutral-800 dark:border-neutral-200',
               rectangleClassName
             )}
-            initial={{ width: 0, height: 0, opacity: 0 }}
-            animate={
-              active
-                ? { width: dimensions.width, height: dimensions.height, opacity: 1 }
-                : { width: 0, height: 0, opacity: 0 }
-            }
-            transition={{
-              duration: 0.4,
-              ease: 'easeInOut',
+            style={{
+              width: dimensions.width,
+              height: dimensions.height,
+              transform: active ? 'scale(1)' : 'scale(0)',
+              opacity: active ? 1 : 0,
+              transition: `transform ${duration}s cubic-bezier(0.25, 0.1, 0.25, 1), opacity ${duration}s cubic-bezier(0.25, 0.1, 0.25, 1)`,
             }}
           />
-          <motion.div
+
+          <div
             className="absolute top-0 left-0"
-            initial={{ opacity: 0, x: 0, y: 0 }}
-            animate={
-              active
-                ? { opacity: 1, x: dimensions.width, y: dimensions.height }
-                : { opacity: 0, x: 0, y: 0 }
-            }
-            style={{ rotate: -90 }}
-            transition={{
-              duration: 0.4,
-              ease: 'easeInOut',
+            style={{
+              transform: active
+                ? `translate(${dimensions.width}px, ${dimensions.height}px) rotate(-90deg)`
+                : 'translate(0px, 0px) rotate(-90deg)',
+              opacity: active ? 1 : 0,
+              transition: `transform ${duration}s cubic-bezier(0.25, 0.1, 0.25, 1), opacity ${duration}s cubic-bezier(0.25, 0.1, 0.25, 1)`,
             }}
           >
             <Pointer className={cn('text-primary h-5 w-5', pointerClassName)} aria-hidden="true" />
-          </motion.div>
+          </div>
         </div>
       )}
     </div>
   );
-}
+});
 
 type PointerProps = React.SVGProps<SVGSVGElement>;
 
-const Pointer = ({ ...props }: PointerProps) => {
+const Pointer = memo(({ ...props }: PointerProps) => {
   return (
     <svg
       stroke="currentColor"
@@ -120,4 +118,6 @@ const Pointer = ({ ...props }: PointerProps) => {
       <path d="M14.082 2.182a.5.5 0 0 1 .103.557L8.528 15.467a.5.5 0 0 1-.917-.007L5.57 10.694.803 8.652a.5.5 0 0 1-.006-.916l12.728-5.657a.5.5 0 0 1 .556.103z"></path>
     </svg>
   );
-};
+});
+
+Pointer.displayName = 'Pointer';

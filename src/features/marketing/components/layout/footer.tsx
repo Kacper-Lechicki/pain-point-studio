@@ -39,7 +39,7 @@ const Footer = () => {
                 {section.items.map((item: FooterItem, itemIndex: number) => (
                   <li key={`footer-item-${sectionIndex}-${itemIndex}`}>
                     {item.disabled ? (
-                      <span className="text-muted-foreground/50 block cursor-not-allowed text-sm wrap-break-word">
+                      <span className="text-disabled-foreground block cursor-not-allowed text-sm wrap-break-word">
                         {t(item.label)}
                       </span>
                     ) : (

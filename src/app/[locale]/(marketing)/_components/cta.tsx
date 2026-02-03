@@ -1,13 +1,22 @@
 'use client';
 
+import dynamic from 'next/dynamic';
+
 import { Send } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
-import { HeroHighlight } from '@/components/ui/hero-highlight';
 import { ScrollReveal } from '@/components/ui/scroll-reveal';
 import { ROUTES } from '@/config/routes';
 import { Link } from '@/i18n/routing';
+
+const HeroHighlight = dynamic(
+  () => import('@/components/ui/hero-highlight').then((mod) => ({ default: mod.HeroHighlight })),
+  {
+    ssr: true,
+    loading: () => <div className="bg-background mb-16 py-16 sm:mb-16 sm:py-24" />,
+  }
+);
 
 const Cta = () => {
   const t = useTranslations();

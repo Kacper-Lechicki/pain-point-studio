@@ -14,7 +14,8 @@ const nextConfig: NextConfig = {
   // Disables the 'X-Powered-By' header for security
   poweredByHeader: false,
   // Creates a standalone build for Docker/Self-hosting (keeps image size small)
-  output: 'standalone',
+  // Only enabled when STANDALONE env var is set, to allow 'next start' to work locally
+  ...(process.env.STANDALONE === 'true' ? { output: 'standalone' } : {}),
 
   // -----------------------------------------------------------------------------
   // 2. BUILD & DEVELOPER EXPERIENCE

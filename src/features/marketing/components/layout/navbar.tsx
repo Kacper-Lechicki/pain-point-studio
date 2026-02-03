@@ -63,7 +63,7 @@ const Navbar = () => {
               link.disabled ? (
                 <span
                   key={`nav-link-disabled-${index}`}
-                  className="text-muted-foreground/50 cursor-not-allowed text-sm font-medium"
+                  className="text-disabled-foreground cursor-not-allowed text-sm font-medium"
                 >
                   {t(link.label)}
                 </span>
@@ -148,7 +148,7 @@ const Navbar = () => {
               link.disabled ? (
                 <span
                   key={`mobile-nav-disabled-${index}`}
-                  className="text-muted-foreground/50 cursor-not-allowed py-2 text-lg font-medium"
+                  className="text-disabled-foreground cursor-not-allowed py-2 text-lg font-medium"
                 >
                   {t(link.label)}
                 </span>
