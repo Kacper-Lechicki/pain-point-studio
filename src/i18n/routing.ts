@@ -12,15 +12,11 @@ export const routing = defineRouting({
   pathnames: PATHNAMES,
 });
 
-// Lightweight wrappers around Next.js' navigation APIs
-// that will consider the routing configuration
 const { Link: BaseLink, redirect, usePathname, useRouter, getPathname } = createNavigation(routing);
 
 type BaseLinkProps = ComponentProps<typeof BaseLink>;
 type Href = BaseLinkProps['href'];
 
-// Custom Link component that supports both typed pathnames
-// and raw strings (e.g. for hash links or external URLs)
 export const Link = BaseLink as unknown as React.ForwardRefExoticComponent<
   Omit<BaseLinkProps, 'href'> & {
     href: Href | (string & {});

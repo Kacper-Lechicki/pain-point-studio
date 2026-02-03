@@ -1,7 +1,3 @@
-/**
- * Tailwind CSS default breakpoints
- * These should be consistent with your globals.css
- */
 export const BREAKPOINTS = {
   sm: 640,
   md: 768,
