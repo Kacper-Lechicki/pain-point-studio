@@ -2,21 +2,20 @@ import type { ReactNode } from 'react';
 
 import { setRequestLocale } from 'next-intl/server';
 
-type Props = {
+import { locales } from '@/i18n/constants';
+
+interface LocaleLayoutProps {
   children: ReactNode;
   params: Promise<{ locale: string }>;
-};
+}
 
-export default async function LocaleLayout({ children, params }: Props) {
+export default async function LocaleLayout({ children, params }: LocaleLayoutProps) {
   const { locale } = await params;
-
-  // Enable static rendering for this locale
   setRequestLocale(locale);
 
   return children;
 }
 
-// Generate static params for all supported locales
 export function generateStaticParams() {
-  return [{ locale: 'en' }];
+  return locales.map((locale: string) => ({ locale }));
 }

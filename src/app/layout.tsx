@@ -1,44 +1,47 @@
-import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Inter, JetBrains_Mono } from 'next/font/google';
 
 import { NextIntlClientProvider } from 'next-intl';
-import { getLocale, getMessages } from 'next-intl/server';
+import { getLocale, getMessages, getTranslations } from 'next-intl/server';
 
+import { ScrollToTop } from '@/components/ui/scroll-to-top';
+import { getAppMetadata } from '@/config/metadata';
 import '@/lib/env';
 
 import './globals.css';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+const inter = Inter({
+  variable: '--font-sans',
   subsets: ['latin'],
 });
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+const jetbrainsMono = JetBrains_Mono({
+  variable: '--font-mono',
   subsets: ['latin'],
 });
 
-export const metadata: Metadata = {
-  title: 'Pain Point Studio',
-  description:
-    'Validate product ideas before writing code. A structured research platform for developers to uncover real user pain points.',
-};
+export async function generateMetadata() {
+  const t = await getTranslations();
 
-export default async function RootLayout({
-  children,
-}: Readonly<{
+  return getAppMetadata(t);
+}
+
+interface RootLayoutProps {
   children: React.ReactNode;
-}>) {
+}
+
+export default async function RootLayout({ children }: Readonly<RootLayoutProps>) {
   const locale = await getLocale();
   const messages = await getMessages();
 
   return (
-    <html lang={locale}>
+    <html lang={locale} className="dark" suppressHydrationWarning data-scroll-behavior="smooth">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} flex min-h-screen flex-col antialiased`}
+        className={`${inter.variable} ${jetbrainsMono.variable} flex min-h-screen flex-col antialiased`}
       >
+        <ScrollToTop />
+
         <NextIntlClientProvider messages={messages}>
-          <main className="flex-1">{children}</main>
+          <div className="flex-1">{children}</div>
         </NextIntlClientProvider>
       </body>
     </html>

@@ -218,3 +218,21 @@ git blame path/to/file
 3. **Commit often, push regularly** - smaller commits are easier to revert
 4. **When in doubt, create a backup branch** before risky operations
 5. **If you pushed secrets, rotate them immediately** - git history is permanent
+
+---
+
+## AI Optimization Instructions
+
+> **For AI assistants auditing files according to this document:**
+>
+> I will provide you with commit messages, branch names, or Git-related scripts, and you will verify and optimize them according to these instructions, ensuring that their behavior remains unchanged.
+>
+> **Key rules:**
+>
+> 1. Verify branch names follow allowed prefixes (`feat/`, `fix/`, `docs/`, etc.)
+> 2. Check commit messages use Conventional Commits format
+> 3. Ensure no sensitive data is committed (secrets, credentials)
+> 4. Validate `.gitignore` covers all necessary files
+> 5. Confirm no force-push commands target shared branches
+> 6. **Do not change Git history** - only suggest corrections
+> 7. Repository integrity must remain **identical**

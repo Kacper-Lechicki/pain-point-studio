@@ -42,6 +42,8 @@ const eslintConfig = defineConfig([
       'no-console': 'warn',
       // Warn on unused variables
       '@typescript-eslint/no-unused-vars': 'warn',
+      // Enforce curly braces for all control statements
+      curly: ['error', 'all'],
     },
   },
   // Detect hardcoded secrets (API keys, tokens, etc.)

@@ -60,3 +60,21 @@ End-to-End tests (Playwright) are **expensive** and **slow**, so they do NOT run
 2.  Wait for **Main CI** to pass (Lint, Types, Unit).
 3.  If ready, add the `run-e2e` label (or trigger manually) to run full system tests.
 4.  Once all checks turn green, merge!
+
+---
+
+## AI Optimization Instructions
+
+> **For AI assistants auditing files according to this document:**
+>
+> I will provide you with CI/CD configuration files (GitHub Actions workflows, scripts), and you will verify and optimize them according to these instructions, ensuring that their behavior remains unchanged.
+>
+> **Key rules:**
+>
+> 1. Verify branch naming patterns match the allowed prefixes
+> 2. Ensure all required CI steps are present (types, lint, unit tests)
+> 3. Check workflow triggers are correctly configured
+> 4. Validate environment variable handling in CI context
+> 5. Confirm E2E tests are properly isolated (manual/label trigger)
+> 6. **Do not change workflow behavior** - only fix misconfigurations
+> 7. Functionality must remain **identical**

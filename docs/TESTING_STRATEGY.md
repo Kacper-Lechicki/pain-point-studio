@@ -118,3 +118,22 @@ NEXT_PUBLIC_APP_URL="http://localhost:3000"
 ```
 
 See `docs/ENV_VARIABLES.md` for the complete list.
+
+---
+
+## AI Optimization Instructions
+
+> **For AI assistants auditing files according to this document:**
+>
+> I will provide you with test files (Vitest, Playwright), and you will verify and optimize them according to these instructions, ensuring that their behavior remains unchanged.
+>
+> **Key rules:**
+>
+> 1. Verify tests follow ROI framework (test critical flows, skip trivial code)
+> 2. Check E2E tests use accessibility selectors (`getByRole`, `getByLabel`)
+> 3. Ensure unit tests are colocated with source files
+> 4. Validate mocks are used only for external boundaries
+> 5. Confirm test data is independent (no shared state between tests)
+> 6. Check for `data-testid` overuse (prefer accessibility selectors)
+> 7. **Do not change test assertions** - only fix patterns and structure
+> 8. Test coverage must remain **identical**
