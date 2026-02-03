@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import i18nMiddleware, { config as i18nConfig } from '@/i18n/config';
+import i18nMiddleware from '@/i18n/config';
 import { isAuthenticated, isProtectionEnabled } from '@/lib/deploy-credentials';
 
 export default function middleware(req: NextRequest) {
@@ -20,4 +20,6 @@ export default function middleware(req: NextRequest) {
   });
 }
 
-export const config = i18nConfig;
+export const config = {
+  matcher: ['/', '/(en)/:path*'],
+};
