@@ -27,7 +27,7 @@ const Cta = () => {
   const noCreditCard = t('common.noCreditCard');
 
   return (
-    <HeroHighlight containerClassName="bg-background py-16 sm:py-24 mb-16 sm:mb-16">
+    <HeroHighlight containerClassName="bg-background pt-20 pb-32 sm:py-32 mb-16 sm:mb-16">
       <ScrollReveal>
         <div className="relative z-10 container mx-auto px-6 sm:px-4 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">

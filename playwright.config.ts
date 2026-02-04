@@ -17,11 +17,11 @@ export default defineConfig({
   // Run tests in files in parallel
   fullyParallel: true,
   // Fail the build on CI if you accidentally left test.only in the source code
-  forbidOnly: !!process.env.CI,
+  forbidOnly: !!env.CI,
   // Retry on CI only
-  retries: process.env.CI ? 2 : 0,
+  retries: env.CI ? 2 : 0,
   // Opt out of parallel tests on CI to avoid resource congestion
-  ...(process.env.CI ? { workers: 1 } : {}),
+  ...(env.CI ? { workers: 1 } : {}),
   // Reporter to use. See https://playwright.dev/docs/test-reporters
   reporter: [['html', { outputFolder: 'reports/playwright/html' }]],
   // Folder for test artifacts such as screenshots, videos, traces, etc.
@@ -64,7 +64,7 @@ export default defineConfig({
     // URL to wait for before starting tests
     url: env.NEXT_PUBLIC_APP_URL,
     // Whether to reuse an existing server instance (useful for local development)
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: !env.CI,
     // Timeout for server startup (Next.js cold start can be slow)
     timeout: 120_000,
     // Pipe stdout for debugging startup issues

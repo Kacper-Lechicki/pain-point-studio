@@ -2,6 +2,8 @@ import type { NextConfig } from 'next';
 
 import createNextIntlPlugin from 'next-intl/plugin';
 
+import { env } from './src/lib/env';
+
 // Initialize next-intl plugin with the request configuration path
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
@@ -15,7 +17,7 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   // Creates a standalone build for Docker/Self-hosting (keeps image size small)
   // Only enabled when STANDALONE env var is set, to allow 'next start' to work locally
-  ...(process.env.STANDALONE === 'true' ? { output: 'standalone' } : {}),
+  ...(env.STANDALONE === 'true' ? { output: 'standalone' } : {}),
 
   // -----------------------------------------------------------------------------
   // 2. BUILD & DEVELOPER EXPERIENCE

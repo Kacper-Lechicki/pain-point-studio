@@ -13,7 +13,7 @@ const Developers = () => {
   const description = t('marketing.personas.description');
 
   return (
-    <section className="section-padding border-t border-white/5 bg-[#1a1a1a] transition-colors duration-1000">
+    <section className="section-padding bg-section-alt border-t border-white/5 transition-colors duration-1000">
       <ScrollReveal>
         <div className="section-container">
           <div className="section-content">
