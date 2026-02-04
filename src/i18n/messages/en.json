@@ -99,7 +99,7 @@
     },
     "functionalMinimalism": {
       "title": "Built on Functional Minimalism",
-      "description": "Every feature must pass one test: Is it absolutely necessary to go from 'I don't know what to build' to 'I have a validated problem worth solving'?",
+      "description": "Every feature must pass one test: Is it absolutely necessary to go from \"I don't know what to build\" to \"I have a validated problem worth solving\"?",
       "items": {
         "onboarding": {
           "title": "No Complicated Onboarding",
@@ -170,7 +170,7 @@
         },
         "community": {
           "title": "Community Access",
-          "description": "Optional: Find other developers researching similar problems. Form teams. Share insights."
+          "description": "Find other developers researching similar problems. Form teams. Share insights."
         },
         "setup": {
           "title": "Fast Setup",
