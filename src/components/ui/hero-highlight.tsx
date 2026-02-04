@@ -96,16 +96,16 @@ export const HeroHighlight = ({ children, className, containerClassName }: HeroH
           backgroundImage: dotPatterns.light.hover,
           WebkitMaskImage: useMotionTemplate`
             radial-gradient(
-              200px circle at ${mouseX}px ${mouseY}px,
-              black 0%,
+              250px circle at ${mouseX}px ${mouseY}px,
+              black 60%,
               transparent 100%
             ),
             radial-gradient(ellipse at center, black, transparent 80%)
           `,
           maskImage: useMotionTemplate`
             radial-gradient(
-              200px circle at ${mouseX}px ${mouseY}px,
-              black 0%,
+              250px circle at ${mouseX}px ${mouseY}px,
+              black 60%,
               transparent 100%
             ),
             radial-gradient(ellipse at center, black, transparent 80%)
@@ -120,16 +120,16 @@ export const HeroHighlight = ({ children, className, containerClassName }: HeroH
           backgroundImage: dotPatterns.dark.hover,
           WebkitMaskImage: useMotionTemplate`
             radial-gradient(
-              200px circle at ${mouseX}px ${mouseY}px,
-              black 0%,
+              250px circle at ${mouseX}px ${mouseY}px,
+              black 60%,
               transparent 100%
             ),
             radial-gradient(ellipse at center, black, transparent 80%)
           `,
           maskImage: useMotionTemplate`
             radial-gradient(
-              200px circle at ${mouseX}px ${mouseY}px,
-              black 0%,
+              250px circle at ${mouseX}px ${mouseY}px,
+              black 60%,
               transparent 100%
             ),
             radial-gradient(ellipse at center, black, transparent 80%)

@@ -92,7 +92,7 @@
   --secondary: rgb(26, 28, 34);
   --secondary-foreground: rgb(220, 222, 228);
   --muted: rgb(20, 22, 27);
-  --muted-foreground: rgb(148, 152, 165);
+  --muted-foreground: rgb(168, 172, 183);
   --accent: rgb(30, 58, 138);
   --accent-foreground: rgb(191, 219, 254);
   --destructive: rgb(239, 68, 68);
@@ -132,7 +132,7 @@
   --shadow-xl: 0 1px 3px 0px hsl(220 15% 5% / 0.2), 0 8px 10px -1px hsl(220 15% 5% / 0.2);
   --shadow-2xl: 0 1px 3px 0px hsl(220 15% 5% / 0.35);
   --disabled: rgb(30, 33, 40);
-  --disabled-foreground: rgb(115, 120, 135);
+  --disabled-foreground: rgb(128, 132, 145);
   --success: rgb(34, 197, 94);
   --warning: rgb(245, 158, 11);
   --error: rgb(239, 68, 68);
