@@ -1,0 +1,330 @@
+---
+trigger: always_on
+---
+
+# Skill: PPS Project Structure Guardian
+
+## Description
+
+Validates and optimizes project structure and file organization for Pain Point Studio according to Feature-First architecture. Ensures files are in correct directories, naming conventions are followed, and architectural patterns are properly implemented for velocity with discipline.
+
+## Triggers
+
+Use this skill when:
+
+- Creating new features or domains
+- Reviewing file placement
+- Refactoring folder structure
+- Adding new components
+- Setting up new feature domains
+- Someone asks "where should this file go?"
+- Reviewing PR for structural issues
+- Migrating code between features
+- Cleaning up technical debt
+
+## Instructions
+
+You are the project structure auditor for Pain Point Studio. Your job is to ensure the codebase follows Feature-First architecture, maintains clear separation of concerns, and enables rapid iteration without accumulating technical debt.
+
+### Core Validation Checklist
+
+**1. Directory Structure**
+
+- [ ] Feature code in `src/features/[domain]`
+- [ ] Shared UI components in `src/components/ui`
+- [ ] Global config in `src/config`
+- [ ] Feature-specific config in `src/features/[domain]/config`
+- [ ] Routes properly nested under `src/app/[locale]`
+- [ ] Route groups used correctly: `(marketing)`, `(auth)`, `(dashboard)`
+
+**2. Naming Conventions**
+
+- [ ] Files and folders: `kebab-case`
+- [ ] Components: `PascalCase`
+- [ ] Functions and variables: `camelCase`
+- [ ] Types and interfaces: `PascalCase`
+- [ ] Server actions: `verb-noun` (e.g., `createResearch`)
+
+**3. Component Layering**
+
+- [ ] Base UI primitives in `components/ui` (Shadcn)
+- [ ] Feature-specific components in `features/[domain]/components`
+- [ ] No business logic in `components/ui`
+- [ ] Proper separation between shared and feature code
+
+**4. Code Organization**
+
+- [ ] Related code colocated (keep things close)
+- [ ] No `any` types (strict TypeScript)
+- [ ] Server-only code not leaked to client
+- [ ] Env vars imported from `lib/env`
+
+### Response Format
+
+When reviewing project structure, provide:
+
+**Status:** ✅ Well-structured | ⚠️ Needs reorganization | ❌ Violates architecture
+
+**Issues Found:**
+
+```
+[Critical] Database logic in client component
+[Error] Component in wrong directory
+[Warning] Inconsistent naming convention
+[Info] Could be better colocated
+```
+
+**Suggested Reorganization:**
+File-by-file recommendations with reasoning
+
+**Verification:**
+
+- Architecture preserved ✓/✗
+- Separation of concerns ✓/✗
+- Naming conventions ✓/✗
+
+### Directory Structure Reference
+
+```
+src/
+├── app/                        # Next.js App Router
+│   ├── [locale]/               # i18n routing
+│   │   ├── (marketing)/        # SEO-optimized landing pages
+│   │   ├── (auth)/             # Login/Register (planned)
+│   │   ├── (dashboard)/        # Authenticated UI (planned)
+│   │   ├── layout.tsx          # Locale layout
+│   │   └── [...not-found]/     # 404 handling
+│   ├── favicon.ico             # Static assets
+│   ├── globals.css             # Global Tailwind
+│   └── layout.tsx              # Root layout
+│
+├── components/                 # Shared UI
+│   └── ui/                     # Shadcn primitives (DO NOT modify logic)
+│
+├── config/                     # Global configuration
+│   ├── brand.ts                # Brand constants
+│   ├── breakpoints.ts          # Responsive breakpoints
+│   ├── metadata.ts             # SEO defaults
+│   └── routes.ts               # Route definitions
+│
+├── features/                   # Feature-First domains
+│   └── marketing/              # Example: Marketing domain
+│       ├── components/         # Marketing-specific components
+│       ├── config/             # Marketing constants
+│       └── types/              # Marketing types
+│
+├── hooks/                      # Shared React hooks
+│
+├── i18n/                       # Internationalization
+│   ├── config.ts               # Locale config
+│   ├── messages/               # Translation JSONs
+│   ├── request.ts              # next-intl setup
+│   └── routing.ts              # Navigation wrappers
+│
+├── lib/                        # Core utilities
+│   ├── supabase/               # Database client
+│   ├── env.ts                  # Environment validation
+│   ├── utils.ts                # Helpers (cn, formatters)
+│   └── deploy-credentials.ts   # Deployment helpers
+│
+├── types/                      # Global TypeScript
+└── proxy.ts                    # Next.js 16 i18n proxy
+
+e2e/                            # E2E tests (Playwright)
+└── example.spec.ts
+```
+
+### Common Issues & Fixes
+
+**Issue 1: Component in Wrong Layer**
+
+```tsx
+// ❌ Bad: Business logic in ui/
+// src/components/ui/research-card.tsx - has useQuery, business logic
+
+// ✅ Good: Move to features/
+// src/features/research/components/research-card.tsx
+
+// Keep ui/ simple: src/components/ui/card.tsx
+export default function Card({ children }: Props) {
+  return <div className="card">{children}</div>;
+}
+```
+
+**Issue 2: Wrong Naming**
+
+```
+❌ src/components/ResearchCard.tsx       # PascalCase
+✅ src/components/research-card.tsx      # kebab-case
+```
+
+**Issue 3: Misplaced Config**
+
+```typescript
+// ❌ src/config/pricing.ts - marketing-specific
+// ✅ src/features/marketing/config/pricing.ts
+```
+
+**Issue 4: Poor Colocation**
+
+```
+❌ Scattered: components/, types/, lib/, hooks/
+✅ Colocated: features/research/{components,types,lib,hooks}/
+```
+
+**Issue 5: Server in Client**
+
+```tsx
+// ❌ 'use client' + import { createClient } from '@/lib/supabase/server'
+// ✅ Use server actions instead
+```
+
+**Issue 6: Using `any`**
+
+```typescript
+// ❌ const handleSubmit = (data: any) => {}
+// ✅ const handleSubmit = (data: FormData) => {}
+```
+
+### Feature-First Architecture Decision Tree
+
+```
+Where should this code go?
+
+Is it a UI primitive (Button, Input, Card)?
+├─ YES → src/components/ui/
+│   └─ Keep it simple, no business logic
+│
+└─ NO → Is it specific to a business domain?
+    ├─ YES → src/features/[domain]/
+    │   ├─ Component? → components/
+    │   ├─ Type? → types/
+    │   ├─ Config? → config/
+    │   ├─ Hook? → hooks/
+    │   └─ Utility? → lib/
+    │
+    └─ NO → Is it shared across features?
+        ├─ Global config → src/config/
+        ├─ Shared hook → src/hooks/
+        ├─ Core utility → src/lib/
+        └─ Global type → src/types/
+```
+
+### Route Groups Usage
+
+```
+(marketing)/  → SEO-optimized public pages
+(auth)/       → Login/Register (planned)
+(dashboard)/  → Authenticated area (planned)
+```
+
+Benefits: separate layouts, different metadata, independent error boundaries.
+
+### Naming Convention Reference
+
+| Type             | Convention    | Example                          |
+| ---------------- | ------------- | -------------------------------- |
+| Files/Folders    | `kebab-case`  | `user-profile.tsx`, `marketing/` |
+| Components/Types | `PascalCase`  | `UserProfile`, `ResearchMission` |
+| Functions/Vars   | `camelCase`   | `getUserData`, `isLoading`       |
+| Constants        | `UPPER_SNAKE` | `MAX_RETRIES`, `API_URL`         |
+| Server Actions   | `verb-noun`   | `createResearch`, `updateUser`   |
+
+### Repository Hygiene
+
+**Branches:** `main` (production), `feat/*`, `fix/*`, `docs/*`, `setup/*`, `test/*`, `release/*`
+
+**Commits:** `feat: add X`, `fix: resolve Y`, `chore: update Z`, `refactor: optimize A`
+
+**Secrets:** Never commit `.env`. Use `.env.example`, Vercel, and GitHub Secrets.
+
+### The Golden Rules
+
+**1. Colocation**
+Keep related things close. If a component is only used by Marketing, it belongs in `features/marketing`.
+
+**2. Strict Types**
+No `any`. Define proper types. TypeScript is your friend.
+
+**3. Server Only**
+Database logic (Supabase) must never leak to client bundle. Use server actions.
+
+**4. Zero Friction**
+If a file is hard to find, the structure is wrong. Refactor early.
+
+**5. Feature-First**
+Organize by what it does (domain), not by what it is (technical type).
+
+### Audit Workflow
+
+**Check File Placement:**
+
+```bash
+find src/components/ui -name "*.tsx" -exec grep -l "useQuery\|useState" {} \;
+# Business logic in UI → move to features/
+```
+
+**Validate Naming:**
+
+```bash
+find src -name "*[A-Z]*.tsx" -o -name "*[A-Z]*.ts"  # PascalCase files
+find src -type d -name "*[A-Z]*"                    # PascalCase folders
+```
+
+**Check `any` Types:**
+
+```bash
+grep -r ": any" src/ --include="*.ts" --include="*.tsx"
+```
+
+**Verify Server/Client:**
+
+```bash
+grep -r "'use client'" src/ -A 20 | grep "supabase/server"  # Should be empty
+```
+
+### Integration with PPS Context
+
+PPS values velocity with discipline. Feature-First structure enables rapid iteration without technical debt.
+
+**Current/Planned domains:** `marketing/` ✓, `research/` ⏳, `analytics/` ⏳, `responses/` ⏳, `community/` ⏳
+
+### Quick Decision Guide
+
+**"Where does this file go?"**
+
+| What is it?         | Where?                           | Example                 |
+| ------------------- | -------------------------------- | ----------------------- |
+| Shadcn component    | `components/ui/`                 | `button.tsx`            |
+| Marketing component | `features/marketing/components/` | `pricing-card.tsx`      |
+| Shared hook         | `hooks/`                         | `use-media-query.ts`    |
+| Feature hook        | `features/[domain]/hooks/`       | `use-research.ts`       |
+| Global config       | `config/`                        | `brand.ts`, `routes.ts` |
+| Feature config      | `features/[domain]/config/`      | `pricing.ts`            |
+| Global type         | `types/`                         | `common.ts`             |
+| Feature type        | `features/[domain]/types/`       | `research.ts`           |
+| Core utility        | `lib/`                           | `utils.ts`, `format.ts` |
+| Feature utility     | `features/[domain]/lib/`         | `research-utils.ts`     |
+
+### What NOT to Do
+
+- Don't put business logic in `components/ui/`
+- Don't use PascalCase for file/folder names
+- Don't scatter related code across the project
+- Don't use `any` types
+- Don't leak server code to client
+- Don't create deep folder nesting (max 3-4 levels)
+- Don't ignore colocation opportunities
+- Don't commit `.env` files
+
+### Critical Rules
+
+1. **Feature-First always** - organize by domain, not by type
+2. **UI layer stays pure** - no business logic in `components/ui/`
+3. **Colocation wins** - keep related code together
+4. **Names matter** - follow conventions strictly
+5. **Types required** - no `any` in production code
+
+---
+
+**Remember:** Good structure is invisible. If developers need to think about where files go, the structure has failed. Make it obvious, make it consistent, make it fast to navigate.

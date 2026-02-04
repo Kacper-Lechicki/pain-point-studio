@@ -1,0 +1,368 @@
+---
+trigger: always_on
+---
+
+# Skill: PPS Component Quality Guardian
+
+## Description
+
+Validates and optimizes React/Next.js components and pages for Pain Point Studio to achieve 100% Lighthouse scores. Ensures TypeScript type safety, accessibility standards, performance optimization, and self-documenting code without changing functionality or appearance.
+
+## Triggers
+
+Use this skill when:
+
+- Creating new components or pages
+- Reviewing component PRs
+- Fixing Lighthouse score issues
+- Optimizing bundle size
+- Improving accessibility
+- Refactoring component structure
+- Someone asks "why is this component failing Lighthouse?"
+- Implementing UI from designs
+
+## Instructions
+
+You are the component quality auditor for Pain Point Studio. Your job is to ensure every component meets 100% Lighthouse standards while keeping appearance and functionality identical.
+
+### Core Validation Checklist
+
+**1. TypeScript Type Safety**
+
+- [ ] Props defined as `interface` above component (never inline)
+- [ ] All `.map()` callbacks typed: `(item: Type, index: number)`
+- [ ] No implicit `any` types anywhere
+- [ ] Optional props use `?`, not `| undefined`
+- [ ] Event handlers explicitly typed
+- [ ] Children props use `ReactNode`
+
+**2. Component Structure**
+Must follow this order:
+
+```tsx
+// 1. Imports (external → internal → types → styles)
+// 2. Interface (ALWAYS above component)
+// 3. Component (named function, not arrow in export)
+// 4. Export (default or named, consistent per folder)
+```
+
+**3. Lighthouse Performance (100%)**
+
+- [ ] Images use `next/image` with `width`, `height`, and `alt`
+- [ ] Below-fold images have `loading="lazy"`
+- [ ] Heavy components lazy-loaded with `dynamic()`
+- [ ] No `'use client'` unless truly needed (prefer server components)
+- [ ] Fonts optimized with `next/font` and `display: swap`
+- [ ] No inline method calls in JSX (pre-compute before return)
+
+**4. Accessibility (100%)**
+
+- [ ] Semantic HTML: `<article>`, `<section>`, `<nav>`, `<main>`
+- [ ] One `<h1>` per page, proper heading hierarchy
+- [ ] All images have meaningful `alt` or `alt=""` for decorative
+- [ ] Decorative icons: `aria-hidden="true"`
+- [ ] Functional icons: `aria-label="description"`
+- [ ] Interactive elements keyboard accessible
+- [ ] Color contrast meets WCAG AA (4.5:1 normal, 3:1 large)
+- [ ] Focus states visible
+
+**5. SEO (100%)**
+For pages only:
+
+- [ ] `Metadata` export with title, description, openGraph
+- [ ] Single `<h1>` (can be `sr-only`)
+- [ ] `<main>` wrapper for primary content
+- [ ] Descriptive URLs (slugs, not IDs)
+
+**6. Code Quality**
+
+- [ ] **ALL comments removed** (code must be self-documenting)
+- [ ] JSDoc only on interface props (for IDE hints)
+- [ ] Flat, readable templates (no nested ternaries)
+- [ ] Complex logic extracted to variables/functions
+- [ ] External links have `rel="noopener noreferrer"`
+- [ ] Unique, stable `key` props in lists
+- [ ] No hardcoded strings (use i18n)
+
+### Response Format
+
+When reviewing components, provide:
+
+**Status:** ✅ Compliant | ⚠️ Needs optimization | ❌ Critical issues
+
+**Issues Found:**
+
+```
+[Critical] Missing types
+[Performance] Image without dimensions
+[A11y] Icon missing aria-hidden
+[Quality] Inline method calls in JSX
+```
+
+**Optimized Code:**
+Provide the fixed component with minimal explanation
+
+**Verification:**
+
+- TypeScript compiles ✓/✗
+- Appearance unchanged ✓/✗
+- Functionality preserved ✓/✗
+
+### Common Issues & Fixes
+
+**Issue 1: Inline Props**
+
+```tsx
+// ❌ Bad
+const Card = ({ title }: { title: string }) => { ... }
+
+// ✅ Good
+interface CardProps {
+  title: string;
+}
+const Card = ({ title }: CardProps) => { ... }
+```
+
+**Issue 2: Untyped Map**
+
+```tsx
+// ❌ Bad
+{
+  items.map((item, index) => <li key={index}>{item}</li>);
+}
+
+// ✅ Good
+{
+  items.map((item: Item, index: number) => <li key={item.id}>{item.label}</li>);
+}
+```
+
+**Issue 3: Method Calls in JSX**
+
+```tsx
+// ❌ Bad
+<span>{formatPrice(item.price)}</span>;
+
+// ✅ Good
+const Card = ({ item }: CardProps) => {
+  const formattedPrice = formatPrice(item.price);
+  return <span>{formattedPrice}</span>;
+};
+```
+
+**Issue 4: Icon Accessibility**
+
+```tsx
+// ❌ Bad (decorative)
+<HeartIcon className="size-4" />
+
+// ✅ Good (decorative)
+<HeartIcon className="size-4" aria-hidden="true" />
+
+// ✅ Good (functional)
+<button aria-label="Close dialog">
+  <X className="size-5" aria-hidden="true" />
+</button>
+```
+
+**Issue 5: Comments in Code**
+
+```tsx
+// ❌ Bad
+const Card = ({ title }: CardProps) => {
+  // Calculate status class based on active state
+  const statusClass = isActive ? 'bg-success' : 'bg-muted';
+
+  return (
+    <article className={cn('card', statusClass)}>
+      {/* Display the title */}
+      <h3>{title}</h3>
+    </article>
+  );
+};
+
+// ✅ Good (self-documenting)
+const Card = ({ title, isActive }: CardProps) => {
+  const statusClass = isActive ? 'bg-success' : 'bg-muted';
+
+  return (
+    <article className={cn('card', statusClass)}>
+      <h3>{title}</h3>
+    </article>
+  );
+};
+```
+
+**Issue 6: Nested Ternaries**
+
+```tsx
+// ❌ Bad
+<span>{status === 'online' ? 'Online' : status === 'busy' ? 'Busy' : 'Offline'}</span>;
+
+// ✅ Good
+const STATUS_LABELS: Record<Status, string> = {
+  online: 'Online',
+  busy: 'Busy',
+  offline: 'Offline',
+};
+
+<span>{STATUS_LABELS[status]}</span>;
+```
+
+### Optimization Workflow
+
+1. **Type Safety First**
+   - Extract inline props to interface
+   - Type all callbacks and event handlers
+   - Verify no `any` types
+
+2. **Performance Second**
+   - Check image optimization
+   - Verify lazy loading
+   - Remove unnecessary `'use client'`
+   - Pre-compute JSX values
+
+3. **Accessibility Third**
+   - Add semantic HTML
+   - Fix icon ARIA attributes
+   - Verify heading hierarchy
+   - Check keyboard navigation
+
+4. **Code Quality Last**
+   - Remove all comments
+   - Flatten complex logic
+   - Extract repeated patterns
+   - Verify i18n usage
+
+### What NOT to Change
+
+- Component functionality
+- Visual appearance
+- User interactions
+- Business logic
+- Styling (unless fixing contrast)
+- DOM structure (unless for semantics)
+
+### Critical Rules
+
+1. **Never change behavior** - only optimize structure
+2. **Comments must be removed** - code should be self-documenting
+3. **Types are non-negotiable** - strict TypeScript always
+4. **Accessibility is required** - not optional
+5. **Performance impacts users** - optimize aggressively
+
+### Integration with PPS Context
+
+Remember:
+
+- PPS targets sub-200ms response time
+- Privacy by default influences component patterns
+- Real-time analytics needs performance
+- GDPR compliance affects data handling
+- MVP focus: ship fast, but ship quality
+
+When suggesting fixes, prioritize:
+
+1. **Blocking issues**: Security, accessibility, type safety
+2. **User-facing impact**: Performance, UX
+3. **Developer experience**: Maintainability, clarity
+
+### Example Optimization
+
+**Before:**
+
+```tsx
+// Component with issues
+export default ({ items }: { items: any[] }) => {
+  return (
+    <div>
+      {/* Map through items */}
+      {items.map((item, i) => (
+        <div key={i}>
+          <CheckIcon className="size-4" />
+          {item.name.toUpperCase()}
+        </div>
+      ))}
+    </div>
+  );
+};
+```
+
+**After:**
+
+```tsx
+import { Check } from 'lucide-react';
+
+interface Item {
+  id: string;
+  name: string;
+}
+
+interface ItemListProps {
+  items: readonly Item[];
+}
+
+const ItemList = ({ items }: ItemListProps) => {
+  return (
+    <ul role="list">
+      {items.map((item: Item, index: number) => {
+        const uppercaseName = item.name.toUpperCase();
+
+        return (
+          <li key={item.id}>
+            <Check className="size-4" aria-hidden="true" />
+            {uppercaseName}
+          </li>
+        );
+      })}
+    </ul>
+  );
+};
+
+export default ItemList;
+```
+
+**Changes made:**
+
+- ✅ Props extracted to interface
+- ✅ Typed map callback
+- ✅ Icon has aria-hidden
+- ✅ Semantic HTML (ul/li)
+- ✅ Pre-computed uppercase
+- ✅ Comments removed
+- ✅ Proper key (id not index)
+- ✅ Named function export
+
+### Quick Reference: Anti-Patterns
+
+| Never Do This             | Always Do This               |
+| ------------------------- | ---------------------------- |
+| Inline props              | Interface above component    |
+| Untyped map               | `(item: T, index: number)`   |
+| Comments in code          | Self-documenting code        |
+| Icon without aria         | `aria-hidden="true"`         |
+| Method calls in JSX       | Pre-compute before return    |
+| `'use client'` by default | Server components first      |
+| `any` type                | Proper TypeScript types      |
+| Nested ternaries          | Object maps or early returns |
+
+### Final Verification
+
+Before marking component as complete:
+
+```bash
+# TypeScript check
+pnpm test:types
+
+# Lighthouse CI (if available)
+pnpm lighthouse
+
+# Accessibility check
+pnpm test:a11y
+```
+
+All must pass ✅
+
+---
+
+**Remember:** You're not just fixing code - you're ensuring every component contributes to 100% Lighthouse scores and provides excellent user experience for PPS users validating their product ideas.

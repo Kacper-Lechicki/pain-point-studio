@@ -7,11 +7,11 @@ export const env = createEnv({
    * Attempting to use them in a Client Component will throw a build error.
    */
   server: {
+    CI: z.string().optional(),
+    STANDALONE: z.string().optional(),
     NODE_ENV: z.enum(['development', 'test', 'production']),
     BASIC_AUTH_USER: z.string().optional(),
     BASIC_AUTH_PASSWORD: z.string().optional(),
-    CI: z.string().optional(),
-    STANDALONE: z.string().optional(),
   },
 
   /**
@@ -19,7 +19,10 @@ export const env = createEnv({
    * Available in the browser.
    */
   client: {
-    NEXT_PUBLIC_APP_URL: z.url(),
+    NEXT_PUBLIC_APP_URL: z.url().min(1),
+    NEXT_PUBLIC_SUPABASE_URL: z.url().min(1),
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
+    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z.string().min(1),
   },
 
   /**
@@ -27,12 +30,18 @@ export const env = createEnv({
    * Necessary for correct tree-shaking and variable detection.
    */
   runtimeEnv: {
+    // Server
+    CI: process.env.CI,
+    STANDALONE: process.env.STANDALONE,
     NODE_ENV: process.env.NODE_ENV,
     BASIC_AUTH_USER: process.env.BASIC_AUTH_USER,
     BASIC_AUTH_PASSWORD: process.env.BASIC_AUTH_PASSWORD,
-    CI: process.env.CI,
-    STANDALONE: process.env.STANDALONE,
+
+    // Client
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
   },
 
   /**

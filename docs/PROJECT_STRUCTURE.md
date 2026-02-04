@@ -4,51 +4,52 @@ This document outlines the file structure and architectural standards for **Pain
 
 ## 1. Directory Structure
 
-We follow a **Feature-First** architecture. Code is organized by domain (what it does) rather than technical type (controllers, views), except for shared infrastructure.
+We follow a **Feature-First** architecture. Code is organized by domain (what it does) rather than technical type, with clear separation for shared infrastructure.
 
 ```text
 src/
 ├── app/                        # 1. Routing & Layouts (Next.js App Router)
 │   ├── [locale]/               # Dynamic locale segment (i18n routing)
-│   │   ├── layout.tsx          # Locale layout (sets requestLocale)
-│   │   ├── (auth)/             # Auth Group: Login/Register logic
 │   │   ├── (marketing)/        # Marketing Group: Landing pages (SEO optimized)
-│   │   ├── (dashboard)/        # App Group: Authenticated user interface
-│   │   │   ├── layout.tsx      # Dashboard layout (Sidebar, Auth Guard)
-│   │   │   ├── research/       # Research domain routes
-│   │   │   └── settings/       # User settings routes
-│   │   └── (survey)/           # Public Group: Respondent facing views
-│   │       └── r/[slug]/       # Public survey route (minimal layout)
-│   ├── api/                    # Route Handlers (Webhooks, Cron)
-│   └── layout.tsx              # Root Layout (Fonts, Providers, NextIntlClientProvider)
+│   │   ├── layout.tsx          # Locale layout (sets requestLocale)
+│   │   └── [...not-found]/     # 404 handling
+│   ├── favicon.ico             # Static assets
+│   ├── globals.css             # Global Tailwind styles
+│   └── layout.tsx              # Root Layout (Fonts, Providers)
 │
-├── components/                 # 2. UI Components
-│   ├── ui/                     # Base primitives (Shadcn/UI). DO NOT modify logic here.
-│   ├── features/               # Smart business components (e.g., ResearchCard)
-│   │   ├── research/
-│   │   ├── analytics/
-│   │   └── survey/
-│   └── shared/                 # Global components (Navbar, Footer, Loaders)
+├── components/                 # 2. Shared UI Components
+│   └── ui/                     # Base primitives (Shadcn/UI). DO NOT modify logic here.
 │
-├── i18n/                       # 3. Internationalization
-│   ├── config.ts               # Middleware config (locales, defaultLocale)
-│   ├── request.ts              # Server-side locale resolution
-│   └── messages/               # Translation files (en.json, de.json, etc.)
+├── config/                     # 3. Global Configuration
+│   ├── brand.ts                # Brand constants
+│   ├── breakpoints.ts          # Responsive design breakpoints
+│   ├── metadata.ts             # SEO metadata defaults
+│   └── routes.ts               # Application route definitions
 │
-├── lib/                        # 4. Core Utilities & Config
-│   ├── db/                     # Database client (Supabase)
+├── features/                   # 4. Domain Logic (Feature-First)
+│   └── marketing/              # Marketing Domain
+│       ├── components/         # Feature-specific components
+│       ├── config/             # Feature constants
+│       └── types/              # Feature-specific types
+│
+├── hooks/                      # 5. Shared React Hooks
+│
+├── i18n/                       # 6. Internationalization
+│   ├── config.ts               # Locale config
+│   ├── messages/               # Translation files (JSON)
+│   ├── request.ts              # next-intl request configuration
+│   └── routing.ts              # Navigation wrappers
+│
+├── lib/                        # 7. Core Utilities & Infrastructure
+│   ├── supabase/               # Database client
 │   ├── env.ts                  # Environment validation (Zod + t3-env)
-│   ├── validations/            # Zod schemas (Single source of truth)
-│   └── utils.ts                # Helper functions (cn, formatters)
+│   ├── utils.ts                # Helper functions (cn, formatters)
+│   └── deploy-credentials.ts   # Deployment helpers
 │
-├── server/                     # 5. Backend Logic (Server Actions)
-│   ├── actions/                # Mutations: Write data (Create/Update/Delete)
-│   └── queries/                # Queries: Read data (Fetch/Cached)
+├── types/                      # 8. Global TypeScript Definitions
+├── proxy.ts                    # Next.js 16 i18n proxy
 │
-├── types/                      # 6. Global TypeScript Definitions
-├── proxy.ts                    # Next.js 16 i18n proxy (replaces middleware.ts)
-│
-e2e/                            # 7. E2E Tests (Playwright)
+e2e/                            # 9. E2E Tests (Playwright)
 └── example.spec.ts
 ```
 
@@ -60,25 +61,27 @@ e2e/                            # 7. E2E Tests (Playwright)
 
 We use Route Groups to separate distinct areas of the application without affecting the URL structure.
 
-- **(dashboard)**: Requires authentication, uses the App Sidebar layout.
-- **(survey)**: Public access, minimal white-label layout (focus on content).
 - **(marketing)**: Optimized for SEO, standard navigation.
+- **(auth)**: _Planned_ - Login/Register logic.
+- **(dashboard)**: _Planned_ - Authenticated user interface.
 
 ### Component Layering
 
 - **`components/ui`**: Contains "dumb" components (Buttons, Inputs) generated by Shadcn. **Rule:** Treat this as library code. Do not add complex business logic here.
-- **`components/features`**: Contains domain-specific logic. Example: `ResearchForm` belongs in `features/research`, not in a generic folder.
+- **`features/[domain]`**: logical grouping for all code related to a specific business domain.
+  - `components/`: UI components specific to this feature.
+  - `config/`: Constants and configuration isolated to this feature.
+  - `types/`: TypeScript definitions used only within this feature.
 
-### Server Actions Separation
+### Global vs Feature Config
 
-To maintain clarity and security, we separate data operations:
+- **`src/config`**: Contains app-wide constants (routes, brand colors, breakpoints).
+- **`features/[name]/config`**: Contains constants specific to that feature (e.g., pricing plans in marketing).
 
-- **`server/queries`**: Safe, cacheable read operations.
-- **`server/actions`**: Write operations requiring strict validation (Zod) and authorization checks.
+### Environment & Validation
 
-### Single Source of Validation
-
-All data shapes must be defined in `lib/validations` using Zod. These schemas are used both on the **Client** (React Hook Form) and the **Server** (API validation).
+- **`lib/env.ts`**: Single source of truth for all environment variables. Validated at build time using Zod.
+- **`lib/utils.ts`**: Common utilities (like `cn` for Tailwind class merging).
 
 ---
 
@@ -125,9 +128,9 @@ Use **Conventional Commits** to keep history readable:
 
 ## 5. The Golden Rules
 
-1. **Colocation**: Keep related things close. If a component is only used by the Dashboard, keep it in the Dashboard feature folder.
+1. **Colocation**: Keep related things close. If a component is only used by Marketing, keep it in the `features/marketing` folder.
 2. **Strict Types**: No `any`. If you find yourself using `any`, pause and define the type.
-3. **Server Only**: Database logic (Supabase client, queries) must never leak to the client bundle.
+3. **Server Only**: Database logic (Supabase client) must never leak to the client bundle.
 4. **Zero Friction**: If a file feels hard to find, the structure is wrong. Refactor early.
 
 ---
@@ -142,9 +145,8 @@ Use **Conventional Commits** to keep history readable:
 >
 > 1. Verify files are placed in correct directories per Feature-First architecture
 > 2. Check naming conventions (kebab-case files, PascalCase components)
-> 3. Ensure components are in correct layer (ui vs features vs shared)
-> 4. Validate server actions are properly separated (queries vs actions)
-> 5. Confirm Zod schemas are in `lib/validations` (single source of truth)
-> 6. Check for `any` types and replace with proper definitions
-> 7. **Do not move files** - only flag misplacements
-> 8. Functionality must remain **identical**
+> 3. Ensure components are in correct layer (ui vs features)
+> 4. Validate env vars are imported from `lib/env`
+> 5. Check for `any` types and replace with proper definitions
+> 6. **Do not move files** - only flag misplacements
+> 7. Functionality must remain **identical**
