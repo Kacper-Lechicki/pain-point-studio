@@ -18,11 +18,11 @@ export const IDEA_TRENDS_DATA: IdeaTrendsDataPoint[] = [
 export const IDEA_TRENDS_CONFIG = {
   desktop: {
     label: 'desktop',
-    color: '#8b5cf6',
+    color: 'var(--chart-violet)',
   },
   mobile: {
     label: 'mobile',
-    color: '#06b6d4',
+    color: 'var(--chart-cyan)',
   },
 } satisfies ChartConfig;
 
@@ -33,10 +33,10 @@ export interface PainPointsDataPoint {
 }
 
 export const PAIN_POINTS_DATA: PainPointsDataPoint[] = [
-  { painPoint: 'Price', intensity: 45, fill: '#22c55e' },
-  { painPoint: 'Speed', intensity: 80, fill: '#ef4444' },
-  { painPoint: 'UX', intensity: 65, fill: '#a855f7' },
-  { painPoint: 'Support', intensity: 30, fill: '#3b82f6' },
+  { painPoint: 'Price', intensity: 45, fill: 'var(--success)' },
+  { painPoint: 'Speed', intensity: 80, fill: 'var(--error)' },
+  { painPoint: 'UX', intensity: 65, fill: 'var(--chart-purple)' },
+  { painPoint: 'Support', intensity: 30, fill: 'var(--info)' },
 ];
 
 export const PAIN_POINTS_CONFIG = {
@@ -45,19 +45,19 @@ export const PAIN_POINTS_CONFIG = {
   },
   price: {
     label: 'price',
-    color: '#22c55e',
+    color: 'var(--success)',
   },
   speed: {
     label: 'speed',
-    color: '#ef4444',
+    color: 'var(--error)',
   },
   ux: {
     label: 'ux',
-    color: '#a855f7',
+    color: 'var(--chart-purple)',
   },
   support: {
     label: 'support',
-    color: '#3b82f6',
+    color: 'var(--info)',
   },
 } satisfies ChartConfig;
 
@@ -68,10 +68,10 @@ export interface QuestionEngagementDataPoint {
 }
 
 export const QUESTION_ENGAGEMENT_DATA: QuestionEngagementDataPoint[] = [
-  { activity: 'form_fill', count: 320, fill: '#e11d48' },
-  { activity: 'scroll', count: 450, fill: '#f59e0b' },
-  { activity: 'click', count: 580, fill: '#10b981' },
-  { activity: 'view', count: 890, fill: '#3b82f6' },
+  { activity: 'form_fill', count: 320, fill: 'var(--chart-rose)' },
+  { activity: 'scroll', count: 450, fill: 'var(--warning)' },
+  { activity: 'click', count: 580, fill: 'var(--chart-emerald)' },
+  { activity: 'view', count: 890, fill: 'var(--info)' },
 ];
 
 export const QUESTION_ENGAGEMENT_CONFIG = {
@@ -80,19 +80,19 @@ export const QUESTION_ENGAGEMENT_CONFIG = {
   },
   view: {
     label: 'view',
-    color: '#3b82f6',
+    color: 'var(--info)',
   },
   click: {
     label: 'click',
-    color: '#10b981',
+    color: 'var(--chart-emerald)',
   },
   scroll: {
     label: 'scroll',
-    color: '#f59e0b',
+    color: 'var(--warning)',
   },
   form_fill: {
     label: 'formFill',
-    color: '#e11d48',
+    color: 'var(--chart-rose)',
   },
 } satisfies ChartConfig;
 
@@ -114,6 +114,6 @@ export const RESPONSES_GROWTH_DATA: ResponsesGrowthDataPoint[] = [
 export const RESPONSES_GROWTH_CONFIG = {
   visitors: {
     label: 'visitors',
-    color: '#ec4899',
+    color: 'var(--chart-pink)',
   },
 } satisfies ChartConfig;

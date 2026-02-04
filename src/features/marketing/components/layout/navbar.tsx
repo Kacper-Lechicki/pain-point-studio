@@ -52,7 +52,11 @@ const Navbar = () => {
     >
       <div className="container mx-auto flex h-16 items-center px-6 sm:px-4 lg:px-8">
         <div className="flex flex-1 items-center justify-start">
-          <Link href={ROUTES.marketing.home} className="text-lg font-semibold tracking-tight">
+          <Link
+            href={ROUTES.marketing.home}
+            className="text-lg font-semibold tracking-tight"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
             {brandName}
           </Link>
         </div>
@@ -120,13 +124,13 @@ const Navbar = () => {
 
       <div
         className={cn(
-          'bg-background fixed top-16 right-0 left-0 z-50 flex h-[calc(100dvh-4rem)] flex-col overflow-y-auto p-6 transition-all duration-300 ease-in-out lg:hidden',
+          'bg-background fixed top-16 right-0 left-0 z-50 flex h-[calc(100dvh-4rem)] flex-col transition-all duration-300 ease-in-out lg:hidden',
           isMobileMenuOpen
             ? 'pointer-events-auto translate-y-0 opacity-100'
             : 'pointer-events-none -translate-y-4 opacity-0'
         )}
       >
-        <div className="flex flex-col gap-8">
+        <div className="px-6 pt-6 pb-4">
           <div className="flex flex-col gap-4">
             <Button className="w-full justify-center gap-2" size="lg" asChild>
               <Link href={ROUTES.auth.signIn} onClick={() => setIsMobileMenuOpen(false)}>
@@ -142,7 +146,9 @@ const Navbar = () => {
               </Link>
             </Button>
           </div>
+        </div>
 
+        <div className="flex-1 overflow-y-auto px-6 py-4">
           <div className="flex flex-col items-start gap-4">
             {NAV_LINKS.map((link: NavLink, index: number) =>
               link.disabled ? (
@@ -166,7 +172,7 @@ const Navbar = () => {
           </div>
         </div>
 
-        <div className="mt-auto border-t pt-6">
+        <div className="mt-auto border-t p-6">
           <p className="text-muted-foreground text-center text-sm">{copyrightText}</p>
         </div>
       </div>

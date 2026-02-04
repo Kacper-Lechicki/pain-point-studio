@@ -19,8 +19,8 @@ const HowItWorks = () => {
 
   return (
     <section className="relative overflow-hidden border-t border-white/5 py-0">
-      <div className="absolute inset-0 -z-10 h-full w-full bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[24px_24px]" />
-      <div className="absolute inset-0 -z-10 h-full w-full bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(120,119,198,0.1),transparent)]" />
+      <div className="absolute inset-0 -z-10 h-full w-full bg-[linear-gradient(to_right,var(--grid-line)_1px,transparent_1px),linear-gradient(to_bottom,var(--grid-line)_1px,transparent_1px)] bg-size-[24px_24px]" />
+      <div className="absolute inset-0 -z-10 h-full w-full bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,color-mix(in_srgb,var(--section-glow),transparent_90%),transparent)]" />
 
       <div className="mx-auto w-full space-y-0">
         <div className="bg-background">
@@ -43,7 +43,7 @@ const HowItWorks = () => {
         </div>
 
         {otherSteps.map((step: HowItWorksStep, index: number) => {
-          const bgClass = index % 2 === 0 ? 'bg-[#1a1a1a]' : 'bg-background';
+          const bgClass = index % 2 === 0 ? 'bg-section-alt' : 'bg-background';
           const isReversed = step.id % 2 === 0;
 
           return (

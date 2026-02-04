@@ -13,6 +13,16 @@ const getEncodedPattern = (color: string) => {
   return `url("data:image/svg+xml;base64,${base64}")`;
 };
 
+const getComputedColor = (cssVar: string): string => {
+  if (typeof window === 'undefined') {
+    return '#d4d4d4';
+  }
+
+  const style = getComputedStyle(document.documentElement);
+
+  return style.getPropertyValue(cssVar).trim() || '#d4d4d4';
+};
+
 type HeroHighlightProps = {
   children: React.ReactNode;
   className?: string;
@@ -22,17 +32,31 @@ type HeroHighlightProps = {
 export const HeroHighlight = ({ children, className, containerClassName }: HeroHighlightProps) => {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
+  const [mounted, setMounted] = React.useState(false);
 
-  const dotPatterns = {
-    light: {
-      default: getEncodedPattern('#d4d4d4'),
-      hover: getEncodedPattern('#3b82f6'),
-    },
-    dark: {
-      default: getEncodedPattern('#404040'),
-      hover: getEncodedPattern('#60a5fa'),
-    },
-  };
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const dotPatterns = React.useMemo(() => {
+    if (!mounted) {
+      return {
+        light: { default: '', hover: '' },
+        dark: { default: '', hover: '' },
+      };
+    }
+
+    return {
+      light: {
+        default: getEncodedPattern(getComputedColor('--dot-default')),
+        hover: getEncodedPattern(getComputedColor('--dot-hover')),
+      },
+      dark: {
+        default: getEncodedPattern(getComputedColor('--dot-default')),
+        hover: getEncodedPattern(getComputedColor('--dot-hover')),
+      },
+    };
+  }, [mounted]);
 
   const handleMouseMove = ({
     currentTarget,
@@ -55,19 +79,19 @@ export const HeroHighlight = ({ children, className, containerClassName }: HeroH
       onMouseMove={handleMouseMove}
     >
       <div
-        className="pointer-events-none absolute inset-0 mask-[radial-gradient(ellipse_at_center,black,transparent_65%)] dark:hidden"
+        className="pointer-events-none absolute inset-0 mask-[radial-gradient(ellipse_at_center,black,transparent_100%)] sm:mask-[radial-gradient(ellipse_at_center,black,transparent_80%)] dark:hidden"
         style={{
           backgroundImage: dotPatterns.light.default,
         }}
       />
       <div
-        className="pointer-events-none absolute inset-0 hidden mask-[radial-gradient(ellipse_at_center,black,transparent_65%)] dark:block"
+        className="pointer-events-none absolute inset-0 hidden mask-[radial-gradient(ellipse_at_center,black,transparent_100%)] sm:mask-[radial-gradient(ellipse_at_center,black,transparent_80%)] dark:block"
         style={{
           backgroundImage: dotPatterns.dark.default,
         }}
       />
       <motion.div
-        className="pointer-events-none absolute inset-0 mask-[radial-gradient(ellipse_at_center,black,transparent_65%)] opacity-0 transition duration-300 group-hover:opacity-100 dark:hidden"
+        className="pointer-events-none absolute inset-0 mask-[radial-gradient(ellipse_at_center,black,transparent_80%)] opacity-0 transition duration-300 md:group-hover:opacity-100 dark:hidden"
         style={{
           backgroundImage: dotPatterns.light.hover,
           WebkitMaskImage: useMotionTemplate`
@@ -76,7 +100,7 @@ export const HeroHighlight = ({ children, className, containerClassName }: HeroH
               black 0%,
               transparent 100%
             ),
-            radial-gradient(ellipse at center, black, transparent 65%)
+            radial-gradient(ellipse at center, black, transparent 80%)
           `,
           maskImage: useMotionTemplate`
             radial-gradient(
@@ -84,14 +108,14 @@ export const HeroHighlight = ({ children, className, containerClassName }: HeroH
               black 0%,
               transparent 100%
             ),
-            radial-gradient(ellipse at center, black, transparent 65%)
+            radial-gradient(ellipse at center, black, transparent 80%)
           `,
           maskComposite: 'intersect',
           WebkitMaskComposite: 'source-in',
         }}
       />
       <motion.div
-        className="pointer-events-none absolute inset-0 hidden mask-[radial-gradient(ellipse_at_center,black,transparent_65%)] opacity-0 transition duration-300 group-hover:opacity-100 dark:block"
+        className="pointer-events-none absolute inset-0 hidden mask-[radial-gradient(ellipse_at_center,black,transparent_80%)] opacity-0 transition duration-300 md:group-hover:opacity-100 dark:block"
         style={{
           backgroundImage: dotPatterns.dark.hover,
           WebkitMaskImage: useMotionTemplate`
@@ -100,7 +124,7 @@ export const HeroHighlight = ({ children, className, containerClassName }: HeroH
               black 0%,
               transparent 100%
             ),
-            radial-gradient(ellipse at center, black, transparent 65%)
+            radial-gradient(ellipse at center, black, transparent 80%)
           `,
           maskImage: useMotionTemplate`
             radial-gradient(
@@ -108,7 +132,7 @@ export const HeroHighlight = ({ children, className, containerClassName }: HeroH
               black 0%,
               transparent 100%
             ),
-            radial-gradient(ellipse at center, black, transparent 65%)
+            radial-gradient(ellipse at center, black, transparent 80%)
           `,
           maskComposite: 'intersect',
           WebkitMaskComposite: 'source-in',
@@ -145,7 +169,7 @@ export const Highlight = ({ children, className }: HighlightProps) => {
         display: 'inline',
       }}
       className={cn(
-        `relative inline-block rounded-lg bg-linear-to-r from-blue-200 to-blue-300 px-1 pb-1 dark:from-blue-500/50 dark:to-blue-600/50`,
+        `relative inline-block md:rounded-lg md:bg-linear-to-r md:from-blue-200 md:to-blue-300 md:px-1 md:pb-1 md:dark:from-blue-500/50 md:dark:to-blue-600/50`,
         className
       )}
     >

@@ -1,13 +1,10 @@
-import { Suspense } from 'react';
-
-import { ChevronDown, Info, Send } from 'lucide-react';
+import { Info, Send } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
 import { Button } from '@/components/ui/button';
+import { HeroHighlight } from '@/components/ui/hero-highlight';
 import { ROUTES } from '@/config/routes';
 import { Link } from '@/i18n/routing';
-
-import { BackgroundRippleEffect } from './hero-client';
 
 const Hero = async () => {
   const t = await getTranslations();
@@ -20,17 +17,13 @@ const Hero = async () => {
   const noCreditCard = t('common.noCreditCard');
 
   return (
-    <section className="dark bg-background relative w-full overflow-hidden">
-      <Suspense fallback={null}>
-        <BackgroundRippleEffect rows={10} cols={30} />
-      </Suspense>
-
-      <div className="pointer-events-none relative z-10 container mx-auto flex flex-col items-center gap-8 px-6 py-24 text-center *:pointer-events-auto sm:px-4 md:py-32">
+    <HeroHighlight containerClassName="dark bg-background w-full overflow-hidden">
+      <div className="pointer-events-none relative z-10 container mx-auto flex flex-col items-center gap-8 px-6 pt-20 pb-32 text-center *:pointer-events-auto sm:px-4 md:py-32">
         <div className="bg-muted border-border inline-flex items-center rounded-full border px-4 py-1.5 text-sm font-medium">
           {badge}
         </div>
 
-        <h1 className="max-w-4xl text-4xl leading-snug font-bold tracking-tight md:text-6xl">
+        <h1 className="max-w-2xl text-4xl leading-snug font-bold tracking-tight md:text-6xl">
           {title}
         </h1>
 
@@ -58,13 +51,7 @@ const Hero = async () => {
           <p className="text-muted-foreground text-xs">{noCreditCard}</p>
         </div>
       </div>
-
-      <div className="pointer-events-none absolute bottom-2 left-1/2 z-20 -translate-x-1/2 opacity-30">
-        <ChevronDown className="text-foreground size-8" strokeWidth={2} aria-hidden="true" />
-      </div>
-
-      <div className="from-background pointer-events-none absolute right-0 bottom-0 left-0 z-10 h-32 w-full bg-linear-to-t to-transparent" />
-    </section>
+    </HeroHighlight>
   );
 };
 

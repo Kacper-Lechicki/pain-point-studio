@@ -66,7 +66,7 @@ export const PointerHighlight = memo(function PointerHighlight({
       {children}
 
       {hasValidDimensions && (
-        <div className="pointer-events-none absolute inset-0">
+        <div className="pointer-events-none absolute inset-0 hidden md:block">
           <div
             className={cn(
               'absolute origin-top-left rounded-lg border border-neutral-800 dark:border-neutral-200',
