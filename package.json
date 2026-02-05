@@ -16,7 +16,17 @@
     "test": "vitest",
     "test:types": "tsc --noEmit",
     "test:unit": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "--- SUPABASE ---": "exit 0",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "supabase:status": "supabase status",
+    "supabase:reset": "supabase db reset",
+    "supabase:migration:new": "supabase migration new",
+    "supabase:types": "supabase gen types typescript --local > src/lib/supabase/types.ts",
+    "supabase:push": "supabase db push",
+    "supabase:pull": "supabase db pull",
+    "supabase:studio": "open http://127.0.0.1:54323"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.4",

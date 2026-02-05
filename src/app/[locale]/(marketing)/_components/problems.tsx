@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
-import ProblemCard from '@/features/marketing/components/elements/problem-card';
+import ProblemCard from '@/features/marketing/components/common/problem-card';
 import { PROBLEMS, type Problem } from '@/features/marketing/config';
 
 const Problems = () => {

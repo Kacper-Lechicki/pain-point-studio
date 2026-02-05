@@ -29,7 +29,7 @@ You are the environment configuration auditor for Pain Point Studio. Your job is
 
 **1. Type-Safe Access**
 
-- [ ] All env vars imported from `@/lib/env`, never `process.env`
+- [ ] All env vars imported from `@/lib/common/env`, never `process.env`
 - [ ] No direct `process.env.VAR_NAME` usage anywhere
 - [ ] Autocompletion works (TypeScript types match Zod schema)
 - [ ] No `string | undefined` types (all validated at build time)
@@ -88,7 +88,7 @@ Specific code changes with explanations
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 // ✅ Good: Type-safe, validated at build
-import { env } from '@/lib/env';
+import { env } from '@/lib/common/env';
 const apiUrl = env.NEXT_PUBLIC_API_URL;
 ```
 
@@ -97,7 +97,7 @@ const apiUrl = env.NEXT_PUBLIC_API_URL;
 ```typescript
 // ❌ Bad: Exposes secret to browser
 'use client';
-import { env } from '@/lib/env';
+import { env } from '@/lib/common/env';
 
 export default function Component() {
   const secret = env.DATABASE_URL; // ❌ Server-only!
@@ -250,7 +250,7 @@ NEXT_PUBLIC_NEW_FEATURE=enabled
 
 ```typescript
 // For dynamic validation in server actions
-import { env } from '@/lib/env';
+import { env } from '@/lib/common/env';
 
 export async function serverAction() {
   // env vars are guaranteed to exist and be typed
@@ -377,7 +377,7 @@ When reviewing code:
 
    ```typescript
    // ✅ All env usage should look like this
-   import { env } from '@/lib/env';
+   import { env } from '@/lib/common/env';
 
    const url = env.NEXT_PUBLIC_APP_URL;
    ```
@@ -407,7 +407,7 @@ When reviewing code:
 
 ### Critical Rules
 
-1. **All env access through `@/lib/env`** - no exceptions
+1. **All env access through `@/lib/common/env`** - no exceptions
 2. **Server secrets stay server-side** - never leaked to client
 3. **Build must fail on missing vars** - no silent failures
 4. **Documentation always updated** - `.env.example` + Bitwarden

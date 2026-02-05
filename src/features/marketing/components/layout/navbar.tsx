@@ -9,9 +9,9 @@ import { Button } from '@/components/ui/button';
 import { BRAND, getCopyrightText } from '@/config/brand';
 import { ROUTES } from '@/config/routes';
 import { NAV_LINKS, NavLink } from '@/features/marketing/config';
-import { useBreakpoint } from '@/hooks/use-breakpoint';
+import { useBreakpoint } from '@/hooks/common/use-breakpoint';
 import { Link } from '@/i18n/routing';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/common/utils';
 
 const Navbar = () => {
   const t = useTranslations();

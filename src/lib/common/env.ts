@@ -12,6 +12,7 @@ export const env = createEnv({
     NODE_ENV: z.enum(['development', 'test', 'production']),
     BASIC_AUTH_USER: z.string().optional(),
     BASIC_AUTH_PASSWORD: z.string().optional(),
+    SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
   },
 
   /**
@@ -36,6 +37,7 @@ export const env = createEnv({
     NODE_ENV: process.env.NODE_ENV,
     BASIC_AUTH_USER: process.env.BASIC_AUTH_USER,
     BASIC_AUTH_PASSWORD: process.env.BASIC_AUTH_PASSWORD,
+    SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
 
     // Client
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,

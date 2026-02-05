@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import i18nMiddleware from '@/i18n/config';
-import { isAuthenticated, isProtectionEnabled } from '@/lib/deploy-credentials';
+import { isAuthenticated, isProtectionEnabled } from '@/lib/common/deploy-credentials';
+import { updateSession } from '@/lib/supabase/middleware';
 
-export default function middleware(req: NextRequest) {
+export default async function middleware(req: NextRequest) {
+  await updateSession(req);
+
   if (!isProtectionEnabled()) {
     return i18nMiddleware(req);
   }
@@ -21,5 +24,5 @@ export default function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/(en)/:path*'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
 };
