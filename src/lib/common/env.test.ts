@@ -20,7 +20,6 @@ describe('Environment Configuration', () => {
       NEXT_PUBLIC_APP_URL: 'https://example.com',
       NEXT_PUBLIC_SUPABASE_URL: 'http://127.0.0.1:54321',
       NEXT_PUBLIC_SUPABASE_ANON_KEY: 'test-anon-key',
-      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: 'test-publishable-key',
     };
     const merged = { ...defaults, ...overrides };
     Object.entries(merged).forEach(([key, value]) => vi.stubEnv(key, value));

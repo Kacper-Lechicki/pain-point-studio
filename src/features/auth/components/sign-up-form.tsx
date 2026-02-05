@@ -3,7 +3,9 @@
 import { useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -15,14 +17,15 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Spinner } from '@/components/ui/spinner';
 import { ROUTES } from '@/config/routes';
 import { signUpWithEmail } from '@/features/auth/actions';
 import { SignUpSchema, signUpSchema } from '@/features/auth/types';
 import { Link } from '@/i18n/routing';
 
 export function SignUpForm() {
+  const t = useTranslations();
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
   const form = useForm<SignUpSchema>({
@@ -35,15 +38,14 @@ export function SignUpForm() {
 
   async function onSubmit(data: SignUpSchema) {
     setIsLoading(true);
-    setError(null);
-    setSuccess(false);
 
     const result = await signUpWithEmail(data);
 
     if (result.error) {
-      setError(result.error);
+      toast.error(result.error);
       setIsLoading(false);
     } else {
+      toast.success(t('auth.confirmationSent'));
       setSuccess(true);
       setIsLoading(false);
 
@@ -54,73 +56,67 @@ export function SignUpForm() {
   if (success) {
     return (
       <div className="flex flex-col space-y-4 text-center">
-        <h3 className="text-lg font-semibold">Check your email</h3>
+        <h3 className="text-lg font-semibold">{t('auth.checkEmail')}</h3>
 
-        <p className="text-muted-foreground text-sm">
-          We&apos;ve sent you a confirmation link. Please check your inbox to complete your
-          registration.
-        </p>
+        <p className="text-muted-foreground text-sm">{t('auth.confirmationSent')}</p>
 
         <Button variant="outline" className="w-full" onClick={() => setSuccess(false)}>
-          Back to Sign Up
+          {t('auth.backToSignUp')}
         </Button>
       </div>
     );
   }
 
   return (
-    <div className="grid gap-6">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('auth.email')}</FormLabel>
 
-                <FormControl>
-                  <Input placeholder="name@example.com" {...field} />
-                </FormControl>
+              <FormControl>
+                <Input placeholder={t('auth.emailPlaceholder')} {...field} />
+              </FormControl>
 
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('auth.password')}</FormLabel>
 
-                <FormControl>
-                  <Input type="password" placeholder="••••••••" {...field} />
-                </FormControl>
+              <FormControl>
+                <Input type="password" placeholder={t('auth.passwordPlaceholder')} {...field} />
+              </FormControl>
 
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          {error && <div className="text-destructive text-sm font-medium">{error}</div>}
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading && <Spinner />}
+          {t('auth.createAccount')}
+        </Button>
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading && (
-              <div className="border-background border-t-foreground mr-2 size-4 animate-spin rounded-full border-2" />
-            )}
-            Create Account
-          </Button>
-        </form>
-      </Form>
-
-      <div className="text-center text-sm">
-        Already have an account?{' '}
-        <Link href={ROUTES.auth.signIn} className="text-primary underline-offset-4 hover:underline">
-          Sign In
-        </Link>
-      </div>
-    </div>
+        <div className="text-center text-sm">
+          {t('auth.alreadyHaveAccount')}{' '}
+          <Link
+            href={ROUTES.auth.signIn}
+            className="text-primary underline-offset-4 hover:underline"
+          >
+            {t('auth.signIn')}
+          </Link>
+        </div>
+      </form>
+    </Form>
   );
 }

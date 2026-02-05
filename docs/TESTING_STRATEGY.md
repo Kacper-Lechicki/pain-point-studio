@@ -105,7 +105,7 @@ The `playwright.config.ts` requires proper environment variable loading. Key poi
 const { loadEnvConfig } = require('@next/env');
 loadEnvConfig(process.cwd());
 
-const { env } = require('./src/lib/env');
+const { env } = require('./e2e/env');
 ```
 
 ### Required Environment Variables

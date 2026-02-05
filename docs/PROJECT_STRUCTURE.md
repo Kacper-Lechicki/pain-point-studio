@@ -42,7 +42,7 @@ src/
 │
 ├── lib/                        # 7. Core Utilities & Infrastructure
 │   ├── supabase/               # Database client
-│   ├── env.ts                  # Environment validation (Zod + t3-env)
+│   ├── common/env.ts           # Environment validation (Zod + t3-env)
 │   ├── utils.ts                # Helper functions (cn, formatters)
 │   └── deploy-credentials.ts   # Deployment helpers
 │
@@ -80,7 +80,7 @@ We use Route Groups to separate distinct areas of the application without affect
 
 ### Environment & Validation
 
-- **`lib/env.ts`**: Single source of truth for all environment variables. Validated at build time using Zod.
+- **`lib/common/env.ts`**: Single source of truth for all environment variables. Validated at build time using Zod.
 - **`lib/utils.ts`**: Common utilities (like `cn` for Tailwind class merging).
 
 ---

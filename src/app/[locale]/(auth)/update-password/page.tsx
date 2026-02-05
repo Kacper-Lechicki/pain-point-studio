@@ -1,12 +1,15 @@
+import { getTranslations } from 'next-intl/server';
+
 import { AuthHeader } from '@/features/auth/components/auth-header';
-import { AuthLayout } from '@/features/auth/components/auth-layout';
 import { UpdatePasswordForm } from '@/features/auth/components/update-password-form';
 
-export default function UpdatePasswordPage() {
+export default async function UpdatePasswordPage() {
+  const t = await getTranslations();
+
   return (
-    <AuthLayout>
-      <AuthHeader title="Set New Password" description="Please enter your new password below" />
+    <>
+      <AuthHeader title={t('auth.setNewPassword')} description={t('auth.enterNewPassword')} />
       <UpdatePasswordForm />
-    </AuthLayout>
+    </>
   );
 }

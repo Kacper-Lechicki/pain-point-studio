@@ -104,6 +104,7 @@ function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
       aria-describedby={!error ? `${formDescriptionId}` : `${formDescriptionId} ${formMessageId}`}
       aria-invalid={!!error}
       {...props}
+      suppressHydrationWarning
     />
   );
 }
@@ -117,6 +118,7 @@ function FormDescription({ className, ...props }: React.ComponentProps<'p'>) {
       id={formDescriptionId}
       className={cn('text-muted-foreground text-sm', className)}
       {...props}
+      suppressHydrationWarning
     />
   );
 }
@@ -135,6 +137,7 @@ function FormMessage({ className, ...props }: React.ComponentProps<'p'>) {
       id={formMessageId}
       className={cn('text-destructive text-sm', className)}
       {...props}
+      suppressHydrationWarning
     >
       {body}
     </p>

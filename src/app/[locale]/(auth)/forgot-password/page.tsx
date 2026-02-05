@@ -1,16 +1,15 @@
+import { getTranslations } from 'next-intl/server';
+
 import { AuthHeader } from '@/features/auth/components/auth-header';
-import { AuthLayout } from '@/features/auth/components/auth-layout';
 import { ForgotPasswordForm } from '@/features/auth/components/forgot-password-form';
 
-export default function ForgotPasswordPage() {
-  return (
-    <AuthLayout>
-      <AuthHeader
-        title="Reset Password"
-        description="Enter your email to receive a password reset link"
-      />
+export default async function ForgotPasswordPage() {
+  const t = await getTranslations();
 
+  return (
+    <>
+      <AuthHeader title={t('auth.resetPassword')} description={t('auth.enterEmailToReset')} />
       <ForgotPasswordForm />
-    </AuthLayout>
+    </>
   );
 }

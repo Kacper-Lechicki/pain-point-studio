@@ -39,7 +39,9 @@
     "company": "Company",
     "noCreditCard": "No credit card required",
     "startResearch": "Start Your First Research",
-    "seeHowItWorks": "See How It Works"
+    "seeHowItWorks": "See How It Works",
+    "settings": "Settings",
+    "loading": "Loading..."
   },
   "auth": {
     "welcomeBack": "Welcome back",
@@ -47,9 +49,13 @@
     "signIn": "Sign In",
     "signUp": "Sign Up",
     "signOut": "Sign Out",
+    "signInWithEmail": "Sign In with Email",
     "email": "Email",
+    "emailPlaceholder": "name@example.com",
     "password": "Password",
+    "newPassword": "New Password",
     "confirmPassword": "Confirm Password",
+    "passwordPlaceholder": "••••••••",
     "forgotPassword": "Forgot your password?",
     "resetPassword": "Reset Password",
     "sendResetLink": "Send Reset Link",
@@ -57,9 +63,34 @@
     "orContinueWith": "Or continue with",
     "terms": "Terms of Service",
     "privacy": "Privacy Policy",
+    "termsAgreement": "By clicking continue, you agree to our",
+    "and": "and",
     "checkEmail": "Check your email",
+    "confirmationSent": "We've sent you a confirmation link. Please check your inbox to complete your registration.",
+    "resetLinkSent": "We've sent you a password reset link. Please check your inbox.",
     "backToSignIn": "Back to Sign In",
-    "backToSignUp": "Back to Sign Up"
+    "backToSignUp": "Back to Sign Up",
+    "alreadyHaveAccount": "Already have an account?",
+    "enterEmailToSignIn": "Enter your email to sign in to your account",
+    "enterEmailToCreate": "Enter your email below to create your account",
+    "enterEmailToReset": "Enter your email to receive a password reset link",
+    "setNewPassword": "Set New Password",
+    "enterNewPassword": "Please enter your new password below",
+    "backToHome": "Back to Home",
+    "signInSuccess": "Signed in successfully!",
+    "signOutSuccess": "Signed out successfully.",
+    "passwordUpdated": "Password updated successfully!",
+    "providers": {
+      "github": "GitHub",
+      "google": "Google"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome to Pain Point Studio",
+    "description": "Start your first research to discover real user pain points. Your research missions will appear here.",
+    "empty": "No research missions yet",
+    "startResearch": "Start Research"
   },
   "marketing": {
     "hero": {

@@ -6,12 +6,23 @@ import { User } from '@supabase/supabase-js';
 
 import { createClient } from '@/lib/supabase/client';
 
+/**
+ * Client-side hook to access the current authenticated user.
+ * Subscribes to Supabase auth state changes in real-time.
+ */
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
 
   useEffect(() => {
+    // Get initial session
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+      setLoading(false);
+    });
+
+    // Subscribe to auth state changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {

@@ -9,7 +9,7 @@ loadEnvConfig(process.cwd());
 
 // Now safe to import env (validation will pass)
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const { env } = require(path.join(process.cwd(), 'src/lib/env'));
+const { env } = require(path.join(process.cwd(), 'e2e/env'));
 
 export default defineConfig({
   // Directory where E2E tests are located

@@ -1,51 +1,33 @@
-import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
-import { createServerClient } from '@supabase/ssr';
+import { ROUTES } from '@/config/routes';
+import { createClient } from '@/lib/supabase/server';
 
-import { env } from '@/lib/common/env';
-
-export async function GET(request: NextRequest) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ locale: string }> }
+) {
+  // Retrieve URL parameters
+  const { locale } = await params;
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get('code');
+  const next = requestUrl.searchParams.get('next');
 
   if (code) {
-    const cookieStore = await cookies();
-
-    const supabase = createServerClient(
-      env.NEXT_PUBLIC_SUPABASE_URL,
-      env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      {
-        cookies: {
-          getAll() {
-            return cookieStore.getAll();
-          },
-          setAll(cookiesToSet) {
-            try {
-              cookiesToSet.forEach(({ name, value, options }) =>
-                cookieStore.set(name, value, options)
-              );
-            } catch {}
-          },
-        },
-      }
-    );
-
+    // Exchange auth code for Supabase session
+    const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
-      const pathSegments = requestUrl.pathname.split('/');
-      const locale = pathSegments[1];
-      const dashboardUrl = new URL(`/${locale}/dashboard`, request.url);
+      // Redirect to destination or dashboard
+      const redirectPath = next || `/${locale}${ROUTES.common.dashboard}`;
 
-      return NextResponse.redirect(dashboardUrl);
+      return NextResponse.redirect(new URL(redirectPath, request.url));
     }
   }
 
-  const pathSegments = requestUrl.pathname.split('/');
-  const locale = pathSegments[1];
-  const signInUrl = new URL(`/${locale}/sign-in`, request.url);
-
+  // Handle error by redirecting to sign in
+  const signInUrl = new URL(`/${locale}${ROUTES.auth.signIn}`, request.url);
   signInUrl.searchParams.set('error', 'auth_callback_error');
 
   return NextResponse.redirect(signInUrl);
