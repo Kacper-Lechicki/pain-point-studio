@@ -41,6 +41,26 @@
     "startResearch": "Start Your First Research",
     "seeHowItWorks": "See How It Works"
   },
+  "auth": {
+    "welcomeBack": "Welcome back",
+    "createAccount": "Create an account",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "forgotPassword": "Forgot your password?",
+    "resetPassword": "Reset Password",
+    "sendResetLink": "Send Reset Link",
+    "updatePassword": "Update Password",
+    "orContinueWith": "Or continue with",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "checkEmail": "Check your email",
+    "backToSignIn": "Back to Sign In",
+    "backToSignUp": "Back to Sign Up"
+  },
   "marketing": {
     "hero": {
       "badge": "Stop Building Things Nobody Needs",

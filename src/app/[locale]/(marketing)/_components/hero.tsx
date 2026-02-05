@@ -34,14 +34,14 @@ const Hero = async () => {
         <div className="flex flex-col items-center gap-4 max-sm:w-full max-sm:max-w-2xl">
           <div className="flex w-full flex-col gap-4 sm:flex-row sm:items-center">
             <Button className="h-11 gap-2 px-8 text-base" asChild>
-              <Link href={ROUTES.marketing.start}>
+              <Link href={ROUTES.common.home}>
                 {startResearch}
                 <Send className="size-4" aria-hidden="true" />
               </Link>
             </Button>
 
             <Button variant="secondary" className="h-11 gap-2 px-8 text-base" asChild>
-              <Link href={ROUTES.marketing.howItWorks}>
+              <Link href={ROUTES.common.home}>
                 {seeHowItWorks}
                 <Info className="size-4" aria-hidden="true" />
               </Link>

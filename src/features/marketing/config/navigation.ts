@@ -7,8 +7,8 @@ export interface NavLink {
 }
 
 export const NAV_LINKS: NavLink[] = [
-  { href: ROUTES.marketing.solutions, label: 'common.solutions', disabled: true },
-  { href: ROUTES.marketing.features, label: 'common.features', disabled: true },
-  { href: ROUTES.marketing.pricing, label: 'common.pricing', disabled: true },
-  { href: ROUTES.marketing.about, label: 'common.about', disabled: true },
+  { href: ROUTES.common.home, label: 'common.solutions', disabled: true },
+  { href: ROUTES.common.home, label: 'common.features', disabled: true },
+  { href: ROUTES.common.home, label: 'common.pricing', disabled: true },
+  { href: ROUTES.common.home, label: 'common.about', disabled: true },
 ];

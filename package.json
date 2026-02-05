@@ -20,6 +20,7 @@
     "--- SUPABASE ---": "exit 0",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
+    "supabase:restart": "supabase stop && supabase start",
     "supabase:status": "supabase status",
     "supabase:reset": "supabase db reset",
     "supabase:migration:new": "supabase migration new",
@@ -29,6 +30,8 @@
     "supabase:studio": "open http://127.0.0.1:54323"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
+    "@radix-ui/react-label": "^2.1.8",
     "@radix-ui/react-slot": "^1.2.4",
     "@react-three/fiber": "10.0.0-alpha.2",
     "@supabase/ssr": "^0.8.0",
@@ -43,6 +46,7 @@
     "next-intl": "^4.8.1",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
+    "react-hook-form": "^7.71.1",
     "recharts": "^2.15.4",
     "tailwind-merge": "^3.4.0",
     "three": "^0.182.0",

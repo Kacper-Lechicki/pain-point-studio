@@ -21,7 +21,7 @@ const Footer = () => {
       <div className="container mx-auto px-6 py-12 sm:px-4 lg:px-8">
         <div className="divide-border flex flex-col divide-y lg:grid lg:grid-cols-5 lg:gap-8 lg:divide-y-0">
           <div className="col-span-2 flex flex-col gap-4 py-8 first:pt-0 lg:py-0">
-            <Link href={ROUTES.marketing.home} className="text-lg font-semibold tracking-tight">
+            <Link href={ROUTES.common.home} className="text-lg font-semibold tracking-tight">
               {brandName}
             </Link>
 

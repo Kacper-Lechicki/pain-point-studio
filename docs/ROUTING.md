@@ -48,7 +48,7 @@ import { ROUTES } from '@/config/routes';
 import { Link } from '@/i18n/routing';
 
 // Using ROUTES (Recommended)
-<Link href={ROUTES.marketing.features}>Features</Link>;
+<Link href={ROUTES.common.home}>Features</Link>;
 
 // Standard localized route
 <Link href="/dashboard">Dashboard</Link>;
@@ -73,7 +73,7 @@ Labels for navigation and footer items should be stored in the `Common` section 
 In config files:
 
 ```tsx
-{ label: 'Common.features', href: ROUTES.marketing.features }
+{ label: 'Common.features', href: ROUTES.common.home }
 ```
 
 In components:

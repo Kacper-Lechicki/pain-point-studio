@@ -1,20 +1,32 @@
 export const PATHNAMES = {
-  '/': '/',
-  '/solutions': '/solutions',
-  '/features': '/features',
-  '/pricing': '/pricing',
-  '/about': '/about',
-  '/how-it-works': '/how-it-works',
-  '/start': '/start',
-  '/docs': '/docs',
-  '/blog': '/blog',
-  '/case-studies': '/case-studies',
-  '/community': '/community',
-  '/privacy': '/privacy',
-  '/terms': '/terms',
-  '/sign-in': '/sign-in',
-  '/sign-up': '/sign-up',
-  '/dashboard': '/dashboard',
-  '/explore': '/explore',
-  '/instruments': '/instruments',
+  // --- COMMON ---
+  '/': {
+    en: '/',
+  },
+  '/dashboard': {
+    en: '/dashboard',
+  },
+  '/settings': {
+    en: '/settings',
+  },
+  // --- AUTH ---
+  '/sign-in': {
+    en: '/sign-in',
+  },
+  '/sign-up': {
+    en: '/sign-up',
+  },
+  '/sign-out': {
+    en: '/sign-out',
+  },
+  '/forgot-password': {
+    en: '/forgot-password',
+  },
+  '/update-password': {
+    en: '/update-password',
+  },
+  // --- TEST ---
+  '/instruments': {
+    en: '/instruments',
+  },
 } as const;

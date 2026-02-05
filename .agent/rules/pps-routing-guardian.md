@@ -76,7 +76,7 @@ import Link from 'next/link';
 // ✅ Good: i18n routing
 import { Link } from '@/i18n/routing';
 import { ROUTES } from '@/config/routes';
-<Link href={ROUTES.marketing.features}>Features</Link>
+<Link href={ROUTES.common.home}>Features</Link>
 ```
 
 **Issue 2: Raw String Href**
@@ -86,18 +86,18 @@ import { ROUTES } from '@/config/routes';
 <Link href="/pricing">Pricing</Link>
 
 // ✅ Good: ROUTES config
-<Link href={ROUTES.marketing.pricing}>Pricing</Link>
+<Link href={ROUTES.common.home}>Pricing</Link>
 ```
 
 **Issue 3: Hardcoded Labels**
 
 ```tsx
 // ❌ Bad: Hardcoded text
-<Link href={ROUTES.marketing.features}>Features</Link>;
+<Link href={ROUTES.common.home}>Features</Link>;
 
 // ✅ Good: Translated label
 const t = useTranslations();
-<Link href={ROUTES.marketing.features}>{t('Common.features')}</Link>;
+<Link href={ROUTES.common.home}>{t('Common.features')}</Link>;
 ```
 
 **Issue 4: Missing Route Config**
@@ -165,7 +165,7 @@ import { ROUTES } from '@/config/routes';
 import { Link } from '@/i18n/routing';
 
 const t = useTranslations();
-<Link href={ROUTES.marketing.pricing}>{t('Common.pricing')}</Link>;
+<Link href={ROUTES.common.home}>{t('Common.pricing')}</Link>;
 ```
 
 ### Navigation Patterns
@@ -176,7 +176,7 @@ const t = useTranslations();
 import { ROUTES } from '@/config/routes';
 import { Link } from '@/i18n/routing';
 
-<Link href={ROUTES.marketing.features}>Features</Link>;
+<Link href={ROUTES.common.home}>Features</Link>;
 ```
 
 **Hash links:**
@@ -203,7 +203,7 @@ import { Link } from '@/i18n/routing';
 import { useRouter } from '@/i18n/routing';
 
 const router = useRouter();
-router.push(ROUTES.marketing.features);
+router.push(ROUTES.common.home);
 ```
 
 **Server redirects:**
@@ -260,8 +260,8 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { label: 'Common.features', href: ROUTES.marketing.features },
-  { label: 'Common.pricing', href: ROUTES.marketing.pricing },
+  { label: 'Common.features', href: ROUTES.common.home },
+  { label: 'Common.pricing', href: ROUTES.common.home },
 ];
 ```
 

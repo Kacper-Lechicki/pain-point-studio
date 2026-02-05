@@ -53,7 +53,7 @@ const Navbar = () => {
       <div className="container mx-auto flex h-16 items-center px-6 sm:px-4 lg:px-8">
         <div className="flex flex-1 items-center justify-start">
           <Link
-            href={ROUTES.marketing.home}
+            href={ROUTES.common.home}
             className="text-lg font-semibold tracking-tight"
             onClick={() => setIsMobileMenuOpen(false)}
           >
@@ -95,7 +95,7 @@ const Navbar = () => {
             </Button>
 
             <Button className="group gap-2" variant="secondary" asChild>
-              <Link href={ROUTES.app.explore}>
+              <Link href={ROUTES.common.home}>
                 {exploreLabel}
                 <Globe
                   className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12"
@@ -140,7 +140,7 @@ const Navbar = () => {
             </Button>
 
             <Button variant="secondary" className="w-full justify-center gap-2" size="lg" asChild>
-              <Link href={ROUTES.app.explore} onClick={() => setIsMobileMenuOpen(false)}>
+              <Link href={ROUTES.common.home} onClick={() => setIsMobileMenuOpen(false)}>
                 {exploreLabel}
                 <Globe className="h-4 w-4" aria-hidden="true" />
               </Link>
