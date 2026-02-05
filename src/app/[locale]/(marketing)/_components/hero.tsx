@@ -3,7 +3,7 @@ import { getTranslations } from 'next-intl/server';
 
 import { Button } from '@/components/ui/button';
 import { HeroHighlight } from '@/components/ui/hero-highlight';
-import { ROUTES } from '@/config/routes';
+import { ROUTES } from '@/config';
 import { Link } from '@/i18n/routing';
 
 const Hero = async () => {

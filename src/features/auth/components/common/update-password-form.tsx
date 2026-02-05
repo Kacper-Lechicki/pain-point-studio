@@ -18,12 +18,12 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
-import { ROUTES } from '@/config/routes';
+import { ROUTES } from '@/config';
 import { updatePassword } from '@/features/auth/actions';
 import { UpdatePasswordSchema, updatePasswordSchema } from '@/features/auth/types';
 import { useRouter } from '@/i18n/routing';
 
-export function UpdatePasswordForm() {
+const UpdatePasswordForm = () => {
   const t = useTranslations();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -93,4 +93,6 @@ export function UpdatePasswordForm() {
       </form>
     </Form>
   );
-}
+};
+
+export { UpdatePasswordForm };

@@ -4,8 +4,8 @@ import { ArrowUp } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
-import { BRAND, getCopyrightText } from '@/config/brand';
-import { ROUTES } from '@/config/routes';
+import { BRAND, getCopyrightText } from '@/config';
+import { ROUTES } from '@/config';
 import { FOOTER_SECTIONS, type FooterItem, type FooterSection } from '@/features/marketing/config';
 import { Link } from '@/i18n/routing';
 

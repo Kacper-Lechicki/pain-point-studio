@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { ROUTES } from '@/config/routes';
+import { ROUTES } from '@/config';
 import i18nMiddleware from '@/i18n/config';
 import { isAuthenticated, isProtectionEnabled } from '@/lib/common/deploy-credentials';
 import { updateSession } from '@/lib/supabase/middleware';
@@ -23,7 +23,7 @@ function getPathnameWithoutLocale(pathname: string): string {
   return '/';
 }
 
-export default async function middleware(req: NextRequest) {
+const middleware = async (req: NextRequest) => {
   const { response: supabaseResponse, user } = await updateSession(req);
 
   // Basic auth protection for deploy gating (production only)
@@ -62,8 +62,12 @@ export default async function middleware(req: NextRequest) {
   });
 
   return i18nResponse;
-}
+};
+
+export default middleware;
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+  ],
 };

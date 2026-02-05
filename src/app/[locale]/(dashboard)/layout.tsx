@@ -1,16 +1,16 @@
 import { ReactNode } from 'react';
 
 import { PageTransition } from '@/components/ui/page-transition';
-import { DashboardNavbar } from '@/features/dashboard/components/layout/dashboard-navbar';
+import { Navbar } from '@/features/dashboard/components/layout/navbar';
 
 interface DashboardLayoutProps {
   children: ReactNode;
 }
 
-export default function DashboardLayout({ children }: DashboardLayoutProps) {
+const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   return (
     <div className="flex min-h-screen flex-col">
-      <DashboardNavbar />
+      <Navbar />
 
       <main className="flex-1">
         <PageTransition>
@@ -19,4 +19,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       </main>
     </div>
   );
-}
+};
+
+export default DashboardLayout;

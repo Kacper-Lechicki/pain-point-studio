@@ -1,10 +1,10 @@
 import { getTranslations } from 'next-intl/server';
 
-import { ROUTES } from '@/config/routes';
-import { AuthHeader } from '@/features/auth/components/auth-header';
-import { OAuthSection } from '@/features/auth/components/oauth-section';
-import { SignInForm } from '@/features/auth/components/sign-in-form';
-import { TermsText } from '@/features/auth/components/terms-text';
+import { ROUTES } from '@/config';
+import { AuthHeader } from '@/features/auth/components/common/auth-header';
+import { OAuthSection } from '@/features/auth/components/common/oauth-section';
+import { SignInForm } from '@/features/auth/components/common/sign-in-form';
+import { TermsText } from '@/features/auth/components/common/terms-text';
 
 export default async function SignInPage() {
   const t = await getTranslations();

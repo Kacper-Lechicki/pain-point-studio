@@ -20,8 +20,15 @@ describe('Environment Configuration', () => {
       NEXT_PUBLIC_APP_URL: 'https://example.com',
       NEXT_PUBLIC_SUPABASE_URL: 'http://127.0.0.1:54321',
       NEXT_PUBLIC_SUPABASE_ANON_KEY: 'test-anon-key',
+      SUPABASE_AUTH_REDIRECT_URI: 'https://example.com/auth/callback',
+      SUPABASE_AUTH_GITHUB_CLIENT_ID: 'test-github-id',
+      SUPABASE_AUTH_GITHUB_SECRET: 'test-github-secret',
+      SUPABASE_AUTH_GOOGLE_CLIENT_ID: 'test-google-id',
+      SUPABASE_AUTH_GOOGLE_SECRET: 'test-google-secret',
     };
+
     const merged = { ...defaults, ...overrides };
+
     Object.entries(merged).forEach(([key, value]) => vi.stubEnv(key, value));
   };
 

@@ -11,6 +11,8 @@ src/
 ├── app/                        # 1. Routing & Layouts (Next.js App Router)
 │   ├── [locale]/               # Dynamic locale segment (i18n routing)
 │   │   ├── (marketing)/        # Marketing Group: Landing pages (SEO optimized)
+│   │   ├── (auth)/             # Auth Group: Login/Register logic
+│   │   ├── (dashboard)/        # Dashboard Group: Authenticated user interface
 │   │   ├── layout.tsx          # Locale layout (sets requestLocale)
 │   │   └── [...not-found]/     # 404 handling
 │   ├── favicon.ico             # Static assets
@@ -27,6 +29,14 @@ src/
 │   └── routes.ts               # Application route definitions
 │
 ├── features/                   # 4. Domain Logic (Feature-First)
+│   ├── auth/                   # Auth Domain
+│   │   ├── actions/            # Server actions
+│   │   ├── components/         # Feature-specific components
+│   │   ├── config/             # Feature constants
+│   │   ├── hooks/              # Feature hooks
+│   │   └── types/              # Feature-specific types
+│   ├── dashboard/              # Dashboard Domain
+│   │   └── components/         # Feature-specific components
 │   └── marketing/              # Marketing Domain
 │       ├── components/         # Feature-specific components
 │       ├── config/             # Feature constants
@@ -46,10 +56,11 @@ src/
 │   ├── utils.ts                # Helper functions (cn, formatters)
 │   └── deploy-credentials.ts   # Deployment helpers
 │
-├── types/                      # 8. Global TypeScript Definitions
 ├── proxy.ts                    # Next.js 16 i18n proxy
 │
 e2e/                            # 9. E2E Tests (Playwright)
+├── auth.spec.ts
+├── env.ts                      # Playwright specific env vars
 └── example.spec.ts
 ```
 
@@ -62,8 +73,8 @@ e2e/                            # 9. E2E Tests (Playwright)
 We use Route Groups to separate distinct areas of the application without affecting the URL structure.
 
 - **(marketing)**: Optimized for SEO, standard navigation.
-- **(auth)**: _Planned_ - Login/Register logic.
-- **(dashboard)**: _Planned_ - Authenticated user interface.
+- **(auth)**: Login/Register logic.
+- **(dashboard)**: Authenticated user interface.
 
 ### Component Layering
 

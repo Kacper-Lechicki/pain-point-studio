@@ -9,7 +9,7 @@ import { RESPONSES_GROWTH_CONFIG, RESPONSES_GROWTH_DATA } from '@/features/marke
 
 const formatDayTick = (value: string): string => value.slice(0, 3);
 
-export function ResponsesGrowthChart() {
+const ResponsesGrowthChart = () => {
   const t = useTranslations('marketing.charts.responsesGrowth');
   const title = t('title');
   const description = t('description');
@@ -90,4 +90,6 @@ export function ResponsesGrowthChart() {
       </CardContent>
     </Card>
   );
-}
+};
+
+export { ResponsesGrowthChart };

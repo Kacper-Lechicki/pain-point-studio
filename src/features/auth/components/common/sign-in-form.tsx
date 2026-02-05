@@ -18,12 +18,12 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
-import { ROUTES } from '@/config/routes';
+import { ROUTES } from '@/config';
 import { signInWithEmail } from '@/features/auth/actions';
 import { SignInSchema, signInSchema } from '@/features/auth/types';
 import { Link, useRouter } from '@/i18n/routing';
 
-export function SignInForm() {
+const SignInForm = () => {
   const t = useTranslations();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -102,4 +102,6 @@ export function SignInForm() {
       </form>
     </Form>
   );
-}
+};
+
+export { SignInForm };

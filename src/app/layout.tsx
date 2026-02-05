@@ -5,7 +5,7 @@ import { getLocale, getMessages, getTranslations } from 'next-intl/server';
 
 import { ScrollToTop } from '@/components/ui/scroll-to-top';
 import { Toaster } from '@/components/ui/sonner';
-import { getAppMetadata } from '@/config/metadata';
+import { getAppMetadata } from '@/config';
 import '@/lib/common/env';
 
 import './globals.css';

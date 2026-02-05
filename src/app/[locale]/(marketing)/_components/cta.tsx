@@ -7,7 +7,7 @@ import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { ScrollReveal } from '@/components/ui/scroll-reveal';
-import { ROUTES } from '@/config/routes';
+import { ROUTES } from '@/config';
 import { Link } from '@/i18n/routing';
 
 const HeroHighlight = dynamic(

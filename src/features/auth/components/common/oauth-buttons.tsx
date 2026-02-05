@@ -5,11 +5,11 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { signInWithOAuth } from '@/features/auth/actions';
-import { OAuthButton } from '@/features/auth/components/oauth-button';
-import { OAUTH_PROVIDERS, OAuthProviderConfig } from '@/features/auth/config/providers';
+import { OAuthButton } from '@/features/auth/components/common/oauth-button';
+import { OAUTH_PROVIDERS, OAuthProviderConfig } from '@/features/auth/config';
 import { AuthProvider } from '@/features/auth/types';
 
-export function OAuthButtons() {
+const OAuthButtons = () => {
   const [loading, setLoading] = useState<AuthProvider | null>(null);
 
   const handleOAuthSignIn = async (provider: AuthProvider) => {
@@ -36,4 +36,6 @@ export function OAuthButtons() {
       ))}
     </div>
   );
-}
+};
+
+export { OAuthButtons };

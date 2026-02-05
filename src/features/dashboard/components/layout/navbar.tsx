@@ -2,12 +2,12 @@
 
 import { useTranslations } from 'next-intl';
 
-import { BRAND } from '@/config/brand';
-import { ROUTES } from '@/config/routes';
-import { UserMenu } from '@/features/auth/components/user-menu';
+import { BRAND } from '@/config';
+import { ROUTES } from '@/config';
+import { UserMenu } from '@/features/auth/components/common/user-menu';
 import { Link } from '@/i18n/routing';
 
-export function DashboardNavbar() {
+const Navbar = () => {
   const t = useTranslations();
 
   return (
@@ -21,4 +21,6 @@ export function DashboardNavbar() {
       </div>
     </nav>
   );
-}
+};
+
+export { Navbar };

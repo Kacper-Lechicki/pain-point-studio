@@ -8,7 +8,7 @@ interface PageTransitionProps {
   children: ReactNode;
 }
 
-export function PageTransition({ children }: PageTransitionProps) {
+const PageTransition = ({ children }: PageTransitionProps) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
@@ -18,4 +18,6 @@ export function PageTransition({ children }: PageTransitionProps) {
       {children}
     </motion.div>
   );
-}
+};
+
+export { PageTransition };

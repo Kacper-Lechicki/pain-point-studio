@@ -1,8 +1,8 @@
 import { ArrowLeft } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
-import { BRAND } from '@/config/brand';
-import { ROUTES } from '@/config/routes';
+import { BRAND } from '@/config';
+import { ROUTES } from '@/config';
 import { Link } from '@/i18n/routing';
 
 const Navbar = async () => {

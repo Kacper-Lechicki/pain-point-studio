@@ -1,4 +1,4 @@
-import { AppRoute } from '@/config/routes';
+import { AppRoute } from '@/config';
 import { Link } from '@/i18n/routing';
 
 interface AuthHeaderProps {
@@ -8,7 +8,7 @@ interface AuthHeaderProps {
   linkHref?: AppRoute;
 }
 
-export function AuthHeader({ title, description, linkText, linkHref }: AuthHeaderProps) {
+const AuthHeader = ({ title, description, linkText, linkHref }: AuthHeaderProps) => {
   return (
     <div className="flex flex-col space-y-2 text-center">
       <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
@@ -24,4 +24,6 @@ export function AuthHeader({ title, description, linkText, linkHref }: AuthHeade
       </p>
     </div>
   );
-}
+};
+
+export { AuthHeader };

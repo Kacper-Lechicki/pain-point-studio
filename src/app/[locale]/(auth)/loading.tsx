@@ -1,5 +1,7 @@
 import { Loading } from '@/components/ui/loading';
 
-export default function AuthGlobalLoading() {
+const AuthGlobalLoading = () => {
   return <Loading />;
-}
+};
+
+export default AuthGlobalLoading;

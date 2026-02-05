@@ -6,10 +6,12 @@ interface LoadingProps {
   spinnerClassName?: string;
 }
 
-export function Loading({ className, spinnerClassName }: LoadingProps) {
+const Loading = ({ className, spinnerClassName }: LoadingProps) => {
   return (
     <div className={cn('flex min-h-[50vh] w-full items-center justify-center', className)}>
       <Spinner className={cn('size-8', spinnerClassName)} />
     </div>
   );
-}
+};
+
+export { Loading };

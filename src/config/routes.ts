@@ -1,7 +1,9 @@
 import { PATHNAMES } from '@/i18n/pathnames';
 
+// Type-safe route keys based on defined pathnames
 export type AppRoute = keyof typeof PATHNAMES;
 
+// Centralized route configuration for type-safe navigation
 export const ROUTES = {
   auth: {
     signIn: '/sign-in' as AppRoute,

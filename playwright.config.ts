@@ -2,12 +2,10 @@ import path from 'node:path';
 
 import { defineConfig, devices } from '@playwright/test';
 
-// Load environment variables BEFORE importing env.ts (validation runs on import)
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { loadEnvConfig } = require('@next/env');
 loadEnvConfig(process.cwd());
 
-// Now safe to import env (validation will pass)
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { env } = require(path.join(process.cwd(), 'e2e/env'));
 

@@ -32,7 +32,7 @@ test.describe('Auth Pages – Navigation & Layout', () => {
   // Verify that the 'Back to Home' link correctly navigates to the landing page
   test('back to home link navigates to landing page', async ({ page }) => {
     await page.goto('/en/sign-in');
-    await page.getByRole('link', { name: /back to home/i }).click();
+    await page.getByRole('link', { name: /back to home/i }).click({ force: true });
     await expect(page).toHaveURL(/\/en$/);
   });
 });

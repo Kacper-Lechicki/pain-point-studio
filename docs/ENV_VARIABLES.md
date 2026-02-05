@@ -30,6 +30,17 @@ import { env } from '@/lib/common/env';
 console.log(env.NEXT_PUBLIC_APP_URL);
 ```
 
+## 🧪 Testing Environment
+
+For E2E tests (Playwright) configuration, use `e2e/env.ts`. This file provides simplified environment access for tools running outside the Next.js context.
+
+```typescript
+// in playwright.config.ts
+import { env } from './e2e/env';
+```
+
+**Note:** The main application code and test files should ALWAYS use `@/lib/common/env`.
+
 ## ⚠️ Troubleshooting
 
 **Error: `Invalid environment variables` during build/start**

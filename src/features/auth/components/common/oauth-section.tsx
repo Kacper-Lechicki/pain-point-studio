@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 
 import { OAuthButtons } from './oauth-buttons';
 
-export function OAuthSection() {
+const OAuthSection = () => {
   const t = useTranslations();
 
   return (
@@ -24,4 +24,6 @@ export function OAuthSection() {
       <OAuthButtons />
     </>
   );
-}
+};
+
+export { OAuthSection };

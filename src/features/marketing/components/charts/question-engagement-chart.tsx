@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { QUESTION_ENGAGEMENT_CONFIG, QUESTION_ENGAGEMENT_DATA } from '@/features/marketing/config';
 
-export function QuestionEngagementChart() {
+const QuestionEngagementChart = () => {
   const t = useTranslations('marketing.charts.questionEngagement');
   const title = t('title');
   const description = t('description');
@@ -72,4 +72,6 @@ export function QuestionEngagementChart() {
       </CardContent>
     </Card>
   );
-}
+};
+
+export { QuestionEngagementChart };

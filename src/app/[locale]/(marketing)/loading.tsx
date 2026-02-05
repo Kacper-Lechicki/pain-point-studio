@@ -1,5 +1,7 @@
 import { Loading } from '@/components/ui/loading';
 
-export default function MarketingLoading() {
+const MarketingLoading = () => {
   return <Loading />;
-}
+};
+
+export default MarketingLoading;

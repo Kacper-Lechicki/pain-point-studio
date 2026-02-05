@@ -7,13 +7,13 @@ import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
-import { ROUTES } from '@/config/routes';
+import { ROUTES } from '@/config';
 import { signOut } from '@/features/auth/actions';
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import { Link } from '@/i18n/routing';
 import { cn } from '@/lib/common/utils';
 
-export function UserMenu() {
+const UserMenu = () => {
   const t = useTranslations();
   const { user, loading } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
@@ -106,4 +106,6 @@ export function UserMenu() {
       </div>
     </div>
   );
-}
+};
+
+export { UserMenu };

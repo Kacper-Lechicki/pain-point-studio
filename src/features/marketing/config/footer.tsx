@@ -1,4 +1,4 @@
-import { AppRoute, ROUTES } from '@/config/routes';
+import { AppRoute, ROUTES } from '@/config';
 
 export interface FooterItem {
   label: string;

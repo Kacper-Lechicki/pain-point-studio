@@ -4,7 +4,7 @@ interface SpinnerProps {
   className?: string;
 }
 
-export function Spinner({ className }: SpinnerProps) {
+const Spinner = ({ className }: SpinnerProps) => {
   return (
     <div
       className={cn(
@@ -15,4 +15,6 @@ export function Spinner({ className }: SpinnerProps) {
       aria-label="Loading"
     />
   );
-}
+};
+
+export { Spinner };

@@ -1,5 +1,7 @@
 import { Loading } from '@/components/ui/loading';
 
-export default function DashboardGlobalLoading() {
+const DashboardGlobalLoading = () => {
   return <Loading />;
-}
+};
+
+export default DashboardGlobalLoading;

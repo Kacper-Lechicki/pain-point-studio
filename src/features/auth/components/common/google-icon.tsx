@@ -1,6 +1,6 @@
 import { SVGProps } from 'react';
 
-export function GoogleIcon(props: SVGProps<SVGSVGElement>) {
+const GoogleIcon = (props: SVGProps<SVGSVGElement>) => {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" {...props}>
       <path
@@ -9,4 +9,6 @@ export function GoogleIcon(props: SVGProps<SVGSVGElement>) {
       />
     </svg>
   );
-}
+};
+
+export { GoogleIcon };

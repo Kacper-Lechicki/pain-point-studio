@@ -2,7 +2,7 @@ import { ComponentType, SVGProps } from 'react';
 
 import { Github } from 'lucide-react';
 
-import { GoogleIcon } from '@/features/auth/components/google-icon';
+import { GoogleIcon } from '@/features/auth/components/common/google-icon';
 import { AuthProvider } from '@/features/auth/types';
 
 export interface OAuthProviderConfig {

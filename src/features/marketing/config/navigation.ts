@@ -1,4 +1,4 @@
-import { ROUTES } from '@/config/routes';
+import { ROUTES } from '@/config';
 
 export interface NavLink {
   href: string;
