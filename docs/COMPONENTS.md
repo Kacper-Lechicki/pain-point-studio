@@ -26,7 +26,7 @@ import { memo } from 'react';
 
 import { LucideIcon } from 'lucide-react';
 
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/common/utils';
 
 // 2. Interface (ALWAYS above the component, never inline)
 interface ComponentNameProps {
@@ -352,7 +352,7 @@ Before considering a component complete, verify:
 ```tsx
 import type { LucideIcon } from 'lucide-react';
 
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/common/utils';
 
 // Props interface with documentation
 interface FeatureCardProps {

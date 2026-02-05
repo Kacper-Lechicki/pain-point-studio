@@ -8,5 +8,4 @@ const Configuration = {
   },
 };
 
-// Export the configuration for commitlint to use
 export default Configuration;

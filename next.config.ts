@@ -2,15 +2,13 @@ import type { NextConfig } from 'next';
 
 import createNextIntlPlugin from 'next-intl/plugin';
 
-import { env } from './src/lib/env';
+import { env } from './src/lib/common/env';
 
 // Initialize next-intl plugin with the request configuration path
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
 /** @type {import('next').NextConfig} */
 const nextConfig: NextConfig = {
-  // -----------------------------------------------------------------------------
-  // 1. CORE & REACT CONFIGURATION
   // Enables the React Compiler (React Forget) for automatic memoization
   reactCompiler: true,
   // Disables the 'X-Powered-By' header for security
@@ -18,9 +16,6 @@ const nextConfig: NextConfig = {
   // Creates a standalone build for Docker/Self-hosting (keeps image size small)
   // Only enabled when STANDALONE env var is set, to allow 'next start' to work locally
   ...(env.STANDALONE === 'true' ? { output: 'standalone' } : {}),
-
-  // -----------------------------------------------------------------------------
-  // 2. BUILD & DEVELOPER EXPERIENCE
   // TypeScript validation configuration
   typescript: {
     ignoreBuildErrors: false,
@@ -31,9 +26,6 @@ const nextConfig: NextConfig = {
   logging: {
     fetches: { fullUrl: false },
   },
-
-  // -----------------------------------------------------------------------------
-  // 3. ASSET & IMAGE CONFIGURATION
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [
@@ -41,13 +33,6 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'avatars.githubusercontent.com' }, // GitHub Auth
     ],
   },
-
-  // -----------------------------------------------------------------------------
-  // 4. EXPERIMENTAL FEATURES
-  experimental: {},
-
-  // -----------------------------------------------------------------------------
-  // 5. SECURITY HEADERS
   async headers() {
     return [
       {
@@ -77,5 +62,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-// Export the configuration wrapped with the next-intl plugin
 export default withNextIntl(nextConfig);

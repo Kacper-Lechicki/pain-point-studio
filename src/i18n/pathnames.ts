@@ -16,4 +16,5 @@ export const PATHNAMES = {
   '/sign-up': '/sign-up',
   '/dashboard': '/dashboard',
   '/explore': '/explore',
+  '/instruments': '/instruments',
 } as const;

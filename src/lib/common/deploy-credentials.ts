@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 
-import { env } from '@/lib/env';
+import { env } from '@/lib/common/env';
 
 /**
  * Checks if the Basic Auth protection should be enabled.

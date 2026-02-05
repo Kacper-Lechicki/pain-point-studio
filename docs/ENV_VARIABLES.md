@@ -24,7 +24,7 @@ At Pain Point Studio, we treat configuration as code. We use **Type-Safe Environ
 Instead of `process.env.VAR_NAME`, import the `env` object:
 
 ```typescript
-import { env } from '@/lib/env';
+import { env } from '@/lib/common/env';
 
 // ✅ Type-safe, guaranteed values
 console.log(env.NEXT_PUBLIC_APP_URL);
@@ -50,7 +50,7 @@ Ensure you are using `env.NEXT_PUBLIC_...`. Variables from the `server` section 
 >
 > **Key rules:**
 >
-> 1. Verify all env vars are imported from `@/lib/env`, not `process.env`
+> 1. Verify all env vars are imported from `@/lib/common/env`, not `process.env`
 > 2. Check that client-side code only uses `NEXT_PUBLIC_*` variables
 > 3. Ensure server-only variables are not leaked to client components
 > 4. Validate that `.env.example` is updated when new vars are added

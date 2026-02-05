@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/common/utils';
 
 type CardProps = React.ComponentProps<'div'>;
 type CardHeaderProps = React.ComponentProps<'div'>;

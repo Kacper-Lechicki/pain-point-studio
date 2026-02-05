@@ -4,7 +4,7 @@ import React from 'react';
 
 import { motion, useMotionTemplate, useMotionValue } from 'motion/react';
 
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/common/utils';
 
 const getEncodedPattern = (color: string) => {
   const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='16' height='24' fill='none'><circle fill='${color}' id='pattern-circle' cx='10' cy='10' r='2.5'></circle></svg>`;

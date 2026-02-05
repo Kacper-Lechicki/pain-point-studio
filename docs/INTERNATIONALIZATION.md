@@ -25,7 +25,8 @@ src/
 | File                          | Purpose                                                              |
 | ----------------------------- | -------------------------------------------------------------------- |
 | `src/proxy.ts`                | Entry point for i18n routing (Next.js 16 uses proxy, not middleware) |
-| `src/i18n/config.ts`          | Defines supported locales and default locale                         |
+| `src/i18n/constants.ts`       | Single source of truth for supported `locales`                       |
+| `src/i18n/config.ts`          | Middleware config (pathnames, defaultLocale)                         |
 | `src/i18n/request.ts`         | Resolves locale from routing and loads messages                      |
 | `src/app/[locale]/layout.tsx` | Sets the request locale for static rendering                         |
 | `src/app/layout.tsx`          | Wraps app in `NextIntlClientProvider`                                |
@@ -68,30 +69,25 @@ The proxy in `src/proxy.ts` handles the redirect logic.
 
 ## Adding a New Locale
 
-Follow this checklist to add a new language (e.g., `de` for German).
+Follow this simplified checklist to add a new language (e.g., `de` for German). The system is designed to auto-configure routing and static generation based on `src/i18n/constants.ts`.
 
-### Step 1: Update i18n Config
+### Step 1: Update Constants
 
-**File:** `src/i18n/config.ts`
+**File:** `src/i18n/constants.ts`
+
+Approve the new locale in the central configuration:
 
 ```ts
 export const locales = ['en', 'de'] as const;
-export const defaultLocale = 'en';
 ```
 
-### Step 2: Update Proxy Matcher
+> **Note:** This automatically updates:
+>
+> - `src/proxy.ts` matchers
+> - `src/i18n/config.ts` middleware validation
+> - `src/app/[locale]/layout.tsx` static params generation
 
-**File:** `src/proxy.ts`
-
-Add the new locale to the matcher pattern:
-
-```ts
-export const config = {
-  matcher: ['/', '/(de|en)/:path*'],
-};
-```
-
-### Step 3: Create Translation File
+### Step 2: Create Translation File
 
 **File:** `src/i18n/messages/de.json`
 
@@ -112,17 +108,23 @@ Copy the structure from `en.json` and translate all values:
 
 > **Important:** Keys must be identical across all locale files. Only values differ.
 
-### Step 4: Update Static Params
+### Step 3: Localize Pathnames (Optional)
 
-**File:** `src/app/[locale]/layout.tsx`
+**File:** `src/i18n/pathnames.ts`
+
+If you want localized URLs (e.g., `/de/preise` instead of `/de/pricing`), add translations to `PATHNAMES`:
 
 ```ts
-export function generateStaticParams() {
-  return [{ locale: 'en' }, { locale: 'de' }];
-}
+export const PATHNAMES = {
+  // ...
+  '/pricing': {
+    en: '/pricing',
+    de: '/preise',
+  },
+} as const;
 ```
 
-### Step 5: Verify Type Safety
+### Step 4: Verify Type Safety
 
 Run TypeScript to ensure all translation keys are valid:
 
@@ -132,13 +134,12 @@ pnpm test:types
 
 ### Checklist Summary
 
-| Step | File                              | Action                          |
-| ---- | --------------------------------- | ------------------------------- |
-| 1    | `src/i18n/config.ts`              | Add locale to `locales` array   |
-| 2    | `src/proxy.ts`                    | Add locale to matcher regex     |
-| 3    | `src/i18n/messages/{locale}.json` | Create translation file         |
-| 4    | `src/app/[locale]/layout.tsx`     | Add to `generateStaticParams()` |
-| 5    | Terminal                          | Run `pnpm test:types`           |
+| Step | File                              | Action                        |
+| ---- | --------------------------------- | ----------------------------- |
+| 1    | `src/i18n/constants.ts`           | Add locale to `locales` array |
+| 2    | `src/i18n/messages/{locale}.json` | Create translation file       |
+| 3    | `src/i18n/pathnames.ts`           | (Optional) Localize URL paths |
+| 4    | Terminal                          | Run `pnpm test:types`         |
 
 All translations are type-safe. Missing keys will cause TypeScript errors.
 

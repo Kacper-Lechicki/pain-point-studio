@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { env } from '@/lib/env';
+import { env } from '@/lib/common/env';
 
 import { isAuthenticated, isProtectionEnabled } from './deploy-credentials';
 
@@ -14,7 +14,7 @@ type MockEnv = {
 };
 
 // Mock the environment configuration module
-vi.mock('@/lib/env', () => ({
+vi.mock('@/lib/common/env', () => ({
   env: {
     NODE_ENV: 'development',
     BASIC_AUTH_USER: 'admin',

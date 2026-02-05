@@ -2,11 +2,11 @@
 
 import { useTranslations } from 'next-intl';
 
-import StepContent from '@/features/marketing/components/elements/step-content';
-import StepExtra from '@/features/marketing/components/elements/step-extra';
-import StepVisual from '@/features/marketing/components/elements/step-visual';
+import StepContent from '@/features/marketing/components/common/step-content';
+import StepExtra from '@/features/marketing/components/common/step-extra';
+import StepVisual from '@/features/marketing/components/common/step-visual';
 import { HowItWorksStep } from '@/features/marketing/config';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/common/utils';
 
 interface StepCardProps {
   step: HowItWorksStep;
