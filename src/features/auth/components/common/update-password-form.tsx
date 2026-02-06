@@ -16,13 +16,13 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Spinner } from '@/components/ui/spinner';
 import { ROUTES } from '@/config';
 import { updatePassword } from '@/features/auth/actions';
 import { UpdatePasswordSchema, updatePasswordSchema } from '@/features/auth/types';
 import { useRouter } from '@/i18n/routing';
 
-import { PasswordInput } from './password-input';
 import { PasswordStrength } from './password-strength';
 
 const UpdatePasswordForm = () => {
@@ -75,7 +75,12 @@ const UpdatePasswordForm = () => {
               <FormLabel>{t('auth.newPassword')}</FormLabel>
 
               <FormControl>
-                <PasswordInput placeholder={t('auth.passwordPlaceholder')} {...field} />
+                <PasswordInput
+                  placeholder={t('auth.passwordPlaceholder')}
+                  showPasswordLabel={t('auth.showPassword')}
+                  hidePasswordLabel={t('auth.hidePassword')}
+                  {...field}
+                />
               </FormControl>
 
               <PasswordStrength password={password} isError={!!form.formState.errors.password} />
@@ -91,7 +96,12 @@ const UpdatePasswordForm = () => {
               <FormLabel>{t('auth.confirmPassword')}</FormLabel>
 
               <FormControl>
-                <PasswordInput placeholder={t('auth.passwordPlaceholder')} {...field} />
+                <PasswordInput
+                  placeholder={t('auth.passwordPlaceholder')}
+                  showPasswordLabel={t('auth.showPassword')}
+                  hidePasswordLabel={t('auth.hidePassword')}
+                  {...field}
+                />
               </FormControl>
 
               <FormMessage />

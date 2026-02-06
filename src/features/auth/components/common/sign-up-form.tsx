@@ -17,10 +17,10 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Spinner } from '@/components/ui/spinner';
 import { ROUTES } from '@/config';
 import { signUpWithEmail } from '@/features/auth/actions';
-import { PasswordInput } from '@/features/auth/components/common/password-input';
 import { PasswordStrength } from '@/features/auth/components/common/password-strength';
 import { SignUpSchema, signUpSchema } from '@/features/auth/types';
 import { Link } from '@/i18n/routing';
@@ -119,7 +119,12 @@ const SignUpForm = ({ header, children }: SignUpFormProps) => {
                 <FormLabel>{t('auth.password')}</FormLabel>
 
                 <FormControl>
-                  <PasswordInput placeholder={t('auth.passwordPlaceholder')} {...field} />
+                  <PasswordInput
+                    placeholder={t('auth.passwordPlaceholder')}
+                    showPasswordLabel={t('auth.showPassword')}
+                    hidePasswordLabel={t('auth.hidePassword')}
+                    {...field}
+                  />
                 </FormControl>
 
                 <PasswordStrength password={password} isError={!!form.formState.errors.password} />

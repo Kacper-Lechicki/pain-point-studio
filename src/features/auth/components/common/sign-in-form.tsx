@@ -17,13 +17,12 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Spinner } from '@/components/ui/spinner';
 import { ROUTES } from '@/config';
 import { signInWithEmail } from '@/features/auth/actions';
 import { SignInSchema, signInSchema } from '@/features/auth/types';
 import { useRouter } from '@/i18n/routing';
-
-import { PasswordInput } from './password-input';
 
 const SignInForm = () => {
   const t = useTranslations();
@@ -85,7 +84,12 @@ const SignInForm = () => {
               <FormLabel>{t('auth.password')}</FormLabel>
 
               <FormControl>
-                <PasswordInput placeholder={t('auth.passwordPlaceholder')} {...field} />
+                <PasswordInput
+                  placeholder={t('auth.passwordPlaceholder')}
+                  showPasswordLabel={t('auth.showPassword')}
+                  hidePasswordLabel={t('auth.hidePassword')}
+                  {...field}
+                />
               </FormControl>
 
               <FormMessage />

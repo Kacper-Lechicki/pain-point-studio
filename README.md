@@ -26,18 +26,19 @@ Pain Point Studio is a research platform designed for developer validation workf
    cp .env.local.example .env.local
    ```
 
-3. **Start local Supabase stack**:
+3. **Start development environment**:
+
+   This command starts the local Supabase stack, Supabase Studio, and the Next.js dev server concurrently:
 
    ```bash
-   pnpm supabase:start
+   pnpm run:dev
    ```
 
-4. **Run the development server**:
-   ```bash
-   pnpm dev
-   ```
+   > **Note**: Make sure Docker is running before executing this command.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+   Access the application:
+   - **App**: [http://localhost:3000](http://localhost:3000)
+   - **Supabase Studio**: [http://localhost:54323](http://localhost:54323)
 
 &nbsp;
 
