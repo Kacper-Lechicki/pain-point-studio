@@ -34,11 +34,7 @@ const OAuthButton = ({ provider, isLoading, disabled, onClick }: OAuthButtonProp
           'border-gray-300 bg-white text-gray-700 md:hover:bg-white md:hover:text-gray-700 dark:bg-white dark:text-gray-700 dark:md:hover:bg-white dark:md:hover:text-gray-700'
       )}
     >
-      {isLoading ? (
-        <Spinner />
-      ) : (
-        <Icon className={cn('mr-2 size-4', !isGoogle && 'fill-current')} />
-      )}
+      {isLoading ? <Spinner /> : <Icon className={cn('size-4', !isGoogle && 'fill-current')} />}
       {t(provider.label)}
     </Button>
   );

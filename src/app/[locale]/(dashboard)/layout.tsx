@@ -1,6 +1,7 @@
-import { ReactNode } from 'react';
+import { ReactNode, Suspense } from 'react';
 
 import { PageTransition } from '@/components/ui/page-transition';
+import { AuthToast } from '@/features/auth/components/common/auth-toast';
 import { Navbar } from '@/features/dashboard/components/layout/navbar';
 
 interface DashboardLayoutProps {
@@ -11,6 +12,10 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />
+
+      <Suspense>
+        <AuthToast />
+      </Suspense>
 
       <main className="flex-1">
         <PageTransition>

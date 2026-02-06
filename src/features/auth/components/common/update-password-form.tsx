@@ -47,15 +47,20 @@ const UpdatePasswordForm = () => {
   async function onSubmit(data: UpdatePasswordSchema) {
     setIsLoading(true);
 
-    const result = await updatePassword(data);
+    try {
+      const result = await updatePassword(data);
 
-    if (result.error) {
-      toast.error(result.error);
+      if (result.error) {
+        toast.error(result.error);
+        setIsLoading(false);
+      } else {
+        toast.success(t('auth.passwordUpdated'));
+        router.push(ROUTES.common.dashboard);
+        router.refresh();
+      }
+    } catch {
+      toast.error(t('auth.unexpectedError'));
       setIsLoading(false);
-    } else {
-      toast.success(t('auth.passwordUpdated'));
-      router.push(ROUTES.common.dashboard);
-      router.refresh();
     }
   }
 

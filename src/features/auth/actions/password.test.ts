@@ -78,14 +78,14 @@ describe('Auth Actions – Password', () => {
       const { updatePassword } = await import('./password');
 
       const result = await updatePassword({
-        password: 'newpassword1',
-        confirmPassword: 'newpassword1',
+        password: 'NewPassword1!',
+        confirmPassword: 'NewPassword1!',
       });
 
       expect(result).toEqual({ success: true });
 
       expect(mockUpdateUser).toHaveBeenCalledWith({
-        password: 'newpassword1',
+        password: 'NewPassword1!',
       });
     });
 
@@ -98,8 +98,8 @@ describe('Auth Actions – Password', () => {
       const { updatePassword } = await import('./password');
 
       const result = await updatePassword({
-        password: 'samepassword',
-        confirmPassword: 'samepassword',
+        password: 'SamePassword1!',
+        confirmPassword: 'SamePassword1!',
       });
 
       expect(result).toEqual({ error: 'Same password' });

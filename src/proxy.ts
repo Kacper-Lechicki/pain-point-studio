@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { ROUTES } from '@/config';
 import i18nMiddleware from '@/i18n/config';
+import { defaultLocale } from '@/i18n/constants';
 import { isAuthenticated, isProtectionEnabled } from '@/lib/common/deploy-credentials';
 import { updateSession } from '@/lib/supabase/middleware';
 
@@ -10,12 +11,12 @@ const AUTH_ROUTES = [ROUTES.auth.signIn, ROUTES.auth.signUp, ROUTES.auth.forgotP
 
 /**
  * Extracts the pathname without the locale prefix.
- * E.g. "/en/dashboard" → "/dashboard", "/en" → "/"
+ * E.g. "/en/dashboard" -> "/dashboard", "/en" -> "/"
  */
 function getPathnameWithoutLocale(pathname: string): string {
   const segments = pathname.split('/');
 
-  // Remove the locale segment (e.g. "/en/dashboard" → ["", "en", "dashboard"])
+  // Remove the locale segment (e.g. "/en/dashboard" -> ["", "en", "dashboard"])
   if (segments.length > 2) {
     return '/' + segments.slice(2).join('/');
   }
@@ -37,10 +38,10 @@ const middleware = async (req: NextRequest) => {
   }
 
   const pathname = getPathnameWithoutLocale(req.nextUrl.pathname);
+  const locale = req.nextUrl.pathname.split('/')[1] || defaultLocale;
 
   // Route protection: redirect unauthenticated users away from protected routes
   if (!user && PROTECTED_ROUTES.some((route) => pathname.startsWith(route))) {
-    const locale = req.nextUrl.pathname.split('/')[1] || 'en';
     const signInUrl = new URL(`/${locale}${ROUTES.auth.signIn}`, req.url);
 
     return NextResponse.redirect(signInUrl);
@@ -48,7 +49,6 @@ const middleware = async (req: NextRequest) => {
 
   // Route protection: redirect authenticated users from home and auth pages to dashboard
   if (user && (pathname === '/' || AUTH_ROUTES.some((route) => pathname.startsWith(route)))) {
-    const locale = req.nextUrl.pathname.split('/')[1] || 'en';
     const dashboardUrl = new URL(`/${locale}${ROUTES.common.dashboard}`, req.url);
 
     return NextResponse.redirect(dashboardUrl);
@@ -57,8 +57,8 @@ const middleware = async (req: NextRequest) => {
   // Run i18n middleware and propagate Supabase session cookies
   const i18nResponse = i18nMiddleware(req);
 
-  supabaseResponse.cookies.getAll().forEach((cookie) => {
-    i18nResponse.cookies.set(cookie.name, cookie.value);
+  supabaseResponse.cookies.getAll().forEach(({ name, value, ...options }) => {
+    i18nResponse.cookies.set(name, value, options);
   });
 
   return i18nResponse;

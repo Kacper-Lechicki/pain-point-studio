@@ -3,6 +3,17 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ROUTES } from '@/config';
 import { createClient } from '@/lib/supabase/server';
 
+/**
+ * Validates that a redirect path is safe (relative, no open redirect).
+ */
+function getSafeRedirectPath(next: string | null, fallback: string): string {
+  if (!next || !next.startsWith('/') || next.startsWith('//')) {
+    return fallback;
+  }
+
+  return next;
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ locale: string }> }
@@ -12,15 +23,26 @@ export async function GET(
 
   const code = requestUrl.searchParams.get('code');
   const next = requestUrl.searchParams.get('next');
+  const type = requestUrl.searchParams.get('type');
 
   if (code) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
-      const redirectPath = next || `/${locale}${ROUTES.common.dashboard}`;
+      const fallbackPath = `/${locale}${ROUTES.common.dashboard}`;
+      const redirectPath = getSafeRedirectPath(next, fallbackPath);
 
-      return NextResponse.redirect(new URL(redirectPath, request.url));
+      const redirectUrl = new URL(redirectPath, request.url);
+
+      // Add toast param for dashboard redirects (email confirmation or OAuth sign-in)
+      if (redirectPath === fallbackPath) {
+        const toastKey = type === 'signup' ? 'emailConfirmed' : 'signInSuccess';
+
+        redirectUrl.searchParams.set('toast', toastKey);
+      }
+
+      return NextResponse.redirect(redirectUrl);
     }
   }
 

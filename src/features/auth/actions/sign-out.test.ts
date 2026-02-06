@@ -1,12 +1,6 @@
 // @vitest-environment node
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-// Mock redirect
-const mockRedirect = vi.fn();
-vi.mock('next/navigation', () => ({
-  redirect: mockRedirect,
-}));
-
 // Mock Supabase server client
 const mockSignOut = vi.fn();
 
@@ -31,14 +25,25 @@ describe('Auth Actions – Sign Out', () => {
     vi.clearAllMocks();
   });
 
-  // Successful sign-out and redirection
-  it('should call supabase.auth.signOut and redirect to home', async () => {
+  // Successful sign-out
+  it('should call supabase.auth.signOut and return success', async () => {
     mockSignOut.mockResolvedValue({ error: null });
 
     const { signOut } = await import('./sign-out');
-    await signOut();
+    const result = await signOut();
 
     expect(mockSignOut).toHaveBeenCalled();
-    expect(mockRedirect).toHaveBeenCalledWith('/');
+    expect(result).toEqual({ success: true });
+  });
+
+  // Sign-out with error
+  it('should return error when sign-out fails', async () => {
+    mockSignOut.mockResolvedValue({ error: { message: 'Sign out failed' } });
+
+    const { signOut } = await import('./sign-out');
+    const result = await signOut();
+
+    expect(mockSignOut).toHaveBeenCalled();
+    expect(result).toEqual({ error: 'Sign out failed' });
   });
 });

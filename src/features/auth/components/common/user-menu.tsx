@@ -2,19 +2,24 @@
 
 import { useEffect, useRef, useState } from 'react';
 
+import Image from 'next/image';
+
 import { LogOut, Settings, User as UserIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { ROUTES } from '@/config';
 import { signOut } from '@/features/auth/actions';
 import { useAuth } from '@/features/auth/hooks/use-auth';
+import { useRouter } from '@/i18n/routing';
 import { Link } from '@/i18n/routing';
 import { cn } from '@/lib/common/utils';
 
 const UserMenu = () => {
   const t = useTranslations();
+  const router = useRouter();
   const { user, loading } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
@@ -51,21 +56,41 @@ const UserMenu = () => {
     );
   }
 
+  const avatarUrl = user.user_metadata?.avatar_url as string | undefined;
   const initials = user.email?.slice(0, 2).toUpperCase() ?? '??';
 
   const handleSignOut = async () => {
     setIsSigningOut(true);
-    await signOut();
+
+    try {
+      const result = await signOut();
+
+      if (result.error) {
+        toast.error(result.error);
+        setIsSigningOut(false);
+      } else {
+        toast.success(t('auth.signOutSuccess'));
+        router.push('/');
+        router.refresh();
+      }
+    } catch {
+      toast.error(t('auth.unexpectedError'));
+      setIsSigningOut(false);
+    }
   };
 
   return (
     <div ref={menuRef} className="relative">
       <button
         onClick={() => setIsOpen((prev) => !prev)}
-        className="bg-primary text-primary-foreground flex size-9 items-center justify-center rounded-full text-xs font-semibold transition-opacity hover:opacity-90"
+        className="bg-primary text-primary-foreground flex size-9 items-center justify-center overflow-hidden rounded-full text-xs font-semibold transition-opacity hover:opacity-90"
         aria-label="User menu"
       >
-        {initials}
+        {avatarUrl ? (
+          <Image src={avatarUrl} alt="" width={36} height={36} className="size-full object-cover" />
+        ) : (
+          initials
+        )}
       </button>
 
       <div

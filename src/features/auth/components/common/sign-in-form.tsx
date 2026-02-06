@@ -41,15 +41,20 @@ const SignInForm = () => {
   async function onSubmit(data: SignInSchema) {
     setIsLoading(true);
 
-    const result = await signInWithEmail(data);
+    try {
+      const result = await signInWithEmail(data);
 
-    if (result.error) {
-      toast.error(result.error);
+      if (result.error) {
+        toast.error(result.error);
+        setIsLoading(false);
+      } else {
+        toast.success(t('auth.signInSuccess'));
+        router.push(ROUTES.common.dashboard);
+        router.refresh();
+      }
+    } catch {
+      toast.error(t('auth.unexpectedError'));
       setIsLoading(false);
-    } else {
-      toast.success(t('auth.signInSuccess'));
-      router.push(ROUTES.common.dashboard);
-      router.refresh();
     }
   }
 

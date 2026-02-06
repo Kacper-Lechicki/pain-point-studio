@@ -9,15 +9,13 @@ export default async function SignUpPage() {
   const t = await getTranslations();
 
   return (
-    <>
-      <AuthHeader title={t('auth.createAccount')} description={t('auth.enterEmailToCreate')} />
-
-      <div className="grid gap-6">
-        <SignUpForm />
-        <OAuthSection mode="signUp" />
-      </div>
-
+    <SignUpForm
+      header={
+        <AuthHeader title={t('auth.createAccount')} description={t('auth.enterEmailToCreate')} />
+      }
+    >
+      <OAuthSection mode="signUp" />
       <TermsText />
-    </>
+    </SignUpForm>
   );
 }

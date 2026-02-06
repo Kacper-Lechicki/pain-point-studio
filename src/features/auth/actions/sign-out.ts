@@ -1,12 +1,15 @@
 'use server';
 
-import { redirect } from 'next/navigation';
-
+import { AuthActionResult } from '@/features/auth/types';
 import { createClient } from '@/lib/supabase/server';
 
-export const signOut = async () => {
+export const signOut = async (): Promise<AuthActionResult> => {
   const supabase = await createClient();
-  await supabase.auth.signOut();
+  const { error } = await supabase.auth.signOut();
 
-  redirect('/');
+  if (error) {
+    return { error: error.message };
+  }
+
+  return { success: true };
 };

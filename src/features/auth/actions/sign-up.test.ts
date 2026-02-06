@@ -39,14 +39,14 @@ describe('Auth Actions – Sign Up', () => {
 
     const result = await signUpWithEmail({
       email: 'new@example.com',
-      password: 'securepass1',
+      password: 'SecurePass1!',
     });
 
     expect(result).toEqual({ success: true });
 
     expect(mockSignUp).toHaveBeenCalledWith({
       email: 'new@example.com',
-      password: 'securepass1',
+      password: 'SecurePass1!',
       options: {
         emailRedirectTo: 'https://example.com/en/auth/callback',
       },
@@ -63,7 +63,7 @@ describe('Auth Actions – Sign Up', () => {
 
     const result = await signUpWithEmail({
       email: 'existing@example.com',
-      password: 'securepass1',
+      password: 'SecurePass1!',
     });
 
     expect(result).toEqual({ error: 'User already registered' });

@@ -7,9 +7,10 @@ export default async function ForgotPasswordPage() {
   const t = await getTranslations();
 
   return (
-    <>
-      <AuthHeader title={t('auth.resetPassword')} description={t('auth.enterEmailToReset')} />
-      <ForgotPasswordForm />
-    </>
+    <ForgotPasswordForm
+      header={
+        <AuthHeader title={t('auth.resetPassword')} description={t('auth.enterEmailToReset')} />
+      }
+    />
   );
 }

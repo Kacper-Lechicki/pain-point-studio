@@ -98,7 +98,9 @@
     "backToHome": "Back to Home",
     "signInSuccess": "Signed in successfully!",
     "signOutSuccess": "Signed out successfully.",
+    "emailConfirmed": "Email confirmed. You are now signed in!",
     "passwordUpdated": "Password updated successfully!",
+    "unexpectedError": "Something went wrong. Please try again.",
     "providers": {
       "github": "GitHub",
       "google": "Google"
