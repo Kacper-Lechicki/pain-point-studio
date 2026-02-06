@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from 'react';
 
-import { Globe, Menu, User, X } from 'lucide-react';
+import { Globe, Menu, User as UserIcon, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
-import { BRAND, getCopyrightText } from '@/config/brand';
-import { ROUTES } from '@/config/routes';
+import { BRAND, getCopyrightText } from '@/config';
+import { ROUTES } from '@/config';
 import { NAV_LINKS, NavLink } from '@/features/marketing/config';
 import { useBreakpoint } from '@/hooks/common/use-breakpoint';
 import { Link } from '@/i18n/routing';
@@ -20,7 +20,6 @@ const Navbar = () => {
 
   const brandName = t(BRAND.name);
   const copyrightText = getCopyrightText(t);
-  const signInLabel = t('common.signIn');
   const exploreLabel = t('common.explore');
 
   if (isDesktop && isMobileMenuOpen) {
@@ -46,14 +45,14 @@ const Navbar = () => {
   return (
     <nav
       className={cn(
-        'sticky top-0 z-50 border-b backdrop-blur-md transition-colors duration-300',
+        'sticky top-0 z-50 backdrop-blur-md transition-colors duration-300',
         isMobileMenuOpen ? 'bg-background' : 'bg-background/80'
       )}
     >
       <div className="container mx-auto flex h-16 items-center px-6 sm:px-4 lg:px-8">
         <div className="flex flex-1 items-center justify-start">
           <Link
-            href={ROUTES.marketing.home}
+            href={ROUTES.common.home}
             className="text-lg font-semibold tracking-tight"
             onClick={() => setIsMobileMenuOpen(false)}
           >
@@ -87,15 +86,15 @@ const Navbar = () => {
 
         <div className="flex flex-1 items-center justify-end gap-4">
           <div className="hidden items-center gap-4 lg:flex">
-            <Button className="gap-2" asChild>
+            <Button asChild>
               <Link href={ROUTES.auth.signIn}>
-                {signInLabel}
-                <User className="h-4 w-4" aria-hidden="true" />
+                {t('common.signIn')}
+                <UserIcon className="size-4" aria-hidden="true" />
               </Link>
             </Button>
 
             <Button className="group gap-2" variant="secondary" asChild>
-              <Link href={ROUTES.app.explore}>
+              <Link href={ROUTES.common.home}>
                 {exploreLabel}
                 <Globe
                   className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12"
@@ -132,15 +131,15 @@ const Navbar = () => {
       >
         <div className="px-6 pt-6 pb-4">
           <div className="flex flex-col gap-4">
-            <Button className="w-full justify-center gap-2" size="lg" asChild>
+            <Button asChild className="w-full justify-center">
               <Link href={ROUTES.auth.signIn} onClick={() => setIsMobileMenuOpen(false)}>
-                {signInLabel}
-                <User className="h-4 w-4" aria-hidden="true" />
+                {t('common.signIn')}
+                <UserIcon className="size-4" aria-hidden="true" />
               </Link>
             </Button>
 
             <Button variant="secondary" className="w-full justify-center gap-2" size="lg" asChild>
-              <Link href={ROUTES.app.explore} onClick={() => setIsMobileMenuOpen(false)}>
+              <Link href={ROUTES.common.home} onClick={() => setIsMobileMenuOpen(false)}>
                 {exploreLabel}
                 <Globe className="h-4 w-4" aria-hidden="true" />
               </Link>

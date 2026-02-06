@@ -29,8 +29,9 @@ You are the environment configuration auditor for Pain Point Studio. Your job is
 
 **1. Type-Safe Access**
 
-- [ ] All env vars imported from `@/lib/common/env`, never `process.env`
-- [ ] No direct `process.env.VAR_NAME` usage anywhere
+- [ ] All env vars in application code imported from `@/lib/common/env`
+- [ ] E2E testing context (Playwright config) uses `e2e/env.ts`
+- [ ] No direct `process.env.VAR_NAME` usage anywhere in application code
 - [ ] Autocompletion works (TypeScript types match Zod schema)
 - [ ] No `string | undefined` types (all validated at build time)
 

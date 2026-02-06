@@ -135,7 +135,7 @@ type InstrumentUpdate = TablesUpdate<'instruments'>;
 | -------------------------------------- | ------ | -------- | ------------------------ |
 | `NEXT_PUBLIC_SUPABASE_URL`             | Client | Yes      | Supabase project API URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY`        | Client | Yes      | Public anonymous key     |
-| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Client | Yes      | Publishable key          |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Client | No       | Public publishable key   |
 | `SUPABASE_SERVICE_ROLE_KEY`            | Server | No       | Admin key (bypasses RLS) |
 
 For local development, use `.env.local.example` which contains the default keys from `supabase start`.

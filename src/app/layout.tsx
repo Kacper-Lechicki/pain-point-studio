@@ -4,7 +4,8 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages, getTranslations } from 'next-intl/server';
 
 import { ScrollToTop } from '@/components/ui/scroll-to-top';
-import { getAppMetadata } from '@/config/metadata';
+import { Toaster } from '@/components/ui/sonner';
+import { getAppMetadata } from '@/config';
 import '@/lib/common/env';
 
 import './globals.css';
@@ -42,6 +43,7 @@ export default async function RootLayout({ children }: Readonly<RootLayoutProps>
 
         <NextIntlClientProvider messages={messages}>
           <div className="flex-1">{children}</div>
+          <Toaster />
         </NextIntlClientProvider>
       </body>
     </html>

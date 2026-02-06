@@ -19,8 +19,6 @@ import { glob } from 'glob';
 // === CONFIGURATION ===
 const TRANSLATION_FILE_PATH = './src/i18n/messages/en.json';
 const SRC_PATTERN = './src/**/*.{ts,tsx,js,jsx}';
-
-// List of prefixes that are ALWAYS treated as used (e.g., backend errors, API responses)
 const ALWAYS_KEEP_PREFIXES = ['error', 'errors.', 'api.', 'common.'];
 // ====================
 

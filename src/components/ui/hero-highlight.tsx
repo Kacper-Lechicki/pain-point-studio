@@ -27,9 +27,15 @@ type HeroHighlightProps = {
   children: React.ReactNode;
   className?: string;
   containerClassName?: string;
+  showDotsOnMobile?: boolean;
 };
 
-export const HeroHighlight = ({ children, className, containerClassName }: HeroHighlightProps) => {
+export const HeroHighlight = ({
+  children,
+  className,
+  containerClassName,
+  showDotsOnMobile = true,
+}: HeroHighlightProps) => {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const [mounted, setMounted] = React.useState(false);
@@ -79,19 +85,30 @@ export const HeroHighlight = ({ children, className, containerClassName }: HeroH
       onMouseMove={handleMouseMove}
     >
       <div
-        className="pointer-events-none absolute inset-0 mask-[radial-gradient(ellipse_at_center,black,transparent_100%)] sm:mask-[radial-gradient(ellipse_at_center,black,transparent_80%)] dark:hidden"
+        className={cn(
+          'pointer-events-none absolute inset-0 mask-[radial-gradient(ellipse_at_center,black,transparent_100%)] sm:mask-[radial-gradient(ellipse_at_center,black,transparent_80%)] dark:hidden',
+          !showDotsOnMobile && 'max-lg:hidden!'
+        )}
         style={{
           backgroundImage: dotPatterns.light.default,
         }}
       />
+
       <div
-        className="pointer-events-none absolute inset-0 hidden mask-[radial-gradient(ellipse_at_center,black,transparent_100%)] sm:mask-[radial-gradient(ellipse_at_center,black,transparent_80%)] dark:block"
+        className={cn(
+          'pointer-events-none absolute inset-0 hidden mask-[radial-gradient(ellipse_at_center,black,transparent_100%)] sm:mask-[radial-gradient(ellipse_at_center,black,transparent_80%)] dark:block',
+          !showDotsOnMobile && 'max-lg:hidden!'
+        )}
         style={{
           backgroundImage: dotPatterns.dark.default,
         }}
       />
+
       <motion.div
-        className="pointer-events-none absolute inset-0 mask-[radial-gradient(ellipse_at_center,black,transparent_80%)] opacity-0 transition duration-300 md:group-hover:opacity-100 dark:hidden"
+        className={cn(
+          'pointer-events-none absolute inset-0 mask-[radial-gradient(ellipse_at_center,black,transparent_80%)] opacity-0 transition duration-300 md:group-hover:opacity-100 dark:hidden',
+          !showDotsOnMobile && 'max-lg:hidden!'
+        )}
         style={{
           backgroundImage: dotPatterns.light.hover,
           WebkitMaskImage: useMotionTemplate`
@@ -114,8 +131,12 @@ export const HeroHighlight = ({ children, className, containerClassName }: HeroH
           WebkitMaskComposite: 'source-in',
         }}
       />
+
       <motion.div
-        className="pointer-events-none absolute inset-0 hidden mask-[radial-gradient(ellipse_at_center,black,transparent_80%)] opacity-0 transition duration-300 md:group-hover:opacity-100 dark:block"
+        className={cn(
+          'pointer-events-none absolute inset-0 hidden mask-[radial-gradient(ellipse_at_center,black,transparent_80%)] opacity-0 transition duration-300 md:group-hover:opacity-100 dark:block',
+          !showDotsOnMobile && 'max-lg:hidden!'
+        )}
         style={{
           backgroundImage: dotPatterns.dark.hover,
           WebkitMaskImage: useMotionTemplate`

@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { BREAKPOINTS } from '@/config/breakpoints';
+import { BREAKPOINTS } from '@/config';
 
 import { useBreakpoint, useWindowSize } from './use-breakpoint';
 

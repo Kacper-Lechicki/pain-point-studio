@@ -1,0 +1,20 @@
+import { cn } from '@/lib/common/utils';
+
+interface SpinnerProps {
+  className?: string;
+}
+
+const Spinner = ({ className }: SpinnerProps) => {
+  return (
+    <div
+      className={cn(
+        'size-4 animate-spin rounded-full border-2 border-current border-t-transparent',
+        className
+      )}
+      role="status"
+      aria-label="Loading"
+    />
+  );
+};
+
+export { Spinner };

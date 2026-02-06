@@ -12,11 +12,13 @@ export const routing = defineRouting({
   pathnames: PATHNAMES,
 });
 
+// Create navigation utilities based on the routing configuration
 const { Link: BaseLink, redirect, usePathname, useRouter, getPathname } = createNavigation(routing);
 
 type BaseLinkProps = ComponentProps<typeof BaseLink>;
 type Href = BaseLinkProps['href'];
 
+// Export a strongly-typed Link component that also accepts string hrefs
 export const Link = BaseLink as unknown as React.ForwardRefExoticComponent<
   Omit<BaseLinkProps, 'href'> & {
     href: Href | (string & {});

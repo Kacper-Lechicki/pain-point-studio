@@ -20,6 +20,7 @@ describe('Supabase Browser Client', () => {
     vi.clearAllMocks();
   });
 
+  // Verify client initialization with correct environment variables
   it('should call createBrowserClient with correct env values', async () => {
     const { createClient } = await import('./client');
     createClient();
@@ -27,6 +28,7 @@ describe('Supabase Browser Client', () => {
     expect(mockCreateBrowserClient).toHaveBeenCalledWith('http://127.0.0.1:54321', 'test-anon-key');
   });
 
+  // Verify client instantiation frequency
   it('should call createBrowserClient exactly once per invocation', async () => {
     const { createClient } = await import('./client');
     createClient();

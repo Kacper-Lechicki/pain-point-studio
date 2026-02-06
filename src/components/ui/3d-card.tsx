@@ -2,7 +2,7 @@
 
 import React, { createContext, memo, useCallback, useContext, useRef, useState } from 'react';
 
-import { BREAKPOINTS } from '@/config/breakpoints';
+import { BREAKPOINTS } from '@/config';
 import { cn } from '@/lib/common/utils';
 
 type MouseEnterContextValue = [boolean, React.Dispatch<React.SetStateAction<boolean>>];

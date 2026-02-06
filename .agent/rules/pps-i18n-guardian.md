@@ -46,7 +46,7 @@ You are the internationalization auditor for Pain Point Studio. Your job is to e
 
 **3. Locale Configuration**
 
-- [ ] New locales added to `src/i18n/config.ts`
+- [ ] New locales added to `src/i18n/constants.ts`
 - [ ] Proxy matcher updated in `src/proxy.ts`
 - [ ] Translation file created in `src/i18n/messages/{locale}.json`
 - [ ] Static params updated in `src/app/[locale]/layout.tsx`
@@ -223,12 +223,11 @@ export const locales = ['en', 'de'] as const;
 
 **Complete checklist for adding a new language (e.g., German 'de'):**
 
-**Step 1: Update i18n Config**
+**Step 1: Update Constants**
 
 ```typescript
-// src/i18n/config.ts
+// src/i18n/constants.ts
 export const locales = ['en', 'de'] as const;
-export const defaultLocale = 'en';
 ```
 
 **Step 2: Update Proxy Matcher**

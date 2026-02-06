@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 
 import { useRouter } from 'next/navigation';
 
-export default function NotFoundCatchAll() {
+const NotFoundCatchAll = () => {
   const router = useRouter();
 
   useEffect(() => {
@@ -12,4 +12,6 @@ export default function NotFoundCatchAll() {
   }, [router]);
 
   return null;
-}
+};
+
+export default NotFoundCatchAll;

@@ -1,3 +1,4 @@
+// Standard Tailwind CSS breakpoints for responsive design
 export const BREAKPOINTS = {
   sm: 640,
   md: 768,

@@ -15,7 +15,7 @@ import { IDEA_TRENDS_CONFIG, IDEA_TRENDS_DATA } from '@/features/marketing/confi
 
 const formatMonthTick = (value: string): string => value.slice(0, 3);
 
-export function IdeaTrendsChart() {
+const IdeaTrendsChart = () => {
   const t = useTranslations('marketing.charts.ideaTrends');
   const title = t('title');
   const description = t('description');
@@ -87,4 +87,6 @@ export function IdeaTrendsChart() {
       </CardContent>
     </Card>
   );
-}
+};
+
+export { IdeaTrendsChart };

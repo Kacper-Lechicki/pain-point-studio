@@ -10,7 +10,7 @@ At Pain Point Studio, we treat configuration as code. We use **Type-Safe Environ
 
 ## 🚀 How to add a new variable?
 
-1.  **Add definition in `src/lib/env.ts`:**
+1.  **Add definition in `src/lib/common/env.ts`:**
     - If it's a server-side secret: `server` section.
     - If it's a public variable (e.g., analytics ID): `client` section (must include `NEXT_PUBLIC_` prefix).
 2.  **Add mapping in `runtimeEnv`:** (In the same file - a Next.js technical limitation for client-side bundling).
@@ -30,11 +30,22 @@ import { env } from '@/lib/common/env';
 console.log(env.NEXT_PUBLIC_APP_URL);
 ```
 
+## 🧪 Testing Environment
+
+For E2E tests (Playwright) configuration, use `e2e/env.ts`. This file provides simplified environment access for tools running outside the Next.js context.
+
+```typescript
+// in playwright.config.ts
+import { env } from './e2e/env';
+```
+
+**Note:** The main application code and test files should ALWAYS use `@/lib/common/env`.
+
 ## ⚠️ Troubleshooting
 
 **Error: `Invalid environment variables` during build/start**
 
-Your environment does not satisfy the schema defined in `src/lib/env.ts`. Check the error message to see which key is missing or has an invalid format.
+Your environment does not satisfy the schema defined in `src/lib/common/env.ts`. Check the error message to see which key is missing or has an invalid format.
 
 **Error: `process.env is not defined` in browser**
 

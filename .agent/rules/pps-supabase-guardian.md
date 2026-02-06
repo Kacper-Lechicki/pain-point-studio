@@ -152,4 +152,50 @@ pnpm supabase:types
 
 # Push to production
 pnpm supabase:push
+
+# Pull production changes
+pnpm supabase:pull
+
+# Diff local changes from Studio GUI
+npx supabase db diff -f <name>
 ```
+
+### Development Workflows
+
+**Workflow 1: Visual Editing in Studio (Prototyping)**
+
+1. `pnpm supabase:start`
+2. `pnpm supabase:studio` -> http://127.0.0.1:54323
+3. Make changes in GUI (tables, RLS, indexes)
+4. `npx supabase db diff -f <name>`
+5. `pnpm supabase:reset` (verify reproducibility)
+6. `pnpm supabase:types`
+
+**Workflow 2: Manual SQL Migration (Control)**
+
+1. `pnpm supabase:migration:new add_feature_column`
+2. Edit `supabase/migrations/<timestamp>_add_feature_column.sql`
+3. `pnpm supabase:reset`
+4. `pnpm supabase:types`
+
+**Workflow 3: Syncing Production to Local**
+
+1. `pnpm supabase:pull` (captures dashboard changes)
+2. Review generated migration
+3. `pnpm supabase:reset`
+4. `pnpm supabase:types`
+
+### Local vs Production Rules
+
+1. **Never connect `pnpm dev` to production DB.**
+2. **Never use `seed.sql` on production.** Use dedicated migrations for production seeding.
+3. **Always test migrations locally first** with `pnpm supabase:reset`.
+4. **Never commit production keys.**
+
+### Critical Rules
+
+1. **All database logic in `src/lib/supabase/server.ts` or `client.ts` wrappers.**
+2. **RLS must be enabled on every table.**
+3. **Types must be regenerated after schema changes.**
+4. **Local development must be isolated from production.**
+5. **Metadata/Seed data stays in `supabase/seed.sql` for local.**

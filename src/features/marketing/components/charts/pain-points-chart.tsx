@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { PAIN_POINTS_CONFIG, PAIN_POINTS_DATA } from '@/features/marketing/config';
 
-export function PainPointsChart() {
+const PainPointsChart = () => {
   const t = useTranslations('marketing.charts.painPoints');
   const title = t('title');
   const description = t('description');
@@ -59,4 +59,6 @@ export function PainPointsChart() {
       </CardContent>
     </Card>
   );
-}
+};
+
+export { PainPointsChart };

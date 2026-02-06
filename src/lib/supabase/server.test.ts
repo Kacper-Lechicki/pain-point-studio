@@ -6,12 +6,14 @@ const mockCookieStore = {
   getAll: vi.fn().mockReturnValue([]),
   set: vi.fn(),
 };
+
 vi.mock('next/headers', () => ({
   cookies: vi.fn().mockResolvedValue(mockCookieStore),
 }));
 
 // Mock @supabase/ssr
 const mockCreateServerClient = vi.fn().mockReturnValue({ from: vi.fn() });
+
 vi.mock('@supabase/ssr', () => ({
   createServerClient: mockCreateServerClient,
 }));
@@ -29,6 +31,7 @@ describe('Supabase Server Client', () => {
     vi.clearAllMocks();
   });
 
+  // Verify client initialization with correct environment variables
   it('should call createServerClient with correct env values', async () => {
     const { createClient } = await import('./server');
     await createClient();
@@ -45,12 +48,14 @@ describe('Supabase Server Client', () => {
     );
   });
 
+  // Verify cookie retrieval for session management
   it('should provide a working getAll cookie handler', async () => {
     const { createClient } = await import('./server');
     await createClient();
 
     const lastCall = mockCreateServerClient.mock.calls.at(-1) as unknown[];
     const options = lastCall?.[2] as { cookies: { getAll: () => void } } | undefined;
+
     options?.cookies.getAll();
 
     expect(mockCookieStore.getAll).toHaveBeenCalled();

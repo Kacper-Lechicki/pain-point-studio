@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 
-import { BREAKPOINTS } from '@/config/breakpoints';
-import { type Breakpoint } from '@/config/breakpoints';
+import { BREAKPOINTS } from '@/config';
+import { type Breakpoint } from '@/config';
 
 /**
  * Hook to check if the current window width is at least the given breakpoint

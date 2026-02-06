@@ -1,33 +1,23 @@
 import { PATHNAMES } from '@/i18n/pathnames';
 
+// Type-safe route keys based on defined pathnames
 export type AppRoute = keyof typeof PATHNAMES;
 
+// Centralized route configuration for type-safe navigation
 export const ROUTES = {
-  marketing: {
-    home: '/' as AppRoute,
-    solutions: '/solutions' as AppRoute,
-    features: '/features' as AppRoute,
-    pricing: '/pricing' as AppRoute,
-    about: '/about' as AppRoute,
-    howItWorks: '/how-it-works' as AppRoute,
-    start: '/start' as AppRoute,
-  },
-  resources: {
-    docs: '/docs' as AppRoute,
-    blog: '/blog' as AppRoute,
-    caseStudies: '/case-studies' as AppRoute,
-    community: '/community' as AppRoute,
-  },
-  legal: {
-    privacy: '/privacy' as AppRoute,
-    terms: '/terms' as AppRoute,
-  },
   auth: {
     signIn: '/sign-in' as AppRoute,
     signUp: '/sign-up' as AppRoute,
+    signOut: '/sign-out' as AppRoute,
+    forgotPassword: '/forgot-password' as AppRoute,
+    updatePassword: '/update-password' as AppRoute,
   },
-  app: {
+  common: {
+    home: '/' as AppRoute,
     dashboard: '/dashboard' as AppRoute,
-    explore: '/explore' as AppRoute,
+    settings: '/settings' as AppRoute,
+  },
+  test: {
+    instruments: '/instruments' as AppRoute,
   },
 } as const;

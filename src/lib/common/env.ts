@@ -13,6 +13,11 @@ export const env = createEnv({
     BASIC_AUTH_USER: z.string().optional(),
     BASIC_AUTH_PASSWORD: z.string().optional(),
     SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
+    SUPABASE_AUTH_REDIRECT_URI: z.url().min(1),
+    SUPABASE_AUTH_GITHUB_CLIENT_ID: z.string().min(1),
+    SUPABASE_AUTH_GITHUB_SECRET: z.string().min(1),
+    SUPABASE_AUTH_GOOGLE_CLIENT_ID: z.string().min(1),
+    SUPABASE_AUTH_GOOGLE_SECRET: z.string().min(1),
   },
 
   /**
@@ -23,7 +28,7 @@ export const env = createEnv({
     NEXT_PUBLIC_APP_URL: z.url().min(1),
     NEXT_PUBLIC_SUPABASE_URL: z.url().min(1),
     NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
-    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z.string().min(1),
+    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z.string().optional(),
   },
 
   /**
@@ -38,6 +43,11 @@ export const env = createEnv({
     BASIC_AUTH_USER: process.env.BASIC_AUTH_USER,
     BASIC_AUTH_PASSWORD: process.env.BASIC_AUTH_PASSWORD,
     SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+    SUPABASE_AUTH_REDIRECT_URI: process.env.SUPABASE_AUTH_REDIRECT_URI,
+    SUPABASE_AUTH_GITHUB_CLIENT_ID: process.env.SUPABASE_AUTH_GITHUB_CLIENT_ID,
+    SUPABASE_AUTH_GITHUB_SECRET: process.env.SUPABASE_AUTH_GITHUB_SECRET,
+    SUPABASE_AUTH_GOOGLE_CLIENT_ID: process.env.SUPABASE_AUTH_GOOGLE_CLIENT_ID,
+    SUPABASE_AUTH_GOOGLE_SECRET: process.env.SUPABASE_AUTH_GOOGLE_SECRET,
 
     // Client
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,

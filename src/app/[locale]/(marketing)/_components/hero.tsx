@@ -3,7 +3,7 @@ import { getTranslations } from 'next-intl/server';
 
 import { Button } from '@/components/ui/button';
 import { HeroHighlight } from '@/components/ui/hero-highlight';
-import { ROUTES } from '@/config/routes';
+import { ROUTES } from '@/config';
 import { Link } from '@/i18n/routing';
 
 const Hero = async () => {
@@ -18,7 +18,7 @@ const Hero = async () => {
 
   return (
     <HeroHighlight containerClassName="dark bg-background w-full overflow-hidden">
-      <div className="pointer-events-none relative z-10 container mx-auto flex flex-col items-center gap-8 px-6 pt-12 pb-16 text-center *:pointer-events-auto sm:px-4 md:pt-32 md:pb-20">
+      <div className="pointer-events-none relative z-10 container mx-auto flex flex-col items-center gap-8 px-6 pb-16 text-center *:pointer-events-auto sm:px-4 md:pb-20">
         <div className="bg-muted border-border inline-flex items-center rounded-full border px-4 py-1.5 text-sm font-medium">
           {badge}
         </div>
@@ -34,14 +34,14 @@ const Hero = async () => {
         <div className="flex flex-col items-center gap-4 max-sm:w-full max-sm:max-w-2xl">
           <div className="flex w-full flex-col gap-4 sm:flex-row sm:items-center">
             <Button className="h-11 gap-2 px-8 text-base" asChild>
-              <Link href={ROUTES.marketing.start}>
+              <Link href={ROUTES.common.home}>
                 {startResearch}
                 <Send className="size-4" aria-hidden="true" />
               </Link>
             </Button>
 
             <Button variant="secondary" className="h-11 gap-2 px-8 text-base" asChild>
-              <Link href={ROUTES.marketing.howItWorks}>
+              <Link href={ROUTES.common.home}>
                 {seeHowItWorks}
                 <Info className="size-4" aria-hidden="true" />
               </Link>
