@@ -57,7 +57,7 @@ You are the project structure auditor for Pain Point Studio. Your job is to ensu
 - [ ] Related code colocated (keep things close)
 - [ ] No `any` types (strict TypeScript)
 - [ ] Server-only code not leaked to client
-- [ ] Env vars imported from `lib/env`
+- [ ] Env vars imported from `lib/common/env`
 
 ### Response Format
 
