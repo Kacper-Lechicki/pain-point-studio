@@ -1,6 +1,8 @@
-# Pain Point Studio 🚀
+# Pain Point Studio
 
 Pain Point Studio is a research platform designed for developer validation workflows. It solves one of the most common issues in software development: the lack of validation before building. 70% of side projects are abandoned because they didn't solve a real problem. PPS enables a structured research process from idea to first feedback in hours instead of weeks.
+
+&nbsp;
 
 ## 🏁 Getting Started
 
@@ -37,6 +39,8 @@ Pain Point Studio is a research platform designed for developer validation workf
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+&nbsp;
+
 ## 📂 Project Resources
 
 This repository is designed with **velocity and discipline** in mind. Detailed documentation and architectural rules can be found in the following directories:
@@ -62,6 +66,8 @@ This folder contains rules and skills that empower AI assistants to act as speci
 
 - **rules/**: Specialized AI "Guardians" (Supabase, I18n, Project Structure, etc.) that audit code in real-time to ensure it meets our architectural standards.
 - **workflows/**: Standardized processes for common tasks like handling tickets or optimizing code.
+
+&nbsp;
 
 ---
 
