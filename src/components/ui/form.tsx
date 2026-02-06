@@ -4,6 +4,7 @@ import * as React from 'react';
 
 import * as LabelPrimitive from '@radix-ui/react-label';
 import { Slot } from '@radix-ui/react-slot';
+import { useTranslations } from 'next-intl';
 import {
   Controller,
   type ControllerProps,
@@ -124,8 +125,16 @@ function FormDescription({ className, ...props }: React.ComponentProps<'p'>) {
 }
 
 function FormMessage({ className, ...props }: React.ComponentProps<'p'>) {
+  const t = useTranslations();
   const { error, formMessageId } = useFormField();
-  const body = error ? String(error?.message ?? '') : props.children;
+
+  let body = error ? String(error?.message ?? '') : props.children;
+
+  if (typeof body === 'string' && body.includes('.')) {
+    try {
+      body = t(body as Parameters<typeof t>[0]);
+    } catch {}
+  }
 
   if (!body) {
     return null;
@@ -135,7 +144,7 @@ function FormMessage({ className, ...props }: React.ComponentProps<'p'>) {
     <p
       data-slot="form-message"
       id={formMessageId}
-      className={cn('text-destructive text-sm', className)}
+      className={cn('text-destructive text-xs', className)}
       {...props}
       suppressHydrationWarning
     >

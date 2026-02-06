@@ -222,6 +222,7 @@
 
 @layer base {
   html {
+    font-size: 16px;
     scroll-behavior: smooth;
   }
 
@@ -261,6 +262,10 @@
 @layer components {
   .section-container {
     @apply container mx-auto px-6 sm:px-4 lg:px-8;
+  }
+
+  .page-top-spacing {
+    @apply pt-8 md:pt-16;
   }
 
   .section-padding {

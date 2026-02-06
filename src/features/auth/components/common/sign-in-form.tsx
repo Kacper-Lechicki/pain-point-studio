@@ -21,7 +21,9 @@ import { Spinner } from '@/components/ui/spinner';
 import { ROUTES } from '@/config';
 import { signInWithEmail } from '@/features/auth/actions';
 import { SignInSchema, signInSchema } from '@/features/auth/types';
-import { Link, useRouter } from '@/i18n/routing';
+import { useRouter } from '@/i18n/routing';
+
+import { PasswordInput } from './password-input';
 
 const SignInForm = () => {
   const t = useTranslations();
@@ -78,7 +80,7 @@ const SignInForm = () => {
               <FormLabel>{t('auth.password')}</FormLabel>
 
               <FormControl>
-                <Input type="password" placeholder={t('auth.passwordPlaceholder')} {...field} />
+                <PasswordInput placeholder={t('auth.passwordPlaceholder')} {...field} />
               </FormControl>
 
               <FormMessage />
@@ -86,19 +88,10 @@ const SignInForm = () => {
           )}
         />
 
-        <Button type="submit" className="w-full" disabled={isLoading}>
+        <Button type="submit" className="mt-4 w-full" disabled={isLoading}>
           {isLoading && <Spinner />}
           {t('auth.signInWithEmail')}
         </Button>
-
-        <div className="text-center text-sm">
-          <Link
-            href={ROUTES.auth.forgotPassword}
-            className="text-muted-foreground hover:text-primary underline-offset-4 hover:underline"
-          >
-            {t('auth.forgotPassword')}
-          </Link>
-        </div>
       </form>
     </Form>
   );

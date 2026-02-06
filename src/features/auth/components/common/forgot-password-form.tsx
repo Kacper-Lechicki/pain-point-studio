@@ -85,15 +85,15 @@ const ForgotPasswordForm = () => {
           )}
         />
 
-        <Button type="submit" className="w-full" disabled={isLoading}>
+        <Button type="submit" className="mt-4 w-full" disabled={isLoading}>
           {isLoading && <Spinner />}
           {t('auth.sendResetLink')}
         </Button>
 
-        <div className="text-center text-sm">
+        <div className="mt-2 text-center text-sm">
           <Link
             href={ROUTES.auth.signIn}
-            className="text-muted-foreground hover:text-primary underline-offset-4 hover:underline"
+            className="hover:text-primary underline underline-offset-4"
           >
             {t('auth.backToSignIn')}
           </Link>

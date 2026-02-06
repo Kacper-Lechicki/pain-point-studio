@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -18,10 +18,10 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
-import { ROUTES } from '@/config';
 import { signUpWithEmail } from '@/features/auth/actions';
+import { PasswordInput } from '@/features/auth/components/common/password-input';
+import { PasswordStrength } from '@/features/auth/components/common/password-strength';
 import { SignUpSchema, signUpSchema } from '@/features/auth/types';
-import { Link } from '@/i18n/routing';
 
 const SignUpForm = () => {
   const t = useTranslations();
@@ -34,6 +34,12 @@ const SignUpForm = () => {
       email: '',
       password: '',
     },
+  });
+
+  const password = useWatch({
+    control: form.control,
+    name: 'password',
+    defaultValue: '',
   });
 
   async function onSubmit(data: SignUpSchema) {
@@ -94,28 +100,18 @@ const SignUpForm = () => {
               <FormLabel>{t('auth.password')}</FormLabel>
 
               <FormControl>
-                <Input type="password" placeholder={t('auth.passwordPlaceholder')} {...field} />
+                <PasswordInput placeholder={t('auth.passwordPlaceholder')} {...field} />
               </FormControl>
 
-              <FormMessage />
+              <PasswordStrength password={password} isError={!!form.formState.errors.password} />
             </FormItem>
           )}
         />
 
-        <Button type="submit" className="w-full" disabled={isLoading}>
+        <Button type="submit" className="mt-4 w-full" disabled={isLoading}>
           {isLoading && <Spinner />}
           {t('auth.createAccount')}
         </Button>
-
-        <div className="text-center text-sm">
-          {t('auth.alreadyHaveAccount')}{' '}
-          <Link
-            href={ROUTES.auth.signIn}
-            className="text-primary underline-offset-4 hover:underline"
-          >
-            {t('auth.signIn')}
-          </Link>
-        </div>
       </form>
     </Form>
   );

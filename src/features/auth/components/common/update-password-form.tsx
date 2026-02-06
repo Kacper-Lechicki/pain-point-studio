@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -16,12 +16,14 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { ROUTES } from '@/config';
 import { updatePassword } from '@/features/auth/actions';
 import { UpdatePasswordSchema, updatePasswordSchema } from '@/features/auth/types';
 import { useRouter } from '@/i18n/routing';
+
+import { PasswordInput } from './password-input';
+import { PasswordStrength } from './password-strength';
 
 const UpdatePasswordForm = () => {
   const t = useTranslations();
@@ -34,6 +36,12 @@ const UpdatePasswordForm = () => {
       password: '',
       confirmPassword: '',
     },
+  });
+
+  const password = useWatch({
+    control: form.control,
+    name: 'password',
+    defaultValue: '',
   });
 
   async function onSubmit(data: UpdatePasswordSchema) {
@@ -62,10 +70,10 @@ const UpdatePasswordForm = () => {
               <FormLabel>{t('auth.newPassword')}</FormLabel>
 
               <FormControl>
-                <Input type="password" placeholder={t('auth.passwordPlaceholder')} {...field} />
+                <PasswordInput placeholder={t('auth.passwordPlaceholder')} {...field} />
               </FormControl>
 
-              <FormMessage />
+              <PasswordStrength password={password} isError={!!form.formState.errors.password} />
             </FormItem>
           )}
         />
@@ -78,7 +86,7 @@ const UpdatePasswordForm = () => {
               <FormLabel>{t('auth.confirmPassword')}</FormLabel>
 
               <FormControl>
-                <Input type="password" placeholder={t('auth.passwordPlaceholder')} {...field} />
+                <PasswordInput placeholder={t('auth.passwordPlaceholder')} {...field} />
               </FormControl>
 
               <FormMessage />
@@ -86,7 +94,7 @@ const UpdatePasswordForm = () => {
           )}
         />
 
-        <Button type="submit" className="w-full" disabled={isLoading}>
+        <Button type="submit" className="mt-4 w-full" disabled={isLoading}>
           {isLoading && <Spinner />}
           {t('auth.updatePassword')}
         </Button>

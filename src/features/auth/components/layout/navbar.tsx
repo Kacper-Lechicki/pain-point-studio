@@ -9,7 +9,7 @@ const Navbar = async () => {
   const t = await getTranslations();
 
   return (
-    <nav className="sticky top-0 z-50 border-b backdrop-blur-md">
+    <nav className="bg-background/80 sticky top-0 z-50 backdrop-blur-md transition-colors duration-300">
       <div className="container mx-auto flex h-16 items-center px-6 sm:px-4 lg:px-8">
         <div className="flex flex-1 items-center justify-start">
           <Link

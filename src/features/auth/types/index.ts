@@ -1,19 +1,25 @@
 import { z } from 'zod';
 
-export const PASSWORD_MIN_LENGTH = 8;
+import { PASSWORD_CONFIG } from '@/features/auth/config/password';
+
+export const PASSWORD_MIN_LENGTH = PASSWORD_CONFIG.MIN_LENGTH;
+
+const basePasswordSchema = z
+  .string()
+  .min(PASSWORD_MIN_LENGTH, 'auth.passwordRequirements')
+  .regex(/[A-Z]/, 'auth.passwordRequirements')
+  .regex(/[a-z]/, 'auth.passwordRequirements')
+  .regex(/\d/, 'auth.passwordRequirements')
+  .regex(/[^A-Za-z0-9]/, 'auth.passwordRequirements');
 
 export const signInSchema = z.object({
   email: z.email(),
-  password: z
-    .string()
-    .min(PASSWORD_MIN_LENGTH, `Password must be at least ${PASSWORD_MIN_LENGTH} characters`),
+  password: z.string().min(1, 'Password is required'),
 });
 
 export const signUpSchema = z.object({
   email: z.email(),
-  password: z
-    .string()
-    .min(PASSWORD_MIN_LENGTH, `Password must be at least ${PASSWORD_MIN_LENGTH} characters`),
+  password: basePasswordSchema,
 });
 
 export const forgotPasswordSchema = z.object({
@@ -22,12 +28,8 @@ export const forgotPasswordSchema = z.object({
 
 export const updatePasswordSchema = z
   .object({
-    password: z
-      .string()
-      .min(PASSWORD_MIN_LENGTH, `Password must be at least ${PASSWORD_MIN_LENGTH} characters`),
-    confirmPassword: z
-      .string()
-      .min(PASSWORD_MIN_LENGTH, `Password must be at least ${PASSWORD_MIN_LENGTH} characters`),
+    password: basePasswordSchema,
+    confirmPassword: basePasswordSchema,
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",

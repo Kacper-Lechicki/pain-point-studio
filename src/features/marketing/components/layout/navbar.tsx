@@ -45,7 +45,7 @@ const Navbar = () => {
   return (
     <nav
       className={cn(
-        'sticky top-0 z-50 border-b backdrop-blur-md transition-colors duration-300',
+        'sticky top-0 z-50 backdrop-blur-md transition-colors duration-300',
         isMobileMenuOpen ? 'bg-background' : 'bg-background/80'
       )}
     >
