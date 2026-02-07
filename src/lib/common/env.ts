@@ -18,6 +18,9 @@ export const env = createEnv({
     SUPABASE_AUTH_GITHUB_SECRET: z.string().min(1),
     SUPABASE_AUTH_GOOGLE_CLIENT_ID: z.string().min(1),
     SUPABASE_AUTH_GOOGLE_SECRET: z.string().min(1),
+    SMTP_HOST: z.string().min(1),
+    SMTP_PORT: z.coerce.number().min(1),
+    SMTP_KEY: z.string().min(1),
   },
 
   /**
@@ -48,6 +51,9 @@ export const env = createEnv({
     SUPABASE_AUTH_GITHUB_SECRET: process.env.SUPABASE_AUTH_GITHUB_SECRET,
     SUPABASE_AUTH_GOOGLE_CLIENT_ID: process.env.SUPABASE_AUTH_GOOGLE_CLIENT_ID,
     SUPABASE_AUTH_GOOGLE_SECRET: process.env.SUPABASE_AUTH_GOOGLE_SECRET,
+    SMTP_HOST: process.env.SMTP_HOST,
+    SMTP_PORT: process.env.SMTP_PORT,
+    SMTP_KEY: process.env.SMTP_KEY,
 
     // Client
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,

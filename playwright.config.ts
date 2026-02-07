@@ -9,6 +9,9 @@ loadEnvConfig(process.cwd());
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { env } = require(path.join(process.cwd(), 'e2e/env'));
 
+const PORT = process.env.PORT;
+const baseURL = PORT ? `http://localhost:${PORT}` : env.NEXT_PUBLIC_APP_URL;
+
 export default defineConfig({
   // Directory where E2E tests are located
   testDir: './e2e',
@@ -27,7 +30,7 @@ export default defineConfig({
   // Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions.
   use: {
     // Base URL to use in actions like `await page.goto('/')`
-    baseURL: env.NEXT_PUBLIC_APP_URL,
+    baseURL,
     // Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer
     trace: 'on-first-retry',
   },
@@ -60,9 +63,10 @@ export default defineConfig({
     // Command to start the server
     command: 'pnpm dev',
     // URL to wait for before starting tests
-    url: env.NEXT_PUBLIC_APP_URL,
+    url: baseURL,
     // Whether to reuse an existing server instance (useful for local development)
-    reuseExistingServer: !env.CI,
+    // If PORT is specified, we assume a dedicated run and do not reuse (forces cleanup)
+    reuseExistingServer: !env.CI && !PORT,
     // Timeout for server startup (Next.js cold start can be slow)
     timeout: 120_000,
     // Pipe stdout for debugging startup issues
