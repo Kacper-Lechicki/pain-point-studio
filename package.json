@@ -17,7 +17,7 @@
     "test": "vitest",
     "test:types": "tsc --noEmit",
     "test:unit": "vitest",
-    "test:e2e": "playwright test",
+    "test:e2e": "pnpm supabase:restart && rm -rf .next && pnpm exec playwright install && PORT=3333 playwright test",
     "--- SUPABASE ---": "exit 0",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
