@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import { signInWithOAuth } from '@/features/auth/actions';
@@ -10,6 +11,7 @@ import { OAUTH_PROVIDERS, OAuthProviderConfig } from '@/features/auth/config';
 import { AuthProvider } from '@/features/auth/types';
 
 const OAuthButtons = () => {
+  const t = useTranslations();
   const [loading, setLoading] = useState<AuthProvider | null>(null);
 
   const handleOAuthSignIn = async (provider: AuthProvider) => {
@@ -18,7 +20,7 @@ const OAuthButtons = () => {
     const result = await signInWithOAuth(provider);
 
     if (result.error) {
-      toast.error(result.error);
+      toast.error(t(result.error));
       setLoading(null);
     }
   };

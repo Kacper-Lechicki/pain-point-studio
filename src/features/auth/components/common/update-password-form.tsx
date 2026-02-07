@@ -51,7 +51,7 @@ const UpdatePasswordForm = () => {
       const result = await updatePassword(data);
 
       if (result.error) {
-        toast.error(result.error);
+        toast.error(t(result.error));
         setIsLoading(false);
       } else {
         toast.success(t('auth.passwordUpdated'));

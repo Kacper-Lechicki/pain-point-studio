@@ -46,7 +46,7 @@ const ForgotPasswordForm = ({ header }: ForgotPasswordFormProps) => {
       const result = await resetPassword(data);
 
       if (result.error) {
-        toast.error(result.error);
+        toast.error(t(result.error));
         setIsLoading(false);
       } else {
         toast.success(t('auth.resetLinkSent'));
