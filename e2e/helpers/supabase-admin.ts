@@ -1,19 +1,27 @@
-import { createClient } from '@supabase/supabase-js';
+import { type SupabaseClient, createClient } from '@supabase/supabase-js';
 
 import { env } from '../env';
 
+let _admin: SupabaseClient | null = null;
+
 /**
- * Creates a Supabase admin client using the service role key.
+ * Returns a cached Supabase admin client using the service role key.
  * Only used for e2e test cleanup (e.g. deleting users created during tests).
  */
 function getAdminClient() {
+  if (_admin) {
+    return _admin;
+  }
+
   if (!env.SUPABASE_SERVICE_ROLE_KEY) {
     throw new Error('[e2e] SUPABASE_SERVICE_ROLE_KEY is required for admin cleanup operations.');
   }
 
-  return createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
+  _admin = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
     auth: { autoRefreshToken: false, persistSession: false },
   });
+
+  return _admin;
 }
 
 /**
@@ -29,7 +37,7 @@ export async function ensureUser(email: string, password: string): Promise<strin
     await deleteUserByEmail(email).catch(() => {});
 
     if (attempt > 0) {
-      await new Promise((r) => setTimeout(r, 500 * attempt));
+      await new Promise((r) => setTimeout(r, 500 * 2 ** attempt));
     }
 
     const { data, error } = await admin.auth.admin.createUser({
@@ -53,13 +61,29 @@ export async function ensureUser(email: string, password: string): Promise<strin
 /**
  * Deletes a user by email from the local Supabase instance.
  * No-op if the user does not exist.
+ * Paginates through users in small batches to avoid fetching the entire user list.
  */
 export async function deleteUserByEmail(email: string): Promise<void> {
   const admin = getAdminClient();
-  const { data } = await admin.auth.admin.listUsers();
-  const user = data?.users?.find((u) => u.email === email);
 
-  if (user) {
-    await admin.auth.admin.deleteUser(user.id);
+  let page = 1;
+
+  while (true) {
+    const { data } = await admin.auth.admin.listUsers({ page, perPage: 50 });
+    const users = data?.users ?? [];
+
+    const user = users.find((u) => u.email === email);
+
+    if (user) {
+      await admin.auth.admin.deleteUser(user.id);
+
+      return;
+    }
+
+    if (users.length < 50) {
+      return;
+    }
+
+    page++;
   }
 }
