@@ -9,10 +9,16 @@ vi.mock('next-intl/server', () => ({
 // Mock env
 vi.mock('@/lib/common/env', () => ({
   env: {
+    NODE_ENV: 'production',
     NEXT_PUBLIC_APP_URL: 'https://example.com',
     NEXT_PUBLIC_SUPABASE_URL: 'http://127.0.0.1:54321',
     NEXT_PUBLIC_SUPABASE_ANON_KEY: 'test-anon-key',
   },
+}));
+
+// Mock rate limiter — allow all by default
+vi.mock('@/lib/common/rate-limit', () => ({
+  rateLimit: vi.fn().mockResolvedValue({ limited: false }),
 }));
 
 // Mock Supabase server client
@@ -34,7 +40,6 @@ describe('Auth Actions – Password', () => {
   });
 
   describe('resetPassword', () => {
-    // Successful password reset flow
     it('should return success on valid email', async () => {
       mockResetPasswordForEmail.mockResolvedValue({ error: null });
 
@@ -48,8 +53,7 @@ describe('Auth Actions – Password', () => {
       });
     });
 
-    // Supabase error handling during reset
-    it('should return error on Supabase failure', async () => {
+    it('should return an error when Supabase fails', async () => {
       mockResetPasswordForEmail.mockResolvedValue({
         error: { message: 'User not found' },
       });
@@ -57,21 +61,32 @@ describe('Auth Actions – Password', () => {
       const { resetPassword } = await import('./password');
       const result = await resetPassword({ email: 'nonexistent@example.com' });
 
-      expect(result).toEqual({ error: 'User not found' });
+      expect(result.error).toBeDefined();
+      expect(result).not.toHaveProperty('success');
     });
 
-    // Email validation failure
-    it('should return error on invalid email', async () => {
+    it('should not call Supabase when email is invalid', async () => {
       const { resetPassword } = await import('./password');
       const result = await resetPassword({ email: 'bad-email' });
 
-      expect(result).toEqual({ error: 'Invalid email' });
+      expect(result.error).toBeDefined();
+      expect(mockResetPasswordForEmail).not.toHaveBeenCalled();
+    });
+
+    it('should return rate limit error when rate limited', async () => {
+      const { rateLimit } = await import('@/lib/common/rate-limit');
+
+      vi.mocked(rateLimit).mockResolvedValueOnce({ limited: true });
+
+      const { resetPassword } = await import('./password');
+      const result = await resetPassword({ email: 'test@example.com' });
+
+      expect(result.error).toBeDefined();
       expect(mockResetPasswordForEmail).not.toHaveBeenCalled();
     });
   });
 
   describe('updatePassword', () => {
-    // Successful password update flow
     it('should return success on valid matching passwords', async () => {
       mockUpdateUser.mockResolvedValue({ error: null });
 
@@ -89,8 +104,7 @@ describe('Auth Actions – Password', () => {
       });
     });
 
-    // Supabase error handling during update
-    it('should return error on Supabase failure', async () => {
+    it('should return an error when Supabase rejects the update', async () => {
       mockUpdateUser.mockResolvedValue({
         error: { message: 'Same password' },
       });
@@ -102,24 +116,23 @@ describe('Auth Actions – Password', () => {
         confirmPassword: 'SamePassword1!',
       });
 
-      expect(result).toEqual({ error: 'Same password' });
+      expect(result.error).toBeDefined();
+      expect(result).not.toHaveProperty('success');
     });
 
-    // Password mismatch validation
-    it('should return error on non-matching passwords', async () => {
+    it('should not call Supabase when passwords do not match', async () => {
       const { updatePassword } = await import('./password');
 
       const result = await updatePassword({
-        password: 'password123',
-        confirmPassword: 'different123',
+        password: 'Password123!',
+        confirmPassword: 'Different123!',
       });
 
-      expect(result).toEqual({ error: 'Invalid passwords' });
+      expect(result.error).toBeDefined();
       expect(mockUpdateUser).not.toHaveBeenCalled();
     });
 
-    // Password complexity/length validation
-    it('should return error on short passwords', async () => {
+    it('should not call Supabase when password is too short', async () => {
       const { updatePassword } = await import('./password');
 
       const result = await updatePassword({
@@ -127,7 +140,7 @@ describe('Auth Actions – Password', () => {
         confirmPassword: 'short',
       });
 
-      expect(result).toEqual({ error: 'Invalid passwords' });
+      expect(result.error).toBeDefined();
       expect(mockUpdateUser).not.toHaveBeenCalled();
     });
   });

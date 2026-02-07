@@ -6,7 +6,18 @@ import { defaultLocale } from '@/i18n/constants';
 import { isAuthenticated, isProtectionEnabled } from '@/lib/common/deploy-credentials';
 import { updateSession } from '@/lib/supabase/middleware';
 
-const PROTECTED_ROUTES = [ROUTES.common.dashboard, ROUTES.common.settings];
+// Public routes that DON'T require authentication (allowlist approach)
+// Everything else is protected by default — new routes are secure without manual registration
+const PUBLIC_ROUTES = [
+  '/',
+  '/auth/callback',
+  ROUTES.auth.signIn,
+  ROUTES.auth.signUp,
+  ROUTES.auth.forgotPassword,
+  ROUTES.auth.updatePassword,
+];
+
+// Auth routes that authenticated users should be redirected away from
 const AUTH_ROUTES = [ROUTES.auth.signIn, ROUTES.auth.signUp, ROUTES.auth.forgotPassword];
 
 /**
@@ -40,8 +51,12 @@ const middleware = async (req: NextRequest) => {
   const pathname = getPathnameWithoutLocale(req.nextUrl.pathname);
   const locale = req.nextUrl.pathname.split('/')[1] || defaultLocale;
 
-  // Route protection: redirect unauthenticated users away from protected routes
-  if (!user && PROTECTED_ROUTES.some((route) => pathname.startsWith(route))) {
+  const isPublicRoute = PUBLIC_ROUTES.some((route) =>
+    route === '/' ? pathname === '/' : pathname.startsWith(route)
+  );
+
+  // Route protection: redirect unauthenticated users away from non-public routes
+  if (!user && !isPublicRoute) {
     const signInUrl = new URL(`/${locale}${ROUTES.auth.signIn}`, req.url);
 
     return NextResponse.redirect(signInUrl);

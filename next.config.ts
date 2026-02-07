@@ -7,6 +7,23 @@ import { env } from './src/lib/common/env';
 // Initialize next-intl plugin with the request configuration path
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
+// Build CSP directives - allows Supabase, OAuth avatar domains, and Next.js requirements
+const supabaseUrl = new URL(env.NEXT_PUBLIC_SUPABASE_URL);
+
+const cspDirectives = [
+  `default-src 'self'`,
+  `script-src 'self' 'unsafe-inline' 'unsafe-eval'`,
+  `style-src 'self' 'unsafe-inline'`,
+  `img-src 'self' blob: data: https://lh3.googleusercontent.com https://avatars.githubusercontent.com`,
+  `font-src 'self'`,
+  `connect-src 'self' ${supabaseUrl.origin} https://accounts.google.com https://github.com`,
+  `frame-src 'self' https://accounts.google.com https://github.com`,
+  `object-src 'none'`,
+  `base-uri 'self'`,
+  `form-action 'self'`,
+  `frame-ancestors 'none'`,
+].join('; ');
+
 /** @type {import('next').NextConfig} */
 const nextConfig: NextConfig = {
   // Enables the React Compiler (React Forget) for automatic memoization
@@ -55,6 +72,11 @@ const nextConfig: NextConfig = {
           {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=(), browsing-topics=()',
+          },
+          // Content Security Policy - Prevents XSS and data injection attacks
+          {
+            key: 'Content-Security-Policy',
+            value: cspDirectives,
           },
         ],
       },
