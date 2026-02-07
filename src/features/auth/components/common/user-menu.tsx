@@ -2,12 +2,11 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import Image from 'next/image';
-
-import { LogOut, Settings, User as UserIcon } from 'lucide-react';
+import { Home, LogOut, Settings, User as UserIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { ROUTES } from '@/config';
@@ -56,7 +55,7 @@ const UserMenu = () => {
     );
   }
 
-  const avatarUrl = user.user_metadata?.avatar_url as string | undefined;
+  const avatarUrl = (user.user_metadata?.avatar_url as string) || undefined;
   const initials = user.email?.slice(0, 2).toUpperCase() ?? '??';
 
   const handleSignOut = async () => {
@@ -70,7 +69,7 @@ const UserMenu = () => {
         setIsSigningOut(false);
       } else {
         toast.success(t('auth.signOutSuccess'));
-        router.push('/');
+        router.push(ROUTES.common.home);
         router.refresh();
       }
     } catch {
@@ -83,14 +82,13 @@ const UserMenu = () => {
     <div ref={menuRef} className="relative">
       <button
         onClick={() => setIsOpen((prev) => !prev)}
-        className="bg-primary text-primary-foreground flex size-9 items-center justify-center overflow-hidden rounded-full text-xs font-semibold transition-opacity hover:opacity-90"
+        className="flex items-center transition-opacity hover:opacity-90"
         aria-label="User menu"
       >
-        {avatarUrl ? (
-          <Image src={avatarUrl} alt="" width={36} height={36} className="size-full object-cover" />
-        ) : (
-          initials
-        )}
+        <Avatar className="size-9 text-xs font-semibold">
+          <AvatarImage src={avatarUrl} alt="" />
+          <AvatarFallback>{initials}</AvatarFallback>
+        </Avatar>
       </button>
 
       <div
@@ -106,6 +104,15 @@ const UserMenu = () => {
         </div>
 
         <div className="py-1">
+          <Link
+            href={ROUTES.common.dashboard}
+            onClick={() => setIsOpen(false)}
+            className="hover:bg-accent flex w-full items-center gap-2 px-4 py-2 text-sm transition-colors"
+          >
+            <Home className="size-4" aria-hidden="true" />
+            {t('common.dashboard')}
+          </Link>
+
           <Link
             href={ROUTES.common.settings}
             onClick={() => setIsOpen(false)}

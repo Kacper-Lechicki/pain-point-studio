@@ -17,7 +17,4 @@ export const ROUTES = {
     dashboard: '/dashboard' as AppRoute,
     settings: '/settings' as AppRoute,
   },
-  test: {
-    instruments: '/instruments' as AppRoute,
-  },
 } as const;

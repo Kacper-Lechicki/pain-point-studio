@@ -25,8 +25,4 @@ export const PATHNAMES = {
   '/update-password': {
     en: '/update-password',
   },
-  // --- TEST ---
-  '/instruments': {
-    en: '/instruments',
-  },
 } as const;

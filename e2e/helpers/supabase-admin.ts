@@ -61,11 +61,16 @@ export async function ensureUser(email: string, password: string): Promise<strin
 /**
  * Deletes a user by email from the local Supabase instance.
  * No-op if the user does not exist.
- * Paginates through users in small batches to avoid fetching the entire user list.
+ *
+ * Uses GoTrue admin API listUsers first. If the user isn't found there
+ * (local GoTrue's listUsers can be unreliable after db reset), falls back
+ * to the `get_user_id_by_email` RPC function (defined in seed.sql) which
+ * queries auth.users directly.
  */
 export async function deleteUserByEmail(email: string): Promise<void> {
   const admin = getAdminClient();
 
+  // Try GoTrue admin API first
   let page = 1;
 
   while (true) {
@@ -81,9 +86,19 @@ export async function deleteUserByEmail(email: string): Promise<void> {
     }
 
     if (users.length < 50) {
-      return;
+      break;
     }
 
     page++;
+  }
+
+  // Fallback: use the seed-defined RPC function to look up the user id
+  // directly in auth.users (bypasses GoTrue's potentially stale listUsers).
+  const { data: userId } = await admin.rpc('get_user_id_by_email', {
+    lookup_email: email,
+  });
+
+  if (userId) {
+    await admin.auth.admin.deleteUser(userId);
   }
 }

@@ -17,6 +17,7 @@
     ]
   },
   "common": {
+    "cancel": "Cancel",
     "features": "Features",
     "templates": "Templates",
     "pricing": "Pricing",
@@ -102,6 +103,7 @@
     "passwordUpdated": "Password updated successfully!",
     "unexpectedError": "Something went wrong. Please try again.",
     "errors": {
+      "passwordRequired": "Password is required.",
       "invalidCredentials": "Invalid email or password. Please try again.",
       "emailNotConfirmed": "Please verify your email address before signing in.",
       "userAlreadyRegistered": "An account with this email already exists.",
@@ -318,6 +320,117 @@
         "copy": "Copy link",
         "copied": "Copied"
       }
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "description": "Manage your account settings and preferences.",
+    "backToDashboard": "Back to Dashboard",
+    "nav": {
+      "profile": "Profile",
+      "email": "Email",
+      "password": "Password",
+      "connectedAccounts": "Accounts",
+      "dangerZone": "Danger Zone"
+    },
+    "profile": {
+      "title": "Profile Information",
+      "description": "Update your personal information and public profile.",
+      "avatar": "Profile Photo",
+      "uploadAvatar": "Upload Photo",
+      "changeAvatar": "Change Photo",
+      "removeAvatar": "Remove Photo",
+      "avatarHint": "JPG, PNG, WebP or GIF. Max 5MB.",
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "Enter your full name",
+      "role": "Role / Occupation",
+      "rolePlaceholder": "Select your role",
+      "bio": "Bio",
+      "bioPlaceholder": "Tell us a bit about yourself",
+      "bioCounter": "{count}/{max}",
+      "saveProfile": "Save Profile",
+      "profileUpdated": "Profile updated successfully.",
+      "avatarUpdated": "Profile photo updated.",
+      "avatarRemoved": "Profile photo removed.",
+      "socialLinks": {
+        "title": "Social Links",
+        "description": "Add up to 5 links to your social profiles or repositories.",
+        "linkLabel": "Link {number}",
+        "removeLink": "Remove link",
+        "addLink": "Add Link",
+        "urlPlaceholder": "https://",
+        "labelPlaceholder": "Select platform",
+        "maxReached": "Maximum of {max} links reached.",
+        "labels": {
+          "website": "Website",
+          "github": "GitHub",
+          "twitter": "X (Twitter)",
+          "linkedin": "LinkedIn",
+          "other": "Other"
+        }
+      }
+    },
+    "email": {
+      "title": "Email Address",
+      "description": "Change the email address associated with your account.",
+      "newEmail": "New Email",
+      "newEmailPlaceholder": "Enter your new email",
+      "doubleConfirmHint": "For security, a confirmation link will be sent to both your current and new email. You must confirm both to complete the change.",
+      "saveEmail": "Update Email",
+      "emailUpdateSent": "Confirmation emails sent. Please check both inboxes."
+    },
+    "password": {
+      "title": "Change Password",
+      "description": "Update your password to keep your account secure.",
+      "setFirstDescription": "You signed in with an external provider. Set a password to also sign in with email.",
+      "setFirstHint": "Since you signed up with an external provider, no current password is required.",
+      "currentPasswordHint": "For security, you must enter your current password before setting a new one.",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm New Password",
+      "savePassword": "Update Password",
+      "passwordUpdated": "Password updated successfully."
+    },
+    "connectedAccounts": {
+      "title": "Connected Accounts",
+      "description": "OAuth providers linked to your account.",
+      "connected": "Connected",
+      "noAccounts": "No external accounts connected."
+    },
+    "dangerZone": {
+      "title": "Danger Zone",
+      "description": "Irreversible actions for your account.",
+      "deleteAccount": "Delete Account",
+      "deleteDescription": "Permanently delete your account and all associated data. This action cannot be undone.",
+      "deleteConfirmTitle": "Are you sure?",
+      "deleteConfirmDescription": "This will permanently delete your account, profile, and all your data. This action cannot be undone.",
+      "deleteConfirmLabel": "Type \"{text}\" to confirm",
+      "deleteConfirmPlaceholder": "delete my account",
+      "deleteButton": "Delete My Account",
+      "accountDeleted": "Your account has been deleted."
+    },
+    "roles": {
+      "soloDeveloper": "Solo Developer",
+      "productManager": "Product Manager",
+      "designer": "Designer",
+      "founder": "Founder",
+      "student": "Student",
+      "other": "Other"
+    },
+    "errors": {
+      "invalidData": "Please check your input and try again.",
+      "nameTooLong": "Name must be 100 characters or less.",
+      "bioTooLong": "Bio must be 200 characters or less.",
+      "invalidEmail": "Please enter a valid email address.",
+      "currentPasswordIncorrect": "Current password is incorrect.",
+      "passwordsMismatch": "Passwords do not match.",
+      "confirmationMismatch": "Please type the exact confirmation text.",
+      "avatarTooLarge": "Image must be smaller than 5MB.",
+      "avatarInvalidType": "Only JPG, PNG, WebP, and GIF images are allowed.",
+      "uploadFailed": "Failed to upload image. Please try again.",
+      "deleteFailed": "Failed to delete account. Please try again.",
+      "rateLimitExceeded": "Too many attempts. Please wait a moment and try again.",
+      "unexpected": "Something went wrong. Please try again."
     }
   }
 }

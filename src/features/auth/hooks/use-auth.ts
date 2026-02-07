@@ -28,7 +28,16 @@ export function useAuth() {
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    const handleRefresh = () => {
+      supabase.auth.getUser().then(({ data }) => setUser(data.user));
+    };
+
+    window.addEventListener('auth:refresh', handleRefresh);
+
+    return () => {
+      subscription.unsubscribe();
+      window.removeEventListener('auth:refresh', handleRefresh);
+    };
   }, [supabase.auth]);
 
   return {

@@ -3,15 +3,14 @@
 import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/config';
+import { OAuthButtons } from '@/features/auth/components/common/oauth-buttons';
 import { Link } from '@/i18n/routing';
 
-import { OAuthButtons } from './oauth-buttons';
-
-interface OAuthSectionProps {
+interface OAuthLinksProps {
   mode?: 'signIn' | 'signUp';
 }
 
-const OAuthSection = ({ mode = 'signIn' }: OAuthSectionProps) => {
+const OAuthLinks = ({ mode = 'signIn' }: OAuthLinksProps) => {
   const t = useTranslations();
 
   return (
@@ -64,4 +63,4 @@ const OAuthSection = ({ mode = 'signIn' }: OAuthSectionProps) => {
   );
 };
 
-export { OAuthSection };
+export { OAuthLinks };
