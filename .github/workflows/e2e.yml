@@ -16,7 +16,19 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
+      # Verify that the current branch name follows the required naming convention
+      - name: Check Branch Name
+        if: github.event_name == 'pull_request'
+        run: |
+          BRANCH_NAME=${{ github.head_ref }}
+          echo "Checking branch name: $BRANCH_NAME"
+          if [[ ! "$BRANCH_NAME" =~ ^(fix|feat|docs|setup|test|release)\/.+ ]]; then
+            echo "::error::Branch name '$BRANCH_NAME' does not match the allowed pattern: fix/..., feat/..., docs/..., setup/..., test/..., or release/..."
+            exit 1
+          fi
+
       # Install the pnpm package manager (must be before setup-node for caching)
+
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -44,6 +56,19 @@ jobs:
           CI: true
           NODE_ENV: test
           NEXT_PUBLIC_APP_URL: http://localhost:3333
+          # Supabase local defaults for CI validation
+          NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
+          SUPABASE_SERVICE_ROLE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU
+          # Auth & SMTP placeholders for CI validation
+          SUPABASE_AUTH_REDIRECT_URI: http://localhost:3333/auth/callback
+          SUPABASE_AUTH_GITHUB_CLIENT_ID: ci_test_github_id
+          SUPABASE_AUTH_GITHUB_SECRET: ci_test_github_secret
+          SUPABASE_AUTH_GOOGLE_CLIENT_ID: ci_test_google_id
+          SUPABASE_AUTH_GOOGLE_SECRET: ci_test_google_secret
+          SMTP_HOST: localhost
+          SMTP_PORT: 587
+          SMTP_KEY: ci_test_smtp_key
 
       # Upload the test results/reports as an artifact for later inspection (even if tests fail)
       - name: Upload Playwright Report
