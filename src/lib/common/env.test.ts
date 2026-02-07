@@ -25,6 +25,9 @@ describe('Environment Configuration', () => {
       SUPABASE_AUTH_GITHUB_SECRET: 'test-github-secret',
       SUPABASE_AUTH_GOOGLE_CLIENT_ID: 'test-google-id',
       SUPABASE_AUTH_GOOGLE_SECRET: 'test-google-secret',
+      SMTP_HOST: 'smtp.example.com',
+      SMTP_PORT: '587',
+      SMTP_KEY: 'test-smtp-key',
     };
 
     const merged = { ...defaults, ...overrides };
