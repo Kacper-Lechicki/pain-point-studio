@@ -44,7 +44,7 @@ const SignInForm = () => {
       const result = await signInWithEmail(data);
 
       if (result.error) {
-        toast.error(result.error);
+        toast.error(t(result.error));
         setIsLoading(false);
       } else {
         toast.success(t('auth.signInSuccess'));

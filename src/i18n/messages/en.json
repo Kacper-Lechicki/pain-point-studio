@@ -101,6 +101,19 @@
     "emailConfirmed": "Email confirmed. You are now signed in!",
     "passwordUpdated": "Password updated successfully!",
     "unexpectedError": "Something went wrong. Please try again.",
+    "errors": {
+      "invalidCredentials": "Invalid email or password. Please try again.",
+      "emailNotConfirmed": "Please verify your email address before signing in.",
+      "userAlreadyRegistered": "An account with this email already exists.",
+      "passwordTooShort": "Password must be at least 8 characters.",
+      "samePassword": "New password must be different from your current password.",
+      "rateLimitExceeded": "Too many attempts. Please wait a moment and try again.",
+      "invalidEmail": "Please enter a valid email address.",
+      "signupsDisabled": "Sign ups are currently disabled.",
+      "linkExpired": "This link is invalid or has expired. Please request a new one.",
+      "invalidData": "Please check your input and try again.",
+      "unexpected": "Something went wrong. Please try again."
+    },
     "providers": {
       "github": "GitHub",
       "google": "Google"

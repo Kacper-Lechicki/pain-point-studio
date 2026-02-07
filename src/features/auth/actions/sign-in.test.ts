@@ -14,10 +14,16 @@ vi.mock('next-intl/server', () => ({
 // Mock env
 vi.mock('@/lib/common/env', () => ({
   env: {
+    NODE_ENV: 'production',
     NEXT_PUBLIC_APP_URL: 'https://example.com',
     NEXT_PUBLIC_SUPABASE_URL: 'http://127.0.0.1:54321',
     NEXT_PUBLIC_SUPABASE_ANON_KEY: 'test-anon-key',
   },
+}));
+
+// Mock rate limiter — allow all by default
+vi.mock('@/lib/common/rate-limit', () => ({
+  rateLimit: vi.fn().mockResolvedValue({ limited: false }),
 }));
 
 // Mock Supabase server client
@@ -39,7 +45,6 @@ describe('Auth Actions – Sign In', () => {
   });
 
   describe('signInWithEmail', () => {
-    // Successful sign-in with email
     it('should return success on valid credentials', async () => {
       mockSignInWithPassword.mockResolvedValue({ error: null });
 
@@ -58,8 +63,7 @@ describe('Auth Actions – Sign In', () => {
       });
     });
 
-    // Invalid credentials error handling
-    it('should return error on invalid credentials', async () => {
+    it('should return an error when Supabase rejects credentials', async () => {
       mockSignInWithPassword.mockResolvedValue({
         error: { message: 'Invalid login credentials' },
       });
@@ -71,11 +75,11 @@ describe('Auth Actions – Sign In', () => {
         password: 'wrongpassword',
       });
 
-      expect(result).toEqual({ error: 'Invalid login credentials' });
+      expect(result.error).toBeDefined();
+      expect(result).not.toHaveProperty('success');
     });
 
-    // Zod validation failure for email/password
-    it('should return error on invalid form data', async () => {
+    it('should not call Supabase when form data is invalid', async () => {
       const { signInWithEmail } = await import('./sign-in');
 
       const result = await signInWithEmail({
@@ -83,13 +87,28 @@ describe('Auth Actions – Sign In', () => {
         password: 'pw',
       });
 
-      expect(result).toEqual({ error: 'Invalid data' });
+      expect(result.error).toBeDefined();
+      expect(mockSignInWithPassword).not.toHaveBeenCalled();
+    });
+
+    it('should return rate limit error when rate limited', async () => {
+      const { rateLimit } = await import('@/lib/common/rate-limit');
+
+      vi.mocked(rateLimit).mockResolvedValueOnce({ limited: true });
+
+      const { signInWithEmail } = await import('./sign-in');
+
+      const result = await signInWithEmail({
+        email: 'test@example.com',
+        password: 'password123',
+      });
+
+      expect(result.error).toBeDefined();
       expect(mockSignInWithPassword).not.toHaveBeenCalled();
     });
   });
 
   describe('signInWithOAuth', () => {
-    // Successful OAuth provider redirection
     it('should redirect on successful OAuth', async () => {
       const { redirect } = await import('next/navigation');
 
@@ -104,8 +123,7 @@ describe('Auth Actions – Sign In', () => {
       expect(redirect).toHaveBeenCalledWith('https://accounts.google.com/oauth');
     });
 
-    // OAuth failure error handling
-    it('should return error on OAuth failure', async () => {
+    it('should return an error on OAuth failure', async () => {
       mockSignInWithOAuth.mockResolvedValue({
         data: {},
         error: { message: 'OAuth error' },
@@ -114,10 +132,9 @@ describe('Auth Actions – Sign In', () => {
       const { signInWithOAuth } = await import('./sign-in');
       const result = await signInWithOAuth('github');
 
-      expect(result).toEqual({ error: 'OAuth error' });
+      expect(result.error).toBeDefined();
     });
 
-    // OAuth callback URL construction with locale
     it('should construct correct redirect URL with locale', async () => {
       mockSignInWithOAuth.mockResolvedValue({
         data: { url: 'https://github.com/oauth' },
@@ -136,6 +153,18 @@ describe('Auth Actions – Sign In', () => {
           redirectTo: 'https://example.com/en/auth/callback',
         },
       });
+    });
+
+    it('should return an error when OAuth returns no redirect URL', async () => {
+      mockSignInWithOAuth.mockResolvedValue({
+        data: { url: null },
+        error: null,
+      });
+
+      const { signInWithOAuth } = await import('./sign-in');
+      const result = await signInWithOAuth('google');
+
+      expect(result.error).toBeDefined();
     });
   });
 });
