@@ -25,49 +25,32 @@ const TEST_USER = {
   password: 'E2eTestPass1!',
 };
 
-async function trySignIn(page: import('@playwright/test').Page): Promise<boolean> {
-  await page.goto('/en/sign-in');
-
-  const emailInput = page.locator(sel.email);
-  const passwordInput = page.locator(sel.password);
-  const submitBtn = page.locator(sel.submit);
-
-  await expect(submitBtn).toBeEnabled();
-
+/**
+ * Sign in as the test user. Uses toPass() retry pattern to handle
+ * WebKit hydration issues where .fill() can be swallowed.
+ */
+async function signIn(page: import('@playwright/test').Page) {
   await expect(async () => {
+    await page.goto('/en/sign-in', { timeout: 15_000 });
+
+    const emailInput = page.locator(sel.email);
+    const passwordInput = page.locator(sel.password);
+    const submitBtn = page.locator(sel.submit);
+
+    await expect(submitBtn).toBeEnabled({ timeout: 5_000 });
+
     await emailInput.click();
     await emailInput.fill(TEST_USER.email);
     await expect(emailInput).toHaveValue(TEST_USER.email);
-  }).toPass({ timeout: 10_000 });
 
-  await expect(async () => {
     await passwordInput.click();
     await passwordInput.fill(TEST_USER.password);
     await expect(passwordInput).toHaveValue(TEST_USER.password);
-  }).toPass({ timeout: 10_000 });
 
-  await submitBtn.click();
+    await submitBtn.click();
 
-  try {
-    await expect(page).toHaveURL(/\/dashboard/, { timeout: 15_000 });
-
-    return true;
-  } catch {
-    await page.goto('/en/dashboard');
-    const url = page.url();
-
-    return /\/dashboard/.test(url);
-  }
-}
-
-async function signIn(page: import('@playwright/test').Page) {
-  for (let attempt = 0; attempt < 2; attempt++) {
-    if (await trySignIn(page)) {
-      return;
-    }
-  }
-
-  await expect(page).toHaveURL(/\/dashboard/);
+    await expect(page).toHaveURL(/\/dashboard/, { timeout: 10_000 });
+  }).toPass({ timeout: 50_000 });
 }
 
 // ─────────────────────────────────────────────────────────────────
@@ -86,21 +69,23 @@ test.describe('Sign-In Flow', () => {
     await page.goto('/en/sign-in');
     await expect(linkTo(page, '/sign-up')).toBeVisible();
     await expect(linkTo(page, '/forgot-password')).toBeVisible();
-
-    await expect(
-      page.locator('a[href="/en"]').or(page.locator('a[href="/"]')).first()
-    ).toBeVisible();
+    // Home link — next-intl Link renders href="/en" for the root route
+    await expect(page.locator('a[href="/en"]').first()).toBeVisible();
   });
 
   test('navigates to sign-up page', async ({ page }) => {
     await page.goto('/en/sign-in');
-    await linkTo(page, '/sign-up').click();
+    const link = linkTo(page, '/sign-up');
+    await expect(link).toBeVisible();
+    await link.click();
     await expect(page).toHaveURL(/\/sign-up/);
   });
 
   test('navigates to forgot-password page', async ({ page }) => {
     await page.goto('/en/sign-in');
-    await linkTo(page, '/forgot-password').click();
+    const link = linkTo(page, '/forgot-password');
+    await expect(link).toBeVisible();
+    await link.click();
     await expect(page).toHaveURL(/\/forgot-password/);
   });
 
@@ -112,7 +97,12 @@ test.describe('Sign-In Flow', () => {
 
   test('stays on page with invalid email format', async ({ page }) => {
     await page.goto('/en/sign-in');
-    await page.locator(sel.email).fill('not-an-email');
+
+    await expect(async () => {
+      await page.locator(sel.email).fill('not-an-email');
+      await expect(page.locator(sel.email)).toHaveValue('not-an-email');
+    }).toPass({ timeout: 10_000 });
+
     await page.locator(sel.password).fill('SomePassword1!');
     await page.locator(sel.submit).click();
     await expect(page).toHaveURL(/\/sign-in/);
@@ -127,10 +117,16 @@ test.describe('Sign-In Flow', () => {
 
   test('shows error feedback for invalid credentials', async ({ page }) => {
     await page.goto('/en/sign-in');
-    await page.locator(sel.email).fill('nonexistent@example.com');
+
+    await expect(async () => {
+      await page.locator(sel.email).fill('nonexistent@example.com');
+      await expect(page.locator(sel.email)).toHaveValue('nonexistent@example.com');
+    }).toPass({ timeout: 10_000 });
+
     await page.locator(sel.password).fill('WrongPassword1!');
     await page.locator(sel.submit).click();
 
+    // Wait for either error toast or button re-enabled (server responded)
     await expect(async () => {
       const toastVisible = await page.locator(sel.toast).first().isVisible();
       const buttonReEnabled = await page.locator(`${sel.submit}:not([disabled])`).isVisible();
@@ -159,7 +155,12 @@ test.describe('Sign-In Flow', () => {
     test.skip(browserName === 'webkit', 'WebKit does not reliably trigger form submit via Enter');
 
     await page.goto('/en/sign-in');
-    await page.locator(sel.email).fill('nonexistent@example.com');
+
+    await expect(async () => {
+      await page.locator(sel.email).fill('nonexistent@example.com');
+      await expect(page.locator(sel.email)).toHaveValue('nonexistent@example.com');
+    }).toPass({ timeout: 10_000 });
+
     await page.locator(sel.password).fill('SomePass1!');
     await page.locator(sel.password).press('Enter');
     await expect(page.locator(sel.toast).first()).toBeVisible({ timeout: 15_000 });
@@ -191,7 +192,9 @@ test.describe('Sign-Up Flow', () => {
 
   test('navigates to sign-in page', async ({ page }) => {
     await page.goto('/en/sign-up');
-    await linkTo(page, '/sign-in').click();
+    const link = linkTo(page, '/sign-in');
+    await expect(link).toBeVisible();
+    await link.click();
     await expect(page).toHaveURL(/\/sign-in/);
   });
 
@@ -203,7 +206,12 @@ test.describe('Sign-Up Flow', () => {
 
   test('stays on page with invalid email format', async ({ page }) => {
     await page.goto('/en/sign-up');
-    await page.locator(sel.email).fill('bad');
+
+    await expect(async () => {
+      await page.locator(sel.email).fill('bad');
+      await expect(page.locator(sel.email)).toHaveValue('bad');
+    }).toPass({ timeout: 10_000 });
+
     await page.locator(sel.password).fill('StrongPass1!');
     await page.locator(sel.submit).click();
     await expect(page).toHaveURL(/\/sign-up/);
@@ -244,16 +252,23 @@ test.describe('Sign-Up Flow', () => {
   test('successful sign-up shows confirmation state', async ({ page }) => {
     await page.goto('/en/sign-up');
 
-    const emailInput = page.locator(sel.email);
+    // Use toPass() to guard against hydration-swallowed fills
+    await expect(async () => {
+      await page.locator(sel.email).click();
+      await page.locator(sel.email).fill(SIGNUP_EMAIL);
+      await expect(page.locator(sel.email)).toHaveValue(SIGNUP_EMAIL);
+    }).toPass({ timeout: 10_000 });
 
-    await emailInput.click();
-    await emailInput.fill(SIGNUP_EMAIL);
+    await expect(async () => {
+      await page.locator(sel.password).click();
+      await page.locator(sel.password).fill('StrongPass1!');
+      await expect(page.locator(sel.password)).toHaveValue('StrongPass1!');
+    }).toPass({ timeout: 10_000 });
 
-    const passwordInput = page.locator(sel.password);
-
-    await passwordInput.click();
-    await passwordInput.fill('StrongPass1!');
     await page.locator(sel.submit).click();
+
+    // After success, the form is replaced with a confirmation message
+    // and a "Back to Sign In" link. The submit button disappears.
     await expect(page.locator(sel.submit)).not.toBeVisible({ timeout: 30_000 });
     await expect(linkTo(page, '/sign-in')).toBeVisible();
   });
@@ -278,7 +293,9 @@ test.describe('Forgot Password Flow', () => {
 
   test('navigates back to sign-in', async ({ page }) => {
     await page.goto('/en/forgot-password');
-    await linkTo(page, '/sign-in').click();
+    const link = linkTo(page, '/sign-in');
+    await expect(link).toBeVisible();
+    await link.click();
     await expect(page).toHaveURL(/\/sign-in/);
   });
 
@@ -422,16 +439,13 @@ test.describe('Full Auth Lifecycle', () => {
     await page.goto('/en');
     await expect(page).toHaveURL(/\/dashboard/, { timeout: 10_000 });
 
+    // Open user menu and sign out
     const userMenuTrigger = page.locator('button[aria-label="User menu"]');
     await expect(userMenuTrigger).toBeVisible({ timeout: 10_000 });
     await userMenuTrigger.click();
 
-    const signOutBtn = page
-      .locator('[aria-label="User menu"]')
-      .locator('..')
-      .locator('button')
-      .last();
-
+    // Target the sign-out button by its LogOut icon — stable across layout changes
+    const signOutBtn = page.locator('button:has(svg.lucide-log-out)');
     await expect(signOutBtn).toBeVisible();
     await signOutBtn.click();
 
@@ -439,6 +453,7 @@ test.describe('Full Auth Lifecycle', () => {
       timeout: 15_000,
     });
 
+    // Dashboard should no longer be accessible
     await page.goto('/en/dashboard');
     await expect(page).toHaveURL(/\/sign-in/, { timeout: 10_000 });
   });

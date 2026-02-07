@@ -86,29 +86,24 @@ async function navigateToSection(
   section: 'profile' | 'email' | 'password' | 'connectedAccounts' | 'dangerZone',
   waitForSelector: string
 ) {
-  // Wait for navigation UI to render (mounted guard defers it)
-  const tabs = page.locator(sel.navTabs);
-  const select = page.locator(sel.navSelect);
+  // Use toPass() to handle the hydration race between desktop tabs
+  // and mobile select — the mounted guard + useBreakpoint can flip
+  // the layout after initial render, so we retry the whole sequence.
+  await expect(async () => {
+    const tabs = page.locator(sel.navTabs);
+    const select = page.locator(sel.navSelect);
 
-  // Wait until at least one nav element exists in the DOM
-  await page
-    .locator(`[data-testid="settings-nav"], [data-testid="settings-nav-select"]`)
-    .first()
-    .waitFor({
-      state: 'visible',
-      timeout: 10_000,
-    });
+    if (await tabs.isVisible().catch(() => false)) {
+      // Desktop: click the vertical tab trigger
+      await tabs.locator(`[data-section="${section}"]`).click();
+    } else {
+      // Mobile: open select dropdown and pick the item
+      await select.click({ timeout: 3_000 });
+      await page.locator(`[data-section="${section}"]`).click({ timeout: 3_000 });
+    }
 
-  if (await tabs.isVisible().catch(() => false)) {
-    // Desktop: click the vertical tab trigger
-    await tabs.locator(`[data-section="${section}"]`).click();
-  } else {
-    // Mobile: open select dropdown and pick the item
-    await select.click();
-    await page.locator(`[data-section="${section}"]`).click();
-  }
-
-  await expect(page.locator(waitForSelector)).toBeVisible({ timeout: 5_000 });
+    await expect(page.locator(waitForSelector)).toBeVisible({ timeout: 3_000 });
+  }).toPass({ timeout: 15_000 });
 }
 
 // ─────────────────────────────────────────────────────────────────
