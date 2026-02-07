@@ -39,7 +39,7 @@ jobs:
 
       # Execute Playwright End-to-End tests simulating real user flows
       - name: Run Playwright Tests
-        run: pnpm test:e2e
+        run: rm -rf .next && pnpm exec playwright install && PORT=3333 playwright test
         env:
           CI: true
           NODE_ENV: test
