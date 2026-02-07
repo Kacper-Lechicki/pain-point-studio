@@ -39,11 +39,11 @@ jobs:
 
       # Execute Playwright End-to-End tests simulating real user flows
       - name: Run Playwright Tests
-        run: rm -rf .next && pnpm exec playwright install && PORT=3333 playwright test
+        run: rm -rf .next && PORT=3333 pnpm exec playwright test
         env:
           CI: true
           NODE_ENV: test
-          NEXT_PUBLIC_APP_URL: http://localhost:3000
+          NEXT_PUBLIC_APP_URL: http://localhost:3333
 
       # Upload the test results/reports as an artifact for later inspection (even if tests fail)
       - name: Upload Playwright Report
