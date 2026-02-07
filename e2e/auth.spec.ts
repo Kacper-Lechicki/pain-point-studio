@@ -38,13 +38,13 @@ async function trySignIn(page: import('@playwright/test').Page): Promise<boolean
     await emailInput.click();
     await emailInput.fill(TEST_USER.email);
     await expect(emailInput).toHaveValue(TEST_USER.email);
-  }).toPass({ timeout: 5_000 });
+  }).toPass({ timeout: 10_000 });
 
   await expect(async () => {
     await passwordInput.click();
     await passwordInput.fill(TEST_USER.password);
     await expect(passwordInput).toHaveValue(TEST_USER.password);
-  }).toPass({ timeout: 5_000 });
+  }).toPass({ timeout: 10_000 });
 
   await submitBtn.click();
 

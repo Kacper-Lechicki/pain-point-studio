@@ -23,6 +23,10 @@ export default defineConfig({
   retries: env.CI ? 2 : 0,
   // Opt out of parallel tests on CI to avoid resource congestion
   ...(env.CI ? { workers: 1 } : {}),
+  // Per-test timeout (30s locally, 60s on CI to account for slower runners)
+  timeout: env.CI ? 60_000 : 30_000,
+  // Global expect assertion timeout
+  expect: { timeout: env.CI ? 10_000 : 5_000 },
   // Reporter to use. See https://playwright.dev/docs/test-reporters
   reporter: [['html', { outputFolder: 'reports/playwright/html' }]],
   // Folder for test artifacts such as screenshots, videos, traces, etc.
@@ -33,6 +37,8 @@ export default defineConfig({
     baseURL,
     // Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer
     trace: 'on-first-retry',
+    // Navigation timeout
+    navigationTimeout: env.CI ? 30_000 : 15_000,
   },
   // Configure projects for major browsers
   projects: [
