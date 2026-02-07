@@ -10,6 +10,7 @@ import { updateSession } from '@/lib/supabase/middleware';
 // Everything else is protected by default — new routes are secure without manual registration
 const PUBLIC_ROUTES = [
   '/',
+  '/auth/callback',
   ROUTES.auth.signIn,
   ROUTES.auth.signUp,
   ROUTES.auth.forgotPassword,

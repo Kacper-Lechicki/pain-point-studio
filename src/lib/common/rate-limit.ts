@@ -1,5 +1,7 @@
 import { headers } from 'next/headers';
 
+import { env } from '@/lib/common/env';
+
 interface RateLimitEntry {
   count: number;
   resetAt: number;
@@ -44,6 +46,11 @@ interface RateLimitConfig {
  * For multi-instance, replace with Redis-based solution (e.g. @upstash/ratelimit).
  */
 export async function rateLimit(config: RateLimitConfig): Promise<{ limited: boolean }> {
+  // Skip rate limiting outside production (parallel Playwright workers share one IP)
+  if (env.NODE_ENV !== 'production') {
+    return { limited: false };
+  }
+
   cleanup();
 
   const headerStore = await headers();
