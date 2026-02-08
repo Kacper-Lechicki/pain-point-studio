@@ -28,9 +28,18 @@ function getAdminClient() {
  * Ensures a confirmed user exists with the given credentials.
  * Handles race conditions when multiple Playwright projects run
  * beforeAll in parallel by retrying on failure.
+ *
+ * By default sets fullName='E2E User' and role='other' on the profile
+ * so the complete-profile modal doesn't block tests.
+ * Pass `{ fullName: '', role: '' }` to test the incomplete profile flow.
+ *
  * Returns the user's id.
  */
-export async function ensureUser(email: string, password: string): Promise<string> {
+export async function ensureUser(
+  email: string,
+  password: string,
+  profile?: { fullName?: string; role?: string }
+): Promise<string> {
   const admin = getAdminClient();
 
   for (let attempt = 0; attempt < 3; attempt++) {
@@ -47,6 +56,11 @@ export async function ensureUser(email: string, password: string): Promise<strin
     });
 
     if (!error) {
+      const fullName = profile?.fullName ?? 'E2E User';
+      const role = profile?.role ?? 'other';
+
+      await admin.from('profiles').update({ full_name: fullName, role }).eq('id', data.user.id);
+
       return data.user.id;
     }
 

@@ -44,7 +44,14 @@
     "settings": "Settings",
     "profile": "Profile",
     "goBack": "Go Back",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "error": {
+      "title": "Something went wrong",
+      "description": "An unexpected error occurred. Please try again.",
+      "retry": "Try again",
+      "backToDashboard": "Back to Dashboard",
+      "backToSignIn": "Back to Sign In"
+    }
   },
   "auth": {
     "welcomeBack": "Welcome back",
@@ -326,6 +333,15 @@
   "settings": {
     "title": "Settings",
     "description": "Manage your account settings and preferences.",
+    "completeProfile": {
+      "title": "Complete Your Profile",
+      "description": "Please provide your name and role to continue.",
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "John Doe",
+      "role": "Role",
+      "rolePlaceholder": "Select your role",
+      "submit": "Continue"
+    },
     "nav": {
       "profile": "Profile",
       "email": "Email",
@@ -431,6 +447,8 @@
       "other": "Other"
     },
     "errors": {
+      "fieldRequired": "This field is required.",
+      "invalidUrl": "Please enter a valid URL.",
       "invalidData": "Please check your input and try again.",
       "nameTooLong": "Name must be 100 characters or less.",
       "bioTooLong": "Bio must be 200 characters or less.",

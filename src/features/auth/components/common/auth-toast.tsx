@@ -29,7 +29,6 @@ const AuthToast = () => {
     if (toastKey && isValidToastKey(toastKey)) {
       toast.success(t(`auth.${toastKey}`));
 
-      // Clean the URL without triggering a navigation
       window.history.replaceState(null, '', window.location.pathname);
     }
   }, [searchParams, t]);

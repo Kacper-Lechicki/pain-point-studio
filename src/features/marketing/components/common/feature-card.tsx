@@ -46,4 +46,4 @@ const FeatureCard = ({ titleKey, descriptionKey, icon: Icon }: FeatureCardProps)
   );
 };
 
-export default FeatureCard;
+export { FeatureCard };

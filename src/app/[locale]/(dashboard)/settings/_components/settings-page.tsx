@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { HASH_TO_SECTION, SECTION_TO_HASH, type SettingsSectionValue } from '@/config/routes';
 import { ProfileData } from '@/features/settings/actions';
 
 const SECTIONS = [
@@ -31,24 +32,9 @@ const SECTIONS = [
   { value: 'dangerZone', icon: Trash2 },
 ] as const;
 
-type SectionValue = (typeof SECTIONS)[number]['value'];
+const DEFAULT_SECTION: SettingsSectionValue = 'profile';
 
-const SECTION_TO_HASH: Record<SectionValue, string> = {
-  profile: 'profile',
-  email: 'email',
-  password: 'password',
-  appearance: 'appearance',
-  connectedAccounts: 'connected-accounts',
-  dangerZone: 'danger-zone',
-};
-
-const HASH_TO_SECTION: Record<string, SectionValue> = Object.fromEntries(
-  Object.entries(SECTION_TO_HASH).map(([k, v]) => [v, k as SectionValue])
-) as Record<string, SectionValue>;
-
-const DEFAULT_SECTION: SectionValue = 'profile';
-
-function getSectionFromHash(): SectionValue {
+function getSectionFromHash(): SettingsSectionValue {
   const hash = window.location.hash.replace('#', '');
 
   return HASH_TO_SECTION[hash] ?? DEFAULT_SECTION;
@@ -85,8 +71,6 @@ function useMounted() {
   return useSyncExternalStore(subscribeMounted, getMountedSnapshot, getMountedServerSnapshot);
 }
 
-// ── Component ───────────────────────────────────────────────────
-
 interface SettingsPageProps {
   profile: ProfileData;
 }
@@ -95,7 +79,7 @@ const SettingsPage = ({ profile }: SettingsPageProps) => {
   const t = useTranslations('settings');
   const mounted = useMounted();
 
-  const [activeSection, setActiveSectionState] = useState<SectionValue>(() =>
+  const [activeSection, setActiveSectionState] = useState<SettingsSectionValue>(() =>
     typeof window === 'undefined' ? DEFAULT_SECTION : getSectionFromHash()
   );
 
@@ -114,16 +98,16 @@ const SettingsPage = ({ profile }: SettingsPageProps) => {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  const setActiveSection = useCallback((section: SectionValue) => {
+  const setActiveSection = useCallback((section: SettingsSectionValue) => {
     if (section === getSectionFromHash()) {
       return;
     }
 
     setActiveSectionState(section);
-    window.history.pushState(null, '', `#${SECTION_TO_HASH[section]}`);
+    window.history.replaceState(null, '', `#${SECTION_TO_HASH[section]}`);
   }, []);
 
-  const sectionContent: Record<SectionValue, React.ReactNode> = {
+  const sectionContent: Record<SettingsSectionValue, React.ReactNode> = {
     profile: <ProfileForm profile={profile} />,
     email: <EmailForm currentEmail={profile.email} />,
     password: <PasswordForm hasPassword={profile.hasPassword} />,
@@ -171,7 +155,10 @@ const SettingsPage = ({ profile }: SettingsPageProps) => {
         <div className="w-full space-y-6 lg:hidden">
           <SettingsHeader />
 
-          <Select value={activeSection} onValueChange={(v) => setActiveSection(v as SectionValue)}>
+          <Select
+            value={activeSection}
+            onValueChange={(v) => setActiveSection(v as SettingsSectionValue)}
+          >
             <SelectTrigger
               className="w-full"
               data-testid="settings-nav-select"
@@ -206,5 +193,4 @@ const SettingsPage = ({ profile }: SettingsPageProps) => {
   );
 };
 
-export { SettingsPage, SECTION_TO_HASH, HASH_TO_SECTION };
-export type { SectionValue };
+export { SettingsPage };

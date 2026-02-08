@@ -21,6 +21,7 @@ export interface RateLimiter {
 
 // ---------------------------------------------------------------------------
 // In-memory implementation
+// TODO(scaling): Replace with Redis-backed implementation for multi-instance deployments
 // ---------------------------------------------------------------------------
 
 interface RateLimitEntry {

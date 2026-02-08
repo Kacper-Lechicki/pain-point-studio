@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, Plus, Trash2 } from 'lucide-react';
@@ -55,6 +55,15 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
       socialLinks: profile.socialLinks,
     },
   });
+
+  useEffect(() => {
+    form.reset({
+      fullName: profile.fullName,
+      role: profile.role,
+      bio: profile.bio,
+      socialLinks: profile.socialLinks,
+    });
+  }, [profile.fullName, profile.role, profile.bio, profile.socialLinks, form]);
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -139,7 +148,7 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
                 <FormItem>
                   <FormLabel>{t('settings.profile.role')}</FormLabel>
 
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger className="w-full" aria-label={t('settings.profile.role')}>
                         <SelectValue placeholder={t('settings.profile.rolePlaceholder')} />

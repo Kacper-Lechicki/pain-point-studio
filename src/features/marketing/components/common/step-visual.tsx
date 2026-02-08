@@ -26,4 +26,4 @@ const StepVisual = ({ icon: Icon, label, chart: Chart }: StepVisualProps) => {
   );
 };
 
-export default StepVisual;
+export { StepVisual };

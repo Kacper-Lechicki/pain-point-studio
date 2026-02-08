@@ -32,7 +32,7 @@ export const getProfile = async (): Promise<ProfileData | null> => {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
+  if (!user || !user.email) {
     return null;
   }
 
@@ -51,7 +51,7 @@ export const getProfile = async (): Promise<ProfileData | null> => {
 
   return {
     id: user.id,
-    email: user.email ?? '',
+    email: user.email,
     fullName: profile?.full_name ?? '',
     role: profile?.role ?? '',
     bio: profile?.bio ?? '',

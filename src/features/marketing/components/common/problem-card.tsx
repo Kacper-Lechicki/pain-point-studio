@@ -44,4 +44,4 @@ const ProblemCard = ({ icon: Icon, titleKey, descriptionKey }: ProblemCardProps)
   );
 };
 
-export default ProblemCard;
+export { ProblemCard };

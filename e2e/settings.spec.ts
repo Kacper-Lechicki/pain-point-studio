@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 
+import { ROUTES, SECTION_TO_HASH, url } from './helpers/routes';
 import { deleteUserByEmail, ensureUser } from './helpers/supabase-admin';
 
 // Serialize describe blocks within each project to avoid overwhelming
@@ -51,7 +52,7 @@ function scopedEmail(base: string, projectName: string) {
 function makeSignIn(email: string) {
   return async function signIn(page: import('@playwright/test').Page) {
     await expect(async () => {
-      await page.goto('/en/sign-in', { timeout: 15_000 });
+      await page.goto(url(ROUTES.auth.signIn), { timeout: 15_000 });
 
       const emailInput = page.locator('input[name="email"]');
       const passwordInput = page.locator('input[name="password"]');
@@ -128,7 +129,7 @@ test.describe('Settings Page – Rendering & Profile', () => {
 
   test('renders profile section → updates profile → navbar has back link', async ({ page }) => {
     await signIn(page);
-    await page.goto('/en/settings');
+    await page.goto(url(ROUTES.common.settings));
     await expect(page).toHaveURL(/\/settings/);
 
     // ── Profile section visible by default ──
@@ -158,7 +159,7 @@ test.describe('Settings Page – Rendering & Profile', () => {
     await expect(page.locator(sel.toast).first()).toBeVisible({ timeout: 15_000 });
 
     // ── Back to dashboard link in navbar ──
-    await expect(page.locator('nav a[href*="/dashboard"]').first()).toBeAttached();
+    await expect(page.locator(`nav a[href*="${ROUTES.common.dashboard}"]`).first()).toBeAttached();
   });
 });
 
@@ -184,7 +185,7 @@ test.describe('Settings Page – Email Validation', () => {
 
   test('stays on page with invalid email format', async ({ page }) => {
     await signIn(page);
-    await page.goto('/en/settings#email');
+    await page.goto(url(ROUTES.common.settings, SECTION_TO_HASH.email));
     await expect(page.locator(sel.email)).toBeVisible({ timeout: 15_000 });
 
     const emailInput = page.locator(sel.email);
@@ -219,7 +220,7 @@ test.describe('Settings Page – Password', () => {
 
   test('validates passwords → updates password → clears fields', async ({ page }) => {
     await signIn(page);
-    await page.goto('/en/settings#password');
+    await page.goto(url(ROUTES.common.settings, SECTION_TO_HASH.password));
     await expect(page.locator(sel.password)).toBeVisible({ timeout: 15_000 });
 
     // ── Weak password rejected ──
@@ -282,7 +283,7 @@ test.describe('Settings Page – Delete Account', () => {
     await ensureUser(email, PASSWORD);
 
     await signIn(page);
-    await page.goto('/en/settings#danger-zone');
+    await page.goto(url(ROUTES.common.settings, SECTION_TO_HASH.dangerZone));
     await expect(page.locator(sel.deleteButton)).toBeVisible({ timeout: 15_000 });
 
     // ── Open dialog ──
@@ -324,12 +325,12 @@ test.describe('Settings Page – Delete Account', () => {
     await deleteSubmit2.click();
 
     // Should redirect away from settings
-    await page.waitForURL((url) => !url.pathname.includes('/settings'), {
+    await page.waitForURL((url) => !url.pathname.includes(ROUTES.common.settings), {
       timeout: 15_000,
     });
 
     // Dashboard should no longer be accessible
-    await page.goto('/en/dashboard');
+    await page.goto(url(ROUTES.common.dashboard));
     await expect(page).toHaveURL(/\/sign-in/, { timeout: 10_000 });
   });
 });
@@ -361,7 +362,7 @@ test.describe('Settings Page – Navigation', () => {
     // ── Settings via user menu ──
     await page.locator(sel.userMenu).click();
 
-    const settingsLink = page.locator('a[href*="/settings"]');
+    const settingsLink = page.locator(`a[href*="${ROUTES.common.settings}"]`);
     await expect(settingsLink).toBeVisible();
     await settingsLink.click();
 
@@ -373,31 +374,32 @@ test.describe('Settings Page – Navigation', () => {
     await page.locator(sel.userMenu).click();
 
     const menuDropdown = page.locator(sel.userMenu).locator('..');
-    const dashboardLink = menuDropdown.locator('a[href*="/dashboard"]');
+    const dashboardLink = menuDropdown.locator(`a[href*="${ROUTES.common.dashboard}"]`);
     await expect(dashboardLink).toBeVisible();
     await dashboardLink.click();
 
     await expect(page).toHaveURL(/\/dashboard/);
   });
 
-  test('hash navigation → direct URL → click updates hash → browser back', async ({ page }) => {
+  test('hash navigation → direct URL → click updates hash → browser back to dashboard', async ({
+    page,
+  }) => {
     await signIn(page);
 
     // ── Direct hash navigation ──
-    await page.goto('/en/settings#email');
+    await page.goto(url(ROUTES.common.settings, SECTION_TO_HASH.email));
     await expect(page.locator(sel.email)).toBeVisible({ timeout: 15_000 });
 
-    // ── Click nav updates hash ──
+    // ── Click nav updates hash (replaceState, not pushState) ──
     await navigateToSection(page, 'password', sel.password);
     await expect(page).toHaveURL(/#password/);
 
-    // ── Browser back returns to previous hash ──
+    // ── Browser back returns to dashboard (hash changes don't push history) ──
     await page.goBack();
-    await expect(page.locator(sel.email)).toBeVisible({ timeout: 10_000 });
-    await expect(page).toHaveURL(/#email/);
+    await expect(page).toHaveURL(/\/dashboard/, { timeout: 10_000 });
 
     // ── No hash defaults to profile ──
-    await page.goto('/en/settings');
+    await page.goto(url(ROUTES.common.settings));
     await expect(page.locator(sel.fullName)).toBeVisible({ timeout: 15_000 });
   });
 });
@@ -424,7 +426,7 @@ test.describe('Settings Page – Accent Color', () => {
 
   test('switches accent color → persists after reload', async ({ page }) => {
     await signIn(page);
-    await page.goto('/en/settings#appearance');
+    await page.goto(url(ROUTES.common.settings, SECTION_TO_HASH.appearance));
     await expect(page.locator('button[data-accent="blue"]')).toBeVisible({ timeout: 15_000 });
 
     // ── Blue is the default — no data-accent on <html> ──
@@ -453,5 +455,56 @@ test.describe('Settings Page – Accent Color', () => {
     await expect(page.locator('button[data-accent="blue"]')).toBeVisible({ timeout: 15_000 });
     await page.locator('button[data-accent="blue"]').click();
     await expect(html).toHaveAttribute('data-accent', 'blue');
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────
+// Settings Page – Complete Profile Modal
+// ─────────────────────────────────────────────────────────────────
+test.describe('Settings Page – Complete Profile Modal', () => {
+  test.describe.configure({ timeout: 60_000 });
+
+  let email: string;
+  let signIn: ReturnType<typeof makeSignIn>;
+
+  test.beforeAll(async ({}, testInfo) => {
+    email = scopedEmail('e2e-settings-modal', testInfo.project.name);
+    signIn = makeSignIn(email);
+    // Create user with empty profile to trigger the complete-profile modal
+    await ensureUser(email, PASSWORD, { fullName: '', role: '' });
+  });
+
+  test.afterAll(async ({}, testInfo) => {
+    const e = scopedEmail('e2e-settings-modal', testInfo.project.name);
+    await deleteUserByEmail(e).catch(() => {});
+  });
+
+  test('shows non-dismissable modal → fill form → modal disappears', async ({ page }) => {
+    await signIn(page);
+
+    const dialog = page.locator('[role="dialog"]');
+    await expect(dialog).toBeVisible({ timeout: 15_000 });
+
+    // ── Modal cannot be dismissed with Escape ──
+    await page.keyboard.press('Escape');
+    await expect(dialog).toBeVisible();
+
+    // ── Fill fullName ──
+    await expect(async () => {
+      const nameInput = dialog.locator('input[name="fullName"]');
+      await nameInput.click();
+      await nameInput.fill('Test User');
+      await expect(nameInput).toHaveValue('Test User');
+    }).toPass({ timeout: 10_000 });
+
+    // ── Select role ──
+    await dialog.locator('[data-testid="complete-profile-role"]').click();
+    await page.locator('[role="option"]').first().click();
+
+    // ── Submit ──
+    await dialog.locator('button[type="submit"]').click();
+
+    // ── Modal disappears after successful submission ──
+    await expect(dialog).not.toBeVisible({ timeout: 15_000 });
   });
 });

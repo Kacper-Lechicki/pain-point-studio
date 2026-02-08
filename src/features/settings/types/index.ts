@@ -15,14 +15,16 @@ const SOCIAL_LINK_DOMAINS: Record<string, string[]> = {
 
 export const socialLinkSchema = z
   .object({
-    label: z.string().min(1),
-    url: z.string().url(),
+    label: z.string().min(1, 'settings.errors.fieldRequired'),
+    url: z.string().url('settings.errors.invalidUrl'),
   })
   .refine(
     (data) => {
       const allowedDomains = SOCIAL_LINK_DOMAINS[data.label];
 
-      if (!allowedDomains) {return true;}
+      if (!allowedDomains) {
+        return true;
+      }
 
       try {
         const hostname = new URL(data.url).hostname.replace(/^www\./, '');
@@ -39,10 +41,23 @@ export const socialLinkSchema = z
 
 export type SocialLink = z.infer<typeof socialLinkSchema>;
 
+export const completeProfileSchema = z.object({
+  fullName: z
+    .string()
+    .min(1, 'settings.errors.fieldRequired')
+    .max(FULL_NAME_MAX_LENGTH, 'settings.errors.nameTooLong'),
+  role: z.string().min(1, 'settings.errors.fieldRequired'),
+});
+
+export type CompleteProfileSchema = z.infer<typeof completeProfileSchema>;
+
 export const updateProfileSchema = z.object({
-  fullName: z.string().max(FULL_NAME_MAX_LENGTH),
-  role: z.string(),
-  bio: z.string().max(BIO_MAX_LENGTH),
+  fullName: z
+    .string()
+    .min(1, 'settings.errors.fieldRequired')
+    .max(FULL_NAME_MAX_LENGTH, 'settings.errors.nameTooLong'),
+  role: z.string().min(1, 'settings.errors.fieldRequired'),
+  bio: z.string().max(BIO_MAX_LENGTH, 'settings.errors.bioTooLong'),
   socialLinks: z.array(socialLinkSchema).max(MAX_SOCIAL_LINKS),
 });
 
@@ -53,7 +68,7 @@ export type UpdateProfileSchema = z.infer<typeof updateProfileSchema>;
 // ---------------------------------------------------------------------------
 
 export const updateEmailSchema = z.object({
-  email: z.email(),
+  email: z.email('settings.errors.invalidEmail'),
 });
 
 export type UpdateEmailSchema = z.infer<typeof updateEmailSchema>;
@@ -80,7 +95,7 @@ export type ChangePasswordSchema = z.infer<typeof changePasswordSchema>;
 // ---------------------------------------------------------------------------
 
 export const deleteAccountSchema = z.object({
-  confirmation: z.string().email(),
+  confirmation: z.string().email('settings.errors.confirmationMismatch'),
 });
 
 export type DeleteAccountSchema = z.infer<typeof deleteAccountSchema>;

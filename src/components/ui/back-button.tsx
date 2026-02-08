@@ -3,6 +3,7 @@
 import { ArrowLeft } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { ROUTES } from '@/config';
 import { useRouter } from '@/i18n/routing';
 
 const NAV_DEPTH_KEY = '__nav_depth';
@@ -68,7 +69,7 @@ const BackButton = () => {
     if (canGoBack()) {
       router.back();
     } else {
-      router.replace('/dashboard');
+      router.replace(ROUTES.common.dashboard);
     }
   };
 

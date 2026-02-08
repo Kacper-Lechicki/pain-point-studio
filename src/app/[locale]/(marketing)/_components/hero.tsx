@@ -17,7 +17,10 @@ const Hero = async () => {
   const noCreditCard = t('common.noCreditCard');
 
   return (
-    <HeroHighlight containerClassName="bg-background w-full overflow-hidden">
+    <HeroHighlight
+      showDotsOnMobile={false}
+      containerClassName="bg-background w-full overflow-hidden"
+    >
       <div className="pointer-events-none relative z-10 container mx-auto flex flex-col items-center gap-8 px-6 pb-16 text-center *:pointer-events-auto sm:px-4 md:pb-20">
         <div className="bg-muted border-border inline-flex items-center rounded-full border px-4 py-1.5 text-sm font-medium">
           {badge}

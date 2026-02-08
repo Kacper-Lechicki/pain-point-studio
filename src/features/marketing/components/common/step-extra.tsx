@@ -68,4 +68,4 @@ const StepExtra = ({ type, stepKey }: StepExtraProps) => {
   return null;
 };
 
-export default StepExtra;
+export { StepExtra };

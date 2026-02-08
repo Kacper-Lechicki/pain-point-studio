@@ -55,4 +55,4 @@ const PersonaCard = ({ icon: Icon, titleKey, descriptionKey, featuresKey }: Pers
   );
 };
 
-export default PersonaCard;
+export { PersonaCard };

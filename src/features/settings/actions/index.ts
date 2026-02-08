@@ -1,3 +1,4 @@
+export { completeProfile } from './complete-profile';
 export { deleteAccount } from './delete-account';
 export { getProfile } from './get-profile';
 export type { LookupValue, ProfileData } from './get-profile';

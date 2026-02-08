@@ -26,8 +26,7 @@ const QuestionEngagementChart = () => {
   };
 
   const formatActivityTick = (value: string): string => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return (chartConfig[value as keyof typeof chartConfig] as any)?.label ?? value;
+    return chartConfig[value as keyof typeof chartConfig]?.label ?? value;
   };
 
   return (

@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 
+import { ROUTES, url } from './helpers/routes';
 import { deleteUserByEmail, ensureUser } from './helpers/supabase-admin';
 
 // ── Selectors ────────────────────────────────────────────────────
@@ -31,7 +32,7 @@ const TEST_USER = {
  */
 async function signIn(page: import('@playwright/test').Page) {
   await expect(async () => {
-    await page.goto('/en/sign-in', { timeout: 15_000 });
+    await page.goto(url(ROUTES.auth.signIn), { timeout: 15_000 });
 
     const emailInput = page.locator(sel.email);
     const passwordInput = page.locator(sel.password);
@@ -58,7 +59,7 @@ async function signIn(page: import('@playwright/test').Page) {
 // ─────────────────────────────────────────────────────────────────
 test.describe('Sign-In Flow', () => {
   test('renders the sign-in form with email, password and submit', async ({ page }) => {
-    await page.goto('/en/sign-in');
+    await page.goto(url(ROUTES.auth.signIn));
     await expect(page.locator(sel.form)).toBeVisible();
     await expect(page.locator(sel.email)).toBeVisible();
     await expect(page.locator(sel.password)).toBeVisible();
@@ -66,37 +67,37 @@ test.describe('Sign-In Flow', () => {
   });
 
   test('has navigation links to sign-up, forgot-password, and home', async ({ page }) => {
-    await page.goto('/en/sign-in');
-    await expect(linkTo(page, '/sign-up')).toBeVisible();
-    await expect(linkTo(page, '/forgot-password')).toBeVisible();
+    await page.goto(url(ROUTES.auth.signIn));
+    await expect(linkTo(page, ROUTES.auth.signUp)).toBeVisible();
+    await expect(linkTo(page, ROUTES.auth.forgotPassword)).toBeVisible();
     // Home link — next-intl Link renders href="/en" for the root route
-    await expect(page.locator('a[href="/en"]').first()).toBeVisible();
+    await expect(page.locator(`a[href="${url(ROUTES.common.home)}"]`).first()).toBeVisible();
   });
 
   test('navigates to sign-up page', async ({ page }) => {
-    await page.goto('/en/sign-in');
-    const link = linkTo(page, '/sign-up');
+    await page.goto(url(ROUTES.auth.signIn));
+    const link = linkTo(page, ROUTES.auth.signUp);
     await expect(link).toBeVisible();
     await link.click();
     await expect(page).toHaveURL(/\/sign-up/);
   });
 
   test('navigates to forgot-password page', async ({ page }) => {
-    await page.goto('/en/sign-in');
-    const link = linkTo(page, '/forgot-password');
+    await page.goto(url(ROUTES.auth.signIn));
+    const link = linkTo(page, ROUTES.auth.forgotPassword);
     await expect(link).toBeVisible();
     await link.click();
     await expect(page).toHaveURL(/\/forgot-password/);
   });
 
   test('stays on page when submitting empty form', async ({ page }) => {
-    await page.goto('/en/sign-in');
+    await page.goto(url(ROUTES.auth.signIn));
     await page.locator(sel.submit).click();
     await expect(page).toHaveURL(/\/sign-in/);
   });
 
   test('stays on page with invalid email format', async ({ page }) => {
-    await page.goto('/en/sign-in');
+    await page.goto(url(ROUTES.auth.signIn));
 
     await expect(async () => {
       await page.locator(sel.email).fill('not-an-email');
@@ -109,14 +110,14 @@ test.describe('Sign-In Flow', () => {
   });
 
   test('stays on page with empty password', async ({ page }) => {
-    await page.goto('/en/sign-in');
+    await page.goto(url(ROUTES.auth.signIn));
     await page.locator(sel.email).fill('test@example.com');
     await page.locator(sel.submit).click();
     await expect(page).toHaveURL(/\/sign-in/);
   });
 
   test('shows error feedback for invalid credentials', async ({ page }) => {
-    await page.goto('/en/sign-in');
+    await page.goto(url(ROUTES.auth.signIn));
 
     await expect(async () => {
       await page.locator(sel.email).fill('nonexistent@example.com');
@@ -137,7 +138,7 @@ test.describe('Sign-In Flow', () => {
   });
 
   test('password visibility toggle changes input type', async ({ page }) => {
-    await page.goto('/en/sign-in');
+    await page.goto(url(ROUTES.auth.signIn));
     const pw = page.locator(sel.password);
 
     await expect(pw).toHaveAttribute('type', 'password');
@@ -154,7 +155,7 @@ test.describe('Sign-In Flow', () => {
     test.skip(isMobile, 'Keyboard submission is not applicable on mobile viewports');
     test.skip(browserName === 'webkit', 'WebKit does not reliably trigger form submit via Enter');
 
-    await page.goto('/en/sign-in');
+    await page.goto(url(ROUTES.auth.signIn));
 
     await expect(async () => {
       await page.locator(sel.email).fill('nonexistent@example.com');
@@ -178,7 +179,7 @@ test.describe('Sign-Up Flow', () => {
   });
 
   test('renders the sign-up form with email, password and submit', async ({ page }) => {
-    await page.goto('/en/sign-up');
+    await page.goto(url(ROUTES.auth.signUp));
     await expect(page.locator(sel.form)).toBeVisible();
     await expect(page.locator(sel.email)).toBeVisible();
     await expect(page.locator(sel.password)).toBeVisible();
@@ -186,26 +187,26 @@ test.describe('Sign-Up Flow', () => {
   });
 
   test('has navigation link to sign-in', async ({ page }) => {
-    await page.goto('/en/sign-up');
-    await expect(linkTo(page, '/sign-in')).toBeVisible();
+    await page.goto(url(ROUTES.auth.signUp));
+    await expect(linkTo(page, ROUTES.auth.signIn)).toBeVisible();
   });
 
   test('navigates to sign-in page', async ({ page }) => {
-    await page.goto('/en/sign-up');
-    const link = linkTo(page, '/sign-in');
+    await page.goto(url(ROUTES.auth.signUp));
+    const link = linkTo(page, ROUTES.auth.signIn);
     await expect(link).toBeVisible();
     await link.click();
     await expect(page).toHaveURL(/\/sign-in/);
   });
 
   test('stays on page when submitting empty form', async ({ page }) => {
-    await page.goto('/en/sign-up');
+    await page.goto(url(ROUTES.auth.signUp));
     await page.locator(sel.submit).click();
     await expect(page).toHaveURL(/\/sign-up/);
   });
 
   test('stays on page with invalid email format', async ({ page }) => {
-    await page.goto('/en/sign-up');
+    await page.goto(url(ROUTES.auth.signUp));
 
     await expect(async () => {
       await page.locator(sel.email).fill('bad');
@@ -218,7 +219,7 @@ test.describe('Sign-Up Flow', () => {
   });
 
   test('rejects password without uppercase letter', async ({ page }) => {
-    await page.goto('/en/sign-up');
+    await page.goto(url(ROUTES.auth.signUp));
     await page.locator(sel.email).fill('test@example.com');
     await page.locator(sel.password).fill('weakpass1!');
     await page.locator(sel.submit).click();
@@ -226,7 +227,7 @@ test.describe('Sign-Up Flow', () => {
   });
 
   test('rejects password without special character', async ({ page }) => {
-    await page.goto('/en/sign-up');
+    await page.goto(url(ROUTES.auth.signUp));
     await page.locator(sel.email).fill('test@example.com');
     await page.locator(sel.password).fill('WeakPass12');
     await page.locator(sel.submit).click();
@@ -234,7 +235,7 @@ test.describe('Sign-Up Flow', () => {
   });
 
   test('rejects password without number', async ({ page }) => {
-    await page.goto('/en/sign-up');
+    await page.goto(url(ROUTES.auth.signUp));
     await page.locator(sel.email).fill('test@example.com');
     await page.locator(sel.password).fill('WeakPass!!');
     await page.locator(sel.submit).click();
@@ -242,7 +243,7 @@ test.describe('Sign-Up Flow', () => {
   });
 
   test('rejects password shorter than 8 characters', async ({ page }) => {
-    await page.goto('/en/sign-up');
+    await page.goto(url(ROUTES.auth.signUp));
     await page.locator(sel.email).fill('test@example.com');
     await page.locator(sel.password).fill('Ab1!');
     await page.locator(sel.submit).click();
@@ -250,7 +251,7 @@ test.describe('Sign-Up Flow', () => {
   });
 
   test('successful sign-up shows confirmation state', async ({ page }) => {
-    await page.goto('/en/sign-up');
+    await page.goto(url(ROUTES.auth.signUp));
 
     // Use toPass() to guard against hydration-swallowed fills
     await expect(async () => {
@@ -270,7 +271,7 @@ test.describe('Sign-Up Flow', () => {
     // After success, the form is replaced with a confirmation message
     // and a "Back to Sign In" link. The submit button disappears.
     await expect(page.locator(sel.submit)).not.toBeVisible({ timeout: 30_000 });
-    await expect(linkTo(page, '/sign-in')).toBeVisible();
+    await expect(linkTo(page, ROUTES.auth.signIn)).toBeVisible();
   });
 });
 
@@ -279,7 +280,7 @@ test.describe('Sign-Up Flow', () => {
 // ─────────────────────────────────────────────────────────────────
 test.describe('Forgot Password Flow', () => {
   test('renders the form with email input and submit', async ({ page }) => {
-    await page.goto('/en/forgot-password');
+    await page.goto(url(ROUTES.auth.forgotPassword));
     await expect(page.locator(sel.form)).toBeVisible();
     await expect(page.locator(sel.email)).toBeVisible();
     await expect(page.locator(sel.submit)).toBeVisible();
@@ -287,26 +288,26 @@ test.describe('Forgot Password Flow', () => {
   });
 
   test('has navigation link back to sign-in', async ({ page }) => {
-    await page.goto('/en/forgot-password');
-    await expect(linkTo(page, '/sign-in')).toBeVisible();
+    await page.goto(url(ROUTES.auth.forgotPassword));
+    await expect(linkTo(page, ROUTES.auth.signIn)).toBeVisible();
   });
 
   test('navigates back to sign-in', async ({ page }) => {
-    await page.goto('/en/forgot-password');
-    const link = linkTo(page, '/sign-in');
+    await page.goto(url(ROUTES.auth.forgotPassword));
+    const link = linkTo(page, ROUTES.auth.signIn);
     await expect(link).toBeVisible();
     await link.click();
     await expect(page).toHaveURL(/\/sign-in/);
   });
 
   test('stays on page when submitting empty email', async ({ page }) => {
-    await page.goto('/en/forgot-password');
+    await page.goto(url(ROUTES.auth.forgotPassword));
     await page.locator(sel.submit).click();
     await expect(page).toHaveURL(/\/forgot-password/);
   });
 
   test('stays on page with invalid email format', async ({ page }) => {
-    await page.goto('/en/forgot-password');
+    await page.goto(url(ROUTES.auth.forgotPassword));
     await page.locator(sel.email).fill('not-valid');
     await page.locator(sel.submit).click();
     await expect(page).toHaveURL(/\/forgot-password/);
@@ -318,7 +319,7 @@ test.describe('Forgot Password Flow', () => {
 // ─────────────────────────────────────────────────────────────────
 test.describe('Update Password Flow', () => {
   test('renders the form with password, confirm password and submit', async ({ page }) => {
-    await page.goto('/en/update-password');
+    await page.goto(url(ROUTES.auth.updatePassword));
     await expect(page.locator(sel.form)).toBeVisible();
     await expect(page.locator(sel.password)).toBeVisible();
     await expect(page.locator(sel.confirmPassword)).toBeVisible();
@@ -327,13 +328,13 @@ test.describe('Update Password Flow', () => {
   });
 
   test('stays on page when submitting empty form', async ({ page }) => {
-    await page.goto('/en/update-password');
+    await page.goto(url(ROUTES.auth.updatePassword));
     await page.locator(sel.submit).click();
     await expect(page).toHaveURL(/\/update-password/);
   });
 
   test('stays on page with weak password', async ({ page }) => {
-    await page.goto('/en/update-password');
+    await page.goto(url(ROUTES.auth.updatePassword));
     await page.locator(sel.password).fill('weak');
     await page.locator(sel.confirmPassword).fill('weak');
     await page.locator(sel.submit).click();
@@ -341,7 +342,7 @@ test.describe('Update Password Flow', () => {
   });
 
   test('stays on page when passwords do not match', async ({ page }) => {
-    await page.goto('/en/update-password');
+    await page.goto(url(ROUTES.auth.updatePassword));
     await page.locator(sel.password).fill('StrongPass1!');
     await page.locator(sel.confirmPassword).fill('DifferentPass1!');
     await page.locator(sel.submit).click();
@@ -354,35 +355,35 @@ test.describe('Update Password Flow', () => {
 // ─────────────────────────────────────────────────────────────────
 test.describe('Route Protection', () => {
   test('redirects unauthenticated user from /dashboard to /sign-in', async ({ page }) => {
-    await page.goto('/en/dashboard');
+    await page.goto(url(ROUTES.common.dashboard));
     await expect(page).toHaveURL(/\/sign-in/);
   });
 
   test('redirects unauthenticated user from /settings to /sign-in', async ({ page }) => {
-    await page.goto('/en/settings');
+    await page.goto(url(ROUTES.common.settings));
     await expect(page).toHaveURL(/\/sign-in/);
   });
 
   test('allows unauthenticated access to /sign-in', async ({ page }) => {
-    await page.goto('/en/sign-in');
+    await page.goto(url(ROUTES.auth.signIn));
     await expect(page).toHaveURL(/\/sign-in/);
     await expect(page.locator(sel.form)).toBeVisible();
   });
 
   test('allows unauthenticated access to /sign-up', async ({ page }) => {
-    await page.goto('/en/sign-up');
+    await page.goto(url(ROUTES.auth.signUp));
     await expect(page).toHaveURL(/\/sign-up/);
     await expect(page.locator(sel.form)).toBeVisible();
   });
 
   test('allows unauthenticated access to /forgot-password', async ({ page }) => {
-    await page.goto('/en/forgot-password');
+    await page.goto(url(ROUTES.auth.forgotPassword));
     await expect(page).toHaveURL(/\/forgot-password/);
     await expect(page.locator(sel.form)).toBeVisible();
   });
 
   test('allows unauthenticated access to /update-password', async ({ page }) => {
-    await page.goto('/en/update-password');
+    await page.goto(url(ROUTES.auth.updatePassword));
     await expect(page).toHaveURL(/\/update-password/);
     await expect(page.locator(sel.form)).toBeVisible();
   });
@@ -393,22 +394,22 @@ test.describe('Route Protection', () => {
 // ─────────────────────────────────────────────────────────────────
 test.describe('Auth Callback', () => {
   test('callback without code redirects to sign-in with error', async ({ page }) => {
-    await page.goto('/en/auth/callback');
+    await page.goto(url('/auth/callback'));
     await expect(page).toHaveURL(/\/sign-in\?error=auth_callback_error/);
   });
 
   test('callback with invalid code redirects to sign-in with error', async ({ page }) => {
-    await page.goto('/en/auth/callback?code=invalid-code');
+    await page.goto(url('/auth/callback') + '?code=invalid-code');
     await expect(page).toHaveURL(/\/sign-in\?error=auth_callback_error/);
   });
 
   test('dashboard with toast param redirects unauthenticated to sign-in', async ({ page }) => {
-    await page.goto('/en/dashboard?toast=signInSuccess');
+    await page.goto(url(ROUTES.common.dashboard) + '?toast=signInSuccess');
     await expect(page).toHaveURL(/\/sign-in/);
   });
 
   test('invalid toast param is handled gracefully', async ({ page }) => {
-    await page.goto('/en/sign-in?toast=invalidKey');
+    await page.goto(url(ROUTES.auth.signIn) + '?toast=invalidKey');
     await expect(page.locator(sel.form)).toBeVisible();
     await expect(page.locator(sel.email)).toBeVisible();
   });
@@ -433,10 +434,10 @@ test.describe('Full Auth Lifecycle', () => {
     await expect(page).toHaveURL(/\/dashboard/);
 
     await page.waitForLoadState('networkidle');
-    await page.goto('/en/sign-in');
+    await page.goto(url(ROUTES.auth.signIn));
     await expect(page).toHaveURL(/\/dashboard/, { timeout: 10_000 });
 
-    await page.goto('/en');
+    await page.goto(url(ROUTES.common.home));
     await expect(page).toHaveURL(/\/dashboard/, { timeout: 10_000 });
 
     // Open user menu and sign out
@@ -449,12 +450,12 @@ test.describe('Full Auth Lifecycle', () => {
     await expect(signOutBtn).toBeVisible();
     await signOutBtn.click();
 
-    await page.waitForURL((url) => !url.pathname.includes('/dashboard'), {
+    await page.waitForURL((url) => !url.pathname.includes(ROUTES.common.dashboard), {
       timeout: 15_000,
     });
 
     // Dashboard should no longer be accessible
-    await page.goto('/en/dashboard');
+    await page.goto(url(ROUTES.common.dashboard));
     await expect(page).toHaveURL(/\/sign-in/, { timeout: 10_000 });
   });
 });

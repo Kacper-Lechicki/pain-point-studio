@@ -55,9 +55,13 @@ vi.mock('@/lib/supabase/server', () => ({
       updateUser: mockUpdateUser,
     },
     from: vi.fn((table: string) => {
-      if (table === 'roles') {return mockRolesChain;}
+      if (table === 'roles') {
+        return mockRolesChain;
+      }
 
-      if (table === 'social_link_types') {return mockLinkTypesChain;}
+      if (table === 'social_link_types') {
+        return mockLinkTypesChain;
+      }
 
       return { update: mockUpdate };
     }),
@@ -162,25 +166,36 @@ describe('Settings Actions – Update Profile', () => {
     expect(mockGetUser).not.toHaveBeenCalled();
   });
 
-  it('should reject invalid role values', async () => {
+  it('should reject empty role', async () => {
     const { updateProfile } = await import('./update-profile');
     const result = await updateProfile({
       ...validData,
-      role: 'not-a-real-role',
+      role: '',
     });
 
     expect(result.error).toBeDefined();
-    expect(result).not.toHaveProperty('success');
+    expect(mockGetUser).not.toHaveBeenCalled();
   });
 
-  it('should reject invalid social link labels', async () => {
+  it('should reject empty fullName', async () => {
     const { updateProfile } = await import('./update-profile');
     const result = await updateProfile({
       ...validData,
-      socialLinks: [{ label: 'invalid-type', url: 'https://example.com' }],
+      fullName: '',
     });
 
     expect(result.error).toBeDefined();
-    expect(result).not.toHaveProperty('success');
+    expect(mockGetUser).not.toHaveBeenCalled();
+  });
+
+  it('should reject social link with mismatched domain', async () => {
+    const { updateProfile } = await import('./update-profile');
+    const result = await updateProfile({
+      ...validData,
+      socialLinks: [{ label: 'github', url: 'https://twitter.com/user' }],
+    });
+
+    expect(result.error).toBeDefined();
+    expect(mockGetUser).not.toHaveBeenCalled();
   });
 });

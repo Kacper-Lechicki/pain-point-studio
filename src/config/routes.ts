@@ -1,9 +1,7 @@
 import { PATHNAMES } from '@/i18n/pathnames';
 
-// Type-safe route keys based on defined pathnames
 export type AppRoute = keyof typeof PATHNAMES;
 
-// Centralized route configuration for type-safe navigation
 export const ROUTES = {
   auth: {
     signIn: '/sign-in' as AppRoute,
@@ -21,3 +19,29 @@ export const ROUTES = {
     preview: '/profile/preview' as AppRoute,
   },
 } as const;
+
+// ── Settings section ↔ URL hash mapping ──────────────────────────
+
+export const SETTINGS_SECTION_VALUES = [
+  'profile',
+  'email',
+  'password',
+  'appearance',
+  'connectedAccounts',
+  'dangerZone',
+] as const;
+
+export type SettingsSectionValue = (typeof SETTINGS_SECTION_VALUES)[number];
+
+export const SECTION_TO_HASH: Record<SettingsSectionValue, string> = {
+  profile: 'profile',
+  email: 'email',
+  password: 'password',
+  appearance: 'appearance',
+  connectedAccounts: 'connected-accounts',
+  dangerZone: 'danger-zone',
+};
+
+export const HASH_TO_SECTION: Record<string, SettingsSectionValue> = Object.fromEntries(
+  Object.entries(SECTION_TO_HASH).map(([k, v]) => [v, k as SettingsSectionValue])
+) as Record<string, SettingsSectionValue>;
