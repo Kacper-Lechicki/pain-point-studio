@@ -130,7 +130,7 @@ const AvatarUpload = ({
   };
 
   return (
-    <div className="bg-muted/20 flex flex-col items-center gap-4 rounded-lg border border-dashed p-5 sm:flex-row sm:items-center">
+    <div className="bg-muted/20 flex flex-col items-center gap-4 rounded-lg border border-dashed p-4 sm:flex-row sm:items-center">
       <Avatar className="ring-offset-background ring-border/50 size-20 shrink-0 ring-2 ring-offset-2">
         <AvatarImage src={currentUrl || undefined} alt={t('profile.avatar')} />
         <AvatarFallback className="text-lg">{fallbackInitials}</AvatarFallback>

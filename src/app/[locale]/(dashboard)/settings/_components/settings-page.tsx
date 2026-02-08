@@ -3,6 +3,7 @@
 import { useState, useSyncExternalStore } from 'react';
 
 import { CircleUserRound, KeyRound, Link2, Mail, Trash2 } from 'lucide-react';
+import { motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 
 import { ConnectedAccounts } from '@/app/[locale]/(dashboard)/settings/_components/connected-accounts';
@@ -92,8 +93,8 @@ const SettingsPage = ({ profile }: SettingsPageProps) => {
       <div className="flex w-full flex-col gap-6 lg:flex-row lg:items-start lg:gap-8">
         <div className="sticky top-24 hidden w-60 shrink-0 flex-col gap-6 lg:flex">
           <div className="space-y-1">
-            <h1 className="text-xl font-bold tracking-tight">{t('title')}</h1>
-            <p className="text-muted-foreground text-xs">{t('description')}</p>
+            <h1 className="text-lg font-semibold">{t('title')}</h1>
+            <p className="text-muted-foreground text-sm">{t('description')}</p>
           </div>
 
           <nav className="flex w-full flex-col gap-2" data-testid="settings-nav">
@@ -104,7 +105,7 @@ const SettingsPage = ({ profile }: SettingsPageProps) => {
                 data-section={value}
                 data-state={activeSection === value ? 'active' : 'inactive'}
                 onClick={() => setActiveSection(value)}
-                className="text-muted-foreground hover:border-border hover:text-foreground data-[state=active]:bg-accent data-[state=active]:text-foreground flex h-9 min-h-9 w-full items-center justify-start gap-2.5 rounded-lg border border-dashed border-transparent px-3 text-sm font-medium transition-all data-[state=active]:border-solid data-[state=active]:border-transparent"
+                className="text-muted-foreground hover:text-foreground hover:bg-accent/50 data-[state=active]:bg-accent data-[state=active]:text-foreground data-[state=active]:border-primary flex h-9 min-h-9 w-full items-center justify-start gap-2.5 rounded-lg border-l-2 border-transparent px-3 text-sm font-medium transition-all"
               >
                 <Icon className="size-4 shrink-0" aria-hidden="true" />
                 {t(`nav.${value}`)}
@@ -133,7 +134,14 @@ const SettingsPage = ({ profile }: SettingsPageProps) => {
         </div>
 
         <div className="sm:border-border/50 sm:bg-card/80 min-w-0 flex-1 rounded-xl sm:border sm:p-6 sm:shadow-xl sm:backdrop-blur-sm lg:p-10">
-          {sectionContent[activeSection]}
+          <motion.div
+            key={activeSection}
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
+          >
+            {sectionContent[activeSection]}
+          </motion.div>
         </div>
       </div>
     </div>

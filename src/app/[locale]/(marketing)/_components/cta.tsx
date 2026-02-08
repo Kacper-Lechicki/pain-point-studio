@@ -38,7 +38,7 @@ const Cta = () => {
             <p className="text-muted-foreground mt-6 text-lg leading-8">{description}</p>
 
             <div className="mt-10 flex flex-col items-center justify-center gap-4">
-              <Button asChild size="lg" className="h-12 gap-2 px-8 text-base">
+              <Button asChild size="lg" className="h-11 gap-2 px-8 text-base">
                 <Link href={ROUTES.auth.signIn}>
                   {startResearch}
                   <Send className="size-4" aria-hidden="true" />

@@ -1,3 +1,4 @@
+import { LogIn } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
 import { PageTransition } from '@/components/ui/page-transition';
@@ -13,6 +14,7 @@ export default async function SignInPage() {
   return (
     <PageTransition>
       <AuthHeader
+        icon={LogIn}
         title={t('auth.welcomeBack')}
         description={t('auth.dontHaveAccount')}
         linkText={t('auth.signUp')}

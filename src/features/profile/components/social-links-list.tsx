@@ -13,6 +13,14 @@ const SOCIAL_ICONS: Record<string, React.ComponentType<{ className?: string }>> 
   other: LinkIcon,
 };
 
+const SOCIAL_COLORS: Record<string, string> = {
+  github: 'hover:border-[#24292e]/30 hover:bg-[#24292e]/5',
+  twitter: 'hover:border-sky-500/30 hover:bg-sky-500/5',
+  linkedin: 'hover:border-blue-600/30 hover:bg-blue-600/5',
+  website: 'hover:border-primary/30 hover:bg-primary/5',
+  other: 'hover:border-primary/30 hover:bg-primary/5',
+};
+
 function getDisplayUrl(url: string): string {
   try {
     const parsed = new URL(url);
@@ -39,6 +47,7 @@ const SocialLinksList = ({ links }: SocialLinksListProps) => {
       <div className="flex flex-wrap gap-2">
         {links.map((link, index) => {
           const Icon = SOCIAL_ICONS[link.label] ?? LinkIcon;
+          const colorClass = SOCIAL_COLORS[link.label] ?? SOCIAL_COLORS.other;
 
           return (
             <a
@@ -46,7 +55,7 @@ const SocialLinksList = ({ links }: SocialLinksListProps) => {
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="border-border/60 text-muted-foreground hover:text-foreground hover:bg-accent/50 inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors"
+              className={`border-border/60 text-muted-foreground hover:text-foreground inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors ${colorClass}`}
             >
               <Icon className="size-4 shrink-0" />
               <span>{getDisplayUrl(link.url)}</span>

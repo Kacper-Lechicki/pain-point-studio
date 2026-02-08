@@ -1,5 +1,6 @@
 'use client';
 
+import { BarChart3, FolderOpen } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Separator } from '@/components/ui/separator';
@@ -41,6 +42,7 @@ const ProfileView = ({ profile, isPreview = false }: ProfileViewProps) => {
           <EmptySection
             title={t('sections.projects.title')}
             description={t('sections.projects.emptyDescription')}
+            icon={FolderOpen}
           />
 
           <Separator />
@@ -48,6 +50,7 @@ const ProfileView = ({ profile, isPreview = false }: ProfileViewProps) => {
           <EmptySection
             title={t('sections.statistics.title')}
             description={t('sections.statistics.emptyDescription')}
+            icon={BarChart3}
           />
         </div>
       </div>

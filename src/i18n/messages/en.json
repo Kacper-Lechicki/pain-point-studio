@@ -43,6 +43,7 @@
     "seeHowItWorks": "See How It Works",
     "settings": "Settings",
     "profile": "Profile",
+    "goBack": "Go Back",
     "loading": "Loading..."
   },
   "auth": {
@@ -97,11 +98,10 @@
     "enterEmailToReset": "Enter your email to receive a password reset link",
     "setNewPassword": "Set New Password",
     "enterNewPassword": "Please enter your new password below",
-    "backToHome": "Back to Home",
-    "signInSuccess": "Signed in successfully!",
-    "signOutSuccess": "Signed out successfully.",
+    "signInSuccess": "Signed in!",
+    "signOutSuccess": "Signed out.",
     "emailConfirmed": "Email confirmed. You are now signed in!",
-    "passwordUpdated": "Password updated successfully!",
+    "passwordUpdated": "Password updated!",
     "unexpectedError": "Something went wrong. Please try again.",
     "errors": {
       "passwordRequired": "Password is required.",
@@ -326,7 +326,6 @@
   "settings": {
     "title": "Settings",
     "description": "Manage your account settings and preferences.",
-    "backToDashboard": "Back to Dashboard",
     "nav": {
       "profile": "Profile",
       "email": "Email",
@@ -351,7 +350,7 @@
       "bioCounter": "{count}/{max}",
       "previewProfile": "Preview Profile",
       "saveProfile": "Save Profile",
-      "profileUpdated": "Profile updated successfully.",
+      "profileUpdated": "Profile updated.",
       "avatarUpdated": "Profile photo updated.",
       "avatarRemoved": "Profile photo removed.",
       "socialLinks": {
@@ -391,7 +390,7 @@
       "newPassword": "New Password",
       "confirmPassword": "Confirm New Password",
       "savePassword": "Update Password",
-      "passwordUpdated": "Password updated successfully."
+      "passwordUpdated": "Password updated."
     },
     "connectedAccounts": {
       "title": "Connected Accounts",
@@ -439,8 +438,7 @@
   "profile": {
     "preview": {
       "title": "Profile Preview",
-      "description": "This is how your profile looks to others.",
-      "backToSettings": "Back to Settings"
+      "description": "This is how your profile looks to others."
     },
     "memberSince": "Member since {date}",
     "empty": {

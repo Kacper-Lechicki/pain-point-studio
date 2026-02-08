@@ -1,3 +1,4 @@
+import { UserPlus } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
 import { PageTransition } from '@/components/ui/page-transition';
@@ -15,6 +16,7 @@ export default async function SignUpPage() {
       <SignUpForm
         header={
           <AuthHeader
+            icon={UserPlus}
             title={t('auth.createAccount')}
             description={t('auth.alreadyHaveAccount')}
             linkText={t('auth.signIn')}

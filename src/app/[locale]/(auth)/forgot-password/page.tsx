@@ -1,3 +1,4 @@
+import { Mail } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
 import { PageTransition } from '@/components/ui/page-transition';
@@ -11,7 +12,11 @@ export default async function ForgotPasswordPage() {
     <PageTransition>
       <ForgotPasswordForm
         header={
-          <AuthHeader title={t('auth.resetPassword')} description={t('auth.enterEmailToReset')} />
+          <AuthHeader
+            icon={Mail}
+            title={t('auth.resetPassword')}
+            description={t('auth.enterEmailToReset')}
+          />
         }
       />
     </PageTransition>

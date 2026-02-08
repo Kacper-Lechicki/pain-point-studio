@@ -1,9 +1,9 @@
 'use client';
 
-import { ArrowLeft } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { ROUTES } from '@/config';
+import { BackButton } from '@/components/ui/back-button';
+import { BRAND, ROUTES } from '@/config';
 import { UserMenu } from '@/features/auth/components/common/user-menu';
 import { Link, usePathname } from '@/i18n/routing';
 
@@ -11,30 +11,20 @@ const Navbar = () => {
   const t = useTranslations();
   const pathname = usePathname();
 
-  const isSettings = pathname === '/settings';
-  const isProfilePreview = pathname === '/profile/preview';
+  const showBackButton = pathname !== '/dashboard';
 
   return (
     <nav className="bg-background/80 sticky top-0 z-50 border-b backdrop-blur-md">
       <div className="container mx-auto flex h-16 items-center justify-between px-6 sm:px-4 lg:px-8">
-        <div className="flex items-center">
-          {isSettings && (
+        <div className="flex min-w-0 flex-1 items-center">
+          {showBackButton ? (
+            <BackButton />
+          ) : (
             <Link
               href={ROUTES.common.dashboard}
-              className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-sm transition-colors"
+              className="truncate text-lg font-semibold tracking-tight"
             >
-              <ArrowLeft className="size-4" />
-              {t('settings.backToDashboard')}
-            </Link>
-          )}
-
-          {isProfilePreview && (
-            <Link
-              href={ROUTES.common.settings}
-              className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-sm transition-colors"
-            >
-              <ArrowLeft className="size-4" />
-              {t('profile.preview.backToSettings')}
+              {t(BRAND.name)}
             </Link>
           )}
         </div>

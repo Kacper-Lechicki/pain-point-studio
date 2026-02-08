@@ -50,10 +50,10 @@ const Navbar = () => {
       )}
     >
       <div className="container mx-auto flex h-16 items-center px-6 sm:px-4 lg:px-8">
-        <div className="flex flex-1 items-center justify-start">
+        <div className="flex min-w-0 flex-1 items-center justify-start">
           <Link
             href={ROUTES.common.home}
-            className="text-lg font-semibold tracking-tight"
+            className="truncate text-lg font-semibold tracking-tight"
             onClick={() => setIsMobileMenuOpen(false)}
           >
             {brandName}
@@ -130,15 +130,15 @@ const Navbar = () => {
         )}
       >
         <div className="px-6 pt-6 pb-4">
-          <div className="flex flex-col gap-4">
-            <Button asChild className="w-full justify-center">
+          <div className="flex gap-3">
+            <Button asChild className="flex-1 justify-center">
               <Link href={ROUTES.auth.signIn} onClick={() => setIsMobileMenuOpen(false)}>
                 {t('common.signIn')}
                 <UserIcon className="size-4" aria-hidden="true" />
               </Link>
             </Button>
 
-            <Button variant="secondary" className="w-full justify-center gap-2" size="lg" asChild>
+            <Button variant="secondary" className="flex-1 justify-center gap-2" asChild>
               <Link href={ROUTES.common.home} onClick={() => setIsMobileMenuOpen(false)}>
                 {exploreLabel}
                 <Globe className="h-4 w-4" aria-hidden="true" />

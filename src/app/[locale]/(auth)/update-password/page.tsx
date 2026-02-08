@@ -1,3 +1,4 @@
+import { KeyRound } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
 import { PageTransition } from '@/components/ui/page-transition';
@@ -9,7 +10,11 @@ export default async function UpdatePasswordPage() {
 
   return (
     <PageTransition>
-      <AuthHeader title={t('auth.setNewPassword')} description={t('auth.enterNewPassword')} />
+      <AuthHeader
+        icon={KeyRound}
+        title={t('auth.setNewPassword')}
+        description={t('auth.enterNewPassword')}
+      />
       <UpdatePasswordForm />
     </PageTransition>
   );

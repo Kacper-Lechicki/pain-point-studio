@@ -42,7 +42,7 @@ const ConnectedAccounts = ({ identities }: ConnectedAccountsProps) => {
             return (
               <div
                 key={identity.provider}
-                className="bg-muted/30 flex flex-wrap items-center justify-between gap-2 rounded-lg border p-4 transition-colors"
+                className="bg-muted/30 hover:bg-muted/50 flex flex-wrap items-center justify-between gap-2 rounded-xl border p-4 transition-all hover:shadow-sm"
               >
                 <div className="flex min-w-0 items-center gap-3">
                   <Icon className="size-5 shrink-0" aria-hidden="true" />

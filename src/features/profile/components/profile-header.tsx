@@ -29,28 +29,33 @@ const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
     : '';
 
   return (
-    <div className="flex flex-col items-start gap-4 sm:flex-row">
-      <Avatar className="ring-offset-background ring-border/50 size-20 shrink-0 ring-2 ring-offset-2">
-        <AvatarImage src={profile.avatarUrl || undefined} alt={profile.fullName || ''} />
-        <AvatarFallback className="text-lg">{fallbackInitials}</AvatarFallback>
-      </Avatar>
+    <div className="flex flex-col items-start gap-5 sm:flex-row">
+      <div className="relative shrink-0">
+        <div className="bg-primary/10 absolute -inset-2 rounded-full blur-xl" />
+        <Avatar className="ring-offset-background ring-primary/20 relative size-24 ring-4 ring-offset-2">
+          <AvatarImage src={profile.avatarUrl || undefined} alt={profile.fullName || ''} />
+          <AvatarFallback className="text-xl font-semibold">{fallbackInitials}</AvatarFallback>
+        </Avatar>
+      </div>
 
-      <div className="space-y-2">
-        <div className="space-y-1">
-          <h2 className="text-xl font-semibold">
+      <div className="space-y-3">
+        <div className="space-y-1.5">
+          <h2 className="text-2xl font-bold tracking-tight">
             {profile.fullName || (
               <span className="text-muted-foreground italic">{t('empty.fullName')}</span>
             )}
           </h2>
 
           {profile.role ? (
-            <Badge variant="secondary">{profile.role}</Badge>
+            <Badge variant="secondary" className="text-xs">
+              {profile.role}
+            </Badge>
           ) : (
             <span className="text-muted-foreground text-sm italic">{t('empty.role')}</span>
           )}
         </div>
 
-        <p className="text-muted-foreground text-sm leading-relaxed">
+        <p className="text-muted-foreground max-w-lg text-sm leading-relaxed">
           {profile.bio || <span className="italic">{t('empty.bio')}</span>}
         </p>
 
