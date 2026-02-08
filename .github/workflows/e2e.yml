@@ -99,9 +99,25 @@ jobs:
           supabase status
           exit 1
 
+      # Build the Next.js app for production (much faster page loads than dev mode)
+      - name: Build Next.js
+        run: pnpm build
+        env:
+          NEXT_PUBLIC_APP_URL: http://localhost:3000
+          NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
+          SUPABASE_AUTH_REDIRECT_URI: http://localhost:3000/auth/callback
+          SUPABASE_AUTH_GITHUB_CLIENT_ID: ci_test_github_id
+          SUPABASE_AUTH_GITHUB_SECRET: ci_test_github_secret
+          SUPABASE_AUTH_GOOGLE_CLIENT_ID: ci_test_google_id
+          SUPABASE_AUTH_GOOGLE_SECRET: ci_test_google_secret
+          SMTP_HOST: localhost
+          SMTP_PORT: 587
+          SMTP_KEY: ci_test_smtp_key
+
       # Execute Playwright End-to-End tests simulating real user flows
       - name: Run Playwright Tests
-        run: rm -rf .next && PORT=3000 pnpm exec playwright test
+        run: PORT=3000 pnpm exec playwright test
         env:
           CI: true
           NODE_ENV: test

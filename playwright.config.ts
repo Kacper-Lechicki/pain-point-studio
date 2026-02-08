@@ -19,10 +19,10 @@ export default defineConfig({
   fullyParallel: true,
   // Fail the build on CI if you accidentally left test.only in the source code
   forbidOnly: !!env.CI,
-  // Retry on CI only
-  retries: env.CI ? 2 : 0,
-  // Opt out of parallel tests on CI to avoid resource congestion
-  ...(env.CI ? { workers: 1 } : {}),
+  // Retry on CI only (1 retry is enough with stable GoTrue rate limits)
+  retries: env.CI ? 1 : 0,
+  // Limit CI parallelism (GitHub Actions runners have 2 vCPUs)
+  ...(env.CI ? { workers: 2 } : {}),
   // Per-test timeout (30s locally, 60s on CI to account for slower runners)
   timeout: env.CI ? 60_000 : 30_000,
   // Global expect assertion timeout
@@ -66,8 +66,8 @@ export default defineConfig({
   ],
   // Run your local dev server before starting the tests
   webServer: {
-    // Command to start the server
-    command: 'pnpm dev',
+    // Use production server on CI (pre-built), dev server locally
+    command: env.CI ? 'pnpm start' : 'pnpm dev',
     // URL to wait for before starting tests
     url: baseURL,
     // Whether to reuse an existing server instance (useful for local development)

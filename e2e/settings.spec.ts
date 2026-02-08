@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 
+import { makeSignIn, scopedEmail } from './helpers/auth';
 import { ROUTES, SECTION_TO_HASH, url } from './helpers/routes';
 import { deleteUserByEmail, ensureUser } from './helpers/supabase-admin';
 
@@ -25,34 +26,6 @@ const sel = {
 } as const;
 
 const PASSWORD = 'E2eSettingsPass1!';
-
-function scopedEmail(base: string, projectName: string) {
-  const slug = projectName.toLowerCase().replace(/\s+/g, '-');
-
-  return `${base}+${slug}@example.com`;
-}
-
-// ── Shared helpers ───────────────────────────────────────────────
-
-function makeSignIn(email: string) {
-  return async function signIn(page: import('@playwright/test').Page) {
-    await expect(async () => {
-      await page.goto(url(ROUTES.auth.signIn), { timeout: 15_000 });
-
-      const submitBtn = page.locator('form button[type="submit"]');
-      await expect(submitBtn).toBeEnabled({ timeout: 5_000 });
-
-      await page.locator('input[name="email"]').fill(email);
-      await expect(page.locator('input[name="email"]')).toHaveValue(email);
-
-      await page.locator('input[name="password"]').fill(PASSWORD);
-      await expect(page.locator('input[name="password"]')).toHaveValue(PASSWORD);
-
-      await submitBtn.click();
-      await expect(page).toHaveURL(/\/dashboard/, { timeout: 10_000 });
-    }).toPass({ timeout: 50_000 });
-  };
-}
 
 /**
  * Navigate to a settings section (desktop tabs or mobile select).
@@ -96,7 +69,7 @@ test.describe('Settings – Core Flow', () => {
 
   test.beforeAll(async ({}, testInfo) => {
     email = scopedEmail('e2e-settings-core', testInfo.project.name);
-    signIn = makeSignIn(email);
+    signIn = makeSignIn(email, PASSWORD);
     await ensureUser(email, PASSWORD);
   });
 
@@ -182,7 +155,7 @@ test.describe('Settings – Password', () => {
 
   test.beforeAll(async ({}, testInfo) => {
     email = scopedEmail('e2e-settings-password', testInfo.project.name);
-    signIn = makeSignIn(email);
+    signIn = makeSignIn(email, PASSWORD);
     await ensureUser(email, PASSWORD);
   });
 
@@ -250,7 +223,7 @@ test.describe('Settings – Delete Account', () => {
 
   test('dialog → cancel → confirm → delete → dashboard locked', async ({ page }, testInfo) => {
     const email = scopedEmail('e2e-settings-delete', testInfo.project.name);
-    const signIn = makeSignIn(email);
+    const signIn = makeSignIn(email, PASSWORD);
 
     await ensureUser(email, PASSWORD);
     await signIn(page);
@@ -306,7 +279,7 @@ test.describe('Settings – Complete Profile Modal', () => {
 
   test.beforeAll(async ({}, testInfo) => {
     email = scopedEmail('e2e-settings-modal', testInfo.project.name);
-    signIn = makeSignIn(email);
+    signIn = makeSignIn(email, PASSWORD);
     await ensureUser(email, PASSWORD, { fullName: '', role: '' });
   });
 

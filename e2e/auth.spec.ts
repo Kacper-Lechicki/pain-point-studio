@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 
+import { makeSignIn, scopedEmail } from './helpers/auth';
 import { ROUTES, url } from './helpers/routes';
 import { deleteUserByEmail, ensureUser } from './helpers/supabase-admin';
 
@@ -14,36 +15,6 @@ const sel = {
 } as const;
 
 const PASSWORD = 'E2eTestPass1!';
-
-function scopedEmail(base: string, projectName: string) {
-  const slug = projectName.toLowerCase().replace(/\s+/g, '-');
-
-  return `${base}+${slug}@example.com`;
-}
-
-/**
- * Sign in helper. Uses toPass() to handle WebKit hydration issues
- * where .fill() can be swallowed during first render.
- */
-function makeSignIn(email: string) {
-  return async function signIn(page: import('@playwright/test').Page) {
-    await expect(async () => {
-      await page.goto(url(ROUTES.auth.signIn), { timeout: 15_000 });
-
-      const submitBtn = page.locator(sel.submit);
-      await expect(submitBtn).toBeEnabled({ timeout: 5_000 });
-
-      await page.locator(sel.email).fill(email);
-      await expect(page.locator(sel.email)).toHaveValue(email);
-
-      await page.locator(sel.password).fill(PASSWORD);
-      await expect(page.locator(sel.password)).toHaveValue(PASSWORD);
-
-      await submitBtn.click();
-      await expect(page).toHaveURL(/\/dashboard/, { timeout: 10_000 });
-    }).toPass({ timeout: 50_000 });
-  };
-}
 
 // ─────────────────────────────────────────────────────────────────
 // Sign-In Flow
@@ -95,12 +66,6 @@ test.describe('Sign-In Flow', () => {
 // Sign-Up Flow
 // ─────────────────────────────────────────────────────────────────
 test.describe('Sign-Up Flow', () => {
-  const SIGNUP_EMAIL = 'e2e-signup-test@example.com';
-
-  test.afterEach(async () => {
-    await deleteUserByEmail(SIGNUP_EMAIL).catch(() => {});
-  });
-
   test('rejects weak passwords', async ({ page }) => {
     await page.goto(url(ROUTES.auth.signUp));
     await expect(page.locator(sel.form)).toBeVisible();
@@ -120,15 +85,20 @@ test.describe('Sign-Up Flow', () => {
     }
   });
 
-  test('successful sign-up shows confirmation', async ({ page }) => {
+  test('successful sign-up shows confirmation', async ({ page }, testInfo) => {
+    const signupEmail = scopedEmail('e2e-signup', testInfo.project.name);
+
     await expect(async () => {
+      // Clean up any leftover user from a previous retry
+      await deleteUserByEmail(signupEmail).catch(() => {});
+
       await page.goto(url(ROUTES.auth.signUp), { timeout: 15_000 });
 
       const submitBtn = page.locator(sel.submit);
       await expect(submitBtn).toBeEnabled({ timeout: 5_000 });
 
-      await page.locator(sel.email).fill(SIGNUP_EMAIL);
-      await expect(page.locator(sel.email)).toHaveValue(SIGNUP_EMAIL);
+      await page.locator(sel.email).fill(signupEmail);
+      await expect(page.locator(sel.email)).toHaveValue(signupEmail);
 
       await page.locator(sel.password).fill('StrongPass1!');
       await expect(page.locator(sel.password)).toHaveValue('StrongPass1!');
@@ -137,9 +107,12 @@ test.describe('Sign-Up Flow', () => {
 
       // Submit button disappears, back-to-sign-in link appears
       await expect(submitBtn).not.toBeVisible({ timeout: 15_000 });
-    }).toPass({ timeout: 50_000 });
+    }).toPass({ timeout: 30_000 });
 
     await expect(page.locator(`a[href*="${ROUTES.auth.signIn}"]`).first()).toBeVisible();
+
+    // Clean up test user
+    await deleteUserByEmail(signupEmail).catch(() => {});
   });
 });
 
