@@ -1,2 +1,0 @@
--- Initial schema for Pain Point Studio
--- (instruments table removed — was a test artifact)

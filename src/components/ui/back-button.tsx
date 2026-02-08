@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+
 import { ArrowLeft } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -54,6 +56,10 @@ if (typeof window !== 'undefined' && !('navigation' in window)) {
 }
 
 function canGoBack(): boolean {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
   if ('navigation' in window) {
     return Boolean((window.navigation as { canGoBack?: boolean }).canGoBack);
   }
@@ -64,22 +70,29 @@ function canGoBack(): boolean {
 const BackButton = () => {
   const t = useTranslations();
   const router = useRouter();
+  const [goBack, setGoBack] = useState(false);
 
-  const handleBack = () => {
-    if (canGoBack()) {
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => setGoBack(canGoBack()));
+
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  const handleClick = () => {
+    if (goBack) {
       router.back();
     } else {
-      router.replace(ROUTES.common.dashboard);
+      router.push(ROUTES.common.dashboard);
     }
   };
 
   return (
     <button
       type="button"
-      onClick={handleBack}
+      onClick={handleClick}
       className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-sm transition-colors"
     >
-      <ArrowLeft className="size-4" />
+      <ArrowLeft className="size-4" aria-hidden="true" />
       {t('common.goBack')}
     </button>
   );
