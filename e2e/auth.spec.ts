@@ -13,32 +13,36 @@ const sel = {
   toast: '[data-sonner-toast]',
 } as const;
 
-// ── Test user credentials ────────────────────────────────────────
-const TEST_USER = {
-  email: 'e2e-auth-test@example.com',
-  password: 'E2eTestPass1!',
-};
+const PASSWORD = 'E2eTestPass1!';
+
+function scopedEmail(base: string, projectName: string) {
+  const slug = projectName.toLowerCase().replace(/\s+/g, '-');
+
+  return `${base}+${slug}@example.com`;
+}
 
 /**
  * Sign in helper. Uses toPass() to handle WebKit hydration issues
  * where .fill() can be swallowed during first render.
  */
-async function signIn(page: import('@playwright/test').Page) {
-  await expect(async () => {
-    await page.goto(url(ROUTES.auth.signIn), { timeout: 15_000 });
+function makeSignIn(email: string) {
+  return async function signIn(page: import('@playwright/test').Page) {
+    await expect(async () => {
+      await page.goto(url(ROUTES.auth.signIn), { timeout: 15_000 });
 
-    const submitBtn = page.locator(sel.submit);
-    await expect(submitBtn).toBeEnabled({ timeout: 5_000 });
+      const submitBtn = page.locator(sel.submit);
+      await expect(submitBtn).toBeEnabled({ timeout: 5_000 });
 
-    await page.locator(sel.email).fill(TEST_USER.email);
-    await expect(page.locator(sel.email)).toHaveValue(TEST_USER.email);
+      await page.locator(sel.email).fill(email);
+      await expect(page.locator(sel.email)).toHaveValue(email);
 
-    await page.locator(sel.password).fill(TEST_USER.password);
-    await expect(page.locator(sel.password)).toHaveValue(TEST_USER.password);
+      await page.locator(sel.password).fill(PASSWORD);
+      await expect(page.locator(sel.password)).toHaveValue(PASSWORD);
 
-    await submitBtn.click();
-    await expect(page).toHaveURL(/\/dashboard/, { timeout: 10_000 });
-  }).toPass({ timeout: 50_000 });
+      await submitBtn.click();
+      await expect(page).toHaveURL(/\/dashboard/, { timeout: 10_000 });
+    }).toPass({ timeout: 50_000 });
+  };
 }
 
 // ─────────────────────────────────────────────────────────────────
@@ -230,12 +234,18 @@ test.describe('Auth Callback', () => {
 test.describe('Full Auth Lifecycle', () => {
   test.describe.configure({ timeout: 60_000 });
 
-  test.beforeAll(async () => {
-    await ensureUser(TEST_USER.email, TEST_USER.password);
+  let email: string;
+  let signIn: ReturnType<typeof makeSignIn>;
+
+  test.beforeAll(async ({}, testInfo) => {
+    email = scopedEmail('e2e-auth-lifecycle', testInfo.project.name);
+    signIn = makeSignIn(email);
+    await ensureUser(email, PASSWORD);
   });
 
-  test.afterAll(async () => {
-    await deleteUserByEmail(TEST_USER.email).catch(() => {});
+  test.afterAll(async ({}, testInfo) => {
+    const e = scopedEmail('e2e-auth-lifecycle', testInfo.project.name);
+    await deleteUserByEmail(e).catch(() => {});
   });
 
   test('sign in → auth redirects → sign out → dashboard locked', async ({ page }) => {
