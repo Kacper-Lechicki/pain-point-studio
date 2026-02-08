@@ -330,8 +330,19 @@
       "profile": "Profile",
       "email": "Email",
       "password": "Password",
+      "appearance": "Appearance",
       "connectedAccounts": "Accounts",
       "dangerZone": "Danger Zone"
+    },
+    "appearance": {
+      "title": "Appearance",
+      "description": "Customize the look and feel of your interface.",
+      "accentColor": "Accent Color",
+      "accents": {
+        "blue": "Blue",
+        "teal": "Teal",
+        "indigo": "Indigo"
+      }
     },
     "profile": {
       "title": "Profile Information",

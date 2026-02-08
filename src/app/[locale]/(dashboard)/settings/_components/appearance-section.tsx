@@ -1,0 +1,52 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
+
+import { ACCENT_OPTIONS, type Accent, useAccent } from '@/hooks/common/use-accent';
+import { cn } from '@/lib/common/utils';
+
+const ACCENT_PREVIEW: Record<Accent, string> = {
+  blue: 'bg-blue-500',
+  teal: 'bg-teal-500',
+  indigo: 'bg-indigo-500',
+};
+
+const AppearanceSection = () => {
+  const t = useTranslations('settings.appearance');
+  const { accent, setAccent } = useAccent();
+
+  return (
+    <section className="space-y-8">
+      <div className="border-border/40 space-y-1 border-b pb-6">
+        <h2 className="text-lg font-semibold">{t('title')}</h2>
+        <p className="text-muted-foreground text-sm">{t('description')}</p>
+      </div>
+
+      <div className="space-y-3">
+        <p className="text-sm font-medium">{t('accentColor')}</p>
+
+        <div className="flex flex-wrap gap-2">
+          {ACCENT_OPTIONS.map((option) => (
+            <button
+              key={option}
+              type="button"
+              data-accent={option}
+              onClick={() => setAccent(option)}
+              className={cn(
+                'flex items-center gap-2.5 rounded-lg border px-4 py-2 text-sm font-medium transition-colors',
+                accent === option
+                  ? 'border-primary bg-primary/5 text-foreground'
+                  : 'border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+              )}
+            >
+              <span className={cn('size-3.5 rounded-full', ACCENT_PREVIEW[option])} />
+              {t(`accents.${option}`)}
+            </button>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export { AppearanceSection };

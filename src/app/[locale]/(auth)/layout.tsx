@@ -10,7 +10,7 @@ interface AuthGroupLayoutProps {
 const AuthGroupLayout = ({ children }: AuthGroupLayoutProps) => {
   return (
     <HeroHighlight
-      containerClassName="dark bg-background min-h-screen w-full overflow-hidden"
+      containerClassName="bg-background min-h-screen w-full overflow-hidden"
       className="w-full"
       showDotsOnMobile={false}
     >

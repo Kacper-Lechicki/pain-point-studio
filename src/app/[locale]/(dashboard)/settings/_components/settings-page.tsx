@@ -2,10 +2,11 @@
 
 import { useState, useSyncExternalStore } from 'react';
 
-import { CircleUserRound, KeyRound, Link2, Mail, Trash2 } from 'lucide-react';
+import { CircleUserRound, KeyRound, Link2, Mail, Palette, Trash2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 
+import { AppearanceSection } from '@/app/[locale]/(dashboard)/settings/_components/appearance-section';
 import { ConnectedAccounts } from '@/app/[locale]/(dashboard)/settings/_components/connected-accounts';
 import { DangerZone } from '@/app/[locale]/(dashboard)/settings/_components/danger-zone';
 import { EmailForm } from '@/app/[locale]/(dashboard)/settings/_components/email-form';
@@ -25,6 +26,7 @@ const SECTIONS = [
   { value: 'profile', icon: CircleUserRound },
   { value: 'email', icon: Mail },
   { value: 'password', icon: KeyRound },
+  { value: 'appearance', icon: Palette },
   { value: 'connectedAccounts', icon: Link2 },
   { value: 'dangerZone', icon: Trash2 },
 ] as const;
@@ -74,6 +76,7 @@ const SettingsPage = ({ profile }: SettingsPageProps) => {
     profile: <ProfileForm profile={profile} />,
     email: <EmailForm currentEmail={profile.email} />,
     password: <PasswordForm hasPassword={profile.hasPassword} />,
+    appearance: <AppearanceSection />,
     connectedAccounts: <ConnectedAccounts identities={profile.identities} />,
     dangerZone: <DangerZone userEmail={profile.email} />,
   };

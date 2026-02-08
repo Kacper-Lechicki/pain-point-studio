@@ -1,4 +1,5 @@
 import { Inter, JetBrains_Mono } from 'next/font/google';
+import Script from 'next/script';
 
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages, getTranslations } from 'next-intl/server';
@@ -36,6 +37,9 @@ export default async function RootLayout({ children }: Readonly<RootLayoutProps>
 
   return (
     <html lang={locale} className="dark" suppressHydrationWarning data-scroll-behavior="smooth">
+      <head>
+        <Script src="/scripts/accent-init.js" strategy="beforeInteractive" />
+      </head>
       <body
         className={`${inter.variable} ${jetbrainsMono.variable} flex min-h-screen flex-col antialiased`}
       >

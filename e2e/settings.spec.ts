@@ -83,7 +83,7 @@ function makeSignIn(email: string) {
  */
 async function navigateToSection(
   page: import('@playwright/test').Page,
-  section: 'profile' | 'email' | 'password' | 'connectedAccounts' | 'dangerZone',
+  section: 'profile' | 'email' | 'password' | 'appearance' | 'connectedAccounts' | 'dangerZone',
   waitForSelector: string
 ) {
   // Use toPass() to handle the hydration race between desktop tabs
@@ -378,5 +378,61 @@ test.describe('Settings Page – Navigation', () => {
     await dashboardLink.click();
 
     await expect(page).toHaveURL(/\/dashboard/);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────
+// Settings Page – Accent Color
+// ─────────────────────────────────────────────────────────────────
+test.describe('Settings Page – Accent Color', () => {
+  test.describe.configure({ timeout: 60_000 });
+
+  let email: string;
+  let signIn: ReturnType<typeof makeSignIn>;
+
+  test.beforeAll(async ({}, testInfo) => {
+    email = scopedEmail('e2e-settings-accent', testInfo.project.name);
+    signIn = makeSignIn(email);
+    await ensureUser(email, PASSWORD);
+  });
+
+  test.afterAll(async ({}, testInfo) => {
+    const e = scopedEmail('e2e-settings-accent', testInfo.project.name);
+    await deleteUserByEmail(e).catch(() => {});
+  });
+
+  test('switches accent color → persists after reload', async ({ page }) => {
+    await signIn(page);
+    await page.goto('/en/settings');
+
+    // ── Navigate to appearance section ──
+    await navigateToSection(page, 'appearance', 'button[data-accent="blue"]');
+
+    // ── Blue is the default — no data-accent on <html> ──
+    const html = page.locator('html');
+    const blueBtn = page.locator('button[data-accent="blue"]');
+    const tealBtn = page.locator('button[data-accent="teal"]');
+    const indigoBtn = page.locator('button[data-accent="indigo"]');
+
+    await expect(blueBtn).toBeVisible();
+    await expect(tealBtn).toBeVisible();
+    await expect(indigoBtn).toBeVisible();
+
+    // ── Switch to teal ──
+    await tealBtn.click();
+    await expect(html).toHaveAttribute('data-accent', 'teal');
+
+    // ── Switch to indigo ──
+    await indigoBtn.click();
+    await expect(html).toHaveAttribute('data-accent', 'indigo');
+
+    // ── Persists after reload ──
+    await page.reload();
+    await expect(html).toHaveAttribute('data-accent', 'indigo', { timeout: 5_000 });
+
+    // ── Switch back to blue (default) ──
+    await navigateToSection(page, 'appearance', 'button[data-accent="blue"]');
+    await page.locator('button[data-accent="blue"]').click();
+    await expect(html).toHaveAttribute('data-accent', 'blue');
   });
 });
