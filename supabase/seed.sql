@@ -2,8 +2,6 @@
 -- Run with: pnpm supabase:reset (applies migrations + seed)
 -- All seed user passwords: Password1!
 
--- pgcrypto lives in the extensions schema — make crypt()/gen_salt() visible
-CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA extensions;
 
 -- ============================================================
 -- Helper: lookup user id by email (used by e2e test cleanup)
@@ -27,7 +25,7 @@ VALUES (
   '00000000-0000-0000-0000-000000000000',
   'authenticated', 'authenticated',
   'alice@example.com',
-  crypt('Password1!', gen_salt('bf')),
+  extensions.crypt('Password1!', extensions.gen_salt('bf')),
   now(),
   '{"full_name": "Alice Johnson"}'::jsonb,
   now(), now(), '', false
@@ -60,7 +58,7 @@ VALUES (
   '00000000-0000-0000-0000-000000000000',
   'authenticated', 'authenticated',
   'bob@example.com',
-  crypt('Password1!', gen_salt('bf')),
+  extensions.crypt('Password1!', extensions.gen_salt('bf')),
   now(),
   '{"full_name": "Bob Martinez"}'::jsonb,
   now(), now(), '', false
@@ -93,7 +91,7 @@ VALUES (
   '00000000-0000-0000-0000-000000000000',
   'authenticated', 'authenticated',
   'carol@example.com',
-  crypt('Password1!', gen_salt('bf')),
+  extensions.crypt('Password1!', extensions.gen_salt('bf')),
   now(),
   '{"full_name": "Carol Chen"}'::jsonb,
   now(), now(), '', false
@@ -125,7 +123,7 @@ VALUES (
   '00000000-0000-0000-0000-000000000000',
   'authenticated', 'authenticated',
   'dave@example.com',
-  crypt('Password1!', gen_salt('bf')),
+  extensions.crypt('Password1!', extensions.gen_salt('bf')),
   now(),
   '{"full_name": ""}'::jsonb,
   now(), now(), '', false
