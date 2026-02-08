@@ -4,18 +4,15 @@ import { getLocale } from 'next-intl/server';
 import { z } from 'zod';
 
 import { mapAuthError } from '@/features/auth/config';
-import {
-  AuthActionResult,
-  forgotPasswordSchema,
-  updatePasswordSchema,
-} from '@/features/auth/types';
+import { forgotPasswordSchema, updatePasswordSchema } from '@/features/auth/types';
 import { env } from '@/lib/common/env';
 import { rateLimit } from '@/lib/common/rate-limit';
+import { ActionResult } from '@/lib/common/types';
 import { createClient } from '@/lib/supabase/server';
 
 export const resetPassword = async (
   formData: z.infer<typeof forgotPasswordSchema>
-): Promise<AuthActionResult> => {
+): Promise<ActionResult> => {
   const { limited } = await rateLimit({ key: 'reset-password', limit: 3, windowSeconds: 3600 });
 
   if (limited) {
@@ -43,7 +40,13 @@ export const resetPassword = async (
 
 export const updatePassword = async (
   formData: z.infer<typeof updatePasswordSchema>
-): Promise<AuthActionResult> => {
+): Promise<ActionResult> => {
+  const { limited } = await rateLimit({ key: 'update-password', limit: 5, windowSeconds: 3600 });
+
+  if (limited) {
+    return { error: 'auth.errors.rateLimitExceeded' };
+  }
+
   const supabase = await createClient();
   const validation = updatePasswordSchema.safeParse(formData);
 

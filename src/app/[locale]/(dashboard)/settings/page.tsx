@@ -1,7 +1,20 @@
-export default async function SettingsPage() {
+import { redirect } from 'next/navigation';
+
+import { SettingsPage } from '@/app/[locale]/(dashboard)/settings/_components/settings-page';
+import { PageTransition } from '@/components/ui/page-transition';
+import { ROUTES } from '@/config';
+import { getProfile } from '@/features/settings/actions';
+
+export default async function SettingsRoute() {
+  const profile = await getProfile();
+
+  if (!profile) {
+    redirect(ROUTES.auth.signIn);
+  }
+
   return (
-    <div>
-      <h1 className="text-3xl font-bold">Settings</h1>
-    </div>
+    <PageTransition>
+      <SettingsPage profile={profile} />
+    </PageTransition>
   );
 }

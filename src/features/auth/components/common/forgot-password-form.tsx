@@ -22,6 +22,7 @@ import { ROUTES } from '@/config';
 import { resetPassword } from '@/features/auth/actions';
 import { ForgotPasswordSchema, forgotPasswordSchema } from '@/features/auth/types';
 import { Link } from '@/i18n/routing';
+import type { MessageKey } from '@/i18n/types';
 
 interface ForgotPasswordFormProps {
   header?: ReactNode;
@@ -46,7 +47,7 @@ const ForgotPasswordForm = ({ header }: ForgotPasswordFormProps) => {
       const result = await resetPassword(data);
 
       if (result.error) {
-        toast.error(t(result.error));
+        toast.error(t(result.error as MessageKey));
         setIsLoading(false);
       } else {
         toast.success(t('auth.resetLinkSent'));
@@ -99,7 +100,7 @@ const ForgotPasswordForm = ({ header }: ForgotPasswordFormProps) => {
             )}
           />
 
-          <Button type="submit" className="mt-4 w-full" disabled={isLoading}>
+          <Button type="submit" size="lg" className="mt-4 w-full" disabled={isLoading}>
             {isLoading && <Spinner />}
             {t('auth.sendResetLink')}
           </Button>

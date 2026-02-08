@@ -9,7 +9,7 @@ import { updateSession } from '@/lib/supabase/middleware';
 // Public routes that DON'T require authentication (allowlist approach)
 // Everything else is protected by default — new routes are secure without manual registration
 const PUBLIC_ROUTES = [
-  '/',
+  ROUTES.common.home,
   '/auth/callback',
   ROUTES.auth.signIn,
   ROUTES.auth.signUp,
@@ -52,7 +52,7 @@ const middleware = async (req: NextRequest) => {
   const locale = req.nextUrl.pathname.split('/')[1] || defaultLocale;
 
   const isPublicRoute = PUBLIC_ROUTES.some((route) =>
-    route === '/' ? pathname === '/' : pathname.startsWith(route)
+    route === ROUTES.common.home ? pathname === ROUTES.common.home : pathname.startsWith(route)
   );
 
   // Route protection: redirect unauthenticated users away from non-public routes
@@ -63,7 +63,10 @@ const middleware = async (req: NextRequest) => {
   }
 
   // Route protection: redirect authenticated users from home and auth pages to dashboard
-  if (user && (pathname === '/' || AUTH_ROUTES.some((route) => pathname.startsWith(route)))) {
+  if (
+    user &&
+    (pathname === ROUTES.common.home || AUTH_ROUTES.some((route) => pathname.startsWith(route)))
+  ) {
     const dashboardUrl = new URL(`/${locale}${ROUTES.common.dashboard}`, req.url);
 
     return NextResponse.redirect(dashboardUrl);

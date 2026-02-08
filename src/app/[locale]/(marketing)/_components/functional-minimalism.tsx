@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 
 import { ScrollReveal } from '@/components/ui/scroll-reveal';
-import FeatureCard from '@/features/marketing/components/common/feature-card';
+import { FeatureCard } from '@/features/marketing/components/common/feature-card';
 import { MINIMALISM_FEATURES, MinimalismFeature } from '@/features/marketing/config';
 
 const FunctionalMinimalism = () => {

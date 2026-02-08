@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 
 import { CopyableLink } from '@/features/marketing/components/common/copyable-link';
+import type { MessageKey } from '@/i18n/types';
 
 interface StepExtraProps {
   type: 'example' | 'questions' | 'share' | 'stats';
@@ -14,8 +15,8 @@ const StepExtra = ({ type, stepKey }: StepExtraProps) => {
   const baseKey = `marketing.howItWorks.steps.${stepKey}`;
 
   if (type === 'example') {
-    const exampleTitle = t(`${baseKey}.exampleTitle`);
-    const exampleDescription = t(`${baseKey}.exampleDescription`);
+    const exampleTitle = t(`${baseKey}.exampleTitle` as MessageKey);
+    const exampleDescription = t(`${baseKey}.exampleDescription` as MessageKey);
 
     return (
       <div className="card-static mt-6 text-left text-sm">
@@ -30,8 +31,8 @@ const StepExtra = ({ type, stepKey }: StepExtraProps) => {
   }
 
   if (type === 'questions') {
-    const question1 = t(`${baseKey}.question1`);
-    const question2 = t(`${baseKey}.question2`);
+    const question1 = t(`${baseKey}.question1` as MessageKey);
+    const question2 = t(`${baseKey}.question2` as MessageKey);
 
     return (
       <div className="mt-6 flex flex-col gap-3">
@@ -46,8 +47,8 @@ const StepExtra = ({ type, stepKey }: StepExtraProps) => {
   }
 
   if (type === 'stats') {
-    const responsesLabel = t(`${baseKey}.responsesLabel`);
-    const painPointsLabel = t(`${baseKey}.painPointsLabel`);
+    const responsesLabel = t(`${baseKey}.responsesLabel` as MessageKey);
+    const painPointsLabel = t(`${baseKey}.painPointsLabel` as MessageKey);
 
     return (
       <div className="mt-6 flex flex-col gap-3">
@@ -67,4 +68,4 @@ const StepExtra = ({ type, stepKey }: StepExtraProps) => {
   return null;
 };
 
-export default StepExtra;
+export { StepExtra };

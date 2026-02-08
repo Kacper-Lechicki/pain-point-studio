@@ -1,20 +1,10 @@
 import { z } from 'zod';
 
-import { PASSWORD_CONFIG } from '@/features/auth/config/password';
-
-export const PASSWORD_MIN_LENGTH = PASSWORD_CONFIG.MIN_LENGTH;
-
-const basePasswordSchema = z
-  .string()
-  .min(PASSWORD_MIN_LENGTH, 'auth.passwordRequirements')
-  .regex(/[A-Z]/, 'auth.passwordRequirements')
-  .regex(/[a-z]/, 'auth.passwordRequirements')
-  .regex(/\d/, 'auth.passwordRequirements')
-  .regex(/[^A-Za-z0-9]/, 'auth.passwordRequirements');
+import { basePasswordSchema } from '@/features/auth/config/password';
 
 export const signInSchema = z.object({
   email: z.email(),
-  password: z.string().min(1, 'Password is required'),
+  password: z.string().min(1, 'auth.errors.passwordRequired'),
 });
 
 export const signUpSchema = z.object({
@@ -32,7 +22,7 @@ export const updatePasswordSchema = z
     confirmPassword: basePasswordSchema,
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
+    message: 'settings.errors.passwordsMismatch',
     path: ['confirmPassword'],
   });
 
@@ -42,7 +32,3 @@ export type ForgotPasswordSchema = z.infer<typeof forgotPasswordSchema>;
 export type UpdatePasswordSchema = z.infer<typeof updatePasswordSchema>;
 
 export type AuthProvider = 'google' | 'github';
-
-export type AuthActionResult =
-  | { success: true; error?: undefined }
-  | { error: string; success?: undefined };

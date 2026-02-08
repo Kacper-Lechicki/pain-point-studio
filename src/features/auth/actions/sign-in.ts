@@ -6,14 +6,15 @@ import { getLocale } from 'next-intl/server';
 import { z } from 'zod';
 
 import { mapAuthError } from '@/features/auth/config';
-import { AuthActionResult, AuthProvider, signInSchema } from '@/features/auth/types';
+import { AuthProvider, signInSchema } from '@/features/auth/types';
 import { env } from '@/lib/common/env';
 import { rateLimit } from '@/lib/common/rate-limit';
+import { ActionResult } from '@/lib/common/types';
 import { createClient } from '@/lib/supabase/server';
 
 export const signInWithEmail = async (
   formData: z.infer<typeof signInSchema>
-): Promise<AuthActionResult> => {
+): Promise<ActionResult> => {
   const { limited } = await rateLimit({ key: 'sign-in', limit: 5, windowSeconds: 300 });
 
   if (limited) {

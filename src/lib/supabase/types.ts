@@ -28,18 +28,89 @@ export type Database = {
   };
   public: {
     Tables: {
-      instruments: {
+      profiles: {
+        Row: {
+          avatar_url: string;
+          bio: string;
+          full_name: string;
+          id: string;
+          role: string;
+          social_links: Json;
+          updated_at: string;
+        };
+        Insert: {
+          avatar_url?: string;
+          bio?: string;
+          full_name?: string;
+          id: string;
+          role?: string;
+          social_links?: Json;
+          updated_at?: string;
+        };
+        Update: {
+          avatar_url?: string;
+          bio?: string;
+          full_name?: string;
+          id?: string;
+          role?: string;
+          social_links?: Json;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'profiles_role_fk';
+            columns: ['role'];
+            isOneToOne: false;
+            referencedRelation: 'roles';
+            referencedColumns: ['value'];
+          },
+        ];
+      };
+      roles: {
         Row: {
           id: number;
-          name: string;
+          is_active: boolean;
+          label_key: string;
+          sort_order: number;
+          value: string;
         };
         Insert: {
           id?: number;
-          name: string;
+          is_active?: boolean;
+          label_key: string;
+          sort_order?: number;
+          value: string;
         };
         Update: {
           id?: number;
-          name?: string;
+          is_active?: boolean;
+          label_key?: string;
+          sort_order?: number;
+          value?: string;
+        };
+        Relationships: [];
+      };
+      social_link_types: {
+        Row: {
+          id: number;
+          is_active: boolean;
+          label_key: string;
+          sort_order: number;
+          value: string;
+        };
+        Insert: {
+          id?: number;
+          is_active?: boolean;
+          label_key: string;
+          sort_order?: number;
+          value: string;
+        };
+        Update: {
+          id?: number;
+          is_active?: boolean;
+          label_key?: string;
+          sort_order?: number;
+          value?: string;
         };
         Relationships: [];
       };
@@ -48,7 +119,7 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      get_user_id_by_email: { Args: { lookup_email: string }; Returns: string };
     };
     Enums: {
       [_ in never]: never;

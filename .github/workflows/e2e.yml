@@ -45,6 +45,29 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
+      # Get Playwright version for browser caching
+      - name: Get Playwright version
+        id: playwright-version
+        run: echo "version=$(pnpm exec playwright --version | awk '{print $2}')" >> $GITHUB_OUTPUT
+
+      # Cache Playwright browsers to avoid re-downloading ~400MB each run
+      - name: Cache Playwright Browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-browsers-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
+
+      # Install browsers + system deps if not cached
+      - name: Install Playwright Browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: pnpm exec playwright install --with-deps
+
+      # Install only system dependencies when browsers are cached
+      - name: Install Playwright System Dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: pnpm exec playwright install-deps
+
       # Install Supabase CLI
       - name: Install Supabase CLI
         uses: supabase/setup-cli@v1
@@ -75,10 +98,6 @@ jobs:
           echo "::error::Supabase failed to become healthy within 150 seconds"
           supabase status
           exit 1
-
-      # Install the browsers required by Playwright and their system dependencies
-      - name: Install Playwright Browsers
-        run: pnpm exec playwright install --with-deps
 
       # Execute Playwright End-to-End tests simulating real user flows
       - name: Run Playwright Tests

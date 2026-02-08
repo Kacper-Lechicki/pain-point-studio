@@ -22,7 +22,8 @@ import { Spinner } from '@/components/ui/spinner';
 import { ROUTES } from '@/config';
 import { signInWithEmail } from '@/features/auth/actions';
 import { SignInSchema, signInSchema } from '@/features/auth/types';
-import { useRouter } from '@/i18n/routing';
+import { Link, useRouter } from '@/i18n/routing';
+import type { MessageKey } from '@/i18n/types';
 
 const SignInForm = () => {
   const t = useTranslations();
@@ -44,7 +45,7 @@ const SignInForm = () => {
       const result = await signInWithEmail(data);
 
       if (result.error) {
-        toast.error(t(result.error));
+        toast.error(t(result.error as MessageKey));
         setIsLoading(false);
       } else {
         toast.success(t('auth.signInSuccess'));
@@ -97,7 +98,16 @@ const SignInForm = () => {
           )}
         />
 
-        <Button type="submit" className="mt-4 w-full" disabled={isLoading}>
+        <div className="flex items-center justify-end">
+          <Link
+            href={ROUTES.auth.forgotPassword}
+            className="hover:text-primary text-sm underline underline-offset-4"
+          >
+            {t('auth.forgotPassword')}
+          </Link>
+        </div>
+
+        <Button type="submit" size="lg" className="mt-2 w-full font-semibold" disabled={isLoading}>
           {isLoading && <Spinner />}
           {t('auth.signInWithEmail')}
         </Button>

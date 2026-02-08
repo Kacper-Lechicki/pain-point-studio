@@ -28,9 +28,18 @@ function getAdminClient() {
  * Ensures a confirmed user exists with the given credentials.
  * Handles race conditions when multiple Playwright projects run
  * beforeAll in parallel by retrying on failure.
+ *
+ * By default sets fullName='E2E User' and role='other' on the profile
+ * so the complete-profile modal doesn't block tests.
+ * Pass `{ fullName: '', role: '' }` to test the incomplete profile flow.
+ *
  * Returns the user's id.
  */
-export async function ensureUser(email: string, password: string): Promise<string> {
+export async function ensureUser(
+  email: string,
+  password: string,
+  profile?: { fullName?: string; role?: string }
+): Promise<string> {
   const admin = getAdminClient();
 
   for (let attempt = 0; attempt < 3; attempt++) {
@@ -47,6 +56,11 @@ export async function ensureUser(email: string, password: string): Promise<strin
     });
 
     if (!error) {
+      const fullName = profile?.fullName ?? 'E2E User';
+      const role = profile?.role === '' ? null : (profile?.role ?? 'other');
+
+      await admin.from('profiles').update({ full_name: fullName, role }).eq('id', data.user.id);
+
       return data.user.id;
     }
 
@@ -61,11 +75,16 @@ export async function ensureUser(email: string, password: string): Promise<strin
 /**
  * Deletes a user by email from the local Supabase instance.
  * No-op if the user does not exist.
- * Paginates through users in small batches to avoid fetching the entire user list.
+ *
+ * Uses GoTrue admin API listUsers first. If the user isn't found there
+ * (local GoTrue's listUsers can be unreliable after db reset), falls back
+ * to the `get_user_id_by_email` RPC function (defined in seed.sql) which
+ * queries auth.users directly.
  */
 export async function deleteUserByEmail(email: string): Promise<void> {
   const admin = getAdminClient();
 
+  // Try GoTrue admin API first
   let page = 1;
 
   while (true) {
@@ -81,9 +100,19 @@ export async function deleteUserByEmail(email: string): Promise<void> {
     }
 
     if (users.length < 50) {
-      return;
+      break;
     }
 
     page++;
+  }
+
+  // Fallback: use the seed-defined RPC function to look up the user id
+  // directly in auth.users (bypasses GoTrue's potentially stale listUsers).
+  const { data: userId } = await admin.rpc('get_user_id_by_email', {
+    lookup_email: email,
+  });
+
+  if (userId) {
+    await admin.auth.admin.deleteUser(userId);
   }
 }

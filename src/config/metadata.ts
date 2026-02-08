@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
 
 import { BRAND } from '@/config';
+import type { MessageKey } from '@/i18n/types';
 
 // Generates global application metadata for SEO, using localized strings
 export const getAppMetadata = (t: {
-  (key: string): string;
-  raw: (key: string) => unknown;
+  (key: MessageKey): string;
+  raw: (key: MessageKey) => unknown;
 }): Metadata => ({
   title: t(BRAND.name),
   description: t('metadata.description'),

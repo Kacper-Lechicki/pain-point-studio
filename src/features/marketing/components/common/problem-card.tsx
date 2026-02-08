@@ -4,11 +4,12 @@ import { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { CardBody, CardContainer, CardItem } from '@/components/ui/3d-card';
+import type { MessageKey } from '@/i18n/types';
 
 interface ProblemCardProps {
   icon: LucideIcon;
-  titleKey: string;
-  descriptionKey: string;
+  titleKey: MessageKey;
+  descriptionKey: MessageKey;
 }
 
 const ProblemCard = ({ icon: Icon, titleKey, descriptionKey }: ProblemCardProps) => {
@@ -43,4 +44,4 @@ const ProblemCard = ({ icon: Icon, titleKey, descriptionKey }: ProblemCardProps)
   );
 };
 
-export default ProblemCard;
+export { ProblemCard };

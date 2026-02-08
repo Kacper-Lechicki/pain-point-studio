@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 
 import { ScrollReveal } from '@/components/ui/scroll-reveal';
-import StepCard from '@/features/marketing/components/common/step-card';
+import { StepCard } from '@/features/marketing/components/common/step-card';
 import { HOW_IT_WORKS_STEPS, HowItWorksStep } from '@/features/marketing/config';
 
 const HowItWorks = () => {

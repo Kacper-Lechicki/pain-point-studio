@@ -20,7 +20,6 @@ const eslintConfig = defineConfig([
     'reports/**',
     'test-results/**',
     'playwright-report/**',
-    'public/**',
     'scripts/**',
   ]),
   // Enforce blank lines before control flow statements
@@ -52,6 +51,18 @@ const eslintConfig = defineConfig([
     plugins: { 'no-secrets': noSecrets },
     rules: {
       'no-secrets/no-secrets': 'error',
+    },
+  },
+  {
+    files: ['public/**'],
+    languageOptions: { parserOptions: { ecmaVersion: 'latest', sourceType: 'script' } },
+    rules: {
+      'padding-line-between-statements': 'off',
+      'no-console': 'off',
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+      curly: 'off',
+      'no-secrets/no-secrets': 'off',
     },
   },
 ]);

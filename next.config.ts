@@ -12,9 +12,9 @@ const supabaseUrl = new URL(env.NEXT_PUBLIC_SUPABASE_URL);
 
 const cspDirectives = [
   `default-src 'self'`,
-  `script-src 'self' 'unsafe-inline' 'unsafe-eval'`,
+  `script-src 'self' 'unsafe-inline'`,
   `style-src 'self' 'unsafe-inline'`,
-  `img-src 'self' blob: data: https://lh3.googleusercontent.com https://avatars.githubusercontent.com`,
+  `img-src 'self' blob: data: https://lh3.googleusercontent.com https://avatars.githubusercontent.com ${supabaseUrl.origin}`,
   `font-src 'self'`,
   `connect-src 'self' ${supabaseUrl.origin} https://accounts.google.com https://github.com`,
   `frame-src 'self' https://accounts.google.com https://github.com`,
@@ -48,6 +48,11 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { protocol: 'https', hostname: 'lh3.googleusercontent.com' }, // Google Auth
       { protocol: 'https', hostname: 'avatars.githubusercontent.com' }, // GitHub Auth
+      {
+        protocol: supabaseUrl.protocol.replace(':', '') as 'http' | 'https',
+        hostname: supabaseUrl.hostname,
+        port: supabaseUrl.port,
+      }, // Supabase Storage (avatars)
     ],
   },
   async headers() {

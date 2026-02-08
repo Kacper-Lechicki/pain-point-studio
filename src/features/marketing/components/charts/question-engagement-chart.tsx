@@ -19,15 +19,14 @@ const QuestionEngagementChart = () => {
         key,
         {
           ...value,
-          label: value.label ? t(`chart.${value.label}`) : undefined,
+          label: value.label ? t(`chart.${value.label}` as Parameters<typeof t>[0]) : undefined,
         },
       ])
     ),
   };
 
   const formatActivityTick = (value: string): string => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return (chartConfig[value as keyof typeof chartConfig] as any)?.label ?? value;
+    return chartConfig[value as keyof typeof chartConfig]?.label ?? value;
   };
 
   return (

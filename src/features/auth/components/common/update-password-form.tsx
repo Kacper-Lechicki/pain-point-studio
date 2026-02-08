@@ -22,6 +22,7 @@ import { ROUTES } from '@/config';
 import { updatePassword } from '@/features/auth/actions';
 import { UpdatePasswordSchema, updatePasswordSchema } from '@/features/auth/types';
 import { useRouter } from '@/i18n/routing';
+import type { MessageKey } from '@/i18n/types';
 
 import { PasswordStrength } from './password-strength';
 
@@ -51,7 +52,7 @@ const UpdatePasswordForm = () => {
       const result = await updatePassword(data);
 
       if (result.error) {
-        toast.error(t(result.error));
+        toast.error(t(result.error as MessageKey));
         setIsLoading(false);
       } else {
         toast.success(t('auth.passwordUpdated'));
@@ -109,7 +110,7 @@ const UpdatePasswordForm = () => {
           )}
         />
 
-        <Button type="submit" className="mt-4 w-full" disabled={isLoading}>
+        <Button type="submit" size="lg" className="mt-4 w-full" disabled={isLoading}>
           {isLoading && <Spinner />}
           {t('auth.updatePassword')}
         </Button>

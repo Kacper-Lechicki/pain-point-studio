@@ -37,4 +37,4 @@ const StepContent = ({ id, title, description, isReversed, children }: StepConte
   );
 };
 
-export default StepContent;
+export { StepContent };

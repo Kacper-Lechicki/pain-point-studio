@@ -1,7 +1,10 @@
+import { LogIn } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
+import { PageTransition } from '@/components/ui/page-transition';
+import { ROUTES } from '@/config';
 import { AuthHeader } from '@/features/auth/components/common/auth-header';
-import { OAuthSection } from '@/features/auth/components/common/oauth-section';
+import { OAuthLinks } from '@/features/auth/components/common/oauth-links';
 import { SignInForm } from '@/features/auth/components/common/sign-in-form';
 import { TermsText } from '@/features/auth/components/common/terms-text';
 
@@ -9,15 +12,21 @@ export default async function SignInPage() {
   const t = await getTranslations();
 
   return (
-    <>
-      <AuthHeader title={t('auth.welcomeBack')} description={t('auth.enterEmailToSignIn')} />
+    <PageTransition>
+      <AuthHeader
+        icon={LogIn}
+        title={t('auth.welcomeBack')}
+        description={t('auth.dontHaveAccount')}
+        linkText={t('auth.signUp')}
+        linkHref={ROUTES.auth.signUp}
+      />
 
-      <div className="grid gap-6">
+      <div className="grid gap-4">
         <SignInForm />
-        <OAuthSection />
+        <OAuthLinks />
       </div>
 
       <TermsText />
-    </>
+    </PageTransition>
   );
 }

@@ -9,6 +9,7 @@ import { signInWithOAuth } from '@/features/auth/actions';
 import { OAuthButton } from '@/features/auth/components/common/oauth-button';
 import { OAUTH_PROVIDERS, OAuthProviderConfig } from '@/features/auth/config';
 import { AuthProvider } from '@/features/auth/types';
+import type { MessageKey } from '@/i18n/types';
 
 const OAuthButtons = () => {
   const t = useTranslations();
@@ -20,7 +21,7 @@ const OAuthButtons = () => {
     const result = await signInWithOAuth(provider);
 
     if (result.error) {
-      toast.error(t(result.error));
+      toast.error(t(result.error as MessageKey));
       setLoading(null);
     }
   };

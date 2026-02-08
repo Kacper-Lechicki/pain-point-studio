@@ -2,12 +2,11 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import Image from 'next/image';
-
-import { LogOut, Settings, User as UserIcon } from 'lucide-react';
+import { Home, LogOut, Settings, User as UserIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { ROUTES } from '@/config';
@@ -15,7 +14,7 @@ import { signOut } from '@/features/auth/actions';
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import { useRouter } from '@/i18n/routing';
 import { Link } from '@/i18n/routing';
-import { cn } from '@/lib/common/utils';
+import { cn, proxyImageUrl } from '@/lib/common/utils';
 
 const UserMenu = () => {
   const t = useTranslations();
@@ -56,7 +55,7 @@ const UserMenu = () => {
     );
   }
 
-  const avatarUrl = user.user_metadata?.avatar_url as string | undefined;
+  const avatarUrl = (user.user_metadata?.avatar_url as string) || undefined;
   const initials = user.email?.slice(0, 2).toUpperCase() ?? '??';
 
   const handleSignOut = async () => {
@@ -70,7 +69,7 @@ const UserMenu = () => {
         setIsSigningOut(false);
       } else {
         toast.success(t('auth.signOutSuccess'));
-        router.push('/');
+        router.push(ROUTES.common.home);
         router.refresh();
       }
     } catch {
@@ -83,19 +82,18 @@ const UserMenu = () => {
     <div ref={menuRef} className="relative">
       <button
         onClick={() => setIsOpen((prev) => !prev)}
-        className="bg-primary text-primary-foreground flex size-9 items-center justify-center overflow-hidden rounded-full text-xs font-semibold transition-opacity hover:opacity-90"
+        className="ring-ring/30 flex items-center rounded-full transition-all hover:ring-2"
         aria-label="User menu"
       >
-        {avatarUrl ? (
-          <Image src={avatarUrl} alt="" width={36} height={36} className="size-full object-cover" />
-        ) : (
-          initials
-        )}
+        <Avatar className="size-9 text-xs font-semibold">
+          <AvatarImage src={proxyImageUrl(avatarUrl)} alt="" />
+          <AvatarFallback>{initials}</AvatarFallback>
+        </Avatar>
       </button>
 
       <div
         className={cn(
-          'bg-popover text-popover-foreground absolute right-0 mt-2 w-56 origin-top-right rounded-md border shadow-lg transition-all duration-200',
+          'bg-popover text-popover-foreground absolute right-0 mt-2 w-56 origin-top-right rounded-xl border shadow-lg transition-all duration-200',
           isOpen
             ? 'pointer-events-auto scale-100 opacity-100'
             : 'pointer-events-none scale-95 opacity-0'
@@ -105,20 +103,40 @@ const UserMenu = () => {
           <p className="truncate text-sm font-medium">{user.email}</p>
         </div>
 
-        <div className="py-1">
+        <div className="p-1">
+          <Link
+            href={ROUTES.common.dashboard}
+            onClick={() => setIsOpen(false)}
+            className="hover:bg-accent flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors"
+          >
+            <Home className="size-4" aria-hidden="true" />
+            {t('common.dashboard')}
+          </Link>
+
+          <Link
+            href={ROUTES.profile.preview}
+            onClick={() => setIsOpen(false)}
+            className="hover:bg-accent flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors"
+          >
+            <UserIcon className="size-4" aria-hidden="true" />
+            {t('common.profile')}
+          </Link>
+
           <Link
             href={ROUTES.common.settings}
             onClick={() => setIsOpen(false)}
-            className="hover:bg-accent flex w-full items-center gap-2 px-4 py-2 text-sm transition-colors"
+            className="hover:bg-accent flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors"
           >
             <Settings className="size-4" aria-hidden="true" />
             {t('common.settings')}
           </Link>
+        </div>
 
+        <div className="border-t p-1">
           <button
             onClick={handleSignOut}
             disabled={isSigningOut}
-            className="hover:bg-accent flex w-full items-center gap-2 px-4 py-2 text-sm transition-colors disabled:opacity-50"
+            className="hover:bg-accent flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors disabled:opacity-50"
           >
             {isSigningOut ? (
               <Spinner className="size-4" />

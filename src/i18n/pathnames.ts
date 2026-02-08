@@ -9,6 +9,9 @@ export const PATHNAMES = {
   '/settings': {
     en: '/settings',
   },
+  '/profile/preview': {
+    en: '/profile/preview',
+  },
   // --- AUTH ---
   '/sign-in': {
     en: '/sign-in',
@@ -24,9 +27,5 @@ export const PATHNAMES = {
   },
   '/update-password': {
     en: '/update-password',
-  },
-  // --- TEST ---
-  '/instruments': {
-    en: '/instruments',
   },
 } as const;

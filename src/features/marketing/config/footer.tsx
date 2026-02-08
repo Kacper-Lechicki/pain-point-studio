@@ -1,14 +1,15 @@
 import { AppRoute, ROUTES } from '@/config';
+import type { MessageKey } from '@/i18n/types';
 
 export interface FooterItem {
-  label: string;
+  label: MessageKey;
   href: AppRoute | '#';
   disabled?: boolean;
   external?: boolean;
 }
 
 export interface FooterSection {
-  title: string;
+  title: MessageKey;
   items: FooterItem[];
 }
 

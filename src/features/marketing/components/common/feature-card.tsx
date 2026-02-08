@@ -4,10 +4,11 @@ import { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { CardBody, CardContainer, CardItem } from '@/components/ui/3d-card';
+import type { MessageKey } from '@/i18n/types';
 
 interface FeatureCardProps {
-  titleKey: string;
-  descriptionKey: string;
+  titleKey: MessageKey;
+  descriptionKey: MessageKey;
   icon: LucideIcon;
 }
 
@@ -45,4 +46,4 @@ const FeatureCard = ({ titleKey, descriptionKey, icon: Icon }: FeatureCardProps)
   );
 };
 
-export default FeatureCard;
+export { FeatureCard };
