@@ -121,22 +121,24 @@ test.describe('Sign-Up Flow', () => {
   });
 
   test('successful sign-up shows confirmation', async ({ page }) => {
-    await page.goto(url(ROUTES.auth.signUp));
-
     await expect(async () => {
+      await page.goto(url(ROUTES.auth.signUp), { timeout: 15_000 });
+
+      const submitBtn = page.locator(sel.submit);
+      await expect(submitBtn).toBeEnabled({ timeout: 5_000 });
+
       await page.locator(sel.email).fill(SIGNUP_EMAIL);
       await expect(page.locator(sel.email)).toHaveValue(SIGNUP_EMAIL);
-    }).toPass({ timeout: 10_000 });
 
-    await expect(async () => {
       await page.locator(sel.password).fill('StrongPass1!');
       await expect(page.locator(sel.password)).toHaveValue('StrongPass1!');
-    }).toPass({ timeout: 10_000 });
 
-    await page.locator(sel.submit).click();
+      await submitBtn.click();
 
-    // Submit button disappears, back-to-sign-in link appears
-    await expect(page.locator(sel.submit)).not.toBeVisible({ timeout: 30_000 });
+      // Submit button disappears, back-to-sign-in link appears
+      await expect(submitBtn).not.toBeVisible({ timeout: 15_000 });
+    }).toPass({ timeout: 50_000 });
+
     await expect(page.locator(`a[href*="${ROUTES.auth.signIn}"]`).first()).toBeVisible();
   });
 });

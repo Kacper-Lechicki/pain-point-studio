@@ -6,12 +6,6 @@ import { CircleUserRound, KeyRound, Link2, Mail, Palette, Trash2 } from 'lucide-
 import { motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 
-import { AppearanceSection } from '@/app/[locale]/(dashboard)/settings/_components/appearance-section';
-import { ConnectedAccounts } from '@/app/[locale]/(dashboard)/settings/_components/connected-accounts';
-import { DangerZone } from '@/app/[locale]/(dashboard)/settings/_components/danger-zone';
-import { EmailForm } from '@/app/[locale]/(dashboard)/settings/_components/email-form';
-import { PasswordForm } from '@/app/[locale]/(dashboard)/settings/_components/password-form';
-import { ProfileForm } from '@/app/[locale]/(dashboard)/settings/_components/profile-form';
 import { SettingsHeader } from '@/app/[locale]/(dashboard)/settings/_components/settings-header';
 import {
   Select,
@@ -22,6 +16,12 @@ import {
 } from '@/components/ui/select';
 import { HASH_TO_SECTION, SECTION_TO_HASH, type SettingsSectionValue } from '@/config/routes';
 import { ProfileData } from '@/features/settings/actions';
+import { AppearanceSection } from '@/features/settings/components/appearance-section';
+import { ConnectedAccounts } from '@/features/settings/components/connected-accounts';
+import { DangerZone } from '@/features/settings/components/danger-zone';
+import { EmailForm } from '@/features/settings/components/email-form';
+import { PasswordForm } from '@/features/settings/components/password-form';
+import { ProfileForm } from '@/features/settings/components/profile-form';
 
 const SECTIONS = [
   { value: 'profile', icon: CircleUserRound },

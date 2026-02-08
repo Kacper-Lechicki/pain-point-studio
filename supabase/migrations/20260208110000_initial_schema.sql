@@ -576,11 +576,11 @@ INSERT INTO "public"."roles" ("value", "label_key", "sort_order", "is_active") V
 ON CONFLICT ("value") DO NOTHING;
 
 INSERT INTO "public"."social_link_types" ("value", "label_key", "sort_order", "is_active") VALUES
-  ('website',  'settings.socialLinks.labels.website',  1, true),
-  ('github',   'settings.socialLinks.labels.github',   2, true),
-  ('twitter',  'settings.socialLinks.labels.twitter',  3, true),
-  ('linkedin', 'settings.socialLinks.labels.linkedin', 4, true),
-  ('other',    'settings.socialLinks.labels.other',    5, true)
+  ('website',  'settings.profile.socialLinks.labels.website',  1, true),
+  ('github',   'settings.profile.socialLinks.labels.github',   2, true),
+  ('twitter',  'settings.profile.socialLinks.labels.twitter',  3, true),
+  ('linkedin', 'settings.profile.socialLinks.labels.linkedin', 4, true),
+  ('other',    'settings.profile.socialLinks.labels.other',    5, true)
 ON CONFLICT ("value") DO NOTHING;
 
 --
