@@ -107,7 +107,7 @@ const SignInForm = () => {
           </Link>
         </div>
 
-        <Button type="submit" size="lg" className="mt-2 w-full" disabled={isLoading}>
+        <Button type="submit" size="lg" className="mt-2 w-full font-semibold" disabled={isLoading}>
           {isLoading && <Spinner />}
           {t('auth.signInWithEmail')}
         </Button>

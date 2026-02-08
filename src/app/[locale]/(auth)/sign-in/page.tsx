@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 
+import { PageTransition } from '@/components/ui/page-transition';
 import { ROUTES } from '@/config';
 import { AuthHeader } from '@/features/auth/components/common/auth-header';
 import { OAuthLinks } from '@/features/auth/components/common/oauth-links';
@@ -10,7 +11,7 @@ export default async function SignInPage() {
   const t = await getTranslations();
 
   return (
-    <>
+    <PageTransition>
       <AuthHeader
         title={t('auth.welcomeBack')}
         description={t('auth.dontHaveAccount')}
@@ -18,12 +19,12 @@ export default async function SignInPage() {
         linkHref={ROUTES.auth.signUp}
       />
 
-      <div className="grid gap-6">
+      <div className="grid gap-4">
         <SignInForm />
         <OAuthLinks />
       </div>
 
       <TermsText />
-    </>
+    </PageTransition>
   );
 }

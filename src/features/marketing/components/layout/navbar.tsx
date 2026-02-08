@@ -148,7 +148,7 @@ const Navbar = () => {
         </div>
 
         <div className="flex-1 overflow-y-auto px-6 py-4">
-          <div className="flex flex-col items-start gap-4">
+          <div className="flex flex-col items-start gap-2">
             {NAV_LINKS.map((link: NavLink, index: number) =>
               link.disabled ? (
                 <span

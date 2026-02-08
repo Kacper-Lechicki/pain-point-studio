@@ -114,6 +114,15 @@ const UserMenu = () => {
           </Link>
 
           <Link
+            href={ROUTES.profile.preview}
+            onClick={() => setIsOpen(false)}
+            className="hover:bg-accent flex w-full items-center gap-2 px-4 py-2 text-sm transition-colors"
+          >
+            <UserIcon className="size-4" aria-hidden="true" />
+            {t('common.profile')}
+          </Link>
+
+          <Link
             href={ROUTES.common.settings}
             onClick={() => setIsOpen(false)}
             className="hover:bg-accent flex w-full items-center gap-2 px-4 py-2 text-sm transition-colors"
@@ -121,7 +130,9 @@ const UserMenu = () => {
             <Settings className="size-4" aria-hidden="true" />
             {t('common.settings')}
           </Link>
+        </div>
 
+        <div className="border-t py-1">
           <button
             onClick={handleSignOut}
             disabled={isSigningOut}

@@ -20,6 +20,7 @@ export interface ProfileData {
   hasPassword: boolean;
   identities: { provider: string; email: string | undefined }[];
   socialLinks: SocialLink[];
+  memberSince: string;
   roleOptions: LookupValue[];
   socialLinkOptions: LookupValue[];
 }
@@ -57,6 +58,7 @@ export const getProfile = async (): Promise<ProfileData | null> => {
     avatarUrl: profile?.avatar_url ?? (user.user_metadata?.avatar_url as string) ?? '',
     hasPassword,
     socialLinks: (Array.isArray(profile?.social_links) ? profile.social_links : []) as SocialLink[],
+    memberSince: user.created_at ?? '',
     identities: (user.identities ?? []).map((identity) => ({
       provider: identity.provider,
       email: identity.identity_data?.email as string | undefined,

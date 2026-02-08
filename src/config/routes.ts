@@ -17,4 +17,7 @@ export const ROUTES = {
     dashboard: '/dashboard' as AppRoute,
     settings: '/settings' as AppRoute,
   },
+  profile: {
+    preview: '/profile/preview' as AppRoute,
+  },
 } as const;

@@ -42,6 +42,7 @@
     "startResearch": "Start Your First Research",
     "seeHowItWorks": "See How It Works",
     "settings": "Settings",
+    "profile": "Profile",
     "loading": "Loading..."
   },
   "auth": {
@@ -431,7 +432,32 @@
       "uploadFailed": "Failed to upload image. Please try again.",
       "deleteFailed": "Failed to delete account. Please try again.",
       "rateLimitExceeded": "Too many attempts. Please wait a moment and try again.",
+      "socialLinkDomainMismatch": "URL doesn't match the selected platform.",
       "unexpected": "Something went wrong. Please try again."
+    }
+  },
+  "profile": {
+    "preview": {
+      "title": "Profile Preview",
+      "description": "This is how your profile looks to others.",
+      "backToSettings": "Back to Settings"
+    },
+    "memberSince": "Member since {date}",
+    "empty": {
+      "fullName": "No name set",
+      "role": "No role set",
+      "bio": "No bio yet."
+    },
+    "sections": {
+      "socialLinks": "Social Links",
+      "projects": {
+        "title": "Public Projects",
+        "emptyDescription": "No public projects yet. Shared research missions will appear here."
+      },
+      "statistics": {
+        "title": "Statistics",
+        "emptyDescription": "Statistics will be available once you start collecting responses."
+      }
     }
   }
 }

@@ -12,7 +12,7 @@ interface AuthHeaderProps {
 
 const AuthHeader = ({ title, description, linkText, linkHref }: AuthHeaderProps) => {
   return (
-    <div className="flex flex-col space-y-2 text-center">
+    <div className="flex flex-col space-y-2 pb-4 text-center">
       <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
 
       <p className="text-muted-foreground text-sm">
@@ -21,7 +21,10 @@ const AuthHeader = ({ title, description, linkText, linkHref }: AuthHeaderProps)
         {linkText && linkHref && (
           <>
             <ArrowRight className="mx-1.5 inline size-3" />
-            <Link href={linkHref} className="hover:text-primary underline underline-offset-4">
+            <Link
+              href={linkHref}
+              className="hover:text-primary font-semibold underline underline-offset-4"
+            >
               {linkText}
             </Link>
           </>

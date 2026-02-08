@@ -94,53 +94,63 @@ const SignUpForm = ({ header, children }: SignUpFormProps) => {
     <>
       {header}
 
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('auth.email')}</FormLabel>
+      <div className="grid gap-4">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('auth.email')}</FormLabel>
 
-                <FormControl>
-                  <Input placeholder={t('auth.emailPlaceholder')} {...field} />
-                </FormControl>
+                  <FormControl>
+                    <Input placeholder={t('auth.emailPlaceholder')} {...field} />
+                  </FormControl>
 
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('auth.password')}</FormLabel>
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('auth.password')}</FormLabel>
 
-                <FormControl>
-                  <PasswordInput
-                    placeholder={t('auth.passwordPlaceholder')}
-                    showPasswordLabel={t('auth.showPassword')}
-                    hidePasswordLabel={t('auth.hidePassword')}
-                    {...field}
+                  <FormControl>
+                    <PasswordInput
+                      placeholder={t('auth.passwordPlaceholder')}
+                      showPasswordLabel={t('auth.showPassword')}
+                      hidePasswordLabel={t('auth.hidePassword')}
+                      {...field}
+                    />
+                  </FormControl>
+
+                  <PasswordStrength
+                    password={password}
+                    isError={!!form.formState.errors.password}
                   />
-                </FormControl>
+                </FormItem>
+              )}
+            />
 
-                <PasswordStrength password={password} isError={!!form.formState.errors.password} />
-              </FormItem>
-            )}
-          />
+            <Button
+              type="submit"
+              size="lg"
+              className="mt-4 w-full font-semibold"
+              disabled={isLoading}
+            >
+              {isLoading && <Spinner />}
+              {t('auth.createAccount')}
+            </Button>
+          </form>
+        </Form>
 
-          <Button type="submit" size="lg" className="mt-4 w-full" disabled={isLoading}>
-            {isLoading && <Spinner />}
-            {t('auth.createAccount')}
-          </Button>
-        </form>
-      </Form>
-
-      {children}
+        {children}
+      </div>
     </>
   );
 };

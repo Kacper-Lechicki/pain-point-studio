@@ -7,10 +7,35 @@ import { BIO_MAX_LENGTH, FULL_NAME_MAX_LENGTH, MAX_SOCIAL_LINKS } from '@/featur
 // Profile
 // ---------------------------------------------------------------------------
 
-export const socialLinkSchema = z.object({
-  label: z.string().min(1),
-  url: z.string().url(),
-});
+const SOCIAL_LINK_DOMAINS: Record<string, string[]> = {
+  github: ['github.com'],
+  twitter: ['twitter.com', 'x.com'],
+  linkedin: ['linkedin.com'],
+};
+
+export const socialLinkSchema = z
+  .object({
+    label: z.string().min(1),
+    url: z.string().url(),
+  })
+  .refine(
+    (data) => {
+      const allowedDomains = SOCIAL_LINK_DOMAINS[data.label];
+
+      if (!allowedDomains) {return true;}
+
+      try {
+        const hostname = new URL(data.url).hostname.replace(/^www\./, '');
+
+        return allowedDomains.some(
+          (domain) => hostname === domain || hostname.endsWith(`.${domain}`)
+        );
+      } catch {
+        return false;
+      }
+    },
+    { message: 'settings.errors.socialLinkDomainMismatch', path: ['url'] }
+  );
 
 export type SocialLink = z.infer<typeof socialLinkSchema>;
 

@@ -8,10 +8,11 @@ import { UserMenu } from '@/features/auth/components/common/user-menu';
 import { Link, usePathname } from '@/i18n/routing';
 
 const Navbar = () => {
-  const t = useTranslations('settings');
+  const t = useTranslations();
   const pathname = usePathname();
 
   const isSettings = pathname === '/settings';
+  const isProfilePreview = pathname === '/profile/preview';
 
   return (
     <nav className="bg-background/80 sticky top-0 z-50 border-b backdrop-blur-md">
@@ -23,7 +24,17 @@ const Navbar = () => {
               className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-sm transition-colors"
             >
               <ArrowLeft className="size-4" />
-              {t('backToDashboard')}
+              {t('settings.backToDashboard')}
+            </Link>
+          )}
+
+          {isProfilePreview && (
+            <Link
+              href={ROUTES.common.settings}
+              className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-sm transition-colors"
+            >
+              <ArrowLeft className="size-4" />
+              {t('profile.preview.backToSettings')}
             </Link>
           )}
         </div>

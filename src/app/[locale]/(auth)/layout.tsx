@@ -1,7 +1,6 @@
 import { ReactNode } from 'react';
 
 import { HeroHighlight } from '@/components/ui/hero-highlight';
-import { PageTransition } from '@/components/ui/page-transition';
 import Navbar from '@/features/auth/components/layout/navbar';
 
 interface AuthGroupLayoutProps {
@@ -19,11 +18,9 @@ const AuthGroupLayout = ({ children }: AuthGroupLayoutProps) => {
         <Navbar />
 
         <main className="page-top-spacing flex flex-1 flex-col items-center px-6 pb-12">
-          <PageTransition className="w-full">
-            <div className="lg:border-border/50 lg:bg-card/80 mx-auto w-full rounded-xl sm:p-4 md:w-[600px] lg:border lg:p-8 lg:shadow-xl lg:backdrop-blur-sm">
-              <div className="flex flex-col space-y-6">{children}</div>
-            </div>
-          </PageTransition>
+          <div className="lg:border-border/50 lg:bg-card/80 mx-auto w-full rounded-xl sm:p-4 md:w-[600px] lg:border lg:p-8 lg:shadow-xl lg:backdrop-blur-sm">
+            <div className="flex flex-col space-y-6">{children}</div>
+          </div>
         </main>
       </div>
     </HeroHighlight>

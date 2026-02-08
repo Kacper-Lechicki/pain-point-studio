@@ -28,9 +28,11 @@ import {
 } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
+import { ROUTES } from '@/config';
 import { ProfileData, updateProfile } from '@/features/settings/actions';
 import { BIO_MAX_LENGTH, MAX_SOCIAL_LINKS } from '@/features/settings/config';
 import { UpdateProfileSchema, updateProfileSchema } from '@/features/settings/types';
+import { Link } from '@/i18n/routing';
 import type { MessageKey } from '@/i18n/types';
 
 import { AvatarUpload } from './avatar-upload';
@@ -96,9 +98,11 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
           <p className="text-muted-foreground text-sm">{t('settings.profile.description')}</p>
         </div>
 
-        <Button type="button" variant="outline" size="sm" disabled className="shrink-0">
-          <Eye className="size-4" />
-          {t('settings.profile.previewProfile')}
+        <Button type="button" variant="outline" size="sm" asChild className="shrink-0">
+          <Link href={ROUTES.profile.preview}>
+            <Eye className="size-4" />
+            {t('settings.profile.previewProfile')}
+          </Link>
         </Button>
       </div>
 
