@@ -4,27 +4,6 @@
 
 
 -- ============================================================
--- Lookup tables (roles & social_link_types)
--- Must be seeded before profiles that reference them via FK.
--- ============================================================
-INSERT INTO public.roles (value, label_key, sort_order, is_active) VALUES
-  ('solo-developer', 'settings.roles.soloDeveloper', 1, true),
-  ('product-manager', 'settings.roles.productManager', 2, true),
-  ('designer',        'settings.roles.designer',       3, true),
-  ('founder',         'settings.roles.founder',         4, true),
-  ('student',         'settings.roles.student',         5, true),
-  ('other',           'settings.roles.other',           6, true)
-ON CONFLICT (value) DO NOTHING;
-
-INSERT INTO public.social_link_types (value, label_key, sort_order, is_active) VALUES
-  ('website',  'settings.socialLinks.labels.website',  1, true),
-  ('github',   'settings.socialLinks.labels.github',   2, true),
-  ('twitter',  'settings.socialLinks.labels.twitter',  3, true),
-  ('linkedin', 'settings.socialLinks.labels.linkedin', 4, true),
-  ('other',    'settings.socialLinks.labels.other',    5, true)
-ON CONFLICT (value) DO NOTHING;
-
--- ============================================================
 -- Helper: lookup user id by email (used by e2e test cleanup)
 -- Only exists in local dev — seed.sql is NOT applied in production.
 -- ============================================================
