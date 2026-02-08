@@ -2,6 +2,9 @@
 -- Run with: pnpm supabase:reset (applies migrations + seed)
 -- All seed user passwords: Password1!
 
+-- pgcrypto lives in the extensions schema — make crypt()/gen_salt() visible
+CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA extensions;
+
 -- ============================================================
 -- Helper: lookup user id by email (used by e2e test cleanup)
 -- Only exists in local dev — seed.sql is NOT applied in production.
