@@ -15,7 +15,7 @@ const ConnectedAccounts = ({ identities }: ConnectedAccountsProps) => {
   const oauthIdentities = identities.filter((identity) => identity.provider !== 'email');
 
   return (
-    <section className="space-y-4">
+    <section className="space-y-8">
       <div className="space-y-1">
         <h2 className="text-lg font-semibold">{t('settings.connectedAccounts.title')}</h2>
 
@@ -29,7 +29,7 @@ const ConnectedAccounts = ({ identities }: ConnectedAccountsProps) => {
           {t('settings.connectedAccounts.noAccounts')}
         </p>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {oauthIdentities.map((identity) => {
             const providerConfig = OAUTH_PROVIDERS.find((p) => p.id === identity.provider);
 
@@ -42,7 +42,7 @@ const ConnectedAccounts = ({ identities }: ConnectedAccountsProps) => {
             return (
               <div
                 key={identity.provider}
-                className="flex flex-wrap items-center justify-between gap-2 rounded-lg border p-3"
+                className="flex flex-wrap items-center justify-between gap-2 rounded-lg border p-4"
               >
                 <div className="flex min-w-0 items-center gap-3">
                   <Icon className="size-5 shrink-0" aria-hidden="true" />

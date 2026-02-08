@@ -22,6 +22,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { PasswordStrength } from '@/features/auth/components/common/password-strength';
 import { changePassword } from '@/features/settings/actions';
 import { ChangePasswordSchema, changePasswordSchema } from '@/features/settings/types';
+import type { MessageKey } from '@/i18n/types';
 
 interface PasswordFormProps {
   hasPassword: boolean;
@@ -57,7 +58,7 @@ const PasswordForm = ({ hasPassword }: PasswordFormProps) => {
       const result = await changePassword(data);
 
       if (result.error) {
-        toast.error(t(result.error));
+        toast.error(t(result.error as MessageKey));
       } else {
         toast.success(t('settings.password.passwordUpdated'));
         form.reset();
@@ -70,7 +71,7 @@ const PasswordForm = ({ hasPassword }: PasswordFormProps) => {
   }
 
   return (
-    <section className="space-y-4">
+    <section className="space-y-8">
       <div className="space-y-1">
         <div className="flex items-center gap-2">
           <h2 className="text-lg font-semibold">{t('settings.password.title')}</h2>

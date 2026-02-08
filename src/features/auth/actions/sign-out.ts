@@ -1,10 +1,10 @@
 'use server';
 
 import { mapAuthError } from '@/features/auth/config';
-import { AuthActionResult } from '@/features/auth/types';
+import { ActionResult } from '@/lib/common/types';
 import { createClient } from '@/lib/supabase/server';
 
-export const signOut = async (): Promise<AuthActionResult> => {
+export const signOut = async (): Promise<ActionResult> => {
   const supabase = await createClient();
   const { error } = await supabase.auth.signOut();
 

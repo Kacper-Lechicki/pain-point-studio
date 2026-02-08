@@ -4,11 +4,12 @@ import { Github } from 'lucide-react';
 
 import { GoogleIcon } from '@/features/auth/components/common/google-icon';
 import { AuthProvider } from '@/features/auth/types';
+import type { MessageKey } from '@/i18n/types';
 
 export interface OAuthProviderConfig {
   id: AuthProvider;
   icon: ComponentType<{ className?: string } | SVGProps<SVGSVGElement>>;
-  label: string;
+  label: MessageKey;
 }
 
 export const OAUTH_PROVIDERS: OAuthProviderConfig[] = [

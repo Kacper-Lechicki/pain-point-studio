@@ -1,8 +1,7 @@
 import { z } from 'zod';
 
 import { basePasswordSchema } from '@/features/auth/config/password';
-import { BIO_MAX_LENGTH, FULL_NAME_MAX_LENGTH } from '@/features/settings/config/profile';
-import { MAX_SOCIAL_LINKS } from '@/features/settings/config/social-links';
+import { BIO_MAX_LENGTH, FULL_NAME_MAX_LENGTH, MAX_SOCIAL_LINKS } from '@/features/settings/config';
 
 // ---------------------------------------------------------------------------
 // Profile
@@ -55,10 +54,8 @@ export type ChangePasswordSchema = z.infer<typeof changePasswordSchema>;
 // Delete account
 // ---------------------------------------------------------------------------
 
-export const DELETE_CONFIRMATION_TEXT = 'delete my account';
-
 export const deleteAccountSchema = z.object({
-  confirmation: z.string(),
+  confirmation: z.string().email(),
 });
 
 export type DeleteAccountSchema = z.infer<typeof deleteAccountSchema>;

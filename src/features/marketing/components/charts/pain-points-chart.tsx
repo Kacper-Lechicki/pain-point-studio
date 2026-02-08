@@ -19,7 +19,7 @@ const PainPointsChart = () => {
         key,
         {
           ...value,
-          label: value.label ? t(`chart.${value.label}`) : undefined,
+          label: value.label ? t(`chart.${value.label}` as Parameters<typeof t>[0]) : undefined,
         },
       ])
     ),

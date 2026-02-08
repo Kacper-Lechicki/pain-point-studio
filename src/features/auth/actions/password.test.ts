@@ -143,5 +143,21 @@ describe('Auth Actions – Password', () => {
       expect(result.error).toBeDefined();
       expect(mockUpdateUser).not.toHaveBeenCalled();
     });
+
+    it('should return rate limit error when rate limited', async () => {
+      const { rateLimit } = await import('@/lib/common/rate-limit');
+
+      vi.mocked(rateLimit).mockResolvedValueOnce({ limited: true });
+
+      const { updatePassword } = await import('./password');
+
+      const result = await updatePassword({
+        password: 'NewPassword1!',
+        confirmPassword: 'NewPassword1!',
+      });
+
+      expect(result.error).toBeDefined();
+      expect(mockUpdateUser).not.toHaveBeenCalled();
+    });
   });
 });

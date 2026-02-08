@@ -1,12 +1,12 @@
 'use server';
 
 import { mapAuthError } from '@/features/auth/config';
-import { AuthActionResult } from '@/features/auth/types';
 import { ChangePasswordSchema, changePasswordSchema } from '@/features/settings/types';
 import { rateLimit } from '@/lib/common/rate-limit';
+import { ActionResult } from '@/lib/common/types';
 import { createClient } from '@/lib/supabase/server';
 
-export const changePassword = async (formData: ChangePasswordSchema): Promise<AuthActionResult> => {
+export const changePassword = async (formData: ChangePasswordSchema): Promise<ActionResult> => {
   const { limited } = await rateLimit({ key: 'change-password', limit: 3, windowSeconds: 3600 });
 
   if (limited) {

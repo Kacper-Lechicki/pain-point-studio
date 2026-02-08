@@ -1,11 +1,13 @@
 'use server';
 
+import { getTranslations } from 'next-intl/server';
+
 import { SocialLink } from '@/features/settings/types';
 import { createClient } from '@/lib/supabase/server';
 
 export interface LookupValue {
   value: string;
-  labelKey: string;
+  label: string;
 }
 
 export interface ProfileData {
@@ -44,6 +46,7 @@ export const getProfile = async (): Promise<ProfileData | null> => {
   ]);
 
   const hasPassword = (user.identities ?? []).some((identity) => identity.provider === 'email');
+  const t = await getTranslations();
 
   return {
     id: user.id,
@@ -58,10 +61,13 @@ export const getProfile = async (): Promise<ProfileData | null> => {
       provider: identity.provider,
       email: identity.identity_data?.email as string | undefined,
     })),
-    roleOptions: (roles ?? []).map((r) => ({ value: r.value, labelKey: r.label_key })),
+    roleOptions: (roles ?? []).map((r) => ({
+      value: r.value,
+      label: t(r.label_key as Parameters<typeof t>[0]),
+    })),
     socialLinkOptions: (socialLinkTypes ?? []).map((s) => ({
       value: s.value,
-      labelKey: s.label_key,
+      label: t(s.label_key as Parameters<typeof t>[0]),
     })),
   };
 };

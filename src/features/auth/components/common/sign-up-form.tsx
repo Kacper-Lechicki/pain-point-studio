@@ -24,6 +24,7 @@ import { signUpWithEmail } from '@/features/auth/actions';
 import { PasswordStrength } from '@/features/auth/components/common/password-strength';
 import { SignUpSchema, signUpSchema } from '@/features/auth/types';
 import { Link } from '@/i18n/routing';
+import type { MessageKey } from '@/i18n/types';
 
 interface SignUpFormProps {
   header?: ReactNode;
@@ -56,7 +57,7 @@ const SignUpForm = ({ header, children }: SignUpFormProps) => {
       const result = await signUpWithEmail(data);
 
       if (result.error) {
-        toast.error(t(result.error));
+        toast.error(t(result.error as MessageKey));
         setIsLoading(false);
       } else {
         toast.success(t('auth.confirmationSent'));

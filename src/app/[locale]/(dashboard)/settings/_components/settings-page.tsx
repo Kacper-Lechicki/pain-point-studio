@@ -77,7 +77,7 @@ const SettingsPage = ({ profile }: SettingsPageProps) => {
     email: <EmailForm currentEmail={profile.email} />,
     password: <PasswordForm hasPassword={profile.hasPassword} />,
     connectedAccounts: <ConnectedAccounts identities={profile.identities} />,
-    dangerZone: <DangerZone />,
+    dangerZone: <DangerZone userEmail={profile.email} />,
   };
 
   if (!mounted) {

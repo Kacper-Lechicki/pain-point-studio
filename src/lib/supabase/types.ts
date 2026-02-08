@@ -56,7 +56,15 @@ export type Database = {
           social_links?: Json;
           updated_at?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'profiles_role_fk';
+            columns: ['role'];
+            isOneToOne: false;
+            referencedRelation: 'roles';
+            referencedColumns: ['value'];
+          },
+        ];
       };
       roles: {
         Row: {

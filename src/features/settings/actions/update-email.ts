@@ -1,12 +1,12 @@
 'use server';
 
 import { mapAuthError } from '@/features/auth/config';
-import { AuthActionResult } from '@/features/auth/types';
 import { UpdateEmailSchema, updateEmailSchema } from '@/features/settings/types';
 import { rateLimit } from '@/lib/common/rate-limit';
+import { ActionResult } from '@/lib/common/types';
 import { createClient } from '@/lib/supabase/server';
 
-export const updateEmail = async (formData: UpdateEmailSchema): Promise<AuthActionResult> => {
+export const updateEmail = async (formData: UpdateEmailSchema): Promise<ActionResult> => {
   const { limited } = await rateLimit({ key: 'update-email', limit: 3, windowSeconds: 3600 });
 
   if (limited) {
@@ -20,6 +20,14 @@ export const updateEmail = async (formData: UpdateEmailSchema): Promise<AuthActi
   }
 
   const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: 'settings.errors.unexpected' };
+  }
 
   const { error } = await supabase.auth.updateUser({
     email: validation.data.email,

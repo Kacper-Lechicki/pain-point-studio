@@ -32,7 +32,3 @@ export type ForgotPasswordSchema = z.infer<typeof forgotPasswordSchema>;
 export type UpdatePasswordSchema = z.infer<typeof updatePasswordSchema>;
 
 export type AuthProvider = 'google' | 'github';
-
-export type AuthActionResult =
-  | { success: true; error?: undefined }
-  | { error: string; success?: undefined };

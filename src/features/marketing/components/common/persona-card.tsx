@@ -4,12 +4,13 @@ import { Check, LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { CardBody, CardContainer, CardItem } from '@/components/ui/3d-card';
+import type { MessageKey } from '@/i18n/types';
 
 interface PersonaCardProps {
   icon: LucideIcon;
-  titleKey: string;
-  descriptionKey: string;
-  featuresKey: string;
+  titleKey: MessageKey;
+  descriptionKey: MessageKey;
+  featuresKey: MessageKey;
 }
 
 const PersonaCard = ({ icon: Icon, titleKey, descriptionKey, featuresKey }: PersonaCardProps) => {

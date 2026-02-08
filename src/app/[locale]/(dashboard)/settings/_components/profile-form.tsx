@@ -31,6 +31,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { ProfileData, updateProfile } from '@/features/settings/actions';
 import { BIO_MAX_LENGTH, MAX_SOCIAL_LINKS } from '@/features/settings/config';
 import { UpdateProfileSchema, updateProfileSchema } from '@/features/settings/types';
+import type { MessageKey } from '@/i18n/types';
 
 import { AvatarUpload } from './avatar-upload';
 
@@ -76,7 +77,7 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
       const result = await updateProfile(data);
 
       if (result.error) {
-        toast.error(t(result.error));
+        toast.error(t(result.error as MessageKey));
       } else {
         toast.success(t('settings.profile.profileUpdated'));
       }
@@ -88,7 +89,7 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
   }
 
   return (
-    <section className="space-y-6">
+    <section className="space-y-8">
       <div className="space-y-1">
         <h2 className="text-lg font-semibold">{t('settings.profile.title')}</h2>
         <p className="text-muted-foreground text-sm">{t('settings.profile.description')}</p>
@@ -137,7 +138,7 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
                     <SelectContent>
                       {profile.roleOptions.map((option) => (
                         <SelectItem key={option.value} value={option.value}>
-                          {t(option.labelKey)}
+                          {option.label}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -224,7 +225,7 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
                             <SelectContent>
                               {profile.socialLinkOptions.map((option) => (
                                 <SelectItem key={option.value} value={option.value}>
-                                  {t(option.labelKey)}
+                                  {option.label}
                                 </SelectItem>
                               ))}
                             </SelectContent>

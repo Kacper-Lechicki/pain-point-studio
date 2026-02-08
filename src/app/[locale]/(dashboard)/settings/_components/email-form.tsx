@@ -21,6 +21,7 @@ import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { updateEmail } from '@/features/settings/actions';
 import { UpdateEmailSchema, updateEmailSchema } from '@/features/settings/types';
+import type { MessageKey } from '@/i18n/types';
 
 interface EmailFormProps {
   currentEmail: string;
@@ -44,7 +45,7 @@ const EmailForm = ({ currentEmail }: EmailFormProps) => {
       const result = await updateEmail(data);
 
       if (result.error) {
-        toast.error(t(result.error));
+        toast.error(t(result.error as MessageKey));
       } else {
         toast.success(t('settings.email.emailUpdateSent'));
       }
@@ -56,7 +57,7 @@ const EmailForm = ({ currentEmail }: EmailFormProps) => {
   }
 
   return (
-    <section className="space-y-4">
+    <section className="space-y-8">
       <div className="space-y-1">
         <div className="flex items-center gap-2">
           <h2 className="text-lg font-semibold">{t('settings.email.title')}</h2>

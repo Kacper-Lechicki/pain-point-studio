@@ -51,7 +51,7 @@ vi.mock('@/lib/supabase/admin', () => ({
   }),
 }));
 
-const validConfirmation = { confirmation: 'delete my account' };
+const validConfirmation = { confirmation: 'test@example.com' };
 
 describe('Settings Actions – Delete Account', () => {
   beforeEach(() => {
@@ -59,7 +59,7 @@ describe('Settings Actions – Delete Account', () => {
 
     // Default: authenticated user
     mockGetUser.mockResolvedValue({
-      data: { user: { id: 'user-123' } },
+      data: { user: { id: 'user-123', email: 'test@example.com' } },
     });
 
     // Default: no avatar files
@@ -129,6 +129,15 @@ describe('Settings Actions – Delete Account', () => {
     expect(result.error).toBeDefined();
     expect(result).not.toHaveProperty('success');
     expect(mockSignOut).not.toHaveBeenCalled();
+  });
+
+  it('should return error when confirmation email does not match', async () => {
+    const { deleteAccount } = await import('./delete-account');
+    const result = await deleteAccount({ confirmation: 'wrong@example.com' });
+
+    expect(result.error).toBeDefined();
+    expect(result).not.toHaveProperty('success');
+    expect(mockAdminDeleteUser).not.toHaveBeenCalled();
   });
 
   it('should not call Supabase when form data is invalid', async () => {

@@ -28,19 +28,17 @@ import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { ROUTES } from '@/config';
 import { deleteAccount } from '@/features/settings/actions';
-import {
-  DELETE_CONFIRMATION_TEXT,
-  DeleteAccountSchema,
-  deleteAccountSchema,
-} from '@/features/settings/types';
+import { DeleteAccountSchema, deleteAccountSchema } from '@/features/settings/types';
 import { useRouter } from '@/i18n/routing';
+import type { MessageKey } from '@/i18n/types';
 
 interface DeleteAccountDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  userEmail: string;
 }
 
-const DeleteAccountDialog = ({ open, onOpenChange }: DeleteAccountDialogProps) => {
+const DeleteAccountDialog = ({ open, onOpenChange, userEmail }: DeleteAccountDialogProps) => {
   const t = useTranslations();
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
@@ -58,7 +56,7 @@ const DeleteAccountDialog = ({ open, onOpenChange }: DeleteAccountDialogProps) =
     defaultValue: '',
   });
 
-  const isConfirmed = confirmationValue === DELETE_CONFIRMATION_TEXT;
+  const isConfirmed = confirmationValue === userEmail;
 
   async function onSubmit(data: DeleteAccountSchema) {
     setIsDeleting(true);
@@ -67,7 +65,7 @@ const DeleteAccountDialog = ({ open, onOpenChange }: DeleteAccountDialogProps) =
       const result = await deleteAccount(data);
 
       if (result.error) {
-        toast.error(t(result.error));
+        toast.error(t(result.error as MessageKey));
         setIsDeleting(false);
       } else {
         toast.success(t('settings.dangerZone.accountDeleted'));
@@ -98,7 +96,7 @@ const DeleteAccountDialog = ({ open, onOpenChange }: DeleteAccountDialogProps) =
                 <FormItem>
                   <FormLabel>
                     {t('settings.dangerZone.deleteConfirmLabel', {
-                      text: DELETE_CONFIRMATION_TEXT,
+                      text: userEmail,
                     })}
                   </FormLabel>
 

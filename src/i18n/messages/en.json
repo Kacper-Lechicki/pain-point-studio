@@ -405,7 +405,7 @@
       "deleteConfirmTitle": "Are you sure?",
       "deleteConfirmDescription": "This will permanently delete your account, profile, and all your data. This action cannot be undone.",
       "deleteConfirmLabel": "Type \"{text}\" to confirm",
-      "deleteConfirmPlaceholder": "delete my account",
+      "deleteConfirmPlaceholder": "your@email.com",
       "deleteButton": "Delete My Account",
       "accountDeleted": "Your account has been deleted."
     },

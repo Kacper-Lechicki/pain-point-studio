@@ -23,6 +23,7 @@ import { ROUTES } from '@/config';
 import { signInWithEmail } from '@/features/auth/actions';
 import { SignInSchema, signInSchema } from '@/features/auth/types';
 import { useRouter } from '@/i18n/routing';
+import type { MessageKey } from '@/i18n/types';
 
 const SignInForm = () => {
   const t = useTranslations();
@@ -44,7 +45,7 @@ const SignInForm = () => {
       const result = await signInWithEmail(data);
 
       if (result.error) {
-        toast.error(t(result.error));
+        toast.error(t(result.error as MessageKey));
         setIsLoading(false);
       } else {
         toast.success(t('auth.signInSuccess'));

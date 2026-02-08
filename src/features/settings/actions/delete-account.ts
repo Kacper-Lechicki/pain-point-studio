@@ -1,16 +1,12 @@
 'use server';
 
-import { AuthActionResult } from '@/features/auth/types';
-import {
-  DELETE_CONFIRMATION_TEXT,
-  DeleteAccountSchema,
-  deleteAccountSchema,
-} from '@/features/settings/types';
+import { DeleteAccountSchema, deleteAccountSchema } from '@/features/settings/types';
 import { rateLimit } from '@/lib/common/rate-limit';
+import { ActionResult } from '@/lib/common/types';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createClient } from '@/lib/supabase/server';
 
-export const deleteAccount = async (formData: DeleteAccountSchema): Promise<AuthActionResult> => {
+export const deleteAccount = async (formData: DeleteAccountSchema): Promise<ActionResult> => {
   const { limited } = await rateLimit({ key: 'delete-account', limit: 1, windowSeconds: 3600 });
 
   if (limited) {
@@ -19,7 +15,7 @@ export const deleteAccount = async (formData: DeleteAccountSchema): Promise<Auth
 
   const validation = deleteAccountSchema.safeParse(formData);
 
-  if (!validation.success || validation.data.confirmation !== DELETE_CONFIRMATION_TEXT) {
+  if (!validation.success) {
     return { error: 'settings.errors.confirmationMismatch' };
   }
 
@@ -31,6 +27,11 @@ export const deleteAccount = async (formData: DeleteAccountSchema): Promise<Auth
 
   if (!user) {
     return { error: 'settings.errors.unexpected' };
+  }
+
+  // Confirmation must match user's email
+  if (validation.data.confirmation !== user.email) {
+    return { error: 'settings.errors.confirmationMismatch' };
   }
 
   // Clean up avatar files from storage

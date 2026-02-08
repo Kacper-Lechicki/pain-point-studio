@@ -97,4 +97,13 @@ describe('Settings Actions – Update Avatar URL', () => {
     expect(result.error).toBeDefined();
     expect(result).not.toHaveProperty('success');
   });
+
+  it('should return error when avatar URL is not a valid URL', async () => {
+    const { updateAvatarUrl } = await import('./update-avatar');
+    const result = await updateAvatarUrl('not-a-url');
+
+    expect(result.error).toBe('settings.errors.invalidData');
+    expect(result).not.toHaveProperty('success');
+    expect(mockGetUser).not.toHaveBeenCalled();
+  });
 });

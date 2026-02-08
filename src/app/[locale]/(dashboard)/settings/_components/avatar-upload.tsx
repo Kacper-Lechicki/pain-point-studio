@@ -81,7 +81,7 @@ const AvatarUpload = ({
       const result = await updateAvatarUrl(publicUrl);
 
       if (result.error) {
-        toast.error(t(result.error));
+        toast.error(t(result.error as Parameters<typeof t>[0]));
       } else {
         onAvatarChange(publicUrl);
         window.dispatchEvent(new Event('auth:refresh'));
@@ -116,7 +116,7 @@ const AvatarUpload = ({
       const result = await updateAvatarUrl('');
 
       if (result.error) {
-        toast.error(t(result.error));
+        toast.error(t(result.error as Parameters<typeof t>[0]));
       } else {
         onAvatarChange('');
         window.dispatchEvent(new Event('auth:refresh'));

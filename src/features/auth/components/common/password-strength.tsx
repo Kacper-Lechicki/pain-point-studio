@@ -106,7 +106,7 @@ const PasswordStrength = ({ password = '', isError = false }: PasswordStrengthPr
                 !req.met && (password || isError) && 'text-destructive/80'
               )}
             >
-              {t(`requirements.${req.key}`)}
+              {t(`requirements.${req.key}` as Parameters<typeof t>[0])}
             </span>
           </li>
         ))}

@@ -1,12 +1,12 @@
 'use server';
 
 import { mapAuthError } from '@/features/auth/config';
-import { AuthActionResult } from '@/features/auth/types';
 import { UpdateProfileSchema, updateProfileSchema } from '@/features/settings/types';
 import { rateLimit } from '@/lib/common/rate-limit';
+import { ActionResult } from '@/lib/common/types';
 import { createClient } from '@/lib/supabase/server';
 
-export const updateProfile = async (formData: UpdateProfileSchema): Promise<AuthActionResult> => {
+export const updateProfile = async (formData: UpdateProfileSchema): Promise<ActionResult> => {
   const { limited } = await rateLimit({ key: 'update-profile', limit: 10, windowSeconds: 300 });
 
   if (limited) {
@@ -58,7 +58,6 @@ export const updateProfile = async (formData: UpdateProfileSchema): Promise<Auth
       role: validation.data.role,
       bio: validation.data.bio,
       social_links: validation.data.socialLinks,
-      updated_at: new Date().toISOString(),
     })
     .eq('id', user.id);
 

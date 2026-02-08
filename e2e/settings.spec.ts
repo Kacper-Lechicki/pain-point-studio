@@ -316,8 +316,8 @@ test.describe('Settings Page – Delete Account', () => {
 
     await expect(async () => {
       await input2.click();
-      await input2.fill('delete my account');
-      await expect(input2).toHaveValue('delete my account');
+      await input2.fill(email);
+      await expect(input2).toHaveValue(email);
     }).toPass({ timeout: 10_000 });
 
     await expect(deleteSubmit2).toBeEnabled();

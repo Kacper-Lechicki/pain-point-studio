@@ -17,11 +17,13 @@ vi.mock('@/lib/common/rate-limit', () => ({
 }));
 
 // Mock Supabase server client
+const mockGetUser = vi.fn();
 const mockUpdateUser = vi.fn();
 
 vi.mock('@/lib/supabase/server', () => ({
   createClient: vi.fn().mockResolvedValue({
     auth: {
+      getUser: mockGetUser,
       updateUser: mockUpdateUser,
     },
   }),
@@ -30,6 +32,11 @@ vi.mock('@/lib/supabase/server', () => ({
 describe('Settings Actions – Update Email', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+
+    // Default: authenticated user
+    mockGetUser.mockResolvedValue({
+      data: { user: { id: 'user-123', email: 'test@example.com' } },
+    });
 
     // Default: email update succeeds
     mockUpdateUser.mockResolvedValue({ error: null });
@@ -50,6 +57,7 @@ describe('Settings Actions – Update Email', () => {
     const result = await updateEmail({ email: 'not-an-email' });
 
     expect(result.error).toBeDefined();
+    expect(mockGetUser).not.toHaveBeenCalled();
     expect(mockUpdateUser).not.toHaveBeenCalled();
   });
 
@@ -74,6 +82,18 @@ describe('Settings Actions – Update Email', () => {
     const result = await updateEmail({ email: 'new@example.com' });
 
     expect(result.error).toBeDefined();
+    expect(mockGetUser).not.toHaveBeenCalled();
+    expect(mockUpdateUser).not.toHaveBeenCalled();
+  });
+
+  it('should return error when user is not authenticated', async () => {
+    mockGetUser.mockResolvedValue({ data: { user: null } });
+
+    const { updateEmail } = await import('./update-email');
+    const result = await updateEmail({ email: 'new@example.com' });
+
+    expect(result.error).toBeDefined();
+    expect(result).not.toHaveProperty('success');
     expect(mockUpdateUser).not.toHaveBeenCalled();
   });
 });
