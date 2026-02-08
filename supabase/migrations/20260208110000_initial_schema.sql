@@ -85,7 +85,7 @@ BEGIN
     RAISE EXCEPTION 'full_name cannot be cleared once set';
   END IF;
 
-  IF OLD.role <> '' AND NEW.role = '' THEN
+  IF OLD.role IS NOT NULL AND OLD.role <> '' AND (NEW.role IS NULL OR NEW.role = '') THEN
     RAISE EXCEPTION 'role cannot be cleared once set';
   END IF;
 
@@ -117,7 +117,7 @@ SET default_table_access_method = "heap";
 CREATE TABLE IF NOT EXISTS "public"."profiles" (
     "id" "uuid" NOT NULL,
     "full_name" "text" DEFAULT ''::"text" NOT NULL,
-    "role" "text" DEFAULT ''::"text" NOT NULL,
+    "role" "text" DEFAULT NULL,
     "bio" "text" DEFAULT ''::"text" NOT NULL,
     "avatar_url" "text" DEFAULT ''::"text" NOT NULL,
     "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL,

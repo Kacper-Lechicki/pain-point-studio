@@ -57,7 +57,7 @@ export async function ensureUser(
 
     if (!error) {
       const fullName = profile?.fullName ?? 'E2E User';
-      const role = profile?.role ?? 'other';
+      const role = profile?.role === '' ? null : (profile?.role ?? 'other');
 
       await admin.from('profiles').update({ full_name: fullName, role }).eq('id', data.user.id);
 
