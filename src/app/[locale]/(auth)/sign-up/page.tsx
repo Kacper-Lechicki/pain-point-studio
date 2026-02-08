@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 
+import { ROUTES } from '@/config';
 import { AuthHeader } from '@/features/auth/components/common/auth-header';
 import { OAuthLinks } from '@/features/auth/components/common/oauth-links';
 import { SignUpForm } from '@/features/auth/components/common/sign-up-form';
@@ -11,10 +12,15 @@ export default async function SignUpPage() {
   return (
     <SignUpForm
       header={
-        <AuthHeader title={t('auth.createAccount')} description={t('auth.enterEmailToCreate')} />
+        <AuthHeader
+          title={t('auth.createAccount')}
+          description={t('auth.alreadyHaveAccount')}
+          linkText={t('auth.signIn')}
+          linkHref={ROUTES.auth.signIn}
+        />
       }
     >
-      <OAuthLinks mode="signUp" />
+      <OAuthLinks />
       <TermsText />
     </SignUpForm>
   );

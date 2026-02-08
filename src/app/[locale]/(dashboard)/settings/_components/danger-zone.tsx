@@ -19,12 +19,12 @@ const DangerZone = ({ userEmail }: DangerZoneProps) => {
   return (
     <>
       <section className="space-y-8">
-        <div className="space-y-1">
+        <div className="border-destructive/20 space-y-1 border-b pb-6">
           <h2 className="text-destructive text-lg font-semibold">{t('title')}</h2>
           <p className="text-destructive/90 text-sm">{t('description')}</p>
         </div>
 
-        <div className="border-destructive/50 rounded-lg border px-4 py-4">
+        <div className="border-destructive/30 bg-destructive/5 rounded-lg border px-4 py-4">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
             <div className="min-w-0 flex-1 space-y-1">
               <p className="text-sm font-medium">{t('deleteAccount')}</p>

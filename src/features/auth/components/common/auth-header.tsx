@@ -1,3 +1,5 @@
+import { ArrowRight } from 'lucide-react';
+
 import { AppRoute } from '@/config';
 import { Link } from '@/i18n/routing';
 
@@ -17,9 +19,12 @@ const AuthHeader = ({ title, description, linkText, linkHref }: AuthHeaderProps)
         {description}
 
         {linkText && linkHref && (
-          <Link href={linkHref} className="text-primary ml-1 hover:underline">
-            {linkText}
-          </Link>
+          <>
+            <ArrowRight className="mx-1.5 inline size-3" />
+            <Link href={linkHref} className="hover:text-primary underline underline-offset-4">
+              {linkText}
+            </Link>
+          </>
         )}
       </p>
     </div>

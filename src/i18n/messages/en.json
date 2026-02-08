@@ -348,6 +348,7 @@
       "bio": "Bio",
       "bioPlaceholder": "Tell us a bit about yourself",
       "bioCounter": "{count}/{max}",
+      "previewProfile": "Preview Profile",
       "saveProfile": "Save Profile",
       "profileUpdated": "Profile updated successfully.",
       "avatarUpdated": "Profile photo updated.",

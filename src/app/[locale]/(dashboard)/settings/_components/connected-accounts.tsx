@@ -16,7 +16,7 @@ const ConnectedAccounts = ({ identities }: ConnectedAccountsProps) => {
 
   return (
     <section className="space-y-8">
-      <div className="space-y-1">
+      <div className="border-border/40 space-y-1 border-b pb-6">
         <h2 className="text-lg font-semibold">{t('settings.connectedAccounts.title')}</h2>
 
         <p className="text-muted-foreground text-sm">
@@ -42,7 +42,7 @@ const ConnectedAccounts = ({ identities }: ConnectedAccountsProps) => {
             return (
               <div
                 key={identity.provider}
-                className="flex flex-wrap items-center justify-between gap-2 rounded-lg border p-4"
+                className="bg-muted/30 flex flex-wrap items-center justify-between gap-2 rounded-lg border p-4 transition-colors"
               >
                 <div className="flex min-w-0 items-center gap-3">
                   <Icon className="size-5 shrink-0" aria-hidden="true" />

@@ -25,6 +25,7 @@ const OAuthButton = ({ provider, isLoading, disabled, onClick }: OAuthButtonProp
     <Button
       onClick={() => onClick(provider.id)}
       disabled={disabled}
+      size="lg"
       variant={isGoogle ? 'outline' : 'default'}
       className={cn(
         'flex w-full items-center justify-center transition-all duration-200',

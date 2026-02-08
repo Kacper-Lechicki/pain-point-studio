@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Plus, Trash2 } from 'lucide-react';
+import { Eye, Plus, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -90,9 +90,16 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
 
   return (
     <section className="space-y-8">
-      <div className="space-y-1">
-        <h2 className="text-lg font-semibold">{t('settings.profile.title')}</h2>
-        <p className="text-muted-foreground text-sm">{t('settings.profile.description')}</p>
+      <div className="border-border/40 flex flex-wrap items-start justify-between gap-3 border-b pb-6">
+        <div className="space-y-1">
+          <h2 className="text-lg font-semibold">{t('settings.profile.title')}</h2>
+          <p className="text-muted-foreground text-sm">{t('settings.profile.description')}</p>
+        </div>
+
+        <Button type="button" variant="outline" size="sm" disabled className="shrink-0">
+          <Eye className="size-4" />
+          {t('settings.profile.previewProfile')}
+        </Button>
       </div>
 
       <div className="space-y-6">
@@ -178,18 +185,47 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
               )}
             />
 
-            <div className="space-y-3 pt-2">
-              <div className="space-y-1">
-                <p className="text-sm font-medium">{t('settings.profile.socialLinks.title')}</p>
-                <p className="text-muted-foreground text-sm">
-                  {t('settings.profile.socialLinks.description')}
-                </p>
+            <div className="space-y-4 pt-2">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium">{t('settings.profile.socialLinks.title')}</p>
+                  <p className="text-muted-foreground text-sm">
+                    {t('settings.profile.socialLinks.description')}
+                  </p>
+                </div>
+
+                {fields.length < MAX_SOCIAL_LINKS && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="shrink-0"
+                    onClick={() =>
+                      append({
+                        label: profile.socialLinkOptions[0]?.value ?? 'website',
+                        url: '',
+                      })
+                    }
+                  >
+                    <Plus className="size-4" />
+                    {t('settings.profile.socialLinks.addLink')}
+                  </Button>
+                )}
               </div>
 
-              <div className="flex flex-col gap-5">
+              {fields.length >= MAX_SOCIAL_LINKS && (
+                <p className="text-muted-foreground text-xs">
+                  {t('settings.profile.socialLinks.maxReached', { max: MAX_SOCIAL_LINKS })}
+                </p>
+              )}
+
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 {fields.map((field, index) => (
-                  <div key={field.id} className="w-full space-y-2">
-                    <div className="flex w-full items-center justify-between">
+                  <div
+                    key={field.id}
+                    className="bg-muted/20 space-y-2 rounded-lg border border-dashed p-4"
+                  >
+                    <div className="flex items-center justify-between">
                       <span className="text-muted-foreground text-sm font-medium">
                         {t('settings.profile.socialLinks.linkLabel', {
                           number: index + 1,
@@ -256,24 +292,6 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
                   </div>
                 ))}
               </div>
-
-              {fields.length < MAX_SOCIAL_LINKS ? (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() =>
-                    append({ label: profile.socialLinkOptions[0]?.value ?? 'website', url: '' })
-                  }
-                >
-                  <Plus className="size-4" />
-                  {t('settings.profile.socialLinks.addLink')}
-                </Button>
-              ) : (
-                <p className="text-muted-foreground text-xs">
-                  {t('settings.profile.socialLinks.maxReached', { max: MAX_SOCIAL_LINKS })}
-                </p>
-              )}
             </div>
 
             <div className="flex justify-end">

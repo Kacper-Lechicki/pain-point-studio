@@ -58,7 +58,7 @@ const EmailForm = ({ currentEmail }: EmailFormProps) => {
 
   return (
     <section className="space-y-8">
-      <div className="space-y-1">
+      <div className="border-border/40 space-y-1 border-b pb-6">
         <div className="flex items-center gap-2">
           <h2 className="text-lg font-semibold">{t('settings.email.title')}</h2>
 

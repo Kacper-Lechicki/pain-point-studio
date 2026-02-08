@@ -18,9 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ProfileData } from '@/features/settings/actions';
-import { useBreakpoint } from '@/hooks/common/use-breakpoint';
 
 const SECTIONS = [
   { value: 'profile', icon: CircleUserRound },
@@ -68,7 +66,6 @@ interface SettingsPageProps {
 
 const SettingsPage = ({ profile }: SettingsPageProps) => {
   const t = useTranslations('settings');
-  const isDesktop = useBreakpoint('lg');
   const mounted = useMounted();
   const [activeSection, setActiveSection] = useState<SectionValue>('profile');
 
@@ -90,68 +87,52 @@ const SettingsPage = ({ profile }: SettingsPageProps) => {
     );
   }
 
-  if (isDesktop) {
-    return (
-      <div className="mx-auto w-full">
-        <div className="space-y-8">
+  return (
+    <div className="mx-auto w-full">
+      <div className="flex w-full flex-col gap-6 lg:flex-row lg:items-start lg:gap-8">
+        <div className="sticky top-24 hidden w-60 shrink-0 flex-col gap-6 lg:flex">
+          <div className="space-y-1">
+            <h1 className="text-xl font-bold tracking-tight">{t('title')}</h1>
+            <p className="text-muted-foreground text-xs">{t('description')}</p>
+          </div>
+
+          <nav className="flex w-full flex-col gap-2" data-testid="settings-nav">
+            {SECTIONS.map(({ value, icon: Icon }) => (
+              <button
+                key={value}
+                type="button"
+                data-section={value}
+                data-state={activeSection === value ? 'active' : 'inactive'}
+                onClick={() => setActiveSection(value)}
+                className="text-muted-foreground hover:border-border hover:text-foreground data-[state=active]:bg-accent data-[state=active]:text-foreground flex h-9 min-h-9 w-full items-center justify-start gap-2.5 rounded-lg border border-dashed border-transparent px-3 text-sm font-medium transition-all data-[state=active]:border-solid data-[state=active]:border-transparent"
+              >
+                <Icon className="size-4 shrink-0" aria-hidden="true" />
+                {t(`nav.${value}`)}
+              </button>
+            ))}
+          </nav>
+        </div>
+
+        <div className="w-full space-y-6 lg:hidden">
           <SettingsHeader />
 
-          <Tabs
-            value={activeSection}
-            onValueChange={(v) => setActiveSection(v as SectionValue)}
-            orientation="vertical"
-            data-testid="settings-nav"
-          >
-            <div className="flex flex-1 gap-8">
-              <TabsList className="sticky top-24 flex h-fit w-48 shrink-0 flex-col gap-3 self-start bg-transparent">
-                {SECTIONS.map(({ value, icon: Icon }) => (
-                  <TabsTrigger
-                    key={value}
-                    value={value}
-                    data-section={value}
-                    className="data-[state=active]:bg-accent h-9! min-h-9 w-full justify-start gap-2 rounded-lg px-3 after:hidden data-[state=active]:shadow-none"
-                  >
-                    <Icon className="size-4" aria-hidden="true" />
-                    {t(`nav.${value}`)}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
+          <Select value={activeSection} onValueChange={(v) => setActiveSection(v as SectionValue)}>
+            <SelectTrigger className="w-full" data-testid="settings-nav-select">
+              <SelectValue />
+            </SelectTrigger>
 
-              <div className="border-border/50 bg-card/80 min-w-0 flex-1 rounded-xl border p-8 shadow-xl backdrop-blur-sm">
-                {SECTIONS.map(({ value }) => (
-                  <TabsContent key={value} value={value}>
-                    {sectionContent[value]}
-                  </TabsContent>
-                ))}
-              </div>
-            </div>
-          </Tabs>
+            <SelectContent>
+              {SECTIONS.map(({ value, icon: Icon }) => (
+                <SelectItem key={value} value={value} data-section={value}>
+                  <Icon className="size-4" />
+                  {t(`nav.${value}`)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-      </div>
-    );
-  }
 
-  return (
-    <div className="mx-auto w-full max-w-4xl">
-      <div className="space-y-6">
-        <SettingsHeader />
-
-        <Select value={activeSection} onValueChange={(v) => setActiveSection(v as SectionValue)}>
-          <SelectTrigger className="w-full" data-testid="settings-nav-select">
-            <SelectValue />
-          </SelectTrigger>
-
-          <SelectContent>
-            {SECTIONS.map(({ value, icon: Icon }) => (
-              <SelectItem key={value} value={value} data-section={value}>
-                <Icon className="size-4" />
-                {t(`nav.${value}`)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-        <div className="sm:border-border/50 sm:bg-card/80 rounded-xl sm:border sm:p-4 sm:shadow-xl sm:backdrop-blur-sm">
+        <div className="sm:border-border/50 sm:bg-card/80 min-w-0 flex-1 rounded-xl sm:border sm:p-6 sm:shadow-xl sm:backdrop-blur-sm lg:p-10">
           {sectionContent[activeSection]}
         </div>
       </div>
