@@ -332,7 +332,8 @@
       "password": "Password",
       "appearance": "Appearance",
       "connectedAccounts": "Accounts",
-      "dangerZone": "Danger Zone"
+      "dangerZone": "Danger Zone",
+      "label": "Settings section"
     },
     "appearance": {
       "title": "Appearance",

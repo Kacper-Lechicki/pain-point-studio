@@ -14,7 +14,7 @@ import { signOut } from '@/features/auth/actions';
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import { useRouter } from '@/i18n/routing';
 import { Link } from '@/i18n/routing';
-import { cn } from '@/lib/common/utils';
+import { cn, proxyImageUrl } from '@/lib/common/utils';
 
 const UserMenu = () => {
   const t = useTranslations();
@@ -86,7 +86,7 @@ const UserMenu = () => {
         aria-label="User menu"
       >
         <Avatar className="size-9 text-xs font-semibold">
-          <AvatarImage src={avatarUrl} alt="" />
+          <AvatarImage src={proxyImageUrl(avatarUrl)} alt="" />
           <AvatarFallback>{initials}</AvatarFallback>
         </Avatar>
       </button>

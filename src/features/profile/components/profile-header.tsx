@@ -6,6 +6,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import type { ProfilePreviewData } from '@/features/profile/types';
+import { proxyImageUrl } from '@/lib/common/utils';
 
 interface ProfileHeaderProps {
   profile: ProfilePreviewData;
@@ -33,7 +34,10 @@ const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
       <div className="relative shrink-0">
         <div className="bg-primary/10 absolute -inset-2 rounded-full blur-xl" />
         <Avatar className="ring-offset-background ring-primary/20 relative size-24 ring-4 ring-offset-2">
-          <AvatarImage src={profile.avatarUrl || undefined} alt={profile.fullName || ''} />
+          <AvatarImage
+            src={proxyImageUrl(profile.avatarUrl || undefined)}
+            alt={profile.fullName || ''}
+          />
           <AvatarFallback className="text-xl font-semibold">{fallbackInitials}</AvatarFallback>
         </Avatar>
       </div>

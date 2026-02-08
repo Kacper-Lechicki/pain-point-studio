@@ -71,11 +71,11 @@ const PasswordStrength = ({ password = '', isError = false }: PasswordStrengthPr
   return (
     <div className="mt-1.5 space-y-2">
       <div className="flex items-center justify-between text-[10px]">
-        <span className="text-muted-foreground/90">{t('passwordStrength')}</span>
+        <span className="text-muted-foreground">{t('passwordStrength')}</span>
         <span
           className={cn(
             'font-semibold',
-            strength > 0 ? 'text-foreground' : 'text-muted-foreground/50'
+            strength > 0 ? 'text-foreground' : 'text-muted-foreground'
           )}
         >
           {label}
@@ -95,14 +95,14 @@ const PasswordStrength = ({ password = '', isError = false }: PasswordStrengthPr
             {req.met ? (
               <Check className="text-success size-2.5" aria-hidden="true" />
             ) : !password && !isError ? (
-              <Circle className="text-muted-foreground/40 size-2.5" aria-hidden="true" />
+              <Circle className="text-muted-foreground size-2.5" aria-hidden="true" />
             ) : (
               <X className="text-destructive size-2.5" aria-hidden="true" />
             )}
 
             <span
               className={cn(
-                req.met ? 'text-foreground/80' : 'text-muted-foreground/60',
+                req.met ? 'text-foreground' : 'text-muted-foreground',
                 !req.met && (password || isError) && 'text-destructive/80'
               )}
             >

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useSyncExternalStore } from 'react';
+import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 
 import { CircleUserRound, KeyRound, Link2, Mail, Palette, Trash2 } from 'lucide-react';
 import { motion } from 'motion/react';
@@ -33,7 +33,29 @@ const SECTIONS = [
 
 type SectionValue = (typeof SECTIONS)[number]['value'];
 
+const SECTION_TO_HASH: Record<SectionValue, string> = {
+  profile: 'profile',
+  email: 'email',
+  password: 'password',
+  appearance: 'appearance',
+  connectedAccounts: 'connected-accounts',
+  dangerZone: 'danger-zone',
+};
+
+const HASH_TO_SECTION: Record<string, SectionValue> = Object.fromEntries(
+  Object.entries(SECTION_TO_HASH).map(([k, v]) => [v, k as SectionValue])
+) as Record<string, SectionValue>;
+
+const DEFAULT_SECTION: SectionValue = 'profile';
+
+function getSectionFromHash(): SectionValue {
+  const hash = window.location.hash.replace('#', '');
+
+  return HASH_TO_SECTION[hash] ?? DEFAULT_SECTION;
+}
+
 let clientMounted = false;
+
 const mountedListeners = new Set<() => void>();
 
 function subscribeMounted(callback: () => void) {
@@ -63,6 +85,8 @@ function useMounted() {
   return useSyncExternalStore(subscribeMounted, getMountedSnapshot, getMountedServerSnapshot);
 }
 
+// ── Component ───────────────────────────────────────────────────
+
 interface SettingsPageProps {
   profile: ProfileData;
 }
@@ -70,7 +94,34 @@ interface SettingsPageProps {
 const SettingsPage = ({ profile }: SettingsPageProps) => {
   const t = useTranslations('settings');
   const mounted = useMounted();
-  const [activeSection, setActiveSection] = useState<SectionValue>('profile');
+
+  const [activeSection, setActiveSectionState] = useState<SectionValue>(() =>
+    typeof window === 'undefined' ? DEFAULT_SECTION : getSectionFromHash()
+  );
+
+  useEffect(() => {
+    const section = getSectionFromHash();
+    window.history.replaceState(null, '', `#${SECTION_TO_HASH[section]}`);
+  }, []);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setActiveSectionState(getSectionFromHash());
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  const setActiveSection = useCallback((section: SectionValue) => {
+    if (section === getSectionFromHash()) {
+      return;
+    }
+
+    setActiveSectionState(section);
+    window.history.pushState(null, '', `#${SECTION_TO_HASH[section]}`);
+  }, []);
 
   const sectionContent: Record<SectionValue, React.ReactNode> = {
     profile: <ProfileForm profile={profile} />,
@@ -121,7 +172,11 @@ const SettingsPage = ({ profile }: SettingsPageProps) => {
           <SettingsHeader />
 
           <Select value={activeSection} onValueChange={(v) => setActiveSection(v as SectionValue)}>
-            <SelectTrigger className="w-full" data-testid="settings-nav-select">
+            <SelectTrigger
+              className="w-full"
+              data-testid="settings-nav-select"
+              aria-label={t('nav.label')}
+            >
               <SelectValue />
             </SelectTrigger>
 
@@ -136,7 +191,7 @@ const SettingsPage = ({ profile }: SettingsPageProps) => {
           </Select>
         </div>
 
-        <div className="sm:border-border/50 sm:bg-card/80 min-w-0 flex-1 rounded-xl sm:border sm:p-6 sm:shadow-xl sm:backdrop-blur-sm lg:p-10">
+        <div className="sm:border-border/50 sm:bg-card min-w-0 flex-1 rounded-xl sm:border sm:p-6 sm:shadow-xl lg:p-10">
           <motion.div
             key={activeSection}
             initial={{ opacity: 0, y: 4 }}
@@ -151,4 +206,5 @@ const SettingsPage = ({ profile }: SettingsPageProps) => {
   );
 };
 
-export { SettingsPage };
+export { SettingsPage, SECTION_TO_HASH, HASH_TO_SECTION };
+export type { SectionValue };

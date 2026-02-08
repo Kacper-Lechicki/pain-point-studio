@@ -141,7 +141,7 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
 
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
-                      <SelectTrigger className="w-full">
+                      <SelectTrigger className="w-full" aria-label={t('settings.profile.role')}>
                         <SelectValue placeholder={t('settings.profile.rolePlaceholder')} />
                       </SelectTrigger>
                     </FormControl>
@@ -255,7 +255,10 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
                         <FormItem className="w-full">
                           <Select onValueChange={labelField.onChange} value={labelField.value}>
                             <FormControl>
-                              <SelectTrigger className="h-9 w-full">
+                              <SelectTrigger
+                                className="h-9 w-full"
+                                aria-label={t('settings.profile.socialLinks.labelPlaceholder')}
+                              >
                                 <SelectValue
                                   placeholder={t('settings.profile.socialLinks.labelPlaceholder')}
                                 />

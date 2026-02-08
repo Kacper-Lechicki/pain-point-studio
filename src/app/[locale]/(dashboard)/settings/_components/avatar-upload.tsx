@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { updateAvatarUrl } from '@/features/settings/actions';
 import { AVATAR_ACCEPTED_TYPES, AVATAR_MAX_SIZE } from '@/features/settings/config';
+import { proxyImageUrl } from '@/lib/common/utils';
 import { createClient } from '@/lib/supabase/client';
 
 interface AvatarUploadProps {
@@ -132,7 +133,7 @@ const AvatarUpload = ({
   return (
     <div className="bg-muted/20 flex flex-col items-center gap-4 rounded-lg border border-dashed p-4 sm:flex-row sm:items-center">
       <Avatar className="ring-offset-background ring-border/50 size-20 shrink-0 ring-2 ring-offset-2">
-        <AvatarImage src={currentUrl || undefined} alt={t('profile.avatar')} />
+        <AvatarImage src={proxyImageUrl(currentUrl || undefined)} alt={t('profile.avatar')} />
         <AvatarFallback className="text-lg">{fallbackInitials}</AvatarFallback>
       </Avatar>
 
@@ -178,8 +179,9 @@ const AvatarUpload = ({
         type="file"
         accept={AVATAR_ACCEPTED_TYPES.join(',')}
         onChange={handleFileSelect}
-        className="hidden"
         aria-label={t('profile.uploadAvatar')}
+        className="sr-only"
+        tabIndex={-1}
       />
     </div>
   );

@@ -184,8 +184,8 @@ test.describe('Settings Page – Email Validation', () => {
 
   test('stays on page with invalid email format', async ({ page }) => {
     await signIn(page);
-    await page.goto('/en/settings');
-    await navigateToSection(page, 'email', sel.email);
+    await page.goto('/en/settings#email');
+    await expect(page.locator(sel.email)).toBeVisible({ timeout: 15_000 });
 
     const emailInput = page.locator(sel.email);
 
@@ -219,8 +219,8 @@ test.describe('Settings Page – Password', () => {
 
   test('validates passwords → updates password → clears fields', async ({ page }) => {
     await signIn(page);
-    await page.goto('/en/settings');
-    await navigateToSection(page, 'password', sel.password);
+    await page.goto('/en/settings#password');
+    await expect(page.locator(sel.password)).toBeVisible({ timeout: 15_000 });
 
     // ── Weak password rejected ──
     await page.locator(sel.password).fill('weak');
@@ -282,8 +282,8 @@ test.describe('Settings Page – Delete Account', () => {
     await ensureUser(email, PASSWORD);
 
     await signIn(page);
-    await page.goto('/en/settings');
-    await navigateToSection(page, 'dangerZone', sel.deleteButton);
+    await page.goto('/en/settings#danger-zone');
+    await expect(page.locator(sel.deleteButton)).toBeVisible({ timeout: 15_000 });
 
     // ── Open dialog ──
     await page.locator(sel.deleteButton).click();
@@ -379,6 +379,27 @@ test.describe('Settings Page – Navigation', () => {
 
     await expect(page).toHaveURL(/\/dashboard/);
   });
+
+  test('hash navigation → direct URL → click updates hash → browser back', async ({ page }) => {
+    await signIn(page);
+
+    // ── Direct hash navigation ──
+    await page.goto('/en/settings#email');
+    await expect(page.locator(sel.email)).toBeVisible({ timeout: 15_000 });
+
+    // ── Click nav updates hash ──
+    await navigateToSection(page, 'password', sel.password);
+    await expect(page).toHaveURL(/#password/);
+
+    // ── Browser back returns to previous hash ──
+    await page.goBack();
+    await expect(page.locator(sel.email)).toBeVisible({ timeout: 10_000 });
+    await expect(page).toHaveURL(/#email/);
+
+    // ── No hash defaults to profile ──
+    await page.goto('/en/settings');
+    await expect(page.locator(sel.fullName)).toBeVisible({ timeout: 15_000 });
+  });
 });
 
 // ─────────────────────────────────────────────────────────────────
@@ -403,10 +424,8 @@ test.describe('Settings Page – Accent Color', () => {
 
   test('switches accent color → persists after reload', async ({ page }) => {
     await signIn(page);
-    await page.goto('/en/settings');
-
-    // ── Navigate to appearance section ──
-    await navigateToSection(page, 'appearance', 'button[data-accent="blue"]');
+    await page.goto('/en/settings#appearance');
+    await expect(page.locator('button[data-accent="blue"]')).toBeVisible({ timeout: 15_000 });
 
     // ── Blue is the default — no data-accent on <html> ──
     const html = page.locator('html');
@@ -431,7 +450,7 @@ test.describe('Settings Page – Accent Color', () => {
     await expect(html).toHaveAttribute('data-accent', 'indigo', { timeout: 5_000 });
 
     // ── Switch back to blue (default) ──
-    await navigateToSection(page, 'appearance', 'button[data-accent="blue"]');
+    await expect(page.locator('button[data-accent="blue"]')).toBeVisible({ timeout: 15_000 });
     await page.locator('button[data-accent="blue"]').click();
     await expect(html).toHaveAttribute('data-accent', 'blue');
   });

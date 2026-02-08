@@ -21,7 +21,7 @@ const DangerZone = ({ userEmail }: DangerZoneProps) => {
       <section className="space-y-8">
         <div className="border-destructive/20 space-y-1 border-b pb-6">
           <h2 className="text-destructive text-lg font-semibold">{t('title')}</h2>
-          <p className="text-destructive/90 text-sm">{t('description')}</p>
+          <p className="text-destructive text-sm">{t('description')}</p>
         </div>
 
         <div className="border-destructive/30 bg-destructive/5 rounded-lg border px-4 py-4">
