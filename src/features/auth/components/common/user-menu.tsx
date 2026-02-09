@@ -136,6 +136,7 @@ const UserMenu = () => {
           <button
             onClick={handleSignOut}
             disabled={isSigningOut}
+            data-testid="sign-out"
             className="md:hover:bg-accent flex min-h-10 w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors disabled:opacity-50 md:min-h-9"
           >
             {isSigningOut ? (

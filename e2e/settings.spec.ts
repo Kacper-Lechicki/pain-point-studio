@@ -221,6 +221,12 @@ test.describe('Settings – Password', () => {
 test.describe('Settings – Delete Account', () => {
   test.describe.configure({ timeout: 60_000 });
 
+  // Cleanup in case the test fails before the account is deleted via UI
+  test.afterAll(async ({}, testInfo) => {
+    const e = scopedEmail('e2e-settings-delete', testInfo.project.name);
+    await deleteUserByEmail(e).catch(() => {});
+  });
+
   test('dialog → cancel → confirm → delete → dashboard locked', async ({ page }, testInfo) => {
     const email = scopedEmail('e2e-settings-delete', testInfo.project.name);
     const signIn = makeSignIn(email, PASSWORD);
@@ -240,7 +246,7 @@ test.describe('Settings – Delete Account', () => {
     await expect(dialog.locator('button[type="submit"]')).toBeDisabled();
 
     // Cancel closes dialog
-    await dialog.locator('button[type="button"]').first().click();
+    await dialog.locator('[data-testid="delete-cancel"]').click();
     await expect(dialog).not.toBeVisible();
 
     // Reopen and delete

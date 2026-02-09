@@ -12,7 +12,6 @@
 # testing
 /coverage
 /test-results/
-/playwright-report/
 /blob-report/
 /playwright/.cache/
 vitest.config.mts.timestamp-*

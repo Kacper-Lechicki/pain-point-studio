@@ -19,7 +19,6 @@ const eslintConfig = defineConfig([
     'coverage/**',
     'reports/**',
     'test-results/**',
-    'playwright-report/**',
     'scripts/**',
   ]),
   // Enforce blank lines before control flow statements

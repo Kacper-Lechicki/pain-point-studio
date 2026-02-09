@@ -51,13 +51,8 @@ test.describe('Sign-In Flow', () => {
     await page.locator(sel.password).fill('WrongPassword1!');
     await page.locator(sel.submit).click();
 
-    // Server responds with error toast or re-enables button
-    await expect(async () => {
-      const toastVisible = await page.locator(sel.toast).first().isVisible();
-      const buttonReEnabled = await page.locator(`${sel.submit}:not([disabled])`).isVisible();
-      expect(toastVisible || buttonReEnabled).toBe(true);
-    }).toPass({ timeout: 15_000 });
-
+    // Server responds with error toast
+    await expect(page.locator(sel.toast).first()).toBeVisible({ timeout: 15_000 });
     await expect(page).toHaveURL(/\/sign-in/);
   });
 });
@@ -133,6 +128,21 @@ test.describe('Forgot Password Flow', () => {
     await page.locator(sel.email).fill('not-valid');
     await page.locator(sel.submit).click();
     await expect(page).toHaveURL(/\/forgot-password/);
+  });
+
+  test('valid email shows confirmation view', async ({ page }) => {
+    await page.goto(url(ROUTES.auth.forgotPassword));
+
+    await expect(async () => {
+      await page.locator(sel.email).fill('any-user@example.com');
+      await expect(page.locator(sel.email)).toHaveValue('any-user@example.com');
+    }).toPass({ timeout: 10_000 });
+
+    await page.locator(sel.submit).click();
+
+    // Form disappears, replaced by confirmation (link back to sign-in)
+    await expect(page.locator(sel.submit)).not.toBeVisible({ timeout: 15_000 });
+    await expect(page.locator(`a[href*="${ROUTES.auth.signIn}"]`).first()).toBeVisible();
   });
 });
 
@@ -237,7 +247,7 @@ test.describe('Full Auth Lifecycle', () => {
       await expect(trigger).toBeVisible({ timeout: 5_000 });
       await trigger.click();
 
-      const signOutBtn = page.locator('button:has(svg.lucide-log-out)');
+      const signOutBtn = page.locator('[data-testid="sign-out"]');
       await expect(signOutBtn).toBeVisible({ timeout: 3_000 });
       await signOutBtn.click();
 

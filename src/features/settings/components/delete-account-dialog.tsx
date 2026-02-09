@@ -117,6 +117,7 @@ const DeleteAccountDialog = ({ open, onOpenChange, userEmail }: DeleteAccountDia
               <Button
                 type="button"
                 variant="outline"
+                data-testid="delete-cancel"
                 onClick={() => onOpenChange(false)}
                 disabled={isDeleting}
               >
