@@ -2,20 +2,22 @@
 
 import * as React from 'react';
 
+import { type VariantProps } from 'class-variance-authority';
 import { Check, Copy } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Input, inputVariants } from '@/components/ui/input';
 import { cn } from '@/lib/common/utils';
 
-interface ClipboardInputProps extends React.ComponentProps<typeof Input> {
+interface ClipboardInputProps
+  extends Omit<React.ComponentProps<typeof Input>, 'value'>, VariantProps<typeof inputVariants> {
   value: string;
   copyLabel?: string;
   copiedLabel?: string;
 }
 
 const ClipboardInput = React.forwardRef<HTMLInputElement, ClipboardInputProps>(
-  ({ className, value, copyLabel = 'Copy', copiedLabel = 'Copied', ...props }, ref) => {
+  ({ className, value, size, copyLabel = 'Copy', copiedLabel = 'Copied', ...props }, ref) => {
     const [copied, setCopied] = React.useState(false);
 
     const handleCopy = async () => {
@@ -32,6 +34,7 @@ const ClipboardInput = React.forwardRef<HTMLInputElement, ClipboardInputProps>(
           ref={ref}
           value={value}
           readOnly
+          size={size}
           className={cn('bg-muted text-muted-foreground pr-10', className)}
           {...props}
         />

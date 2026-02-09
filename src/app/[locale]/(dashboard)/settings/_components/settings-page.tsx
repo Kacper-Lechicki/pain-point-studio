@@ -119,8 +119,9 @@ const SettingsPage = ({ profile }: SettingsPageProps) => {
   if (!mounted) {
     return (
       <div className="mx-auto w-full">
-        <div className="space-y-8">
+        <div className="space-y-6">
           <SettingsHeader />
+          <div className="border-border/50 border-b lg:hidden" />
         </div>
       </div>
     );
@@ -176,6 +177,8 @@ const SettingsPage = ({ profile }: SettingsPageProps) => {
               ))}
             </SelectContent>
           </Select>
+
+          <div className="border-border/50 border-b" />
         </div>
 
         <div className="sm:border-border/50 sm:bg-card min-w-0 flex-1 rounded-xl sm:border sm:p-6 sm:shadow-xl lg:p-10">

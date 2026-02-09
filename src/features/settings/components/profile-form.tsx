@@ -107,7 +107,7 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
           <p className="text-muted-foreground text-sm">{t('settings.profile.description')}</p>
         </div>
 
-        <Button type="button" variant="outline" size="sm" asChild className="shrink-0">
+        <Button type="button" variant="outline" asChild className="shrink-0">
           <Link href={ROUTES.profile.preview}>
             <Eye className="size-4" />
             {t('settings.profile.previewProfile')}
@@ -211,7 +211,6 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
                   <Button
                     type="button"
                     variant="outline"
-                    size="sm"
                     className="shrink-0"
                     onClick={() =>
                       append({
@@ -248,8 +247,8 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
                       <Button
                         type="button"
                         variant="ghost"
-                        size="icon"
-                        className="text-destructive hover:bg-destructive/10 hover:text-destructive size-8"
+                        size="icon-sm"
+                        className="text-destructive hover:bg-destructive/10 hover:text-destructive"
                         onClick={() => remove(index)}
                         aria-label={t('settings.profile.socialLinks.removeLink')}
                       >
@@ -265,7 +264,7 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
                           <Select onValueChange={labelField.onChange} value={labelField.value}>
                             <FormControl>
                               <SelectTrigger
-                                className="h-9 w-full"
+                                className="w-full"
                                 aria-label={t('settings.profile.socialLinks.labelPlaceholder')}
                               >
                                 <SelectValue
@@ -296,7 +295,7 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
                           <FormControl>
                             <Input
                               placeholder={t('settings.profile.socialLinks.urlPlaceholder')}
-                              className="h-9 w-full"
+                              className="w-full"
                               {...urlField}
                             />
                           </FormControl>

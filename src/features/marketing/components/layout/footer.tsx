@@ -62,7 +62,7 @@ const Footer = () => {
 
           <Button
             variant="ghost"
-            size="icon"
+            size="icon-md"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             aria-label="Scroll to top"
           >

@@ -32,12 +32,7 @@ const DangerZone = ({ userEmail }: DangerZoneProps) => {
               <p className="text-muted-foreground text-sm">{t('deleteDescription')}</p>
             </div>
 
-            <Button
-              variant="destructive"
-              size="sm"
-              className="shrink-0"
-              onClick={() => setDialogOpen(true)}
-            >
+            <Button variant="destructive" className="shrink-0" onClick={() => setDialogOpen(true)}>
               <Trash2 className="size-4" aria-hidden="true" />
               {t('deleteAccount')}
             </Button>
