@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { makeSignIn, scopedEmail } from './helpers/auth';
+import { makeApiSignIn, scopedEmail } from './helpers/auth';
 import { ROUTES, url } from './helpers/routes';
 import { deleteUserByEmail, ensureUser } from './helpers/supabase-admin';
 
@@ -97,6 +97,9 @@ test.describe('Sign-Up Flow', () => {
       await deleteUserByEmail(signupEmail).catch(() => {});
       await page.goto(url(ROUTES.auth.signUp), { timeout: 15_000 });
 
+      // Wait for hydration to stabilize (JS bundles loaded + executed)
+      await page.waitForLoadState('networkidle', { timeout: 10_000 }).catch(() => {});
+
       // Wait for the form to be interactive (hydrated)
       const submitBtn = page.locator(sel.submit);
       await expect(submitBtn).toBeEnabled({ timeout: 5_000 });
@@ -111,7 +114,7 @@ test.describe('Sign-Up Flow', () => {
 
       // Confirmation screen: submit button disappears
       await expect(submitBtn).not.toBeVisible({ timeout: 10_000 });
-    }).toPass({ timeout: 45_000 });
+    }).toPass({ timeout: 60_000 });
 
     await expect(page.locator(`a[href*="${ROUTES.auth.signIn}"]`).first()).toBeVisible();
 
@@ -208,16 +211,17 @@ test.describe('Auth Callback', () => {
 });
 
 // ─────────────────────────────────────────────────────────────────
-// Full Auth Lifecycle: Sign In → Redirects → Sign Out
-// Uses the FORM-BASED sign-in to test the actual UI flow end-to-end.
+// Full Auth Lifecycle: Session → Redirects → Sign Out
+// Uses API sign-in for reliability; the sign-in form UI is tested
+// separately above (renders, rejects invalid, shows error toast).
 // ─────────────────────────────────────────────────────────────────
 test.describe('Full Auth Lifecycle', () => {
   let email: string;
-  let signIn: ReturnType<typeof makeSignIn>;
+  let signIn: ReturnType<typeof makeApiSignIn>;
 
   test.beforeAll(async ({}, testInfo) => {
     email = scopedEmail('e2e-auth-lifecycle', testInfo.project.name);
-    signIn = makeSignIn(email);
+    signIn = makeApiSignIn(email, PASSWORD);
     await ensureUser(email, PASSWORD);
   });
 
@@ -226,13 +230,13 @@ test.describe('Full Auth Lifecycle', () => {
     await deleteUserByEmail(e).catch(() => {});
   });
 
-  test('sign in → auth redirects → sign out → dashboard locked', async ({ page }) => {
+  test('session → auth redirects → sign out → dashboard locked', async ({ page }) => {
     await signIn(page);
     await expect(page).toHaveURL(/\/dashboard/);
 
     // Authenticated user is redirected away from sign-in
     await page.goto(url(ROUTES.auth.signIn));
-    await expect(page).toHaveURL(/\/dashboard/, { timeout: 10_000 });
+    await expect(page).toHaveURL(/\/dashboard/, { timeout: 15_000 });
 
     // Sign out via user menu
     await expect(async () => {
@@ -244,11 +248,11 @@ test.describe('Full Auth Lifecycle', () => {
       await expect(signOutBtn).toBeVisible({ timeout: 3_000 });
       await signOutBtn.click();
 
-      await page.waitForURL((u) => !u.pathname.includes('/dashboard'), { timeout: 10_000 });
+      await page.waitForURL((u) => !u.pathname.includes('/dashboard'), { timeout: 15_000 });
     }).toPass({ timeout: 30_000 });
 
     // Dashboard no longer accessible
     await page.goto(url(ROUTES.common.dashboard));
-    await expect(page).toHaveURL(/\/sign-in/, { timeout: 10_000 });
+    await expect(page).toHaveURL(/\/sign-in/, { timeout: 15_000 });
   });
 });

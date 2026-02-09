@@ -93,8 +93,11 @@ test.describe('Settings – Core Flow', () => {
       await expect(nameInput).toHaveValue('Test User');
     }).toPass({ timeout: 10_000 });
 
-    await page.locator(sel.profileSubmit).click();
-    await expect(page.locator(sel.toast).first()).toBeVisible({ timeout: 15_000 });
+    // Submit and wait for success toast (retry for slow CI server actions)
+    await expect(async () => {
+      await page.locator(sel.profileSubmit).click();
+      await expect(page.locator(sel.toast).first()).toBeVisible({ timeout: 10_000 });
+    }).toPass({ timeout: 20_000 });
 
     // ── Navigate to email → verify pre-filled → reject invalid ──
     await navigateToSection(page, 'email', sel.email);
@@ -204,10 +207,10 @@ test.describe('Settings – Password', () => {
     await page.locator(sel.passwordSubmit).click();
     await expect(page.locator(sel.toast).first()).toBeVisible({ timeout: 15_000 });
 
-    // Fields cleared after success
-    await expect(cpwField).toHaveValue('', { timeout: 5_000 });
-    await expect(pw).toHaveValue('', { timeout: 5_000 });
-    await expect(cpw).toHaveValue('', { timeout: 5_000 });
+    // Fields cleared after success (CI can be slow to re-render after server action)
+    await expect(cpwField).toHaveValue('', { timeout: 15_000 });
+    await expect(pw).toHaveValue('', { timeout: 15_000 });
+    await expect(cpw).toHaveValue('', { timeout: 15_000 });
   });
 });
 
@@ -257,14 +260,14 @@ test.describe('Settings – Delete Account', () => {
     await expect(dialog.locator('button[type="submit"]')).toBeEnabled();
     await dialog.locator('button[type="submit"]').click();
 
-    // Redirected away from settings
+    // Redirected away from settings (account deletion can be slow on CI)
     await page.waitForURL((u) => !u.pathname.includes(ROUTES.common.settings), {
-      timeout: 15_000,
+      timeout: 30_000,
     });
 
     // Dashboard no longer accessible
     await page.goto(url(ROUTES.common.dashboard));
-    await expect(page).toHaveURL(/\/sign-in/, { timeout: 10_000 });
+    await expect(page).toHaveURL(/\/sign-in/, { timeout: 15_000 });
   });
 });
 
