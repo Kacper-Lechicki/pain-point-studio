@@ -6,8 +6,7 @@ import { Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
-
-import { DeleteAccountDialog } from './delete-account-dialog';
+import { DeleteAccountDialog } from '@/features/settings/components/delete-account-dialog';
 
 interface DangerZoneProps {
   userEmail: string;

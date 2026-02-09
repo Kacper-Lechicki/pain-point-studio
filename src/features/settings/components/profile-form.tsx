@@ -31,12 +31,11 @@ import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
 import { ROUTES } from '@/config';
 import { ProfileData, updateProfile } from '@/features/settings/actions';
+import { AvatarUpload } from '@/features/settings/components/avatar-upload';
 import { BIO_MAX_LENGTH, MAX_SOCIAL_LINKS } from '@/features/settings/config';
 import { UpdateProfileSchema, updateProfileSchema } from '@/features/settings/types';
 import { Link } from '@/i18n/routing';
 import type { MessageKey } from '@/i18n/types';
-
-import { AvatarUpload } from './avatar-upload';
 
 interface ProfileFormProps {
   profile: ProfileData;

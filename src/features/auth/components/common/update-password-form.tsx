@@ -20,11 +20,10 @@ import { PasswordInput } from '@/components/ui/password-input';
 import { Spinner } from '@/components/ui/spinner';
 import { ROUTES } from '@/config';
 import { updatePassword } from '@/features/auth/actions';
+import { PasswordStrength } from '@/features/auth/components/common/password-strength';
 import { UpdatePasswordSchema, updatePasswordSchema } from '@/features/auth/types';
 import { useRouter } from '@/i18n/routing';
 import type { MessageKey } from '@/i18n/types';
-
-import { PasswordStrength } from './password-strength';
 
 const UpdatePasswordForm = () => {
   const t = useTranslations();
