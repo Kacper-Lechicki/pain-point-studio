@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { makeSignIn, scopedEmail } from './helpers/auth';
+import { makeApiSignIn, scopedEmail } from './helpers/auth';
 import { ROUTES, SECTION_TO_HASH, url } from './helpers/routes';
 import { deleteUserByEmail, ensureUser } from './helpers/supabase-admin';
 
@@ -62,14 +62,12 @@ async function navigateToSection(
 // Profile update, section navigation, email validation, accent color
 // ─────────────────────────────────────────────────────────────────
 test.describe('Settings – Core Flow', () => {
-  test.describe.configure({ timeout: 120_000 });
-
   let email: string;
-  let signIn: ReturnType<typeof makeSignIn>;
+  let signIn: ReturnType<typeof makeApiSignIn>;
 
   test.beforeAll(async ({}, testInfo) => {
     email = scopedEmail('e2e-settings-core', testInfo.project.name);
-    signIn = makeSignIn(email, PASSWORD);
+    signIn = makeApiSignIn(email, PASSWORD);
     await ensureUser(email, PASSWORD);
   });
 
@@ -148,14 +146,12 @@ test.describe('Settings – Core Flow', () => {
 // Settings – Password Update
 // ─────────────────────────────────────────────────────────────────
 test.describe('Settings – Password', () => {
-  test.describe.configure({ timeout: 120_000 });
-
   let email: string;
-  let signIn: ReturnType<typeof makeSignIn>;
+  let signIn: ReturnType<typeof makeApiSignIn>;
 
   test.beforeAll(async ({}, testInfo) => {
     email = scopedEmail('e2e-settings-password', testInfo.project.name);
-    signIn = makeSignIn(email, PASSWORD);
+    signIn = makeApiSignIn(email, PASSWORD);
     await ensureUser(email, PASSWORD);
   });
 
@@ -219,8 +215,6 @@ test.describe('Settings – Password', () => {
 // Settings – Delete Account
 // ─────────────────────────────────────────────────────────────────
 test.describe('Settings – Delete Account', () => {
-  test.describe.configure({ timeout: 120_000 });
-
   // Cleanup in case the test fails before the account is deleted via UI
   test.afterAll(async ({}, testInfo) => {
     const e = scopedEmail('e2e-settings-delete', testInfo.project.name);
@@ -229,7 +223,7 @@ test.describe('Settings – Delete Account', () => {
 
   test('dialog → cancel → confirm → delete → dashboard locked', async ({ page }, testInfo) => {
     const email = scopedEmail('e2e-settings-delete', testInfo.project.name);
-    const signIn = makeSignIn(email, PASSWORD);
+    const signIn = makeApiSignIn(email, PASSWORD);
 
     await ensureUser(email, PASSWORD);
     await signIn(page);
@@ -278,14 +272,12 @@ test.describe('Settings – Delete Account', () => {
 // Settings – Complete Profile Modal
 // ─────────────────────────────────────────────────────────────────
 test.describe('Settings – Complete Profile Modal', () => {
-  test.describe.configure({ timeout: 120_000 });
-
   let email: string;
-  let signIn: ReturnType<typeof makeSignIn>;
+  let signIn: ReturnType<typeof makeApiSignIn>;
 
   test.beforeAll(async ({}, testInfo) => {
     email = scopedEmail('e2e-settings-modal', testInfo.project.name);
-    signIn = makeSignIn(email, PASSWORD);
+    signIn = makeApiSignIn(email, PASSWORD);
     await ensureUser(email, PASSWORD, { fullName: '', role: '' });
   });
 

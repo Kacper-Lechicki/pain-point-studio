@@ -93,11 +93,13 @@ test.describe('Sign-Up Flow', () => {
 
     // WebKit hydration can reset form fields after fill — retry the entire
     // fill-and-submit sequence until the confirmation screen appears.
-    // Re-navigating on each retry resets form state (needed on CI where
-    // GoTrue can be slow; on production build goto is ~200ms).
     await expect(async () => {
       await deleteUserByEmail(signupEmail).catch(() => {});
       await page.goto(url(ROUTES.auth.signUp), { timeout: 15_000 });
+
+      // Wait for the form to be interactive (hydrated)
+      const submitBtn = page.locator(sel.submit);
+      await expect(submitBtn).toBeEnabled({ timeout: 5_000 });
 
       await page.locator(sel.email).fill(signupEmail);
       await expect(page.locator(sel.email)).toHaveValue(signupEmail);
@@ -105,10 +107,10 @@ test.describe('Sign-Up Flow', () => {
       await page.locator(sel.password).fill('StrongPass1!');
       await expect(page.locator(sel.password)).toHaveValue('StrongPass1!');
 
-      await page.locator(sel.submit).click();
+      await submitBtn.click();
 
       // Confirmation screen: submit button disappears
-      await expect(page.locator(sel.submit)).not.toBeVisible({ timeout: 10_000 });
+      await expect(submitBtn).not.toBeVisible({ timeout: 10_000 });
     }).toPass({ timeout: 45_000 });
 
     await expect(page.locator(`a[href*="${ROUTES.auth.signIn}"]`).first()).toBeVisible();
@@ -207,10 +209,9 @@ test.describe('Auth Callback', () => {
 
 // ─────────────────────────────────────────────────────────────────
 // Full Auth Lifecycle: Sign In → Redirects → Sign Out
+// Uses the FORM-BASED sign-in to test the actual UI flow end-to-end.
 // ─────────────────────────────────────────────────────────────────
 test.describe('Full Auth Lifecycle', () => {
-  test.describe.configure({ timeout: 120_000 });
-
   let email: string;
   let signIn: ReturnType<typeof makeSignIn>;
 
