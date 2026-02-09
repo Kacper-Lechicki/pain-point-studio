@@ -59,7 +59,7 @@ const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
           )}
         </div>
 
-        <p className="text-muted-foreground max-w-lg text-sm leading-relaxed">
+        <p className="text-muted-foreground max-w-lg text-sm leading-relaxed break-words whitespace-pre-wrap">
           {profile.bio || <span className="italic">{t('empty.bio')}</span>}
         </p>
 

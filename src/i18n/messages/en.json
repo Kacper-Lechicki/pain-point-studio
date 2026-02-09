@@ -383,11 +383,16 @@
       "bioCounter": "{count}/{max}",
       "previewProfile": "Preview Profile",
       "saveProfile": "Save Profile",
-      "profileUpdated": "Profile updated.",
-      "avatarUpdated": "Profile photo updated.",
-      "avatarRemoved": "Profile photo removed.",
+      "profileUpdated": "Profile updated",
+      "avatarUpdated": "Profile photo updated",
+      "avatarRemoved": "Profile photo removed",
       "removeAvatarConfirmTitle": "Remove profile photo?",
       "removeAvatarConfirmDescription": "Your profile photo will be permanently removed.",
+      "cropAvatar": "Crop Photo",
+      "cropAvatarDescription": "Drag to reposition. Scroll to zoom in or out.",
+      "cropZoom": "Zoom",
+      "cropConfirm": "Apply",
+      "cropCancel": "Cancel",
       "socialLinks": {
         "title": "Social Links",
         "description": "Add up to 5 links to your social profiles or repositories.",
@@ -427,7 +432,7 @@
       "newPassword": "New Password",
       "confirmPassword": "Confirm New Password",
       "savePassword": "Update Password",
-      "passwordUpdated": "Password updated."
+      "passwordUpdated": "Password updated"
     },
     "connectedAccounts": {
       "title": "Connected Accounts",
@@ -460,7 +465,7 @@
       "invalidUrl": "Please enter a valid URL.",
       "invalidData": "Please check your input and try again.",
       "nameTooLong": "Name must be 100 characters or less.",
-      "bioTooLong": "Bio must be 200 characters or less.",
+      "bioTooLong": "Bio must be 500 characters or less.",
       "invalidEmail": "Please enter a valid email address.",
       "currentPasswordIncorrect": "Current password is incorrect.",
       "passwordsMismatch": "Passwords do not match.",

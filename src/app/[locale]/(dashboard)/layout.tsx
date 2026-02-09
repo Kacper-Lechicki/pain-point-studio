@@ -23,7 +23,7 @@ const DashboardLayout = async ({ children }: DashboardLayoutProps) => {
       </Suspense>
 
       <main className="flex-1">
-        <div className="container mx-auto px-6 py-8 sm:px-4 lg:px-8">{children}</div>
+        <div className="container mx-auto px-6 pt-4 pb-8 sm:px-4 md:pt-8 lg:px-8">{children}</div>
       </main>
 
       {needsCompletion && (
