@@ -9,6 +9,7 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import {
   Form,
   FormControl,
@@ -30,12 +31,11 @@ import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
 import { ROUTES } from '@/config';
 import { ProfileData, updateProfile } from '@/features/settings/actions';
+import { AvatarUpload } from '@/features/settings/components/avatar-upload';
 import { BIO_MAX_LENGTH, MAX_SOCIAL_LINKS } from '@/features/settings/config';
 import { UpdateProfileSchema, updateProfileSchema } from '@/features/settings/types';
 import { Link } from '@/i18n/routing';
 import type { MessageKey } from '@/i18n/types';
-
-import { AvatarUpload } from './avatar-upload';
 
 interface ProfileFormProps {
   profile: ProfileData;
@@ -45,6 +45,7 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
   const t = useTranslations();
   const [isLoading, setIsLoading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState(profile.avatarUrl);
+  const [removeLinkIndex, setRemoveLinkIndex] = useState<number | null>(null);
 
   const form = useForm<UpdateProfileSchema>({
     resolver: zodResolver(updateProfileSchema),
@@ -107,7 +108,7 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
           <p className="text-muted-foreground text-sm">{t('settings.profile.description')}</p>
         </div>
 
-        <Button type="button" variant="outline" size="sm" asChild className="shrink-0">
+        <Button type="button" variant="outline" asChild className="shrink-0">
           <Link href={ROUTES.profile.preview}>
             <Eye className="size-4" />
             {t('settings.profile.previewProfile')}
@@ -211,7 +212,6 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
                   <Button
                     type="button"
                     variant="outline"
-                    size="sm"
                     className="shrink-0"
                     onClick={() =>
                       append({
@@ -248,9 +248,9 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
                       <Button
                         type="button"
                         variant="ghost"
-                        size="icon"
-                        className="text-destructive hover:bg-destructive/10 hover:text-destructive size-8"
-                        onClick={() => remove(index)}
+                        size="icon-sm"
+                        className="text-destructive md:hover:bg-destructive/10 md:hover:text-destructive"
+                        onClick={() => setRemoveLinkIndex(index)}
                         aria-label={t('settings.profile.socialLinks.removeLink')}
                       >
                         <Trash2 className="size-4" aria-hidden="true" />
@@ -265,7 +265,7 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
                           <Select onValueChange={labelField.onChange} value={labelField.value}>
                             <FormControl>
                               <SelectTrigger
-                                className="h-9 w-full"
+                                className="w-full"
                                 aria-label={t('settings.profile.socialLinks.labelPlaceholder')}
                               >
                                 <SelectValue
@@ -296,7 +296,7 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
                           <FormControl>
                             <Input
                               placeholder={t('settings.profile.socialLinks.urlPlaceholder')}
-                              className="h-9 w-full"
+                              className="w-full"
                               {...urlField}
                             />
                           </FormControl>
@@ -319,6 +319,20 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
           </form>
         </Form>
       </div>
+
+      <ConfirmDialog
+        open={removeLinkIndex !== null}
+        onOpenChange={(open) => !open && setRemoveLinkIndex(null)}
+        onConfirm={() => {
+          if (removeLinkIndex !== null) {
+            remove(removeLinkIndex);
+            setRemoveLinkIndex(null);
+          }
+        }}
+        title={t('settings.profile.socialLinks.removeLinkConfirmTitle')}
+        description={t('settings.profile.socialLinks.removeLinkConfirmDescription')}
+        confirmLabel={t('settings.profile.socialLinks.removeLink')}
+      />
     </section>
   );
 };

@@ -24,12 +24,12 @@ export default function DashboardError({ reset }: DashboardErrorProps) {
       </div>
 
       <div className="flex gap-3">
-        <Button variant="outline" size="sm" onClick={reset}>
+        <Button variant="outline" onClick={reset}>
           <RotateCcw className="size-4" />
           {t('retry')}
         </Button>
 
-        <Button variant="default" size="sm" asChild>
+        <Button variant="default" asChild>
           <Link href={ROUTES.common.dashboard}>
             <ArrowLeft className="size-4" />
             {t('backToDashboard')}

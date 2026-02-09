@@ -59,7 +59,16 @@ export async function ensureUser(
       const fullName = profile?.fullName ?? 'E2E User';
       const role = profile?.role === '' ? null : (profile?.role ?? 'other');
 
-      await admin.from('profiles').update({ full_name: fullName, role }).eq('id', data.user.id);
+      const { error: profileError } = await admin
+        .from('profiles')
+        .update({ full_name: fullName, role })
+        .eq('id', data.user.id);
+
+      if (profileError) {
+        throw new Error(
+          `[e2e] User ${email} created but profile update failed: ${profileError.message}`
+        );
+      }
 
       return data.user.id;
     }

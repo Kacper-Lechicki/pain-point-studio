@@ -82,7 +82,7 @@ const UserMenu = () => {
     <div ref={menuRef} className="relative">
       <button
         onClick={() => setIsOpen((prev) => !prev)}
-        className="ring-ring/30 flex items-center rounded-full transition-all hover:ring-2"
+        className="ring-ring/30 flex items-center rounded-full transition-all md:hover:ring-2"
         aria-label="User menu"
       >
         <Avatar className="size-9 text-xs font-semibold">
@@ -107,7 +107,7 @@ const UserMenu = () => {
           <Link
             href={ROUTES.common.dashboard}
             onClick={() => setIsOpen(false)}
-            className="hover:bg-accent flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors"
+            className="md:hover:bg-accent flex min-h-10 w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors md:min-h-9"
           >
             <Home className="size-4" aria-hidden="true" />
             {t('common.dashboard')}
@@ -116,7 +116,7 @@ const UserMenu = () => {
           <Link
             href={ROUTES.profile.preview}
             onClick={() => setIsOpen(false)}
-            className="hover:bg-accent flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors"
+            className="md:hover:bg-accent flex min-h-10 w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors md:min-h-9"
           >
             <UserIcon className="size-4" aria-hidden="true" />
             {t('common.profile')}
@@ -125,7 +125,7 @@ const UserMenu = () => {
           <Link
             href={ROUTES.common.settings}
             onClick={() => setIsOpen(false)}
-            className="hover:bg-accent flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors"
+            className="md:hover:bg-accent flex min-h-10 w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors md:min-h-9"
           >
             <Settings className="size-4" aria-hidden="true" />
             {t('common.settings')}
@@ -136,7 +136,8 @@ const UserMenu = () => {
           <button
             onClick={handleSignOut}
             disabled={isSigningOut}
-            className="hover:bg-accent flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors disabled:opacity-50"
+            data-testid="sign-out"
+            className="md:hover:bg-accent flex min-h-10 w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors disabled:opacity-50 md:min-h-9"
           >
             {isSigningOut ? (
               <Spinner className="size-4" />

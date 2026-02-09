@@ -100,7 +100,7 @@ const ForgotPasswordForm = ({ header }: ForgotPasswordFormProps) => {
             )}
           />
 
-          <Button type="submit" size="lg" className="mt-4 w-full" disabled={isLoading}>
+          <Button type="submit" size="default" className="mt-4 w-full" disabled={isLoading}>
             {isLoading && <Spinner />}
             {t('auth.sendResetLink')}
           </Button>
@@ -108,7 +108,7 @@ const ForgotPasswordForm = ({ header }: ForgotPasswordFormProps) => {
           <div className="mt-2 text-center text-sm">
             <Link
               href={ROUTES.auth.signIn}
-              className="hover:text-primary underline underline-offset-4"
+              className="md:hover:text-primary underline underline-offset-4"
             >
               {t('auth.backToSignIn')}
             </Link>

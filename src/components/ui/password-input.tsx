@@ -2,21 +2,24 @@
 
 import * as React from 'react';
 
+import { type VariantProps } from 'class-variance-authority';
 import { Eye, EyeOff } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Input, inputVariants } from '@/components/ui/input';
 import { cn } from '@/lib/common/utils';
 
-type PasswordInputProps = React.ComponentProps<typeof Input> & {
-  showPasswordLabel?: string;
-  hidePasswordLabel?: string;
-};
+type PasswordInputProps = Omit<React.ComponentProps<typeof Input>, 'type'> &
+  VariantProps<typeof inputVariants> & {
+    showPasswordLabel?: string;
+    hidePasswordLabel?: string;
+  };
 
 const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
   (
     {
       className,
+      size,
       showPasswordLabel = 'Show password',
       hidePasswordLabel = 'Hide password',
       ...props
@@ -31,6 +34,7 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
       <div className="relative">
         <Input
           type={showPassword ? 'text' : 'password'}
+          size={size}
           className={cn('pr-10', className)}
           ref={ref}
           {...props}
@@ -40,7 +44,7 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
           type="button"
           variant="ghost"
           size="icon"
-          className="text-muted-foreground absolute top-0 right-0 h-full px-3 hover:bg-transparent"
+          className="text-muted-foreground absolute top-0 right-0 h-full px-3 md:hover:bg-transparent"
           onClick={togglePassword}
           aria-label={showPassword ? hidePasswordLabel : showPasswordLabel}
         >

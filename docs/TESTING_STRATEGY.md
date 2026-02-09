@@ -46,15 +46,15 @@ Not everything deserves a test. Use this guide to decide.
 
 - **Location**: `e2e/`
 - **Pattern**: User-centric.
-- **Selectors**: Use clear accessibility roles first (`getByRole('button', { name: 'Save' })`). Use `data-testid` only as a last resort.
+- **Selectors**: Prefer structural selectors (`input[name="email"]`, `form button[type="submit"]`) for i18n resilience. Use `data-testid` for elements without good structural selectors (e.g., `data-testid="sign-out"`). Avoid text-based selectors (`getByText`, `getByLabel`) which break on translation changes.
 - **Data**: Each test should be independent. Ideally, create fresh data (e.g., a new user) for each test run to avoid brittleness.
 - **Mocks**: **Avoid mocking the backend**. E2E should test the real stack (Database -> API -> Client).
 
 ```typescript
 test('Visitor can register and create a workspace', async ({ page }) => {
   await page.goto('/register');
-  await page.getByLabel('Email').fill('new@user.com');
-  await page.getByRole('button', { name: 'Sign Up' }).click();
+  await page.locator('input[name="email"]').fill('new@user.com');
+  await page.locator('form button[type="submit"]').click();
   await expect(page).toHaveURL('/dashboard');
 });
 ```
@@ -130,10 +130,10 @@ See `docs/ENV_VARIABLES.md` for the complete list.
 > **Key rules:**
 >
 > 1. Verify tests follow ROI framework (test critical flows, skip trivial code)
-> 2. Check E2E tests use accessibility selectors (`getByRole`, `getByLabel`)
+> 2. Check E2E tests use structural selectors (`input[name="..."]`, `form button[type="submit"]`) or `data-testid` — avoid text-based selectors for i18n resilience
 > 3. Ensure unit tests are colocated with source files
 > 4. Validate mocks are used only for external boundaries
 > 5. Confirm test data is independent (no shared state between tests)
-> 6. Check for `data-testid` overuse (prefer accessibility selectors)
+> 6. Prefer structural selectors over `data-testid` where possible, but use `data-testid` for elements without stable structural selectors
 > 7. **Do not change test assertions** - only fix patterns and structure
 > 8. Test coverage must remain **identical**

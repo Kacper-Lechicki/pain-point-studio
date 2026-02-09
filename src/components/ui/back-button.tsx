@@ -90,7 +90,7 @@ const BackButton = () => {
     <button
       type="button"
       onClick={handleClick}
-      className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-sm transition-colors"
+      className="text-muted-foreground md:hover:text-foreground inline-flex items-center gap-2 text-sm transition-colors"
     >
       <ArrowLeft className="size-4" aria-hidden="true" />
       {t('common.goBack')}

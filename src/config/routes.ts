@@ -20,6 +20,16 @@ export const ROUTES = {
   },
 } as const;
 
+/**
+ * Sibling route groups — navigating between routes in the same group
+ * automatically uses `replace` instead of `push` to prevent history buildup.
+ *
+ * Add any set of routes that users commonly ping-pong between.
+ */
+export const SIBLING_GROUPS: readonly (readonly AppRoute[])[] = [
+  [ROUTES.auth.signIn, ROUTES.auth.signUp, ROUTES.auth.forgotPassword],
+];
+
 // ── Settings section ↔ URL hash mapping ──────────────────────────
 
 export const SETTINGS_SECTION_VALUES = [

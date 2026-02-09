@@ -55,7 +55,7 @@ export const getProfile = async (): Promise<ProfileData | null> => {
     fullName: profile?.full_name ?? '',
     role: profile?.role ?? '',
     bio: profile?.bio ?? '',
-    avatarUrl: profile?.avatar_url ?? (user.user_metadata?.avatar_url as string) ?? '',
+    avatarUrl: profile?.avatar_url || (user.user_metadata?.avatar_url as string) || '',
     hasPassword,
     socialLinks: (Array.isArray(profile?.social_links) ? profile.social_links : []) as SocialLink[],
     memberSince: user.created_at ?? '',

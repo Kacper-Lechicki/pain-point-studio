@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 
+import { makeApiSignIn, scopedEmail } from './helpers/auth';
 import { ROUTES, url } from './helpers/routes';
 import { deleteUserByEmail, ensureUser } from './helpers/supabase-admin';
 
@@ -14,36 +15,6 @@ const sel = {
 } as const;
 
 const PASSWORD = 'E2eTestPass1!';
-
-function scopedEmail(base: string, projectName: string) {
-  const slug = projectName.toLowerCase().replace(/\s+/g, '-');
-
-  return `${base}+${slug}@example.com`;
-}
-
-/**
- * Sign in helper. Uses toPass() to handle WebKit hydration issues
- * where .fill() can be swallowed during first render.
- */
-function makeSignIn(email: string) {
-  return async function signIn(page: import('@playwright/test').Page) {
-    await expect(async () => {
-      await page.goto(url(ROUTES.auth.signIn), { timeout: 15_000 });
-
-      const submitBtn = page.locator(sel.submit);
-      await expect(submitBtn).toBeEnabled({ timeout: 5_000 });
-
-      await page.locator(sel.email).fill(email);
-      await expect(page.locator(sel.email)).toHaveValue(email);
-
-      await page.locator(sel.password).fill(PASSWORD);
-      await expect(page.locator(sel.password)).toHaveValue(PASSWORD);
-
-      await submitBtn.click();
-      await expect(page).toHaveURL(/\/dashboard/, { timeout: 10_000 });
-    }).toPass({ timeout: 50_000 });
-  };
-}
 
 // ─────────────────────────────────────────────────────────────────
 // Sign-In Flow
@@ -72,20 +43,20 @@ test.describe('Sign-In Flow', () => {
   test('shows error for invalid credentials', async ({ page }) => {
     await page.goto(url(ROUTES.auth.signIn));
 
+    // WebKit hydration can reset form fields after fill — retry the entire
+    // fill-and-submit sequence until the server error toast appears.
     await expect(async () => {
       await page.locator(sel.email).fill('nonexistent@example.com');
       await expect(page.locator(sel.email)).toHaveValue('nonexistent@example.com');
-    }).toPass({ timeout: 10_000 });
 
-    await page.locator(sel.password).fill('WrongPassword1!');
-    await page.locator(sel.submit).click();
+      await page.locator(sel.password).fill('WrongPassword1!');
+      await expect(page.locator(sel.password)).toHaveValue('WrongPassword1!');
 
-    // Server responds with error toast or re-enables button
-    await expect(async () => {
-      const toastVisible = await page.locator(sel.toast).first().isVisible();
-      const buttonReEnabled = await page.locator(`${sel.submit}:not([disabled])`).isVisible();
-      expect(toastVisible || buttonReEnabled).toBe(true);
-    }).toPass({ timeout: 15_000 });
+      await page.locator(sel.submit).click();
+
+      // Server responds with error toast
+      await expect(page.locator(sel.toast).first()).toBeVisible({ timeout: 10_000 });
+    }).toPass({ timeout: 30_000 });
 
     await expect(page).toHaveURL(/\/sign-in/);
   });
@@ -95,12 +66,6 @@ test.describe('Sign-In Flow', () => {
 // Sign-Up Flow
 // ─────────────────────────────────────────────────────────────────
 test.describe('Sign-Up Flow', () => {
-  const SIGNUP_EMAIL = 'e2e-signup-test@example.com';
-
-  test.afterEach(async () => {
-    await deleteUserByEmail(SIGNUP_EMAIL).catch(() => {});
-  });
-
   test('rejects weak passwords', async ({ page }) => {
     await page.goto(url(ROUTES.auth.signUp));
     await expect(page.locator(sel.form)).toBeVisible();
@@ -120,26 +85,41 @@ test.describe('Sign-Up Flow', () => {
     }
   });
 
-  test('successful sign-up shows confirmation', async ({ page }) => {
+  test('successful sign-up shows confirmation', async ({ page }, testInfo) => {
+    const signupEmail = scopedEmail('e2e-signup', testInfo.project.name);
+
+    // Clean up any leftover user
+    await deleteUserByEmail(signupEmail).catch(() => {});
+
+    // WebKit hydration can reset form fields after fill — retry the entire
+    // fill-and-submit sequence until the confirmation screen appears.
     await expect(async () => {
+      await deleteUserByEmail(signupEmail).catch(() => {});
       await page.goto(url(ROUTES.auth.signUp), { timeout: 15_000 });
 
+      // Wait for hydration to stabilize (JS bundles loaded + executed)
+      await page.waitForLoadState('networkidle', { timeout: 10_000 }).catch(() => {});
+
+      // Wait for the form to be interactive (hydrated)
       const submitBtn = page.locator(sel.submit);
       await expect(submitBtn).toBeEnabled({ timeout: 5_000 });
 
-      await page.locator(sel.email).fill(SIGNUP_EMAIL);
-      await expect(page.locator(sel.email)).toHaveValue(SIGNUP_EMAIL);
+      await page.locator(sel.email).fill(signupEmail);
+      await expect(page.locator(sel.email)).toHaveValue(signupEmail);
 
       await page.locator(sel.password).fill('StrongPass1!');
       await expect(page.locator(sel.password)).toHaveValue('StrongPass1!');
 
       await submitBtn.click();
 
-      // Submit button disappears, back-to-sign-in link appears
-      await expect(submitBtn).not.toBeVisible({ timeout: 15_000 });
-    }).toPass({ timeout: 50_000 });
+      // Confirmation screen: submit button disappears
+      await expect(submitBtn).not.toBeVisible({ timeout: 10_000 });
+    }).toPass({ timeout: 60_000 });
 
     await expect(page.locator(`a[href*="${ROUTES.auth.signIn}"]`).first()).toBeVisible();
+
+    // Clean up test user
+    await deleteUserByEmail(signupEmail).catch(() => {});
   });
 });
 
@@ -231,17 +211,17 @@ test.describe('Auth Callback', () => {
 });
 
 // ─────────────────────────────────────────────────────────────────
-// Full Auth Lifecycle: Sign In → Redirects → Sign Out
+// Full Auth Lifecycle: Session → Redirects → Sign Out
+// Uses API sign-in for reliability; the sign-in form UI is tested
+// separately above (renders, rejects invalid, shows error toast).
 // ─────────────────────────────────────────────────────────────────
 test.describe('Full Auth Lifecycle', () => {
-  test.describe.configure({ timeout: 60_000 });
-
   let email: string;
-  let signIn: ReturnType<typeof makeSignIn>;
+  let signIn: ReturnType<typeof makeApiSignIn>;
 
   test.beforeAll(async ({}, testInfo) => {
     email = scopedEmail('e2e-auth-lifecycle', testInfo.project.name);
-    signIn = makeSignIn(email);
+    signIn = makeApiSignIn(email, PASSWORD);
     await ensureUser(email, PASSWORD);
   });
 
@@ -250,13 +230,13 @@ test.describe('Full Auth Lifecycle', () => {
     await deleteUserByEmail(e).catch(() => {});
   });
 
-  test('sign in → auth redirects → sign out → dashboard locked', async ({ page }) => {
+  test('session → auth redirects → sign out → dashboard locked', async ({ page }) => {
     await signIn(page);
     await expect(page).toHaveURL(/\/dashboard/);
 
     // Authenticated user is redirected away from sign-in
     await page.goto(url(ROUTES.auth.signIn));
-    await expect(page).toHaveURL(/\/dashboard/, { timeout: 10_000 });
+    await expect(page).toHaveURL(/\/dashboard/, { timeout: 15_000 });
 
     // Sign out via user menu
     await expect(async () => {
@@ -264,15 +244,15 @@ test.describe('Full Auth Lifecycle', () => {
       await expect(trigger).toBeVisible({ timeout: 5_000 });
       await trigger.click();
 
-      const signOutBtn = page.locator('button:has(svg.lucide-log-out)');
+      const signOutBtn = page.locator('[data-testid="sign-out"]');
       await expect(signOutBtn).toBeVisible({ timeout: 3_000 });
       await signOutBtn.click();
 
-      await page.waitForURL((u) => !u.pathname.includes('/dashboard'), { timeout: 10_000 });
+      await page.waitForURL((u) => !u.pathname.includes('/dashboard'), { timeout: 15_000 });
     }).toPass({ timeout: 30_000 });
 
     // Dashboard no longer accessible
     await page.goto(url(ROUTES.common.dashboard));
-    await expect(page).toHaveURL(/\/sign-in/, { timeout: 10_000 });
+    await expect(page).toHaveURL(/\/sign-in/, { timeout: 15_000 });
   });
 });

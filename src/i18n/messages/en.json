@@ -18,6 +18,11 @@
   },
   "common": {
     "cancel": "Cancel",
+    "confirm": {
+      "title": "Are you sure?",
+      "description": "This action cannot be undone.",
+      "action": "Confirm"
+    },
     "features": "Features",
     "templates": "Templates",
     "pricing": "Pricing",
@@ -105,10 +110,10 @@
     "enterEmailToReset": "Enter your email to receive a password reset link",
     "setNewPassword": "Set New Password",
     "enterNewPassword": "Please enter your new password below",
-    "signInSuccess": "Signed in!",
-    "signOutSuccess": "Signed out.",
-    "emailConfirmed": "Email confirmed. You are now signed in!",
-    "passwordUpdated": "Password updated!",
+    "signInSuccess": "Signed in",
+    "signOutSuccess": "Signed out",
+    "emailConfirmed": "Email confirmed. You are now signed in",
+    "passwordUpdated": "Password updated",
     "unexpectedError": "Something went wrong. Please try again.",
     "errors": {
       "passwordRequired": "Password is required.",
@@ -381,6 +386,8 @@
       "profileUpdated": "Profile updated.",
       "avatarUpdated": "Profile photo updated.",
       "avatarRemoved": "Profile photo removed.",
+      "removeAvatarConfirmTitle": "Remove profile photo?",
+      "removeAvatarConfirmDescription": "Your profile photo will be permanently removed.",
       "socialLinks": {
         "title": "Social Links",
         "description": "Add up to 5 links to your social profiles or repositories.",
@@ -389,6 +396,8 @@
         "addLink": "Add Link",
         "urlPlaceholder": "https://",
         "labelPlaceholder": "Select platform",
+        "removeLinkConfirmTitle": "Remove this link?",
+        "removeLinkConfirmDescription": "This social link will be removed from your profile.",
         "maxReached": "Maximum of {max} links reached.",
         "labels": {
           "website": "Website",

@@ -6,8 +6,7 @@ import { Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
-
-import { DeleteAccountDialog } from './delete-account-dialog';
+import { DeleteAccountDialog } from '@/features/settings/components/delete-account-dialog';
 
 interface DangerZoneProps {
   userEmail: string;
@@ -32,12 +31,7 @@ const DangerZone = ({ userEmail }: DangerZoneProps) => {
               <p className="text-muted-foreground text-sm">{t('deleteDescription')}</p>
             </div>
 
-            <Button
-              variant="destructive"
-              size="sm"
-              className="shrink-0"
-              onClick={() => setDialogOpen(true)}
-            >
+            <Button variant="destructive" className="shrink-0" onClick={() => setDialogOpen(true)}>
               <Trash2 className="size-4" aria-hidden="true" />
               {t('deleteAccount')}
             </Button>

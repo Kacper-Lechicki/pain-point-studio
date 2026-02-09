@@ -137,12 +137,7 @@ const SignUpForm = ({ header, children }: SignUpFormProps) => {
               )}
             />
 
-            <Button
-              type="submit"
-              size="lg"
-              className="mt-4 w-full font-semibold"
-              disabled={isLoading}
-            >
+            <Button type="submit" className="mt-4 w-full font-semibold" disabled={isLoading}>
               {isLoading && <Spinner />}
               {t('auth.createAccount')}
             </Button>
