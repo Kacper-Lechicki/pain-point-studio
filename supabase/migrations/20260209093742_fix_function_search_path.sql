@@ -61,6 +61,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA "extensions";
 
 CREATE OR REPLACE FUNCTION "public"."handle_new_user"() RETURNS "trigger"
     LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO ''
     AS $$
 BEGIN
   INSERT INTO public.profiles (id, full_name, avatar_url)
@@ -79,6 +80,7 @@ ALTER FUNCTION "public"."handle_new_user"() OWNER TO "postgres";
 
 CREATE OR REPLACE FUNCTION "public"."prevent_clearing_required_fields"() RETURNS "trigger"
     LANGUAGE "plpgsql"
+    SET "search_path" TO ''
     AS $$
 BEGIN
   IF OLD.full_name <> '' AND NEW.full_name = '' THEN
@@ -99,6 +101,7 @@ ALTER FUNCTION "public"."prevent_clearing_required_fields"() OWNER TO "postgres"
 
 CREATE OR REPLACE FUNCTION "public"."set_updated_at"() RETURNS "trigger"
     LANGUAGE "plpgsql"
+    SET "search_path" TO ''
     AS $$
 BEGIN
   NEW.updated_at = now();
@@ -117,7 +120,7 @@ SET default_table_access_method = "heap";
 CREATE TABLE IF NOT EXISTS "public"."profiles" (
     "id" "uuid" NOT NULL,
     "full_name" "text" DEFAULT ''::"text" NOT NULL,
-    "role" "text" DEFAULT NULL,
+    "role" "text",
     "bio" "text" DEFAULT ''::"text" NOT NULL,
     "avatar_url" "text" DEFAULT ''::"text" NOT NULL,
     "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL,
@@ -561,27 +564,6 @@ ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TAB
 
 
 
-
---
--- Seed lookup tables (part of schema — required by FK constraints)
---
-
-INSERT INTO "public"."roles" ("value", "label_key", "sort_order", "is_active") VALUES
-  ('solo-developer', 'settings.roles.soloDeveloper', 1, true),
-  ('product-manager', 'settings.roles.productManager', 2, true),
-  ('designer',        'settings.roles.designer',       3, true),
-  ('founder',         'settings.roles.founder',         4, true),
-  ('student',         'settings.roles.student',         5, true),
-  ('other',           'settings.roles.other',           6, true)
-ON CONFLICT ("value") DO NOTHING;
-
-INSERT INTO "public"."social_link_types" ("value", "label_key", "sort_order", "is_active") VALUES
-  ('website',  'settings.profile.socialLinks.labels.website',  1, true),
-  ('github',   'settings.profile.socialLinks.labels.github',   2, true),
-  ('twitter',  'settings.profile.socialLinks.labels.twitter',  3, true),
-  ('linkedin', 'settings.profile.socialLinks.labels.linkedin', 4, true),
-  ('other',    'settings.profile.socialLinks.labels.other',    5, true)
-ON CONFLICT ("value") DO NOTHING;
 
 --
 -- Dumped schema changes for auth and storage
