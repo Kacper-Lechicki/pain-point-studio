@@ -23,11 +23,13 @@ const OAuthButton = ({ provider, isLoading, disabled, onClick }: OAuthButtonProp
 
   return (
     <Button
-      onClick={() => onClick(provider.id)}
-      disabled={disabled}
+      onClick={() => !disabled && onClick(provider.id)}
+      disabled={isLoading}
+      aria-disabled={disabled || undefined}
       variant={isGoogle ? 'outline' : 'default'}
       className={cn(
         'flex w-full items-center justify-center transition-all duration-200 md:hover:shadow-md',
+        disabled && !isLoading && 'pointer-events-none',
         isGithub &&
           'border-[#24292e] bg-[#24292e] text-white md:hover:bg-[#1b1f23] md:hover:text-white',
         isGoogle &&

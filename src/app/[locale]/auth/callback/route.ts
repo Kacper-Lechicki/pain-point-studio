@@ -27,9 +27,26 @@ export async function GET(
 
   if (code) {
     const supabase = await createClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    const { error, data } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
+      // Restore custom avatar: OAuth sign-in overwrites user_metadata.avatar_url
+      // with the provider's avatar. If the user set a custom one (stored in
+      // profiles.avatar_url), sync it back to user_metadata.
+      if (data.user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('avatar_url')
+          .eq('id', data.user.id)
+          .single();
+
+        if (profile?.avatar_url && profile.avatar_url !== data.user.user_metadata?.avatar_url) {
+          await supabase.auth.updateUser({
+            data: { avatar_url: profile.avatar_url },
+          });
+        }
+      }
+
       const fallbackPath = `/${locale}${ROUTES.common.dashboard}`;
       const redirectPath = getSafeRedirectPath(next, fallbackPath);
 

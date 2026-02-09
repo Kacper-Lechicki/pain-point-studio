@@ -9,6 +9,7 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import {
   Form,
   FormControl,
@@ -45,6 +46,7 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
   const t = useTranslations();
   const [isLoading, setIsLoading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState(profile.avatarUrl);
+  const [removeLinkIndex, setRemoveLinkIndex] = useState<number | null>(null);
 
   const form = useForm<UpdateProfileSchema>({
     resolver: zodResolver(updateProfileSchema),
@@ -249,7 +251,7 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
                         variant="ghost"
                         size="icon-sm"
                         className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-                        onClick={() => remove(index)}
+                        onClick={() => setRemoveLinkIndex(index)}
                         aria-label={t('settings.profile.socialLinks.removeLink')}
                       >
                         <Trash2 className="size-4" aria-hidden="true" />
@@ -318,6 +320,20 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
           </form>
         </Form>
       </div>
+
+      <ConfirmDialog
+        open={removeLinkIndex !== null}
+        onOpenChange={(open) => !open && setRemoveLinkIndex(null)}
+        onConfirm={() => {
+          if (removeLinkIndex !== null) {
+            remove(removeLinkIndex);
+            setRemoveLinkIndex(null);
+          }
+        }}
+        title={t('settings.profile.socialLinks.removeLinkConfirmTitle')}
+        description={t('settings.profile.socialLinks.removeLinkConfirmDescription')}
+        confirmLabel={t('settings.profile.socialLinks.removeLink')}
+      />
     </section>
   );
 };

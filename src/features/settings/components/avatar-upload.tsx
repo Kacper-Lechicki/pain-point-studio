@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Spinner } from '@/components/ui/spinner';
 import { updateAvatarUrl } from '@/features/settings/actions';
 import { AVATAR_ACCEPTED_TYPES, AVATAR_MAX_SIZE } from '@/features/settings/config';
@@ -30,6 +31,7 @@ const AvatarUpload = ({
   const t = useTranslations('settings');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -158,7 +160,7 @@ const AvatarUpload = ({
             <Button
               type="button"
               variant="destructive"
-              onClick={handleRemove}
+              onClick={() => setShowRemoveConfirm(true)}
               disabled={isUploading}
             >
               <X className="size-4" aria-hidden="true" />
@@ -180,6 +182,15 @@ const AvatarUpload = ({
         aria-label={t('profile.uploadAvatar')}
         className="sr-only"
         tabIndex={-1}
+      />
+
+      <ConfirmDialog
+        open={showRemoveConfirm}
+        onOpenChange={setShowRemoveConfirm}
+        onConfirm={handleRemove}
+        title={t('profile.removeAvatarConfirmTitle')}
+        description={t('profile.removeAvatarConfirmDescription')}
+        confirmLabel={t('profile.removeAvatar')}
       />
     </div>
   );
