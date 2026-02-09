@@ -9,9 +9,9 @@
  * using FORM_CONTROL_SIZES and set `defaultVariants.size` to 'default'.
  */
 export const FORM_CONTROL_SIZES = {
-  default: 'h-10', // 40px — the standard
-  md: 'h-9', // 36px
-  sm: 'h-8', // 32px
+  default: 'h-10 md:h-9', // 40px mobile → 36px desktop
+  md: 'h-9', // 36px — explicit compact
+  sm: 'h-8', // 32px — explicit small
 } as const;
 
 export type FormControlSize = keyof typeof FORM_CONTROL_SIZES;

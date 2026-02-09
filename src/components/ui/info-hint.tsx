@@ -30,7 +30,7 @@ const InfoHint = ({ content, dialogTitle = 'Info' }: InfoHintProps) => {
           <TooltipTrigger asChild>
             <button
               type="button"
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className="text-muted-foreground md:hover:text-foreground transition-colors"
             >
               <Info className="size-4" />
               <span className="sr-only">{content}</span>
@@ -50,7 +50,7 @@ const InfoHint = ({ content, dialogTitle = 'Info' }: InfoHintProps) => {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="text-muted-foreground hover:text-foreground transition-colors"
+        className="text-muted-foreground md:hover:text-foreground transition-colors"
       >
         <Info className="size-4" />
         <span className="sr-only">{content}</span>

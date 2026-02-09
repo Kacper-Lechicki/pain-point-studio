@@ -74,7 +74,7 @@ const Navbar = () => {
                 <Link
                   key={`nav-link-${index}`}
                   href={link.href}
-                  className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors"
+                  className="text-muted-foreground md:hover:text-foreground text-sm font-medium transition-colors"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {t(link.label)}
@@ -97,7 +97,7 @@ const Navbar = () => {
               <Link href={ROUTES.common.home}>
                 {exploreLabel}
                 <Globe
-                  className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12"
+                  className="h-4 w-4 transition-transform duration-300 md:group-hover:rotate-12"
                   aria-hidden="true"
                 />
               </Link>
@@ -156,7 +156,7 @@ const Navbar = () => {
                 <Link
                   key={`mobile-nav-${index}`}
                   href={link.href}
-                  className="text-muted-foreground hover:text-foreground py-2 text-lg font-medium transition-colors"
+                  className="text-muted-foreground md:hover:text-foreground py-2 text-lg font-medium transition-colors"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {t(link.label)}

@@ -44,7 +44,7 @@ const ClipboardInput = React.forwardRef<HTMLInputElement, ClipboardInputProps>(
             type="button"
             variant="ghost"
             size="icon"
-            className="h-full px-3 hover:bg-transparent"
+            className="h-full px-3 md:hover:bg-transparent"
             onClick={handleCopy}
             aria-label={copied ? copiedLabel : copyLabel}
           >

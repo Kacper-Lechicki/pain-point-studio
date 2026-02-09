@@ -45,7 +45,7 @@ const Footer = () => {
                     ) : (
                       <Link
                         href={item.href}
-                        className="text-muted-foreground hover:text-foreground block py-2 text-lg font-medium wrap-break-word transition-colors lg:py-0 lg:text-sm lg:font-normal"
+                        className="text-muted-foreground md:hover:text-foreground block py-2 text-lg font-medium wrap-break-word transition-colors lg:py-0 lg:text-sm lg:font-normal"
                       >
                         {t(item.label)}
                       </Link>

@@ -101,7 +101,7 @@ const SignInForm = () => {
         <div className="flex items-center justify-end">
           <Link
             href={ROUTES.auth.forgotPassword}
-            className="hover:text-primary text-sm underline underline-offset-4"
+            className="md:hover:text-primary text-sm underline underline-offset-4"
           >
             {t('auth.forgotPassword')}
           </Link>

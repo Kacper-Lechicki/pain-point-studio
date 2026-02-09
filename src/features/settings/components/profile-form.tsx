@@ -250,7 +250,7 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
                         type="button"
                         variant="ghost"
                         size="icon-sm"
-                        className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                        className="text-destructive md:hover:bg-destructive/10 md:hover:text-destructive"
                         onClick={() => setRemoveLinkIndex(index)}
                         aria-label={t('settings.profile.socialLinks.removeLink')}
                       >

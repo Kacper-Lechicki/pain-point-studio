@@ -144,7 +144,7 @@ const SettingsPage = ({ profile }: SettingsPageProps) => {
                 data-section={value}
                 data-state={activeSection === value ? 'active' : 'inactive'}
                 onClick={() => setActiveSection(value)}
-                className="text-muted-foreground hover:text-foreground hover:bg-accent/50 data-[state=active]:bg-accent data-[state=active]:text-foreground data-[state=active]:border-primary flex h-9 min-h-9 w-full items-center justify-start gap-2.5 rounded-lg border-l-2 border-transparent px-3 text-sm font-medium transition-all"
+                className="text-muted-foreground md:hover:text-foreground md:hover:bg-accent/50 data-[state=active]:bg-accent data-[state=active]:text-foreground data-[state=active]:border-primary flex h-10 min-h-10 w-full items-center justify-start gap-2.5 rounded-lg border-l-2 border-transparent px-3 text-sm font-medium transition-all md:h-9 md:min-h-9"
               >
                 <Icon className="size-4 shrink-0" aria-hidden="true" />
                 {t(`nav.${value}`)}

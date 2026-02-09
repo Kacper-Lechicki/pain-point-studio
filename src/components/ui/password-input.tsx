@@ -44,7 +44,7 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
           type="button"
           variant="ghost"
           size="icon"
-          className="text-muted-foreground absolute top-0 right-0 h-full px-3 hover:bg-transparent"
+          className="text-muted-foreground absolute top-0 right-0 h-full px-3 md:hover:bg-transparent"
           onClick={togglePassword}
           aria-label={showPassword ? hidePasswordLabel : showPasswordLabel}
         >

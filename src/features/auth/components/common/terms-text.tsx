@@ -7,9 +7,9 @@ export async function TermsText() {
     <p className="text-muted-foreground pt-4 text-center text-xs">
       {t('termsAgreement')}
       <span className="mt-1 block">
-        <span className="hover:text-primary underline underline-offset-4">{t('terms')}</span>{' '}
+        <span className="md:hover:text-primary underline underline-offset-4">{t('terms')}</span>{' '}
         {t('and')}{' '}
-        <span className="hover:text-primary underline underline-offset-4">{t('privacy')}</span>.
+        <span className="md:hover:text-primary underline underline-offset-4">{t('privacy')}</span>.
       </span>
     </p>
   );
