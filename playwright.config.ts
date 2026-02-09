@@ -24,8 +24,8 @@ export default defineConfig({
   // Limit parallelism: CI has 2 vCPUs; locally Turbopack dev server
   // struggles with 5+ concurrent browsers (JSON parse errors, 500s).
   workers: 2,
-  // Per-test timeout (30s locally, 60s on CI to account for slower runners)
-  timeout: env.CI ? 60_000 : 30_000,
+  // Per-test timeout (60s locally, 90s on CI — GoTrue can be slow under load)
+  timeout: env.CI ? 90_000 : 60_000,
   // Global expect assertion timeout
   expect: { timeout: env.CI ? 10_000 : 5_000 },
   // Reporter: html for artifact upload + list on CI for live progress in logs

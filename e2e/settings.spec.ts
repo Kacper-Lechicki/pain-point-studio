@@ -62,7 +62,7 @@ async function navigateToSection(
 // Profile update, section navigation, email validation, accent color
 // ─────────────────────────────────────────────────────────────────
 test.describe('Settings – Core Flow', () => {
-  test.describe.configure({ timeout: 60_000 });
+  test.describe.configure({ timeout: 120_000 });
 
   let email: string;
   let signIn: ReturnType<typeof makeSignIn>;
@@ -148,7 +148,7 @@ test.describe('Settings – Core Flow', () => {
 // Settings – Password Update
 // ─────────────────────────────────────────────────────────────────
 test.describe('Settings – Password', () => {
-  test.describe.configure({ timeout: 60_000 });
+  test.describe.configure({ timeout: 120_000 });
 
   let email: string;
   let signIn: ReturnType<typeof makeSignIn>;
@@ -219,7 +219,7 @@ test.describe('Settings – Password', () => {
 // Settings – Delete Account
 // ─────────────────────────────────────────────────────────────────
 test.describe('Settings – Delete Account', () => {
-  test.describe.configure({ timeout: 60_000 });
+  test.describe.configure({ timeout: 120_000 });
 
   // Cleanup in case the test fails before the account is deleted via UI
   test.afterAll(async ({}, testInfo) => {
@@ -278,7 +278,7 @@ test.describe('Settings – Delete Account', () => {
 // Settings – Complete Profile Modal
 // ─────────────────────────────────────────────────────────────────
 test.describe('Settings – Complete Profile Modal', () => {
-  test.describe.configure({ timeout: 60_000 });
+  test.describe.configure({ timeout: 120_000 });
 
   let email: string;
   let signIn: ReturnType<typeof makeSignIn>;
