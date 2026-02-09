@@ -28,8 +28,10 @@ export default defineConfig({
   timeout: env.CI ? 60_000 : 30_000,
   // Global expect assertion timeout
   expect: { timeout: env.CI ? 10_000 : 5_000 },
-  // Reporter to use. See https://playwright.dev/docs/test-reporters
-  reporter: [['html', { outputFolder: 'reports/playwright/html' }]],
+  // Reporter: html for artifact upload + list on CI for live progress in logs
+  reporter: env.CI
+    ? [['list'], ['html', { outputFolder: 'reports/playwright/html' }]]
+    : [['html', { outputFolder: 'reports/playwright/html' }]],
   // Folder for test artifacts such as screenshots, videos, traces, etc.
   outputDir: 'reports/playwright/artifacts',
   // Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions.

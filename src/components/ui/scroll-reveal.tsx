@@ -54,7 +54,7 @@ export const ScrollReveal = memo(
           willChange: isVisible ? 'auto' : 'transform, opacity',
         }}
         className={cn(
-          'motion-reduce:!transform-none motion-reduce:!opacity-100 motion-reduce:!transition-none',
+          'motion-reduce:transform-none! motion-reduce:opacity-100! motion-reduce:transition-none!',
           className
         )}
       >
