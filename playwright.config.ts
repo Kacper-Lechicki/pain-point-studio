@@ -21,8 +21,9 @@ export default defineConfig({
   forbidOnly: !!env.CI,
   // Retry on CI only (1 retry is enough with stable GoTrue rate limits)
   retries: env.CI ? 1 : 0,
-  // Limit CI parallelism (GitHub Actions runners have 2 vCPUs)
-  ...(env.CI ? { workers: 2 } : {}),
+  // Limit parallelism: CI has 2 vCPUs; locally Turbopack dev server
+  // struggles with 5+ concurrent browsers (JSON parse errors, 500s).
+  workers: 2,
   // Per-test timeout (30s locally, 60s on CI to account for slower runners)
   timeout: env.CI ? 60_000 : 30_000,
   // Global expect assertion timeout

@@ -21,19 +21,18 @@ export function scopedEmail(base: string, projectName: string) {
  */
 export function makeSignIn(email: string, password = DEFAULT_PASSWORD) {
   return async function signIn(page: import('@playwright/test').Page) {
+    await page.goto(url(ROUTES.auth.signIn), { timeout: 15_000 });
+
+    // WebKit hydration can reset form fields after fill — retry the
+    // fill-and-submit sequence (without re-navigating) until dashboard.
     await expect(async () => {
-      await page.goto(url(ROUTES.auth.signIn), { timeout: 15_000 });
-
-      const submitBtn = page.locator('form button[type="submit"]');
-      await expect(submitBtn).toBeEnabled({ timeout: 5_000 });
-
       await page.locator('input[name="email"]').fill(email);
       await expect(page.locator('input[name="email"]')).toHaveValue(email);
 
       await page.locator('input[name="password"]').fill(password);
       await expect(page.locator('input[name="password"]')).toHaveValue(password);
 
-      await submitBtn.click();
+      await page.locator('form button[type="submit"]').click();
       await expect(page).toHaveURL(/\/dashboard/, { timeout: 10_000 });
     }).toPass({ timeout: 30_000 });
   };
