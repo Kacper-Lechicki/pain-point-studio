@@ -109,7 +109,7 @@ const UpdatePasswordForm = () => {
           )}
         />
 
-        <Button type="submit" size="lg" className="mt-4 w-full" disabled={isLoading}>
+        <Button type="submit" size="default" className="mt-4 w-full" disabled={isLoading}>
           {isLoading && <Spinner />}
           {t('auth.updatePassword')}
         </Button>
