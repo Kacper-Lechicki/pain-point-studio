@@ -13,9 +13,13 @@ type LinkProps = Omit<BaseLinkProps, 'href'> & {
 };
 
 function resolveHrefPathname(href: LinkProps['href']): string {
-  if (typeof href === 'string') {return href;}
+  if (typeof href === 'string') {
+    return href;
+  }
 
-  if (typeof href === 'object' && 'pathname' in href) {return href.pathname as string;}
+  if (typeof href === 'object' && 'pathname' in href) {
+    return href.pathname as string;
+  }
 
   return '';
 }
