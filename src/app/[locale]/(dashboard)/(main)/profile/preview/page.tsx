@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 
+import { BackButton } from '@/components/ui/back-button';
 import { PageTransition } from '@/components/ui/page-transition';
 import { ROUTES } from '@/config';
 import { ProfileView } from '@/features/profile/components';
@@ -26,6 +27,10 @@ export default async function ProfilePreviewRoute() {
 
   return (
     <PageTransition>
+      <div className="mb-10 hidden lg:block">
+        <BackButton />
+      </div>
+
       <ProfileView profile={previewData} isPreview />
     </PageTransition>
   );

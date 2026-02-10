@@ -141,6 +141,26 @@
     "empty": "No research missions yet",
     "startResearch": "Start Research"
   },
+  "sidebar": {
+    "home": "Home",
+    "surveys": "Surveys",
+    "analytics": "Analytics",
+    "settings": "Settings",
+    "pinSidebar": "Pin sidebar",
+    "unpinSidebar": "Unpin sidebar"
+  },
+  "breadcrumbs": {
+    "dashboard": "Dashboard",
+    "surveys": "Surveys",
+    "analytics": "Analytics",
+    "settings": "Settings",
+    "profile": "Profile",
+    "preview": "Preview"
+  },
+  "navbar": {
+    "openMenu": "Open menu",
+    "projectPlaceholder": "My First Project"
+  },
   "marketing": {
     "hero": {
       "badge": "Stop Building Things Nobody Needs",

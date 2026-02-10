@@ -6,7 +6,8 @@ import { CircleUserRound, KeyRound, Link2, Mail, Palette, Trash2 } from 'lucide-
 import { motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 
-import { SettingsHeader } from '@/app/[locale]/(dashboard)/settings/_components/settings-header';
+import { SettingsHeader } from '@/app/[locale]/(dashboard)/(main)/settings/_components/settings-header';
+import { BackButton } from '@/components/ui/back-button';
 import {
   Select,
   SelectContent,
@@ -130,9 +131,11 @@ const SettingsPage = ({ profile }: SettingsPageProps) => {
   return (
     <div className="mx-auto w-full">
       <div className="flex w-full flex-col gap-6 lg:flex-row lg:items-start lg:gap-8">
-        <div className="sticky top-24 hidden w-60 shrink-0 flex-col gap-6 lg:flex">
+        <div className="sticky top-24 hidden w-(--sidebar-width-expanded) shrink-0 flex-col gap-6 lg:flex">
+          <BackButton />
+
           <div className="space-y-1">
-            <h1 className="text-lg font-semibold">{t('title')}</h1>
+            <h1 className="text-xl font-bold tracking-tight">{t('title')}</h1>
             <p className="text-muted-foreground text-sm">{t('description')}</p>
           </div>
 
@@ -144,7 +147,7 @@ const SettingsPage = ({ profile }: SettingsPageProps) => {
                 data-section={value}
                 data-state={activeSection === value ? 'active' : 'inactive'}
                 onClick={() => setActiveSection(value)}
-                className="text-muted-foreground md:hover:text-foreground md:hover:bg-accent/50 data-[state=active]:bg-accent data-[state=active]:text-foreground data-[state=active]:border-primary flex h-10 min-h-10 w-full items-center justify-start gap-2.5 rounded-lg border-l-2 border-transparent px-3 text-sm font-medium transition-all md:h-9 md:min-h-9"
+                className="text-muted-foreground data-[state=active]:bg-accent data-[state=active]:text-foreground data-[state=active]:border-primary data-[state=inactive]:md:hover:text-foreground data-[state=inactive]:md:hover:border-muted-foreground/30 flex h-10 min-h-10 w-full items-center justify-start gap-2.5 rounded-lg border border-transparent px-3 text-sm font-medium transition-colors data-[state=active]:border-solid md:h-9 md:min-h-9 data-[state=inactive]:md:hover:border-dashed"
               >
                 <Icon className="size-4 shrink-0" aria-hidden="true" />
                 {t(`nav.${value}`)}

@@ -12,6 +12,12 @@ export const PATHNAMES = {
   '/profile/preview': {
     en: '/profile/preview',
   },
+  '/dashboard/surveys': {
+    en: '/dashboard/surveys',
+  },
+  '/dashboard/analytics': {
+    en: '/dashboard/analytics',
+  },
   // --- AUTH ---
   '/sign-in': {
     en: '/sign-in',

@@ -38,7 +38,7 @@ const UserMenu = () => {
 
   if (loading) {
     return (
-      <div className="flex size-9 items-center justify-center">
+      <div className="flex size-8 items-center justify-center">
         <Spinner className="size-4" />
       </div>
     );
@@ -85,7 +85,7 @@ const UserMenu = () => {
         className="ring-ring/30 flex items-center rounded-full transition-all md:hover:ring-2"
         aria-label="User menu"
       >
-        <Avatar className="size-9 text-xs font-semibold">
+        <Avatar className="size-8 text-xs font-semibold">
           <AvatarImage src={proxyImageUrl(avatarUrl)} alt="" />
           <AvatarFallback>{initials}</AvatarFallback>
         </Avatar>
@@ -107,27 +107,27 @@ const UserMenu = () => {
           <Link
             href={ROUTES.common.dashboard}
             onClick={() => setIsOpen(false)}
-            className="md:hover:bg-accent flex min-h-10 w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors md:min-h-9"
+            className="md:hover:text-foreground md:hover:border-muted-foreground/30 flex min-h-10 w-full items-center gap-2.5 rounded-lg border border-transparent px-3 text-sm font-medium transition-colors md:min-h-9 md:hover:border-dashed"
           >
-            <Home className="size-4" aria-hidden="true" />
+            <Home className="size-4 shrink-0" aria-hidden="true" />
             {t('common.dashboard')}
           </Link>
 
           <Link
             href={ROUTES.profile.preview}
             onClick={() => setIsOpen(false)}
-            className="md:hover:bg-accent flex min-h-10 w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors md:min-h-9"
+            className="md:hover:text-foreground md:hover:border-muted-foreground/30 flex min-h-10 w-full items-center gap-2.5 rounded-lg border border-transparent px-3 text-sm font-medium transition-colors md:min-h-9 md:hover:border-dashed"
           >
-            <UserIcon className="size-4" aria-hidden="true" />
+            <UserIcon className="size-4 shrink-0" aria-hidden="true" />
             {t('common.profile')}
           </Link>
 
           <Link
             href={ROUTES.common.settings}
             onClick={() => setIsOpen(false)}
-            className="md:hover:bg-accent flex min-h-10 w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors md:min-h-9"
+            className="md:hover:text-foreground md:hover:border-muted-foreground/30 flex min-h-10 w-full items-center gap-2.5 rounded-lg border border-transparent px-3 text-sm font-medium transition-colors md:min-h-9 md:hover:border-dashed"
           >
-            <Settings className="size-4" aria-hidden="true" />
+            <Settings className="size-4 shrink-0" aria-hidden="true" />
             {t('common.settings')}
           </Link>
         </div>
@@ -137,7 +137,7 @@ const UserMenu = () => {
             onClick={handleSignOut}
             disabled={isSigningOut}
             data-testid="sign-out"
-            className="md:hover:bg-accent flex min-h-10 w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors disabled:opacity-50 md:min-h-9"
+            className="md:hover:text-foreground md:hover:border-muted-foreground/30 flex min-h-10 w-full items-center gap-2.5 rounded-lg border border-transparent px-3 text-sm font-medium transition-colors disabled:opacity-50 md:min-h-9 md:hover:border-dashed"
           >
             {isSigningOut ? (
               <Spinner className="size-4" />

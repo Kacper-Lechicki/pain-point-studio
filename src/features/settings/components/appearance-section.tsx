@@ -36,7 +36,7 @@ const AppearanceSection = () => {
                 'flex min-h-10 items-center gap-2.5 rounded-lg border px-4 py-2 text-sm font-medium transition-colors md:min-h-9',
                 accent === option
                   ? 'border-primary bg-primary/5 text-foreground'
-                  : 'border-border text-muted-foreground md:hover:bg-accent md:hover:text-accent-foreground'
+                  : 'border-border text-muted-foreground md:hover:bg-accent md:hover:text-foreground'
               )}
             >
               <span className={cn('size-3.5 rounded-full', ACCENT_PREVIEW[option])} />
