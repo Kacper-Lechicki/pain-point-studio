@@ -672,6 +672,10 @@ CREATE OR REPLACE TRIGGER "on_auth_user_created" AFTER INSERT ON "auth"."users" 
 
 
 
+INSERT INTO "storage"."buckets" ("id", "name", "public", "file_size_limit", "allowed_mime_types")
+VALUES ('avatars', 'avatars', true, 5242880, ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
+ON CONFLICT ("id") DO NOTHING;
+
 CREATE POLICY "Avatars are publicly readable" ON "storage"."objects" FOR SELECT USING (("bucket_id" = 'avatars'::"text"));
 
 
