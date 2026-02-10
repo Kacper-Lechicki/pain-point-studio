@@ -8,17 +8,15 @@ import { mapSupabaseError } from '@/lib/supabase/errors';
 export const changePassword = withProtectedAction('change-password', {
   schema: changePasswordSchema,
   rateLimit: { limit: 3, windowSeconds: 3600 },
-  action: async ({ data, user, supabase }) => {
-    if (!user.email) {
-      return { error: 'settings.errors.unexpected' };
-    }
-
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email: user.email,
-      password: data.currentPassword,
+  action: async ({ data, supabase }) => {
+    // Verify the current password via an RPC that checks the hash directly,
+    // instead of signInWithPassword which would create a new session and
+    // invalidate the existing refresh token.
+    const { data: isValid } = await supabase.rpc('verify_password', {
+      current_plain_password: data.currentPassword,
     });
 
-    if (signInError) {
+    if (!isValid) {
       return { error: 'settings.errors.currentPasswordIncorrect' };
     }
 

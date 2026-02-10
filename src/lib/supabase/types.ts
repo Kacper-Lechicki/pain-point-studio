@@ -121,6 +121,10 @@ export type Database = {
     Functions: {
       get_user_id_by_email: { Args: { lookup_email: string }; Returns: string };
       has_password: { Args: never; Returns: boolean };
+      verify_password: {
+        Args: { current_plain_password: string };
+        Returns: boolean;
+      };
     };
     Enums: {
       [_ in never]: never;

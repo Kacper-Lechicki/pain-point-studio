@@ -16,7 +16,6 @@ vi.mock('@/lib/common/rate-limit', () => ({
 
 const mockUpdateUser = vi.fn();
 const mockGetUser = vi.fn();
-const mockSignInWithPassword = vi.fn();
 const mockRpc = vi.fn();
 const mockAdminUpdateUserById = vi.fn();
 
@@ -25,7 +24,6 @@ vi.mock('@/lib/supabase/server', () => ({
     auth: {
       updateUser: mockUpdateUser,
       getUser: mockGetUser,
-      signInWithPassword: mockSignInWithPassword,
     },
     rpc: mockRpc,
   }),
@@ -54,7 +52,7 @@ describe('Settings Actions – changePassword', () => {
     mockGetUser.mockResolvedValue({
       data: { user: { email: 'user@example.com', identities: [{ provider: 'email' }] } },
     });
-    mockSignInWithPassword.mockResolvedValue({ error: null });
+    mockRpc.mockResolvedValue({ data: true });
     mockUpdateUser.mockResolvedValue({ error: null });
   });
 
@@ -63,9 +61,8 @@ describe('Settings Actions – changePassword', () => {
     const result = await changePassword(changeData);
 
     expect(result).toEqual({ success: true });
-    expect(mockSignInWithPassword).toHaveBeenCalledWith({
-      email: 'user@example.com',
-      password: changeData.currentPassword,
+    expect(mockRpc).toHaveBeenCalledWith('verify_password', {
+      current_plain_password: changeData.currentPassword,
     });
     expect(mockUpdateUser).toHaveBeenCalledWith({
       password: changeData.password,
@@ -123,7 +120,7 @@ describe('Settings Actions – changePassword', () => {
   });
 
   it('should reject when current password is incorrect', async () => {
-    mockSignInWithPassword.mockResolvedValue({ error: { message: 'Invalid login credentials' } });
+    mockRpc.mockResolvedValue({ data: false });
 
     const { changePassword } = await import('./update-password');
     const result = await changePassword({
@@ -136,17 +133,6 @@ describe('Settings Actions – changePassword', () => {
     expect(mockUpdateUser).not.toHaveBeenCalled();
   });
 
-  it('should return unexpected error when user has no email', async () => {
-    mockGetUser.mockResolvedValue({ data: { user: { email: null } } });
-
-    const { changePassword } = await import('./update-password');
-    const result = await changePassword(changeData);
-
-    expect(result.error).toBe('settings.errors.unexpected');
-    expect(mockSignInWithPassword).not.toHaveBeenCalled();
-    expect(mockUpdateUser).not.toHaveBeenCalled();
-  });
-
   it('should return unexpected error when getUser returns no user', async () => {
     mockGetUser.mockResolvedValue({ data: { user: null } });
 
@@ -154,7 +140,6 @@ describe('Settings Actions – changePassword', () => {
     const result = await changePassword(changeData);
 
     expect(result.error).toBe('settings.errors.unexpected');
-    expect(mockSignInWithPassword).not.toHaveBeenCalled();
     expect(mockUpdateUser).not.toHaveBeenCalled();
   });
 });
@@ -186,7 +171,7 @@ describe('Settings Actions – setPassword', () => {
     expect(mockAdminUpdateUserById).toHaveBeenCalledWith('user-id-123', {
       email: 'user@example.com',
     });
-    expect(mockSignInWithPassword).not.toHaveBeenCalled();
+    expect(mockRpc).not.toHaveBeenCalledWith('verify_password', expect.anything());
   });
 
   it('should not create email identity if one already exists', async () => {
