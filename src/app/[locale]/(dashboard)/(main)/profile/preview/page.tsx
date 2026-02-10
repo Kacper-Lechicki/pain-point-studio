@@ -27,7 +27,7 @@ export default async function ProfilePreviewRoute() {
 
   return (
     <PageTransition>
-      <div className="mb-10 hidden lg:block">
+      <div className="mb-4 hidden lg:block">
         <BackButton />
       </div>
 

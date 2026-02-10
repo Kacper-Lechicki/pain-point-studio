@@ -1,13 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useForm, useWatch } from 'react-hook-form';
-import { toast } from 'sonner';
 
-import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -17,18 +13,26 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { PasswordInput } from '@/components/ui/password-input';
-import { Spinner } from '@/components/ui/spinner';
+import { SubmitButton } from '@/components/ui/submit-button';
 import { ROUTES } from '@/config';
 import { updatePassword } from '@/features/auth/actions';
 import { PasswordStrength } from '@/features/auth/components/common/password-strength';
 import { UpdatePasswordSchema, updatePasswordSchema } from '@/features/auth/types';
+import { useFormAction } from '@/hooks/common/use-form-action';
 import { useRouter } from '@/i18n/routing';
 import type { MessageKey } from '@/i18n/types';
 
 const UpdatePasswordForm = () => {
   const t = useTranslations();
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+
+  const { isLoading, execute } = useFormAction({
+    successMessage: 'auth.passwordUpdated' as MessageKey,
+    onSuccess: () => {
+      router.push(ROUTES.common.dashboard);
+      router.refresh();
+    },
+  });
 
   const form = useForm<UpdatePasswordSchema>({
     resolver: zodResolver(updatePasswordSchema),
@@ -45,23 +49,7 @@ const UpdatePasswordForm = () => {
   });
 
   async function onSubmit(data: UpdatePasswordSchema) {
-    setIsLoading(true);
-
-    try {
-      const result = await updatePassword(data);
-
-      if (result.error) {
-        toast.error(t(result.error as MessageKey));
-        setIsLoading(false);
-      } else {
-        toast.success(t('auth.passwordUpdated'));
-        router.push(ROUTES.common.dashboard);
-        router.refresh();
-      }
-    } catch {
-      toast.error(t('auth.unexpectedError'));
-      setIsLoading(false);
-    }
+    await execute(updatePassword, data);
   }
 
   return (
@@ -75,12 +63,7 @@ const UpdatePasswordForm = () => {
               <FormLabel>{t('auth.newPassword')}</FormLabel>
 
               <FormControl>
-                <PasswordInput
-                  placeholder={t('auth.passwordPlaceholder')}
-                  showPasswordLabel={t('auth.showPassword')}
-                  hidePasswordLabel={t('auth.hidePassword')}
-                  {...field}
-                />
+                <PasswordInput {...field} />
               </FormControl>
 
               <PasswordStrength password={password} isError={!!form.formState.errors.password} />
@@ -96,12 +79,7 @@ const UpdatePasswordForm = () => {
               <FormLabel>{t('auth.confirmPassword')}</FormLabel>
 
               <FormControl>
-                <PasswordInput
-                  placeholder={t('auth.passwordPlaceholder')}
-                  showPasswordLabel={t('auth.showPassword')}
-                  hidePasswordLabel={t('auth.hidePassword')}
-                  {...field}
-                />
+                <PasswordInput {...field} />
               </FormControl>
 
               <FormMessage />
@@ -109,10 +87,9 @@ const UpdatePasswordForm = () => {
           )}
         />
 
-        <Button type="submit" size="default" className="mt-4 w-full" disabled={isLoading}>
-          {isLoading && <Spinner />}
+        <SubmitButton isLoading={isLoading} size="default" className="mt-4 w-full">
           {t('auth.updatePassword')}
-        </Button>
+        </SubmitButton>
       </form>
     </Form>
   );

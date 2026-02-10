@@ -1,53 +1,34 @@
 'use server';
 
-import { mapAuthError } from '@/features/auth/config';
-import { ChangePasswordSchema, changePasswordSchema } from '@/features/settings/types';
-import { rateLimit } from '@/lib/common/rate-limit';
-import { ActionResult } from '@/lib/common/types';
-import { createClient } from '@/lib/supabase/server';
+import { updatePasswordSchema } from '@/features/settings/types';
+import { withProtectedAction } from '@/lib/common/with-protected-action';
+import { mapSupabaseError } from '@/lib/supabase/errors';
 
-export const changePassword = async (formData: ChangePasswordSchema): Promise<ActionResult> => {
-  const { limited } = await rateLimit({ key: 'change-password', limit: 3, windowSeconds: 3600 });
-
-  if (limited) {
-    return { error: 'settings.errors.rateLimitExceeded' };
-  }
-
-  const validation = changePasswordSchema.safeParse(formData);
-
-  if (!validation.success) {
-    return { error: 'settings.errors.invalidData' };
-  }
-
-  const supabase = await createClient();
-
-  // If current password is provided, verify it first
-  if (validation.data.currentPassword) {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user?.email) {
+export const updatePassword = withProtectedAction('change-password', {
+  schema: updatePasswordSchema,
+  rateLimit: { limit: 3, windowSeconds: 3600 },
+  action: async ({ data, user, supabase }) => {
+    if (!user.email) {
       return { error: 'settings.errors.unexpected' };
     }
 
     const { error: signInError } = await supabase.auth.signInWithPassword({
       email: user.email,
-      password: validation.data.currentPassword,
+      password: data.currentPassword,
     });
 
     if (signInError) {
       return { error: 'settings.errors.currentPasswordIncorrect' };
     }
-  }
 
-  const { error } = await supabase.auth.updateUser({
-    password: validation.data.password,
-  });
+    const { error } = await supabase.auth.updateUser({
+      password: data.password,
+    });
 
-  if (error) {
-    return { error: mapAuthError(error.message) };
-  }
+    if (error) {
+      return { error: mapSupabaseError(error.message) };
+    }
 
-  return { success: true };
-};
+    return { success: true };
+  },
+});

@@ -1,11 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useForm, useWatch } from 'react-hook-form';
-import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -25,10 +22,11 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Spinner } from '@/components/ui/spinner';
+import { SubmitButton } from '@/components/ui/submit-button';
 import { ROUTES } from '@/config';
 import { deleteAccount } from '@/features/settings/actions';
 import { DeleteAccountSchema, deleteAccountSchema } from '@/features/settings/types';
+import { useFormAction } from '@/hooks/common/use-form-action';
 import { useRouter } from '@/i18n/routing';
 import type { MessageKey } from '@/i18n/types';
 
@@ -41,7 +39,15 @@ interface DeleteAccountDialogProps {
 const DeleteAccountDialog = ({ open, onOpenChange, userEmail }: DeleteAccountDialogProps) => {
   const t = useTranslations();
   const router = useRouter();
-  const [isDeleting, setIsDeleting] = useState(false);
+
+  const { isLoading: isDeleting, execute } = useFormAction({
+    successMessage: 'settings.dangerZone.accountDeleted' as MessageKey,
+    unexpectedErrorMessage: 'settings.errors.unexpected' as MessageKey,
+    onSuccess: () => {
+      router.push(ROUTES.common.home);
+      router.refresh();
+    },
+  });
 
   const form = useForm<DeleteAccountSchema>({
     resolver: zodResolver(deleteAccountSchema),
@@ -59,23 +65,7 @@ const DeleteAccountDialog = ({ open, onOpenChange, userEmail }: DeleteAccountDia
   const isConfirmed = confirmationValue === userEmail;
 
   async function onSubmit(data: DeleteAccountSchema) {
-    setIsDeleting(true);
-
-    try {
-      const result = await deleteAccount(data);
-
-      if (result.error) {
-        toast.error(t(result.error as MessageKey));
-        setIsDeleting(false);
-      } else {
-        toast.success(t('settings.dangerZone.accountDeleted'));
-        router.push(ROUTES.common.home);
-        router.refresh();
-      }
-    } catch {
-      toast.error(t('settings.errors.unexpected'));
-      setIsDeleting(false);
-    }
+    await execute(deleteAccount, data);
   }
 
   return (
@@ -124,10 +114,9 @@ const DeleteAccountDialog = ({ open, onOpenChange, userEmail }: DeleteAccountDia
                 {t('common.cancel')}
               </Button>
 
-              <Button type="submit" variant="destructive" disabled={!isConfirmed || isDeleting}>
-                {isDeleting && <Spinner />}
+              <SubmitButton isLoading={isDeleting} variant="destructive" disabled={!isConfirmed}>
                 {t('settings.dangerZone.deleteButton')}
-              </Button>
+              </SubmitButton>
             </DialogFooter>
           </form>
         </Form>

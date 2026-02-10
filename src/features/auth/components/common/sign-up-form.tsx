@@ -5,9 +5,7 @@ import { ReactNode, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useForm, useWatch } from 'react-hook-form';
-import { toast } from 'sonner';
 
-import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -18,12 +16,12 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
-import { Spinner } from '@/components/ui/spinner';
-import { ROUTES } from '@/config';
+import { SubmitButton } from '@/components/ui/submit-button';
 import { signUpWithEmail } from '@/features/auth/actions';
+import { AuthSuccessMessage } from '@/features/auth/components/common/auth-success-message';
 import { PasswordStrength } from '@/features/auth/components/common/password-strength';
 import { SignUpSchema, signUpSchema } from '@/features/auth/types';
-import { Link } from '@/i18n/routing';
+import { useFormAction } from '@/hooks/common/use-form-action';
 import type { MessageKey } from '@/i18n/types';
 
 interface SignUpFormProps {
@@ -33,7 +31,6 @@ interface SignUpFormProps {
 
 const SignUpForm = ({ header, children }: SignUpFormProps) => {
   const t = useTranslations();
-  const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
   const form = useForm<SignUpSchema>({
@@ -44,6 +41,14 @@ const SignUpForm = ({ header, children }: SignUpFormProps) => {
     },
   });
 
+  const { isLoading, execute } = useFormAction({
+    successMessage: 'auth.confirmationSent' as MessageKey,
+    onSuccess: () => {
+      setSuccess(true);
+      form.reset();
+    },
+  });
+
   const password = useWatch({
     control: form.control,
     name: 'password',
@@ -51,43 +56,11 @@ const SignUpForm = ({ header, children }: SignUpFormProps) => {
   });
 
   async function onSubmit(data: SignUpSchema) {
-    setIsLoading(true);
-
-    try {
-      const result = await signUpWithEmail(data);
-
-      if (result.error) {
-        toast.error(t(result.error as MessageKey));
-        setIsLoading(false);
-      } else {
-        toast.success(t('auth.confirmationSent'));
-        setSuccess(true);
-        setIsLoading(false);
-
-        form.reset();
-      }
-    } catch {
-      toast.error(t('auth.unexpectedError'));
-      setIsLoading(false);
-    }
+    await execute(signUpWithEmail, data);
   }
 
   if (success) {
-    return (
-      <div className="flex flex-col space-y-2 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight">{t('auth.checkEmail')}</h1>
-
-        <p className="text-muted-foreground text-sm">{t('auth.confirmationSent')}</p>
-
-        <div className="pt-2">
-          <Link href={ROUTES.auth.signIn}>
-            <Button variant="outline" className="w-full">
-              {t('auth.backToSignIn')}
-            </Button>
-          </Link>
-        </div>
-      </div>
-    );
+    return <AuthSuccessMessage messageKey={'auth.confirmationSent' as MessageKey} />;
   }
 
   return (
@@ -121,12 +94,7 @@ const SignUpForm = ({ header, children }: SignUpFormProps) => {
                   <FormLabel>{t('auth.password')}</FormLabel>
 
                   <FormControl>
-                    <PasswordInput
-                      placeholder={t('auth.passwordPlaceholder')}
-                      showPasswordLabel={t('auth.showPassword')}
-                      hidePasswordLabel={t('auth.hidePassword')}
-                      {...field}
-                    />
+                    <PasswordInput {...field} />
                   </FormControl>
 
                   <PasswordStrength
@@ -137,10 +105,9 @@ const SignUpForm = ({ header, children }: SignUpFormProps) => {
               )}
             />
 
-            <Button type="submit" className="mt-4 w-full font-semibold" disabled={isLoading}>
-              {isLoading && <Spinner />}
+            <SubmitButton isLoading={isLoading} className="mt-4 w-full font-semibold">
               {t('auth.createAccount')}
-            </Button>
+            </SubmitButton>
           </form>
         </Form>
 

@@ -48,8 +48,13 @@ class InMemoryRateLimiter implements RateLimiter {
     this.cleanup();
 
     const headerStore = await headers();
-    const ip = headerStore.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
-    const storeKey = `${config.key}:${ip}`;
+    const forwarded = headerStore.get('x-forwarded-for')?.split(',')[0]?.trim();
+
+    if (!forwarded) {
+      return { limited: true };
+    }
+
+    const storeKey = `${config.key}:${forwarded}`;
     const now = Date.now();
 
     const entry = this.store.get(storeKey);

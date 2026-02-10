@@ -3,11 +3,11 @@
 import { Lock, Unlock } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { SIDEBAR_BOTTOM_ITEM, SIDEBAR_NAV } from '@/features/dashboard/config/navigation';
+import { SIDEBAR_BOTTOM_ITEM } from '@/features/dashboard/config/navigation';
 
 import { SidebarItem } from './sidebar-item';
+import { SidebarNavList } from './sidebar-nav-list';
 import { useSidebar } from './sidebar-provider';
 
 export function Sidebar() {
@@ -26,16 +26,7 @@ export function Sidebar() {
         className="bg-sidebar border-sidebar-border fixed top-14 left-0 z-40 hidden h-[calc(100vh-3.5rem)] flex-col border-r transition-[width] duration-200 ease-in-out lg:flex"
       >
         <nav className="flex flex-1 flex-col gap-1 overflow-x-hidden overflow-y-auto p-2">
-          {SIDEBAR_NAV.map((group, i) => (
-            <div key={i}>
-              {i > 0 && <Separator className="my-2" />}
-              <div className="flex flex-col gap-2">
-                {group.items.map((item) => (
-                  <SidebarItem key={item.href} {...item} isExpanded={isExpanded} />
-                ))}
-              </div>
-            </div>
-          ))}
+          <SidebarNavList isExpanded={isExpanded} />
 
           <div className="mt-auto pt-1">
             <SidebarItem {...SIDEBAR_BOTTOM_ITEM} isExpanded={isExpanded} />

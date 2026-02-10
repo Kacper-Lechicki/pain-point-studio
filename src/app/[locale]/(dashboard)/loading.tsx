@@ -1,7 +1,1 @@
-import { Loading } from '@/components/ui/loading';
-
-const DashboardGlobalLoading = () => {
-  return <Loading />;
-};
-
-export default DashboardGlobalLoading;
+export { Loading as default } from '@/components/ui/loading';

@@ -6,7 +6,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import type { ProfilePreviewData } from '@/features/profile/types';
-import { proxyImageUrl } from '@/lib/common/utils';
+import { getInitials, proxyImageUrl } from '@/lib/common/utils';
 
 interface ProfileHeaderProps {
   profile: ProfilePreviewData;
@@ -16,14 +16,7 @@ const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
   const t = useTranslations('profile');
   const format = useFormatter();
 
-  const fallbackInitials = profile.fullName
-    ? profile.fullName
-        .split(' ')
-        .map((n) => n[0])
-        .join('')
-        .toUpperCase()
-        .slice(0, 2)
-    : '?';
+  const fallbackInitials = getInitials(profile.fullName, '?');
 
   const memberSinceFormatted = profile.memberSince
     ? format.dateTime(new Date(profile.memberSince), { year: 'numeric', month: 'long' })

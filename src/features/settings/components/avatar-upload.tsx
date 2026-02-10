@@ -80,14 +80,6 @@ const AvatarUpload = ({
       const ext = blob.type.split('/')[1] || 'jpg';
       const filePath = `${userId}/${Date.now()}.${ext}`;
 
-      if (currentUrl) {
-        const oldPath = currentUrl.split('/avatars/')[1];
-
-        if (oldPath) {
-          await supabase.storage.from('avatars').remove([oldPath]);
-        }
-      }
-
       const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, blob, { upsert: true, contentType: blob.type });
@@ -96,6 +88,14 @@ const AvatarUpload = ({
         toast.error(t('errors.uploadFailed'));
 
         return;
+      }
+
+      if (currentUrl) {
+        const oldPath = currentUrl.split('/avatars/')[1];
+
+        if (oldPath) {
+          await supabase.storage.from('avatars').remove([oldPath]);
+        }
       }
 
       const {

@@ -21,7 +21,7 @@ supabase/
 ├── config.toml        # Local Supabase configuration
 ├── seed.sql           # Development seed data
 └── migrations/        # SQL migration files
-    └── 00000000000000_init.sql
+    └── <timestamp>_initial_schema.sql
 ```
 
 ## Quick Start (Local Development)
@@ -158,11 +158,12 @@ All tables **must** have RLS enabled. Policies control who can read/write data:
 -- Enable RLS on a table
 ALTER TABLE public.my_table ENABLE ROW LEVEL SECURITY;
 
--- Example: Allow authenticated users to read their own data
+-- Always wrap auth functions in (select ...) for performance.
+-- This ensures the function is evaluated once per query, not per row.
 CREATE POLICY "Users can read own data"
   ON public.my_table
   FOR SELECT
-  USING (auth.uid() = user_id);
+  USING ((select auth.uid()) = user_id);
 ```
 
 The `SUPABASE_SERVICE_ROLE_KEY` bypasses RLS — use it only in trusted server-side code (e.g., admin scripts, webhooks).
@@ -269,6 +270,7 @@ pnpm test:unit         # run tests against new schema
 2. **Never use `seed.sql` on production.** Seed data is for development only. Production data should come from real usage or dedicated admin scripts.
 3. **Always test migrations locally first.** Run `pnpm supabase:reset` and verify before `pnpm supabase:push`.
 4. **Never commit production keys.** Store them in Bitwarden / Vercel environment variables.
+5. **Always use `(select auth.uid())` in RLS policies**, not bare `auth.uid()`. The subquery wrapper ensures the function is evaluated once per query instead of per row — critical for performance at scale.
 
 ### Data Flow Between Environments
 

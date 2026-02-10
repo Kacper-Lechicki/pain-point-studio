@@ -61,12 +61,19 @@ This folder contains the "Source of Truth" for the project's technical standards
 - **[GIT_USAGE.md](./docs/GIT_USAGE.md)**: Branching strategy and commit conventions.
 - **[PNPM_USAGE.md](./docs/PNPM_USAGE.md)**: Dependency management and script standards.
 
-### `.agent/` - AI Engineering Logic
+### `.cursor/rules/` - AI Guardian Rules
 
-This folder contains rules and skills that empower AI assistants to act as specialized guardians of the codebase:
+Specialized Cursor AI rules that audit code in real-time to ensure it meets architectural standards:
 
-- **rules/**: Specialized AI "Guardians" (Supabase, I18n, Project Structure, etc.) that audit code in real-time to ensure it meets our architectural standards.
-- **workflows/**: Standardized processes for common tasks like handling tickets or optimizing code.
+- **pps-architect** — Senior architect decision framework and technical debt policy.
+- **pps-component-quality-guardian** — 100% Lighthouse compliance, TypeScript type safety, shared component reuse.
+- **pps-supabase-guardian** — Client selection, RLS enforcement, migration hygiene, `(select auth.uid())` pattern.
+- **pps-testing-guardian** — ROI framework, `withProtectedAction` test patterns, E2E structural selectors.
+- **pps-project-structure-guardian** — Feature-First architecture, naming conventions, colocation rules.
+- **pps-i18n-guardian** — Translation consistency, locale routing, namespace conventions.
+- **pps-routing-guradian** — Type-safe routes, sibling navigation, import sources.
+- **pps-env-guardian** — Zod-validated env vars, server/client separation.
+- **pps-ci-cd-guardian** — Branch naming, pipeline isolation, workflow triggers.
 
 &nbsp;
 

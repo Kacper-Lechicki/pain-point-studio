@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 
 import { Badge } from '@/components/ui/badge';
 import { OAUTH_PROVIDERS } from '@/features/auth/config';
+import { SettingsSectionHeader } from '@/features/settings/components/settings-section-header';
 
 interface ConnectedAccountsProps {
   identities: { provider: string; email: string | undefined }[];
@@ -16,13 +17,10 @@ const ConnectedAccounts = ({ identities }: ConnectedAccountsProps) => {
 
   return (
     <section className="space-y-8">
-      <div className="border-border/40 space-y-1 border-b pb-6">
-        <h2 className="text-lg font-semibold">{t('settings.connectedAccounts.title')}</h2>
-
-        <p className="text-muted-foreground text-sm">
-          {t('settings.connectedAccounts.description')}
-        </p>
-      </div>
+      <SettingsSectionHeader
+        title={t('settings.connectedAccounts.title')}
+        description={t('settings.connectedAccounts.description')}
+      />
 
       {oauthIdentities.length === 0 ? (
         <p className="text-muted-foreground text-sm">

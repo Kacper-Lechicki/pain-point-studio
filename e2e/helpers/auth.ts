@@ -1,7 +1,7 @@
 import { expect } from '@playwright/test';
 import { createClient } from '@supabase/supabase-js';
 
-import { env } from '../env';
+import { env } from './env';
 import { ROUTES, url } from './routes';
 
 const DEFAULT_PASSWORD = 'E2eTestPass1!';
@@ -47,6 +47,7 @@ export function makeApiSignIn(email: string, password = DEFAULT_PASSWORD) {
     //    where project-ref is extracted from the Supabase URL (the hostname segment).
     const projectRef = new URL(env.NEXT_PUBLIC_SUPABASE_URL).hostname.split('.')[0];
     const cookieName = `sb-${projectRef}-auth-token`;
+
     const cookieValue = JSON.stringify({
       access_token: data.session.access_token,
       refresh_token: data.session.refresh_token,
@@ -59,6 +60,7 @@ export function makeApiSignIn(email: string, password = DEFAULT_PASSWORD) {
     //    We replicate that chunking so the middleware can read them.
     const CHUNK_SIZE = 3180;
     const baseUrl = new URL(env.NEXT_PUBLIC_APP_URL);
+
     const cookieBase = {
       domain: baseUrl.hostname,
       path: '/',

@@ -1,5 +1,5 @@
-import { ROUTES, SECTION_TO_HASH } from '../../src/config/routes';
-import { defaultLocale } from '../../src/i18n/constants';
+import { ROUTES, SECTION_TO_HASH } from '@/config/routes';
+import { defaultLocale } from '@/i18n/constants';
 
 export { ROUTES, SECTION_TO_HASH };
 

@@ -3,11 +3,11 @@
 import { getLocale } from 'next-intl/server';
 import { z } from 'zod';
 
-import { mapAuthError } from '@/features/auth/config';
 import { signUpSchema } from '@/features/auth/types';
 import { env } from '@/lib/common/env';
 import { rateLimit } from '@/lib/common/rate-limit';
 import { ActionResult } from '@/lib/common/types';
+import { mapSupabaseError } from '@/lib/supabase/errors';
 import { createClient } from '@/lib/supabase/server';
 
 export const signUpWithEmail = async (
@@ -36,7 +36,7 @@ export const signUpWithEmail = async (
   });
 
   if (error) {
-    return { error: mapAuthError(error.message) };
+    return { error: mapSupabaseError(error.message) };
   }
 
   return { success: true };
