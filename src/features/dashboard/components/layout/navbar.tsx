@@ -19,7 +19,7 @@ const Navbar = () => {
   const hasSidebar = pathname.startsWith('/dashboard');
 
   return (
-    <nav className="bg-background/80 border-border fixed inset-x-0 top-0 z-50 border-b backdrop-blur-md">
+    <nav className="bg-background/80 border-border fixed inset-x-0 top-0 z-50 backdrop-blur-md lg:border-b">
       <div
         className={`flex h-14 items-center gap-3 px-4 ${!hasSidebar ? 'container mx-auto sm:px-4 lg:px-8' : ''}`}
       >

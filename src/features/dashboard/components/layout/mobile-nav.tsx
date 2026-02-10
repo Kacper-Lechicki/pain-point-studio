@@ -19,7 +19,7 @@ export function MobileNav() {
         showCloseButton={false}
         aria-describedby={undefined}
       >
-        <SheetHeader className="flex h-14 items-center justify-center border-b px-3">
+        <SheetHeader className="flex h-14 items-center justify-center px-3">
           <SheetTitle className="sr-only">Navigation</SheetTitle>
           <ProjectSelector className="w-full" />
         </SheetHeader>
