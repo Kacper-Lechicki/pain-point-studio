@@ -1,8 +1,8 @@
 import nextVitals from 'eslint-config-next/core-web-vitals';
 import nextTs from 'eslint-config-next/typescript';
 import noSecrets from 'eslint-plugin-no-secrets';
-import tseslint from 'typescript-eslint';
 import { defineConfig, globalIgnores } from 'eslint/config';
+import tseslint from 'typescript-eslint';
 
 const eslintConfig = defineConfig([
   ...nextVitals,
