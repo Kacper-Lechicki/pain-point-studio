@@ -17,6 +17,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -29,10 +32,36 @@ jobs:
       - name: Link Project
         run: supabase link --project-ref "$SUPABASE_PROJECT_REF"
         env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+
+      - name: Repair Drifted Migrations
+        run: |
+          # Parse `supabase migration list` to find remote-only versions.
+          # Output format: "  <local> | <remote> | <timestamp>"
+          # Remote-only rows have an empty local column and a non-empty remote column.
+          # We mark them as "reverted" so `db push` won't fail on drift.
+          REMOTE_ONLY=$(supabase migration list 2>&1 \
+            | tail -n +4 \
+            | while IFS='|' read -r local remote _ts; do
+                local=$(echo "$local" | xargs)
+                remote=$(echo "$remote" | xargs)
+                if [ -z "$local" ] && [ -n "$remote" ]; then
+                  echo "$remote"
+                fi
+              done)
+
+          if [ -z "$REMOTE_ONLY" ]; then
+            echo "No drifted migrations found."
+            exit 0
+          fi
+
+          echo "Drifted remote migrations found:"
+          echo "$REMOTE_ONLY"
+
+          for VERSION in $REMOTE_ONLY; do
+            echo "Repairing $VERSION → reverted"
+            supabase migration repair --status reverted "$VERSION"
+          done
 
       - name: Push Migrations
         run: supabase db push
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}

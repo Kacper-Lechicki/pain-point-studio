@@ -6,9 +6,9 @@ import { Send } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
+import { LoadingLink } from '@/components/ui/loading-link';
 import { ScrollReveal } from '@/components/ui/scroll-reveal';
 import { ROUTES } from '@/config';
-import { Link } from '@/i18n/routing';
 
 const HeroHighlight = dynamic(
   () => import('@/components/ui/hero-highlight').then((mod) => ({ default: mod.HeroHighlight })),
@@ -42,10 +42,12 @@ const Cta = () => {
 
             <div className="mt-10 flex flex-col items-center justify-center gap-4">
               <Button asChild className="h-11 gap-2 px-8">
-                <Link href={ROUTES.auth.signIn}>
+                <LoadingLink
+                  href={ROUTES.auth.signIn}
+                  icon={<Send className="size-4" aria-hidden="true" />}
+                >
                   {startResearch}
-                  <Send className="size-4" aria-hidden="true" />
-                </Link>
+                </LoadingLink>
               </Button>
 
               <p className="text-muted-foreground text-xs">{noCreditCard}</p>

@@ -9,7 +9,7 @@ export function DashboardContent({ children }: { children: ReactNode }) {
 
   return (
     <main
-      className="min-w-0 flex-1 transition-[margin-left] duration-200 lg:ml-(--sidebar-width-collapsed)"
+      className="min-w-0 flex-1 pb-20 transition-[margin-left] duration-200 lg:ml-(--sidebar-width-collapsed)"
       style={isPinned ? { marginLeft: 'var(--sidebar-width-expanded)' } : undefined}
     >
       {children}

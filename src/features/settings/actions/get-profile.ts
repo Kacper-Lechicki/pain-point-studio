@@ -1,5 +1,7 @@
 'use server';
 
+import { cache } from 'react';
+
 import { getTranslations } from 'next-intl/server';
 
 import { SocialLink } from '@/features/settings/types';
@@ -18,6 +20,8 @@ export interface ProfileData {
   bio: string;
   avatarUrl: string;
   hasPassword: boolean;
+  pendingEmail: string | null;
+  emailChangeConfirmStatus: number;
   identities: { provider: string; email: string | undefined; identityId: string }[];
   socialLinks: SocialLink[];
   memberSince: string;
@@ -25,7 +29,7 @@ export interface ProfileData {
   socialLinkOptions: LookupValue[];
 }
 
-export const getProfile = async (): Promise<ProfileData | null> => {
+export const getProfile = cache(async (): Promise<ProfileData | null> => {
   const supabase = await createClient();
 
   const {
@@ -41,6 +45,7 @@ export const getProfile = async (): Promise<ProfileData | null> => {
     { data: roles },
     { data: socialLinkTypes },
     { data: hasPasswordResult },
+    { data: emailChangeStatus },
   ] = await Promise.all([
     supabase.from('profiles').select('*').eq('id', user.id).single(),
     supabase.from('roles').select('value, label_key').eq('is_active', true).order('sort_order'),
@@ -50,9 +55,11 @@ export const getProfile = async (): Promise<ProfileData | null> => {
       .eq('is_active', true)
       .order('sort_order'),
     supabase.rpc('has_password'),
+    supabase.rpc('get_email_change_status'),
   ]);
 
   const hasPassword = hasPasswordResult === true;
+  const pendingRow = Array.isArray(emailChangeStatus) ? emailChangeStatus[0] : null;
   const t = await getTranslations();
 
   return {
@@ -63,6 +70,8 @@ export const getProfile = async (): Promise<ProfileData | null> => {
     bio: profile?.bio ?? '',
     avatarUrl: profile?.avatar_url || (user.user_metadata?.avatar_url as string) || '',
     hasPassword,
+    pendingEmail: pendingRow?.new_email ?? null,
+    emailChangeConfirmStatus: pendingRow?.confirm_status ?? 0,
     socialLinks: (Array.isArray(profile?.social_links) ? profile.social_links : []) as SocialLink[],
     memberSince: user.created_at ?? '',
     identities: (user.identities ?? []).map((identity) => ({
@@ -79,4 +88,4 @@ export const getProfile = async (): Promise<ProfileData | null> => {
       label: t(s.label_key as Parameters<typeof t>[0]),
     })),
   };
-};
+});

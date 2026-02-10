@@ -105,8 +105,18 @@ describe('Settings Actions – Get Profile', () => {
     // Default: profile found
     mockProfileSingle.mockResolvedValue({ data: mockProfile });
 
-    // Default: has password
-    mockRpc.mockResolvedValue({ data: true });
+    // Default: has password, no pending email change
+    mockRpc.mockImplementation((fn: string) => {
+      if (fn === 'has_password') {
+        return Promise.resolve({ data: true });
+      }
+
+      if (fn === 'get_email_change_status') {
+        return Promise.resolve({ data: [] });
+      }
+
+      return Promise.resolve({ data: null });
+    });
 
     // Reset lookup data
     rolesResponse = { data: mockRolesData };
@@ -134,6 +144,8 @@ describe('Settings Actions – Get Profile', () => {
     expect(result!.bio).toBe('A test bio');
     expect(result!.avatarUrl).toBe('https://example.com/avatar.png');
     expect(result!.hasPassword).toBe(true);
+    expect(result!.pendingEmail).toBeNull();
+    expect(result!.emailChangeConfirmStatus).toBe(0);
     expect(result!.socialLinks).toEqual([{ label: 'github', url: 'https://github.com/johndoe' }]);
     expect(result!.identities).toEqual([
       { provider: 'email', email: 'john@example.com', identityId: 'email-id-1' },
@@ -192,12 +204,40 @@ describe('Settings Actions – Get Profile', () => {
   });
 
   it('should set hasPassword to false when RPC returns false', async () => {
-    mockRpc.mockResolvedValue({ data: false });
+    mockRpc.mockImplementation((fn: string) => {
+      if (fn === 'has_password') {
+        return Promise.resolve({ data: false });
+      }
+
+      return Promise.resolve({ data: [] });
+    });
 
     const { getProfile } = await import('./get-profile');
     const result = await getProfile();
 
     expect(result!.hasPassword).toBe(false);
+  });
+
+  it('should return pending email change status when change is in progress', async () => {
+    mockRpc.mockImplementation((fn: string) => {
+      if (fn === 'has_password') {
+        return Promise.resolve({ data: true });
+      }
+
+      if (fn === 'get_email_change_status') {
+        return Promise.resolve({
+          data: [{ new_email: 'new@example.com', confirm_status: 1 }],
+        });
+      }
+
+      return Promise.resolve({ data: null });
+    });
+
+    const { getProfile } = await import('./get-profile');
+    const result = await getProfile();
+
+    expect(result!.pendingEmail).toBe('new@example.com');
+    expect(result!.emailChangeConfirmStatus).toBe(1);
   });
 
   it('should use avatar_url from user_metadata as fallback', async () => {

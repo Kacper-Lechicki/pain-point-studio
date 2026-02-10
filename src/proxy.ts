@@ -65,6 +65,12 @@ const middleware = async (req: NextRequest) => {
 
   const i18nResponse = i18nMiddleware(req);
 
+  // Prevent bfcache on protected pages so the browser can't restore a stale
+  // authenticated page after the session expires and the user is redirected.
+  if (!isPublicRoute) {
+    i18nResponse.headers.set('Cache-Control', 'no-store, max-age=0');
+  }
+
   supabaseResponse.cookies.getAll().forEach(({ name, value, ...options }) => {
     i18nResponse.cookies.set(name, value, options);
   });

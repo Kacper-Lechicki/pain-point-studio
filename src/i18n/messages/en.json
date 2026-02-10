@@ -159,7 +159,7 @@
   },
   "navbar": {
     "openMenu": "Open menu",
-    "projectPlaceholder": "My First Project",
+    "projectPlaceholder": "Default Project",
     "selectProject": "Select project"
   },
   "marketing": {
@@ -441,7 +441,11 @@
       "newEmailPlaceholder": "Enter your new email",
       "doubleConfirmHint": "For security, a confirmation link will be sent to both your current and new email. You must confirm both to complete the change.",
       "saveEmail": "Update Email",
-      "emailUpdateSent": "Confirmation emails sent. Please check both inboxes."
+      "emailUpdateSent": "Confirmation emails sent. Please check both inboxes.",
+      "pendingChange": "Email change to {newEmail} is in progress.",
+      "confirmationsStatus": "{count, plural, =0 {No confirmations yet — check both inboxes.} =1 {1 of 2 confirmations completed.} other {}}",
+      "cancelChange": "Cancel Change",
+      "changeCancelled": "Email change cancelled."
     },
     "password": {
       "title": "Change Password",

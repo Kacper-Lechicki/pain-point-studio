@@ -66,15 +66,29 @@ const SettingsPage = ({ profile }: SettingsPageProps) => {
     window.history.replaceState(null, '', `#${SECTION_TO_HASH[section]}`);
   }, []);
 
-  const sectionContent: Record<SettingsSectionValue, React.ReactNode> = {
-    profile: <ProfileForm profile={profile} />,
-    email: <EmailForm currentEmail={profile.email} />,
-    password: <PasswordForm hasPassword={profile.hasPassword} />,
-    appearance: <AppearanceSection />,
-    connectedAccounts: (
-      <ConnectedAccounts identities={profile.identities} hasPassword={profile.hasPassword} />
-    ),
-    dangerZone: <DangerZone userEmail={profile.email} />,
+  const renderSection = (section: SettingsSectionValue) => {
+    switch (section) {
+      case 'profile':
+        return <ProfileForm profile={profile} />;
+      case 'email':
+        return (
+          <EmailForm
+            currentEmail={profile.email}
+            pendingEmail={profile.pendingEmail}
+            emailChangeConfirmStatus={profile.emailChangeConfirmStatus}
+          />
+        );
+      case 'password':
+        return <PasswordForm hasPassword={profile.hasPassword} />;
+      case 'appearance':
+        return <AppearanceSection />;
+      case 'connectedAccounts':
+        return (
+          <ConnectedAccounts identities={profile.identities} hasPassword={profile.hasPassword} />
+        );
+      case 'dangerZone':
+        return <DangerZone userEmail={profile.email} />;
+    }
   };
 
   return (
@@ -103,7 +117,7 @@ const SettingsPage = ({ profile }: SettingsPageProps) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
           >
-            {sectionContent[activeSection]}
+            {renderSection(activeSection)}
           </motion.div>
         </div>
       </div>

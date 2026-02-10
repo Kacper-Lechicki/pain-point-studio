@@ -1,5 +1,5 @@
 export const FULL_NAME_MAX_LENGTH = 100;
-export const BIO_MAX_LENGTH = 500;
+export const BIO_MAX_LENGTH = 200;
 
 export const MAX_SOCIAL_LINKS = 5;
 
