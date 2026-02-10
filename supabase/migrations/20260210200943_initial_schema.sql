@@ -521,37 +521,28 @@ GRANT ALL ON FUNCTION "public"."cancel_email_change"() TO "service_role";
 
 
 
-GRANT ALL ON FUNCTION "public"."get_email_change_status"() TO "anon";
 GRANT ALL ON FUNCTION "public"."get_email_change_status"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."get_email_change_status"() TO "service_role";
 
 
 
-GRANT ALL ON FUNCTION "public"."handle_new_user"() TO "anon";
-GRANT ALL ON FUNCTION "public"."handle_new_user"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."handle_new_user"() TO "service_role";
 
 
 
-GRANT ALL ON FUNCTION "public"."has_password"() TO "anon";
 GRANT ALL ON FUNCTION "public"."has_password"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."has_password"() TO "service_role";
 
 
 
-GRANT ALL ON FUNCTION "public"."prevent_clearing_required_fields"() TO "anon";
-GRANT ALL ON FUNCTION "public"."prevent_clearing_required_fields"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."prevent_clearing_required_fields"() TO "service_role";
 
 
 
-GRANT ALL ON FUNCTION "public"."set_updated_at"() TO "anon";
-GRANT ALL ON FUNCTION "public"."set_updated_at"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."set_updated_at"() TO "service_role";
 
 
 
-GRANT ALL ON FUNCTION "public"."verify_password"("current_plain_password" "text") TO "anon";
 GRANT ALL ON FUNCTION "public"."verify_password"("current_plain_password" "text") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."verify_password"("current_plain_password" "text") TO "service_role";
 

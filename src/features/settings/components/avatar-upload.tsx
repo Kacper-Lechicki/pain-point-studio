@@ -102,7 +102,7 @@ const AvatarUpload = ({
         data: { publicUrl },
       } = supabase.storage.from('avatars').getPublicUrl(filePath);
 
-      const result = await updateAvatarUrl(publicUrl);
+      const result = await updateAvatarUrl({ avatarUrl: publicUrl });
 
       if (result.error) {
         toast.error(t(result.error as Parameters<typeof t>[0]));
@@ -142,7 +142,7 @@ const AvatarUpload = ({
         await supabase.storage.from('avatars').remove([oldPath]);
       }
 
-      const result = await updateAvatarUrl('');
+      const result = await updateAvatarUrl({ avatarUrl: '' });
 
       if (result.error) {
         toast.error(t(result.error as Parameters<typeof t>[0]));

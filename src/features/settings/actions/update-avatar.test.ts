@@ -11,6 +11,11 @@ vi.mock('@/lib/common/env', () => ({
   },
 }));
 
+// Mock rate limit
+vi.mock('@/lib/common/rate-limit', () => ({
+  rateLimit: vi.fn().mockResolvedValue({ limited: false }),
+}));
+
 // Mock Supabase server client
 const mockGetUser = vi.fn();
 const mockUpdateUser = vi.fn();
@@ -48,7 +53,7 @@ describe('Settings Actions – Update Avatar URL', () => {
 
   it('should return success when avatar URL is updated', async () => {
     const { updateAvatarUrl } = await import('./update-avatar');
-    const result = await updateAvatarUrl('https://storage.example.com/avatar.png');
+    const result = await updateAvatarUrl({ avatarUrl: 'https://storage.example.com/avatar.png' });
 
     expect(result).toEqual({ success: true });
     expect(mockUpdateUser).toHaveBeenCalledWith({
@@ -58,7 +63,7 @@ describe('Settings Actions – Update Avatar URL', () => {
 
   it('should return success when avatar is removed (empty URL)', async () => {
     const { updateAvatarUrl } = await import('./update-avatar');
-    const result = await updateAvatarUrl('');
+    const result = await updateAvatarUrl({ avatarUrl: '' });
 
     expect(result).toEqual({ success: true });
     expect(mockUpdateUser).toHaveBeenCalledWith({
@@ -70,7 +75,7 @@ describe('Settings Actions – Update Avatar URL', () => {
     mockGetUser.mockResolvedValue({ data: { user: null } });
 
     const { updateAvatarUrl } = await import('./update-avatar');
-    const result = await updateAvatarUrl('https://storage.example.com/avatar.png');
+    const result = await updateAvatarUrl({ avatarUrl: 'https://storage.example.com/avatar.png' });
 
     expect(result.error).toBeDefined();
     expect(result).not.toHaveProperty('success');
@@ -81,7 +86,7 @@ describe('Settings Actions – Update Avatar URL', () => {
     mockEq.mockResolvedValue({ error: { message: 'Database error' } });
 
     const { updateAvatarUrl } = await import('./update-avatar');
-    const result = await updateAvatarUrl('https://storage.example.com/avatar.png');
+    const result = await updateAvatarUrl({ avatarUrl: 'https://storage.example.com/avatar.png' });
 
     expect(result.error).toBeDefined();
     expect(result).not.toHaveProperty('success');
@@ -92,7 +97,7 @@ describe('Settings Actions – Update Avatar URL', () => {
     mockUpdateUser.mockResolvedValue({ error: { message: 'Metadata error' } });
 
     const { updateAvatarUrl } = await import('./update-avatar');
-    const result = await updateAvatarUrl('https://storage.example.com/avatar.png');
+    const result = await updateAvatarUrl({ avatarUrl: 'https://storage.example.com/avatar.png' });
 
     expect(result.error).toBeDefined();
     expect(result).not.toHaveProperty('success');
@@ -100,10 +105,22 @@ describe('Settings Actions – Update Avatar URL', () => {
 
   it('should return error when avatar URL is not a valid URL', async () => {
     const { updateAvatarUrl } = await import('./update-avatar');
-    const result = await updateAvatarUrl('not-a-url');
+    const result = await updateAvatarUrl({ avatarUrl: 'not-a-url' });
 
-    expect(result.error).toBe('settings.errors.invalidData');
+    expect(result.error).toBeDefined();
     expect(result).not.toHaveProperty('success');
+    expect(mockGetUser).not.toHaveBeenCalled();
+  });
+
+  it('should return rate limit error when rate limited', async () => {
+    const { rateLimit } = await import('@/lib/common/rate-limit');
+
+    vi.mocked(rateLimit).mockResolvedValueOnce({ limited: true });
+
+    const { updateAvatarUrl } = await import('./update-avatar');
+    const result = await updateAvatarUrl({ avatarUrl: 'https://storage.example.com/avatar.png' });
+
+    expect(result.error).toBeDefined();
     expect(mockGetUser).not.toHaveBeenCalled();
   });
 });

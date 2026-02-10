@@ -2,49 +2,36 @@
 
 import { z } from 'zod';
 
-import { ActionResult } from '@/lib/common/types';
+import { withProtectedAction } from '@/lib/common/with-protected-action';
 import { mapSupabaseError } from '@/lib/supabase/errors';
-import { createClient } from '@/lib/supabase/server';
 
 const avatarUrlSchema = z.object({
   avatarUrl: z.union([z.url(), z.literal('')]),
 });
 
-export const updateAvatarUrl = async (avatarUrl: string): Promise<ActionResult> => {
-  const validation = avatarUrlSchema.safeParse({ avatarUrl });
+export const updateAvatarUrl = withProtectedAction('update-avatar-url', {
+  schema: avatarUrlSchema,
+  rateLimit: { limit: 10, windowSeconds: 60 },
+  action: async ({ data, user, supabase }) => {
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .update({
+        avatar_url: data.avatarUrl,
+      })
+      .eq('id', user.id);
 
-  if (!validation.success) {
-    return { error: 'settings.errors.invalidData' };
-  }
+    if (profileError) {
+      return { error: mapSupabaseError(profileError.message) };
+    }
 
-  const supabase = await createClient();
+    const { error: metaError } = await supabase.auth.updateUser({
+      data: { avatar_url: data.avatarUrl },
+    });
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    if (metaError) {
+      return { error: mapSupabaseError(metaError.message) };
+    }
 
-  if (!user) {
-    return { error: 'settings.errors.unexpected' };
-  }
-
-  const { error: profileError } = await supabase
-    .from('profiles')
-    .update({
-      avatar_url: validation.data.avatarUrl,
-    })
-    .eq('id', user.id);
-
-  if (profileError) {
-    return { error: mapSupabaseError(profileError.message) };
-  }
-
-  const { error: metaError } = await supabase.auth.updateUser({
-    data: { avatar_url: validation.data.avatarUrl },
-  });
-
-  if (metaError) {
-    return { error: mapSupabaseError(metaError.message) };
-  }
-
-  return { success: true };
-};
+    return { success: true };
+  },
+});

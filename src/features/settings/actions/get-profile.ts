@@ -1,5 +1,7 @@
 'use server';
 
+import { cache } from 'react';
+
 import { getTranslations } from 'next-intl/server';
 
 import { SocialLink } from '@/features/settings/types';
@@ -27,7 +29,7 @@ export interface ProfileData {
   socialLinkOptions: LookupValue[];
 }
 
-export const getProfile = async (): Promise<ProfileData | null> => {
+export const getProfile = cache(async (): Promise<ProfileData | null> => {
   const supabase = await createClient();
 
   const {
@@ -86,4 +88,4 @@ export const getProfile = async (): Promise<ProfileData | null> => {
       label: t(s.label_key as Parameters<typeof t>[0]),
     })),
   };
-};
+});
