@@ -119,6 +119,7 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      cancel_email_change: { Args: never; Returns: undefined };
       get_email_change_status: {
         Args: never;
         Returns: {

@@ -59,28 +59,41 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA "extensions";
 
 
 
--- Returns TRUE if the currently authenticated user has a password set.
--- Supabase's getUser() API does not expose encrypted_password,
--- so we need a server-side function to check this.
-CREATE OR REPLACE FUNCTION "public"."has_password"()
-    RETURNS boolean
-    LANGUAGE "sql" SECURITY DEFINER
-    STABLE
+CREATE OR REPLACE FUNCTION "public"."cancel_email_change"() RETURNS "void"
+    LANGUAGE "plpgsql" SECURITY DEFINER
     SET "search_path" TO ''
     AS $$
-  SELECT
-    COALESCE(
-      (
-        SELECT length(u.encrypted_password) > 0
-        FROM auth.users u
-        WHERE u.id = auth.uid()
-      ),
-      false
-    );
+BEGIN
+  UPDATE auth.users
+  SET
+    email_change = '',
+    email_change_token_new = '',
+    email_change_token_current = '',
+    email_change_confirm_status = 0,
+    email_change_sent_at = NULL
+  WHERE id = auth.uid();
+END;
 $$;
 
 
-ALTER FUNCTION "public"."has_password"() OWNER TO "postgres";
+ALTER FUNCTION "public"."cancel_email_change"() OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."get_email_change_status"() RETURNS TABLE("new_email" "text", "confirm_status" smallint)
+    LANGUAGE "sql" STABLE SECURITY DEFINER
+    SET "search_path" TO ''
+    AS $$
+  SELECT
+    u.email_change::text AS new_email,
+    u.email_change_confirm_status AS confirm_status
+  FROM auth.users u
+  WHERE u.id = auth.uid()
+    AND u.email_change IS NOT NULL
+    AND u.email_change <> '';
+$$;
+
+
+ALTER FUNCTION "public"."get_email_change_status"() OWNER TO "postgres";
 
 
 CREATE OR REPLACE FUNCTION "public"."handle_new_user"() RETURNS "trigger"
@@ -100,6 +113,25 @@ $$;
 
 
 ALTER FUNCTION "public"."handle_new_user"() OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."has_password"() RETURNS boolean
+    LANGUAGE "sql" STABLE SECURITY DEFINER
+    SET "search_path" TO ''
+    AS $$
+  SELECT
+    COALESCE(
+      (
+        SELECT length(u.encrypted_password) > 0
+        FROM auth.users u
+        WHERE u.id = auth.uid()
+      ),
+      false
+    );
+$$;
+
+
+ALTER FUNCTION "public"."has_password"() OWNER TO "postgres";
 
 
 CREATE OR REPLACE FUNCTION "public"."prevent_clearing_required_fields"() RETURNS "trigger"
@@ -135,6 +167,26 @@ $$;
 
 
 ALTER FUNCTION "public"."set_updated_at"() OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."verify_password"("current_plain_password" "text") RETURNS boolean
+    LANGUAGE "plpgsql" STABLE SECURITY DEFINER
+    SET "search_path" TO ''
+    AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1
+    FROM auth.users
+    WHERE id = auth.uid()
+      AND encrypted_password IS NOT NULL
+      AND encrypted_password <> ''
+      AND encrypted_password = crypt(current_plain_password, encrypted_password)
+  );
+END;
+$$;
+
+
+ALTER FUNCTION "public"."verify_password"("current_plain_password" "text") OWNER TO "postgres";
 
 SET default_tablespace = '';
 
@@ -464,15 +516,26 @@ GRANT USAGE ON SCHEMA "public" TO "service_role";
 
 
 
-REVOKE EXECUTE ON FUNCTION "public"."has_password"() FROM "anon";
-GRANT EXECUTE ON FUNCTION "public"."has_password"() TO "authenticated";
-GRANT EXECUTE ON FUNCTION "public"."has_password"() TO "service_role";
+GRANT ALL ON FUNCTION "public"."cancel_email_change"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."cancel_email_change"() TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."get_email_change_status"() TO "anon";
+GRANT ALL ON FUNCTION "public"."get_email_change_status"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."get_email_change_status"() TO "service_role";
 
 
 
 GRANT ALL ON FUNCTION "public"."handle_new_user"() TO "anon";
 GRANT ALL ON FUNCTION "public"."handle_new_user"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."handle_new_user"() TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."has_password"() TO "anon";
+GRANT ALL ON FUNCTION "public"."has_password"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."has_password"() TO "service_role";
 
 
 
@@ -485,6 +548,12 @@ GRANT ALL ON FUNCTION "public"."prevent_clearing_required_fields"() TO "service_
 GRANT ALL ON FUNCTION "public"."set_updated_at"() TO "anon";
 GRANT ALL ON FUNCTION "public"."set_updated_at"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."set_updated_at"() TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."verify_password"("current_plain_password" "text") TO "anon";
+GRANT ALL ON FUNCTION "public"."verify_password"("current_plain_password" "text") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."verify_password"("current_plain_password" "text") TO "service_role";
 
 
 
@@ -602,10 +671,6 @@ ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TAB
 CREATE OR REPLACE TRIGGER "on_auth_user_created" AFTER INSERT ON "auth"."users" FOR EACH ROW EXECUTE FUNCTION "public"."handle_new_user"();
 
 
-
-INSERT INTO "storage"."buckets" ("id", "name", "public", "file_size_limit", "allowed_mime_types")
-VALUES ('avatars', 'avatars', true, 5242880, ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
-ON CONFLICT ("id") DO NOTHING;
 
 CREATE POLICY "Avatars are publicly readable" ON "storage"."objects" FOR SELECT USING (("bucket_id" = 'avatars'::"text"));
 
