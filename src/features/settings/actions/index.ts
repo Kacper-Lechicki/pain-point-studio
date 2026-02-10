@@ -1,3 +1,4 @@
+export { cancelEmailChange } from './cancel-email-change';
 export { completeProfile } from './complete-profile';
 export { deleteAccount } from './delete-account';
 export { getProfile } from './get-profile';

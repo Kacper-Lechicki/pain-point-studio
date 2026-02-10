@@ -68,7 +68,13 @@ const SettingsPage = ({ profile }: SettingsPageProps) => {
 
   const sectionContent: Record<SettingsSectionValue, React.ReactNode> = {
     profile: <ProfileForm profile={profile} />,
-    email: <EmailForm currentEmail={profile.email} />,
+    email: (
+      <EmailForm
+        currentEmail={profile.email}
+        pendingEmail={profile.pendingEmail}
+        emailChangeConfirmStatus={profile.emailChangeConfirmStatus}
+      />
+    ),
     password: <PasswordForm hasPassword={profile.hasPassword} />,
     appearance: <AppearanceSection />,
     connectedAccounts: (
