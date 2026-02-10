@@ -1,7 +1,3 @@
-/**
- * Maps known Supabase error messages to i18n translation keys.
- * Prevents leaking internal error details to the client.
- */
 const SUPABASE_ERROR_MAP: Record<string, string> = {
   'Invalid login credentials': 'auth.errors.invalidCredentials',
   'Email not confirmed': 'auth.errors.emailNotConfirmed',

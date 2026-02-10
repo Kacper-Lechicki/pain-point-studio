@@ -3,9 +3,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ROUTES } from '@/config';
 import { createClient } from '@/lib/supabase/server';
 
-/**
- * Validates that a redirect path is safe (relative, no open redirect).
- */
 function getSafeRedirectPath(next: string | null, fallback: string): string {
   if (!next || !next.startsWith('/') || next.startsWith('//')) {
     return fallback;
@@ -52,7 +49,6 @@ export async function GET(
 
       const redirectUrl = new URL(redirectPath, request.url);
 
-      // Add toast param for dashboard redirects (email confirmation or OAuth sign-in)
       if (redirectPath === fallbackPath) {
         const toastKey = type === 'signup' ? 'emailConfirmed' : 'signInSuccess';
 

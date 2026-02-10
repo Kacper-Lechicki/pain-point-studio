@@ -96,7 +96,7 @@ const PasswordForm = ({ hasPassword }: PasswordFormProps) => {
                   <FormLabel>{t('settings.password.currentPassword')}</FormLabel>
 
                   <FormControl>
-                    <PasswordInput {...field} />
+                    <PasswordInput autoComplete="current-password" {...field} />
                   </FormControl>
 
                   <FormMessage />
@@ -113,7 +113,7 @@ const PasswordForm = ({ hasPassword }: PasswordFormProps) => {
                 <FormLabel>{t('settings.password.newPassword')}</FormLabel>
 
                 <FormControl>
-                  <PasswordInput {...field} />
+                  <PasswordInput autoComplete="new-password" {...field} />
                 </FormControl>
 
                 <PasswordStrength password={password} isError={!!form.formState.errors.password} />
@@ -129,7 +129,7 @@ const PasswordForm = ({ hasPassword }: PasswordFormProps) => {
                 <FormLabel>{t('settings.password.confirmPassword')}</FormLabel>
 
                 <FormControl>
-                  <PasswordInput {...field} />
+                  <PasswordInput autoComplete="new-password" {...field} />
                 </FormControl>
 
                 <FormMessage />

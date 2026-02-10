@@ -23,7 +23,6 @@ export const SIDEBAR_NAV: NavGroup[] = [
   },
 ];
 
-/** Pinned to bottom of sidebar, above the pin button */
 export const SIDEBAR_BOTTOM_ITEM: NavItem = {
   labelKey: 'sidebar.settings',
   icon: Settings,

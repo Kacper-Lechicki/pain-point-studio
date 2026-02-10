@@ -3,11 +3,8 @@ import { headers } from 'next/headers';
 import { env } from '@/lib/common/env';
 
 export interface RateLimitConfig {
-  /** Unique identifier for this rate limit (e.g. 'sign-in', 'reset-password') */
   key: string;
-  /** Maximum number of requests allowed in the window */
   limit: number;
-  /** Time window in seconds */
   windowSeconds: number;
 }
 
@@ -88,11 +85,4 @@ class InMemoryRateLimiter implements RateLimiter {
 
 const limiter = new InMemoryRateLimiter();
 
-/**
- * Simple in-memory rate limiter for server actions.
- * Uses IP address + action key for tracking.
- *
- * Sufficient for single-instance MVP deployments.
- * For multi-instance, swap `InMemoryRateLimiter` with a Redis-based implementation.
- */
 export const rateLimit = (config: RateLimitConfig) => limiter.check(config);

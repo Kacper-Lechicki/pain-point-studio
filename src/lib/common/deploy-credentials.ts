@@ -2,10 +2,6 @@ import { NextRequest } from 'next/server';
 
 import { env } from '@/lib/common/env';
 
-/**
- * Checks if the Basic Auth protection should be enabled.
- * It is enabled only in production and if the required environment variables are set.
- */
 export function isProtectionEnabled(): boolean {
   const isProduction = env.NODE_ENV === 'production';
   const hasAuthEnv = !!(env.BASIC_AUTH_USER && env.BASIC_AUTH_PASSWORD);
@@ -13,9 +9,6 @@ export function isProtectionEnabled(): boolean {
   return isProduction && hasAuthEnv;
 }
 
-/**
- * Validates the Basic Auth credentials from the request headers.
- */
 export function isAuthenticated(req: NextRequest): boolean {
   const basicAuth = req.headers.get('authorization');
 

@@ -65,6 +65,7 @@ const EmailForm = ({ currentEmail }: EmailFormProps) => {
                   <Input
                     type="email"
                     placeholder={t('settings.email.newEmailPlaceholder')}
+                    autoComplete="email"
                     {...field}
                   />
                 </FormControl>

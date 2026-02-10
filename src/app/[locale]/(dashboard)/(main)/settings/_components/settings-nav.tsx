@@ -52,7 +52,11 @@ const SettingsNavSelect = ({ activeSection, onSectionChange }: SettingsNavProps)
   const t = useTranslations('settings.nav');
 
   return (
-    <Select value={activeSection} onValueChange={(v) => onSectionChange(v as SettingsSectionValue)}>
+    <Select
+      name="settings-section"
+      value={activeSection}
+      onValueChange={(v) => onSectionChange(v as SettingsSectionValue)}
+    >
       <SelectTrigger className="w-full" data-testid="settings-nav-select" aria-label={t('label')}>
         <SelectValue />
       </SelectTrigger>

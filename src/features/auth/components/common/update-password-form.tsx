@@ -63,7 +63,7 @@ const UpdatePasswordForm = () => {
               <FormLabel>{t('auth.newPassword')}</FormLabel>
 
               <FormControl>
-                <PasswordInput {...field} />
+                <PasswordInput autoComplete="new-password" {...field} />
               </FormControl>
 
               <PasswordStrength password={password} isError={!!form.formState.errors.password} />
@@ -79,7 +79,7 @@ const UpdatePasswordForm = () => {
               <FormLabel>{t('auth.confirmPassword')}</FormLabel>
 
               <FormControl>
-                <PasswordInput {...field} />
+                <PasswordInput autoComplete="new-password" {...field} />
               </FormControl>
 
               <FormMessage />

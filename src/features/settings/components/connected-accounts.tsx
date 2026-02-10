@@ -89,7 +89,7 @@ const ConnectedAccounts = ({ identities, hasPassword }: ConnectedAccountsProps) 
             </div>
           </div>
 
-          <Badge variant={hasPassword ? 'secondary' : 'outline'}>
+          <Badge variant="secondary" className="hidden sm:inline-flex">
             {hasPassword
               ? t('settings.connectedAccounts.connected')
               : t('settings.connectedAccounts.notConnected')}
@@ -123,24 +123,18 @@ const ConnectedAccounts = ({ identities, hasPassword }: ConnectedAccountsProps) 
 
               <div className="flex items-center gap-2">
                 {isConnected ? (
-                  <>
-                    <Badge variant="secondary" className="hidden sm:inline-flex">
-                      {t('settings.connectedAccounts.connected')}
-                    </Badge>
-
-                    <Button
-                      type="button"
-                      variant="ghostDestructive"
-                      size="icon-sm"
-                      disabled={!canUnlink || isBusy}
-                      onClick={() =>
-                        setUnlinkTarget({ identity: linkedIdentity, config: providerConfig })
-                      }
-                      aria-label={t('settings.connectedAccounts.disconnect')}
-                    >
-                      <Unlink className="size-4" aria-hidden="true" />
-                    </Button>
-                  </>
+                  <Button
+                    type="button"
+                    variant="ghostDestructive"
+                    size="icon-sm"
+                    disabled={!canUnlink || isBusy}
+                    onClick={() =>
+                      setUnlinkTarget({ identity: linkedIdentity, config: providerConfig })
+                    }
+                    aria-label={t('settings.connectedAccounts.disconnect')}
+                  >
+                    <Unlink className="size-4" aria-hidden="true" />
+                  </Button>
                 ) : (
                   <Button
                     type="button"
@@ -157,6 +151,12 @@ const ConnectedAccounts = ({ identities, hasPassword }: ConnectedAccountsProps) 
                     {t('settings.connectedAccounts.connect')}
                   </Button>
                 )}
+
+                <Badge variant="secondary" className="hidden sm:inline-flex">
+                  {isConnected
+                    ? t('settings.connectedAccounts.connected')
+                    : t('settings.connectedAccounts.notConnected')}
+                </Badge>
               </div>
             </div>
           );

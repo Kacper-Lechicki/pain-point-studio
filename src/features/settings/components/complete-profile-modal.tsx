@@ -89,6 +89,7 @@ const CompleteProfileModal = ({
                   <FormControl>
                     <Input
                       placeholder={t('settings.completeProfile.fullNamePlaceholder')}
+                      autoComplete="name"
                       {...field}
                     />
                   </FormControl>
@@ -105,7 +106,7 @@ const CompleteProfileModal = ({
                 <FormItem>
                   <FormLabel>{t('settings.completeProfile.role')}</FormLabel>
 
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select name="role" onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger
                         className="w-full"

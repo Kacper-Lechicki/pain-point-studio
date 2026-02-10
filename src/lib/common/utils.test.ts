@@ -63,7 +63,7 @@ describe('proxyImageUrl', () => {
     const url = 'https://lh3.googleusercontent.com/photo.jpg';
     const result = proxyImageUrl(url);
 
-    expect(result).toBe(`/_next/image?url=${encodeURIComponent(url)}&w=256&q=75`);
+    expect(result).toBe(`/_next/image?url=${encodeURIComponent(url)}&w=384&q=75`);
   });
 
   it('should accept custom width and quality', () => {

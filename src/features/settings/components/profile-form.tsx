@@ -115,7 +115,11 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
                 <FormItem>
                   <FormLabel>{t('settings.profile.fullName')}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t('settings.profile.fullNamePlaceholder')} {...field} />
+                    <Input
+                      placeholder={t('settings.profile.fullNamePlaceholder')}
+                      autoComplete="name"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -128,7 +132,7 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('settings.profile.role')}</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select name="role" onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger className="w-full" aria-label={t('settings.profile.role')}>
                         <SelectValue placeholder={t('settings.profile.rolePlaceholder')} />
@@ -232,7 +236,11 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
                       name={`socialLinks.${index}.label`}
                       render={({ field: labelField }) => (
                         <FormItem className="w-full">
-                          <Select onValueChange={labelField.onChange} value={labelField.value}>
+                          <Select
+                            name={`socialLinks.${index}.label`}
+                            onValueChange={labelField.onChange}
+                            value={labelField.value}
+                          >
                             <FormControl>
                               <SelectTrigger
                                 className="w-full"
@@ -264,6 +272,7 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
                           <FormControl>
                             <Input
                               placeholder={t('settings.profile.socialLinks.urlPlaceholder')}
+                              autoComplete="url"
                               className="w-full"
                               {...urlField}
                             />

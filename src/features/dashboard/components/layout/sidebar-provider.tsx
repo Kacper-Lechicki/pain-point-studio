@@ -48,21 +48,13 @@ function writePinned(next: boolean) {
 }
 
 interface SidebarContextValue {
-  /** Whether the sidebar is visually expanded (hovered or pinned) */
   isExpanded: boolean;
-  /** Whether the sidebar is locked open */
   isPinned: boolean;
-  /** Whether the mobile sheet is open */
   isMobileOpen: boolean;
-  /** Toggle pin state */
   togglePin: () => void;
-  /** Set mobile sheet open state */
   setMobileOpen: (open: boolean) => void;
-  /** Mouse enter handler for sidebar */
   handleMouseEnter: () => void;
-  /** Mouse leave handler for sidebar */
   handleMouseLeave: () => void;
-  /** Whether the viewport is at least lg */
   isDesktop: boolean;
 }
 

@@ -57,7 +57,7 @@ const SignInForm = () => {
               <FormLabel>{t('auth.email')}</FormLabel>
 
               <FormControl>
-                <Input placeholder={t('auth.emailPlaceholder')} {...field} />
+                <Input placeholder={t('auth.emailPlaceholder')} autoComplete="email" {...field} />
               </FormControl>
 
               <FormMessage />
@@ -73,7 +73,7 @@ const SignInForm = () => {
               <FormLabel>{t('auth.password')}</FormLabel>
 
               <FormControl>
-                <PasswordInput {...field} />
+                <PasswordInput autoComplete="current-password" {...field} />
               </FormControl>
 
               <FormMessage />

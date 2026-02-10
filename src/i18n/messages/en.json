@@ -159,7 +159,8 @@
   },
   "navbar": {
     "openMenu": "Open menu",
-    "projectPlaceholder": "My First Project"
+    "projectPlaceholder": "My First Project",
+    "selectProject": "Select project"
   },
   "marketing": {
     "hero": {

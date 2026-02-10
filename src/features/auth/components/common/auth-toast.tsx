@@ -15,10 +15,6 @@ function isValidToastKey(value: string): value is ToastKey {
   return (TOAST_KEYS as readonly string[]).includes(value);
 }
 
-/**
- * Reads a `toast` search param from the URL and shows a success toast.
- * Used after server-side redirects (e.g. OAuth callback, email confirmation).
- */
 const AuthToast = () => {
   const searchParams = useSearchParams();
   const t = useTranslations();

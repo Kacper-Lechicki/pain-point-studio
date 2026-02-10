@@ -1,8 +1,5 @@
 import { z } from 'zod';
 
-/**
- * Password validation constraints
- */
 export const PASSWORD_CONFIG = {
   MIN_LENGTH: 8,
   STRONG_LENGTH: 12,
@@ -16,9 +13,6 @@ export const PASSWORD_CONFIG = {
   },
 } as const;
 
-/**
- * Calculates password strength score from 0 to 5
- */
 export const calculatePasswordStrength = (password: string): number => {
   if (!password) {
     return 0;
@@ -53,10 +47,6 @@ export const calculatePasswordStrength = (password: string): number => {
   return Math.min(Math.floor(score * (5 / 6)), 5);
 };
 
-/**
- * Shared Zod schema for password field with all requirements.
- * Used in both auth (sign-up, update-password) and settings (change-password).
- */
 export const basePasswordSchema = z
   .string()
   .min(PASSWORD_CONFIG.MIN_LENGTH, 'auth.passwordRequirements')

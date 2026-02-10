@@ -201,6 +201,8 @@ const AvatarUpload = ({
       </div>
 
       <input
+        id="avatar-upload"
+        name="avatar"
         ref={fileInputRef}
         type="file"
         accept={AVATAR_ACCEPTED_TYPES.join(',')}

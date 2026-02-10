@@ -66,7 +66,7 @@ const ForgotPasswordForm = ({ header }: ForgotPasswordFormProps) => {
                 <FormLabel>{t('auth.email')}</FormLabel>
 
                 <FormControl>
-                  <Input placeholder={t('auth.emailPlaceholder')} {...field} />
+                  <Input placeholder={t('auth.emailPlaceholder')} autoComplete="email" {...field} />
                 </FormControl>
 
                 <FormMessage />

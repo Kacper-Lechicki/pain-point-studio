@@ -28,10 +28,11 @@ export function SidebarItem({ labelKey, icon: Icon, href, isExpanded }: SidebarI
   const link = (
     <Link
       href={href}
+      aria-label={label}
       className={`flex min-h-10 w-full items-center ${isExpanded ? 'justify-start' : 'justify-center'} rounded-lg border text-sm font-medium transition-colors md:min-h-9 ${color}`}
     >
       <div className="flex w-9 shrink-0 items-center justify-center">
-        <Icon className="size-4 shrink-0" />
+        <Icon className="size-4 shrink-0" aria-hidden />
       </div>
       <span
         className={`truncate whitespace-nowrap transition-opacity duration-200 ${isExpanded ? 'opacity-100' : 'opacity-0'}`}
