@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Spinner } from '@/components/ui/spinner';
 import { updateAvatarUrl } from '@/features/settings/actions';
+import { AvatarCropDialog } from '@/features/settings/components/avatar-crop-dialog';
 import { AVATAR_ACCEPTED_TYPES, AVATAR_MAX_SIZE } from '@/features/settings/config';
 import { proxyImageUrl } from '@/lib/common/utils';
 import { createClient } from '@/lib/supabase/client';
@@ -32,8 +33,10 @@ const AvatarUpload = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
+  const [cropDialogOpen, setCropDialogOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<{ src: string; type: string } | null>(null);
 
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
     if (!file) {
@@ -52,12 +55,40 @@ const AvatarUpload = ({
       return;
     }
 
+    const objectUrl = URL.createObjectURL(file);
+
+    setSelectedFile({ src: objectUrl, type: file.type });
+    setCropDialogOpen(true);
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleCropComplete = async (blob: Blob) => {
+    setCropDialogOpen(false);
+
+    if (selectedFile?.src) {
+      URL.revokeObjectURL(selectedFile.src);
+    }
+
+    setSelectedFile(null);
     setIsUploading(true);
 
     try {
       const supabase = createClient();
-      const ext = file.name.split('.').pop();
+      const ext = blob.type.split('/')[1] || 'jpg';
       const filePath = `${userId}/${Date.now()}.${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, blob, { upsert: true, contentType: blob.type });
+
+      if (uploadError) {
+        toast.error(t('errors.uploadFailed'));
+
+        return;
+      }
 
       if (currentUrl) {
         const oldPath = currentUrl.split('/avatars/')[1];
@@ -65,16 +96,6 @@ const AvatarUpload = ({
         if (oldPath) {
           await supabase.storage.from('avatars').remove([oldPath]);
         }
-      }
-
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(filePath, file, { upsert: true });
-
-      if (uploadError) {
-        toast.error(t('errors.uploadFailed'));
-
-        return;
       }
 
       const {
@@ -94,10 +115,15 @@ const AvatarUpload = ({
       toast.error(t('errors.uploadFailed'));
     } finally {
       setIsUploading(false);
+    }
+  };
 
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
+  const handleCropDialogChange = (open: boolean) => {
+    setCropDialogOpen(open);
+
+    if (!open && selectedFile?.src) {
+      URL.revokeObjectURL(selectedFile.src);
+      setSelectedFile(null);
     }
   };
 
@@ -175,6 +201,8 @@ const AvatarUpload = ({
       </div>
 
       <input
+        id="avatar-upload"
+        name="avatar"
         ref={fileInputRef}
         type="file"
         accept={AVATAR_ACCEPTED_TYPES.join(',')}
@@ -192,6 +220,16 @@ const AvatarUpload = ({
         description={t('profile.removeAvatarConfirmDescription')}
         confirmLabel={t('profile.removeAvatar')}
       />
+
+      {selectedFile && (
+        <AvatarCropDialog
+          open={cropDialogOpen}
+          onOpenChange={handleCropDialogChange}
+          imageSrc={selectedFile.src}
+          mimeType={selectedFile.type}
+          onCropComplete={handleCropComplete}
+        />
+      )}
     </div>
   );
 };

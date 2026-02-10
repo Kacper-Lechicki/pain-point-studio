@@ -17,17 +17,11 @@ const PUBLIC_ROUTES = [
   ROUTES.auth.updatePassword,
 ];
 
-// Auth routes that authenticated users should be redirected away from
 const AUTH_ROUTES = [ROUTES.auth.signIn, ROUTES.auth.signUp, ROUTES.auth.forgotPassword];
 
-/**
- * Extracts the pathname without the locale prefix.
- * E.g. "/en/dashboard" -> "/dashboard", "/en" -> "/"
- */
 function getPathnameWithoutLocale(pathname: string): string {
   const segments = pathname.split('/');
 
-  // Remove the locale segment (e.g. "/en/dashboard" -> ["", "en", "dashboard"])
   if (segments.length > 2) {
     return '/' + segments.slice(2).join('/');
   }
@@ -38,7 +32,6 @@ function getPathnameWithoutLocale(pathname: string): string {
 const middleware = async (req: NextRequest) => {
   const { response: supabaseResponse, user } = await updateSession(req);
 
-  // Basic auth protection for deploy gating (production only)
   if (isProtectionEnabled() && !isAuthenticated(req)) {
     return new NextResponse('Auth Required.', {
       status: 401,
@@ -55,14 +48,12 @@ const middleware = async (req: NextRequest) => {
     route === ROUTES.common.home ? pathname === ROUTES.common.home : pathname.startsWith(route)
   );
 
-  // Route protection: redirect unauthenticated users away from non-public routes
   if (!user && !isPublicRoute) {
     const signInUrl = new URL(`/${locale}${ROUTES.auth.signIn}`, req.url);
 
     return NextResponse.redirect(signInUrl);
   }
 
-  // Route protection: redirect authenticated users from home and auth pages to dashboard
   if (
     user &&
     (pathname === ROUTES.common.home || AUTH_ROUTES.some((route) => pathname.startsWith(route)))
@@ -72,7 +63,6 @@ const middleware = async (req: NextRequest) => {
     return NextResponse.redirect(dashboardUrl);
   }
 
-  // Run i18n middleware and propagate Supabase session cookies
   const i18nResponse = i18nMiddleware(req);
 
   supabaseResponse.cookies.getAll().forEach(({ name, value, ...options }) => {

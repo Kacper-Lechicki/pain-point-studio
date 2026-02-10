@@ -1,13 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 
-import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -18,17 +14,25 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
-import { Spinner } from '@/components/ui/spinner';
+import { SubmitButton } from '@/components/ui/submit-button';
 import { ROUTES } from '@/config';
 import { signInWithEmail } from '@/features/auth/actions';
 import { SignInSchema, signInSchema } from '@/features/auth/types';
+import { useFormAction } from '@/hooks/common/use-form-action';
 import { Link, useRouter } from '@/i18n/routing';
 import type { MessageKey } from '@/i18n/types';
 
 const SignInForm = () => {
   const t = useTranslations();
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+
+  const { isLoading, execute } = useFormAction({
+    successMessage: 'auth.signInSuccess' as MessageKey,
+    onSuccess: () => {
+      router.push(ROUTES.common.dashboard);
+      router.refresh();
+    },
+  });
 
   const form = useForm<SignInSchema>({
     resolver: zodResolver(signInSchema),
@@ -39,23 +43,7 @@ const SignInForm = () => {
   });
 
   async function onSubmit(data: SignInSchema) {
-    setIsLoading(true);
-
-    try {
-      const result = await signInWithEmail(data);
-
-      if (result.error) {
-        toast.error(t(result.error as MessageKey));
-        setIsLoading(false);
-      } else {
-        toast.success(t('auth.signInSuccess'));
-        router.push(ROUTES.common.dashboard);
-        router.refresh();
-      }
-    } catch {
-      toast.error(t('auth.unexpectedError'));
-      setIsLoading(false);
-    }
+    await execute(signInWithEmail, data);
   }
 
   return (
@@ -69,7 +57,7 @@ const SignInForm = () => {
               <FormLabel>{t('auth.email')}</FormLabel>
 
               <FormControl>
-                <Input placeholder={t('auth.emailPlaceholder')} {...field} />
+                <Input placeholder={t('auth.emailPlaceholder')} autoComplete="email" {...field} />
               </FormControl>
 
               <FormMessage />
@@ -85,12 +73,7 @@ const SignInForm = () => {
               <FormLabel>{t('auth.password')}</FormLabel>
 
               <FormControl>
-                <PasswordInput
-                  placeholder={t('auth.passwordPlaceholder')}
-                  showPasswordLabel={t('auth.showPassword')}
-                  hidePasswordLabel={t('auth.hidePassword')}
-                  {...field}
-                />
+                <PasswordInput autoComplete="current-password" {...field} />
               </FormControl>
 
               <FormMessage />
@@ -107,10 +90,9 @@ const SignInForm = () => {
           </Link>
         </div>
 
-        <Button type="submit" className="mt-2 w-full font-semibold" disabled={isLoading}>
-          {isLoading && <Spinner />}
+        <SubmitButton isLoading={isLoading} className="mt-2 w-full font-semibold">
           {t('auth.signInWithEmail')}
-        </Button>
+        </SubmitButton>
       </form>
     </Form>
   );

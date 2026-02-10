@@ -15,6 +15,10 @@ export const ROUTES = {
     dashboard: '/dashboard' as AppRoute,
     settings: '/settings' as AppRoute,
   },
+  dashboard: {
+    surveys: '/dashboard/surveys' as AppRoute,
+    analytics: '/dashboard/analytics' as AppRoute,
+  },
   profile: {
     preview: '/profile/preview' as AppRoute,
   },
@@ -29,8 +33,6 @@ export const ROUTES = {
 export const SIBLING_GROUPS: readonly (readonly AppRoute[])[] = [
   [ROUTES.auth.signIn, ROUTES.auth.signUp, ROUTES.auth.forgotPassword],
 ];
-
-// ── Settings section ↔ URL hash mapping ──────────────────────────
 
 export const SETTINGS_SECTION_VALUES = [
   'profile',

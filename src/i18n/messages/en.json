@@ -141,6 +141,27 @@
     "empty": "No research missions yet",
     "startResearch": "Start Research"
   },
+  "sidebar": {
+    "home": "Home",
+    "surveys": "Surveys",
+    "analytics": "Analytics",
+    "settings": "Settings",
+    "pinSidebar": "Pin sidebar",
+    "unpinSidebar": "Unpin sidebar"
+  },
+  "breadcrumbs": {
+    "dashboard": "Dashboard",
+    "surveys": "Surveys",
+    "analytics": "Analytics",
+    "settings": "Settings",
+    "profile": "Profile",
+    "preview": "Preview"
+  },
+  "navbar": {
+    "openMenu": "Open menu",
+    "projectPlaceholder": "My First Project",
+    "selectProject": "Select project"
+  },
   "marketing": {
     "hero": {
       "badge": "Stop Building Things Nobody Needs",
@@ -383,11 +404,16 @@
       "bioCounter": "{count}/{max}",
       "previewProfile": "Preview Profile",
       "saveProfile": "Save Profile",
-      "profileUpdated": "Profile updated.",
-      "avatarUpdated": "Profile photo updated.",
-      "avatarRemoved": "Profile photo removed.",
+      "profileUpdated": "Profile updated",
+      "avatarUpdated": "Profile photo updated",
+      "avatarRemoved": "Profile photo removed",
       "removeAvatarConfirmTitle": "Remove profile photo?",
       "removeAvatarConfirmDescription": "Your profile photo will be permanently removed.",
+      "cropAvatar": "Crop Photo",
+      "cropAvatarDescription": "Drag to reposition. Scroll to zoom in or out.",
+      "cropZoom": "Zoom",
+      "cropConfirm": "Apply",
+      "cropCancel": "Cancel",
       "socialLinks": {
         "title": "Social Links",
         "description": "Add up to 5 links to your social profiles or repositories.",
@@ -427,13 +453,29 @@
       "newPassword": "New Password",
       "confirmPassword": "Confirm New Password",
       "savePassword": "Update Password",
-      "passwordUpdated": "Password updated."
+      "passwordUpdated": "Password updated"
     },
     "connectedAccounts": {
       "title": "Connected Accounts",
-      "description": "OAuth providers linked to your account.",
+      "description": "Manage OAuth providers linked to your account.",
       "connected": "Connected",
-      "noAccounts": "No external accounts connected."
+      "notConnected": "Not connected",
+      "connect": "Connect",
+      "noAccounts": "No external accounts connected.",
+      "disconnect": "Disconnect",
+      "confirmDisconnectTitle": "Disconnect {provider}?",
+      "confirmDisconnectDescription": "You will no longer be able to sign in with {provider}. You can re-link it later from this page.",
+      "disconnected": "Account disconnected successfully.",
+      "passwordSet": "Password login enabled",
+      "passwordNotSet": "No password set",
+      "cannotUnlinkHint": "Set a password or link another account before disconnecting your only login method.",
+      "cannotUnlinkOnlyOAuth": "Link another account before disconnecting your only OAuth provider.",
+      "errors": {
+        "cannotUnlinkLast": "Cannot disconnect your only login method.",
+        "identityNotFound": "Identity not found.",
+        "unlinkFailed": "Failed to disconnect account. Please try again.",
+        "linkFailed": "Failed to link account. Please try again."
+      }
     },
     "dangerZone": {
       "title": "Danger Zone",
@@ -460,7 +502,7 @@
       "invalidUrl": "Please enter a valid URL.",
       "invalidData": "Please check your input and try again.",
       "nameTooLong": "Name must be 100 characters or less.",
-      "bioTooLong": "Bio must be 200 characters or less.",
+      "bioTooLong": "Bio must be 500 characters or less.",
       "invalidEmail": "Please enter a valid email address.",
       "currentPasswordIncorrect": "Current password is incorrect.",
       "passwordsMismatch": "Passwords do not match.",

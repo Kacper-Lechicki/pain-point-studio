@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
+import { SettingsSectionHeader } from '@/features/settings/components/settings-section-header';
 import { ACCENT_OPTIONS, type Accent, useAccent } from '@/hooks/common/use-accent';
 import { cn } from '@/lib/common/utils';
 
@@ -17,10 +18,7 @@ const AppearanceSection = () => {
 
   return (
     <section className="space-y-8">
-      <div className="border-border/40 space-y-1 border-b pb-6">
-        <h2 className="text-lg font-semibold">{t('title')}</h2>
-        <p className="text-muted-foreground text-sm">{t('description')}</p>
-      </div>
+      <SettingsSectionHeader title={t('title')} description={t('description')} />
 
       <div className="space-y-3">
         <p className="text-sm font-medium">{t('accentColor')}</p>
@@ -36,7 +34,7 @@ const AppearanceSection = () => {
                 'flex min-h-10 items-center gap-2.5 rounded-lg border px-4 py-2 text-sm font-medium transition-colors md:min-h-9',
                 accent === option
                   ? 'border-primary bg-primary/5 text-foreground'
-                  : 'border-border text-muted-foreground md:hover:bg-accent md:hover:text-accent-foreground'
+                  : 'border-border text-muted-foreground md:hover:bg-accent md:hover:text-foreground'
               )}
             >
               <span className={cn('size-3.5 rounded-full', ACCENT_PREVIEW[option])} />

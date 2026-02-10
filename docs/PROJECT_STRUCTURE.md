@@ -30,17 +30,24 @@ src/
 │
 ├── features/                   # 4. Domain Logic (Feature-First)
 │   ├── auth/                   # Auth Domain
-│   │   ├── actions/            # Server actions
-│   │   ├── components/         # Feature-specific components
+│   │   ├── actions/            # Server actions (sign-in, sign-up, etc.)
+│   │   ├── components/common/  # Shared auth components (AuthSuccessMessage, forms)
 │   │   ├── config/             # Feature constants
 │   │   ├── hooks/              # Feature hooks
 │   │   └── types/              # Feature-specific types
 │   ├── dashboard/              # Dashboard Domain
-│   │   └── components/         # Feature-specific components
-│   └── marketing/              # Marketing Domain
-│       ├── components/         # Feature-specific components
-│       ├── config/             # Feature constants
-│       └── types/              # Feature-specific types
+│   │   ├── components/layout/  # Layout components (sidebar, mobile-nav, SidebarNavList)
+│   │   └── config/             # Navigation config
+│   ├── marketing/              # Marketing Domain
+│   │   ├── components/         # Feature-specific components
+│   │   ├── config/             # Feature constants
+│   │   └── types/              # Feature-specific types
+│   ├── profile/                # Profile Domain
+│   │   └── components/         # Profile header, avatar
+│   └── settings/               # Settings Domain
+│       ├── actions/            # Server actions (withProtectedAction pattern)
+│       ├── components/         # Settings forms and section headers
+│       └── types/              # Settings-specific types
 │
 ├── hooks/                      # 5. Shared React Hooks
 │
@@ -51,17 +58,23 @@ src/
 │   └── routing.ts              # Navigation wrappers
 │
 ├── lib/                        # 7. Core Utilities & Infrastructure
-│   ├── supabase/               # Database client
-│   ├── common/env.ts           # Environment validation (Zod + t3-env)
-│   ├── utils.ts                # Helper functions (cn, formatters)
-│   └── deploy-credentials.ts   # Deployment helpers
+│   ├── supabase/               # Database client wrappers
+│   └── common/                 # Shared utilities
+│       ├── env.ts              # Environment validation (Zod + t3-env)
+│       ├── utils.ts            # Helpers (cn, getInitials, proxyImageUrl)
+│       ├── with-protected-action.ts  # HOF for server action boilerplate
+│       ├── rate-limit.ts       # In-memory rate limiter
+│       └── types.ts            # ActionResult type
 │
 ├── proxy.ts                    # Next.js 16 i18n proxy
 │
 e2e/                            # 9. E2E Tests (Playwright)
-├── auth.spec.ts
-├── env.ts                      # Playwright specific env vars
-└── example.spec.ts
+├── helpers/                    # Test infrastructure
+│   ├── auth.ts                 # Auth helpers (signIn, ensureUser)
+│   ├── env.ts                  # Playwright env vars (local-only safety guard)
+│   └── supabase-admin.ts       # Admin client for test setup
+├── auth.spec.ts                # Auth flow tests
+└── settings.spec.ts            # Settings flow tests
 ```
 
 ---

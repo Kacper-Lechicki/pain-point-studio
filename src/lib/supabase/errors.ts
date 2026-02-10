@@ -1,7 +1,3 @@
-/**
- * Maps known Supabase error messages to i18n translation keys.
- * Prevents leaking internal error details to the client.
- */
 const SUPABASE_ERROR_MAP: Record<string, string> = {
   'Invalid login credentials': 'auth.errors.invalidCredentials',
   'Email not confirmed': 'auth.errors.emailNotConfirmed',
@@ -13,17 +9,17 @@ const SUPABASE_ERROR_MAP: Record<string, string> = {
   'Unable to validate email address: invalid format': 'auth.errors.invalidEmail',
   'Signups not allowed for this instance': 'auth.errors.signupsDisabled',
   'Email link is invalid or has expired': 'auth.errors.linkExpired',
+  'Identity not found': 'settings.connectedAccounts.errors.identityNotFound',
+  'User must have at least one identity': 'settings.connectedAccounts.errors.cannotUnlinkLast',
 };
 
 export function mapSupabaseError(supabaseMessage: string): string {
-  // Exact match first
   const exactMatch = SUPABASE_ERROR_MAP[supabaseMessage];
 
   if (exactMatch) {
     return exactMatch;
   }
 
-  // Partial match for messages that contain variable parts (e.g. rate limit timers)
   for (const [pattern, key] of Object.entries(SUPABASE_ERROR_MAP)) {
     if (supabaseMessage.startsWith(pattern)) {
       return key;

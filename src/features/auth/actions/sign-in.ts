@@ -5,11 +5,11 @@ import { redirect } from 'next/navigation';
 import { getLocale } from 'next-intl/server';
 import { z } from 'zod';
 
-import { mapAuthError } from '@/features/auth/config';
 import { AuthProvider, signInSchema } from '@/features/auth/types';
 import { env } from '@/lib/common/env';
 import { rateLimit } from '@/lib/common/rate-limit';
 import { ActionResult } from '@/lib/common/types';
+import { mapSupabaseError } from '@/lib/supabase/errors';
 import { createClient } from '@/lib/supabase/server';
 
 export const signInWithEmail = async (
@@ -34,7 +34,7 @@ export const signInWithEmail = async (
   });
 
   if (error) {
-    return { error: mapAuthError(error.message) };
+    return { error: mapSupabaseError(error.message) };
   }
 
   return { success: true };
@@ -52,7 +52,7 @@ export const signInWithOAuth = async (provider: AuthProvider): Promise<{ error: 
   });
 
   if (error) {
-    return { error: mapAuthError(error.message) };
+    return { error: mapSupabaseError(error.message) };
   }
 
   if (data.url) {

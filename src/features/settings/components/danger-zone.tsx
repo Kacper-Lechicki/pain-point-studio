@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { DeleteAccountDialog } from '@/features/settings/components/delete-account-dialog';
+import { SettingsSectionHeader } from '@/features/settings/components/settings-section-header';
 
 interface DangerZoneProps {
   userEmail: string;
@@ -19,10 +20,11 @@ const DangerZone = ({ userEmail }: DangerZoneProps) => {
   return (
     <>
       <section className="space-y-8">
-        <div className="border-destructive/20 space-y-1 border-b pb-6">
-          <h2 className="text-destructive text-lg font-semibold">{t('title')}</h2>
-          <p className="text-destructive text-sm">{t('description')}</p>
-        </div>
+        <SettingsSectionHeader
+          title={t('title')}
+          description={t('description')}
+          variant="destructive"
+        />
 
         <div className="border-destructive/30 bg-destructive/5 rounded-lg border px-4 py-4">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4">

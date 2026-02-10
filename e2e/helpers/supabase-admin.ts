@@ -1,6 +1,6 @@
 import { type SupabaseClient, createClient } from '@supabase/supabase-js';
 
-import { env } from '../env';
+import { env } from './env';
 
 let _admin: SupabaseClient | null = null;
 
@@ -99,7 +99,6 @@ export async function deleteUserByEmail(email: string): Promise<void> {
   while (true) {
     const { data } = await admin.auth.admin.listUsers({ page, perPage: 50 });
     const users = data?.users ?? [];
-
     const user = users.find((u) => u.email === email);
 
     if (user) {

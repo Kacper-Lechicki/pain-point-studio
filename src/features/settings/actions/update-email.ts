@@ -1,41 +1,21 @@
 'use server';
 
-import { mapAuthError } from '@/features/auth/config';
-import { UpdateEmailSchema, updateEmailSchema } from '@/features/settings/types';
-import { rateLimit } from '@/lib/common/rate-limit';
-import { ActionResult } from '@/lib/common/types';
-import { createClient } from '@/lib/supabase/server';
+import { updateEmailSchema } from '@/features/settings/types';
+import { withProtectedAction } from '@/lib/common/with-protected-action';
+import { mapSupabaseError } from '@/lib/supabase/errors';
 
-export const updateEmail = async (formData: UpdateEmailSchema): Promise<ActionResult> => {
-  const { limited } = await rateLimit({ key: 'update-email', limit: 3, windowSeconds: 3600 });
+export const updateEmail = withProtectedAction('update-email', {
+  schema: updateEmailSchema,
+  rateLimit: { limit: 3, windowSeconds: 3600 },
+  action: async ({ data, supabase }) => {
+    const { error } = await supabase.auth.updateUser({
+      email: data.email,
+    });
 
-  if (limited) {
-    return { error: 'settings.errors.rateLimitExceeded' };
-  }
+    if (error) {
+      return { error: mapSupabaseError(error.message) };
+    }
 
-  const validation = updateEmailSchema.safeParse(formData);
-
-  if (!validation.success) {
-    return { error: 'settings.errors.invalidData' };
-  }
-
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return { error: 'settings.errors.unexpected' };
-  }
-
-  const { error } = await supabase.auth.updateUser({
-    email: validation.data.email,
-  });
-
-  if (error) {
-    return { error: mapAuthError(error.message) };
-  }
-
-  return { success: true };
-};
+    return { success: true };
+  },
+});

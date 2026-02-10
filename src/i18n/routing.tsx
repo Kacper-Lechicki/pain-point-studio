@@ -1,4 +1,3 @@
-// Barrel re-export — consumers keep using `import { ... } from '@/i18n/routing'`
 export {
   routing,
   BaseLink,

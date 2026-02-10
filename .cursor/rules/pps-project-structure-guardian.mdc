@@ -135,7 +135,9 @@ src/
 └── proxy.ts                    # Next.js 16 i18n proxy
 
 e2e/                            # E2E tests (Playwright)
-└── example.spec.ts
+├── helpers/                    # Test infra (auth, env, supabase-admin)
+├── auth.spec.ts
+└── settings.spec.ts
 ```
 
 ### Common Issues & Fixes
@@ -309,6 +311,9 @@ PPS values velocity with discipline. Feature-First structure enables rapid itera
 | Feature type        | `features/[domain]/types/`       | `research.ts`           |
 | Core utility        | `lib/`                           | `utils.ts`, `format.ts` |
 | Feature utility     | `features/[domain]/lib/`         | `research-utils.ts`     |
+| Server action HOF   | `lib/common/`                    | `with-protected-action.ts` |
+| Shared auth UI      | `features/auth/components/common/` | `auth-success-message.tsx` |
+| Layout component    | `features/[domain]/components/layout/` | `sidebar-nav-list.tsx` |
 
 ### What NOT to Do
 

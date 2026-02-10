@@ -1,13 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 
-import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -16,11 +12,12 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { InfoHint } from '@/components/ui/info-hint';
 import { Input } from '@/components/ui/input';
-import { Spinner } from '@/components/ui/spinner';
+import { SubmitButton } from '@/components/ui/submit-button';
 import { updateEmail } from '@/features/settings/actions';
+import { SettingsSectionHeader } from '@/features/settings/components/settings-section-header';
 import { UpdateEmailSchema, updateEmailSchema } from '@/features/settings/types';
+import { useFormAction } from '@/hooks/common/use-form-action';
 import type { MessageKey } from '@/i18n/types';
 
 interface EmailFormProps {
@@ -29,7 +26,11 @@ interface EmailFormProps {
 
 const EmailForm = ({ currentEmail }: EmailFormProps) => {
   const t = useTranslations();
-  const [isLoading, setIsLoading] = useState(false);
+
+  const { isLoading, execute } = useFormAction({
+    successMessage: 'settings.email.emailUpdateSent' as MessageKey,
+    unexpectedErrorMessage: 'settings.errors.unexpected' as MessageKey,
+  });
 
   const form = useForm<UpdateEmailSchema>({
     resolver: zodResolver(updateEmailSchema),
@@ -39,37 +40,17 @@ const EmailForm = ({ currentEmail }: EmailFormProps) => {
   });
 
   async function onSubmit(data: UpdateEmailSchema) {
-    setIsLoading(true);
-
-    try {
-      const result = await updateEmail(data);
-
-      if (result.error) {
-        toast.error(t(result.error as MessageKey));
-      } else {
-        toast.success(t('settings.email.emailUpdateSent'));
-      }
-    } catch {
-      toast.error(t('settings.errors.unexpected'));
-    } finally {
-      setIsLoading(false);
-    }
+    await execute(updateEmail, data);
   }
 
   return (
     <section className="space-y-8">
-      <div className="border-border/40 space-y-1 border-b pb-6">
-        <div className="flex items-center gap-2">
-          <h2 className="text-lg font-semibold">{t('settings.email.title')}</h2>
-
-          <InfoHint
-            content={t('settings.email.doubleConfirmHint')}
-            dialogTitle={t('settings.email.title')}
-          />
-        </div>
-
-        <p className="text-muted-foreground text-sm">{t('settings.email.description')}</p>
-      </div>
+      <SettingsSectionHeader
+        title={t('settings.email.title')}
+        description={t('settings.email.description')}
+        hintContent={t('settings.email.doubleConfirmHint')}
+        hintDialogTitle={t('settings.email.title')}
+      />
 
       <Form {...form}>
         <form id="email-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -84,6 +65,7 @@ const EmailForm = ({ currentEmail }: EmailFormProps) => {
                   <Input
                     type="email"
                     placeholder={t('settings.email.newEmailPlaceholder')}
+                    autoComplete="email"
                     {...field}
                   />
                 </FormControl>
@@ -94,10 +76,9 @@ const EmailForm = ({ currentEmail }: EmailFormProps) => {
           />
 
           <div className="flex justify-end">
-            <Button type="submit" form="email-form" disabled={isLoading}>
-              {isLoading && <Spinner />}
+            <SubmitButton isLoading={isLoading} form="email-form">
               {t('settings.email.saveEmail')}
-            </Button>
+            </SubmitButton>
           </div>
         </form>
       </Form>

@@ -7,11 +7,6 @@ import { ACCENT_OPTIONS, DEFAULT_ACCENT } from '@/hooks/common/use-accent';
 const STORAGE_KEY = 'accent';
 const ATTRIBUTE = 'data-accent';
 
-/**
- * Reads accent preference from localStorage and applies
- * the data-accent attribute on <html>. Mounted once in the
- * root layout so the attribute is set on every page.
- */
 const AccentInit = () => {
   useEffect(() => {
     try {

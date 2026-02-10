@@ -6,7 +6,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, Plus, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
@@ -27,15 +26,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Spinner } from '@/components/ui/spinner';
+import { SubmitButton } from '@/components/ui/submit-button';
 import { Textarea } from '@/components/ui/textarea';
 import { ROUTES } from '@/config';
 import { ProfileData, updateProfile } from '@/features/settings/actions';
 import { AvatarUpload } from '@/features/settings/components/avatar-upload';
+import { SettingsSectionHeader } from '@/features/settings/components/settings-section-header';
 import { BIO_MAX_LENGTH, MAX_SOCIAL_LINKS } from '@/features/settings/config';
 import { UpdateProfileSchema, updateProfileSchema } from '@/features/settings/types';
+import { useFormAction } from '@/hooks/common/use-form-action';
 import { Link } from '@/i18n/routing';
 import type { MessageKey } from '@/i18n/types';
+import { getInitials } from '@/lib/common/utils';
 
 interface ProfileFormProps {
   profile: ProfileData;
@@ -43,9 +45,13 @@ interface ProfileFormProps {
 
 const ProfileForm = ({ profile }: ProfileFormProps) => {
   const t = useTranslations();
-  const [isLoading, setIsLoading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState(profile.avatarUrl);
   const [removeLinkIndex, setRemoveLinkIndex] = useState<number | null>(null);
+
+  const { isLoading, execute } = useFormAction({
+    successMessage: 'settings.profile.profileUpdated' as MessageKey,
+    unexpectedErrorMessage: 'settings.errors.unexpected' as MessageKey,
+  });
 
   const form = useForm<UpdateProfileSchema>({
     resolver: zodResolver(updateProfileSchema),
@@ -71,50 +77,26 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
     name: 'socialLinks',
   });
 
-  const bioValue = form.watch('bio') ?? '';
-
-  const fallbackInitials = profile.fullName
-    ? profile.fullName
-        .split(' ')
-        .map((n) => n[0])
-        .join('')
-        .toUpperCase()
-        .slice(0, 2)
-    : profile.email.slice(0, 2).toUpperCase();
+  const fallbackInitials = getInitials(profile.fullName, profile.email);
 
   async function onSubmit(data: UpdateProfileSchema) {
-    setIsLoading(true);
-
-    try {
-      const result = await updateProfile(data);
-
-      if (result.error) {
-        toast.error(t(result.error as MessageKey));
-      } else {
-        toast.success(t('settings.profile.profileUpdated'));
-      }
-    } catch {
-      toast.error(t('settings.errors.unexpected'));
-    } finally {
-      setIsLoading(false);
-    }
+    await execute(updateProfile, data);
   }
 
   return (
     <section className="space-y-8">
-      <div className="border-border/40 flex flex-wrap items-start justify-between gap-3 border-b pb-6">
-        <div className="space-y-1">
-          <h2 className="text-lg font-semibold">{t('settings.profile.title')}</h2>
-          <p className="text-muted-foreground text-sm">{t('settings.profile.description')}</p>
-        </div>
-
-        <Button type="button" variant="outline" asChild className="shrink-0">
-          <Link href={ROUTES.profile.preview}>
-            <Eye className="size-4" />
-            {t('settings.profile.previewProfile')}
-          </Link>
-        </Button>
-      </div>
+      <SettingsSectionHeader
+        title={t('settings.profile.title')}
+        description={t('settings.profile.description')}
+        action={
+          <Button type="button" variant="outline" asChild className="shrink-0">
+            <Link href={ROUTES.profile.preview}>
+              <Eye className="size-4" />
+              {t('settings.profile.previewProfile')}
+            </Link>
+          </Button>
+        }
+      />
 
       <div className="space-y-6">
         <AvatarUpload
@@ -132,11 +114,13 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('settings.profile.fullName')}</FormLabel>
-
                   <FormControl>
-                    <Input placeholder={t('settings.profile.fullNamePlaceholder')} {...field} />
+                    <Input
+                      placeholder={t('settings.profile.fullNamePlaceholder')}
+                      autoComplete="name"
+                      {...field}
+                    />
                   </FormControl>
-
                   <FormMessage />
                 </FormItem>
               )}
@@ -148,14 +132,12 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('settings.profile.role')}</FormLabel>
-
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select name="role" onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger className="w-full" aria-label={t('settings.profile.role')}>
                         <SelectValue placeholder={t('settings.profile.rolePlaceholder')} />
                       </SelectTrigger>
                     </FormControl>
-
                     <SelectContent>
                       {profile.roleOptions.map((option) => (
                         <SelectItem key={option.value} value={option.value}>
@@ -164,7 +146,6 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
                       ))}
                     </SelectContent>
                   </Select>
-
                   <FormMessage />
                 </FormItem>
               )}
@@ -176,7 +157,6 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('settings.profile.bio')}</FormLabel>
-
                   <FormControl>
                     <Textarea
                       placeholder={t('settings.profile.bioPlaceholder')}
@@ -186,14 +166,12 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
                       {...field}
                     />
                   </FormControl>
-
                   <FormDescription>
                     {t('settings.profile.bioCounter', {
-                      count: bioValue.length,
+                      count: (field.value ?? '').length,
                       max: BIO_MAX_LENGTH,
                     })}
                   </FormDescription>
-
                   <FormMessage />
                 </FormItem>
               )}
@@ -240,16 +218,12 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
                   >
                     <div className="flex items-center justify-between">
                       <span className="text-muted-foreground text-sm font-medium">
-                        {t('settings.profile.socialLinks.linkLabel', {
-                          number: index + 1,
-                        })}
+                        {t('settings.profile.socialLinks.linkLabel', { number: index + 1 })}
                       </span>
-
                       <Button
                         type="button"
-                        variant="ghost"
+                        variant="ghostDestructive"
                         size="icon-sm"
-                        className="text-destructive md:hover:bg-destructive/10 md:hover:text-destructive"
                         onClick={() => setRemoveLinkIndex(index)}
                         aria-label={t('settings.profile.socialLinks.removeLink')}
                       >
@@ -262,7 +236,11 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
                       name={`socialLinks.${index}.label`}
                       render={({ field: labelField }) => (
                         <FormItem className="w-full">
-                          <Select onValueChange={labelField.onChange} value={labelField.value}>
+                          <Select
+                            name={`socialLinks.${index}.label`}
+                            onValueChange={labelField.onChange}
+                            value={labelField.value}
+                          >
                             <FormControl>
                               <SelectTrigger
                                 className="w-full"
@@ -273,7 +251,6 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
                                 />
                               </SelectTrigger>
                             </FormControl>
-
                             <SelectContent>
                               {profile.socialLinkOptions.map((option) => (
                                 <SelectItem key={option.value} value={option.value}>
@@ -282,7 +259,6 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
                               ))}
                             </SelectContent>
                           </Select>
-
                           <FormMessage />
                         </FormItem>
                       )}
@@ -296,11 +272,11 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
                           <FormControl>
                             <Input
                               placeholder={t('settings.profile.socialLinks.urlPlaceholder')}
+                              autoComplete="url"
                               className="w-full"
                               {...urlField}
                             />
                           </FormControl>
-
                           <FormMessage />
                         </FormItem>
                       )}
@@ -311,10 +287,9 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
             </div>
 
             <div className="flex justify-end">
-              <Button type="submit" form="profile-form" disabled={isLoading}>
-                {isLoading && <Spinner />}
+              <SubmitButton isLoading={isLoading} form="profile-form">
                 {t('settings.profile.saveProfile')}
-              </Button>
+              </SubmitButton>
             </div>
           </form>
         </Form>

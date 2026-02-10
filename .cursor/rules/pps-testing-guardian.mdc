@@ -283,6 +283,24 @@ describe('calculateTotal', () => {
 });
 ```
 
+**Server action pattern (`withProtectedAction` HOF):**
+
+Server actions use `withProtectedAction` which handles rate-limiting, Zod validation, and auth checks. Test each action by mocking `rate-limit`, `supabase/server`, and `env`:
+
+```typescript
+vi.mock('@/lib/common/rate-limit', () => ({
+  rateLimit: vi.fn().mockResolvedValue({ limited: false }),
+}));
+const mockGetUser = vi.fn();
+vi.mock('@/lib/supabase/server', () => ({
+  createClient: vi.fn().mockResolvedValue({
+    auth: { getUser: mockGetUser },
+  }),
+}));
+```
+
+The HOF itself is tested in `with-protected-action.test.ts`. The `useFormAction` hook is tested in `use-form-action.test.ts`.
+
 **Mock external boundaries only:**
 
 ```typescript
@@ -333,6 +351,7 @@ NEXT_PUBLIC_APP_URL="http://localhost:3000"
 | `pnpm test`       | Unit/Integration (Vitest) | Development, CI (PR) |
 | `pnpm test:e2e`   | E2E (Playwright)          | Pre-merge, CI (main) |
 | `pnpm test:types` | TypeScript validation     | Always               |
+| `pnpm test -- path` | Run single test file | Debugging |
 
 ### CI/CD Integration
 

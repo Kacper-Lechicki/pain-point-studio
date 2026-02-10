@@ -59,6 +59,30 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA "extensions";
 
 
 
+-- Returns TRUE if the currently authenticated user has a password set.
+-- Supabase's getUser() API does not expose encrypted_password,
+-- so we need a server-side function to check this.
+CREATE OR REPLACE FUNCTION "public"."has_password"()
+    RETURNS boolean
+    LANGUAGE "sql" SECURITY DEFINER
+    STABLE
+    SET "search_path" TO ''
+    AS $$
+  SELECT
+    COALESCE(
+      (
+        SELECT length(u.encrypted_password) > 0
+        FROM auth.users u
+        WHERE u.id = auth.uid()
+      ),
+      false
+    );
+$$;
+
+
+ALTER FUNCTION "public"."has_password"() OWNER TO "postgres";
+
+
 CREATE OR REPLACE FUNCTION "public"."handle_new_user"() RETURNS "trigger"
     LANGUAGE "plpgsql" SECURITY DEFINER
     SET "search_path" TO ''
@@ -120,7 +144,7 @@ SET default_table_access_method = "heap";
 CREATE TABLE IF NOT EXISTS "public"."profiles" (
     "id" "uuid" NOT NULL,
     "full_name" "text" DEFAULT ''::"text" NOT NULL,
-    "role" "text" DEFAULT NULL,
+    "role" "text",
     "bio" "text" DEFAULT ''::"text" NOT NULL,
     "avatar_url" "text" DEFAULT ''::"text" NOT NULL,
     "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL,
@@ -248,15 +272,15 @@ CREATE POLICY "Social link types are publicly readable" ON "public"."social_link
 
 
 
-CREATE POLICY "Users can insert own profile" ON "public"."profiles" FOR INSERT WITH CHECK (("auth"."uid"() = "id"));
+CREATE POLICY "Users can insert own profile" ON "public"."profiles" FOR INSERT WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "id"));
 
 
 
-CREATE POLICY "Users can read own profile" ON "public"."profiles" FOR SELECT USING (("auth"."uid"() = "id"));
+CREATE POLICY "Users can read own profile" ON "public"."profiles" FOR SELECT USING ((( SELECT "auth"."uid"() AS "uid") = "id"));
 
 
 
-CREATE POLICY "Users can update own profile" ON "public"."profiles" FOR UPDATE USING (("auth"."uid"() = "id")) WITH CHECK (("auth"."uid"() = "id"));
+CREATE POLICY "Users can update own profile" ON "public"."profiles" FOR UPDATE USING ((( SELECT "auth"."uid"() AS "uid") = "id")) WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "id"));
 
 
 
@@ -440,6 +464,12 @@ GRANT USAGE ON SCHEMA "public" TO "service_role";
 
 
 
+REVOKE EXECUTE ON FUNCTION "public"."has_password"() FROM "anon";
+GRANT EXECUTE ON FUNCTION "public"."has_password"() TO "authenticated";
+GRANT EXECUTE ON FUNCTION "public"."has_password"() TO "service_role";
+
+
+
 GRANT ALL ON FUNCTION "public"."handle_new_user"() TO "anon";
 GRANT ALL ON FUNCTION "public"."handle_new_user"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."handle_new_user"() TO "service_role";
@@ -566,27 +596,6 @@ ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TAB
 
 
 --
--- Seed lookup tables (part of schema — required by FK constraints)
---
-
-INSERT INTO "public"."roles" ("value", "label_key", "sort_order", "is_active") VALUES
-  ('solo-developer', 'settings.roles.soloDeveloper', 1, true),
-  ('product-manager', 'settings.roles.productManager', 2, true),
-  ('designer',        'settings.roles.designer',       3, true),
-  ('founder',         'settings.roles.founder',         4, true),
-  ('student',         'settings.roles.student',         5, true),
-  ('other',           'settings.roles.other',           6, true)
-ON CONFLICT ("value") DO NOTHING;
-
-INSERT INTO "public"."social_link_types" ("value", "label_key", "sort_order", "is_active") VALUES
-  ('website',  'settings.profile.socialLinks.labels.website',  1, true),
-  ('github',   'settings.profile.socialLinks.labels.github',   2, true),
-  ('twitter',  'settings.profile.socialLinks.labels.twitter',  3, true),
-  ('linkedin', 'settings.profile.socialLinks.labels.linkedin', 4, true),
-  ('other',    'settings.profile.socialLinks.labels.other',    5, true)
-ON CONFLICT ("value") DO NOTHING;
-
---
 -- Dumped schema changes for auth and storage
 --
 
@@ -594,19 +603,23 @@ CREATE OR REPLACE TRIGGER "on_auth_user_created" AFTER INSERT ON "auth"."users" 
 
 
 
+INSERT INTO "storage"."buckets" ("id", "name", "public", "file_size_limit", "allowed_mime_types")
+VALUES ('avatars', 'avatars', true, 5242880, ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
+ON CONFLICT ("id") DO NOTHING;
+
 CREATE POLICY "Avatars are publicly readable" ON "storage"."objects" FOR SELECT USING (("bucket_id" = 'avatars'::"text"));
 
 
 
-CREATE POLICY "Users can delete own avatar" ON "storage"."objects" FOR DELETE USING ((("bucket_id" = 'avatars'::"text") AND (("auth"."uid"())::"text" = ("storage"."foldername"("name"))[1])));
+CREATE POLICY "Users can delete own avatar" ON "storage"."objects" FOR DELETE USING ((("bucket_id" = 'avatars'::"text") AND ((( SELECT "auth"."uid"() AS "uid"))::"text" = ("storage"."foldername"("name"))[1])));
 
 
 
-CREATE POLICY "Users can update own avatar" ON "storage"."objects" FOR UPDATE USING ((("bucket_id" = 'avatars'::"text") AND (("auth"."uid"())::"text" = ("storage"."foldername"("name"))[1])));
+CREATE POLICY "Users can update own avatar" ON "storage"."objects" FOR UPDATE USING ((("bucket_id" = 'avatars'::"text") AND ((( SELECT "auth"."uid"() AS "uid"))::"text" = ("storage"."foldername"("name"))[1])));
 
 
 
-CREATE POLICY "Users can upload own avatar" ON "storage"."objects" FOR INSERT WITH CHECK ((("bucket_id" = 'avatars'::"text") AND (("auth"."uid"())::"text" = ("storage"."foldername"("name"))[1])));
+CREATE POLICY "Users can upload own avatar" ON "storage"."objects" FOR INSERT WITH CHECK ((("bucket_id" = 'avatars'::"text") AND ((( SELECT "auth"."uid"() AS "uid"))::"text" = ("storage"."foldername"("name"))[1])));
 
 
 

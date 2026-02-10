@@ -1,13 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 
-import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -31,9 +27,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Spinner } from '@/components/ui/spinner';
+import { SubmitButton } from '@/components/ui/submit-button';
 import { LookupValue, completeProfile } from '@/features/settings/actions';
 import { CompleteProfileSchema, completeProfileSchema } from '@/features/settings/types';
+import { useFormAction } from '@/hooks/common/use-form-action';
 import { useRouter } from '@/i18n/routing';
 import type { MessageKey } from '@/i18n/types';
 
@@ -50,7 +47,11 @@ const CompleteProfileModal = ({
 }: CompleteProfileModalProps) => {
   const t = useTranslations();
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+
+  const { isLoading, execute } = useFormAction({
+    unexpectedErrorMessage: 'settings.errors.unexpected' as MessageKey,
+    onSuccess: () => router.refresh(),
+  });
 
   const form = useForm<CompleteProfileSchema>({
     resolver: zodResolver(completeProfileSchema),
@@ -61,21 +62,7 @@ const CompleteProfileModal = ({
   });
 
   async function onSubmit(data: CompleteProfileSchema) {
-    setIsLoading(true);
-
-    try {
-      const result = await completeProfile(data);
-
-      if (result.error) {
-        toast.error(t(result.error as MessageKey));
-        setIsLoading(false);
-      } else {
-        router.refresh();
-      }
-    } catch {
-      toast.error(t('settings.errors.unexpected'));
-      setIsLoading(false);
-    }
+    await execute(completeProfile, data);
   }
 
   return (
@@ -102,6 +89,7 @@ const CompleteProfileModal = ({
                   <FormControl>
                     <Input
                       placeholder={t('settings.completeProfile.fullNamePlaceholder')}
+                      autoComplete="name"
                       {...field}
                     />
                   </FormControl>
@@ -118,7 +106,7 @@ const CompleteProfileModal = ({
                 <FormItem>
                   <FormLabel>{t('settings.completeProfile.role')}</FormLabel>
 
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select name="role" onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger
                         className="w-full"
@@ -143,10 +131,9 @@ const CompleteProfileModal = ({
               )}
             />
 
-            <Button type="submit" className="mt-4 w-full" disabled={isLoading}>
-              {isLoading && <Spinner />}
+            <SubmitButton isLoading={isLoading} className="mt-4 w-full">
               {t('settings.completeProfile.submit')}
-            </Button>
+            </SubmitButton>
           </form>
         </Form>
       </DialogContent>

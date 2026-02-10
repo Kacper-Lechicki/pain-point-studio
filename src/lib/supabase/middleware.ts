@@ -5,11 +5,6 @@ import { User } from '@supabase/supabase-js';
 
 import { env } from '@/lib/common/env';
 
-/**
- * Updates Supabase session in middleware.
- * Refreshes auth tokens and manages cookie lifecycle.
- * Returns the response with updated cookies and the authenticated user (or null).
- */
 export const updateSession = async (
   req: NextRequest
 ): Promise<{ response: NextResponse; user: User | null }> => {

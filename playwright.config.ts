@@ -7,7 +7,7 @@ const { loadEnvConfig } = require('@next/env');
 loadEnvConfig(process.cwd());
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const { env } = require(path.join(process.cwd(), 'e2e/env'));
+const { env } = require(path.join(process.cwd(), 'e2e/helpers/env'));
 
 const PORT = process.env.PORT;
 const baseURL = PORT ? `http://localhost:${PORT}` : env.NEXT_PUBLIC_APP_URL;

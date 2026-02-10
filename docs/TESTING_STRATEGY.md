@@ -91,7 +91,31 @@ test('calculateTotal should apply discount correctly', () => {
 
 ---
 
-## 6. Environment Setup
+## 6. Server Action Testing with `withProtectedAction`
+
+Server actions that use `withProtectedAction` HOF share a common pattern of rate-limiting, validation, and auth checks. Test each layer independently:
+
+```typescript
+// Mock env, rate limiter, and Supabase client
+vi.mock('@/lib/common/rate-limit', () => ({
+  rateLimit: vi.fn().mockResolvedValue({ limited: false }),
+}));
+
+const mockGetUser = vi.fn();
+vi.mock('@/lib/supabase/server', () => ({
+  createClient: vi.fn().mockResolvedValue({
+    auth: { getUser: mockGetUser },
+  }),
+}));
+```
+
+The `withProtectedAction` HOF itself is tested in `src/lib/common/with-protected-action.test.ts`. Individual actions only need to test their specific business logic (Supabase calls, side effects).
+
+The `useFormAction` hook is tested in `src/hooks/common/use-form-action.test.ts` — covers loading state, success/error toasts, exception handling, and callback invocations.
+
+---
+
+## 7. Environment Setup
 
 ### Playwright Configuration
 
@@ -105,7 +129,7 @@ The `playwright.config.ts` requires proper environment variable loading. Key poi
 const { loadEnvConfig } = require('@next/env');
 loadEnvConfig(process.cwd());
 
-const { env } = require('./e2e/env');
+const { env } = require('./e2e/helpers/env');
 ```
 
 ### Required Environment Variables

@@ -1,53 +1,33 @@
 'use server';
 
-import { mapAuthError } from '@/features/auth/config';
-import { CompleteProfileSchema, completeProfileSchema } from '@/features/settings/types';
-import { rateLimit } from '@/lib/common/rate-limit';
-import { ActionResult } from '@/lib/common/types';
-import { createClient } from '@/lib/supabase/server';
+import { completeProfileSchema } from '@/features/settings/types';
+import { withProtectedAction } from '@/lib/common/with-protected-action';
+import { mapSupabaseError } from '@/lib/supabase/errors';
 
-export const completeProfile = async (formData: CompleteProfileSchema): Promise<ActionResult> => {
-  const { limited } = await rateLimit({ key: 'complete-profile', limit: 5, windowSeconds: 300 });
+export const completeProfile = withProtectedAction('complete-profile', {
+  schema: completeProfileSchema,
+  rateLimit: { limit: 5, windowSeconds: 300 },
+  action: async ({ data, user, supabase }) => {
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .update({
+        full_name: data.fullName,
+        role: data.role,
+      })
+      .eq('id', user.id);
 
-  if (limited) {
-    return { error: 'settings.errors.rateLimitExceeded' };
-  }
+    if (profileError) {
+      return { error: mapSupabaseError(profileError.message) };
+    }
 
-  const validation = completeProfileSchema.safeParse(formData);
+    const { error: metaError } = await supabase.auth.updateUser({
+      data: { full_name: data.fullName },
+    });
 
-  if (!validation.success) {
-    return { error: 'settings.errors.invalidData' };
-  }
+    if (metaError) {
+      return { error: mapSupabaseError(metaError.message) };
+    }
 
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return { error: 'settings.errors.unexpected' };
-  }
-
-  const { error: profileError } = await supabase
-    .from('profiles')
-    .update({
-      full_name: validation.data.fullName,
-      role: validation.data.role,
-    })
-    .eq('id', user.id);
-
-  if (profileError) {
-    return { error: mapAuthError(profileError.message) };
-  }
-
-  const { error: metaError } = await supabase.auth.updateUser({
-    data: { full_name: validation.data.fullName },
-  });
-
-  if (metaError) {
-    return { error: mapAuthError(metaError.message) };
-  }
-
-  return { success: true };
-};
+    return { success: true };
+  },
+});

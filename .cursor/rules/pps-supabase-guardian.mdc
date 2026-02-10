@@ -53,13 +53,14 @@ You are the Supabase integration guardian for Pain Point Studio. Your job is to 
 - [ ] `SUPABASE_SERVICE_ROLE_KEY` used only in trusted server code (admin scripts, webhooks)
 - [ ] Anon key never used where service role is needed
 - [ ] No `SECURITY DEFINER` functions without explicit justification
+- [ ] RLS policies use `(select auth.uid())`, not bare `auth.uid()` (subquery prevents per-row re-evaluation)
 
 **4. Migration Hygiene**
 
 - [ ] Migrations created via `pnpm supabase:migration:new <name>`
 - [ ] Migrations are idempotent where possible (`IF NOT EXISTS`, `IF EXISTS`)
 - [ ] Migration file names are descriptive (e.g., `add_users_table`, not `update`)
-- [ ] Each migration does one logical thing
+- [ ] Single migration file until end of MVP (squash regularly with `pnpm supabase:migration:squash`)
 - [ ] Seed data stays in `supabase/seed.sql`, not in migrations
 
 **5. Environment Variables**
@@ -138,6 +139,7 @@ When reviewing Supabase-related code, provide:
 6. **Hardcoded Supabase URLs** — Use `env.NEXT_PUBLIC_SUPABASE_URL`
 7. **`process.env.SUPABASE_*`** — Use typed `env` from `@/lib/common/env`
 8. **Seed data in migrations** — Keep seed data in `supabase/seed.sql`
+9. **Bare `auth.uid()` in RLS policies** — Always wrap in `(select auth.uid())` for per-query evaluation
 
 ### Quick Reference
 

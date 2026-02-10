@@ -3,10 +3,6 @@ import { z } from 'zod';
 import { basePasswordSchema } from '@/features/auth/config/password';
 import { BIO_MAX_LENGTH, FULL_NAME_MAX_LENGTH, MAX_SOCIAL_LINKS } from '@/features/settings/config';
 
-// ---------------------------------------------------------------------------
-// Profile
-// ---------------------------------------------------------------------------
-
 const SOCIAL_LINK_DOMAINS: Record<string, string[]> = {
   github: ['github.com'],
   twitter: ['twitter.com', 'x.com'],
@@ -63,23 +59,15 @@ export const updateProfileSchema = z.object({
 
 export type UpdateProfileSchema = z.infer<typeof updateProfileSchema>;
 
-// ---------------------------------------------------------------------------
-// Email
-// ---------------------------------------------------------------------------
-
 export const updateEmailSchema = z.object({
   email: z.email('settings.errors.invalidEmail'),
 });
 
 export type UpdateEmailSchema = z.infer<typeof updateEmailSchema>;
 
-// ---------------------------------------------------------------------------
-// Password
-// ---------------------------------------------------------------------------
-
 export const changePasswordSchema = z
   .object({
-    currentPassword: z.string().optional(),
+    currentPassword: z.string().min(1, 'settings.errors.fieldRequired'),
     password: basePasswordSchema,
     confirmPassword: basePasswordSchema,
   })
@@ -90,9 +78,24 @@ export const changePasswordSchema = z
 
 export type ChangePasswordSchema = z.infer<typeof changePasswordSchema>;
 
-// ---------------------------------------------------------------------------
-// Delete account
-// ---------------------------------------------------------------------------
+export const setPasswordSchema = z
+  .object({
+    password: basePasswordSchema,
+    confirmPassword: basePasswordSchema,
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'settings.errors.passwordsMismatch',
+    path: ['confirmPassword'],
+  });
+
+export type SetPasswordSchema = z.infer<typeof setPasswordSchema>;
+
+export const unlinkIdentitySchema = z.object({
+  identityId: z.string().min(1),
+  provider: z.string().min(1),
+});
+
+export type UnlinkIdentitySchema = z.infer<typeof unlinkIdentitySchema>;
 
 export const deleteAccountSchema = z.object({
   confirmation: z.string().email('settings.errors.confirmationMismatch'),

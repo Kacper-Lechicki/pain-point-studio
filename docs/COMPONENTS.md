@@ -329,7 +329,67 @@ const Status = ({ status }: { status: Status }) => (
 
 ---
 
-## 6. Component File Checklist
+## 6. Shared Component Patterns
+
+The project provides reusable components to eliminate repeated patterns. Always use these instead of re-implementing the same logic.
+
+### SubmitButton
+
+Combines `Button` + `Spinner` for form submission. Replaces the repeated pattern of disabling a button and showing a spinner during loading.
+
+```tsx
+import { SubmitButton } from '@/components/ui/submit-button';
+
+<SubmitButton isLoading={isLoading}>{t('save')}</SubmitButton>;
+```
+
+### PasswordInput (with default i18n)
+
+Has built-in `useTranslations('auth')` for placeholder and toggle labels. No need to pass `showPasswordLabel`, `hidePasswordLabel`, or `placeholder` — they default to auth translations.
+
+```tsx
+import { PasswordInput } from '@/components/ui/password-input';
+
+<PasswordInput {...field} />;
+```
+
+### AuthSuccessMessage
+
+Reusable success state for auth flows (sign-up confirmation, forgot-password). Renders a "check your email" message with a back-to-sign-in link.
+
+```tsx
+import { AuthSuccessMessage } from '@/features/auth/components/common/auth-success-message';
+
+<AuthSuccessMessage messageKey="auth.signUpSuccess" />;
+```
+
+### SettingsSectionHeader (with action slot)
+
+Section header with optional `action` slot for placing buttons alongside the title/description.
+
+```tsx
+import { SettingsSectionHeader } from '@/features/settings/components/settings-section-header';
+
+<SettingsSectionHeader
+  title={t('title')}
+  description={t('description')}
+  action={<Button size="sm">{t('edit')}</Button>}
+/>;
+```
+
+### SidebarNavList
+
+Encapsulates the sidebar navigation items with separators. Used by both desktop sidebar and mobile nav.
+
+```tsx
+import { SidebarNavList } from '@/features/dashboard/components/layout/sidebar-nav-list';
+
+<SidebarNavList isExpanded={isExpanded} />;
+```
+
+---
+
+## 7. Component File Checklist
 
 Before considering a component complete, verify:
 
@@ -347,7 +407,7 @@ Before considering a component complete, verify:
 
 ---
 
-## 7. Example: Optimized Component
+## 8. Example: Optimized Component
 
 ```tsx
 import type { LucideIcon } from 'lucide-react';
@@ -395,7 +455,7 @@ export default FeatureCard;
 
 ---
 
-## 8. Page Component Standards
+## 9. Page Component Standards
 
 Pages have additional requirements beyond regular components:
 
@@ -442,7 +502,7 @@ export default async function PageName() {
 
 ---
 
-## 9. Anti-Patterns to Avoid
+## 10. Anti-Patterns to Avoid
 
 | Anti-Pattern               | Why It's Bad                                | Correct Approach                              |
 | -------------------------- | ------------------------------------------- | --------------------------------------------- |
@@ -463,7 +523,7 @@ This guide ensures every component in Pain Point Studio meets the highest standa
 
 ---
 
-## 10. AI Optimization Instructions
+## 11. AI Optimization Instructions
 
 > **For AI assistants optimizing files according to this document:**
 >

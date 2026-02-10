@@ -5,14 +5,22 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-/**
- * Routes an external image URL through Next.js Image Optimization (`/_next/image`)
- * to avoid third-party cookies (e.g. Google avatar URLs from `lh3.googleusercontent.com`).
- * Local/relative URLs are returned unchanged.
- */
+export function getInitials(name: string, fallback: string): string {
+  if (!name) {
+    return fallback.slice(0, 2).toUpperCase();
+  }
+
+  return name
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
+}
+
 export function proxyImageUrl(
   url: string | undefined,
-  width = 256,
+  width = 384,
   quality = 75
 ): string | undefined {
   if (!url) {

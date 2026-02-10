@@ -8,18 +8,8 @@ declare module 'next-intl' {
   }
 }
 
-/**
- * All valid top-level + nested i18n keys derived from en.json.
- * Use this type when a component receives a translation key as a prop
- * or when you need to pass a dynamic key to `t()`.
- */
 export type MessageKey = NestedKeyOf<Messages>;
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-/** Recursively builds dot-separated key paths for a nested object. */
 type NestedKeyOf<T, Prefix extends string = ''> =
   T extends Record<string, unknown>
     ? {
