@@ -6,6 +6,7 @@ import { Globe, Menu, User as UserIcon, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
+import { LoadingLink } from '@/components/ui/loading-link';
 import { BRAND, getCopyrightText } from '@/config';
 import { ROUTES } from '@/config';
 import { NAV_LINKS, NavLink } from '@/features/marketing/config';
@@ -87,10 +88,12 @@ const Navbar = () => {
         <div className="flex flex-1 items-center justify-end gap-4">
           <div className="hidden items-center gap-4 lg:flex">
             <Button asChild>
-              <Link href={ROUTES.auth.signIn}>
+              <LoadingLink
+                href={ROUTES.auth.signIn}
+                icon={<UserIcon className="size-4" aria-hidden="true" />}
+              >
                 {t('common.signIn')}
-                <UserIcon className="size-4" aria-hidden="true" />
-              </Link>
+              </LoadingLink>
             </Button>
 
             <Button className="group gap-2" variant="secondary" asChild>
@@ -127,10 +130,13 @@ const Navbar = () => {
         <div className="px-6 pt-6 pb-4">
           <div className="flex gap-3">
             <Button asChild className="flex-1 justify-center">
-              <Link href={ROUTES.auth.signIn} onClick={() => setIsMobileMenuOpen(false)}>
+              <LoadingLink
+                href={ROUTES.auth.signIn}
+                icon={<UserIcon className="size-4" aria-hidden="true" />}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
                 {t('common.signIn')}
-                <UserIcon className="size-4" aria-hidden="true" />
-              </Link>
+              </LoadingLink>
             </Button>
 
             <Button variant="secondary" className="flex-1 justify-center gap-2" asChild>
