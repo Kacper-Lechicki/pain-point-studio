@@ -16,7 +16,6 @@ export function useBreakpoint(breakpoint: Breakpoint) {
       setIsAbove(window.innerWidth >= BREAKPOINTS[breakpoint]);
     };
 
-    // Initial check
     checkBreakpoint();
 
     window.addEventListener('resize', checkBreakpoint);

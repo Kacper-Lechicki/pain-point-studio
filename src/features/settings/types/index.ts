@@ -65,7 +65,7 @@ export const updateEmailSchema = z.object({
 
 export type UpdateEmailSchema = z.infer<typeof updateEmailSchema>;
 
-export const updatePasswordSchema = z
+export const changePasswordSchema = z
   .object({
     currentPassword: z.string().min(1, 'settings.errors.fieldRequired'),
     password: basePasswordSchema,
@@ -76,7 +76,26 @@ export const updatePasswordSchema = z
     path: ['confirmPassword'],
   });
 
-export type UpdatePasswordSchema = z.infer<typeof updatePasswordSchema>;
+export type ChangePasswordSchema = z.infer<typeof changePasswordSchema>;
+
+export const setPasswordSchema = z
+  .object({
+    password: basePasswordSchema,
+    confirmPassword: basePasswordSchema,
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'settings.errors.passwordsMismatch',
+    path: ['confirmPassword'],
+  });
+
+export type SetPasswordSchema = z.infer<typeof setPasswordSchema>;
+
+export const unlinkIdentitySchema = z.object({
+  identityId: z.string().min(1),
+  provider: z.string().min(1),
+});
+
+export type UnlinkIdentitySchema = z.infer<typeof unlinkIdentitySchema>;
 
 export const deleteAccountSchema = z.object({
   confirmation: z.string().email('settings.errors.confirmationMismatch'),

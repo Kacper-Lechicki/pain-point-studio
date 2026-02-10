@@ -15,10 +15,6 @@ const DashboardLayout = async ({ children }: { children: ReactNode }) => {
       <div className="flex min-h-screen flex-col pt-14">
         <Navbar />
 
-        <Suspense>
-          <AuthToast />
-        </Suspense>
-
         {children}
 
         {needsCompletion && (
@@ -28,6 +24,10 @@ const DashboardLayout = async ({ children }: { children: ReactNode }) => {
             currentRole={profile.role}
           />
         )}
+
+        <Suspense>
+          <AuthToast />
+        </Suspense>
       </div>
     </SidebarProvider>
   );

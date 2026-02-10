@@ -17,8 +17,6 @@ import { useBreakpoint } from '@/hooks/common/use-breakpoint';
 const STORAGE_KEY = 'sidebar-pinned';
 const HOVER_DELAY = 75;
 
-// ── Pinned state as external store (localStorage) ──────────────────
-
 const pinnedListeners = new Set<() => void>();
 
 function subscribePinned(callback: () => void) {
@@ -44,14 +42,10 @@ function getPinnedServerSnapshot(): boolean {
 function writePinned(next: boolean) {
   try {
     localStorage.setItem(STORAGE_KEY, String(next));
-  } catch {
-    // localStorage unavailable
-  }
+  } catch {}
 
   pinnedListeners.forEach((cb) => cb());
 }
-
-// ── Context ────────────────────────────────────────────────────────
 
 interface SidebarContextValue {
   /** Whether the sidebar is visually expanded (hovered or pinned) */
@@ -101,7 +95,6 @@ export function SidebarProvider({ children }: SidebarProviderProps) {
 
   const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // On desktop, mobile sheet is never open (derived state, no effect needed)
   const isMobileOpen = !isDesktop && isMobileOpenRaw;
 
   const togglePin = useCallback(() => {
@@ -129,7 +122,6 @@ export function SidebarProvider({ children }: SidebarProviderProps) {
     setMobileOpenRaw(open);
   }, []);
 
-  // Cleanup hover timer on unmount
   useEffect(() => {
     return () => {
       if (hoverTimerRef.current) {

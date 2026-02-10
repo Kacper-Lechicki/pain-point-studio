@@ -17,6 +17,8 @@ vi.mock('@/lib/common/rate-limit', () => ({
 const mockUpdateUser = vi.fn();
 const mockGetUser = vi.fn();
 const mockSignInWithPassword = vi.fn();
+const mockRpc = vi.fn();
+const mockAdminUpdateUserById = vi.fn();
 
 vi.mock('@/lib/supabase/server', () => ({
   createClient: vi.fn().mockResolvedValue({
@@ -25,41 +27,55 @@ vi.mock('@/lib/supabase/server', () => ({
       getUser: mockGetUser,
       signInWithPassword: mockSignInWithPassword,
     },
+    rpc: mockRpc,
   }),
 }));
 
-const validData = {
+vi.mock('@/lib/supabase/admin', () => ({
+  createAdminClient: vi.fn().mockReturnValue({
+    auth: { admin: { updateUserById: mockAdminUpdateUserById } },
+  }),
+}));
+
+const changeData = {
   currentPassword: 'OldPass1!',
   password: 'NewSecurePass1!',
   confirmPassword: 'NewSecurePass1!',
 };
 
-describe('Settings Actions – Update Password', () => {
+const setData = {
+  password: 'NewSecurePass1!',
+  confirmPassword: 'NewSecurePass1!',
+};
+
+describe('Settings Actions – changePassword', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockGetUser.mockResolvedValue({ data: { user: { email: 'user@example.com' } } });
+    mockGetUser.mockResolvedValue({
+      data: { user: { email: 'user@example.com', identities: [{ provider: 'email' }] } },
+    });
     mockSignInWithPassword.mockResolvedValue({ error: null });
     mockUpdateUser.mockResolvedValue({ error: null });
   });
 
   it('should return success when password is changed', async () => {
-    const { updatePassword } = await import('./update-password');
-    const result = await updatePassword(validData);
+    const { changePassword } = await import('./update-password');
+    const result = await changePassword(changeData);
 
     expect(result).toEqual({ success: true });
     expect(mockSignInWithPassword).toHaveBeenCalledWith({
       email: 'user@example.com',
-      password: validData.currentPassword,
+      password: changeData.currentPassword,
     });
     expect(mockUpdateUser).toHaveBeenCalledWith({
-      password: validData.password,
+      password: changeData.password,
     });
   });
 
   it('should not call Supabase when passwords are too weak', async () => {
-    const { updatePassword } = await import('./update-password');
+    const { changePassword } = await import('./update-password');
 
-    const result = await updatePassword({
+    const result = await changePassword({
       currentPassword: 'OldPass1!',
       password: 'weak',
       confirmPassword: 'weak',
@@ -70,9 +86,9 @@ describe('Settings Actions – Update Password', () => {
   });
 
   it('should not call Supabase when passwords do not match', async () => {
-    const { updatePassword } = await import('./update-password');
+    const { changePassword } = await import('./update-password');
 
-    const result = await updatePassword({
+    const result = await changePassword({
       currentPassword: 'OldPass1!',
       password: 'NewSecurePass1!',
       confirmPassword: 'DifferentPass1!',
@@ -87,8 +103,8 @@ describe('Settings Actions – Update Password', () => {
       error: { message: 'Password update failed' },
     });
 
-    const { updatePassword } = await import('./update-password');
-    const result = await updatePassword(validData);
+    const { changePassword } = await import('./update-password');
+    const result = await changePassword(changeData);
 
     expect(result.error).toBeDefined();
     expect(result).not.toHaveProperty('success');
@@ -99,8 +115,8 @@ describe('Settings Actions – Update Password', () => {
 
     vi.mocked(rateLimit).mockResolvedValueOnce({ limited: true });
 
-    const { updatePassword } = await import('./update-password');
-    const result = await updatePassword(validData);
+    const { changePassword } = await import('./update-password');
+    const result = await changePassword(changeData);
 
     expect(result.error).toBeDefined();
     expect(mockUpdateUser).not.toHaveBeenCalled();
@@ -109,8 +125,8 @@ describe('Settings Actions – Update Password', () => {
   it('should reject when current password is incorrect', async () => {
     mockSignInWithPassword.mockResolvedValue({ error: { message: 'Invalid login credentials' } });
 
-    const { updatePassword } = await import('./update-password');
-    const result = await updatePassword({
+    const { changePassword } = await import('./update-password');
+    const result = await changePassword({
       currentPassword: 'WrongPass1!',
       password: 'NewSecurePass1!',
       confirmPassword: 'NewSecurePass1!',
@@ -123,8 +139,8 @@ describe('Settings Actions – Update Password', () => {
   it('should return unexpected error when user has no email', async () => {
     mockGetUser.mockResolvedValue({ data: { user: { email: null } } });
 
-    const { updatePassword } = await import('./update-password');
-    const result = await updatePassword(validData);
+    const { changePassword } = await import('./update-password');
+    const result = await changePassword(changeData);
 
     expect(result.error).toBe('settings.errors.unexpected');
     expect(mockSignInWithPassword).not.toHaveBeenCalled();
@@ -134,11 +150,121 @@ describe('Settings Actions – Update Password', () => {
   it('should return unexpected error when getUser returns no user', async () => {
     mockGetUser.mockResolvedValue({ data: { user: null } });
 
-    const { updatePassword } = await import('./update-password');
-    const result = await updatePassword(validData);
+    const { changePassword } = await import('./update-password');
+    const result = await changePassword(changeData);
 
     expect(result.error).toBe('settings.errors.unexpected');
     expect(mockSignInWithPassword).not.toHaveBeenCalled();
+    expect(mockUpdateUser).not.toHaveBeenCalled();
+  });
+});
+
+describe('Settings Actions – setPassword', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockGetUser.mockResolvedValue({
+      data: {
+        user: {
+          id: 'user-id-123',
+          email: 'user@example.com',
+          identities: [{ provider: 'google', identity_id: 'g-123' }],
+        },
+      },
+    });
+    mockRpc.mockResolvedValue({ data: false });
+    mockUpdateUser.mockResolvedValue({ error: null });
+    mockAdminUpdateUserById.mockResolvedValue({ error: null });
+  });
+
+  it('should return success and create email identity for OAuth-only user', async () => {
+    const { setPassword } = await import('./update-password');
+    const result = await setPassword(setData);
+
+    expect(result).toEqual({ success: true });
+    expect(mockRpc).toHaveBeenCalledWith('has_password');
+    expect(mockUpdateUser).toHaveBeenCalledWith({ password: setData.password });
+    expect(mockAdminUpdateUserById).toHaveBeenCalledWith('user-id-123', {
+      email: 'user@example.com',
+    });
+    expect(mockSignInWithPassword).not.toHaveBeenCalled();
+  });
+
+  it('should not create email identity if one already exists', async () => {
+    mockGetUser.mockResolvedValue({
+      data: {
+        user: {
+          id: 'user-id-123',
+          email: 'user@example.com',
+          identities: [
+            { provider: 'google', identity_id: 'g-123' },
+            { provider: 'email', identity_id: 'e-456' },
+          ],
+        },
+      },
+    });
+
+    const { setPassword } = await import('./update-password');
+    const result = await setPassword(setData);
+
+    expect(result).toEqual({ success: true });
+    expect(mockAdminUpdateUserById).not.toHaveBeenCalled();
+  });
+
+  it('should reject when user already has a password', async () => {
+    mockRpc.mockResolvedValue({ data: true });
+
+    const { setPassword } = await import('./update-password');
+    const result = await setPassword(setData);
+
+    expect(result.error).toBe('settings.errors.unexpected');
+    expect(mockUpdateUser).not.toHaveBeenCalled();
+  });
+
+  it('should not call Supabase when passwords are too weak', async () => {
+    const { setPassword } = await import('./update-password');
+
+    const result = await setPassword({
+      password: 'weak',
+      confirmPassword: 'weak',
+    });
+
+    expect(result.error).toBeDefined();
+    expect(mockUpdateUser).not.toHaveBeenCalled();
+  });
+
+  it('should not call Supabase when passwords do not match', async () => {
+    const { setPassword } = await import('./update-password');
+
+    const result = await setPassword({
+      password: 'NewSecurePass1!',
+      confirmPassword: 'DifferentPass1!',
+    });
+
+    expect(result.error).toBeDefined();
+    expect(mockUpdateUser).not.toHaveBeenCalled();
+  });
+
+  it('should return error when Supabase rejects the update', async () => {
+    mockUpdateUser.mockResolvedValue({
+      error: { message: 'Password update failed' },
+    });
+
+    const { setPassword } = await import('./update-password');
+    const result = await setPassword(setData);
+
+    expect(result.error).toBeDefined();
+    expect(result).not.toHaveProperty('success');
+  });
+
+  it('should return rate limit error when rate limited', async () => {
+    const { rateLimit } = await import('@/lib/common/rate-limit');
+
+    vi.mocked(rateLimit).mockResolvedValueOnce({ limited: true });
+
+    const { setPassword } = await import('./update-password');
+    const result = await setPassword(setData);
+
+    expect(result.error).toBeDefined();
     expect(mockUpdateUser).not.toHaveBeenCalled();
   });
 });

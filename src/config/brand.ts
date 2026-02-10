@@ -1,6 +1,5 @@
 import type { MessageKey } from '@/i18n/types';
 
-// Global brand constants used throughout the application (translation keys)
 export const BRAND = {
   name: 'brand.name',
   tagline: 'brand.tagline',
@@ -9,7 +8,6 @@ export const BRAND = {
 
 export type BrandConfig = typeof BRAND;
 
-// Helper to generate dynamic copyright text with current year
 export const getCopyrightText = (
   t: (key: MessageKey, values?: Record<string, string | number | Date>) => string,
   year?: number

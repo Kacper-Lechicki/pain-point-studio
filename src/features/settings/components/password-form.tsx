@@ -1,5 +1,7 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useForm, useWatch } from 'react-hook-form';
@@ -15,9 +17,14 @@ import {
 import { PasswordInput } from '@/components/ui/password-input';
 import { SubmitButton } from '@/components/ui/submit-button';
 import { PasswordStrength } from '@/features/auth/components/common/password-strength';
-import { updatePassword } from '@/features/settings/actions';
+import { changePassword, setPassword } from '@/features/settings/actions';
 import { SettingsSectionHeader } from '@/features/settings/components/settings-section-header';
-import { UpdatePasswordSchema, updatePasswordSchema } from '@/features/settings/types';
+import {
+  ChangePasswordSchema,
+  SetPasswordSchema,
+  changePasswordSchema,
+  setPasswordSchema,
+} from '@/features/settings/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import type { MessageKey } from '@/i18n/types';
 
@@ -27,20 +34,24 @@ interface PasswordFormProps {
 
 const PasswordForm = ({ hasPassword }: PasswordFormProps) => {
   const t = useTranslations();
+  const router = useRouter();
 
-  const form = useForm<UpdatePasswordSchema>({
-    resolver: zodResolver(updatePasswordSchema),
-    defaultValues: {
-      currentPassword: '',
-      password: '',
-      confirmPassword: '',
-    },
+  const schema = hasPassword ? changePasswordSchema : setPasswordSchema;
+
+  const form = useForm<ChangePasswordSchema | SetPasswordSchema>({
+    resolver: zodResolver(schema),
+    defaultValues: hasPassword
+      ? { currentPassword: '', password: '', confirmPassword: '' }
+      : { password: '', confirmPassword: '' },
   });
 
   const { isLoading, execute } = useFormAction({
     successMessage: 'settings.password.passwordUpdated' as MessageKey,
     unexpectedErrorMessage: 'settings.errors.unexpected' as MessageKey,
-    onSuccess: () => form.reset(),
+    onSuccess: () => {
+      form.reset();
+      router.refresh();
+    },
   });
 
   const password = useWatch({
@@ -53,8 +64,12 @@ const PasswordForm = ({ hasPassword }: PasswordFormProps) => {
     ? t('settings.password.currentPasswordHint')
     : t('settings.password.setFirstHint');
 
-  async function onSubmit(data: UpdatePasswordSchema) {
-    await execute(updatePassword, data);
+  async function onSubmit(data: ChangePasswordSchema | SetPasswordSchema) {
+    if (hasPassword) {
+      await execute(changePassword, data as ChangePasswordSchema);
+    } else {
+      await execute(setPassword, data as SetPasswordSchema);
+    }
   }
 
   return (

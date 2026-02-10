@@ -19,6 +19,7 @@ vi.mock('next-intl/server', () => ({
 // Mock Supabase server client
 const mockGetUser = vi.fn();
 const mockProfileSingle = vi.fn();
+const mockRpc = vi.fn();
 
 const mockRolesData = [
   { value: 'solo-developer', label_key: 'settings.roles.soloDeveloper' },
@@ -44,8 +45,8 @@ const mockUser = {
   email: 'john@example.com',
   user_metadata: {},
   identities: [
-    { provider: 'email', identity_data: { email: 'john@example.com' } },
-    { provider: 'google', identity_data: { email: 'john@gmail.com' } },
+    { provider: 'email', identity_data: { email: 'john@example.com' }, identity_id: 'email-id-1' },
+    { provider: 'google', identity_data: { email: 'john@gmail.com' }, identity_id: 'google-id-1' },
   ],
 };
 
@@ -57,6 +58,7 @@ vi.mock('@/lib/supabase/server', () => ({
     auth: {
       getUser: mockGetUser,
     },
+    rpc: mockRpc,
     from: vi.fn((table: string) => {
       if (table === 'profiles') {
         return {
@@ -103,6 +105,9 @@ describe('Settings Actions – Get Profile', () => {
     // Default: profile found
     mockProfileSingle.mockResolvedValue({ data: mockProfile });
 
+    // Default: has password
+    mockRpc.mockResolvedValue({ data: true });
+
     // Reset lookup data
     rolesResponse = { data: mockRolesData };
     socialLinkTypesResponse = { data: mockSocialLinkTypesData };
@@ -131,8 +136,8 @@ describe('Settings Actions – Get Profile', () => {
     expect(result!.hasPassword).toBe(true);
     expect(result!.socialLinks).toEqual([{ label: 'github', url: 'https://github.com/johndoe' }]);
     expect(result!.identities).toEqual([
-      { provider: 'email', email: 'john@example.com' },
-      { provider: 'google', email: 'john@gmail.com' },
+      { provider: 'email', email: 'john@example.com', identityId: 'email-id-1' },
+      { provider: 'google', email: 'john@gmail.com', identityId: 'google-id-1' },
     ]);
   });
 
@@ -186,15 +191,8 @@ describe('Settings Actions – Get Profile', () => {
     expect(result!.socialLinks).toEqual([]);
   });
 
-  it('should set hasPassword to false when no email identity exists', async () => {
-    mockGetUser.mockResolvedValue({
-      data: {
-        user: {
-          ...mockUser,
-          identities: [{ provider: 'google', identity_data: { email: 'john@gmail.com' } }],
-        },
-      },
-    });
+  it('should set hasPassword to false when RPC returns false', async () => {
+    mockRpc.mockResolvedValue({ data: false });
 
     const { getProfile } = await import('./get-profile');
     const result = await getProfile();

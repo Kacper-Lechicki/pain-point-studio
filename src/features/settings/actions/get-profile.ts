@@ -18,7 +18,7 @@ export interface ProfileData {
   bio: string;
   avatarUrl: string;
   hasPassword: boolean;
-  identities: { provider: string; email: string | undefined }[];
+  identities: { provider: string; email: string | undefined; identityId: string }[];
   socialLinks: SocialLink[];
   memberSince: string;
   roleOptions: LookupValue[];
@@ -36,7 +36,12 @@ export const getProfile = async (): Promise<ProfileData | null> => {
     return null;
   }
 
-  const [{ data: profile }, { data: roles }, { data: socialLinkTypes }] = await Promise.all([
+  const [
+    { data: profile },
+    { data: roles },
+    { data: socialLinkTypes },
+    { data: hasPasswordResult },
+  ] = await Promise.all([
     supabase.from('profiles').select('*').eq('id', user.id).single(),
     supabase.from('roles').select('value, label_key').eq('is_active', true).order('sort_order'),
     supabase
@@ -44,9 +49,10 @@ export const getProfile = async (): Promise<ProfileData | null> => {
       .select('value, label_key')
       .eq('is_active', true)
       .order('sort_order'),
+    supabase.rpc('has_password'),
   ]);
 
-  const hasPassword = (user.identities ?? []).some((identity) => identity.provider === 'email');
+  const hasPassword = hasPasswordResult === true;
   const t = await getTranslations();
 
   return {
@@ -62,6 +68,7 @@ export const getProfile = async (): Promise<ProfileData | null> => {
     identities: (user.identities ?? []).map((identity) => ({
       provider: identity.provider,
       email: identity.identity_data?.email as string | undefined,
+      identityId: identity.identity_id,
     })),
     roleOptions: (roles ?? []).map((r) => ({
       value: r.value,

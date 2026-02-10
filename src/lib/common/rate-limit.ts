@@ -2,10 +2,6 @@ import { headers } from 'next/headers';
 
 import { env } from '@/lib/common/env';
 
-// ---------------------------------------------------------------------------
-// Public types
-// ---------------------------------------------------------------------------
-
 export interface RateLimitConfig {
   /** Unique identifier for this rate limit (e.g. 'sign-in', 'reset-password') */
   key: string;
@@ -19,11 +15,7 @@ export interface RateLimiter {
   check(config: RateLimitConfig): Promise<{ limited: boolean }>;
 }
 
-// ---------------------------------------------------------------------------
-// In-memory implementation
-// TODO(scaling): Replace with Redis-backed implementation for multi-instance deployments
-// ---------------------------------------------------------------------------
-
+// TODO(scaling): Replace with Redis-backed implementation for multi-instance deployments.
 interface RateLimitEntry {
   count: number;
   resetAt: number;
@@ -93,10 +85,6 @@ class InMemoryRateLimiter implements RateLimiter {
     }
   }
 }
-
-// ---------------------------------------------------------------------------
-// Singleton — public API unchanged
-// ---------------------------------------------------------------------------
 
 const limiter = new InMemoryRateLimiter();
 

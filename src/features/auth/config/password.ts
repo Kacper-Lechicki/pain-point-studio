@@ -46,12 +46,10 @@ export const calculatePasswordStrength = (password: string): number => {
     score += 1;
   }
 
-  // EXTENDED is a bonus for 12+ chars
   if (PASSWORD_CONFIG.REQUIREMENTS.EXTENDED(password)) {
     score += 1;
   }
 
-  // Normalize to 0-5 scale (since we have 6 checks now)
   return Math.min(Math.floor(score * (5 / 6)), 5);
 };
 

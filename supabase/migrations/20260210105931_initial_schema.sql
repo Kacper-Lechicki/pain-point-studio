@@ -59,6 +59,30 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA "extensions";
 
 
 
+-- Returns TRUE if the currently authenticated user has a password set.
+-- Supabase's getUser() API does not expose encrypted_password,
+-- so we need a server-side function to check this.
+CREATE OR REPLACE FUNCTION "public"."has_password"()
+    RETURNS boolean
+    LANGUAGE "sql" SECURITY DEFINER
+    STABLE
+    SET "search_path" TO ''
+    AS $$
+  SELECT
+    COALESCE(
+      (
+        SELECT length(u.encrypted_password) > 0
+        FROM auth.users u
+        WHERE u.id = auth.uid()
+      ),
+      false
+    );
+$$;
+
+
+ALTER FUNCTION "public"."has_password"() OWNER TO "postgres";
+
+
 CREATE OR REPLACE FUNCTION "public"."handle_new_user"() RETURNS "trigger"
     LANGUAGE "plpgsql" SECURITY DEFINER
     SET "search_path" TO ''
@@ -437,6 +461,12 @@ GRANT USAGE ON SCHEMA "public" TO "service_role";
 
 
 
+
+
+
+REVOKE EXECUTE ON FUNCTION "public"."has_password"() FROM "anon";
+GRANT EXECUTE ON FUNCTION "public"."has_password"() TO "authenticated";
+GRANT EXECUTE ON FUNCTION "public"."has_password"() TO "service_role";
 
 
 

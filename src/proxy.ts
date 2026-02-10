@@ -27,7 +27,6 @@ const AUTH_ROUTES = [ROUTES.auth.signIn, ROUTES.auth.signUp, ROUTES.auth.forgotP
 function getPathnameWithoutLocale(pathname: string): string {
   const segments = pathname.split('/');
 
-  // Remove the locale segment (e.g. "/en/dashboard" -> ["", "en", "dashboard"])
   if (segments.length > 2) {
     return '/' + segments.slice(2).join('/');
   }
@@ -72,7 +71,6 @@ const middleware = async (req: NextRequest) => {
     return NextResponse.redirect(dashboardUrl);
   }
 
-  // Run i18n middleware and propagate Supabase session cookies
   const i18nResponse = i18nMiddleware(req);
 
   supabaseResponse.cookies.getAll().forEach(({ name, value, ...options }) => {

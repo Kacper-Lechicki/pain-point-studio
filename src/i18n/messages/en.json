@@ -456,9 +456,25 @@
     },
     "connectedAccounts": {
       "title": "Connected Accounts",
-      "description": "OAuth providers linked to your account.",
+      "description": "Manage OAuth providers linked to your account.",
       "connected": "Connected",
-      "noAccounts": "No external accounts connected."
+      "notConnected": "Not connected",
+      "connect": "Connect",
+      "noAccounts": "No external accounts connected.",
+      "disconnect": "Disconnect",
+      "confirmDisconnectTitle": "Disconnect {provider}?",
+      "confirmDisconnectDescription": "You will no longer be able to sign in with {provider}. You can re-link it later from this page.",
+      "disconnected": "Account disconnected successfully.",
+      "passwordSet": "Password login enabled",
+      "passwordNotSet": "No password set",
+      "cannotUnlinkHint": "Set a password or link another account before disconnecting your only login method.",
+      "cannotUnlinkOnlyOAuth": "Link another account before disconnecting your only OAuth provider.",
+      "errors": {
+        "cannotUnlinkLast": "Cannot disconnect your only login method.",
+        "identityNotFound": "Identity not found.",
+        "unlinkFailed": "Failed to disconnect account. Please try again.",
+        "linkFailed": "Failed to link account. Please try again."
+      }
     },
     "dangerZone": {
       "title": "Danger Zone",

@@ -16,8 +16,6 @@ const Navbar = () => {
   const { setMobileOpen } = useSidebar();
   const t = useTranslations('navbar');
   const pathname = usePathname();
-
-  // Settings/profile pages use a centered container matching the main layout
   const hasSidebar = pathname.startsWith('/dashboard');
 
   return (
@@ -41,7 +39,7 @@ const Navbar = () => {
           <ProjectSelector />
         </div>
 
-        <Separator orientation="vertical" className="hidden !h-5 sm:block" />
+        <Separator orientation="vertical" className="hidden h-5! sm:block" />
 
         <div className="min-w-0 flex-1">
           <Breadcrumbs />

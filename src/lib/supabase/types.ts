@@ -34,7 +34,7 @@ export type Database = {
           bio: string;
           full_name: string;
           id: string;
-          role: string;
+          role: string | null;
           social_links: Json;
           updated_at: string;
         };
@@ -43,7 +43,7 @@ export type Database = {
           bio?: string;
           full_name?: string;
           id: string;
-          role?: string;
+          role?: string | null;
           social_links?: Json;
           updated_at?: string;
         };
@@ -52,7 +52,7 @@ export type Database = {
           bio?: string;
           full_name?: string;
           id?: string;
-          role?: string;
+          role?: string | null;
           social_links?: Json;
           updated_at?: string;
         };
@@ -120,6 +120,7 @@ export type Database = {
     };
     Functions: {
       get_user_id_by_email: { Args: { lookup_email: string }; Returns: string };
+      has_password: { Args: never; Returns: boolean };
     };
     Enums: {
       [_ in never]: never;

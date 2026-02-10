@@ -11,7 +11,7 @@ test.describe.configure({ mode: 'serial' });
 const sel = {
   navTabs: '[data-testid="settings-nav"]',
   navSelect: '[data-testid="settings-nav-select"]',
-  fullName: 'input[name="fullName"]',
+  fullName: 'form#profile-form input[name="fullName"]',
   bio: 'textarea[name="bio"]',
   profileSubmit: 'form#profile-form button[type="submit"]',
   email: 'input[name="email"]',
@@ -24,6 +24,11 @@ const sel = {
   confirmation: 'input[name="confirmation"]',
   toast: '[data-sonner-toast]',
 } as const;
+
+/** Profile form locators scoped to main content to avoid matching the Complete Profile modal. */
+function profileInMain(page: import('@playwright/test').Page) {
+  return page.getByRole('main');
+}
 
 const PASSWORD = 'E2eSettingsPass1!';
 
@@ -81,13 +86,14 @@ test.describe('Settings – Core Flow', () => {
     await page.goto(url(ROUTES.common.settings));
     await expect(page).toHaveURL(/\/settings/);
 
-    // ── Profile section visible by default ──
-    await expect(page.locator(sel.fullName)).toBeVisible({ timeout: 15_000 });
-    await expect(page.locator(sel.bio)).toBeVisible();
+    // ── Profile section visible by default (scope to main to avoid Complete Profile modal) ──
+    const main = profileInMain(page);
+    await expect(main.locator(sel.fullName)).toBeVisible({ timeout: 15_000 });
+    await expect(main.locator(sel.bio)).toBeVisible();
 
     // ── Update profile ──
     await expect(async () => {
-      const nameInput = page.locator(sel.fullName);
+      const nameInput = main.locator(sel.fullName);
       await nameInput.click();
       await nameInput.fill('Test User');
       await expect(nameInput).toHaveValue('Test User');
@@ -95,7 +101,7 @@ test.describe('Settings – Core Flow', () => {
 
     // Submit and wait for success toast (retry for slow CI server actions)
     await expect(async () => {
-      await page.locator(sel.profileSubmit).click();
+      await main.locator(sel.profileSubmit).click();
       await expect(page.locator(sel.toast).first()).toBeVisible({ timeout: 10_000 });
     }).toPass({ timeout: 20_000 });
 
@@ -141,7 +147,7 @@ test.describe('Settings – Core Flow', () => {
 
     // No hash defaults to profile
     await page.goto(url(ROUTES.common.settings));
-    await expect(page.locator(sel.fullName)).toBeVisible({ timeout: 15_000 });
+    await expect(profileInMain(page).locator(sel.fullName)).toBeVisible({ timeout: 15_000 });
   });
 });
 

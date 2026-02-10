@@ -108,7 +108,6 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
 
         <Form {...form}>
           <form id="profile-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {/* fullName, role, bio, socialLinks fields - same as before */}
             <FormField
               control={form.control}
               name="fullName"
@@ -219,9 +218,8 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
                       </span>
                       <Button
                         type="button"
-                        variant="ghost"
+                        variant="ghostDestructive"
                         size="icon-sm"
-                        className="text-destructive md:hover:bg-destructive/10 md:hover:text-destructive"
                         onClick={() => setRemoveLinkIndex(index)}
                         aria-label={t('settings.profile.socialLinks.removeLink')}
                       >

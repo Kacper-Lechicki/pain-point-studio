@@ -39,7 +39,6 @@ export const env = createEnv({
    * Necessary for correct tree-shaking and variable detection.
    */
   runtimeEnv: {
-    // Server
     CI: process.env.CI,
     STANDALONE: process.env.STANDALONE,
     NODE_ENV: process.env.NODE_ENV,
@@ -55,7 +54,6 @@ export const env = createEnv({
     SMTP_PORT: process.env.SMTP_PORT,
     SMTP_KEY: process.env.SMTP_KEY,
 
-    // Client
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,

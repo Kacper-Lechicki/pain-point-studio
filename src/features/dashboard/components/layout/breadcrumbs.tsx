@@ -34,7 +34,6 @@ export function Breadcrumbs() {
   const pathname = usePathname();
   const t = useTranslations('breadcrumbs');
 
-  // Split pathname into segments, e.g. "/dashboard/surveys" → ["dashboard", "surveys"]
   const segments = pathname.split('/').filter(Boolean);
 
   if (segments.length === 0) {
@@ -43,14 +42,12 @@ export function Breadcrumbs() {
 
   type BreadcrumbKey = Parameters<typeof t>[0];
 
-  // Build crumbs, collapsing known multi-segment paths
   const crumbs: Crumb[] = [];
   let i = 0;
 
   while (i < segments.length) {
     const segment = segments[i] as string;
 
-    // Check if the next two segments should collapse
     if (i < segments.length - 1) {
       const pair = `${segment}/${segments[i + 1]}`;
       const collapsedKey = COLLAPSED_PATHS[pair];

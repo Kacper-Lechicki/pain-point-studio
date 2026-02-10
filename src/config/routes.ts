@@ -34,8 +34,6 @@ export const SIBLING_GROUPS: readonly (readonly AppRoute[])[] = [
   [ROUTES.auth.signIn, ROUTES.auth.signUp, ROUTES.auth.forgotPassword],
 ];
 
-// ── Settings section ↔ URL hash mapping ──────────────────────────
-
 export const SETTINGS_SECTION_VALUES = [
   'profile',
   'email',

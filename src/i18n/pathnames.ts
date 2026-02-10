@@ -1,5 +1,4 @@
 export const PATHNAMES = {
-  // --- COMMON ---
   '/': {
     en: '/',
   },
@@ -18,7 +17,6 @@ export const PATHNAMES = {
   '/dashboard/analytics': {
     en: '/dashboard/analytics',
   },
-  // --- AUTH ---
   '/sign-in': {
     en: '/sign-in',
   },
