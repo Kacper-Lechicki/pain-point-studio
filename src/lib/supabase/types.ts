@@ -114,6 +114,83 @@ export type Database = {
         };
         Relationships: [];
       };
+      survey_categories: {
+        Row: {
+          id: number;
+          is_active: boolean;
+          label_key: string;
+          sort_order: number;
+          value: string;
+        };
+        Insert: {
+          id?: number;
+          is_active?: boolean;
+          label_key: string;
+          sort_order?: number;
+          value: string;
+        };
+        Update: {
+          id?: number;
+          is_active?: boolean;
+          label_key?: string;
+          sort_order?: number;
+          value?: string;
+        };
+        Relationships: [];
+      };
+      surveys: {
+        Row: {
+          category: string;
+          created_at: string;
+          description: string;
+          ends_at: string | null;
+          id: string;
+          max_respondents: number | null;
+          starts_at: string | null;
+          status: Database['public']['Enums']['survey_status'];
+          title: string;
+          updated_at: string;
+          user_id: string;
+          visibility: string;
+        };
+        Insert: {
+          category: string;
+          created_at?: string;
+          description: string;
+          ends_at?: string | null;
+          id?: string;
+          max_respondents?: number | null;
+          starts_at?: string | null;
+          status?: Database['public']['Enums']['survey_status'];
+          title: string;
+          updated_at?: string;
+          user_id: string;
+          visibility?: string;
+        };
+        Update: {
+          category?: string;
+          created_at?: string;
+          description?: string;
+          ends_at?: string | null;
+          id?: string;
+          max_respondents?: number | null;
+          starts_at?: string | null;
+          status?: Database['public']['Enums']['survey_status'];
+          title?: string;
+          updated_at?: string;
+          user_id?: string;
+          visibility?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'surveys_category_fk';
+            columns: ['category'];
+            isOneToOne: false;
+            referencedRelation: 'survey_categories';
+            referencedColumns: ['value'];
+          },
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -135,7 +212,7 @@ export type Database = {
       };
     };
     Enums: {
-      [_ in never]: never;
+      survey_status: 'draft' | 'active' | 'closed' | 'archived';
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -263,6 +340,8 @@ export const Constants = {
     Enums: {},
   },
   public: {
-    Enums: {},
+    Enums: {
+      survey_status: ['draft', 'active', 'closed', 'archived'],
+    },
   },
 } as const;

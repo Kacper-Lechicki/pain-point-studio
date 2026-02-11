@@ -21,6 +21,19 @@ INSERT INTO public.social_link_types (value, label_key, sort_order, is_active) V
   ('other',    'settings.profile.socialLinks.labels.other',    5, true)
 ON CONFLICT (value) DO NOTHING;
 
+INSERT INTO public.survey_categories (value, label_key, sort_order, is_active) VALUES
+  ('productivity',    'surveys.categories.productivity',    1,  true),
+  ('health',          'surveys.categories.health',          2,  true),
+  ('finance',         'surveys.categories.finance',         3,  true),
+  ('education',       'surveys.categories.education',       4,  true),
+  ('developer-tools', 'surveys.categories.developerTools',  5,  true),
+  ('design',          'surveys.categories.design',          6,  true),
+  ('marketing',       'surveys.categories.marketing',       7,  true),
+  ('communication',   'surveys.categories.communication',   8,  true),
+  ('entertainment',   'surveys.categories.entertainment',   9,  true),
+  ('other',           'surveys.categories.other',           10, true)
+ON CONFLICT (value) DO NOTHING;
+
 -- ============================================================
 -- Helper: lookup user id by email (used by e2e test cleanup)
 -- Only exists in local dev — seed.sql is NOT applied in production.

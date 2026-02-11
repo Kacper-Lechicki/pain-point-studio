@@ -26,7 +26,7 @@ export function useFormAction(options: UseFormActionOptions = {}) {
     onError,
   } = options;
 
-  async function execute<T>(action: (data: T) => Promise<ActionResult>, data: T) {
+  async function execute<T, D = undefined>(action: (data: T) => Promise<ActionResult<D>>, data: T) {
     setIsLoading(true);
 
     try {

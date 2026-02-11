@@ -1,3 +1,3 @@
-export type ActionResult =
-  | { success: true; error?: undefined }
-  | { error: string; success?: undefined };
+export type ActionResult<T = undefined> =
+  | { success: true; error?: undefined; data?: T }
+  | { error: string; success?: undefined; data?: undefined };

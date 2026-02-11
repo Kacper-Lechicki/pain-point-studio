@@ -5,7 +5,7 @@ import { RateLimitConfig, rateLimit } from '@/lib/common/rate-limit';
 import { ActionResult } from '@/lib/common/types';
 import { createClient } from '@/lib/supabase/server';
 
-interface ProtectedActionConfig<TSchema extends ZodType> {
+interface ProtectedActionConfig<TSchema extends ZodType, TData = undefined> {
   schema: TSchema;
   rateLimit: Omit<RateLimitConfig, 'key'>;
   rateLimitError?: string;
@@ -14,14 +14,14 @@ interface ProtectedActionConfig<TSchema extends ZodType> {
     data: z.infer<TSchema>;
     user: User;
     supabase: Awaited<ReturnType<typeof createClient>>;
-  }) => Promise<ActionResult>;
+  }) => Promise<ActionResult<TData>>;
 }
 
-export function withProtectedAction<TSchema extends ZodType>(
+export function withProtectedAction<TSchema extends ZodType, TData = undefined>(
   key: string,
-  config: ProtectedActionConfig<TSchema>
+  config: ProtectedActionConfig<TSchema, TData>
 ) {
-  return async (formData: z.infer<TSchema>): Promise<ActionResult> => {
+  return async (formData: z.infer<TSchema>): Promise<ActionResult<TData>> => {
     const { limited } = await rateLimit({
       key,
       limit: config.rateLimit.limit,
