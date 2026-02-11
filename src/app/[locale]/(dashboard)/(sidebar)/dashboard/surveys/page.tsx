@@ -1,17 +1,18 @@
 import { ClipboardList } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { PageTransition } from '@/components/ui/page-transition';
 import { ROUTES } from '@/config/routes';
+import { getUserSurveys } from '@/features/surveys/actions';
+import { SurveyList } from '@/features/surveys/components/dashboard/survey-list';
 import Link from '@/i18n/link';
 
-export default function SurveysPage() {
-  const t = useTranslations('surveys');
+export default async function SurveysPage() {
+  const [surveys, t] = await Promise.all([getUserSurveys(), getTranslations('surveys')]);
 
-  // TODO: Replace with real survey data check once DB is wired up
-  const hasSurveys = false;
+  const hasSurveys = surveys !== null && surveys.length > 0;
 
   return (
     <PageTransition>
@@ -30,8 +31,7 @@ export default function SurveysPage() {
 
         <div className="mt-8">
           {hasSurveys ? (
-            // TODO: Survey list will go here in a later stage
-            <div />
+            <SurveyList initialSurveys={surveys} />
           ) : (
             <EmptyState
               icon={ClipboardList}
