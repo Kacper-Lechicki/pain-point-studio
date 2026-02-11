@@ -297,6 +297,21 @@
         "saveFailed": "Failed to save questions. Please try again."
       }
     },
+    "publish": {
+      "successTitle": "Your research \"{name}\" is live!",
+      "successDescription": "Share the link below to start collecting responses.",
+      "shareLink": "Survey Link",
+      "shareVia": "Share via",
+      "downloadQR": "Download QR Code",
+      "shareBody": "I'd love your feedback on my survey: {title}\n\n{url}",
+      "shareEmailSubject": "{title} - Quick Survey",
+      "twitter": "Twitter / X",
+      "linkedin": "LinkedIn",
+      "email": "Email",
+      "reddit": "Reddit",
+      "viewDashboard": "View Dashboard",
+      "createAnother": "Create Another Research"
+    },
     "stats": {
       "title": "Survey Results",
       "overview": "Overview",

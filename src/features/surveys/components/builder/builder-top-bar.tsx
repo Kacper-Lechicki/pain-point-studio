@@ -4,12 +4,11 @@ import { useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
-import { BarChart3, Check, List, Loader2, Pencil, Save, Send, Settings2 } from 'lucide-react';
+import { Check, List, Loader2, Pencil, Save, Send, Settings2 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
-import { ClipboardInput } from '@/components/ui/clipboard-input';
 import {
   Dialog,
   DialogContent,
@@ -29,6 +28,7 @@ import { env } from '@/lib/common/env';
 
 import { useQuestionBuilderContext } from '../../hooks/use-question-builder-context';
 import { SurveyMetadataForm } from '../survey-metadata-form';
+import { PublishSuccessDialog } from './publish-success-dialog';
 
 interface BuilderTopBarProps {
   surveyId: string;
@@ -261,36 +261,18 @@ export function BuilderTopBar({
         </DialogContent>
       </Dialog>
 
-      {/* Share link dialog after publish */}
-      <Dialog
-        open={publishedSlug !== null}
-        onOpenChange={(open) => {
-          if (!open) {
+      {publishedSlug && (
+        <PublishSuccessDialog
+          open
+          shareUrl={`${env.NEXT_PUBLIC_APP_URL}/${locale}/r/${publishedSlug}`}
+          surveyId={surveyId}
+          surveyTitle={surveyTitle}
+          onClose={() => {
             setPublishedSlug(null);
             router.push(ROUTES.dashboard.surveys);
-          }
-        }}
-      >
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>{t('surveys.builder.published')}</DialogTitle>
-            <DialogDescription>{t('surveys.stats.shareLink')}</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            {publishedSlug && (
-              <ClipboardInput value={`${env.NEXT_PUBLIC_APP_URL}/${locale}/r/${publishedSlug}`} />
-            )}
-            <div className="flex justify-end gap-2">
-              <Link href={`/dashboard/surveys/stats/${surveyId}`}>
-                <Button variant="outline" size="sm" className="gap-1.5">
-                  <BarChart3 className="size-3.5" />
-                  {t('surveys.stats.viewResults')}
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+          }}
+        />
+      )}
     </>
   );
 }
