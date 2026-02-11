@@ -139,15 +139,47 @@
     "welcome": "Welcome to Pain Point Studio",
     "description": "Start your first research to discover real user pain points. Your research missions will appear here.",
     "empty": "No research missions yet",
-    "startResearch": "Start Research"
+    "startResearch": "Start Research",
+    "surveysEmpty": {
+      "title": "No surveys yet",
+      "description": "Create a quick survey to start collecting user feedback and discover real pain points.",
+      "cta": "Create quick survey"
+    }
+  },
+  "surveys": {
+    "title": "Quick Surveys",
+    "description": "Create and manage quick surveys to collect user feedback.",
+    "createSurvey": "Create quick survey",
+    "empty": {
+      "title": "No surveys yet",
+      "description": "Quick surveys help you validate ideas fast. Create your first one and start collecting feedback in minutes.",
+      "cta": "Create quick survey"
+    },
+    "new": {
+      "title": "Create a Quick Survey",
+      "description": "Choose how you want to start building your survey.",
+      "template": {
+        "title": "Use a template",
+        "description": "Start with a pre-built question set tailored to common research goals.",
+        "badge": "Recommended for beginners",
+        "comingSoon": "Coming soon"
+      },
+      "scratch": {
+        "title": "Start from scratch",
+        "description": "Build your own survey from a blank canvas with full flexibility."
+      }
+    }
   },
   "sidebar": {
     "home": "Home",
     "surveys": "Surveys",
     "analytics": "Analytics",
-    "settings": "Settings",
+    "allSurveys": "All surveys",
+    "newSurvey": "New survey",
+    "projectSettings": "Project Settings",
     "pinSidebar": "Pin sidebar",
-    "unpinSidebar": "Unpin sidebar"
+    "unpinSidebar": "Unpin sidebar",
+    "back": "Back"
   },
   "breadcrumbs": {
     "dashboard": "Dashboard",
@@ -155,7 +187,9 @@
     "analytics": "Analytics",
     "settings": "Settings",
     "profile": "Profile",
-    "preview": "Preview"
+    "preview": "Preview",
+    "new": "New",
+    "create": "Create"
   },
   "navbar": {
     "openMenu": "Open menu",

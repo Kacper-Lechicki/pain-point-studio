@@ -13,6 +13,9 @@ import {
 } from 'react';
 
 import { useBreakpoint } from '@/hooks/common/use-breakpoint';
+import { usePathname } from '@/i18n/routing';
+
+import { type NavItem, findActiveNavItem } from '../../config/navigation';
 
 const STORAGE_KEY = 'sidebar-pinned';
 const HOVER_DELAY = 75;
@@ -56,6 +59,8 @@ interface SidebarContextValue {
   handleMouseEnter: () => void;
   handleMouseLeave: () => void;
   isDesktop: boolean;
+  hasSubPanel: boolean;
+  activeNavItem: NavItem | undefined;
 }
 
 const SidebarContext = createContext<SidebarContextValue | null>(null);
@@ -76,6 +81,7 @@ interface SidebarProviderProps {
 
 export function SidebarProvider({ children }: SidebarProviderProps) {
   const isDesktop = useBreakpoint('lg');
+  const pathname = usePathname();
 
   const isPinned = useSyncExternalStore(
     subscribePinned,
@@ -88,6 +94,9 @@ export function SidebarProvider({ children }: SidebarProviderProps) {
   const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const isMobileOpen = !isDesktop && isMobileOpenRaw;
+
+  const activeNavItem = findActiveNavItem(pathname);
+  const hasSubPanel = activeNavItem !== undefined;
 
   const togglePin = useCallback(() => {
     writePinned(!getPinnedSnapshot());
@@ -134,6 +143,8 @@ export function SidebarProvider({ children }: SidebarProviderProps) {
       handleMouseEnter,
       handleMouseLeave,
       isDesktop,
+      hasSubPanel,
+      activeNavItem,
     }),
     [
       isExpanded,
@@ -144,6 +155,8 @@ export function SidebarProvider({ children }: SidebarProviderProps) {
       handleMouseEnter,
       handleMouseLeave,
       isDesktop,
+      hasSubPanel,
+      activeNavItem,
     ]
   );
 

@@ -14,9 +14,14 @@ const SidebarNavList = ({ isExpanded }: SidebarNavListProps) => {
         <div key={i}>
           {i > 0 && <Separator className="my-2" />}
 
-          <div className="flex flex-col gap-2">
+          <div className={`flex flex-col gap-2 ${isExpanded ? '' : 'items-center'}`}>
             {group.items.map((item) => (
-              <SidebarItem key={item.href} {...item} isExpanded={isExpanded} />
+              <SidebarItem
+                key={item.href}
+                {...item}
+                isExpanded={isExpanded}
+                hasSubNav={!!item.subNav}
+              />
             ))}
           </div>
         </div>

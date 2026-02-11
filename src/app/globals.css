@@ -44,8 +44,9 @@
   --font-sans: Inter, sans-serif;
   --font-serif: Source Serif 4, serif;
   --font-mono: JetBrains Mono, monospace;
-  --sidebar-width-collapsed: 53px;
-  --sidebar-width-expanded: 240px;
+  --sidebar-width-collapsed: 48px;
+  --sidebar-width-expanded: 204px;
+  --sidebar-sub-panel-width: 224px;
   --radius: 0.375rem;
   --shadow-x: 0;
   --shadow-y: 1px;

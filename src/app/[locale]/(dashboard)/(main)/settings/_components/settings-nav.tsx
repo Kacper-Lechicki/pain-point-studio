@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import type { SettingsSectionValue } from '@/config/routes';
+import { CONTENT_NAV_ITEM_CLASSES } from '@/features/dashboard/config/nav-styles';
 
 const SECTIONS = [
   { value: 'profile', icon: CircleUserRound },
@@ -38,7 +39,7 @@ const SettingsNavButtons = ({ activeSection, onSectionChange }: SettingsNavProps
           data-section={value}
           data-state={activeSection === value ? 'active' : 'inactive'}
           onClick={() => onSectionChange(value)}
-          className="text-muted-foreground data-[state=active]:bg-accent data-[state=active]:text-foreground data-[state=active]:border-primary data-[state=inactive]:md:hover:text-foreground data-[state=inactive]:md:hover:border-muted-foreground/30 flex h-10 min-h-10 w-full items-center justify-start gap-2.5 rounded-lg border border-transparent px-3 text-sm font-medium transition-colors data-[state=active]:border-solid md:h-9 md:min-h-9 data-[state=inactive]:md:hover:border-dashed"
+          className={CONTENT_NAV_ITEM_CLASSES}
         >
           <Icon className="size-4 shrink-0" aria-hidden="true" />
           {t(value)}

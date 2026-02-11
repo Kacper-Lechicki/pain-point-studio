@@ -94,7 +94,7 @@ const SettingsPage = ({ profile }: SettingsPageProps) => {
   return (
     <div ref={containerRef} className="invisible mx-auto w-full">
       <div className="flex w-full flex-col gap-4 lg:flex-row lg:items-start lg:gap-8">
-        <div className="sticky top-24 hidden w-(--sidebar-width-expanded) shrink-0 flex-col gap-6 lg:flex">
+        <div className="sticky top-24 hidden w-(--sidebar-sub-panel-width) shrink-0 flex-col gap-6 lg:flex">
           <BackButton />
 
           <SettingsHeader />

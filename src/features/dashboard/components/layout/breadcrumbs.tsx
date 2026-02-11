@@ -15,6 +15,8 @@ const SEGMENT_KEYS: Record<string, string> = {
   settings: 'settings',
   profile: 'profile',
   preview: 'preview',
+  new: 'new',
+  create: 'create',
 };
 
 /**
