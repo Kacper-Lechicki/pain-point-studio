@@ -7,7 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-const TOAST_KEYS = ['signInSuccess', 'emailConfirmed'] as const;
+const TOAST_KEYS = ['signInSuccess', 'emailConfirmed', 'emailChangeConfirmed'] as const;
 
 type ToastKey = (typeof TOAST_KEYS)[number];
 
