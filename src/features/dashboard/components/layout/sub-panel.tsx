@@ -28,7 +28,7 @@ export function SubPanel() {
           style={{
             left: isPinned ? 'var(--sidebar-width-expanded)' : 'var(--sidebar-width-collapsed)',
           }}
-          className="bg-sidebar border-sidebar-border fixed top-14 z-30 hidden h-[calc(100vh-3.5rem)] overflow-hidden border-r border-l transition-[left] duration-200 ease-in-out lg:block"
+          className="bg-sidebar border-sidebar-border dashboard:block fixed top-14 z-30 hidden h-[calc(100vh-3.5rem)] overflow-hidden border-r border-l transition-[left] duration-200 ease-in-out"
         >
           <div className="flex h-full flex-col" style={{ width: 'var(--sidebar-sub-panel-width)' }}>
             {/*

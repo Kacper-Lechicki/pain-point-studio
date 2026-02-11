@@ -137,15 +137,16 @@ export function MobileNav() {
               transition={TRANSITION}
               className="flex flex-1 flex-col overflow-y-auto"
             >
-              {/* Back button */}
+              {/* Back button — same style as other nav items */}
               <div className="px-2 pt-2">
                 <button
                   type="button"
                   onClick={handleBack}
-                  className="text-muted-foreground hover:text-foreground flex min-h-10 items-center gap-2 px-1 text-sm font-medium transition-colors"
+                  data-state="inactive"
+                  className={SIDEBAR_NAV_ITEM_CLASSES}
                 >
-                  <ChevronLeft className="size-4" />
-                  {t('sidebar.back')}
+                  <ChevronLeft className="size-4 shrink-0" aria-hidden />
+                  <span className="truncate">{t('sidebar.back')}</span>
                 </button>
               </div>
 

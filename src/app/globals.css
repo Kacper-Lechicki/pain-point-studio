@@ -6,6 +6,7 @@
 @theme {
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
+  --breakpoint-dashboard: 1400px;
 }
 
 :root {

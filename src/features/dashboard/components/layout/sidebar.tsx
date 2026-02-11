@@ -23,7 +23,7 @@ export function Sidebar() {
         width: isExpanded ? 'var(--sidebar-width-expanded)' : 'var(--sidebar-width-collapsed)',
       }}
       className={cn(
-        'bg-sidebar border-sidebar-border fixed top-14 left-0 z-40 hidden h-[calc(100vh-3.5rem)] flex-col overflow-hidden transition-[width] duration-200 ease-in-out lg:flex',
+        'bg-sidebar border-sidebar-border dashboard:flex fixed top-14 left-0 z-40 hidden h-[calc(100vh-3.5rem)] flex-col overflow-hidden transition-[width] duration-200 ease-in-out',
         // border-r logic:
         // – no sub-panel → always border-r
         // – sub-panel + overlay (hover, unpinned) → border-r (floats above sub-panel)

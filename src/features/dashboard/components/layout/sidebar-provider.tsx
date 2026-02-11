@@ -80,7 +80,7 @@ interface SidebarProviderProps {
 }
 
 export function SidebarProvider({ children }: SidebarProviderProps) {
-  const isDesktop = useBreakpoint('lg');
+  const isDesktop = useBreakpoint('dashboard');
   const pathname = usePathname();
 
   const isPinned = useSyncExternalStore(

@@ -27,7 +27,7 @@ const Navbar = () => {
           <Button
             variant="ghost"
             size="icon-md"
-            className="-ml-2 lg:hidden"
+            className="dashboard:hidden -ml-2"
             onClick={() => setMobileOpen(true)}
             aria-label={t('openMenu')}
           >
