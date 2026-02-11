@@ -1,6 +1,11 @@
 // @vitest-environment node
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+// Mock next-intl/server
+vi.mock('next-intl/server', () => ({
+  getLocale: vi.fn().mockResolvedValue('en'),
+}));
+
 // Mock env
 vi.mock('@/lib/common/env', () => ({
   env: {
@@ -47,9 +52,12 @@ describe('Settings Actions – Update Email', () => {
     const result = await updateEmail({ email: 'new@example.com' });
 
     expect(result).toEqual({ success: true });
-    expect(mockUpdateUser).toHaveBeenCalledWith({
-      email: 'new@example.com',
-    });
+    expect(mockUpdateUser).toHaveBeenCalledWith(
+      { email: 'new@example.com' },
+      {
+        emailRedirectTo: 'https://example.com/en/auth/callback?next=/en/settings&type=email_change',
+      }
+    );
   });
 
   it('should not call Supabase when email is invalid', async () => {

@@ -26,16 +26,16 @@ const ErrorPage = ({ reset, backHref, backLabelKey }: ErrorPageProps) => {
       </div>
 
       <div className="flex gap-3">
-        <Button variant="outline" onClick={reset}>
-          <RotateCcw className="size-4" />
-          {t('retry')}
-        </Button>
-
         <Button variant="default" asChild>
           <Link href={backHref}>
             <ArrowLeft className="size-4" />
             {t(backLabelKey as 'backToSignIn' | 'backToDashboard')}
           </Link>
+        </Button>
+
+        <Button variant="outline" onClick={reset}>
+          <RotateCcw className="size-4" />
+          {t('retry')}
         </Button>
       </div>
     </div>

@@ -49,8 +49,13 @@ export async function GET(
 
       const redirectUrl = new URL(redirectPath, request.url);
 
-      if (redirectPath === fallbackPath) {
-        const toastKey = type === 'signup' ? 'emailConfirmed' : 'signInSuccess';
+      if (redirectPath === fallbackPath || type === 'email_change') {
+        const toastKey =
+          type === 'signup'
+            ? 'emailConfirmed'
+            : type === 'email_change'
+              ? 'emailChangeConfirmed'
+              : 'signInSuccess';
 
         redirectUrl.searchParams.set('toast', toastKey);
       }
