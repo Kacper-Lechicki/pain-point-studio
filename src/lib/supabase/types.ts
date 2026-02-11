@@ -114,6 +114,48 @@ export type Database = {
         };
         Relationships: [];
       };
+      survey_answers: {
+        Row: {
+          created_at: string;
+          id: string;
+          question_id: string;
+          response_id: string;
+          updated_at: string;
+          value: Json;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          question_id: string;
+          response_id: string;
+          updated_at?: string;
+          value: Json;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          question_id?: string;
+          response_id?: string;
+          updated_at?: string;
+          value?: Json;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'survey_answers_question_id_fkey';
+            columns: ['question_id'];
+            isOneToOne: false;
+            referencedRelation: 'survey_questions';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'survey_answers_response_id_fkey';
+            columns: ['response_id'];
+            isOneToOne: false;
+            referencedRelation: 'survey_responses';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       survey_categories: {
         Row: {
           id: number;
@@ -185,6 +227,53 @@ export type Database = {
           },
         ];
       };
+      survey_responses: {
+        Row: {
+          completed_at: string | null;
+          contact_email: string | null;
+          contact_name: string | null;
+          created_at: string;
+          feedback: string | null;
+          id: string;
+          started_at: string;
+          status: string;
+          survey_id: string;
+          updated_at: string;
+        };
+        Insert: {
+          completed_at?: string | null;
+          contact_email?: string | null;
+          contact_name?: string | null;
+          created_at?: string;
+          feedback?: string | null;
+          id?: string;
+          started_at?: string;
+          status?: string;
+          survey_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          completed_at?: string | null;
+          contact_email?: string | null;
+          contact_name?: string | null;
+          created_at?: string;
+          feedback?: string | null;
+          id?: string;
+          started_at?: string;
+          status?: string;
+          survey_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'survey_responses_survey_id_fkey';
+            columns: ['survey_id'];
+            isOneToOne: false;
+            referencedRelation: 'surveys';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       surveys: {
         Row: {
           category: string;
@@ -193,6 +282,7 @@ export type Database = {
           ends_at: string | null;
           id: string;
           max_respondents: number | null;
+          slug: string | null;
           starts_at: string | null;
           status: Database['public']['Enums']['survey_status'];
           title: string;
@@ -207,6 +297,7 @@ export type Database = {
           ends_at?: string | null;
           id?: string;
           max_respondents?: number | null;
+          slug?: string | null;
           starts_at?: string | null;
           status?: Database['public']['Enums']['survey_status'];
           title: string;
@@ -221,6 +312,7 @@ export type Database = {
           ends_at?: string | null;
           id?: string;
           max_respondents?: number | null;
+          slug?: string | null;
           starts_at?: string | null;
           status?: Database['public']['Enums']['survey_status'];
           title?: string;
@@ -250,6 +342,10 @@ export type Database = {
           confirm_status: number;
           new_email: string;
         }[];
+      };
+      get_survey_response_count: {
+        Args: { p_survey_id: string };
+        Returns: number;
       };
       get_user_id_by_email: { Args: { lookup_email: string }; Returns: string };
       has_password: { Args: never; Returns: boolean };

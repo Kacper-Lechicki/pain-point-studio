@@ -5,12 +5,13 @@ import { z } from 'zod';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
 
 import { QUESTIONS_MIN } from '../config';
+import { generateSurveySlug } from '../lib/generate-slug';
 
 const publishSurveySchema = z.object({
   surveyId: z.string().uuid(),
 });
 
-export const publishSurvey = withProtectedAction<typeof publishSurveySchema, void>(
+export const publishSurvey = withProtectedAction<typeof publishSurveySchema, { slug: string }>(
   'publish-survey',
   {
     schema: publishSurveySchema,
@@ -27,9 +28,11 @@ export const publishSurvey = withProtectedAction<typeof publishSurveySchema, voi
         return { error: 'surveys.builder.errors.minQuestionsToPublish' };
       }
 
+      const slug = generateSurveySlug();
+
       const { error } = await supabase
         .from('surveys')
-        .update({ status: 'active' as const })
+        .update({ status: 'active' as const, slug })
         .eq('id', data.surveyId)
         .eq('user_id', user.id)
         .eq('status', 'draft' as const);
@@ -38,7 +41,7 @@ export const publishSurvey = withProtectedAction<typeof publishSurveySchema, voi
         return { error: 'surveys.errors.unexpected' };
       }
 
-      return { success: true };
+      return { success: true, data: { slug } };
     },
   }
 );

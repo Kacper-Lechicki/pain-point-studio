@@ -15,6 +15,7 @@ const PUBLIC_ROUTES = [
   ROUTES.auth.signUp,
   ROUTES.auth.forgotPassword,
   ROUTES.auth.updatePassword,
+  '/r',
 ];
 
 const AUTH_ROUTES = [ROUTES.auth.signIn, ROUTES.auth.signUp, ROUTES.auth.forgotPassword];

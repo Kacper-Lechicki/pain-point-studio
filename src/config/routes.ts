@@ -25,6 +25,9 @@ export const ROUTES = {
   profile: {
     preview: '/profile/preview' as AppRoute,
   },
+  survey: {
+    respond: '/r',
+  },
 } as const;
 
 /**

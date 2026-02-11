@@ -296,6 +296,82 @@
         "minQuestionsToPublish": "Add at least 1 question with text before publishing.",
         "saveFailed": "Failed to save questions. Please try again."
       }
+    },
+    "stats": {
+      "title": "Survey Results",
+      "overview": "Overview",
+      "totalResponses": "Total Responses",
+      "completedResponses": "Completed",
+      "inProgress": "In Progress",
+      "progressToLimit": "{count} of {max} responses",
+      "closeSurvey": "Close Survey",
+      "closeSurveyConfirm": "Are you sure you want to close this survey? It will stop accepting new responses.",
+      "surveyClosed": "Survey closed successfully.",
+      "shareLink": "Share Link",
+      "copyLink": "Copy link",
+      "linkCopied": "Link copied!",
+      "export": "Export",
+      "exportCSV": "Export CSV",
+      "exportJSON": "Export JSON",
+      "exporting": "Exporting...",
+      "noResponses": "No responses yet",
+      "noResponsesDescription": "Share the survey link to start collecting feedback.",
+      "questionBreakdown": "Question Breakdown",
+      "responses": "responses",
+      "average": "Average: {value}",
+      "recentResponses": "Recent Responses",
+      "viewResults": "View Results"
+    }
+  },
+  "respondent": {
+    "landing": {
+      "questionsCount": "{count, plural, one {# question} other {# questions}}",
+      "estimatedTime": "About {minutes} min to complete",
+      "responsesCount": "{count, plural, one {# person already responded} other {# people already responded}}",
+      "anonymousInfo": "Your responses are anonymous. No login required.",
+      "start": "Start Survey",
+      "alreadyCompleted": {
+        "title": "You've already completed this survey",
+        "description": "Your response was submitted on {date}.",
+        "respondAgain": "Submit another response anyway"
+      }
+    },
+    "flow": {
+      "questionOf": "Question {current} of {total}",
+      "next": "Next",
+      "previous": "Previous",
+      "skip": "Skip",
+      "finish": "Finish",
+      "required": "Required"
+    },
+    "completion": {
+      "title": "Review & Submit",
+      "summary": "You answered {answered} of {total} questions.",
+      "contactTitle": "Optional: Leave your contact info",
+      "contactDescription": "If you'd like to be contacted about your responses, you can leave your details below.",
+      "name": "Name",
+      "namePlaceholder": "Your name",
+      "email": "Email",
+      "emailPlaceholder": "your@email.com",
+      "feedbackTitle": "Any additional feedback?",
+      "feedbackPlaceholder": "Share anything else you'd like us to know...",
+      "submit": "Submit Responses",
+      "submitting": "Submitting..."
+    },
+    "thankYou": {
+      "title": "Thank you!",
+      "description": "Your responses have been recorded. Thank you for taking the time to share your thoughts."
+    },
+    "closed": {
+      "title": "Survey Unavailable",
+      "closed": "This survey is no longer accepting responses.",
+      "expired": "This survey has ended.",
+      "maxReached": "This survey has reached its maximum number of responses."
+    },
+    "errors": {
+      "startFailed": "Failed to start the survey. Please try again.",
+      "saveFailed": "Failed to save your answer. Please try again.",
+      "submitFailed": "Failed to submit your responses. Please try again."
     }
   },
   "sidebar": {

@@ -4,11 +4,12 @@ import { useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
-import { Check, List, Loader2, Pencil, Save, Send, Settings2 } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { BarChart3, Check, List, Loader2, Pencil, Save, Send, Settings2 } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
+import { ClipboardInput } from '@/components/ui/clipboard-input';
 import {
   Dialog,
   DialogContent,
@@ -24,6 +25,7 @@ import type { SurveyMetadataSchema } from '@/features/surveys/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import Link from '@/i18n/link';
 import type { MessageKey } from '@/i18n/types';
+import { env } from '@/lib/common/env';
 
 import { useQuestionBuilderContext } from '../../hooks/use-question-builder-context';
 import { SurveyMetadataForm } from '../survey-metadata-form';
@@ -50,9 +52,11 @@ export function BuilderTopBar({
   onToggleSettings,
 }: BuilderTopBarProps) {
   const t = useTranslations();
+  const locale = useLocale();
   const router = useRouter();
   const { state, dispatch } = useQuestionBuilderContext();
   const [metadataDialogOpen, setMetadataDialogOpen] = useState(false);
+  const [publishedSlug, setPublishedSlug] = useState<string | null>(null);
 
   const saveAction = useFormAction({
     successMessage: 'surveys.create.draftSaved' as MessageKey,
@@ -66,10 +70,16 @@ export function BuilderTopBar({
     },
   });
 
-  const publishAction = useFormAction({
+  const publishAction = useFormAction<{ slug: string }>({
     successMessage: 'surveys.builder.published' as MessageKey,
     unexpectedErrorMessage: 'surveys.errors.unexpected' as MessageKey,
-    onSuccess: () => router.push(ROUTES.dashboard.surveys),
+    onSuccess: (data) => {
+      if (data?.slug) {
+        setPublishedSlug(data.slug);
+      } else {
+        router.push(ROUTES.dashboard.surveys);
+      }
+    },
   });
 
   const hasQuestions = state.questions.some((q) => q.text.trim().length > 0);
@@ -248,6 +258,37 @@ export function BuilderTopBar({
               </div>
             )}
           />
+        </DialogContent>
+      </Dialog>
+
+      {/* Share link dialog after publish */}
+      <Dialog
+        open={publishedSlug !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setPublishedSlug(null);
+            router.push(ROUTES.dashboard.surveys);
+          }
+        }}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t('surveys.builder.published')}</DialogTitle>
+            <DialogDescription>{t('surveys.stats.shareLink')}</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            {publishedSlug && (
+              <ClipboardInput value={`${env.NEXT_PUBLIC_APP_URL}/${locale}/r/${publishedSlug}`} />
+            )}
+            <div className="flex justify-end gap-2">
+              <Link href={`/dashboard/surveys/stats/${surveyId}`}>
+                <Button variant="outline" size="sm" className="gap-1.5">
+                  <BarChart3 className="size-3.5" />
+                  {t('surveys.stats.viewResults')}
+                </Button>
+              </Link>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </>

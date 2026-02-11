@@ -186,3 +186,7 @@ export function validateQuestionConfig(
 export interface QuestionState extends QuestionSchema {
   _isNew?: boolean;
 }
+
+// ── Response types ──────────────────────────────────────────────────
+
+export * from './response';
