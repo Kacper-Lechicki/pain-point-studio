@@ -113,6 +113,7 @@
     "signInSuccess": "Signed in",
     "signOutSuccess": "Signed out",
     "emailConfirmed": "Email confirmed. You are now signed in",
+    "emailChangeConfirmed": "Email address updated",
     "passwordUpdated": "Password updated",
     "unexpectedError": "Something went wrong. Please try again.",
     "errors": {
