@@ -9,6 +9,8 @@ export interface SubNavItem {
   labelKey: MessageKey;
   icon: LucideIcon;
   href: AppRoute;
+  /** Additional pathnames that should highlight this item as active. */
+  alsoActiveFor?: readonly string[] | undefined;
 }
 
 // ── Optional group heading for sub-panel items ────────────────────────
@@ -63,6 +65,7 @@ export const SIDEBAR_NAV: NavGroup[] = [
                   labelKey: 'sidebar.newSurvey',
                   icon: Plus,
                   href: '/dashboard/surveys/new' as AppRoute,
+                  alsoActiveFor: ['/dashboard/surveys/create'],
                 },
               ],
             },

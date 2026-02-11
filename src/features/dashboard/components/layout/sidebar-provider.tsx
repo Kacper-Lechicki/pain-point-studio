@@ -93,7 +93,7 @@ export function SidebarProvider({ children }: SidebarProviderProps) {
 
   const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const isMobileOpen = !isDesktop && isMobileOpenRaw;
+  const isMobileOpen = isMobileOpenRaw;
 
   const activeNavItem = findActiveNavItem(pathname);
   const hasSubPanel = activeNavItem !== undefined;

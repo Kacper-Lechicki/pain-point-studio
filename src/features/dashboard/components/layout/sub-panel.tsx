@@ -56,7 +56,8 @@ export function SubPanel() {
 
                   <div className="flex flex-col gap-2">
                     {group.items.map((item) => {
-                      const isActive = pathname === item.href;
+                      const isActive =
+                        pathname === item.href || (item.alsoActiveFor?.includes(pathname) ?? false);
 
                       return (
                         <Link

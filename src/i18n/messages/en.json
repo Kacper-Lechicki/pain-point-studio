@@ -143,18 +143,18 @@
     "startResearch": "Start Research",
     "surveysEmpty": {
       "title": "No surveys yet",
-      "description": "Create a quick survey to start collecting user feedback and discover real pain points.",
-      "cta": "Create quick survey"
+      "description": "Create a survey to start collecting user feedback and discover real pain points.",
+      "cta": "Create survey"
     }
   },
   "surveys": {
-    "title": "Quick Surveys",
-    "description": "Create and manage quick surveys to collect user feedback.",
-    "createSurvey": "Create quick survey",
+    "title": "Surveys",
+    "description": "Create and manage surveys to collect user feedback.",
+    "createSurvey": "Create survey",
     "empty": {
       "title": "No surveys yet",
-      "description": "Quick surveys help you validate ideas fast. Create your first one and start collecting feedback in minutes.",
-      "cta": "Create quick survey"
+      "description": "Surveys help you validate ideas fast. Create your first one and start collecting feedback in minutes.",
+      "cta": "Create survey"
     },
     "categories": {
       "productivity": "Productivity",
@@ -206,7 +206,7 @@
       "unexpected": "Something went wrong. Please try again."
     },
     "new": {
-      "title": "Create a Quick Survey",
+      "title": "Create a Survey",
       "description": "Choose how you want to start building your survey.",
       "template": {
         "title": "Use a template",
@@ -217,6 +217,84 @@
       "scratch": {
         "title": "Start from scratch",
         "description": "Build your own survey from a blank canvas with full flexibility."
+      }
+    },
+    "builder": {
+      "questionsCount": "Questions ({count}/{max})",
+      "addQuestion": "Add question",
+      "noQuestionSelected": "Select a question to edit",
+      "questions": "Questions",
+      "questionSettings": "Settings",
+      "untitledQuestion": "Untitled question",
+      "questionTextPlaceholder": "Type your question here...",
+      "descriptionPlaceholder": "Add an optional description...",
+      "addDescription": "Add description",
+      "removeDescription": "Remove description",
+      "removeDescriptionConfirmTitle": "Remove description",
+      "removeDescriptionConfirm": "Are you sure you want to remove the description? This action cannot be undone.",
+      "questionDeleted": "Question deleted.",
+      "undo": "Undo",
+      "saveDraft": "Save Draft",
+      "saving": "Saving...",
+      "saved": "Saved",
+      "saveError": "Error saving",
+      "editMetadata": "Edit survey details",
+      "metadataUpdated": "Survey details updated.",
+      "publish": "Publish",
+      "published": "Survey published!",
+      "preview": "Preview",
+      "required": "Required",
+      "questionType": "Question type",
+      "settings": "Settings",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "questionActions": "Question actions",
+      "deleteQuestion": "Delete question",
+      "deleteQuestionConfirmTitle": "Delete question",
+      "deleteQuestionConfirm": "Are you sure you want to delete this question? This action cannot be undone.",
+      "emptyState": {
+        "title": "Start building your research",
+        "description": "Add your first question to get started.",
+        "addQuestion": "Add question"
+      },
+      "types": {
+        "openText": "Open Text",
+        "shortText": "Short Text",
+        "multipleChoice": "Multiple Choice",
+        "ratingScale": "Rating Scale",
+        "yesNo": "Yes / No"
+      },
+      "typeSettings": {
+        "placeholder": "Placeholder text",
+        "maxLength": "Max character length",
+        "options": "Options",
+        "addOption": "Add option",
+        "removeOption": "Remove option",
+        "optionPlaceholder": "Option {number}",
+        "allowOther": "Allow \"Other\" option",
+        "minSelections": "Min selections",
+        "maxSelections": "Max selections",
+        "scaleMin": "Minimum value",
+        "scaleMax": "Maximum value",
+        "minLabel": "Min label",
+        "minLabelPlaceholder": "e.g., Not at all",
+        "maxLabel": "Max label",
+        "maxLabelPlaceholder": "e.g., Extremely"
+      },
+      "errors": {
+        "questionTextRequired": "Question text is required.",
+        "questionTextTooLong": "Question text must be 500 characters or fewer.",
+        "descriptionTooLong": "Description must be 500 characters or fewer.",
+        "minOptions": "At least 2 options are required.",
+        "maxOptions": "Maximum 10 options allowed.",
+        "optionTooLong": "Each option must be 200 characters or fewer.",
+        "ratingMinValue": "Minimum value must be at least 1.",
+        "ratingMaxValue": "Maximum value must be at most 10.",
+        "ratingMinGreaterMax": "Minimum must be less than maximum.",
+        "minQuestions": "At least 1 question is required.",
+        "maxQuestions": "Maximum 15 questions allowed.",
+        "minQuestionsToPublish": "Add at least 1 question with text before publishing.",
+        "saveFailed": "Failed to save questions. Please try again."
       }
     }
   },

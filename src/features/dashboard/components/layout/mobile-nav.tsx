@@ -171,7 +171,9 @@ export function MobileNav() {
 
                     <div className="flex flex-col gap-2">
                       {group.items.map((subItem) => {
-                        const isActive = pathname === subItem.href;
+                        const isActive =
+                          pathname === subItem.href ||
+                          (subItem.alsoActiveFor?.includes(pathname) ?? false);
 
                         return (
                           <Link

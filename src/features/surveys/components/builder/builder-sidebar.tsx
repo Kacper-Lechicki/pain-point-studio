@@ -1,0 +1,111 @@
+'use client';
+
+import { useState } from 'react';
+
+import { Plus } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+
+import { Button } from '@/components/ui/button';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { QUESTIONS_MAX } from '@/features/surveys/config';
+
+import { useQuestionBuilderContext } from '../../hooks/use-question-builder-context';
+import { BuilderSidebarItem } from './builder-sidebar-item';
+
+interface BuilderSidebarProps {
+  /** When true, sidebar renders inline (desktop). When false, renders inside a Sheet (mobile). */
+  isDesktop: boolean;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
+
+function BuilderSidebarContent({ onItemSelect }: { onItemSelect?: () => void }) {
+  const t = useTranslations('surveys.builder');
+  const { state, addQuestion, selectQuestion, deleteQuestion, moveQuestion } =
+    useQuestionBuilderContext();
+  const [deleteQuestionId, setDeleteQuestionId] = useState<string | null>(null);
+
+  return (
+    <>
+      {/* Header */}
+      <div className="border-border flex items-center justify-between border-b px-4 py-2">
+        <span className="text-muted-foreground text-xs font-medium">
+          {t('questionsCount', { count: state.questions.length, max: QUESTIONS_MAX })}
+        </span>
+        <Button
+          variant="ghost"
+          size="icon-xs"
+          onClick={() => addQuestion()}
+          disabled={state.questions.length >= QUESTIONS_MAX}
+          aria-label={t('addQuestion')}
+        >
+          <Plus className="size-4" />
+        </Button>
+      </div>
+
+      {/* Question list */}
+      <div className="flex-1 overflow-y-auto">
+        {state.questions.map((question, index) => (
+          <BuilderSidebarItem
+            key={question.id}
+            question={question}
+            index={index}
+            isActive={question.id === state.activeQuestionId}
+            isFirst={index === 0}
+            isLast={index === state.questions.length - 1}
+            onSelect={() => {
+              selectQuestion(question.id);
+              onItemSelect?.();
+            }}
+            onDelete={() => setDeleteQuestionId(question.id)}
+            onMoveUp={() => moveQuestion(question.id, 'up')}
+            onMoveDown={() => moveQuestion(question.id, 'down')}
+          />
+        ))}
+      </div>
+
+      <ConfirmDialog
+        open={deleteQuestionId !== null}
+        onOpenChange={(open) => !open && setDeleteQuestionId(null)}
+        onConfirm={() => {
+          if (deleteQuestionId) {
+            deleteQuestion(deleteQuestionId);
+            setDeleteQuestionId(null);
+          }
+        }}
+        title={t('deleteQuestionConfirmTitle')}
+        description={t('deleteQuestionConfirm')}
+        confirmLabel={t('deleteQuestion')}
+      />
+    </>
+  );
+}
+
+export function BuilderSidebar({ isDesktop, open, onOpenChange }: BuilderSidebarProps) {
+  const t = useTranslations('surveys.builder');
+
+  if (isDesktop) {
+    return (
+      <div className="border-border flex max-w-[280px] min-w-[280px] flex-col border-r">
+        <BuilderSidebarContent />
+      </div>
+    );
+  }
+
+  return (
+    <Sheet open={open ?? false} onOpenChange={onOpenChange ?? (() => {})}>
+      <SheetContent
+        side="left"
+        className="flex w-72 flex-col p-0"
+        showCloseButton={false}
+        aria-describedby={undefined}
+      >
+        <SheetHeader className="border-border border-b px-4 py-2">
+          <SheetTitle className="text-sm font-medium">{t('questions')}</SheetTitle>
+        </SheetHeader>
+        <BuilderSidebarContent onItemSelect={() => onOpenChange?.(false)} />
+      </SheetContent>
+    </Sheet>
+  );
+}

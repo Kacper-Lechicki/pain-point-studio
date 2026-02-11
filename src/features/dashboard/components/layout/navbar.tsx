@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { UserMenu } from '@/features/auth/components/common/user-menu';
 import { usePathname } from '@/i18n/routing';
+import { cn } from '@/lib/common/utils';
 
 import { Breadcrumbs } from './breadcrumbs';
 import { ProjectSelector } from './project-selector';
@@ -16,18 +17,22 @@ const Navbar = () => {
   const { setMobileOpen } = useSidebar();
   const t = useTranslations('navbar');
   const pathname = usePathname();
-  const hasSidebar = pathname.startsWith('/dashboard');
+  const isDashboard = pathname.startsWith('/dashboard');
+  const isBuilder = isDashboard && /^\/dashboard\/surveys\/new\/.+/.test(pathname);
+  const hasSidebar = isDashboard && !isBuilder;
+  const isFullWidth = isDashboard;
+  const showHamburger = hasSidebar || isBuilder;
 
   return (
     <nav className="bg-background/80 border-border fixed inset-x-0 top-0 z-50 backdrop-blur-md lg:border-b">
       <div
-        className={`flex h-14 items-center gap-3 px-4 ${!hasSidebar ? 'container mx-auto sm:px-4 lg:px-8' : ''}`}
+        className={`flex h-14 items-center gap-3 px-4 ${!isFullWidth ? 'container mx-auto sm:px-4 lg:px-8' : ''}`}
       >
-        {hasSidebar && (
+        {showHamburger && (
           <Button
             variant="ghost"
             size="icon-md"
-            className="dashboard:hidden -ml-2"
+            className={cn('-ml-2', !isBuilder && 'dashboard:hidden')}
             onClick={() => setMobileOpen(true)}
             aria-label={t('openMenu')}
           >

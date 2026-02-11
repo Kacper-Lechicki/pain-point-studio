@@ -138,6 +138,53 @@ export type Database = {
         };
         Relationships: [];
       };
+      survey_questions: {
+        Row: {
+          config: Json;
+          created_at: string;
+          description: string | null;
+          id: string;
+          required: boolean;
+          sort_order: number;
+          survey_id: string;
+          text: string;
+          type: Database['public']['Enums']['question_type'];
+          updated_at: string;
+        };
+        Insert: {
+          config?: Json;
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          required?: boolean;
+          sort_order: number;
+          survey_id: string;
+          text: string;
+          type: Database['public']['Enums']['question_type'];
+          updated_at?: string;
+        };
+        Update: {
+          config?: Json;
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          required?: boolean;
+          sort_order?: number;
+          survey_id?: string;
+          text?: string;
+          type?: Database['public']['Enums']['question_type'];
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'survey_questions_survey_id_fkey';
+            columns: ['survey_id'];
+            isOneToOne: false;
+            referencedRelation: 'surveys';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       surveys: {
         Row: {
           category: string;
@@ -212,6 +259,7 @@ export type Database = {
       };
     };
     Enums: {
+      question_type: 'open_text' | 'short_text' | 'multiple_choice' | 'rating_scale' | 'yes_no';
       survey_status: 'draft' | 'active' | 'closed' | 'archived';
     };
     CompositeTypes: {
@@ -341,6 +389,7 @@ export const Constants = {
   },
   public: {
     Enums: {
+      question_type: ['open_text', 'short_text', 'multiple_choice', 'rating_scale', 'yes_no'],
       survey_status: ['draft', 'active', 'closed', 'archived'],
     },
   },

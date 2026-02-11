@@ -5,7 +5,6 @@ import { useTranslations } from 'next-intl';
 
 import type { AppRoute } from '@/config/routes';
 import { Link, usePathname } from '@/i18n/routing';
-import { cn } from '@/lib/common/utils';
 
 /** Known URL segments → breadcrumbs namespace keys */
 const SEGMENT_KEYS: Record<string, string> = {
@@ -64,29 +63,38 @@ export function Breadcrumbs() {
 
     const href = '/' + segments.slice(0, i + 1).join('/');
     const key = SEGMENT_KEYS[segment];
-    const label = key ? t(key as BreadcrumbKey) : segment;
+
+    // Skip unknown segments (UUIDs, dynamic IDs, etc.)
+    if (!key) {
+      i++;
+      continue;
+    }
+
+    const label = t(key as BreadcrumbKey);
     crumbs.push({ label, href });
     i++;
   }
 
   return (
     <nav aria-label="Breadcrumb">
-      <ol className="flex items-center gap-1 text-sm">
+      <ol className="flex min-w-0 items-center gap-1 text-xs sm:text-sm">
         {crumbs.map((crumb, index) => {
           const isLast = index === crumbs.length - 1;
 
           return (
-            <li key={crumb.href} className="flex items-center gap-1">
-              {index > 0 && <ChevronRight className="text-muted-foreground size-3.5 shrink-0" />}
+            <li
+              key={crumb.href}
+              className={`flex items-center gap-1 ${isLast ? 'min-w-0' : 'shrink-0'}`}
+            >
+              {index > 0 && (
+                <ChevronRight className="text-muted-foreground size-3 shrink-0 sm:size-3.5" />
+              )}
               {isLast ? (
-                <span className="text-foreground font-medium">{crumb.label}</span>
+                <span className="text-foreground truncate font-medium">{crumb.label}</span>
               ) : (
                 <Link
                   href={crumb.href as AppRoute}
-                  className={cn(
-                    'text-muted-foreground hover:text-foreground transition-colors',
-                    index === 0 ? 'inline' : 'hidden sm:inline'
-                  )}
+                  className="text-muted-foreground hover:text-foreground shrink-0 whitespace-nowrap transition-colors"
                 >
                   {crumb.label}
                 </Link>
