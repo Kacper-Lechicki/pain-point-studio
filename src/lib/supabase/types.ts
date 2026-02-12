@@ -362,6 +362,19 @@ export type Database = {
         Returns: undefined;
       };
       start_survey_response: { Args: { p_survey_id: string }; Returns: string };
+      submit_survey_response: {
+        Args: {
+          p_contact_email?: string;
+          p_contact_name?: string;
+          p_feedback?: string;
+          p_response_id: string;
+        };
+        Returns: undefined;
+      };
+      validate_and_save_answer: {
+        Args: { p_question_id: string; p_response_id: string; p_value: Json };
+        Returns: undefined;
+      };
       verify_password: {
         Args: { current_plain_password: string };
         Returns: boolean;

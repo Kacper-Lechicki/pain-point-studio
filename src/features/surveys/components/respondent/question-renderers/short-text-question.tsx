@@ -1,6 +1,7 @@
 'use client';
 
 import { Input } from '@/components/ui/input';
+import { SHORT_TEXT_DEFAULT_MAX_LENGTH } from '@/features/surveys/config';
 
 interface ShortTextQuestionProps {
   value: string;
@@ -10,7 +11,7 @@ interface ShortTextQuestionProps {
 
 export const ShortTextQuestion = ({ value, config, onChange }: ShortTextQuestionProps) => {
   const placeholder = (config.placeholder as string) || '';
-  const maxLength = (config.maxLength as number) || 500;
+  const maxLength = (config.maxLength as number) || SHORT_TEXT_DEFAULT_MAX_LENGTH;
 
   return (
     <div>

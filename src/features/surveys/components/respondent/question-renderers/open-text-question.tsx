@@ -1,6 +1,7 @@
 'use client';
 
 import { Textarea } from '@/components/ui/textarea';
+import { OPEN_TEXT_DEFAULT_MAX_LENGTH } from '@/features/surveys/config';
 
 interface OpenTextQuestionProps {
   value: string;
@@ -10,7 +11,7 @@ interface OpenTextQuestionProps {
 
 export const OpenTextQuestion = ({ value, config, onChange }: OpenTextQuestionProps) => {
   const placeholder = (config.placeholder as string) || '';
-  const maxLength = (config.maxLength as number) || 5000;
+  const maxLength = (config.maxLength as number) || OPEN_TEXT_DEFAULT_MAX_LENGTH;
 
   return (
     <div>

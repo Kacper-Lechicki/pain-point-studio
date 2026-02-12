@@ -447,7 +447,8 @@
     "errors": {
       "startFailed": "Failed to start the survey. Please try again.",
       "saveFailed": "Failed to save your answer. Please try again.",
-      "submitFailed": "Failed to submit your responses. Please try again."
+      "submitFailed": "Failed to submit your responses. Please try again.",
+      "requiredQuestionsUnanswered": "Please answer all required questions before submitting."
     }
   },
   "sidebar": {

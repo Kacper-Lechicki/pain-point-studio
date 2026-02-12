@@ -28,20 +28,34 @@ export const publishSurvey = withProtectedAction<typeof publishSurveySchema, { s
         return { error: 'surveys.builder.errors.minQuestionsToPublish' };
       }
 
-      const slug = generateSurveySlug();
+      // Retry loop for slug collision (unique constraint violation)
+      const MAX_RETRIES = 3;
 
-      const { error } = await supabase
-        .from('surveys')
-        .update({ status: 'active' as const, slug })
-        .eq('id', data.surveyId)
-        .eq('user_id', user.id)
-        .eq('status', 'draft' as const);
+      for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+        const slug = generateSurveySlug();
 
-      if (error) {
+        const { error } = await supabase
+          .from('surveys')
+          .update({ status: 'active' as const, slug })
+          .eq('id', data.surveyId)
+          .eq('user_id', user.id)
+          .eq('status', 'draft' as const);
+
+        if (!error) {
+          return { success: true, data: { slug } };
+        }
+
+        // Unique constraint violation — retry with a new slug
+        const isSlugCollision = error.code === '23505';
+
+        if (isSlugCollision && attempt < MAX_RETRIES) {
+          continue;
+        }
+
         return { error: 'surveys.errors.unexpected' };
       }
 
-      return { success: true, data: { slug } };
+      return { error: 'surveys.errors.unexpected' };
     },
   }
 );

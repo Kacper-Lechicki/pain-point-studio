@@ -1,5 +1,7 @@
 'use client';
 
+import { useMemo } from 'react';
+
 import { useTranslations } from 'next-intl';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 
@@ -25,24 +27,28 @@ export const RatingDistributionChart = ({ answers }: RatingDistributionChartProp
     },
   } satisfies ChartConfig;
 
-  // Count ratings
-  const counts = new Map<number, number>();
+  const { data, average } = useMemo(() => {
+    const counts = new Map<number, number>();
+    let sum = 0;
+    let total = 0;
 
-  for (const a of answers) {
-    const rating = a.value.rating as number;
+    for (const a of answers) {
+      const rating = a.value.rating as number;
 
-    if (typeof rating === 'number') {
-      counts.set(rating, (counts.get(rating) ?? 0) + 1);
+      if (typeof rating === 'number') {
+        counts.set(rating, (counts.get(rating) ?? 0) + 1);
+        sum += rating;
+        total++;
+      }
     }
-  }
 
-  // Calculate average
-  const ratings = answers.map((a) => a.value.rating as number).filter((r) => typeof r === 'number');
-  const average = ratings.length > 0 ? ratings.reduce((a, b) => a + b, 0) / ratings.length : 0;
-
-  const data = Array.from(counts.entries())
-    .map(([rating, count]) => ({ rating: String(rating), count }))
-    .sort((a, b) => Number(a.rating) - Number(b.rating));
+    return {
+      data: Array.from(counts.entries())
+        .map(([rating, count]) => ({ rating: String(rating), count }))
+        .sort((a, b) => Number(a.rating) - Number(b.rating)),
+      average: total > 0 ? sum / total : 0,
+    };
+  }, [answers]);
 
   if (data.length === 0) {
     return <p className="text-muted-foreground text-sm">{t('noChartData')}</p>;

@@ -15,3 +15,10 @@ export const RATING_SCALE_MAX = 10;
 
 // Estimated seconds per question (used to calculate survey completion time)
 export const ESTIMATED_SECONDS_PER_QUESTION = 30;
+
+// Default max-length fallbacks for text question renderers
+export const OPEN_TEXT_DEFAULT_MAX_LENGTH = 5000;
+export const SHORT_TEXT_DEFAULT_MAX_LENGTH = 500;
+
+// Tolerance when validating start date is not in the past (ms)
+export const START_DATE_TOLERANCE_MS = 60_000;

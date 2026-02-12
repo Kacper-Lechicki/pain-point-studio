@@ -27,8 +27,10 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
   const t = useTranslations('surveys.stats');
   const locale = useLocale();
   const [showCloseDialog, setShowCloseDialog] = useState(false);
-  const [isClosed, setIsClosed] = useState(stats.survey.status === 'closed');
+  const [optimisticallyClosed, setOptimisticallyClosed] = useState(false);
   const [, startTransition] = useTransition();
+
+  const isClosed = stats.survey.status === 'closed' || optimisticallyClosed;
 
   const shareUrl = stats.survey.slug
     ? `${env.NEXT_PUBLIC_APP_URL}/${locale}/r/${stats.survey.slug}`
@@ -39,7 +41,7 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
       const result = await closeSurvey({ surveyId: stats.survey.id });
 
       if (result.success) {
-        setIsClosed(true);
+        setOptimisticallyClosed(true);
         toast.success(t('surveyClosed'));
       }
 

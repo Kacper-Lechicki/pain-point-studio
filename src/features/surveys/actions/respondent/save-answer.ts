@@ -9,16 +9,21 @@ export const saveAnswer = withPublicAction<typeof saveAnswerSchema, void>('save-
   schema: saveAnswerSchema,
   rateLimit: { limit: 120, windowSeconds: 60 },
   action: async ({ data, supabase }) => {
-    const { error } = await supabase.from('survey_answers').upsert(
-      {
-        response_id: data.responseId,
-        question_id: data.questionId,
-        value: data.value as Json,
-      },
-      { onConflict: 'response_id,question_id' }
-    );
+    const { error } = await supabase.rpc('validate_and_save_answer', {
+      p_response_id: data.responseId,
+      p_question_id: data.questionId,
+      p_value: data.value as Json,
+    });
 
     if (error) {
+      if (error.message.includes('QUESTION_SURVEY_MISMATCH')) {
+        return { error: 'respondent.errors.saveFailed' };
+      }
+
+      if (error.message.includes('RESPONSE_ALREADY_COMPLETED')) {
+        return { error: 'respondent.errors.saveFailed' };
+      }
+
       return { error: 'respondent.errors.saveFailed' };
     }
 

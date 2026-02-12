@@ -10,6 +10,7 @@ import {
   QUESTION_TEXT_MAX_LENGTH,
   RATING_SCALE_MAX,
   RATING_SCALE_MIN,
+  START_DATE_TOLERANCE_MS,
   SURVEY_DESCRIPTION_MAX_LENGTH,
   SURVEY_MAX_RESPONDENTS_MIN,
   SURVEY_TITLE_MAX_LENGTH,
@@ -41,7 +42,7 @@ export const surveyMetadataSchema = z
     (data) => {
       if (data.startsAt) {
         const startDate = new Date(data.startsAt);
-        const now = new Date(Date.now() - 60_000);
+        const now = new Date(Date.now() - START_DATE_TOLERANCE_MS);
 
         return startDate >= now;
       }

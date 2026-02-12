@@ -1,5 +1,7 @@
 'use client';
 
+import { useMemo } from 'react';
+
 import { useTranslations } from 'next-intl';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 
@@ -25,27 +27,28 @@ export const ChoiceDistributionChart = ({ answers }: ChoiceDistributionChartProp
     },
   } satisfies ChartConfig;
 
-  // Count selections across all answers
-  const counts = new Map<string, number>();
+  const data = useMemo(() => {
+    const counts = new Map<string, number>();
 
-  for (const a of answers) {
-    const selected = (a.value.selected as string[]) ?? [];
+    for (const a of answers) {
+      const selected = (a.value.selected as string[]) ?? [];
 
-    for (const option of selected) {
-      counts.set(option, (counts.get(option) ?? 0) + 1);
+      for (const option of selected) {
+        counts.set(option, (counts.get(option) ?? 0) + 1);
+      }
+
+      const other = a.value.other as string | undefined;
+
+      if (other) {
+        const otherKey = `${t('otherLabel')}: ${other}`;
+        counts.set(otherKey, (counts.get(otherKey) ?? 0) + 1);
+      }
     }
 
-    const other = a.value.other as string | undefined;
-
-    if (other) {
-      const otherKey = `${t('otherLabel')}: ${other}`;
-      counts.set(otherKey, (counts.get(otherKey) ?? 0) + 1);
-    }
-  }
-
-  const data = Array.from(counts.entries())
-    .map(([name, count]) => ({ name, count }))
-    .sort((a, b) => b.count - a.count);
+    return Array.from(counts.entries())
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count);
+  }, [answers, t]);
 
   if (data.length === 0) {
     return <p className="text-muted-foreground text-sm">{t('noChartData')}</p>;

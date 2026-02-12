@@ -10,19 +10,18 @@ export const submitResponse = withPublicAction<typeof submitResponseSchema, void
     schema: submitResponseSchema,
     rateLimit: { limit: 10, windowSeconds: 300 },
     action: async ({ data, supabase }) => {
-      const { error } = await supabase
-        .from('survey_responses')
-        .update({
-          status: 'completed' as const,
-          contact_name: data.contactName || null,
-          contact_email: data.contactEmail || null,
-          feedback: data.feedback || null,
-          completed_at: new Date().toISOString(),
-        })
-        .eq('id', data.responseId)
-        .eq('status', 'in_progress');
+      const { error } = await supabase.rpc('submit_survey_response', {
+        p_response_id: data.responseId,
+        ...(data.contactName ? { p_contact_name: data.contactName } : {}),
+        ...(data.contactEmail ? { p_contact_email: data.contactEmail } : {}),
+        ...(data.feedback ? { p_feedback: data.feedback } : {}),
+      });
 
       if (error) {
+        if (error.message.includes('REQUIRED_QUESTIONS_UNANSWERED')) {
+          return { error: 'respondent.errors.requiredQuestionsUnanswered' };
+        }
+
         return { error: 'respondent.errors.submitFailed' };
       }
 
