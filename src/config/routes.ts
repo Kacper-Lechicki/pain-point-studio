@@ -18,6 +18,14 @@ export const ROUTES = {
     dashboard: '/dashboard' as AppRoute,
     settings: '/settings' as AppRoute,
   },
+  settings: {
+    profile: '/settings/profile' as AppRoute,
+    email: '/settings/email' as AppRoute,
+    password: '/settings/password' as AppRoute,
+    appearance: '/settings/appearance' as AppRoute,
+    connectedAccounts: '/settings/connected-accounts' as AppRoute,
+    dangerZone: '/settings/danger-zone' as AppRoute,
+  },
   dashboard: {
     surveys: '/dashboard/surveys' as AppRoute,
     surveysNew: '/dashboard/surveys/new' as AppRoute,

@@ -26,7 +26,7 @@ const ProfileView = ({ profile, isPreview = false }: ProfileViewProps) => {
         </div>
       )}
 
-      <div className="sm:border-border/50 sm:bg-card/80 rounded-xl sm:border sm:p-6 sm:shadow-xl sm:backdrop-blur-sm lg:p-10">
+      <div>
         <div className="space-y-8">
           <ProfileHeader profile={profile} />
 

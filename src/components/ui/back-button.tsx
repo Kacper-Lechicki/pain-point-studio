@@ -6,6 +6,7 @@ import { ArrowLeft } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/config';
+import type { AppRoute } from '@/config/routes';
 import { useRouter } from '@/i18n/routing';
 
 const NAV_DEPTH_KEY = '__nav_depth';
@@ -67,7 +68,11 @@ function canGoBack(): boolean {
   return getNavDepth() > 0;
 }
 
-const BackButton = () => {
+interface BackButtonProps {
+  fallbackHref?: AppRoute;
+}
+
+const BackButton = ({ fallbackHref }: BackButtonProps) => {
   const t = useTranslations();
   const router = useRouter();
   const [goBack, setGoBack] = useState(false);
@@ -82,7 +87,7 @@ const BackButton = () => {
     if (goBack) {
       router.back();
     } else {
-      router.push(ROUTES.common.dashboard);
+      router.push(fallbackHref ?? ROUTES.common.dashboard);
     }
   };
 

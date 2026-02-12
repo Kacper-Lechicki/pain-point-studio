@@ -26,23 +26,40 @@ function createStatusAction(action: SurveyAction) {
     schema: surveyIdSchema,
     rateLimit: { limit: 10, windowSeconds: 300 },
     action: async ({ data, user, supabase }) => {
-      const applyFilters = (query: ReturnType<typeof supabase.from>) => {
-        let q = query.eq('id', data.surveyId).eq('user_id', user.id);
-
-        if (transition.fromStatuses.length === 1) {
-          q = q.eq('status', transition.fromStatuses[0]);
-        } else {
-          q = q.in('status', [...transition.fromStatuses]);
-        }
-
-        return q;
-      };
-
       const { data: row, error } =
         transition.method === 'delete'
-          ? await applyFilters(supabase.from('surveys')).delete().select('id').maybeSingle()
-          : await applyFilters(supabase.from('surveys'))
-              .update({ status: transition.toStatus! })
+          ? await (
+              transition.fromStatuses.length === 1
+                ? supabase
+                    .from('surveys')
+                    .delete()
+                    .eq('id', data.surveyId)
+                    .eq('user_id', user.id)
+                    .eq('status', transition.fromStatuses[0])
+                : supabase
+                    .from('surveys')
+                    .delete()
+                    .eq('id', data.surveyId)
+                    .eq('user_id', user.id)
+                    .in('status', [...transition.fromStatuses])
+            )
+              .select('id')
+              .maybeSingle()
+          : await (
+              transition.fromStatuses.length === 1
+                ? supabase
+                    .from('surveys')
+                    .update({ status: transition.toStatus! })
+                    .eq('id', data.surveyId)
+                    .eq('user_id', user.id)
+                    .eq('status', transition.fromStatuses[0])
+                : supabase
+                    .from('surveys')
+                    .update({ status: transition.toStatus! })
+                    .eq('id', data.surveyId)
+                    .eq('user_id', user.id)
+                    .in('status', [...transition.fromStatuses])
+            )
               .select('id')
               .maybeSingle();
 

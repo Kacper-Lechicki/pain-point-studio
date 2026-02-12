@@ -12,18 +12,16 @@ export default function DashboardPage() {
 
   return (
     <PageTransition>
-      <div className="max-w-3xl px-6 pt-4 pb-8 sm:px-4 md:pt-8 lg:px-8">
-        <EmptyState
-          icon={ClipboardList}
-          title={t('surveysEmpty.title')}
-          description={t('surveysEmpty.description')}
-          action={
-            <Button asChild>
-              <Link href={ROUTES.dashboard.surveysNew}>{t('surveysEmpty.cta')}</Link>
-            </Button>
-          }
-        />
-      </div>
+      <EmptyState
+        icon={ClipboardList}
+        title={t('surveysEmpty.title')}
+        description={t('surveysEmpty.description')}
+        action={
+          <Button asChild>
+            <Link href={ROUTES.dashboard.surveysNew}>{t('surveysEmpty.cta')}</Link>
+          </Button>
+        }
+      />
     </PageTransition>
   );
 }

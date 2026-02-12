@@ -13,18 +13,20 @@ export function BuilderEmptyState() {
   const { addQuestion } = useQuestionBuilderContext();
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8">
-      <EmptyState
-        icon={ClipboardList}
-        title={t('title')}
-        description={t('description')}
-        action={
-          <Button onClick={() => addQuestion()}>
-            <Plus className="size-4" />
-            {t('addQuestion')}
-          </Button>
-        }
-      />
+    <div className="flex flex-1 flex-col items-center px-4 py-6 sm:px-8 sm:py-8">
+      <div className="mx-auto w-full max-w-3xl">
+        <EmptyState
+          icon={ClipboardList}
+          title={t('title')}
+          description={t('description')}
+          action={
+            <Button onClick={() => addQuestion()}>
+              <Plus className="size-4" aria-hidden />
+              {t('addQuestion')}
+            </Button>
+          }
+        />
+      </div>
     </div>
   );
 }

@@ -150,11 +150,11 @@
   "surveys": {
     "title": "Surveys",
     "description": "Create and manage surveys to collect user feedback.",
-    "createSurvey": "Create survey",
+    "createSurvey": "New survey",
     "empty": {
       "title": "No surveys yet",
       "description": "Surveys help you validate ideas fast. Create your first one and start collecting feedback in minutes.",
-      "cta": "Create survey"
+      "cta": "New survey"
     },
     "categories": {
       "productivity": "Productivity",
@@ -206,6 +206,7 @@
       "unexpected": "Something went wrong. Please try again."
     },
     "builder": {
+      "backToSurveys": "Back to surveys",
       "questionsCount": "Questions ({count}/{max})",
       "addQuestion": "Add question",
       "noQuestionSelected": "Select a question to edit",
@@ -362,7 +363,9 @@
       },
       "card": {
         "responses": "{count, plural, =0 {No responses} one {1 response} other {# responses}}",
-        "created": "Created {date}"
+        "created": "Created {date}",
+        "edited": "Edited {date}",
+        "noDescription": "No description"
       },
       "actions": {
         "share": "Share",
@@ -462,8 +465,14 @@
     "surveys": "Surveys",
     "analytics": "Analytics",
     "allSurveys": "All surveys",
+    "byStatus": "By status",
+    "activeSurveys": "Active",
+    "draftSurveys": "Drafts",
+    "closedSurveys": "Closed",
+    "archivedSurveys": "Archived",
     "newSurvey": "New survey",
     "projectSettings": "Project Settings",
+    "settings": "Settings",
     "pinSidebar": "Pin sidebar",
     "unpinSidebar": "Unpin sidebar",
     "back": "Back"

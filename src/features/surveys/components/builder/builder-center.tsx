@@ -12,6 +12,7 @@ import {
   QUESTION_DESCRIPTION_MAX_LENGTH,
   QUESTION_TEXT_MAX_LENGTH,
 } from '@/features/surveys/config';
+import { cn } from '@/lib/common/utils';
 
 import { useQuestionBuilderContext } from '../../hooks/use-question-builder-context';
 import { BuilderEmptyState } from './builder-empty-state';
@@ -19,7 +20,7 @@ import { QuestionEditor } from './editors/question-editor';
 
 export function BuilderCenter() {
   const t = useTranslations('surveys.builder');
-  const { state, activeQuestion, updateQuestion } = useQuestionBuilderContext();
+  const { state, activeQuestion, updateQuestion, selectQuestion } = useQuestionBuilderContext();
   const textInputRef = useRef<HTMLInputElement>(null);
   const [showRemoveDescriptionConfirm, setShowRemoveDescriptionConfirm] = useState(false);
 
@@ -31,7 +32,11 @@ export function BuilderCenter() {
   }, [activeQuestion?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (state.questions.length === 0) {
-    return <BuilderEmptyState />;
+    return (
+      <div className="flex min-h-0 flex-1 flex-col">
+        <BuilderEmptyState />
+      </div>
+    );
   }
 
   if (!activeQuestion) {
@@ -42,15 +47,33 @@ export function BuilderCenter() {
     );
   }
 
-  const questionIndex = state.questions.findIndex((q) => q.id === activeQuestion.id);
   const showDescription = activeQuestion.description !== null;
 
   return (
-    <div className="flex flex-1 flex-col overflow-y-auto">
+    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
       <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8">
-        {/* Question number */}
-        <div className="text-muted-foreground mb-2 text-sm font-medium">
-          {questionIndex + 1}/{state.questions.length}
+        {/* Step indicator */}
+        <div className="mb-4 flex flex-wrap items-center gap-1.5">
+          {state.questions.map((q, i) => {
+            const isStepActive = q.id === activeQuestion.id;
+
+            return (
+              <button
+                key={q.id}
+                type="button"
+                onClick={() => selectQuestion(q.id)}
+                className={cn(
+                  'flex size-7 items-center justify-center rounded-full border text-xs font-medium tabular-nums transition-colors',
+                  isStepActive
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : 'border-border text-muted-foreground hover:bg-accent hover:text-foreground hover:border-foreground/20'
+                )}
+                aria-current={isStepActive ? 'step' : undefined}
+              >
+                {i + 1}
+              </button>
+            );
+          })}
         </div>
 
         {/* Question text */}

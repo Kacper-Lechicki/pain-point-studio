@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { cn } from '@/lib/common/utils';
 
 interface ProjectSelectorProps {
   className?: string;
@@ -22,7 +23,11 @@ export function ProjectSelector({ className }: ProjectSelectorProps) {
     <Select defaultValue="default" name="project">
       <SelectTrigger
         size="sm"
-        className={`gap-2 ${className ?? 'w-44'}`}
+        className={cn(
+          'border-border/50 min-h-10 w-full rounded-lg px-2 py-0 md:min-h-9',
+          'gap-2.5 [&_[data-slot=select-value]]:min-w-0 [&_[data-slot=select-value]]:flex-1 [&_[data-slot=select-value]]:justify-start [&_[data-slot=select-value]]:gap-0',
+          className ?? 'w-44'
+        )}
         aria-label={t('selectProject')}
       >
         <FolderKanban className="text-muted-foreground size-4 shrink-0" aria-hidden />

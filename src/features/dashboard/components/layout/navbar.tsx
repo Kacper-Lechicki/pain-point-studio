@@ -4,7 +4,6 @@ import { Menu } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
 import { UserMenu } from '@/features/auth/components/common/user-menu';
 import { usePathname } from '@/i18n/routing';
 import { cn } from '@/lib/common/utils';
@@ -14,25 +13,21 @@ import { ProjectSelector } from './project-selector';
 import { useSidebar } from './sidebar-provider';
 
 const Navbar = () => {
-  const { setMobileOpen } = useSidebar();
+  const { setMobileOpen, isDesktop } = useSidebar();
   const t = useTranslations('navbar');
   const pathname = usePathname();
   const isDashboard = pathname.startsWith('/dashboard');
-  const isBuilder = isDashboard && /^\/dashboard\/surveys\/new\/.+/.test(pathname);
-  const hasSidebar = isDashboard && !isBuilder;
-  const isFullWidth = isDashboard;
-  const showHamburger = hasSidebar || isBuilder;
+  const isSettings = pathname.startsWith('/settings');
+  const hasSidebar = isDashboard || isSettings;
 
   return (
-    <nav className="bg-background/80 border-border fixed inset-x-0 top-0 z-50 backdrop-blur-md lg:border-b">
-      <div
-        className={`flex h-14 items-center gap-3 px-4 ${!isFullWidth ? 'container mx-auto sm:px-4 lg:px-8' : ''}`}
-      >
-        {showHamburger && (
+    <nav className="bg-background/80 border-border dashboard:border-b fixed inset-x-0 top-0 z-50 backdrop-blur-md">
+      <div className="dashboard:pl-3 dashboard:pr-4 flex h-14 items-center gap-3 px-4">
+        {hasSidebar && (
           <Button
             variant="ghost"
             size="icon-md"
-            className={cn('-ml-2', !isBuilder && 'dashboard:hidden')}
+            className={cn('-ml-2', 'dashboard:hidden')}
             onClick={() => setMobileOpen(true)}
             aria-label={t('openMenu')}
           >
@@ -40,13 +35,16 @@ const Navbar = () => {
           </Button>
         )}
 
-        <div className="hidden sm:flex">
-          <ProjectSelector />
-        </div>
+        {isDesktop && (
+          <div
+            className="dashboard:flex hidden shrink-0"
+            style={{ width: 'calc(var(--sidebar-width-expanded) - 0.75rem)' }}
+          >
+            <ProjectSelector className="w-full" />
+          </div>
+        )}
 
-        <Separator orientation="vertical" className="hidden h-5! sm:block" />
-
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 pl-1">
           <Breadcrumbs />
         </div>
 

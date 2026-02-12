@@ -6,6 +6,8 @@ import { useTranslations } from 'next-intl';
 import type { AppRoute } from '@/config/routes';
 import { Link, usePathname } from '@/i18n/routing';
 
+import { useBreadcrumbContext } from './breadcrumb-context';
+
 /** Known URL segments → breadcrumbs namespace keys */
 const SEGMENT_KEYS: Record<string, string> = {
   dashboard: 'dashboard',
@@ -34,6 +36,7 @@ interface Crumb {
 export function Breadcrumbs() {
   const pathname = usePathname();
   const t = useTranslations('breadcrumbs');
+  const breadcrumbCtx = useBreadcrumbContext();
 
   const segments = pathname.split('/').filter(Boolean);
 
@@ -64,14 +67,17 @@ export function Breadcrumbs() {
     const href = '/' + segments.slice(0, i + 1).join('/');
     const key = SEGMENT_KEYS[segment];
 
-    // Skip unknown segments (UUIDs, dynamic IDs, etc.)
-    if (!key) {
-      i++;
-      continue;
+    if (key) {
+      crumbs.push({ label: t(key as BreadcrumbKey), href });
+    } else {
+      // Dynamic segments (UUIDs, etc.) — use label from context if registered
+      const dynamicLabel = breadcrumbCtx?.segments[segment];
+
+      if (dynamicLabel) {
+        crumbs.push({ label: dynamicLabel, href });
+      }
     }
 
-    const label = t(key as BreadcrumbKey);
-    crumbs.push({ label, href });
     i++;
   }
 

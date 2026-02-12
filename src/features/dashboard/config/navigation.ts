@@ -1,6 +1,24 @@
-import { BarChart3, ClipboardList, Home, type LucideIcon, Plus, Settings } from 'lucide-react';
+import {
+  Archive,
+  BarChart3,
+  CircleDot,
+  CircleUserRound,
+  ClipboardList,
+  FilePen,
+  Home,
+  KeyRound,
+  Link2,
+  type LucideIcon,
+  Mail,
+  Palette,
+  Plus,
+  Settings,
+  SquareX,
+  Trash2,
+} from 'lucide-react';
 
 import type { AppRoute } from '@/config/routes';
+import { ROUTES } from '@/config/routes';
 import type { MessageKey } from '@/i18n/types';
 
 // ── Sub-panel item (child route) ──────────────────────────────────────
@@ -9,6 +27,10 @@ export interface SubNavItem {
   labelKey: MessageKey;
   icon: LucideIcon;
   href: AppRoute;
+  /** URL hash (without #) for same-path sections, e.g. settings#profile. */
+  hash?: string | undefined;
+  /** Query params appended to href, e.g. { status: 'active' }. */
+  searchParams?: Record<string, string> | undefined;
   /** Additional pathnames that should highlight this item as active. */
   alsoActiveFor?: readonly string[] | undefined;
 }
@@ -68,6 +90,35 @@ export const SIDEBAR_NAV: NavGroup[] = [
                 },
               ],
             },
+            {
+              headingKey: 'sidebar.byStatus',
+              items: [
+                {
+                  labelKey: 'sidebar.activeSurveys',
+                  icon: CircleDot,
+                  href: '/dashboard/surveys' as AppRoute,
+                  searchParams: { status: 'active' },
+                },
+                {
+                  labelKey: 'sidebar.draftSurveys',
+                  icon: FilePen,
+                  href: '/dashboard/surveys' as AppRoute,
+                  searchParams: { status: 'draft' },
+                },
+                {
+                  labelKey: 'sidebar.closedSurveys',
+                  icon: SquareX,
+                  href: '/dashboard/surveys' as AppRoute,
+                  searchParams: { status: 'closed' },
+                },
+                {
+                  labelKey: 'sidebar.archivedSurveys',
+                  icon: Archive,
+                  href: '/dashboard/surveys' as AppRoute,
+                  searchParams: { status: 'archived' },
+                },
+              ],
+            },
           ],
         },
       },
@@ -76,11 +127,27 @@ export const SIDEBAR_NAV: NavGroup[] = [
   },
 ];
 
+const SETTINGS_SUB_NAV_ITEMS: SubNavItem[] = [
+  { labelKey: 'settings.nav.profile', icon: CircleUserRound, href: ROUTES.settings.profile },
+  { labelKey: 'settings.nav.email', icon: Mail, href: ROUTES.settings.email },
+  { labelKey: 'settings.nav.password', icon: KeyRound, href: ROUTES.settings.password },
+  { labelKey: 'settings.nav.appearance', icon: Palette, href: ROUTES.settings.appearance },
+  {
+    labelKey: 'settings.nav.connectedAccounts',
+    icon: Link2,
+    href: ROUTES.settings.connectedAccounts,
+  },
+  { labelKey: 'settings.nav.dangerZone', icon: Trash2, href: ROUTES.settings.dangerZone },
+];
+
 export const SIDEBAR_BOTTOM_ITEM: NavItem = {
-  labelKey: 'sidebar.projectSettings',
+  labelKey: 'sidebar.settings',
   icon: Settings,
-  href: '/settings' as AppRoute,
-  disabled: true,
+  href: ROUTES.common.settings,
+  subNav: {
+    titleKey: 'settings.title',
+    groups: [{ items: SETTINGS_SUB_NAV_ITEMS }],
+  },
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────
@@ -101,6 +168,14 @@ export function findActiveNavItem(pathname: string): NavItem | undefined {
         return item;
       }
     }
+  }
+
+  if (
+    (pathname === SIDEBAR_BOTTOM_ITEM.href ||
+      pathname.startsWith(SIDEBAR_BOTTOM_ITEM.href + '/')) &&
+    SIDEBAR_BOTTOM_ITEM.subNav
+  ) {
+    return SIDEBAR_BOTTOM_ITEM;
   }
 
   return undefined;

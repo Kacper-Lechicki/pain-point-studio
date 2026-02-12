@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
@@ -10,12 +10,146 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { Link, usePathname } from '@/i18n/routing';
 import { cn } from '@/lib/common/utils';
 
-import { SIDEBAR_NAV_ITEM_CLASSES } from '../../config/nav-styles';
-import { type NavItem, SIDEBAR_BOTTOM_ITEM, SIDEBAR_NAV } from '../../config/navigation';
+import {
+  SIDEBAR_NAV_ACTIVE,
+  SIDEBAR_NAV_INACTIVE,
+  SIDEBAR_NAV_ITEM_BASE,
+  SIDEBAR_NAV_ITEM_CLASSES,
+} from '../../config/nav-styles';
+import type { SubNavGroup, SubNavItem } from '../../config/navigation';
+import {
+  type NavItem,
+  SIDEBAR_BOTTOM_ITEM,
+  SIDEBAR_NAV,
+  findActiveNavItem,
+} from '../../config/navigation';
 import { ProjectSelector } from './project-selector';
 import { useSidebar } from './sidebar-provider';
 
 const TRANSITION = { duration: 0.15, ease: [0.25, 0.1, 0.25, 1] as const };
+
+function getSubItemHref(item: SubNavItem): string {
+  if (item.searchParams) {
+    const params = new URLSearchParams(item.searchParams);
+
+    return `${item.href}?${params.toString()}${item.hash ? `#${item.hash}` : ''}`;
+  }
+
+  return item.hash ? `${item.href}#${item.hash}` : item.href;
+}
+
+// ── Shared sub-item active logic (same as secondary-nav) ─────────────
+
+function isSubItemActive(
+  item: SubNavItem,
+  pathname: string,
+  hash: string,
+  currentSearchParams: URLSearchParams,
+  searchParamKeys: string[]
+): boolean {
+  if (item.hash) {
+    return pathname === item.href && hash === item.hash;
+  }
+
+  if (item.searchParams) {
+    if (pathname !== item.href) {
+      return false;
+    }
+
+    return Object.entries(item.searchParams).every(
+      ([key, value]) => currentSearchParams.get(key) === value
+    );
+  }
+
+  if (pathname === item.href) {
+    return searchParamKeys.every((key) => !currentSearchParams.has(key));
+  }
+
+  return item.alsoActiveFor?.includes(pathname) ?? false;
+}
+
+// ── Sub-nav items (extracted to use cn() instead of data-state) ──────
+
+interface SubNavItemsProps {
+  groups: SubNavGroup[];
+  pathname: string;
+  clientState: { search: string; hash: string } | null;
+  t: ReturnType<typeof useTranslations>;
+  onNavigate: () => void;
+}
+
+function SubNavItems({ groups, pathname, clientState, t, onNavigate }: SubNavItemsProps) {
+  const hasSearchParamItems = groups.some((g) => g.items.some((i) => i.searchParams));
+  const searchParamKeys = hasSearchParamItems
+    ? [
+        ...new Set(
+          groups.flatMap((g) =>
+            g.items.flatMap((i) => (i.searchParams ? Object.keys(i.searchParams) : []))
+          )
+        ),
+      ]
+    : [];
+
+  const currentSearchParams = clientState ? new URLSearchParams(clientState.search) : null;
+  const hash = clientState?.hash ?? '';
+
+  return (
+    <nav className="flex flex-1 flex-col gap-2 p-2" onClick={onNavigate}>
+      {groups.map((group, gi) => (
+        <div key={gi}>
+          {group.headingKey && (
+            <div
+              className={cn(
+                'text-muted-foreground mb-1 px-3 text-xs font-semibold tracking-wider uppercase',
+                gi === 0 ? 'mt-0' : 'mt-6'
+              )}
+            >
+              {t(group.headingKey)}
+            </div>
+          )}
+
+          <div className="flex flex-col gap-2">
+            {group.items.map((subItem) => {
+              const href = getSubItemHref(subItem);
+
+              const isActive =
+                clientState && currentSearchParams
+                  ? hasSearchParamItems
+                    ? isSubItemActive(subItem, pathname, hash, currentSearchParams, searchParamKeys)
+                    : subItem.hash
+                      ? pathname === subItem.href && hash === subItem.hash
+                      : pathname === subItem.href ||
+                        (subItem.alsoActiveFor?.includes(pathname) ?? false)
+                  : false;
+
+              const stateClasses = isActive ? SIDEBAR_NAV_ACTIVE : SIDEBAR_NAV_INACTIVE;
+
+              if (subItem.hash) {
+                return (
+                  <a
+                    key={href}
+                    href={`#${subItem.hash}`}
+                    className={cn(SIDEBAR_NAV_ITEM_BASE, stateClasses)}
+                  >
+                    <subItem.icon className="size-4 shrink-0" aria-hidden />
+                    <span className="truncate">{t(subItem.labelKey)}</span>
+                  </a>
+                );
+              }
+
+              return (
+                <Link key={href} href={href} className={cn(SIDEBAR_NAV_ITEM_BASE, stateClasses)}>
+                  <subItem.icon className="size-4 shrink-0" aria-hidden />
+                  <span className="truncate">{t(subItem.labelKey)}</span>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </nav>
+  );
+}
 
 export function MobileNav() {
   const { isMobileOpen, setMobileOpen } = useSidebar();
@@ -24,6 +158,62 @@ export function MobileNav() {
 
   const [activeLevel, setActiveLevel] = useState<'main' | 'sub'>('main');
   const [selectedItem, setSelectedItem] = useState<NavItem | null>(null);
+  const [skipSubEnterAnimation, setSkipSubEnterAnimation] = useState(false);
+
+  // Read search params and hash exclusively on the client via
+  // window.location to avoid the hydration mismatch caused by
+  // useSearchParams() returning empty params during SSR.
+  const [clientState, setClientState] = useState<{
+    search: string;
+    hash: string;
+  } | null>(null);
+
+  const syncFromWindow = useCallback(() => {
+    setClientState({
+      search: window.location.search.replace('?', ''),
+      hash: window.location.hash.replace('#', ''),
+    });
+  }, []);
+
+  useEffect(() => {
+    queueMicrotask(syncFromWindow);
+    window.addEventListener('hashchange', syncFromWindow);
+    window.addEventListener('popstate', syncFromWindow);
+
+    return () => {
+      window.removeEventListener('hashchange', syncFromWindow);
+      window.removeEventListener('popstate', syncFromWindow);
+    };
+  }, [syncFromWindow]);
+
+  // Re-sync when pathname changes (client-side navigation via Next.js router)
+  useEffect(() => {
+    queueMicrotask(syncFromWindow);
+  }, [pathname, syncFromWindow]);
+
+  // When opening, detect if we're on a nested page and jump straight to its sub-nav.
+  // This runs as a useEffect (not in onOpenChange) because the hamburger button in
+  // navbar.tsx sets isMobileOpen directly — Radix's onOpenChange only fires on
+  // internal state changes (overlay click, escape), not when the open prop changes.
+  useEffect(() => {
+    if (!isMobileOpen) {
+      return;
+    }
+
+    const active = findActiveNavItem(pathname);
+
+    if (!active?.subNav) {
+      return;
+    }
+
+    const runSync = () => {
+      setSkipSubEnterAnimation(true);
+      setSelectedItem(active);
+      setActiveLevel('sub');
+    };
+
+    queueMicrotask(runSync);
+  }, [isMobileOpen, pathname]);
 
   const handleOpenChange = (open: boolean) => {
     setMobileOpen(open);
@@ -32,6 +222,7 @@ export function MobileNav() {
       setTimeout(() => {
         setActiveLevel('main');
         setSelectedItem(null);
+        setSkipSubEnterAnimation(false);
       }, 200);
     }
   };
@@ -119,19 +310,40 @@ export function MobileNav() {
               </nav>
 
               <div className="border-t p-2">
-                <span
-                  data-state="inactive"
-                  className={cn(SIDEBAR_NAV_ITEM_CLASSES, 'pointer-events-none opacity-50')}
-                >
-                  <SIDEBAR_BOTTOM_ITEM.icon className="size-4 shrink-0" aria-hidden />
-                  <span className="truncate">{t(SIDEBAR_BOTTOM_ITEM.labelKey)}</span>
-                </span>
+                {(() => {
+                  const isBottomActive =
+                    pathname === SIDEBAR_BOTTOM_ITEM.href ||
+                    pathname.startsWith(SIDEBAR_BOTTOM_ITEM.href + '/');
+
+                  return SIDEBAR_BOTTOM_ITEM.subNav ? (
+                    <button
+                      type="button"
+                      data-state={isBottomActive ? 'active' : 'inactive'}
+                      className={SIDEBAR_NAV_ITEM_CLASSES}
+                      onClick={() => handleItemClick(SIDEBAR_BOTTOM_ITEM)}
+                    >
+                      <SIDEBAR_BOTTOM_ITEM.icon className="size-4 shrink-0" aria-hidden />
+                      <span className="truncate">{t(SIDEBAR_BOTTOM_ITEM.labelKey)}</span>
+                      <ChevronRight className="ml-auto size-4 opacity-50" />
+                    </button>
+                  ) : (
+                    <Link
+                      href={SIDEBAR_BOTTOM_ITEM.href}
+                      data-state={isBottomActive ? 'active' : 'inactive'}
+                      className={SIDEBAR_NAV_ITEM_CLASSES}
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      <SIDEBAR_BOTTOM_ITEM.icon className="size-4 shrink-0" aria-hidden />
+                      <span className="truncate">{t(SIDEBAR_BOTTOM_ITEM.labelKey)}</span>
+                    </Link>
+                  );
+                })()}
               </div>
             </motion.div>
           ) : (
             <motion.div
               key="sub"
-              initial={{ x: 20, opacity: 0 }}
+              initial={skipSubEnterAnimation ? false : { x: 20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: 20, opacity: 0 }}
               transition={TRANSITION}
@@ -160,37 +372,13 @@ export function MobileNav() {
               </div>
 
               {/* Sub-nav items */}
-              <nav className="flex flex-1 flex-col gap-2 p-2" onClick={() => setMobileOpen(false)}>
-                {selectedItem!.subNav!.groups.map((group, gi) => (
-                  <div key={gi}>
-                    {group.headingKey && (
-                      <div className="text-muted-foreground mt-3 mb-1 px-3 text-xs font-semibold tracking-wider uppercase first:mt-0">
-                        {t(group.headingKey)}
-                      </div>
-                    )}
-
-                    <div className="flex flex-col gap-2">
-                      {group.items.map((subItem) => {
-                        const isActive =
-                          pathname === subItem.href ||
-                          (subItem.alsoActiveFor?.includes(pathname) ?? false);
-
-                        return (
-                          <Link
-                            key={subItem.href}
-                            href={subItem.href}
-                            data-state={isActive ? 'active' : 'inactive'}
-                            className={SIDEBAR_NAV_ITEM_CLASSES}
-                          >
-                            <subItem.icon className="size-4 shrink-0" aria-hidden />
-                            <span className="truncate">{t(subItem.labelKey)}</span>
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-              </nav>
+              <SubNavItems
+                groups={selectedItem!.subNav!.groups}
+                pathname={pathname}
+                clientState={clientState}
+                t={t}
+                onNavigate={() => setMobileOpen(false)}
+              />
             </motion.div>
           )}
         </AnimatePresence>

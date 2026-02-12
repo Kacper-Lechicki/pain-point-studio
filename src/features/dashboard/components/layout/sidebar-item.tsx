@@ -2,7 +2,7 @@
 
 import type { CSSProperties } from 'react';
 
-import type { LucideIcon } from 'lucide-react';
+import { ChevronRight, type LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { AppRoute } from '@/config/routes';
@@ -78,12 +78,15 @@ export function SidebarItem({
       <Icon className="size-4 shrink-0" aria-hidden />
       <span
         className={cn(
-          'truncate transition-opacity duration-200',
-          isExpanded ? 'opacity-100' : 'w-0 opacity-0'
+          'min-w-0 truncate transition-opacity duration-200',
+          isExpanded ? 'flex-1 opacity-100' : 'w-0 flex-none opacity-0'
         )}
       >
         {label}
       </span>
+      {isExpanded && hasSubNav && (
+        <ChevronRight className="size-4 shrink-0 opacity-50" aria-hidden />
+      )}
     </>
   );
 

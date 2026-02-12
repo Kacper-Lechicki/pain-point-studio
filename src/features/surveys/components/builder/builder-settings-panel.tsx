@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
+import { BUILDER_SETTINGS_PANEL_WIDTH_CLASS } from '@/features/dashboard/config/layout';
 import {
   QUESTION_OPTIONS_MAX,
   QUESTION_TYPE_ICONS,
@@ -131,7 +132,7 @@ export function BuilderSettingsPanel({ isDesktop, open, onOpenChange }: BuilderS
       onOpenChange={onOpenChange}
       side="right"
       title={t('questionSettings')}
-      desktopClassName="border-border flex max-w-[280px] min-w-[280px] flex-col border-l"
+      desktopClassName={`border-border flex ${BUILDER_SETTINGS_PANEL_WIDTH_CLASS} flex-col border-l`}
     >
       <BuilderSettingsPanelContent />
     </ResponsivePanel>

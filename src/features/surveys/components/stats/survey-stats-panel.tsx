@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ClipboardInput } from '@/components/ui/clipboard-input';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { EmptyState } from '@/components/ui/empty-state';
+import { useBreadcrumbSegment } from '@/features/dashboard/components/layout/breadcrumb-context';
 import { closeSurvey } from '@/features/surveys/actions';
 import type { SurveyStats } from '@/features/surveys/actions/get-survey-stats';
 import { env } from '@/lib/common/env';
@@ -26,6 +27,9 @@ interface SurveyStatsPanelProps {
 export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
   const t = useTranslations('surveys.stats');
   const locale = useLocale();
+
+  // Register survey title as a dynamic breadcrumb segment for the UUID in the URL
+  useBreadcrumbSegment(stats.survey.id, stats.survey.title);
   const [showCloseDialog, setShowCloseDialog] = useState(false);
   const [optimisticallyClosed, setOptimisticallyClosed] = useState(false);
   const [, startTransition] = useTransition();
@@ -52,7 +56,7 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
   const statusVariant = isClosed ? 'secondary' : 'default';
 
   return (
-    <div className="mx-auto max-w-4xl space-y-8">
+    <div className="space-y-8">
       {/* Header */}
       <div className="space-y-4">
         <div className="flex flex-wrap items-start justify-between gap-4">

@@ -12,6 +12,24 @@ export const PATHNAMES = {
   '/settings': {
     en: '/settings',
   },
+  '/settings/profile': {
+    en: '/settings/profile',
+  },
+  '/settings/email': {
+    en: '/settings/email',
+  },
+  '/settings/password': {
+    en: '/settings/password',
+  },
+  '/settings/appearance': {
+    en: '/settings/appearance',
+  },
+  '/settings/connected-accounts': {
+    en: '/settings/connected-accounts',
+  },
+  '/settings/danger-zone': {
+    en: '/settings/danger-zone',
+  },
   '/profile/preview': {
     en: '/profile/preview',
   },

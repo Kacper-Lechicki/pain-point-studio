@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { BUILDER_PANEL_WIDTH_CLASS } from '@/features/dashboard/config/layout';
 import { QUESTIONS_MAX } from '@/features/surveys/config';
 
 import { useQuestionBuilderContext } from '../../hooks/use-question-builder-context';
@@ -92,7 +93,7 @@ export function BuilderSidebar({ isDesktop, open, onOpenChange }: BuilderSidebar
       onOpenChange={onOpenChange}
       side="left"
       title={t('questions')}
-      desktopClassName="border-border flex max-w-[280px] min-w-[280px] flex-col border-r"
+      desktopClassName={`border-border flex ${BUILDER_PANEL_WIDTH_CLASS} flex-col border-r`}
     >
       <BuilderSidebarContent
         onItemSelect={

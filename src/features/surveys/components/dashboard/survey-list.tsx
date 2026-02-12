@@ -25,12 +25,12 @@ const STATUS_TRANSITIONS: Record<string, SurveyStatus | null> = {
 
 interface SurveyListProps {
   initialSurveys: UserSurvey[];
+  initialStatusFilter?: SurveyStatusFilter;
 }
 
-export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
+export const SurveyList = ({ initialSurveys, initialStatusFilter = 'all' }: SurveyListProps) => {
   const t = useTranslations('surveys.dashboard');
   const [surveys, setSurveys] = useState(initialSurveys);
-  const [statusFilter, setStatusFilter] = useState<SurveyStatusFilter>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<SurveySortBy>('updated');
 
@@ -38,10 +38,10 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
     let result = surveys;
 
     // Status filter ("all" shows everything except archived)
-    if (statusFilter === 'all') {
+    if (initialStatusFilter === 'all') {
       result = result.filter((s) => s.status !== 'archived');
     } else {
-      result = result.filter((s) => s.status === statusFilter);
+      result = result.filter((s) => s.status === initialStatusFilter);
     }
 
     // Search filter
@@ -67,7 +67,7 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
     });
 
     return result;
-  }, [surveys, statusFilter, searchQuery, sortBy]);
+  }, [surveys, initialStatusFilter, searchQuery, sortBy]);
 
   const handleStatusChange = (surveyId: string, action: string) => {
     const newStatus = STATUS_TRANSITIONS[action] as SurveyStatus | null | undefined;
@@ -90,8 +90,6 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
   return (
     <div className="space-y-4">
       <SurveyListToolbar
-        statusFilter={statusFilter}
-        onStatusFilterChange={setStatusFilter}
         searchQuery={searchQuery}
         onSearchQueryChange={setSearchQuery}
         sortBy={sortBy}
@@ -108,7 +106,7 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
           </p>
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-3">
           {filteredSurveys.map((survey) => (
             <SurveyCard key={survey.id} survey={survey} onStatusChange={handleStatusChange} />
           ))}

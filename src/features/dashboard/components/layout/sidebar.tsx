@@ -35,21 +35,25 @@ export function Sidebar() {
       <nav
         className={cn(
           'flex flex-1 flex-col gap-2 overflow-x-hidden overflow-y-auto',
-          isExpanded ? 'p-2' : 'px-1 py-2',
+          isExpanded ? 'px-2 pt-6 pb-4' : 'px-1 pt-6 pb-4',
           !isExpanded && 'items-center'
         )}
       >
         <SidebarNavList isExpanded={isExpanded} />
 
         <div className={cn('mt-auto pt-1', !isExpanded && 'flex flex-col items-center')}>
-          <SidebarItem {...SIDEBAR_BOTTOM_ITEM} isExpanded={isExpanded} disabled />
+          <SidebarItem
+            {...SIDEBAR_BOTTOM_ITEM}
+            isExpanded={isExpanded}
+            hasSubNav={!!SIDEBAR_BOTTOM_ITEM.subNav}
+          />
         </div>
       </nav>
 
       <div
         className={cn(
           'border-sidebar-border flex shrink-0 border-t',
-          isExpanded ? 'justify-end p-2' : 'justify-center px-1 py-2'
+          isExpanded ? 'justify-end px-2 py-4' : 'justify-center px-1 py-4'
         )}
       >
         <button
