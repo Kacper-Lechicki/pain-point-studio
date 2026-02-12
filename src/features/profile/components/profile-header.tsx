@@ -35,6 +35,7 @@ const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
               alt={profile.fullName || ''}
               width={96}
               height={96}
+              sizes="96px"
               className="aspect-square size-full object-cover"
             />
           ) : (

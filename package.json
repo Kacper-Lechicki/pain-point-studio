@@ -5,6 +5,7 @@
     "--- DEFAULT ---": "exit 0",
     "dev": "next dev",
     "build": "next build",
+    "build:analyze": "ANALYZE=true next build",
     "start": "next start",
     "prepare": "husky",
     "run:dev": "concurrently -n \"Supabase,Next\" -c \"green,blue\" \"pnpm supabase:start && pnpm supabase:studio\" \"pnpm dev\"",
@@ -67,6 +68,7 @@
   "devDependencies": {
     "@commitlint/cli": "^20.3.1",
     "@commitlint/config-conventional": "^20.3.1",
+    "@next/bundle-analyzer": "^16.1.6",
     "@playwright/test": "^1.58.0",
     "@tailwindcss/postcss": "^4.0.0",
     "@testing-library/dom": "^10.4.1",

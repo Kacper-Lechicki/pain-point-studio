@@ -2,9 +2,11 @@
 
 import { cache } from 'react';
 
+import { z } from 'zod';
+
 import { createClient } from '@/lib/supabase/server';
 
-import type { QuestionType, SurveyStatus } from '../types';
+import { QUESTION_TYPES, type QuestionType, type SurveyStatus } from '../types';
 
 export interface QuestionAnswerData {
   value: Record<string, unknown>;
@@ -35,6 +37,37 @@ export interface SurveyStats {
   questions: QuestionStats[];
 }
 
+const surveyStatsRpcSchema = z.object({
+  survey: z.object({
+    id: z.string(),
+    title: z.string(),
+    slug: z.string().nullable(),
+    status: z.string(),
+    startsAt: z.unknown().transform((v) => (typeof v === 'string' ? v : null)),
+    endsAt: z.unknown().transform((v) => (typeof v === 'string' ? v : null)),
+    maxRespondents: z.number().nullable(),
+  }),
+  totalResponses: z.number(),
+  completedResponses: z.number(),
+  inProgressResponses: z.number(),
+  questions: z
+    .array(
+      z.object({
+        id: z.string(),
+        text: z.string(),
+        type: z.enum(QUESTION_TYPES),
+        sortOrder: z.number(),
+        answers: z.array(
+          z.object({
+            value: z.record(z.string(), z.unknown()),
+            completedAt: z.string().nullable(),
+          })
+        ),
+      })
+    )
+    .default([]),
+});
+
 export const getSurveyStats = cache(async (surveyId: string): Promise<SurveyStats | null> => {
   const supabase = await createClient();
 
@@ -51,39 +84,15 @@ export const getSurveyStats = cache(async (surveyId: string): Promise<SurveyStat
     p_user_id: user.id,
   });
 
-  if (error) {
+  if (error || !data) {
     return null;
   }
 
-  if (!data) {
+  const parsed = surveyStatsRpcSchema.safeParse(data);
+
+  if (!parsed.success) {
     return null;
   }
 
-  const result = data as unknown as {
-    survey: SurveyStats['survey'];
-    totalResponses: number;
-    completedResponses: number;
-    inProgressResponses: number;
-    questions: Array<{
-      id: string;
-      text: string;
-      type: string;
-      sortOrder: number;
-      answers: Array<{ value: Record<string, unknown>; completedAt: string | null }>;
-    }>;
-  };
-
-  return {
-    survey: result.survey,
-    totalResponses: result.totalResponses,
-    completedResponses: result.completedResponses,
-    inProgressResponses: result.inProgressResponses,
-    questions: (result.questions ?? []).map((q) => ({
-      id: q.id,
-      text: q.text,
-      type: q.type as QuestionType,
-      sortOrder: q.sortOrder,
-      answers: q.answers,
-    })),
-  };
+  return parsed.data as SurveyStats;
 });

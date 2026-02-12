@@ -1,5 +1,6 @@
 import type { NextConfig } from 'next';
 
+import withBundleAnalyzer from '@next/bundle-analyzer';
 import createNextIntlPlugin from 'next-intl/plugin';
 
 import { env } from './src/lib/common/env';
@@ -8,9 +9,11 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
 const supabaseUrl = new URL(env.NEXT_PUBLIC_SUPABASE_URL);
 
+const isDev = process.env.NODE_ENV === 'development';
+
 const cspDirectives = [
   `default-src 'self'`,
-  `script-src 'self' 'unsafe-inline' 'unsafe-eval'`,
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''}`,
   `style-src 'self' 'unsafe-inline'`,
   `img-src 'self' blob: data: https://lh3.googleusercontent.com https://avatars.githubusercontent.com ${supabaseUrl.origin}`,
   `font-src 'self'`,
@@ -72,4 +75,6 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withNextIntl(nextConfig);
+const analyzeBundle = withBundleAnalyzer({ enabled: process.env.ANALYZE === 'true' });
+
+export default analyzeBundle(withNextIntl(nextConfig));

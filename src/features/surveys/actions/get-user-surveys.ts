@@ -2,6 +2,8 @@
 
 import { cache } from 'react';
 
+import { z } from 'zod';
+
 import { createClient } from '@/lib/supabase/server';
 
 import type { SurveyStatus } from '../types';
@@ -17,6 +19,20 @@ export interface UserSurvey {
   createdAt: string;
   updatedAt: string;
 }
+
+const userSurveySchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  description: z.string(),
+  category: z.string(),
+  status: z.string(),
+  slug: z.string().nullable(),
+  responseCount: z.number(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+const userSurveysRpcSchema = z.array(userSurveySchema);
 
 export const getUserSurveys = cache(async (): Promise<UserSurvey[] | null> => {
   const supabase = await createClient();
@@ -41,5 +57,7 @@ export const getUserSurveys = cache(async (): Promise<UserSurvey[] | null> => {
     return [];
   }
 
-  return data as unknown as UserSurvey[];
+  const parsed = userSurveysRpcSchema.safeParse(data);
+
+  return parsed.success ? (parsed.data as UserSurvey[]) : null;
 });

@@ -54,11 +54,13 @@ describe('Settings Actions – Update Avatar URL', () => {
   // Valid URL: profile and metadata updated; returns success.
   it('should return success when avatar URL is updated', async () => {
     const { updateAvatarUrl } = await import('./update-avatar');
-    const result = await updateAvatarUrl({ avatarUrl: 'https://storage.example.com/avatar.png' });
+    const result = await updateAvatarUrl({
+      avatarUrl: 'https://lh3.googleusercontent.com/a/avatar.png',
+    });
 
     expect(result).toEqual({ success: true });
     expect(mockUpdateUser).toHaveBeenCalledWith({
-      data: { avatar_url: 'https://storage.example.com/avatar.png' },
+      data: { avatar_url: 'https://lh3.googleusercontent.com/a/avatar.png' },
     });
   });
 
@@ -78,7 +80,9 @@ describe('Settings Actions – Update Avatar URL', () => {
     mockGetUser.mockResolvedValue({ data: { user: null } });
 
     const { updateAvatarUrl } = await import('./update-avatar');
-    const result = await updateAvatarUrl({ avatarUrl: 'https://storage.example.com/avatar.png' });
+    const result = await updateAvatarUrl({
+      avatarUrl: 'https://lh3.googleusercontent.com/a/avatar.png',
+    });
 
     expect(result.error).toBeDefined();
     expect(result).not.toHaveProperty('success');
@@ -90,7 +94,9 @@ describe('Settings Actions – Update Avatar URL', () => {
     mockEq.mockResolvedValue({ error: { message: 'Database error' } });
 
     const { updateAvatarUrl } = await import('./update-avatar');
-    const result = await updateAvatarUrl({ avatarUrl: 'https://storage.example.com/avatar.png' });
+    const result = await updateAvatarUrl({
+      avatarUrl: 'https://lh3.googleusercontent.com/a/avatar.png',
+    });
 
     expect(result.error).toBeDefined();
     expect(result).not.toHaveProperty('success');
@@ -102,7 +108,9 @@ describe('Settings Actions – Update Avatar URL', () => {
     mockUpdateUser.mockResolvedValue({ error: { message: 'Metadata error' } });
 
     const { updateAvatarUrl } = await import('./update-avatar');
-    const result = await updateAvatarUrl({ avatarUrl: 'https://storage.example.com/avatar.png' });
+    const result = await updateAvatarUrl({
+      avatarUrl: 'https://lh3.googleusercontent.com/a/avatar.png',
+    });
 
     expect(result.error).toBeDefined();
     expect(result).not.toHaveProperty('success');
@@ -125,7 +133,9 @@ describe('Settings Actions – Update Avatar URL', () => {
     vi.mocked(rateLimit).mockResolvedValueOnce({ limited: true });
 
     const { updateAvatarUrl } = await import('./update-avatar');
-    const result = await updateAvatarUrl({ avatarUrl: 'https://storage.example.com/avatar.png' });
+    const result = await updateAvatarUrl({
+      avatarUrl: 'https://lh3.googleusercontent.com/a/avatar.png',
+    });
 
     expect(result.error).toBeDefined();
     expect(mockGetUser).not.toHaveBeenCalled();

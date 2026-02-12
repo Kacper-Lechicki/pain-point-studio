@@ -77,7 +77,7 @@ const ACTION_CONFIGS = {
 
 interface SurveyCardProps {
   survey: UserSurvey;
-  onStatusChange: () => void;
+  onStatusChange: (surveyId: string, action: string) => void;
 }
 
 export const SurveyCard = ({ survey, onStatusChange }: SurveyCardProps) => {
@@ -115,7 +115,7 @@ export const SurveyCard = ({ survey, onStatusChange }: SurveyCardProps) => {
 
       if (result.success) {
         toast.success(t(config.toastKey));
-        onStatusChange();
+        onStatusChange(survey.id, action);
       } else {
         toast.error(t('toast.actionFailed'));
       }
