@@ -1,7 +1,8 @@
 import { AlignLeft, ListChecks, Star, ToggleLeft, Type } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
-import type { QuestionType } from '@/features/surveys/types';
+/** @see QuestionType in types/index.ts */
+type QuestionType = 'open_text' | 'short_text' | 'multiple_choice' | 'rating_scale' | 'yes_no';
 
 export const QUESTION_TYPE_ICONS: Record<QuestionType, LucideIcon> = {
   open_text: AlignLeft,

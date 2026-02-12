@@ -3,9 +3,8 @@
 import type { QuestionSchema } from '@/features/surveys/types';
 
 import { MultipleChoiceEditor } from './multiple-choice-editor';
-import { OpenTextEditor } from './open-text-editor';
 import { RatingScaleEditor } from './rating-scale-editor';
-import { ShortTextEditor } from './short-text-editor';
+import { TextPreviewEditor } from './text-preview-editor';
 import { YesNoEditor } from './yes-no-editor';
 
 interface QuestionEditorProps {
@@ -15,9 +14,9 @@ interface QuestionEditorProps {
 export function QuestionEditor({ question }: QuestionEditorProps) {
   switch (question.type) {
     case 'open_text':
-      return <OpenTextEditor config={question.config} />;
+      return <TextPreviewEditor config={question.config} variant="long" />;
     case 'short_text':
-      return <ShortTextEditor config={question.config} />;
+      return <TextPreviewEditor config={question.config} variant="short" />;
     case 'multiple_choice':
       return <MultipleChoiceEditor question={question} />;
     case 'rating_scale':

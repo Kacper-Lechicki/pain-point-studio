@@ -1,20 +1,15 @@
 'use server';
 
-import { z } from 'zod';
-
 import { withProtectedAction } from '@/lib/common/with-protected-action';
 
-import { QUESTIONS_MIN } from '../config';
+import { PG_ERROR, QUESTIONS_MIN } from '../config';
 import { generateSurveySlug } from '../lib/generate-slug';
+import { surveyIdSchema } from '../types';
 
-const publishSurveySchema = z.object({
-  surveyId: z.string().uuid(),
-});
-
-export const publishSurvey = withProtectedAction<typeof publishSurveySchema, { slug: string }>(
+export const publishSurvey = withProtectedAction<typeof surveyIdSchema, { slug: string }>(
   'publish-survey',
   {
-    schema: publishSurveySchema,
+    schema: surveyIdSchema,
     rateLimit: { limit: 10, windowSeconds: 300 },
     action: async ({ data, user, supabase }) => {
       // Verify survey has at least QUESTIONS_MIN questions with non-empty text
@@ -45,14 +40,9 @@ export const publishSurvey = withProtectedAction<typeof publishSurveySchema, { s
           return { success: true, data: { slug } };
         }
 
-        // Unique constraint violation — retry with a new slug
-        const isSlugCollision = error.code === '23505';
-
-        if (isSlugCollision && attempt < MAX_RETRIES) {
-          continue;
+        if (error.code !== PG_ERROR.UNIQUE_VIOLATION || attempt >= MAX_RETRIES) {
+          return { error: 'surveys.errors.unexpected' };
         }
-
-        return { error: 'surveys.errors.unexpected' };
       }
 
       return { error: 'surveys.errors.unexpected' };

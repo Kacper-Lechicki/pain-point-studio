@@ -3,9 +3,8 @@
 import type { PublicSurveyQuestion } from '@/features/surveys/types';
 
 import { MultipleChoiceQuestion } from './multiple-choice-question';
-import { OpenTextQuestion } from './open-text-question';
 import { RatingScaleQuestion } from './rating-scale-question';
-import { ShortTextQuestion } from './short-text-question';
+import { TextQuestion } from './text-question';
 import { YesNoQuestion } from './yes-no-question';
 
 interface QuestionRendererProps {
@@ -17,18 +16,12 @@ interface QuestionRendererProps {
 export const QuestionRenderer = ({ question, value, onChange }: QuestionRendererProps) => {
   switch (question.type) {
     case 'open_text':
-      return (
-        <OpenTextQuestion
-          value={(value.text as string) ?? ''}
-          config={question.config}
-          onChange={onChange}
-        />
-      );
     case 'short_text':
       return (
-        <ShortTextQuestion
+        <TextQuestion
           value={(value.text as string) ?? ''}
           config={question.config}
+          variant={question.type === 'open_text' ? 'long' : 'short'}
           onChange={onChange}
         />
       );

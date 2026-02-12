@@ -7,11 +7,11 @@ import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { QUESTIONS_MAX } from '@/features/surveys/config';
 
 import { useQuestionBuilderContext } from '../../hooks/use-question-builder-context';
 import { BuilderSidebarItem } from './builder-sidebar-item';
+import { ResponsivePanel } from './responsive-panel';
 
 interface BuilderSidebarProps {
   /** When true, sidebar renders inline (desktop). When false, renders inside a Sheet (mobile). */
@@ -20,7 +20,7 @@ interface BuilderSidebarProps {
   onOpenChange?: (open: boolean) => void;
 }
 
-function BuilderSidebarContent({ onItemSelect }: { onItemSelect?: () => void }) {
+function BuilderSidebarContent({ onItemSelect }: { onItemSelect?: (() => void) | undefined }) {
   const t = useTranslations('surveys.builder');
   const { state, addQuestion, selectQuestion, deleteQuestion, moveQuestion } =
     useQuestionBuilderContext();
@@ -85,27 +85,24 @@ function BuilderSidebarContent({ onItemSelect }: { onItemSelect?: () => void }) 
 export function BuilderSidebar({ isDesktop, open, onOpenChange }: BuilderSidebarProps) {
   const t = useTranslations('surveys.builder');
 
-  if (isDesktop) {
-    return (
-      <div className="border-border flex max-w-[280px] min-w-[280px] flex-col border-r">
-        <BuilderSidebarContent />
-      </div>
-    );
-  }
-
   return (
-    <Sheet open={open ?? false} onOpenChange={onOpenChange ?? (() => {})}>
-      <SheetContent
-        side="left"
-        className="flex w-72 flex-col p-0"
-        showCloseButton={false}
-        aria-describedby={undefined}
-      >
-        <SheetHeader className="border-border border-b px-4 py-2">
-          <SheetTitle className="text-sm font-medium">{t('questions')}</SheetTitle>
-        </SheetHeader>
-        <BuilderSidebarContent onItemSelect={() => onOpenChange?.(false)} />
-      </SheetContent>
-    </Sheet>
+    <ResponsivePanel
+      isDesktop={isDesktop}
+      open={open}
+      onOpenChange={onOpenChange}
+      side="left"
+      title={t('questions')}
+      desktopClassName="border-border flex max-w-[280px] min-w-[280px] flex-col border-r"
+    >
+      <BuilderSidebarContent
+        onItemSelect={
+          isDesktop
+            ? undefined
+            : () => {
+                onOpenChange?.(false);
+              }
+        }
+      />
+    </ResponsivePanel>
   );
 }

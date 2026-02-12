@@ -42,40 +42,36 @@ import { SurveyStatusBadge } from './survey-status-badge';
 type ConfirmableAction = 'close' | 'archive' | 'delete';
 type SurveyAction = ConfirmableAction | 'reopen';
 
-const ACTION_FN = {
-  close: closeSurvey,
-  reopen: reopenSurvey,
-  archive: archiveSurvey,
-  delete: deleteSurveyDraft,
-} as const;
-
-const TOAST_KEY = {
-  close: 'toast.closed',
-  reopen: 'toast.reopened',
-  archive: 'toast.archived',
-  delete: 'toast.deleted',
-} as const;
-
-const CONFIRM_CONFIG: Record<
-  ConfirmableAction,
-  { titleKey: string; descriptionKey: string; variant: 'default' | 'destructive' }
-> = {
+const ACTION_CONFIGS = {
   close: {
-    titleKey: 'confirm.closeTitle',
-    descriptionKey: 'confirm.closeDescription',
-    variant: 'default',
+    fn: closeSurvey,
+    toastKey: 'toast.closed',
+    confirm: {
+      titleKey: 'confirm.closeTitle',
+      descriptionKey: 'confirm.closeDescription',
+      variant: 'default' as const,
+    },
   },
+  reopen: { fn: reopenSurvey, toastKey: 'toast.reopened' },
   archive: {
-    titleKey: 'confirm.archiveTitle',
-    descriptionKey: 'confirm.archiveDescription',
-    variant: 'default',
+    fn: archiveSurvey,
+    toastKey: 'toast.archived',
+    confirm: {
+      titleKey: 'confirm.archiveTitle',
+      descriptionKey: 'confirm.archiveDescription',
+      variant: 'default' as const,
+    },
   },
   delete: {
-    titleKey: 'confirm.deleteTitle',
-    descriptionKey: 'confirm.deleteDescription',
-    variant: 'destructive',
+    fn: deleteSurveyDraft,
+    toastKey: 'toast.deleted',
+    confirm: {
+      titleKey: 'confirm.deleteTitle',
+      descriptionKey: 'confirm.deleteDescription',
+      variant: 'destructive' as const,
+    },
   },
-};
+} as const;
 
 // ── Component ────────────────────────────────────────────────────────
 
@@ -113,12 +109,15 @@ export const SurveyCard = ({ survey, onStatusChange }: SurveyCardProps) => {
 
   const handleAction = (action: SurveyAction) => {
     startTransition(async () => {
-      const result = await ACTION_FN[action]({ surveyId: survey.id });
+      const config = ACTION_CONFIGS[action];
+      const result = await config.fn({ surveyId: survey.id });
       setConfirmDialog(null);
 
       if (result.success) {
-        toast.success(t(TOAST_KEY[action]));
+        toast.success(t(config.toastKey));
         onStatusChange();
+      } else {
+        toast.error(t('toast.actionFailed'));
       }
     });
   };
@@ -228,10 +227,12 @@ export const SurveyCard = ({ survey, onStatusChange }: SurveyCardProps) => {
           open
           onOpenChange={(open) => !open && setConfirmDialog(null)}
           onConfirm={() => handleAction(confirmDialog)}
-          title={t(CONFIRM_CONFIG[confirmDialog].titleKey as Parameters<typeof t>[0])}
-          description={t(CONFIRM_CONFIG[confirmDialog].descriptionKey as Parameters<typeof t>[0])}
+          title={t(ACTION_CONFIGS[confirmDialog].confirm.titleKey as Parameters<typeof t>[0])}
+          description={t(
+            ACTION_CONFIGS[confirmDialog].confirm.descriptionKey as Parameters<typeof t>[0]
+          )}
           confirmLabel={t(`actions.${confirmDialog}`)}
-          variant={CONFIRM_CONFIG[confirmDialog].variant}
+          variant={ACTION_CONFIGS[confirmDialog].confirm.variant}
         />
       )}
     </>

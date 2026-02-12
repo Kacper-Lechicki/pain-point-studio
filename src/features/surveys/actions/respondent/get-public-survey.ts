@@ -4,7 +4,8 @@ import { cache } from 'react';
 
 import { createClient } from '@/lib/supabase/server';
 
-import type { PublicSurveyData, PublicSurveyQuestion, QuestionType } from '../../types';
+import { mapQuestionRow } from '../../lib/map-question-row';
+import type { PublicSurveyData } from '../../types';
 
 export const getPublicSurvey = cache(async (slug: string): Promise<PublicSurveyData | null> => {
   const supabase = await createClient();
@@ -22,12 +23,12 @@ export const getPublicSurvey = cache(async (slug: string): Promise<PublicSurveyD
 
   // Determine if accepting responses
   const now = new Date();
-  let isAcceptingResponses = survey.status === 'active';
+  let isAcceptingResponses = true;
   let closedReason: PublicSurveyData['closedReason'];
 
-  if (survey.status !== 'active') {
+  if (survey.starts_at && new Date(survey.starts_at) > now) {
     isAcceptingResponses = false;
-    closedReason = 'closed';
+    closedReason = 'not_started';
   } else if (survey.ends_at && new Date(survey.ends_at) < now) {
     isAcceptingResponses = false;
     closedReason = 'expired';
@@ -51,15 +52,7 @@ export const getPublicSurvey = cache(async (slug: string): Promise<PublicSurveyD
     closedReason = 'max_reached';
   }
 
-  const mappedQuestions: PublicSurveyQuestion[] = (questions ?? []).map((q) => ({
-    id: q.id,
-    text: q.text,
-    type: q.type as QuestionType,
-    required: q.required,
-    description: q.description,
-    config: (q.config as Record<string, unknown>) ?? {},
-    sortOrder: q.sort_order,
-  }));
+  const mappedQuestions = (questions ?? []).map(mapQuestionRow);
 
   return {
     id: survey.id,

@@ -27,6 +27,7 @@ import type { MessageKey } from '@/i18n/types';
 import { env } from '@/lib/common/env';
 
 import { useQuestionBuilderContext } from '../../hooks/use-question-builder-context';
+import { useUnsavedChangesWarning } from '../../hooks/use-unsaved-changes-warning';
 import { SurveyMetadataForm } from '../survey-metadata-form';
 import { PublishSuccessDialog } from './publish-success-dialog';
 
@@ -55,6 +56,7 @@ export function BuilderTopBar({
   const locale = useLocale();
   const router = useRouter();
   const { state, dispatch, buildQuestionsPayload } = useQuestionBuilderContext();
+  useUnsavedChangesWarning(state.isDirty);
   const [metadataDialogOpen, setMetadataDialogOpen] = useState(false);
   const [publishedSlug, setPublishedSlug] = useState<string | null>(null);
 

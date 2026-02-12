@@ -4,12 +4,14 @@ import { cache } from 'react';
 
 import { createClient } from '@/lib/supabase/server';
 
+import type { SurveyStatus } from '../types';
+
 export interface UserSurvey {
   id: string;
   title: string;
   description: string;
   category: string;
-  status: 'draft' | 'active' | 'closed' | 'archived';
+  status: SurveyStatus;
   slug: string | null;
   responseCount: number;
   createdAt: string;
@@ -35,17 +37,5 @@ export const getUserSurveys = cache(async (): Promise<UserSurvey[] | null> => {
     return [];
   }
 
-  const surveys = data as unknown as Array<{
-    id: string;
-    title: string;
-    description: string;
-    category: string;
-    status: 'draft' | 'active' | 'closed' | 'archived';
-    slug: string | null;
-    responseCount: number;
-    createdAt: string;
-    updatedAt: string;
-  }>;
-
-  return surveys;
+  return data as unknown as UserSurvey[];
 });

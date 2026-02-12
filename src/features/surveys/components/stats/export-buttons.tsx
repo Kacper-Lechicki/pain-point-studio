@@ -13,6 +13,18 @@ interface ExportButtonsProps {
   surveyId: string;
 }
 
+type ExportFormat = 'csv' | 'json';
+
+const EXPORT_CONFIG = {
+  csv: { action: exportSurveyCSV, field: 'csv', mime: 'text/csv', labelKey: 'exportCSV' },
+  json: {
+    action: exportSurveyJSON,
+    field: 'json',
+    mime: 'application/json',
+    labelKey: 'exportJSON',
+  },
+} as const;
+
 function downloadBlob(content: string, filename: string, mimeType: string) {
   const blob = new Blob([content], { type: mimeType });
   const url = URL.createObjectURL(blob);
@@ -27,34 +39,18 @@ function downloadBlob(content: string, filename: string, mimeType: string) {
 
 export const ExportButtons = ({ surveyId }: ExportButtonsProps) => {
   const t = useTranslations('surveys.stats');
-  const [exporting, setExporting] = useState<'csv' | 'json' | null>(null);
+  const [exporting, setExporting] = useState<ExportFormat | null>(null);
 
-  const handleExportCSV = async () => {
-    setExporting('csv');
-
-    try {
-      const result = await exportSurveyCSV({ surveyId });
-
-      if (result.success && result.data) {
-        downloadBlob(result.data.csv, result.data.filename, 'text/csv');
-      } else {
-        toast.error(t('exportFailed'));
-      }
-    } catch {
-      toast.error(t('exportFailed'));
-    } finally {
-      setExporting(null);
-    }
-  };
-
-  const handleExportJSON = async () => {
-    setExporting('json');
+  const handleExport = async (format: ExportFormat) => {
+    const { action, field, mime } = EXPORT_CONFIG[format];
+    setExporting(format);
 
     try {
-      const result = await exportSurveyJSON({ surveyId });
+      const result = await action({ surveyId });
 
       if (result.success && result.data) {
-        downloadBlob(result.data.json, result.data.filename, 'application/json');
+        const content = (result.data as Record<string, string>)[field]!;
+        downloadBlob(content, result.data.filename, mime);
       } else {
         toast.error(t('exportFailed'));
       }
@@ -67,26 +63,19 @@ export const ExportButtons = ({ surveyId }: ExportButtonsProps) => {
 
   return (
     <div className="flex gap-2">
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={handleExportCSV}
-        disabled={exporting !== null}
-        className="gap-1.5"
-      >
-        <Download className="size-3.5" />
-        {exporting === 'csv' ? t('exporting') : t('exportCSV')}
-      </Button>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={handleExportJSON}
-        disabled={exporting !== null}
-        className="gap-1.5"
-      >
-        <Download className="size-3.5" />
-        {exporting === 'json' ? t('exporting') : t('exportJSON')}
-      </Button>
+      {(['csv', 'json'] as const).map((format) => (
+        <Button
+          key={format}
+          variant="outline"
+          size="sm"
+          onClick={() => handleExport(format)}
+          disabled={exporting !== null}
+          className="gap-1.5"
+        >
+          <Download className="size-3.5" />
+          {exporting === format ? t('exporting') : t(EXPORT_CONFIG[format].labelKey)}
+        </Button>
+      ))}
     </div>
   );
 };

@@ -3,9 +3,8 @@
 import { useTranslations } from 'next-intl';
 
 import { Badge } from '@/components/ui/badge';
+import type { SurveyStatus } from '@/features/surveys/types';
 import { cn } from '@/lib/common/utils';
-
-type SurveyStatus = 'draft' | 'active' | 'closed' | 'archived';
 
 const STATUS_STYLES: Record<SurveyStatus, string> = {
   active: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400',

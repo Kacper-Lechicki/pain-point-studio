@@ -2,6 +2,7 @@
 
 import { withPublicAction } from '@/lib/common/with-public-action';
 
+import { RPC_ERROR } from '../../config';
 import { startResponseSchema } from '../../types';
 
 export const startResponse = withPublicAction<typeof startResponseSchema, { responseId: string }>(
@@ -15,11 +16,11 @@ export const startResponse = withPublicAction<typeof startResponseSchema, { resp
       });
 
       if (error) {
-        if (error.message.includes('MAX_RESPONDENTS_REACHED')) {
+        if (error.message.includes(RPC_ERROR.MAX_RESPONDENTS_REACHED)) {
           return { error: 'respondent.closed.maxReached' };
         }
 
-        if (error.message.includes('SURVEY_NOT_ACTIVE')) {
+        if (error.message.includes(RPC_ERROR.SURVEY_NOT_ACTIVE)) {
           return { error: 'respondent.closed.closed' };
         }
 

@@ -4,7 +4,9 @@ import { cache } from 'react';
 
 import { createClient } from '@/lib/supabase/server';
 
-import type { QuestionType } from '../types';
+import type { MappedQuestion } from '../lib/map-question-row';
+import { mapQuestionRow } from '../lib/map-question-row';
+import type { SurveyStatus, SurveyVisibility } from '../types';
 
 export interface SurveyBuilderData {
   survey: {
@@ -12,21 +14,13 @@ export interface SurveyBuilderData {
     title: string;
     description: string;
     category: string;
-    visibility: 'private' | 'public';
+    visibility: SurveyVisibility;
     startsAt: string | null;
     endsAt: string | null;
     maxRespondents: number | null;
-    status: 'draft' | 'active' | 'closed' | 'archived';
+    status: SurveyStatus;
   };
-  questions: Array<{
-    id: string;
-    text: string;
-    type: QuestionType;
-    required: boolean;
-    description: string | null;
-    config: Record<string, unknown>;
-    sortOrder: number;
-  }>;
+  questions: MappedQuestion[];
 }
 
 export const getSurveyWithQuestions = cache(
@@ -65,21 +59,13 @@ export const getSurveyWithQuestions = cache(
         title: survey.title,
         description: survey.description ?? '',
         category: survey.category ?? '',
-        visibility: (survey.visibility as 'private' | 'public') ?? 'private',
+        visibility: (survey.visibility as SurveyVisibility) ?? 'private',
         startsAt: survey.starts_at,
         endsAt: survey.ends_at,
         maxRespondents: survey.max_respondents,
         status: survey.status,
       },
-      questions: (questions ?? []).map((q) => ({
-        id: q.id,
-        text: q.text,
-        type: q.type as QuestionType,
-        required: q.required,
-        description: q.description,
-        config: (q.config as Record<string, unknown>) ?? {},
-        sortOrder: q.sort_order,
-      })),
+      questions: (questions ?? []).map(mapQuestionRow),
     };
   }
 );

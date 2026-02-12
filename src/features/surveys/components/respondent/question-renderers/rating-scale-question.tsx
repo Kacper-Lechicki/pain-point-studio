@@ -1,5 +1,8 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+
+import { getRatingScaleConfig } from '@/features/surveys/lib/rating-scale';
 import { cn } from '@/lib/common/utils';
 
 interface RatingScaleQuestionProps {
@@ -9,23 +12,20 @@ interface RatingScaleQuestionProps {
 }
 
 export const RatingScaleQuestion = ({ value, config, onChange }: RatingScaleQuestionProps) => {
-  const min = (config.min as number) ?? 1;
-  const max = (config.max as number) ?? 5;
-  const minLabel = (config.minLabel as string) || '';
-  const maxLabel = (config.maxLabel as string) || '';
-
-  const values = Array.from({ length: max - min + 1 }, (_, i) => min + i);
+  const t = useTranslations('respondent.questions');
+  const { values, minLabel, maxLabel } = getRatingScaleConfig(config);
+  const max = values[values.length - 1] ?? 0;
 
   return (
     <div>
-      <div role="radiogroup" className="flex flex-wrap gap-2">
+      <div role="radiogroup" aria-label={t('ratingScale')} className="flex flex-wrap gap-2">
         {values.map((n) => (
           <button
             key={n}
             type="button"
             role="radio"
             aria-checked={value === n}
-            aria-label={String(n)}
+            aria-label={t('ratingLabel', { value: n, max })}
             onClick={() => onChange({ rating: n })}
             className={cn(
               'flex min-h-10 min-w-10 items-center justify-center rounded-lg border text-sm font-medium transition-colors md:min-h-9 md:min-w-9',

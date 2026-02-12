@@ -4,7 +4,7 @@ import { cache } from 'react';
 
 import { createClient } from '@/lib/supabase/server';
 
-import type { QuestionType } from '../types';
+import type { QuestionType, SurveyStatus } from '../types';
 
 export interface QuestionAnswerData {
   value: Record<string, unknown>;
@@ -24,7 +24,7 @@ export interface SurveyStats {
     id: string;
     title: string;
     slug: string | null;
-    status: string;
+    status: SurveyStatus;
     startsAt: string | null;
     endsAt: string | null;
     maxRespondents: number | null;

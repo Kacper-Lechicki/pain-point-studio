@@ -1,20 +1,21 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { ArrowLeft, ArrowRight, SkipForward } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { PageTransition } from '@/components/ui/page-transition';
 import type { PublicSurveyData } from '@/features/surveys/types';
 
+import { useSurveyFlow } from '../../hooks/use-survey-flow';
 import { QuestionRenderer } from './question-renderers';
 import { SurveyCompletion } from './survey-completion';
 import { SurveyProgress } from './survey-progress';
 import { SurveyThankYou } from './survey-thank-you';
-import { useSurveyFlow } from './use-survey-flow';
 
 type FlowScreen = 'questions' | 'completion' | 'thank-you';
 
@@ -26,7 +27,12 @@ interface SurveyFlowProps {
 
 export const SurveyFlow = ({ survey, responseId, slug }: SurveyFlowProps) => {
   const t = useTranslations('respondent.flow');
+  const tErrors = useTranslations('respondent.errors');
   const [screen, setScreen] = useState<FlowScreen>('questions');
+
+  const handleSaveError = useCallback(() => {
+    toast.error(tErrors('saveFailed'));
+  }, [tErrors]);
 
   const {
     currentIndex,
@@ -39,7 +45,7 @@ export const SurveyFlow = ({ survey, responseId, slug }: SurveyFlowProps) => {
     goToPrevious,
     skip,
     goToQuestion,
-  } = useSurveyFlow({ questions: survey.questions, responseId });
+  } = useSurveyFlow({ questions: survey.questions, responseId, onSaveError: handleSaveError });
 
   const effectiveScreen: FlowScreen =
     screen === 'thank-you'

@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { PageTransition } from '@/components/ui/page-transition';
 import { startResponse } from '@/features/surveys/actions/respondent';
 import { ESTIMATED_SECONDS_PER_QUESTION } from '@/features/surveys/config';
-import type { PublicSurveyData } from '@/features/surveys/types';
+import type { CompletedData, PublicSurveyData } from '@/features/surveys/types';
 import type { MessageKey } from '@/i18n/types';
 
 import { SurveyFlow } from './survey-flow';
@@ -18,11 +18,6 @@ import { SurveyFlow } from './survey-flow';
 interface SurveyLandingProps {
   survey: PublicSurveyData;
   slug: string;
-}
-
-interface CompletedData {
-  timestamp: number;
-  responseId: string;
 }
 
 export const SurveyLanding = ({ survey, slug }: SurveyLandingProps) => {

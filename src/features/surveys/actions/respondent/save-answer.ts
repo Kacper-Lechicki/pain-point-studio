@@ -16,14 +16,6 @@ export const saveAnswer = withPublicAction<typeof saveAnswerSchema, void>('save-
     });
 
     if (error) {
-      if (error.message.includes('QUESTION_SURVEY_MISMATCH')) {
-        return { error: 'respondent.errors.saveFailed' };
-      }
-
-      if (error.message.includes('RESPONSE_ALREADY_COMPLETED')) {
-        return { error: 'respondent.errors.saveFailed' };
-      }
-
       return { error: 'respondent.errors.saveFailed' };
     }
 

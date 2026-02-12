@@ -1,25 +1,27 @@
 'use client';
 
-import { Clock, Lock, Users } from 'lucide-react';
+import { CalendarClock, Clock, Lock, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { PageTransition } from '@/components/ui/page-transition';
 
 interface SurveyClosedProps {
   title: string;
-  reason?: 'closed' | 'expired' | 'max_reached';
+  reason?: 'closed' | 'expired' | 'max_reached' | 'not_started';
 }
 
 const reasonIcons = {
   closed: Lock,
   expired: Clock,
   max_reached: Users,
+  not_started: CalendarClock,
 } as const;
 
 const reasonKeys = {
   closed: 'closed',
   expired: 'expired',
   max_reached: 'maxReached',
+  not_started: 'notStarted',
 } as const;
 
 export const SurveyClosed = ({ title, reason = 'closed' }: SurveyClosedProps) => {

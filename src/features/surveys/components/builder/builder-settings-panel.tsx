@@ -5,7 +5,6 @@ import { useTranslations } from 'next-intl';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Switch } from '@/components/ui/switch';
 import {
   QUESTION_OPTIONS_MAX,
@@ -18,6 +17,7 @@ import { QUESTION_TYPES, type QuestionType } from '@/features/surveys/types';
 import { cn } from '@/lib/common/utils';
 
 import { useQuestionBuilderContext } from '../../hooks/use-question-builder-context';
+import { ResponsivePanel } from './responsive-panel';
 
 interface BuilderSettingsPanelProps {
   isDesktop: boolean;
@@ -124,28 +124,17 @@ function BuilderSettingsPanelContent() {
 export function BuilderSettingsPanel({ isDesktop, open, onOpenChange }: BuilderSettingsPanelProps) {
   const t = useTranslations('surveys.builder');
 
-  if (isDesktop) {
-    return (
-      <div className="border-border flex max-w-[280px] min-w-[280px] flex-col border-l">
-        <BuilderSettingsPanelContent />
-      </div>
-    );
-  }
-
   return (
-    <Sheet open={open ?? false} onOpenChange={onOpenChange ?? (() => {})}>
-      <SheetContent
-        side="right"
-        className="flex w-72 flex-col p-0"
-        showCloseButton={false}
-        aria-describedby={undefined}
-      >
-        <SheetHeader className="border-border border-b px-4 py-2">
-          <SheetTitle className="text-sm font-medium">{t('questionSettings')}</SheetTitle>
-        </SheetHeader>
-        <BuilderSettingsPanelContent />
-      </SheetContent>
-    </Sheet>
+    <ResponsivePanel
+      isDesktop={isDesktop}
+      open={open}
+      onOpenChange={onOpenChange}
+      side="right"
+      title={t('questionSettings')}
+      desktopClassName="border-border flex max-w-[280px] min-w-[280px] flex-col border-l"
+    >
+      <BuilderSettingsPanelContent />
+    </ResponsivePanel>
   );
 }
 

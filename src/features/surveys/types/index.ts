@@ -16,6 +16,12 @@ import {
   SURVEY_TITLE_MAX_LENGTH,
 } from '@/features/surveys/config';
 
+// ── Shared schemas ──────────────────────────────────────────────────
+
+export const surveyIdSchema = z.object({
+  surveyId: z.string().uuid(),
+});
+
 // ── Survey metadata schemas ─────────────────────────────────────────
 
 export const surveyMetadataSchema = z
@@ -85,6 +91,10 @@ export const QUESTION_TYPES = [
 
 export type QuestionType = (typeof QUESTION_TYPES)[number];
 
+export type SurveyStatus = 'draft' | 'active' | 'closed' | 'archived';
+
+export type SurveyVisibility = 'private' | 'public';
+
 // ── Type-specific config schemas ────────────────────────────────────
 
 export const multipleChoiceConfigSchema = z.object({
@@ -109,12 +119,7 @@ export const ratingScaleConfigSchema = z
     path: ['max'],
   });
 
-export const openTextConfigSchema = z.object({
-  placeholder: z.string().max(200).optional(),
-  maxLength: z.number().int().min(1).optional(),
-});
-
-export const shortTextConfigSchema = z.object({
+export const textConfigSchema = z.object({
   placeholder: z.string().max(200).optional(),
   maxLength: z.number().int().min(1).optional(),
 });

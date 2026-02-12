@@ -1,6 +1,6 @@
 'use client';
 
-import { type ReactNode, createContext, useCallback, useContext, useMemo } from 'react';
+import { type ReactNode, createContext, useContext, useMemo } from 'react';
 
 import { useTranslations } from 'next-intl';
 
@@ -52,94 +52,45 @@ export function QuestionBuilderProvider({
   const t = useTranslations();
   const [state, dispatch] = useQuestionBuilder(initialQuestions);
 
-  const activeQuestion = useMemo(
-    () => state.questions.find((q) => q.id === state.activeQuestionId),
-    [state.questions, state.activeQuestionId]
-  );
-
-  const addQuestion = useCallback(
-    (type?: QuestionType) => {
-      dispatch(
-        type ? { type: 'ADD_QUESTION', payload: { questionType: type } } : { type: 'ADD_QUESTION' }
-      );
-    },
-    [dispatch]
-  );
-
-  const deleteQuestion = useCallback(
-    (id: string) => {
-      dispatch({ type: 'DELETE_QUESTION', payload: { questionId: id } });
-    },
-    [dispatch]
-  );
-
-  const selectQuestion = useCallback(
-    (id: string) => {
-      dispatch({ type: 'SELECT_QUESTION', payload: { questionId: id } });
-    },
-    [dispatch]
-  );
-
-  const updateQuestion = useCallback(
-    (id: string, updates: Partial<QuestionSchema>) => {
-      dispatch({ type: 'UPDATE_QUESTION', payload: { questionId: id, updates } });
-    },
-    [dispatch]
-  );
-
-  const changeQuestionType = useCallback(
-    (id: string, newType: QuestionType) => {
-      dispatch({ type: 'CHANGE_QUESTION_TYPE', payload: { questionId: id, newType } });
-    },
-    [dispatch]
-  );
-
-  const moveQuestion = useCallback(
-    (id: string, direction: 'up' | 'down') => {
-      dispatch({ type: 'MOVE_QUESTION', payload: { questionId: id, direction } });
-    },
-    [dispatch]
-  );
-
-  const buildQuestionsPayload = useCallback(
-    () =>
-      state.questions.map((q, i) => ({
-        id: q.id,
-        text: q.text || t('surveys.builder.untitledQuestion'),
-        type: q.type,
-        required: q.required,
-        description: q.description ?? null,
-        config: q.config,
-        sortOrder: i,
-      })),
-    [state.questions, t]
-  );
-
-  const contextValue = useMemo(
+  const contextValue = useMemo<QuestionBuilderContextValue>(
     () => ({
       state,
       dispatch,
-      activeQuestion,
-      addQuestion,
-      deleteQuestion,
-      selectQuestion,
-      updateQuestion,
-      changeQuestionType,
-      moveQuestion,
-      buildQuestionsPayload,
+      activeQuestion: state.questions.find((q) => q.id === state.activeQuestionId),
+      addQuestion: (type?: QuestionType) => {
+        dispatch(
+          type
+            ? { type: 'ADD_QUESTION', payload: { questionType: type } }
+            : { type: 'ADD_QUESTION' }
+        );
+      },
+      deleteQuestion: (id: string) => {
+        dispatch({ type: 'DELETE_QUESTION', payload: { questionId: id } });
+      },
+      selectQuestion: (id: string) => {
+        dispatch({ type: 'SELECT_QUESTION', payload: { questionId: id } });
+      },
+      updateQuestion: (id: string, updates: Partial<QuestionSchema>) => {
+        dispatch({ type: 'UPDATE_QUESTION', payload: { questionId: id, updates } });
+      },
+      changeQuestionType: (id: string, newType: QuestionType) => {
+        dispatch({ type: 'CHANGE_QUESTION_TYPE', payload: { questionId: id, newType } });
+      },
+      moveQuestion: (id: string, direction: 'up' | 'down') => {
+        dispatch({ type: 'MOVE_QUESTION', payload: { questionId: id, direction } });
+      },
+      buildQuestionsPayload: () =>
+        state.questions.map((q, i) => ({
+          id: q.id,
+          text: q.text || t('surveys.builder.untitledQuestion'),
+          type: q.type,
+          required: q.required,
+          description: q.description ?? null,
+          config: q.config,
+          sortOrder: i,
+        })),
     }),
-    [
-      state,
-      dispatch,
-      activeQuestion,
-      addQuestion,
-      deleteQuestion,
-      selectQuestion,
-      updateQuestion,
-      changeQuestionType,
-      moveQuestion,
-      buildQuestionsPayload,
-    ]
+    [state, dispatch, t]
   );
 
   return (

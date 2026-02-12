@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { PageTransition } from '@/components/ui/page-transition';
 import { Textarea } from '@/components/ui/textarea';
 import { submitResponse } from '@/features/surveys/actions/respondent';
+import type { CompletedData } from '@/features/surveys/types';
 
 interface SurveyCompletionProps {
   responseId: string;
@@ -50,7 +51,7 @@ export const SurveyCompletion = ({
         try {
           localStorage.setItem(
             `pps_completed_${slug}`,
-            JSON.stringify({ timestamp: Date.now(), responseId })
+            JSON.stringify({ timestamp: Date.now(), responseId } satisfies CompletedData)
           );
         } catch {
           // localStorage may not be available

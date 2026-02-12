@@ -387,7 +387,8 @@
         "reopened": "Survey reopened.",
         "archived": "Survey archived.",
         "deleted": "Survey deleted.",
-        "linkCopied": "Survey link copied!"
+        "linkCopied": "Survey link copied!",
+        "actionFailed": "Something went wrong. Please try again."
       },
       "noMatchingSurveys": "No surveys match your filters.",
       "noSearchResults": "No surveys found for \"{query}\"."
@@ -417,7 +418,9 @@
     "questions": {
       "yesLabel": "Yes",
       "noLabel": "No",
-      "otherPlaceholder": "Other..."
+      "otherPlaceholder": "Other...",
+      "ratingScale": "Rating scale",
+      "ratingLabel": "Rate {value} out of {max}"
     },
     "completion": {
       "title": "Review & Submit",
@@ -442,7 +445,8 @@
       "title": "Survey Unavailable",
       "closed": "This survey is no longer accepting responses.",
       "expired": "This survey has ended.",
-      "maxReached": "This survey has reached its maximum number of responses."
+      "maxReached": "This survey has reached its maximum number of responses.",
+      "notStarted": "This survey hasn't started yet. Please check back later."
     },
     "errors": {
       "startFailed": "Failed to start the survey. Please try again.",

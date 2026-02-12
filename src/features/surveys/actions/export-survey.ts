@@ -1,15 +1,9 @@
 'use server';
 
-import { z } from 'zod';
-
 import { withProtectedAction } from '@/lib/common/with-protected-action';
 
 import { slugifyTitle } from '../lib/generate-slug';
-import type { QuestionType } from '../types';
-
-const exportSurveySchema = z.object({
-  surveyId: z.string().uuid(),
-});
+import { type QuestionType, surveyIdSchema } from '../types';
 
 function formatAnswerValue(type: QuestionType, value: Record<string, unknown>): string {
   switch (type) {
@@ -33,11 +27,14 @@ function formatAnswerValue(type: QuestionType, value: Record<string, unknown>): 
 }
 
 function escapeCsvField(field: string): string {
-  if (field.includes(',') || field.includes('"') || field.includes('\n')) {
-    return `"${field.replace(/"/g, '""')}"`;
+  // Prevent spreadsheet formula injection (=, +, -, @)
+  const sanitized = /^[=+\-@]/.test(field) ? `\t${field}` : field;
+
+  if (sanitized.includes(',') || sanitized.includes('"') || sanitized.includes('\n')) {
+    return `"${sanitized.replace(/"/g, '""')}"`;
   }
 
-  return field;
+  return sanitized;
 }
 
 async function fetchExportData(
@@ -99,10 +96,10 @@ async function fetchExportData(
 }
 
 export const exportSurveyCSV = withProtectedAction<
-  typeof exportSurveySchema,
+  typeof surveyIdSchema,
   { csv: string; filename: string }
 >('export-survey-csv', {
-  schema: exportSurveySchema,
+  schema: surveyIdSchema,
   rateLimit: { limit: 10, windowSeconds: 60 },
   action: async ({ data, user, supabase }) => {
     const result = await fetchExportData(supabase, data.surveyId, user.id);
@@ -153,10 +150,10 @@ export const exportSurveyCSV = withProtectedAction<
 });
 
 export const exportSurveyJSON = withProtectedAction<
-  typeof exportSurveySchema,
+  typeof surveyIdSchema,
   { json: string; filename: string }
 >('export-survey-json', {
-  schema: exportSurveySchema,
+  schema: surveyIdSchema,
   rateLimit: { limit: 10, windowSeconds: 60 },
   action: async ({ data, user, supabase }) => {
     const result = await fetchExportData(supabase, data.surveyId, user.id);

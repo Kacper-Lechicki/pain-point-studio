@@ -1,5 +1,6 @@
 'use client';
 
+import { getRatingScaleConfig } from '@/features/surveys/lib/rating-scale';
 import { cn } from '@/lib/common/utils';
 
 interface RatingScaleEditorProps {
@@ -7,12 +8,7 @@ interface RatingScaleEditorProps {
 }
 
 export function RatingScaleEditor({ config }: RatingScaleEditorProps) {
-  const min = (config.min as number) ?? 1;
-  const max = (config.max as number) ?? 5;
-  const minLabel = (config.minLabel as string) ?? '';
-  const maxLabel = (config.maxLabel as string) ?? '';
-
-  const values = Array.from({ length: max - min + 1 }, (_, i) => min + i);
+  const { values, minLabel, maxLabel } = getRatingScaleConfig(config);
 
   return (
     <div className="space-y-2">
