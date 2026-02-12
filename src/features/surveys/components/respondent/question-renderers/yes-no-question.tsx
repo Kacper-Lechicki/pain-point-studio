@@ -14,7 +14,7 @@ export const YesNoQuestion = ({ value, onChange }: YesNoQuestionProps) => {
   const t = useTranslations('respondent.questions');
 
   return (
-    <div role="radiogroup" className="flex gap-3">
+    <div role="radiogroup" aria-label={t('yesNoGroup')} className="flex gap-3">
       <button
         type="button"
         role="radio"

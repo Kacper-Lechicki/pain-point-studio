@@ -41,7 +41,11 @@ export const MultipleChoiceQuestion = ({
   };
 
   return (
-    <div role={isSingleSelect ? 'radiogroup' : 'group'} className="space-y-2">
+    <div
+      role={isSingleSelect ? 'radiogroup' : 'group'}
+      aria-label={t('choiceGroup')}
+      className="space-y-2"
+    >
       {options.map((option) => {
         const isSelected = value.selected.includes(option);
 

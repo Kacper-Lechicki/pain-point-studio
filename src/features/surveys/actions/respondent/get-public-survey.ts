@@ -14,7 +14,7 @@ export const getPublicSurvey = cache(async (slug: string): Promise<PublicSurveyD
     .from('surveys')
     .select('id, title, description, status, starts_at, ends_at, max_respondents')
     .eq('slug', slug)
-    .eq('status', 'active' as const)
+    .eq('status', 'active')
     .single();
 
   if (!survey) {

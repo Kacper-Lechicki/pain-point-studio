@@ -33,7 +33,11 @@ export const getUserSurveys = cache(async (): Promise<UserSurvey[] | null> => {
     p_user_id: user.id,
   });
 
-  if (error || !data) {
+  if (error) {
+    return null;
+  }
+
+  if (!data) {
     return [];
   }
 

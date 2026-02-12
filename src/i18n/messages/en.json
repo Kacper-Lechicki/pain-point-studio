@@ -420,7 +420,9 @@
       "noLabel": "No",
       "otherPlaceholder": "Other...",
       "ratingScale": "Rating scale",
-      "ratingLabel": "Rate {value} out of {max}"
+      "ratingLabel": "Rate {value} out of {max}",
+      "yesNoGroup": "Yes or No",
+      "choiceGroup": "Select an option"
     },
     "completion": {
       "title": "Review & Submit",

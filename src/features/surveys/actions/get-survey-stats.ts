@@ -51,7 +51,11 @@ export const getSurveyStats = cache(async (surveyId: string): Promise<SurveyStat
     p_user_id: user.id,
   });
 
-  if (error || !data) {
+  if (error) {
+    return null;
+  }
+
+  if (!data) {
     return null;
   }
 

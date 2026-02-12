@@ -31,10 +31,10 @@ export const publishSurvey = withProtectedAction<typeof surveyIdSchema, { slug: 
 
         const { error } = await supabase
           .from('surveys')
-          .update({ status: 'active' as const, slug })
+          .update({ status: 'active', slug })
           .eq('id', data.surveyId)
           .eq('user_id', user.id)
-          .eq('status', 'draft' as const);
+          .eq('status', 'draft');
 
         if (!error) {
           return { success: true, data: { slug } };
