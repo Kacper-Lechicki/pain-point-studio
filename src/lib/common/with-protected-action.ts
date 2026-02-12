@@ -1,3 +1,8 @@
+/**
+ * HOF for server actions that require an authenticated user. Applies rate limit,
+ * Zod validation, then Supabase auth; only then runs the action with user + supabase.
+ * Use for dashboard/settings flows. For unauthenticated flows use withPublicAction.
+ */
 import { User } from '@supabase/supabase-js';
 import { ZodType, z } from 'zod';
 

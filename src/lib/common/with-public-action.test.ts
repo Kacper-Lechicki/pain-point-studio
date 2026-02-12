@@ -15,67 +15,60 @@ vi.mock('@/lib/common/rate-limit', () => ({
   rateLimit: vi.fn().mockResolvedValue({ limited: false }),
 }));
 
-const mockGetUser = vi.fn();
+const mockSupabase = { auth: {}, from: vi.fn() };
 
 vi.mock('@/lib/supabase/server', () => ({
-  createClient: vi.fn().mockResolvedValue({
-    auth: { getUser: mockGetUser },
-  }),
+  createClient: vi.fn().mockResolvedValue(mockSupabase),
 }));
 
 const testSchema = z.object({
   name: z.string().min(1),
 });
 
-const mockUser = { id: 'user-123', email: 'test@example.com' };
-
-describe('withProtectedAction', () => {
+describe('withPublicAction', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockGetUser.mockResolvedValue({ data: { user: mockUser } });
   });
 
-  // Action receives parsed form data, user, and supabase client; returns action result.
-  it('should call the action with validated data, user, and supabase client', async () => {
+  // Action receives parsed form data and supabase client; returns action result.
+  it('should call the action with validated data and supabase client', async () => {
     const actionFn = vi.fn().mockResolvedValue({ success: true });
 
-    const { withProtectedAction } = await import('./with-protected-action');
-    const protectedAction = withProtectedAction('test-action', {
+    const { withPublicAction } = await import('./with-public-action');
+    const publicAction = withPublicAction('test-action', {
       schema: testSchema,
       rateLimit: { limit: 5, windowSeconds: 60 },
       action: actionFn,
     });
 
-    const result = await protectedAction({ name: 'John' });
+    const result = await publicAction({ name: 'John' });
 
     expect(result).toEqual({ success: true });
     expect(actionFn).toHaveBeenCalledWith(
       expect.objectContaining({
         data: { name: 'John' },
-        user: mockUser,
-        supabase: expect.objectContaining({ auth: expect.any(Object) }),
+        supabase: mockSupabase,
       })
     );
   });
 
-  // When rate limit returns limited: true, action and getUser are not called.
+  // When rate limit returns limited: true, action is not called and error is returned.
   it('should return rate limit error when rate limited', async () => {
     const { rateLimit } = await import('@/lib/common/rate-limit');
     vi.mocked(rateLimit).mockResolvedValueOnce({ limited: true });
 
     const actionFn = vi.fn();
-    const { withProtectedAction } = await import('./with-protected-action');
-    const protectedAction = withProtectedAction('test-action', {
+    const { withPublicAction } = await import('./with-public-action');
+    const publicAction = withPublicAction('test-action', {
       schema: testSchema,
       rateLimit: { limit: 5, windowSeconds: 60 },
       action: actionFn,
     });
 
-    const result = await protectedAction({ name: 'John' });
+    const result = await publicAction({ name: 'John' });
 
     expect(result.error).toBeDefined();
     expect(actionFn).not.toHaveBeenCalled();
-    expect(mockGetUser).not.toHaveBeenCalled();
   });
 
   // rateLimitError option overrides default i18n key when rate limited.
@@ -83,82 +76,94 @@ describe('withProtectedAction', () => {
     const { rateLimit } = await import('@/lib/common/rate-limit');
     vi.mocked(rateLimit).mockResolvedValueOnce({ limited: true });
 
-    const { withProtectedAction } = await import('./with-protected-action');
-    const protectedAction = withProtectedAction('test-action', {
+    const { withPublicAction } = await import('./with-public-action');
+    const publicAction = withPublicAction('test-action', {
       schema: testSchema,
       rateLimit: { limit: 5, windowSeconds: 60 },
       rateLimitError: 'custom.rateLimitMessage',
       action: vi.fn(),
     });
 
-    const result = await protectedAction({ name: 'John' });
+    const result = await publicAction({ name: 'John' });
 
     expect(result.error).toBe('custom.rateLimitMessage');
   });
 
-  // Invalid form data fails schema; action and getUser are not called.
+  // Invalid form data fails schema; action is not called, error returned.
   it('should return validation error for invalid data', async () => {
     const actionFn = vi.fn();
 
-    const { withProtectedAction } = await import('./with-protected-action');
-    const protectedAction = withProtectedAction('test-action', {
+    const { withPublicAction } = await import('./with-public-action');
+    const publicAction = withPublicAction('test-action', {
       schema: testSchema,
       rateLimit: { limit: 5, windowSeconds: 60 },
       action: actionFn,
     });
 
-    const result = await protectedAction({ name: '' });
+    const result = await publicAction({ name: '' });
 
     expect(result.error).toBeDefined();
     expect(actionFn).not.toHaveBeenCalled();
-    expect(mockGetUser).not.toHaveBeenCalled();
   });
 
   // validationError option overrides default i18n key when validation fails.
   it('should use custom validation error message', async () => {
-    const { withProtectedAction } = await import('./with-protected-action');
-    const protectedAction = withProtectedAction('test-action', {
+    const { withPublicAction } = await import('./with-public-action');
+    const publicAction = withPublicAction('test-action', {
       schema: testSchema,
       rateLimit: { limit: 5, windowSeconds: 60 },
       validationError: 'custom.validationMessage',
       action: vi.fn(),
     });
 
-    const result = await protectedAction({ name: '' });
+    const result = await publicAction({ name: '' });
 
     expect(result.error).toBe('custom.validationMessage');
   });
 
-  // When getUser returns null, settings.errors.unexpected is returned and action is not called.
-  it('should return error when user is not authenticated', async () => {
-    mockGetUser.mockResolvedValue({ data: { user: null } });
+  // Default rate limit error key is common.errors.rateLimitExceeded.
+  it('should use default rate limit error when not customized', async () => {
+    const { rateLimit } = await import('@/lib/common/rate-limit');
+    vi.mocked(rateLimit).mockResolvedValueOnce({ limited: true });
 
-    const actionFn = vi.fn();
-    const { withProtectedAction } = await import('./with-protected-action');
-    const protectedAction = withProtectedAction('test-action', {
+    const { withPublicAction } = await import('./with-public-action');
+    const publicAction = withPublicAction('test-action', {
       schema: testSchema,
       rateLimit: { limit: 5, windowSeconds: 60 },
-      action: actionFn,
+      action: vi.fn(),
     });
 
-    const result = await protectedAction({ name: 'John' });
+    const result = await publicAction({ name: 'John' });
 
-    expect(result.error).toBe('settings.errors.unexpected');
-    expect(actionFn).not.toHaveBeenCalled();
+    expect(result.error).toBe('common.errors.rateLimitExceeded');
+  });
+
+  // Default validation error key is common.errors.invalidData.
+  it('should use default validation error when not customized', async () => {
+    const { withPublicAction } = await import('./with-public-action');
+    const publicAction = withPublicAction('test-action', {
+      schema: testSchema,
+      rateLimit: { limit: 5, windowSeconds: 60 },
+      action: vi.fn(),
+    });
+
+    const result = await publicAction({ name: '' });
+
+    expect(result.error).toBe('common.errors.invalidData');
   });
 
   // rateLimit is invoked with the given key, limit, and windowSeconds.
   it('should pass the rate limit key correctly', async () => {
     const { rateLimit } = await import('@/lib/common/rate-limit');
-    const { withProtectedAction } = await import('./with-protected-action');
+    const { withPublicAction } = await import('./with-public-action');
 
-    const protectedAction = withProtectedAction('my-unique-key', {
+    const publicAction = withPublicAction('my-unique-key', {
       schema: testSchema,
       rateLimit: { limit: 10, windowSeconds: 120 },
       action: vi.fn().mockResolvedValue({ success: true }),
     });
 
-    await protectedAction({ name: 'John' });
+    await publicAction({ name: 'John' });
 
     expect(rateLimit).toHaveBeenCalledWith({
       key: 'my-unique-key',

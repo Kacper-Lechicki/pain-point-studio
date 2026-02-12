@@ -15,6 +15,7 @@ const EmptyState = ({ icon: Icon, title, description, action }: EmptyStateProps)
       <div className="bg-accent text-accent-foreground mb-4 flex size-12 items-center justify-center rounded-lg">
         <Icon className="size-6" />
       </div>
+
       <h3 className="text-base font-semibold">{title}</h3>
       <p className="text-muted-foreground mt-1.5 max-w-sm text-sm">{description}</p>
       {action && <div className="mt-6">{action}</div>}

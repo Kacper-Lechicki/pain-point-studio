@@ -46,6 +46,7 @@ const ConfirmDialog = ({
 
         <AlertDialogFooter>
           <AlertDialogCancel>{cancelLabel ?? t('cancel')}</AlertDialogCancel>
+
           <AlertDialogAction variant={variant} onClick={onConfirm}>
             {confirmLabel ?? t('confirm.action')}
           </AlertDialogAction>

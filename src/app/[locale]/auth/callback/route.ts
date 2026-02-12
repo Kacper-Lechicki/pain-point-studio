@@ -27,9 +27,6 @@ export async function GET(
     const { error, data } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
-      // Restore custom avatar: OAuth sign-in overwrites user_metadata.avatar_url
-      // with the provider's avatar. If the user set a custom one (stored in
-      // profiles.avatar_url), sync it back to user_metadata.
       if (data.user) {
         const { data: profile } = await supabase
           .from('profiles')

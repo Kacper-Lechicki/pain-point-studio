@@ -16,6 +16,10 @@ function getStoredAccent(): Accent {
 
   const stored = localStorage.getItem(ACCENT_STORAGE_KEY);
 
+  if (stored === null) {
+    return DEFAULT_ACCENT;
+  }
+
   return ACCENT_OPTIONS.includes(stored as Accent) ? (stored as Accent) : DEFAULT_ACCENT;
 }
 
@@ -29,7 +33,6 @@ export function useAccent() {
   const setAccent = useCallback((newAccent: Accent) => {
     setAccentState(newAccent);
     localStorage.setItem(ACCENT_STORAGE_KEY, newAccent);
-    document.documentElement.setAttribute(ACCENT_ATTRIBUTE, newAccent);
   }, []);
 
   return { accent, setAccent } as const;

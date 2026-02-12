@@ -1,3 +1,7 @@
+/**
+ * Public i18n routing API. App code should import Link, useRouter, usePathname,
+ * redirect, and getPathname from here (@/i18n/routing), not from navigation or link directly.
+ */
 export {
   routing,
   BaseLink,

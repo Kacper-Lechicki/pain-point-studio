@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-import { BREAKPOINTS } from '@/config';
-import { type Breakpoint } from '@/config';
+import { BREAKPOINTS, type Breakpoint } from '@/config';
 
 export function useBreakpoint(breakpoint: Breakpoint) {
   const [isAbove, setIsAbove] = useState<boolean>(false);

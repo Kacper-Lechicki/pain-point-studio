@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
@@ -26,34 +26,41 @@ export function useFormAction<D = undefined>(options: UseFormActionOptions<D> = 
     onError,
   } = options;
 
-  async function execute<T, R = D>(action: (data: T) => Promise<ActionResult<R>>, data: T) {
-    setIsLoading(true);
+  const execute = useCallback(
+    async <T, R = D>(
+      action: (data: T) => Promise<ActionResult<R>>,
+      data: T
+    ): Promise<ActionResult<R>> => {
+      setIsLoading(true);
 
-    try {
-      const result = await action(data);
+      try {
+        const result = await action(data);
 
-      if (result.error) {
-        toast.error(t(result.error as MessageKey));
-        onError?.();
-        setIsLoading(false);
-      } else {
+        if (result.error) {
+          toast.error(t(result.error as MessageKey));
+          onError?.();
+
+          return result;
+        }
+
         if (successMessage) {
           toast.success(t(successMessage));
         }
 
         onSuccess?.(result.data as D | undefined);
+
+        return result;
+      } catch {
+        toast.error(t(unexpectedErrorMessage));
+        onError?.();
+
+        return { error: unexpectedErrorMessage } as ActionResult<R>;
+      } finally {
         setIsLoading(false);
       }
-
-      return result;
-    } catch {
-      toast.error(t(unexpectedErrorMessage));
-      onError?.();
-      setIsLoading(false);
-
-      return { error: unexpectedErrorMessage } as ActionResult;
-    }
-  }
+    },
+    [t, successMessage, unexpectedErrorMessage, onSuccess, onError]
+  );
 
   return { isLoading, execute };
 }

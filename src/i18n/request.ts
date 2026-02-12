@@ -1,14 +1,17 @@
+/**
+ * next-intl server request config: resolves locale from the request (or falls back
+ * to default) and loads messages for that locale. Referenced from next.config.
+ */
 import { getRequestConfig } from 'next-intl/server';
 
-import { routing } from '@/i18n/routing';
+import { type Locale, defaultLocale, locales } from '@/i18n/constants';
 
 export default getRequestConfig(async ({ requestLocale }) => {
   const requestedLocale = await requestLocale;
-
   const locale =
-    requestedLocale && routing.locales.includes(requestedLocale as (typeof routing.locales)[number])
+    requestedLocale && locales.includes(requestedLocale as Locale)
       ? requestedLocale
-      : routing.defaultLocale;
+      : defaultLocale;
 
   return {
     locale,

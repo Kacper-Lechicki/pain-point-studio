@@ -42,9 +42,11 @@ const SettingsPage = ({ profile }: SettingsPageProps) => {
 
   useEffect(() => {
     containerRef.current?.classList.remove('invisible');
+
     const section = getSectionFromHash();
-    setActiveSectionState(section); // eslint-disable-line react-hooks/set-state-in-effect -- synchronize with URL hash on mount
+
     window.history.replaceState(null, '', `#${SECTION_TO_HASH[section]}`);
+    queueMicrotask(() => setActiveSectionState(section));
   }, []);
 
   useEffect(() => {
@@ -96,17 +98,13 @@ const SettingsPage = ({ profile }: SettingsPageProps) => {
       <div className="flex w-full flex-col gap-4 lg:flex-row lg:items-start lg:gap-8">
         <div className="sticky top-24 hidden w-(--sidebar-sub-panel-width) shrink-0 flex-col gap-6 lg:flex">
           <BackButton />
-
           <SettingsHeader />
-
           <SettingsNavButtons activeSection={activeSection} onSectionChange={setActiveSection} />
         </div>
 
         <div className="w-full space-y-6 lg:hidden">
           <SettingsHeader />
-
           <SettingsNavSelect activeSection={activeSection} onSectionChange={setActiveSection} />
-
           <div className="border-border/50 border-b" />
         </div>
 

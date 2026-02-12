@@ -1,9 +1,15 @@
+/**
+ * Basic Auth for deploy/preview protection. When NODE_ENV is production and
+ * BASIC_AUTH_* env vars are set, the app middleware challenges with 401 until
+ * valid credentials are provided. Uses timing-safe comparison to avoid leaks.
+ */
 import { NextRequest } from 'next/server';
 
 import { timingSafeEqual } from 'crypto';
 
 import { env } from '@/lib/common/env';
 
+/** True only in production with both BASIC_AUTH_USER and BASIC_AUTH_PASSWORD set. */
 export function isProtectionEnabled(): boolean {
   const isProduction = env.NODE_ENV === 'production';
   const hasAuthEnv = !!(env.BASIC_AUTH_USER && env.BASIC_AUTH_PASSWORD);
@@ -11,6 +17,7 @@ export function isProtectionEnabled(): boolean {
   return isProduction && hasAuthEnv;
 }
 
+/** Constant-time string comparison to prevent timing side-channels. */
 function safeEqual(a: string, b: string): boolean {
   const bufA = Buffer.from(a);
   const bufB = Buffer.from(b);
@@ -22,25 +29,33 @@ function safeEqual(a: string, b: string): boolean {
   return timingSafeEqual(bufA, bufB);
 }
 
+/** Validates Authorization: Basic <base64(user:password)> against env credentials. */
 export function isAuthenticated(req: NextRequest): boolean {
-  const basicAuth = req.headers.get('authorization');
+  const authorization = req.headers.get('authorization');
 
-  if (!basicAuth) {
+  if (!authorization || !authorization.startsWith('Basic ')) {
     return false;
   }
 
-  const authValue = basicAuth.split(' ')[1];
+  const authValue = authorization.slice(6).trim();
 
   if (!authValue) {
     return false;
   }
 
   try {
-    const [user, pwd] = atob(authValue).split(':');
+    const decoded = atob(authValue);
+    const colonIndex = decoded.indexOf(':');
+
+    if (colonIndex === -1) {
+      return false;
+    }
+
+    const user = decoded.slice(0, colonIndex);
+    const pwd = decoded.slice(colonIndex + 1);
 
     return (
-      safeEqual(user ?? '', env.BASIC_AUTH_USER ?? '') &&
-      safeEqual(pwd ?? '', env.BASIC_AUTH_PASSWORD ?? '')
+      safeEqual(user, env.BASIC_AUTH_USER ?? '') && safeEqual(pwd, env.BASIC_AUTH_PASSWORD ?? '')
     );
   } catch {
     return false;

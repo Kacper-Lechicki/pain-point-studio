@@ -35,6 +35,7 @@ describe('Settings Actions – Cancel Email Change', () => {
     mockRpc.mockResolvedValue({ error: null });
   });
 
+  // RPC cancel_email_change succeeds; action returns success.
   it('should return success when email change is cancelled', async () => {
     const { cancelEmailChange } = await import('./cancel-email-change');
     const result = await cancelEmailChange({});
@@ -43,6 +44,7 @@ describe('Settings Actions – Cancel Email Change', () => {
     expect(mockRpc).toHaveBeenCalledWith('cancel_email_change');
   });
 
+  // When RPC returns error, action returns settings.errors.unexpected.
   it('should return error when RPC fails', async () => {
     mockRpc.mockResolvedValue({
       error: { message: 'RPC failed' },
@@ -54,6 +56,7 @@ describe('Settings Actions – Cancel Email Change', () => {
     expect(result.error).toBe('settings.errors.unexpected');
   });
 
+  // When rate limited, action returns error and does not call RPC.
   it('should return rate limit error when rate limited', async () => {
     const { rateLimit } = await import('@/lib/common/rate-limit');
 
@@ -66,6 +69,7 @@ describe('Settings Actions – Cancel Email Change', () => {
     expect(mockRpc).not.toHaveBeenCalled();
   });
 
+  // When getUser returns null, action returns error and does not call RPC.
   it('should return error when user is not authenticated', async () => {
     mockGetUser.mockResolvedValue({ data: { user: null } });
 

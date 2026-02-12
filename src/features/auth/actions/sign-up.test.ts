@@ -37,6 +37,7 @@ describe('Auth Actions – Sign Up', () => {
     vi.clearAllMocks();
   });
 
+  // Valid email/password call signUp with redirect; returns success.
   it('should return success on valid registration', async () => {
     mockSignUp.mockResolvedValue({ error: null });
 
@@ -58,6 +59,7 @@ describe('Auth Actions – Sign Up', () => {
     });
   });
 
+  // When Supabase signUp returns error (e.g. already registered), action returns error.
   it('should return an error when Supabase rejects registration', async () => {
     mockSignUp.mockResolvedValue({
       error: { message: 'User already registered' },
@@ -74,6 +76,7 @@ describe('Auth Actions – Sign Up', () => {
     expect(result).not.toHaveProperty('success');
   });
 
+  // Invalid email/password fail validation; Supabase is not called.
   it('should not call Supabase when form data is invalid', async () => {
     const { signUpWithEmail } = await import('./sign-up');
 
@@ -86,6 +89,7 @@ describe('Auth Actions – Sign Up', () => {
     expect(mockSignUp).not.toHaveBeenCalled();
   });
 
+  // When rate limited, action returns error and does not call Supabase.
   it('should return rate limit error when rate limited', async () => {
     const { rateLimit } = await import('@/lib/common/rate-limit');
 

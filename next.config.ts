@@ -8,7 +8,6 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
 const supabaseUrl = new URL(env.NEXT_PUBLIC_SUPABASE_URL);
 
-// React Compiler requires eval — unsafe-eval is the minimal relaxation.
 const cspDirectives = [
   `default-src 'self'`,
   `script-src 'self' 'unsafe-inline' 'unsafe-eval'`,

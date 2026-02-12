@@ -22,6 +22,7 @@ export default async function SurveysPage() {
             <h1 className="text-3xl font-bold">{t('title')}</h1>
             <p className="text-muted-foreground mt-1 text-sm">{t('description')}</p>
           </div>
+
           {hasSurveys && (
             <Button asChild>
               <Link href={ROUTES.dashboard.surveysNew}>{t('createSurvey')}</Link>

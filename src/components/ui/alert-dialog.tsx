@@ -47,6 +47,7 @@ function AlertDialogContent({
   return (
     <AlertDialogPortal>
       <AlertDialogOverlay />
+
       <AlertDialogPrimitive.Content
         data-slot="alert-dialog-content"
         data-size={size}

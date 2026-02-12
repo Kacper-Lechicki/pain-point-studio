@@ -1,3 +1,9 @@
+/**
+ * In-memory rate limiter keyed by IP (x-forwarded-for). Used by withProtectedAction
+ * and withPublicAction to cap request frequency per action. Disabled outside
+ * production and when CI is set (avoids failing E2E that share an IP).
+ * TODO(scaling): Replace with Redis-backed implementation for multi-instance deployments.
+ */
 import { headers } from 'next/headers';
 
 import { env } from '@/lib/common/env';
@@ -12,7 +18,6 @@ export interface RateLimiter {
   check(config: RateLimitConfig): Promise<{ limited: boolean }>;
 }
 
-// TODO(scaling): Replace with Redis-backed implementation for multi-instance deployments.
 interface RateLimitEntry {
   count: number;
   resetAt: number;
@@ -25,11 +30,6 @@ class InMemoryRateLimiter implements RateLimiter {
   private lastCleanup = Date.now();
 
   async check(config: RateLimitConfig): Promise<{ limited: boolean }> {
-    // Skip rate limiting outside production and in CI.
-    // NODE_ENV is baked in at build time by Next.js — on CI the production build
-    // has NODE_ENV=production, so we also check the runtime CI env var.
-    // Without this, parallel Playwright browser projects sharing one IP would
-    // exhaust low limits (e.g. delete-account: 1/hour) after the first project.
     if (env.NODE_ENV !== 'production' || env.CI) {
       return { limited: false };
     }

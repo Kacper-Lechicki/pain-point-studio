@@ -5,8 +5,10 @@ import { defineConfig, globalIgnores } from 'eslint/config';
 import tseslint from 'typescript-eslint';
 
 const eslintConfig = defineConfig([
+  // Next.js Core Web Vitals and TypeScript presets
   ...nextVitals,
   ...nextTs,
+  // Directories excluded from linting (build output, deps, reports, scripts)
   globalIgnores([
     '**/node_modules/**',
     '.next/**',
@@ -18,6 +20,7 @@ const eslintConfig = defineConfig([
     'test-results/**',
     'scripts/**',
   ]),
+  // Global style and quality rules (blank lines, console, unused vars, curly braces)
   {
     rules: {
       'padding-line-between-statements': [
@@ -36,6 +39,7 @@ const eslintConfig = defineConfig([
       curly: ['error', 'all'],
     },
   },
+  // TypeScript-aware rules for .ts/.tsx/.mts (type-checked, floating promises)
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.mts'],
     plugins: { '@typescript-eslint': tseslint.plugin },
@@ -47,12 +51,14 @@ const eslintConfig = defineConfig([
       '@typescript-eslint/no-floating-promises': 'error',
     },
   },
+  // Block common secret patterns (API keys, tokens) from being committed
   {
     plugins: { 'no-secrets': noSecrets },
     rules: {
       'no-secrets/no-secrets': 'error',
     },
   },
+  // Public static assets (scripts, etc.) — relaxed rules, no TS/secret checks
   {
     files: ['public/**'],
     languageOptions: { parserOptions: { ecmaVersion: 'latest', sourceType: 'script' } },

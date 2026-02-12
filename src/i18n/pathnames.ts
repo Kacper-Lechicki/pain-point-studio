@@ -1,3 +1,7 @@
+/**
+ * next-intl pathname map: abstract path → per-locale path. Used by middleware
+ * and navigation for locale-prefixed URLs. Keys here define AppRoute in @/config/routes.
+ */
 export const PATHNAMES = {
   '/': {
     en: '/',

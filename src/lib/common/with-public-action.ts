@@ -1,3 +1,8 @@
+/**
+ * HOF for server actions that do not require auth. Applies rate limit and Zod
+ * validation, then runs the action with supabase only. Use for respondent flows,
+ * public forms, etc. For authenticated flows use withProtectedAction.
+ */
 import { ZodType, z } from 'zod';
 
 import { RateLimitConfig, rateLimit } from '@/lib/common/rate-limit';
