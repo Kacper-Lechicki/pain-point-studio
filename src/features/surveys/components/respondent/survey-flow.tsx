@@ -39,20 +39,20 @@ export const SurveyFlow = ({ survey, responseId, slug }: SurveyFlowProps) => {
     goToPrevious,
     skip,
     goToQuestion,
-    setIsComplete,
   } = useSurveyFlow({ questions: survey.questions, responseId });
 
-  // When flow signals completion, show the completion screen
-  if (isComplete && screen === 'questions') {
-    setScreen('completion');
-    setIsComplete(false);
-  }
+  const effectiveScreen: FlowScreen =
+    screen === 'thank-you'
+      ? 'thank-you'
+      : screen === 'completion' || (screen === 'questions' && isComplete)
+        ? 'completion'
+        : 'questions';
 
-  if (screen === 'thank-you') {
+  if (effectiveScreen === 'thank-you') {
     return <SurveyThankYou />;
   }
 
-  if (screen === 'completion') {
+  if (effectiveScreen === 'completion') {
     return (
       <SurveyCompletion
         responseId={responseId}

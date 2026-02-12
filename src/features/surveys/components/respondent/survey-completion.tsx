@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react';
 
 import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -29,6 +30,7 @@ export const SurveyCompletion = ({
   onBack,
 }: SurveyCompletionProps) => {
   const t = useTranslations('respondent.completion');
+  const tErrors = useTranslations('respondent.errors');
   const [contactName, setContactName] = useState('');
   const [contactEmail, setContactEmail] = useState('');
   const [feedback, setFeedback] = useState('');
@@ -55,6 +57,8 @@ export const SurveyCompletion = ({
         }
 
         onSubmitted();
+      } else {
+        toast.error(tErrors('submitFailed'));
       }
     });
   };
@@ -121,7 +125,7 @@ export const SurveyCompletion = ({
 
         <div className="flex gap-3">
           <Button variant="outline" onClick={onBack} disabled={isPending}>
-            {t('title')}
+            {t('back')}
           </Button>
           <Button onClick={handleSubmit} disabled={isPending} className="flex-1">
             {isPending ? t('submitting') : t('submit')}

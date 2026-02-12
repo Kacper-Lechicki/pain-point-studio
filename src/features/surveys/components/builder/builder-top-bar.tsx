@@ -54,7 +54,7 @@ export function BuilderTopBar({
   const t = useTranslations();
   const locale = useLocale();
   const router = useRouter();
-  const { state, dispatch } = useQuestionBuilderContext();
+  const { state, dispatch, buildQuestionsPayload } = useQuestionBuilderContext();
   const [metadataDialogOpen, setMetadataDialogOpen] = useState(false);
   const [publishedSlug, setPublishedSlug] = useState<string | null>(null);
 
@@ -89,32 +89,15 @@ export function BuilderTopBar({
     dispatch({ type: 'SET_SAVE_STATUS', payload: { status: 'saving' } });
     await saveAction.execute(saveSurveyQuestions, {
       surveyId,
-      questions: state.questions.map((q, i) => ({
-        id: q.id,
-        text: q.text || 'Untitled question',
-        type: q.type,
-        required: q.required,
-        description: q.description ?? null,
-        config: q.config,
-        sortOrder: i,
-      })),
+      questions: buildQuestionsPayload(),
     });
   }
 
   async function handlePublish() {
-    // Save first, then publish
     dispatch({ type: 'SET_SAVE_STATUS', payload: { status: 'saving' } });
     const saveResult = await saveAction.execute(saveSurveyQuestions, {
       surveyId,
-      questions: state.questions.map((q, i) => ({
-        id: q.id,
-        text: q.text || 'Untitled question',
-        type: q.type,
-        required: q.required,
-        description: q.description ?? null,
-        config: q.config,
-        sortOrder: i,
-      })),
+      questions: buildQuestionsPayload(),
     });
 
     if (saveResult?.error) {

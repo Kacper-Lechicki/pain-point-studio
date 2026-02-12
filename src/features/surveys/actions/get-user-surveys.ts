@@ -27,35 +27,25 @@ export const getUserSurveys = cache(async (): Promise<UserSurvey[] | null> => {
     return null;
   }
 
-  const { data: surveys } = await supabase
-    .from('surveys')
-    .select('id, title, description, category, status, slug, created_at, updated_at')
-    .eq('user_id', user.id)
-    .order('updated_at', { ascending: false });
+  const { data, error } = await supabase.rpc('get_user_surveys_with_counts', {
+    p_user_id: user.id,
+  });
 
-  if (!surveys || surveys.length === 0) {
+  if (error || !data) {
     return [];
   }
 
-  const result: UserSurvey[] = await Promise.all(
-    surveys.map(async (s) => {
-      const { data: count } = await supabase.rpc('get_survey_response_count', {
-        p_survey_id: s.id,
-      });
+  const surveys = data as unknown as Array<{
+    id: string;
+    title: string;
+    description: string;
+    category: string;
+    status: 'draft' | 'active' | 'closed' | 'archived';
+    slug: string | null;
+    responseCount: number;
+    createdAt: string;
+    updatedAt: string;
+  }>;
 
-      return {
-        id: s.id,
-        title: s.title,
-        description: s.description,
-        category: s.category,
-        status: s.status,
-        slug: s.slug,
-        responseCount: count ?? 0,
-        createdAt: s.created_at,
-        updatedAt: s.updated_at,
-      };
-    })
-  );
-
-  return result;
+  return surveys;
 });

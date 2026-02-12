@@ -1,6 +1,6 @@
 'use client';
 
-import type { QuestionState } from '@/features/surveys/types';
+import type { QuestionSchema } from '@/features/surveys/types';
 
 import { MultipleChoiceEditor } from './multiple-choice-editor';
 import { OpenTextEditor } from './open-text-editor';
@@ -9,7 +9,7 @@ import { ShortTextEditor } from './short-text-editor';
 import { YesNoEditor } from './yes-no-editor';
 
 interface QuestionEditorProps {
-  question: QuestionState;
+  question: QuestionSchema;
 }
 
 export function QuestionEditor({ question }: QuestionEditorProps) {

@@ -4,6 +4,7 @@ import { z } from 'zod';
 
 import { withProtectedAction } from '@/lib/common/with-protected-action';
 
+import { slugifyTitle } from '../lib/generate-slug';
 import type { QuestionType } from '../types';
 
 const exportSurveySchema = z.object({
@@ -144,10 +145,7 @@ export const exportSurveyCSV = withProtectedAction<
       ...rows.map((row) => row.map(escapeCsvField).join(',')),
     ].join('\n');
 
-    const slug = survey.title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .slice(0, 30);
+    const slug = slugifyTitle(survey.title);
     const filename = `${slug}-responses.csv`;
 
     return { success: true, data: { csv, filename } };
@@ -197,10 +195,7 @@ export const exportSurveyJSON = withProtectedAction<
     };
 
     const json = JSON.stringify(exportData, null, 2);
-    const slug = survey.title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .slice(0, 30);
+    const slug = slugifyTitle(survey.title);
     const filename = `${slug}-responses.json`;
 
     return { success: true, data: { json, filename } };

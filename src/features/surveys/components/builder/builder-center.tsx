@@ -23,12 +23,12 @@ export function BuilderCenter() {
   const textInputRef = useRef<HTMLInputElement>(null);
   const [showRemoveDescriptionConfirm, setShowRemoveDescriptionConfirm] = useState(false);
 
-  // Auto-focus when a new question is added
+  // Auto-focus when a new question is added (empty text = freshly created)
   useEffect(() => {
-    if (activeQuestion?._isNew) {
+    if (activeQuestion && !activeQuestion.text) {
       textInputRef.current?.focus();
     }
-  }, [activeQuestion?.id, activeQuestion?._isNew]);
+  }, [activeQuestion?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (state.questions.length === 0) {
     return <BuilderEmptyState />;

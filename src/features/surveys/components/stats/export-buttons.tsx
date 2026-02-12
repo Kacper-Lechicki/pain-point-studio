@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 import { Download } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { exportSurveyCSV, exportSurveyJSON } from '@/features/surveys/actions';
@@ -36,7 +37,11 @@ export const ExportButtons = ({ surveyId }: ExportButtonsProps) => {
 
       if (result.success && result.data) {
         downloadBlob(result.data.csv, result.data.filename, 'text/csv');
+      } else {
+        toast.error(t('exportFailed'));
       }
+    } catch {
+      toast.error(t('exportFailed'));
     } finally {
       setExporting(null);
     }
@@ -50,7 +55,11 @@ export const ExportButtons = ({ surveyId }: ExportButtonsProps) => {
 
       if (result.success && result.data) {
         downloadBlob(result.data.json, result.data.filename, 'application/json');
+      } else {
+        toast.error(t('exportFailed'));
       }
+    } catch {
+      toast.error(t('exportFailed'));
     } finally {
       setExporting(null);
     }

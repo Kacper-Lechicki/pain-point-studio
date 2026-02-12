@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 
 import {
-  ChartConfig,
+  type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
@@ -15,15 +15,15 @@ interface RatingDistributionChartProps {
   answers: QuestionAnswerData[];
 }
 
-const chartConfig = {
-  count: {
-    label: 'Responses',
-    color: 'var(--color-primary)',
-  },
-} satisfies ChartConfig;
-
 export const RatingDistributionChart = ({ answers }: RatingDistributionChartProps) => {
   const t = useTranslations('surveys.stats');
+
+  const chartConfig = {
+    count: {
+      label: t('chartResponses'),
+      color: 'var(--color-primary)',
+    },
+  } satisfies ChartConfig;
 
   // Count ratings
   const counts = new Map<number, number>();
@@ -45,7 +45,7 @@ export const RatingDistributionChart = ({ answers }: RatingDistributionChartProp
     .sort((a, b) => Number(a.rating) - Number(b.rating));
 
   if (data.length === 0) {
-    return <p className="text-muted-foreground text-sm">No responses yet.</p>;
+    return <p className="text-muted-foreground text-sm">{t('noChartData')}</p>;
   }
 
   return (

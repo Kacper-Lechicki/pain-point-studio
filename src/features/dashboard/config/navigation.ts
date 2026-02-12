@@ -65,7 +65,6 @@ export const SIDEBAR_NAV: NavGroup[] = [
                   labelKey: 'sidebar.newSurvey',
                   icon: Plus,
                   href: '/dashboard/surveys/new' as AppRoute,
-                  alsoActiveFor: ['/dashboard/surveys/create'],
                 },
               ],
             },

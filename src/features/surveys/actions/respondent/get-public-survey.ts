@@ -4,8 +4,7 @@ import { cache } from 'react';
 
 import { createClient } from '@/lib/supabase/server';
 
-import type { PublicSurveyData, PublicSurveyQuestion } from '../../types';
-import type { QuestionType } from '../../types';
+import type { PublicSurveyData, PublicSurveyQuestion, QuestionType } from '../../types';
 
 export const getPublicSurvey = cache(async (slug: string): Promise<PublicSurveyData | null> => {
   const supabase = await createClient();
@@ -14,6 +13,7 @@ export const getPublicSurvey = cache(async (slug: string): Promise<PublicSurveyD
     .from('surveys')
     .select('id, title, description, status, starts_at, ends_at, max_respondents')
     .eq('slug', slug)
+    .eq('status', 'active' as const)
     .single();
 
   if (!survey) {

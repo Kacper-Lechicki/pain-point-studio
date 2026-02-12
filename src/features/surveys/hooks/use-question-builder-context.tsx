@@ -1,8 +1,10 @@
 'use client';
 
-import { type ReactNode, createContext, useCallback, useContext } from 'react';
+import { type ReactNode, createContext, useCallback, useContext, useMemo } from 'react';
 
-import type { QuestionSchema, QuestionState, QuestionType } from '@/features/surveys/types';
+import { useTranslations } from 'next-intl';
+
+import type { QuestionSchema, QuestionType } from '@/features/surveys/types';
 
 import {
   type QuestionBuilderAction,
@@ -15,13 +17,23 @@ import {
 interface QuestionBuilderContextValue {
   state: QuestionBuilderState;
   dispatch: React.Dispatch<QuestionBuilderAction>;
-  activeQuestion: QuestionState | undefined;
+  activeQuestion: QuestionSchema | undefined;
   addQuestion: (type?: QuestionType) => void;
   deleteQuestion: (id: string) => void;
   selectQuestion: (id: string) => void;
   updateQuestion: (id: string, updates: Partial<QuestionSchema>) => void;
   changeQuestionType: (id: string, newType: QuestionType) => void;
   moveQuestion: (id: string, direction: 'up' | 'down') => void;
+  /** Build the payload for saving questions to the server. */
+  buildQuestionsPayload: () => Array<{
+    id: string;
+    text: string;
+    type: QuestionType;
+    required: boolean;
+    description: string | null;
+    config: Record<string, unknown>;
+    sortOrder: number;
+  }>;
 }
 
 const QuestionBuilderContext = createContext<QuestionBuilderContextValue | null>(null);
@@ -29,7 +41,7 @@ const QuestionBuilderContext = createContext<QuestionBuilderContextValue | null>
 // ── Provider ────────────────────────────────────────────────────────
 
 interface QuestionBuilderProviderProps {
-  initialQuestions: QuestionState[];
+  initialQuestions: QuestionSchema[];
   children: ReactNode;
 }
 
@@ -37,9 +49,13 @@ export function QuestionBuilderProvider({
   initialQuestions,
   children,
 }: QuestionBuilderProviderProps) {
+  const t = useTranslations();
   const [state, dispatch] = useQuestionBuilder(initialQuestions);
 
-  const activeQuestion = state.questions.find((q) => q.id === state.activeQuestionId);
+  const activeQuestion = useMemo(
+    () => state.questions.find((q) => q.id === state.activeQuestionId),
+    [state.questions, state.activeQuestionId]
+  );
 
   const addQuestion = useCallback(
     (type?: QuestionType) => {
@@ -85,20 +101,49 @@ export function QuestionBuilderProvider({
     [dispatch]
   );
 
+  const buildQuestionsPayload = useCallback(
+    () =>
+      state.questions.map((q, i) => ({
+        id: q.id,
+        text: q.text || t('surveys.builder.untitledQuestion'),
+        type: q.type,
+        required: q.required,
+        description: q.description ?? null,
+        config: q.config,
+        sortOrder: i,
+      })),
+    [state.questions, t]
+  );
+
+  const contextValue = useMemo(
+    () => ({
+      state,
+      dispatch,
+      activeQuestion,
+      addQuestion,
+      deleteQuestion,
+      selectQuestion,
+      updateQuestion,
+      changeQuestionType,
+      moveQuestion,
+      buildQuestionsPayload,
+    }),
+    [
+      state,
+      dispatch,
+      activeQuestion,
+      addQuestion,
+      deleteQuestion,
+      selectQuestion,
+      updateQuestion,
+      changeQuestionType,
+      moveQuestion,
+      buildQuestionsPayload,
+    ]
+  );
+
   return (
-    <QuestionBuilderContext.Provider
-      value={{
-        state,
-        dispatch,
-        activeQuestion,
-        addQuestion,
-        deleteQuestion,
-        selectQuestion,
-        updateQuestion,
-        changeQuestionType,
-        moveQuestion,
-      }}
-    >
+    <QuestionBuilderContext.Provider value={contextValue}>
       {children}
     </QuestionBuilderContext.Provider>
   );

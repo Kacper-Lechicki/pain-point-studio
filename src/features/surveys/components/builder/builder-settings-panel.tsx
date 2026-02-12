@@ -9,13 +9,11 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { Switch } from '@/components/ui/switch';
 import {
   QUESTION_OPTIONS_MAX,
+  QUESTION_TYPE_ICONS,
+  QUESTION_TYPE_LABEL_KEYS,
   RATING_SCALE_MAX,
   RATING_SCALE_MIN,
 } from '@/features/surveys/config';
-import {
-  QUESTION_TYPE_ICONS,
-  QUESTION_TYPE_LABEL_KEYS,
-} from '@/features/surveys/config/question-type-icons';
 import { QUESTION_TYPES, type QuestionType } from '@/features/surveys/types';
 import { cn } from '@/lib/common/utils';
 
@@ -114,7 +112,9 @@ function BuilderSettingsPanelContent() {
         )}
 
         {activeQuestion.type === 'yes_no' && (
-          <p className="text-muted-foreground text-xs italic">No additional settings.</p>
+          <p className="text-muted-foreground text-xs italic">
+            {t('surveys.builder.noAdditionalSettings')}
+          </p>
         )}
       </div>
     </div>

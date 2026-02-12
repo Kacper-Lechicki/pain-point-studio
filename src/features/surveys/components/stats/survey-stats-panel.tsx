@@ -56,7 +56,9 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="flex items-center gap-3">
             <h1 className="text-foreground text-xl font-semibold">{stats.survey.title}</h1>
-            <Badge variant={statusVariant}>{isClosed ? 'Closed' : 'Active'}</Badge>
+            <Badge variant={statusVariant}>
+              {isClosed ? t('statusClosed') : t('statusActive')}
+            </Badge>
           </div>
           <div className="flex gap-2">
             {!isClosed && (

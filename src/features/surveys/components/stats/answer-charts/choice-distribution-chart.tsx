@@ -1,9 +1,10 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 
 import {
-  ChartConfig,
+  type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
@@ -14,14 +15,16 @@ interface ChoiceDistributionChartProps {
   answers: QuestionAnswerData[];
 }
 
-const chartConfig = {
-  count: {
-    label: 'Responses',
-    color: 'var(--color-primary)',
-  },
-} satisfies ChartConfig;
-
 export const ChoiceDistributionChart = ({ answers }: ChoiceDistributionChartProps) => {
+  const t = useTranslations('surveys.stats');
+
+  const chartConfig = {
+    count: {
+      label: t('chartResponses'),
+      color: 'var(--color-primary)',
+    },
+  } satisfies ChartConfig;
+
   // Count selections across all answers
   const counts = new Map<string, number>();
 
@@ -35,7 +38,8 @@ export const ChoiceDistributionChart = ({ answers }: ChoiceDistributionChartProp
     const other = a.value.other as string | undefined;
 
     if (other) {
-      counts.set(`Other: ${other}`, (counts.get(`Other: ${other}`) ?? 0) + 1);
+      const otherKey = `${t('otherLabel')}: ${other}`;
+      counts.set(otherKey, (counts.get(otherKey) ?? 0) + 1);
     }
   }
 
@@ -44,7 +48,7 @@ export const ChoiceDistributionChart = ({ answers }: ChoiceDistributionChartProp
     .sort((a, b) => b.count - a.count);
 
   if (data.length === 0) {
-    return <p className="text-muted-foreground text-sm">No responses yet.</p>;
+    return <p className="text-muted-foreground text-sm">{t('noChartData')}</p>;
   }
 
   return (

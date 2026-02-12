@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+
 import type { QuestionAnswerData } from '@/features/surveys/actions/get-survey-stats';
 
 interface YesNoChartProps {
@@ -7,12 +9,14 @@ interface YesNoChartProps {
 }
 
 export const YesNoChart = ({ answers }: YesNoChartProps) => {
+  const t = useTranslations('surveys.stats');
+
   const yesCount = answers.filter((a) => a.value.answer === true).length;
   const noCount = answers.filter((a) => a.value.answer === false).length;
   const total = yesCount + noCount;
 
   if (total === 0) {
-    return <p className="text-muted-foreground text-sm">No responses yet.</p>;
+    return <p className="text-muted-foreground text-sm">{t('noChartData')}</p>;
   }
 
   const yesPercentage = Math.round((yesCount / total) * 100);
@@ -40,10 +44,10 @@ export const YesNoChart = ({ answers }: YesNoChartProps) => {
       </div>
       <div className="flex justify-between text-sm">
         <span className="text-success flex items-center gap-1.5">
-          Yes: {yesCount} ({yesPercentage}%)
+          {t('yesLabel')}: {yesCount} ({yesPercentage}%)
         </span>
         <span className="text-destructive flex items-center gap-1.5">
-          No: {noCount} ({noPercentage}%)
+          {t('noLabel')}: {noCount} ({noPercentage}%)
         </span>
       </div>
     </div>

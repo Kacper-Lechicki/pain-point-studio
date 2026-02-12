@@ -37,6 +37,48 @@ import { env } from '@/lib/common/env';
 
 import { SurveyStatusBadge } from './survey-status-badge';
 
+// ── Action configuration ─────────────────────────────────────────────
+
+type ConfirmableAction = 'close' | 'archive' | 'delete';
+type SurveyAction = ConfirmableAction | 'reopen';
+
+const ACTION_FN = {
+  close: closeSurvey,
+  reopen: reopenSurvey,
+  archive: archiveSurvey,
+  delete: deleteSurveyDraft,
+} as const;
+
+const TOAST_KEY = {
+  close: 'toast.closed',
+  reopen: 'toast.reopened',
+  archive: 'toast.archived',
+  delete: 'toast.deleted',
+} as const;
+
+const CONFIRM_CONFIG: Record<
+  ConfirmableAction,
+  { titleKey: string; descriptionKey: string; variant: 'default' | 'destructive' }
+> = {
+  close: {
+    titleKey: 'confirm.closeTitle',
+    descriptionKey: 'confirm.closeDescription',
+    variant: 'default',
+  },
+  archive: {
+    titleKey: 'confirm.archiveTitle',
+    descriptionKey: 'confirm.archiveDescription',
+    variant: 'default',
+  },
+  delete: {
+    titleKey: 'confirm.deleteTitle',
+    descriptionKey: 'confirm.deleteDescription',
+    variant: 'destructive',
+  },
+};
+
+// ── Component ────────────────────────────────────────────────────────
+
 interface SurveyCardProps {
   survey: UserSurvey;
   onStatusChange: () => void;
@@ -48,7 +90,7 @@ export const SurveyCard = ({ survey, onStatusChange }: SurveyCardProps) => {
   const locale = useLocale();
   const [, startTransition] = useTransition();
 
-  const [confirmDialog, setConfirmDialog] = useState<'close' | 'archive' | 'delete' | null>(null);
+  const [confirmDialog, setConfirmDialog] = useState<ConfirmableAction | null>(null);
 
   const isDraft = survey.status === 'draft';
   const isActive = survey.status === 'active';
@@ -69,48 +111,13 @@ export const SurveyCard = ({ survey, onStatusChange }: SurveyCardProps) => {
     toast.success(t('toast.linkCopied'));
   };
 
-  const handleAction = (action: 'close' | 'reopen' | 'archive' | 'delete') => {
+  const handleAction = (action: SurveyAction) => {
     startTransition(async () => {
-      let result;
-
-      switch (action) {
-        case 'close':
-          result = await closeSurvey({ surveyId: survey.id });
-
-          if (result.success) {
-            toast.success(t('toast.closed'));
-          }
-
-          break;
-        case 'reopen':
-          result = await reopenSurvey({ surveyId: survey.id });
-
-          if (result.success) {
-            toast.success(t('toast.reopened'));
-          }
-
-          break;
-        case 'archive':
-          result = await archiveSurvey({ surveyId: survey.id });
-
-          if (result.success) {
-            toast.success(t('toast.archived'));
-          }
-
-          break;
-        case 'delete':
-          result = await deleteSurveyDraft({ surveyId: survey.id });
-
-          if (result.success) {
-            toast.success(t('toast.deleted'));
-          }
-
-          break;
-      }
-
+      const result = await ACTION_FN[action]({ surveyId: survey.id });
       setConfirmDialog(null);
 
-      if (result?.success) {
+      if (result.success) {
+        toast.success(t(TOAST_KEY[action]));
         onStatusChange();
       }
     });
@@ -216,34 +223,17 @@ export const SurveyCard = ({ survey, onStatusChange }: SurveyCardProps) => {
         </DropdownMenu>
       </div>
 
-      <ConfirmDialog
-        open={confirmDialog === 'close'}
-        onOpenChange={(open) => !open && setConfirmDialog(null)}
-        onConfirm={() => handleAction('close')}
-        title={t('confirm.closeTitle')}
-        description={t('confirm.closeDescription')}
-        confirmLabel={t('actions.close')}
-        variant="default"
-      />
-
-      <ConfirmDialog
-        open={confirmDialog === 'archive'}
-        onOpenChange={(open) => !open && setConfirmDialog(null)}
-        onConfirm={() => handleAction('archive')}
-        title={t('confirm.archiveTitle')}
-        description={t('confirm.archiveDescription')}
-        confirmLabel={t('actions.archive')}
-        variant="default"
-      />
-
-      <ConfirmDialog
-        open={confirmDialog === 'delete'}
-        onOpenChange={(open) => !open && setConfirmDialog(null)}
-        onConfirm={() => handleAction('delete')}
-        title={t('confirm.deleteTitle')}
-        description={t('confirm.deleteDescription')}
-        confirmLabel={t('actions.delete')}
-      />
+      {confirmDialog && (
+        <ConfirmDialog
+          open
+          onOpenChange={(open) => !open && setConfirmDialog(null)}
+          onConfirm={() => handleAction(confirmDialog)}
+          title={t(CONFIRM_CONFIG[confirmDialog].titleKey as Parameters<typeof t>[0])}
+          description={t(CONFIRM_CONFIG[confirmDialog].descriptionKey as Parameters<typeof t>[0])}
+          confirmLabel={t(`actions.${confirmDialog}`)}
+          variant={CONFIRM_CONFIG[confirmDialog].variant}
+        />
+      )}
     </>
   );
 };

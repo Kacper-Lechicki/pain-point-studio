@@ -18,11 +18,14 @@ export const RatingScaleQuestion = ({ value, config, onChange }: RatingScaleQues
 
   return (
     <div>
-      <div className="flex flex-wrap gap-2">
+      <div role="radiogroup" className="flex flex-wrap gap-2">
         {values.map((n) => (
           <button
             key={n}
             type="button"
+            role="radio"
+            aria-checked={value === n}
+            aria-label={String(n)}
             onClick={() => onChange({ rating: n })}
             className={cn(
               'flex min-h-10 min-w-10 items-center justify-center rounded-lg border text-sm font-medium transition-colors md:min-h-9 md:min-w-9',

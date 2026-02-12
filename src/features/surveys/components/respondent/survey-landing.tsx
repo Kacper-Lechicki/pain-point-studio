@@ -4,11 +4,14 @@ import { useEffect, useState, useTransition } from 'react';
 
 import { Clock, MessageSquare, ShieldCheck, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { PageTransition } from '@/components/ui/page-transition';
 import { startResponse } from '@/features/surveys/actions/respondent';
+import { ESTIMATED_SECONDS_PER_QUESTION } from '@/features/surveys/config';
 import type { PublicSurveyData } from '@/features/surveys/types';
+import type { MessageKey } from '@/i18n/types';
 
 import { SurveyFlow } from './survey-flow';
 
@@ -23,7 +26,8 @@ interface CompletedData {
 }
 
 export const SurveyLanding = ({ survey, slug }: SurveyLandingProps) => {
-  const t = useTranslations('respondent.landing');
+  const t = useTranslations();
+  const tLanding = useTranslations('respondent.landing');
   const [responseId, setResponseId] = useState<string | null>(null);
   const [completedData, setCompletedData] = useState<CompletedData | null>(null);
   const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
@@ -51,6 +55,8 @@ export const SurveyLanding = ({ survey, slug }: SurveyLandingProps) => {
 
       if (result.success && result.data) {
         setResponseId(result.data.responseId);
+      } else if (result.error) {
+        toast.error(t(result.error as MessageKey));
       }
     });
   };
@@ -60,7 +66,10 @@ export const SurveyLanding = ({ survey, slug }: SurveyLandingProps) => {
     return <SurveyFlow survey={survey} responseId={responseId} slug={slug} />;
   }
 
-  const estimatedMinutes = Math.max(1, Math.round((survey.questionCount * 30) / 60));
+  const estimatedMinutes = Math.max(
+    1,
+    Math.round((survey.questionCount * ESTIMATED_SECONDS_PER_QUESTION) / 60)
+  );
 
   return (
     <PageTransition>
@@ -73,42 +82,42 @@ export const SurveyLanding = ({ survey, slug }: SurveyLandingProps) => {
         <div className="text-muted-foreground mb-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm">
           <span className="flex items-center gap-1.5">
             <MessageSquare className="size-4" />
-            {t('questionsCount', { count: survey.questionCount })}
+            {tLanding('questionsCount', { count: survey.questionCount })}
           </span>
           <span className="flex items-center gap-1.5">
             <Clock className="size-4" />
-            {t('estimatedTime', { minutes: estimatedMinutes })}
+            {tLanding('estimatedTime', { minutes: estimatedMinutes })}
           </span>
           {survey.responseCount > 0 && (
             <span className="flex items-center gap-1.5">
               <Users className="size-4" />
-              {t('responsesCount', { count: survey.responseCount })}
+              {tLanding('responsesCount', { count: survey.responseCount })}
             </span>
           )}
         </div>
 
         <div className="text-muted-foreground mb-8 flex items-center gap-1.5 text-xs">
           <ShieldCheck className="size-3.5" />
-          {t('anonymousInfo')}
+          {tLanding('anonymousInfo')}
         </div>
 
         {showDuplicateWarning && completedData ? (
           <div className="bg-muted mb-6 w-full max-w-sm rounded-lg p-4 text-center">
             <p className="text-foreground mb-1 text-sm font-medium">
-              {t('alreadyCompleted.title')}
+              {tLanding('alreadyCompleted.title')}
             </p>
             <p className="text-muted-foreground mb-3 text-xs">
-              {t('alreadyCompleted.description', {
+              {tLanding('alreadyCompleted.description', {
                 date: new Date(completedData.timestamp).toLocaleDateString(),
               })}
             </p>
             <Button variant="outline" size="sm" onClick={() => setShowDuplicateWarning(false)}>
-              {t('alreadyCompleted.respondAgain')}
+              {tLanding('alreadyCompleted.respondAgain')}
             </Button>
           </div>
         ) : (
           <Button onClick={handleStart} disabled={isPending} className="min-w-48">
-            {t('start')}
+            {tLanding('start')}
           </Button>
         )}
       </div>

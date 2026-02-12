@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+
 import type { QuestionAnswerData } from '@/features/surveys/actions/get-survey-stats';
 
 interface TextAnswersListProps {
@@ -7,12 +9,14 @@ interface TextAnswersListProps {
 }
 
 export const TextAnswersList = ({ answers }: TextAnswersListProps) => {
+  const t = useTranslations('surveys.stats');
+
   const textAnswers = answers
     .map((a) => (a.value.text as string) ?? '')
     .filter((t) => t.trim().length > 0);
 
   if (textAnswers.length === 0) {
-    return <p className="text-muted-foreground text-sm">No text responses yet.</p>;
+    return <p className="text-muted-foreground text-sm">{t('noTextResponses')}</p>;
   }
 
   return (

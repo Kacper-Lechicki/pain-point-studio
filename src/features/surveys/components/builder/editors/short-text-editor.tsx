@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+
 import { Input } from '@/components/ui/input';
 
 interface ShortTextEditorProps {
@@ -7,7 +9,8 @@ interface ShortTextEditorProps {
 }
 
 export function ShortTextEditor({ config }: ShortTextEditorProps) {
-  const placeholder = (config.placeholder as string) || 'Type your answer here...';
+  const t = useTranslations('surveys.builder');
+  const placeholder = (config.placeholder as string) || t('defaultTextPlaceholder');
 
   return <Input disabled placeholder={placeholder} className="opacity-60" />;
 }

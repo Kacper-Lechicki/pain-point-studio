@@ -6,12 +6,12 @@ import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { QUESTION_OPTIONS_MAX, QUESTION_OPTION_MAX_LENGTH } from '@/features/surveys/config';
-import type { QuestionState } from '@/features/surveys/types';
+import type { QuestionSchema } from '@/features/surveys/types';
 
 import { useQuestionBuilderContext } from '../../../hooks/use-question-builder-context';
 
 interface MultipleChoiceEditorProps {
-  question: QuestionState;
+  question: QuestionSchema;
 }
 
 export function MultipleChoiceEditor({ question }: MultipleChoiceEditorProps) {

@@ -1,6 +1,7 @@
 'use client';
 
 import { Check } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/common/utils';
@@ -16,6 +17,8 @@ export const MultipleChoiceQuestion = ({
   config,
   onChange,
 }: MultipleChoiceQuestionProps) => {
+  const t = useTranslations('respondent.questions');
+
   const options = (config.options as string[]) ?? [];
   const maxSelections = (config.maxSelections as number) || options.length;
   const allowOther = (config.allowOther as boolean) ?? false;
@@ -38,7 +41,7 @@ export const MultipleChoiceQuestion = ({
   };
 
   return (
-    <div className="space-y-2">
+    <div role={isSingleSelect ? 'radiogroup' : 'group'} className="space-y-2">
       {options.map((option) => {
         const isSelected = value.selected.includes(option);
 
@@ -46,6 +49,8 @@ export const MultipleChoiceQuestion = ({
           <button
             key={option}
             type="button"
+            role={isSingleSelect ? 'radio' : 'checkbox'}
+            aria-checked={isSelected}
             onClick={() => handleToggle(option)}
             className={cn(
               'flex min-h-10 w-full items-center gap-3 rounded-lg border px-4 py-2.5 text-left text-sm transition-colors md:min-h-9',
@@ -75,7 +80,7 @@ export const MultipleChoiceQuestion = ({
           <Input
             value={value.other ?? ''}
             onChange={(e) => onChange({ ...value, other: e.target.value || null })}
-            placeholder="Other..."
+            placeholder={t('otherPlaceholder')}
             className="text-sm"
           />
         </div>

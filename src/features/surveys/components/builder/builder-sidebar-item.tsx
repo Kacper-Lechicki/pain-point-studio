@@ -12,12 +12,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { QUESTION_TYPE_ICONS } from '@/features/surveys/config/question-type-icons';
-import type { QuestionState } from '@/features/surveys/types';
+import { QUESTION_TYPE_ICONS } from '@/features/surveys/config';
+import type { QuestionSchema } from '@/features/surveys/types';
 import { cn } from '@/lib/common/utils';
 
 interface BuilderSidebarItemProps {
-  question: QuestionState;
+  question: QuestionSchema;
   index: number;
   isActive: boolean;
   isFirst: boolean;

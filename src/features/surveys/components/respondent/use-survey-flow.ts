@@ -133,7 +133,6 @@ export function useSurveyFlow({ questions, responseId }: UseSurveyFlowProps) {
     currentIndex,
     currentQuestion,
     currentAnswer,
-    answers,
     answeredCount,
     isComplete,
     updateAnswer,

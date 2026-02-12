@@ -347,8 +347,21 @@ export type Database = {
         Args: { p_survey_id: string };
         Returns: number;
       };
+      get_survey_stats_data: {
+        Args: { p_survey_id: string; p_user_id: string };
+        Returns: Json;
+      };
       get_user_id_by_email: { Args: { lookup_email: string }; Returns: string };
+      get_user_surveys_with_counts: {
+        Args: { p_user_id: string };
+        Returns: Json;
+      };
       has_password: { Args: never; Returns: boolean };
+      save_survey_questions: {
+        Args: { p_questions: Json; p_survey_id: string; p_user_id: string };
+        Returns: undefined;
+      };
+      start_survey_response: { Args: { p_survey_id: string }; Returns: string };
       verify_password: {
         Args: { current_plain_password: string };
         Returns: boolean;

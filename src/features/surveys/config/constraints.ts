@@ -12,3 +12,6 @@ export const QUESTION_OPTIONS_MAX = 10;
 export const QUESTION_OPTION_MAX_LENGTH = 200;
 export const RATING_SCALE_MIN = 1;
 export const RATING_SCALE_MAX = 10;
+
+// Estimated seconds per question (used to calculate survey completion time)
+export const ESTIMATED_SECONDS_PER_QUESTION = 30;

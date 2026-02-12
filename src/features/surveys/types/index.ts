@@ -152,41 +152,6 @@ export const surveyQuestionsSchema = z.object({
 
 export type SurveyQuestionsSchema = z.infer<typeof surveyQuestionsSchema>;
 
-// ── Validate question config by type ────────────────────────────────
-
-export function validateQuestionConfig(
-  type: QuestionType,
-  config: Record<string, unknown>
-): { success: boolean; error?: z.ZodError } {
-  let result;
-
-  switch (type) {
-    case 'multiple_choice':
-      result = multipleChoiceConfigSchema.safeParse(config);
-      break;
-    case 'rating_scale':
-      result = ratingScaleConfigSchema.safeParse(config);
-      break;
-    case 'open_text':
-      result = openTextConfigSchema.safeParse(config);
-      break;
-    case 'short_text':
-      result = shortTextConfigSchema.safeParse(config);
-      break;
-    case 'yes_no':
-      result = z.object({}).safeParse(config);
-      break;
-  }
-
-  return result.success ? { success: true } : { success: false, error: result.error };
-}
-
-// ── Client-side question state (includes transient UI flags) ────────
-
-export interface QuestionState extends QuestionSchema {
-  _isNew?: boolean;
-}
-
 // ── Response types ──────────────────────────────────────────────────
 
 export * from './response';

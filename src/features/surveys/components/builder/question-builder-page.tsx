@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 import type { SurveyCategoryOption } from '@/features/surveys/actions';
-import type { QuestionState, SurveyMetadataSchema } from '@/features/surveys/types';
+import type { QuestionSchema, SurveyMetadataSchema } from '@/features/surveys/types';
 import { useBreakpoint } from '@/hooks/common/use-breakpoint';
 
 import { QuestionBuilderProvider } from '../../hooks/use-question-builder-context';
@@ -18,7 +18,7 @@ interface QuestionBuilderPageProps {
   surveyStatus: string;
   surveyMetadata: Omit<SurveyMetadataSchema, 'title'>;
   categoryOptions: SurveyCategoryOption[];
-  initialQuestions: QuestionState[];
+  initialQuestions: QuestionSchema[];
 }
 
 export function QuestionBuilderPage({

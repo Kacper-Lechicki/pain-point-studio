@@ -1,17 +1,15 @@
 import { useReducer } from 'react';
 
-import { QUESTIONS_MAX } from '@/features/surveys/config';
-import { getDefaultConfig } from '@/features/surveys/config/question-defaults';
-import type { QuestionSchema, QuestionState, QuestionType } from '@/features/surveys/types';
+import { QUESTIONS_MAX, getDefaultConfig } from '@/features/surveys/config';
+import type { QuestionSchema, QuestionType } from '@/features/surveys/types';
 
 // ── State ───────────────────────────────────────────────────────────
 
 export interface QuestionBuilderState {
-  questions: QuestionState[];
+  questions: QuestionSchema[];
   activeQuestionId: string | null;
   isDirty: boolean;
   saveStatus: 'idle' | 'saving' | 'saved' | 'error';
-  deletedQuestion: { question: QuestionState; index: number } | null;
 }
 
 // ── Actions ─────────────────────────────────────────────────────────
@@ -19,8 +17,6 @@ export interface QuestionBuilderState {
 export type QuestionBuilderAction =
   | { type: 'ADD_QUESTION'; payload?: { questionType?: QuestionType } }
   | { type: 'DELETE_QUESTION'; payload: { questionId: string } }
-  | { type: 'UNDO_DELETE' }
-  | { type: 'CLEAR_DELETED' }
   | { type: 'SELECT_QUESTION'; payload: { questionId: string } }
   | { type: 'UPDATE_QUESTION'; payload: { questionId: string; updates: Partial<QuestionSchema> } }
   | { type: 'CHANGE_QUESTION_TYPE'; payload: { questionId: string; newType: QuestionType } }
@@ -41,14 +37,13 @@ function questionBuilderReducer(
       }
 
       const type = action.payload?.questionType ?? 'open_text';
-      const newQuestion: QuestionState = {
+      const newQuestion: QuestionSchema = {
         id: crypto.randomUUID(),
         text: '',
         type,
         required: true,
         description: null,
         config: getDefaultConfig(type),
-        _isNew: true,
       };
 
       return {
@@ -66,7 +61,6 @@ function questionBuilderReducer(
         return state;
       }
 
-      const deleted = state.questions[index]!;
       const remaining = state.questions.filter((q) => q.id !== action.payload.questionId);
 
       let nextActiveId: string | null = null;
@@ -83,30 +77,7 @@ function questionBuilderReducer(
         questions: remaining,
         activeQuestionId: nextActiveId,
         isDirty: true,
-        deletedQuestion: { question: deleted, index },
       };
-    }
-
-    case 'UNDO_DELETE': {
-      if (!state.deletedQuestion) {
-        return state;
-      }
-
-      const { question, index } = state.deletedQuestion;
-      const restored = [...state.questions];
-      restored.splice(Math.min(index, restored.length), 0, question);
-
-      return {
-        ...state,
-        questions: restored,
-        activeQuestionId: question.id,
-        isDirty: true,
-        deletedQuestion: null,
-      };
-    }
-
-    case 'CLEAR_DELETED': {
-      return { ...state, deletedQuestion: null };
     }
 
     case 'SELECT_QUESTION': {
@@ -118,9 +89,7 @@ function questionBuilderReducer(
 
       return {
         ...state,
-        questions: state.questions.map((q) =>
-          q.id === questionId ? { ...q, ...updates, _isNew: false } : q
-        ),
+        questions: state.questions.map((q) => (q.id === questionId ? { ...q, ...updates } : q)),
         isDirty: true,
       };
     }
@@ -131,9 +100,7 @@ function questionBuilderReducer(
       return {
         ...state,
         questions: state.questions.map((q) =>
-          q.id === questionId
-            ? { ...q, type: newType, config: getDefaultConfig(newType), _isNew: false }
-            : q
+          q.id === questionId ? { ...q, type: newType, config: getDefaultConfig(newType) } : q
         ),
         isDirty: true,
       };
@@ -184,13 +151,12 @@ function questionBuilderReducer(
 
 // ── Hook ────────────────────────────────────────────────────────────
 
-export function useQuestionBuilder(initialQuestions: QuestionState[] = []) {
+export function useQuestionBuilder(initialQuestions: QuestionSchema[] = []) {
   const initialState: QuestionBuilderState = {
     questions: initialQuestions,
     activeQuestionId: initialQuestions[0]?.id ?? null,
     isDirty: false,
     saveStatus: 'idle',
-    deletedQuestion: null,
   };
 
   return useReducer(questionBuilderReducer, initialState);

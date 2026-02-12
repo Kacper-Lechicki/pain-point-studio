@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+
 import { Textarea } from '@/components/ui/textarea';
 
 interface OpenTextEditorProps {
@@ -7,7 +9,8 @@ interface OpenTextEditorProps {
 }
 
 export function OpenTextEditor({ config }: OpenTextEditorProps) {
-  const placeholder = (config.placeholder as string) || 'Type your answer here...';
+  const t = useTranslations('surveys.builder');
+  const placeholder = (config.placeholder as string) || t('defaultTextPlaceholder');
 
   return (
     <Textarea

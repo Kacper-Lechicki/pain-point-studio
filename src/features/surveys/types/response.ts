@@ -2,58 +2,6 @@ import { z } from 'zod';
 
 import type { QuestionType } from './index';
 
-// ── Answer value schemas by question type ───────────────────────────
-
-export const openTextAnswerSchema = z.object({
-  text: z.string().max(5000),
-});
-
-export const shortTextAnswerSchema = z.object({
-  text: z.string().max(500),
-});
-
-export const multipleChoiceAnswerSchema = z.object({
-  selected: z.array(z.string()).min(1),
-  other: z.string().max(200).nullable().optional(),
-});
-
-export const ratingScaleAnswerSchema = z.object({
-  rating: z.number().int().min(1).max(10),
-});
-
-export const yesNoAnswerSchema = z.object({
-  answer: z.boolean(),
-});
-
-// ── Discriminated validator ─────────────────────────────────────────
-
-export function validateAnswerValue(
-  type: QuestionType,
-  value: unknown
-): { success: boolean; error?: z.ZodError } {
-  let result;
-
-  switch (type) {
-    case 'open_text':
-      result = openTextAnswerSchema.safeParse(value);
-      break;
-    case 'short_text':
-      result = shortTextAnswerSchema.safeParse(value);
-      break;
-    case 'multiple_choice':
-      result = multipleChoiceAnswerSchema.safeParse(value);
-      break;
-    case 'rating_scale':
-      result = ratingScaleAnswerSchema.safeParse(value);
-      break;
-    case 'yes_no':
-      result = yesNoAnswerSchema.safeParse(value);
-      break;
-  }
-
-  return result.success ? { success: true } : { success: false, error: result.error };
-}
-
 // ── Server action input schemas ─────────────────────────────────────
 
 export const startResponseSchema = z.object({

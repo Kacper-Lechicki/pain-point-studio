@@ -10,17 +10,23 @@ export const startResponse = withPublicAction<typeof startResponseSchema, { resp
     schema: startResponseSchema,
     rateLimit: { limit: 30, windowSeconds: 300 },
     action: async ({ data, supabase }) => {
-      const { data: response, error } = await supabase
-        .from('survey_responses')
-        .insert({ survey_id: data.surveyId })
-        .select('id')
-        .single();
+      const { data: responseId, error } = await supabase.rpc('start_survey_response', {
+        p_survey_id: data.surveyId,
+      });
 
       if (error) {
+        if (error.message.includes('MAX_RESPONDENTS_REACHED')) {
+          return { error: 'respondent.closed.maxReached' };
+        }
+
+        if (error.message.includes('SURVEY_NOT_ACTIVE')) {
+          return { error: 'respondent.closed.closed' };
+        }
+
         return { error: 'respondent.errors.startFailed' };
       }
 
-      return { success: true, data: { responseId: response.id } };
+      return { success: true, data: { responseId: responseId as string } };
     },
   }
 );
