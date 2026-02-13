@@ -15,4 +15,5 @@ export {
   closeSurvey,
   deleteSurveyDraft,
   reopenSurvey,
+  restoreSurvey,
 } from './update-survey-status';

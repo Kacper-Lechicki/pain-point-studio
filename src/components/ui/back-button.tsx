@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl';
 import { ROUTES } from '@/config';
 import type { AppRoute } from '@/config/routes';
 import { useRouter } from '@/i18n/routing';
+import { cn } from '@/lib/common/utils';
 
 const NAV_DEPTH_KEY = '__nav_depth';
 
@@ -70,9 +71,10 @@ function canGoBack(): boolean {
 
 interface BackButtonProps {
   fallbackHref?: AppRoute;
+  className?: string;
 }
 
-const BackButton = ({ fallbackHref }: BackButtonProps) => {
+const BackButton = ({ fallbackHref, className }: BackButtonProps) => {
   const t = useTranslations();
   const router = useRouter();
   const [goBack, setGoBack] = useState(false);
@@ -95,7 +97,10 @@ const BackButton = ({ fallbackHref }: BackButtonProps) => {
     <button
       type="button"
       onClick={handleClick}
-      className="text-muted-foreground md:hover:text-foreground inline-flex items-center gap-2 text-sm transition-colors"
+      className={cn(
+        'text-muted-foreground md:hover:text-foreground inline-flex items-center gap-2 text-sm transition-colors',
+        className
+      )}
     >
       <ArrowLeft className="size-4" aria-hidden="true" />
       {t('common.goBack')}

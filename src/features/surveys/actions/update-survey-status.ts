@@ -14,6 +14,7 @@ const TRANSITIONS = {
   close: { method: 'update', toStatus: 'closed', fromStatuses: ['active'] },
   reopen: { method: 'update', toStatus: 'active', fromStatuses: ['closed'] },
   archive: { method: 'update', toStatus: 'archived', fromStatuses: ['active', 'closed'] },
+  restore: { method: 'update', toStatus: 'closed', fromStatuses: ['archived'] },
   delete: { method: 'delete', fromStatuses: ['draft'] },
 } as const satisfies Record<string, StatusTransition>;
 
@@ -75,4 +76,5 @@ function createStatusAction(action: SurveyAction) {
 export const closeSurvey = createStatusAction('close');
 export const reopenSurvey = createStatusAction('reopen');
 export const archiveSurvey = createStatusAction('archive');
+export const restoreSurvey = createStatusAction('restore');
 export const deleteSurveyDraft = createStatusAction('delete');

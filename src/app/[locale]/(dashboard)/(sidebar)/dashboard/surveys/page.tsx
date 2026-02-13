@@ -8,29 +8,13 @@ import { ROUTES } from '@/config/routes';
 import { DASHBOARD_PAGE_BODY_GAP_TOP } from '@/features/dashboard/config/layout';
 import { getUserSurveys } from '@/features/surveys/actions';
 import { SurveyList } from '@/features/surveys/components/dashboard/survey-list';
-import type { SurveyStatusFilter } from '@/features/surveys/components/dashboard/survey-list-toolbar';
 import Link from '@/i18n/link';
 
-const VALID_STATUSES: SurveyStatusFilter[] = ['all', 'active', 'draft', 'closed', 'archived'];
+export default async function SurveysPage() {
+  const [surveys, t] = await Promise.all([getUserSurveys(), getTranslations('surveys')]);
 
-interface SurveysPageProps {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-}
-
-export default async function SurveysPage({ searchParams }: SurveysPageProps) {
-  const [surveys, t, params] = await Promise.all([
-    getUserSurveys(),
-    getTranslations('surveys'),
-    searchParams,
-  ]);
-
-  const rawStatus = typeof params.status === 'string' ? params.status : undefined;
-  const statusFilter: SurveyStatusFilter =
-    rawStatus && VALID_STATUSES.includes(rawStatus as SurveyStatusFilter)
-      ? (rawStatus as SurveyStatusFilter)
-      : 'all';
-
-  const hasSurveys = surveys !== null && surveys.length > 0;
+  const activeSurveys = surveys?.filter((s) => s.status !== 'archived') ?? [];
+  const hasSurveys = activeSurveys.length > 0;
 
   return (
     <PageTransition>
@@ -52,7 +36,7 @@ export default async function SurveysPage({ searchParams }: SurveysPageProps) {
 
       <div className={DASHBOARD_PAGE_BODY_GAP_TOP}>
         {hasSurveys ? (
-          <SurveyList initialSurveys={surveys} initialStatusFilter={statusFilter} />
+          <SurveyList initialSurveys={activeSurveys} />
         ) : (
           <EmptyState
             icon={ClipboardList}

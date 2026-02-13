@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
+import { Plus, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
-import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -22,7 +22,6 @@ export function BuilderCenter() {
   const t = useTranslations('surveys.builder');
   const { state, activeQuestion, updateQuestion, selectQuestion } = useQuestionBuilderContext();
   const textInputRef = useRef<HTMLInputElement>(null);
-  const [showRemoveDescriptionConfirm, setShowRemoveDescriptionConfirm] = useState(false);
 
   // Auto-focus when a new question is added (empty text = freshly created)
   useEffect(() => {
@@ -88,22 +87,21 @@ export function BuilderCenter() {
         {/* Description */}
         {showDescription ? (
           <div className="mt-2">
-            <div className="flex items-center justify-between">
-              <Textarea
-                value={activeQuestion.description ?? ''}
-                onChange={(e) => updateQuestion(activeQuestion.id, { description: e.target.value })}
-                placeholder={t('descriptionPlaceholder')}
-                maxLength={QUESTION_DESCRIPTION_MAX_LENGTH}
-                className="min-h-[60px] resize-none"
-                rows={2}
-              />
-            </div>
+            <Textarea
+              value={activeQuestion.description ?? ''}
+              onChange={(e) => updateQuestion(activeQuestion.id, { description: e.target.value })}
+              placeholder={t('descriptionPlaceholder')}
+              maxLength={QUESTION_DESCRIPTION_MAX_LENGTH}
+              className="min-h-[60px] resize-none"
+              rows={2}
+            />
             <Button
               variant="ghostDestructive"
               size="sm"
-              className="mt-3"
-              onClick={() => setShowRemoveDescriptionConfirm(true)}
+              className="mt-1.5"
+              onClick={() => updateQuestion(activeQuestion.id, { description: null })}
             >
+              <X className="size-4" aria-hidden />
               {t('removeDescription')}
             </Button>
           </div>
@@ -111,10 +109,11 @@ export function BuilderCenter() {
           <Button
             variant="ghost"
             size="sm"
-            className="mt-3"
+            className="text-muted-foreground mt-2"
             onClick={() => updateQuestion(activeQuestion.id, { description: '' })}
           >
-            + {t('addDescription')}
+            <Plus className="size-4" aria-hidden />
+            {t('addDescription')}
           </Button>
         )}
 
@@ -123,18 +122,6 @@ export function BuilderCenter() {
           <QuestionEditor question={activeQuestion} />
         </div>
       </div>
-
-      <ConfirmDialog
-        open={showRemoveDescriptionConfirm}
-        onOpenChange={setShowRemoveDescriptionConfirm}
-        onConfirm={() => {
-          updateQuestion(activeQuestion.id, { description: null });
-          setShowRemoveDescriptionConfirm(false);
-        }}
-        title={t('removeDescriptionConfirmTitle')}
-        description={t('removeDescriptionConfirm')}
-        confirmLabel={t('removeDescription')}
-      />
     </div>
   );
 }

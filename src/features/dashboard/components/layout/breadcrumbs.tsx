@@ -18,6 +18,7 @@ const SEGMENT_KEYS: Record<string, string> = {
   preview: 'preview',
   new: 'new',
   create: 'create',
+  archive: 'archive',
 };
 
 /**

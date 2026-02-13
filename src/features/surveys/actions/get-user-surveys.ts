@@ -16,6 +16,18 @@ export interface UserSurvey {
   status: SurveyStatus;
   slug: string | null;
   responseCount: number;
+  completedCount: number;
+  questionCount: number;
+  /** 14-element array of daily response counts (newest last). */
+  recentActivity: number[];
+  /** ISO timestamp of the most recent response, or null. */
+  lastResponseAt: string | null;
+  /** Scheduled start date, or null if immediate. */
+  startsAt: string | null;
+  /** Scheduled end date, or null if no limit. */
+  endsAt: string | null;
+  /** Max respondent cap, or null if unlimited. */
+  maxRespondents: number | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -28,6 +40,13 @@ const userSurveySchema = z.object({
   status: z.string(),
   slug: z.string().nullable(),
   responseCount: z.number(),
+  completedCount: z.number(),
+  questionCount: z.number(),
+  recentActivity: z.array(z.number()),
+  lastResponseAt: z.string().nullable(),
+  startsAt: z.string().nullable(),
+  endsAt: z.string().nullable(),
+  maxRespondents: z.number().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
 });

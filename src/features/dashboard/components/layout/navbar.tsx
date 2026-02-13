@@ -37,8 +37,8 @@ const Navbar = () => {
 
         {isDesktop && (
           <div
-            className="dashboard:flex hidden shrink-0"
-            style={{ width: 'calc(var(--sidebar-width-expanded) - 0.75rem)' }}
+            className="dashboard:flex -ml-1 hidden shrink-0"
+            style={{ width: 'calc(var(--sidebar-width-expanded) - 1rem)' }}
           >
             <ProjectSelector className="w-full" />
           </div>

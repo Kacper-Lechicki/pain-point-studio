@@ -134,6 +134,20 @@ export function SecondaryNav({ titleKey, groups }: SecondaryNavProps) {
             <div className="flex flex-col gap-2">
               {group.items.map((item) => {
                 const href = getItemHref(item);
+
+                if (item.disabled) {
+                  return (
+                    <span
+                      key={href}
+                      data-state="inactive"
+                      className={cn(SIDEBAR_NAV_ITEM_CLASSES, 'pointer-events-none opacity-50')}
+                    >
+                      <item.icon className="size-4 shrink-0" aria-hidden />
+                      <span className="truncate">{t(item.labelKey)}</span>
+                    </span>
+                  );
+                }
+
                 const isActive = hasSearchParamItems
                   ? isItemActive(item, pathname, hash, currentSearchParams, searchParamKeys)
                   : item.hash

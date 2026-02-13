@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 
 import { PageTransition } from '@/components/ui/page-transition';
+import { DashboardPageBack } from '@/features/dashboard/components/layout/dashboard-page-back';
 import { getSurveyStats } from '@/features/surveys/actions';
 import { SurveyStatsPanel } from '@/features/surveys/components/stats/survey-stats-panel';
 
@@ -18,6 +19,7 @@ export default async function SurveyStatsPage({ params }: SurveyStatsPageProps) 
 
   return (
     <PageTransition>
+      <DashboardPageBack />
       <SurveyStatsPanel stats={stats} />
     </PageTransition>
   );

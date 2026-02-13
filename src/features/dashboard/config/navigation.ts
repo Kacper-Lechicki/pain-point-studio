@@ -1,19 +1,19 @@
 import {
   Archive,
   BarChart3,
-  CircleDot,
   CircleUserRound,
   ClipboardList,
-  FilePen,
+  FolderOpen,
   Home,
   KeyRound,
+  LayoutTemplate,
   Link2,
   type LucideIcon,
   Mail,
   Palette,
+  Plug,
   Plus,
   Settings,
-  SquareX,
   Trash2,
 } from 'lucide-react';
 
@@ -33,6 +33,8 @@ export interface SubNavItem {
   searchParams?: Record<string, string> | undefined;
   /** Additional pathnames that should highlight this item as active. */
   alsoActiveFor?: readonly string[] | undefined;
+  /** Whether the item is disabled (not clickable, dimmed). */
+  disabled?: boolean | undefined;
 }
 
 // ── Optional group heading for sub-panel items ────────────────────────
@@ -79,43 +81,53 @@ export const SIDEBAR_NAV: NavGroup[] = [
             {
               items: [
                 {
+                  labelKey: 'sidebar.newSurvey',
+                  icon: Plus,
+                  href: '/dashboard/surveys/new' as AppRoute,
+                },
+                {
                   labelKey: 'sidebar.allSurveys',
                   icon: ClipboardList,
                   href: '/dashboard/surveys' as AppRoute,
                 },
                 {
-                  labelKey: 'sidebar.newSurvey',
-                  icon: Plus,
-                  href: '/dashboard/surveys/new' as AppRoute,
+                  labelKey: 'sidebar.templates',
+                  icon: LayoutTemplate,
+                  href: '/dashboard/surveys/templates' as AppRoute,
+                  disabled: true,
                 },
               ],
             },
             {
-              headingKey: 'sidebar.byStatus',
+              headingKey: 'sidebar.organizeHeading',
               items: [
                 {
-                  labelKey: 'sidebar.activeSurveys',
-                  icon: CircleDot,
-                  href: '/dashboard/surveys' as AppRoute,
-                  searchParams: { status: 'active' },
+                  labelKey: 'sidebar.folders',
+                  icon: FolderOpen,
+                  href: '/dashboard/surveys/folders' as AppRoute,
+                  disabled: true,
                 },
                 {
-                  labelKey: 'sidebar.draftSurveys',
-                  icon: FilePen,
-                  href: '/dashboard/surveys' as AppRoute,
-                  searchParams: { status: 'draft' },
-                },
-                {
-                  labelKey: 'sidebar.closedSurveys',
-                  icon: SquareX,
-                  href: '/dashboard/surveys' as AppRoute,
-                  searchParams: { status: 'closed' },
-                },
-                {
-                  labelKey: 'sidebar.archivedSurveys',
+                  labelKey: 'sidebar.archive',
                   icon: Archive,
-                  href: '/dashboard/surveys' as AppRoute,
-                  searchParams: { status: 'archived' },
+                  href: '/dashboard/surveys/archive' as AppRoute,
+                },
+              ],
+            },
+            {
+              headingKey: 'sidebar.configureHeading',
+              items: [
+                {
+                  labelKey: 'sidebar.surveySettings',
+                  icon: Settings,
+                  href: '/dashboard/surveys/settings' as AppRoute,
+                  disabled: true,
+                },
+                {
+                  labelKey: 'sidebar.integrations',
+                  icon: Plug,
+                  href: '/dashboard/surveys/integrations' as AppRoute,
+                  disabled: true,
                 },
               ],
             },

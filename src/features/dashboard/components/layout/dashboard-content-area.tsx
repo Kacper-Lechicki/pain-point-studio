@@ -1,9 +1,6 @@
 import type { ReactNode } from 'react';
 
-import {
-  DASHBOARD_CONTENT_MAX_WIDTH,
-  DASHBOARD_CONTENT_PADDING,
-} from '@/features/dashboard/config/layout';
+import { DASHBOARD_CONTENT_MAX_WIDTH } from '@/features/dashboard/config/layout';
 import { cn } from '@/lib/common/utils';
 
 const MAX_WIDTH_CLASSES: Record<NonNullable<DashboardContentAreaProps['maxWidth']>, string> = {
@@ -26,7 +23,7 @@ function DashboardContentArea({
   return (
     <div
       className={cn(
-        DASHBOARD_CONTENT_PADDING,
+        'px-4 pt-6 pb-20 sm:px-6 md:pb-8 lg:px-8',
         maxWidth !== 'full' && MAX_WIDTH_CLASSES[maxWidth],
         'mx-auto w-full',
         className
