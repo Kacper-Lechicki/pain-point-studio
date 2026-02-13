@@ -20,15 +20,14 @@ const CONTENT_NAV_ITEM_BASE =
 // ── Active / Inactive class sets (for cn()-based usage) ──────────────
 
 /** Sidebar region – active state classes */
-export const SIDEBAR_NAV_ACTIVE =
-  'bg-sidebar-accent text-sidebar-foreground border-sidebar-primary border-solid';
+export const SIDEBAR_NAV_ACTIVE = 'bg-sidebar-accent text-sidebar-foreground';
 
 /** Sidebar region – inactive state classes */
 export const SIDEBAR_NAV_INACTIVE =
   'md:hover:text-sidebar-foreground md:hover:border-sidebar-foreground/25 md:hover:border-dashed';
 
 /** Content region – active state classes */
-export const CONTENT_NAV_ACTIVE = 'bg-accent text-foreground border-primary border-solid';
+export const CONTENT_NAV_ACTIVE = 'bg-accent text-foreground';
 
 /** Content region – inactive state classes */
 export const CONTENT_NAV_INACTIVE =
@@ -42,11 +41,11 @@ export { SIDEBAR_NAV_ITEM_BASE, CONTENT_NAV_ITEM_BASE };
 /** For sidebar region: nav panel + sub-panel (attribute-driven) */
 export const SIDEBAR_NAV_ITEM_CLASSES =
   SIDEBAR_NAV_ITEM_BASE +
-  ' data-[state=active]:bg-sidebar-accent data-[state=active]:text-sidebar-foreground data-[state=active]:border-sidebar-primary data-[state=active]:border-solid' +
+  ' data-[state=active]:bg-sidebar-accent data-[state=active]:text-sidebar-foreground' +
   ' data-[state=inactive]:md:hover:text-sidebar-foreground data-[state=inactive]:md:hover:border-sidebar-foreground/25 data-[state=inactive]:md:hover:border-dashed';
 
 /** For content region: settings nav (attribute-driven) */
 export const CONTENT_NAV_ITEM_CLASSES =
   CONTENT_NAV_ITEM_BASE +
-  ' data-[state=active]:bg-accent data-[state=active]:text-foreground data-[state=active]:border-primary data-[state=active]:border-solid' +
+  ' data-[state=active]:bg-accent data-[state=active]:text-foreground' +
   ' data-[state=inactive]:md:hover:text-foreground data-[state=inactive]:md:hover:border-muted-foreground/30 data-[state=inactive]:md:hover:border-dashed';

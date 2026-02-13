@@ -21,6 +21,7 @@ export type QuestionBuilderAction =
   | { type: 'UPDATE_QUESTION'; payload: { questionId: string; updates: Partial<QuestionSchema> } }
   | { type: 'CHANGE_QUESTION_TYPE'; payload: { questionId: string; newType: QuestionType } }
   | { type: 'MOVE_QUESTION'; payload: { questionId: string; direction: 'up' | 'down' } }
+  | { type: 'REORDER_QUESTIONS'; payload: { questionIds: string[] } }
   | { type: 'SET_SAVE_STATUS'; payload: { status: QuestionBuilderState['saveStatus'] } }
   | { type: 'MARK_CLEAN' };
 
@@ -134,6 +135,18 @@ function questionBuilderReducer(
         questions: reordered,
         isDirty: true,
       };
+    }
+
+    case 'REORDER_QUESTIONS': {
+      const { questionIds } = action.payload;
+      const byId = new Map(state.questions.map((q) => [q.id, q]));
+      const reordered = questionIds.map((id) => byId.get(id)).filter(Boolean) as QuestionSchema[];
+
+      if (reordered.length !== state.questions.length) {
+        return state;
+      }
+
+      return { ...state, questions: reordered, isDirty: true };
     }
 
     case 'SET_SAVE_STATUS': {

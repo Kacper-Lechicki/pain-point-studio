@@ -24,6 +24,7 @@ interface QuestionBuilderContextValue {
   updateQuestion: (id: string, updates: Partial<QuestionSchema>) => void;
   changeQuestionType: (id: string, newType: QuestionType) => void;
   moveQuestion: (id: string, direction: 'up' | 'down') => void;
+  reorderQuestions: (questionIds: string[]) => void;
   /** Build the payload for saving questions to the server. */
   buildQuestionsPayload: () => Array<{
     id: string;
@@ -78,6 +79,9 @@ export function QuestionBuilderProvider({
       },
       moveQuestion: (id: string, direction: 'up' | 'down') => {
         dispatch({ type: 'MOVE_QUESTION', payload: { questionId: id, direction } });
+      },
+      reorderQuestions: (questionIds: string[]) => {
+        dispatch({ type: 'REORDER_QUESTIONS', payload: { questionIds } });
       },
       buildQuestionsPayload: () =>
         state.questions.map((q, i) => ({

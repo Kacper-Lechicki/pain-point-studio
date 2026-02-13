@@ -18,7 +18,7 @@ import { cn } from '@/lib/common/utils';
 const BASE_CLASSES =
   'flex items-center rounded-lg border border-transparent text-sm font-medium whitespace-nowrap transition-all duration-200 ease-in-out ' +
   'text-sidebar-foreground/70 ' +
-  'data-[state=active]:bg-sidebar-accent data-[state=active]:text-sidebar-foreground data-[state=active]:border-sidebar-primary data-[state=active]:border-solid ' +
+  'data-[state=active]:bg-sidebar-accent data-[state=active]:text-sidebar-foreground ' +
   'data-[state=inactive]:md:hover:text-sidebar-foreground data-[state=inactive]:md:hover:border-sidebar-foreground/25 data-[state=inactive]:md:hover:border-dashed';
 
 const EXPANDED_STYLE: CSSProperties = {

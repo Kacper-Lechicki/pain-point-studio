@@ -2,7 +2,7 @@
 
 import { useRef } from 'react';
 
-import { ArrowDown, ArrowUp, MoreVertical, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, GripVertical, MoreVertical, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
@@ -22,6 +22,10 @@ interface BuilderSidebarItemProps {
   isActive: boolean;
   isFirst: boolean;
   isLast: boolean;
+  isDragging?: boolean;
+  dragHandleProps?: {
+    onPointerDown: (e: React.PointerEvent) => void;
+  };
   onSelect: () => void;
   onDelete: () => void;
   onMoveUp: () => void;
@@ -34,6 +38,8 @@ export function BuilderSidebarItem({
   isActive,
   isFirst,
   isLast,
+  isDragging = false,
+  dragHandleProps,
   onSelect,
   onDelete,
   onMoveUp,
@@ -63,10 +69,27 @@ export function BuilderSidebarItem({
         }
       }}
       className={cn(
-        'group flex min-h-10 cursor-pointer items-center gap-2 border-l-2 pr-2 pl-[14px] text-sm transition-colors md:min-h-9',
-        isActive ? 'border-primary bg-accent/50' : 'hover:bg-accent/30 border-transparent'
+        'group flex min-h-10 cursor-pointer items-center gap-2 border-l-2 pr-2 pl-2 text-sm transition-colors md:min-h-9',
+        isActive ? 'border-primary bg-accent/50' : 'hover:bg-accent/30 border-transparent',
+        isDragging && 'opacity-50'
       )}
     >
+      {dragHandleProps ? (
+        <span
+          className="text-muted-foreground flex shrink-0 cursor-grab touch-none active:cursor-grabbing [.group:active_&]:cursor-grabbing"
+          onPointerDown={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            dragHandleProps.onPointerDown(e);
+            e.currentTarget.setPointerCapture(e.pointerId);
+          }}
+          aria-label={t('dragToReorder')}
+          role="button"
+          tabIndex={-1}
+        >
+          <GripVertical className="size-4" aria-hidden />
+        </span>
+      ) : null}
       {/* Number */}
       <span className="text-muted-foreground shrink-0 text-xs font-medium tabular-nums">
         {index + 1}.

@@ -1,14 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { Fragment, useCallback, useRef, useState } from 'react';
 
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { createPortal } from 'react-dom';
 
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { BUILDER_PANEL_WIDTH_CLASS } from '@/features/dashboard/config/layout';
 import { QUESTIONS_MAX } from '@/features/surveys/config';
+import { QUESTION_TYPE_ICONS } from '@/features/surveys/config';
+import { useSortableList } from '@/hooks/use-sortable-list';
+import { cn } from '@/lib/common/utils';
 
 import { useQuestionBuilderContext } from '../../hooks/use-question-builder-context';
 import { BuilderSidebarItem } from './builder-sidebar-item';
@@ -21,15 +25,39 @@ interface BuilderSidebarProps {
   onOpenChange?: (open: boolean) => void;
 }
 
+const ITEM_ID_ATTR = 'data-question-id';
+
 function BuilderSidebarContent({ onItemSelect }: { onItemSelect?: (() => void) | undefined }) {
   const t = useTranslations('surveys.builder');
-  const { state, addQuestion, selectQuestion, deleteQuestion, moveQuestion } =
+  const { state, addQuestion, selectQuestion, deleteQuestion, moveQuestion, reorderQuestions } =
     useQuestionBuilderContext();
   const [deleteQuestionId, setDeleteQuestionId] = useState<string | null>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+
+  const sortable = useSortableList({
+    itemIds: state.questions.map((q) => q.id),
+    containerRef: listRef,
+    itemIdAttribute: ITEM_ID_ATTR,
+    onReorder: useCallback(
+      (newIds: string[]) => {
+        reorderQuestions(newIds);
+      },
+      [reorderQuestions]
+    ),
+  });
+
+  const {
+    draggedId,
+    ghostPosition,
+    ghostWidth,
+    handleDragStart,
+    isDragging,
+    showPlaceholderAt,
+    showPlaceholderAtEnd,
+  } = sortable;
 
   return (
     <>
-      {/* Header */}
       <div className="border-border flex items-center justify-between border-b px-4 py-2">
         <span className="text-muted-foreground text-xs font-medium">
           {t('questionsCount', { count: state.questions.length, max: QUESTIONS_MAX })}
@@ -45,26 +73,93 @@ function BuilderSidebarContent({ onItemSelect }: { onItemSelect?: (() => void) |
         </Button>
       </div>
 
-      {/* Question list */}
-      <div className="flex-1 overflow-y-auto">
+      <div ref={listRef} className="flex-1 overflow-y-auto">
         {state.questions.map((question, index) => (
-          <BuilderSidebarItem
-            key={question.id}
-            question={question}
-            index={index}
-            isActive={question.id === state.activeQuestionId}
-            isFirst={index === 0}
-            isLast={index === state.questions.length - 1}
-            onSelect={() => {
-              selectQuestion(question.id);
-              onItemSelect?.();
-            }}
-            onDelete={() => setDeleteQuestionId(question.id)}
-            onMoveUp={() => moveQuestion(question.id, 'up')}
-            onMoveDown={() => moveQuestion(question.id, 'down')}
-          />
+          <Fragment key={question.id}>
+            {showPlaceholderAt(index) && (
+              <div
+                className="border-primary/50 bg-primary/5 min-h-10 shrink-0 rounded-lg border border-dashed md:min-h-9"
+                aria-hidden
+              />
+            )}
+            <div
+              {...{ [ITEM_ID_ATTR]: question.id }}
+              className={
+                isDragging(question.id)
+                  ? 'invisible h-0 min-h-0 overflow-hidden border-none p-0'
+                  : undefined
+              }
+            >
+              <BuilderSidebarItem
+                question={question}
+                index={index}
+                isActive={question.id === state.activeQuestionId}
+                isFirst={index === 0}
+                isLast={index === state.questions.length - 1}
+                isDragging={isDragging(question.id)}
+                dragHandleProps={{ onPointerDown: (e) => handleDragStart(e, question.id) }}
+                onSelect={() => {
+                  selectQuestion(question.id);
+                  onItemSelect?.();
+                }}
+                onDelete={() => setDeleteQuestionId(question.id)}
+                onMoveUp={() => moveQuestion(question.id, 'up')}
+                onMoveDown={() => moveQuestion(question.id, 'down')}
+              />
+            </div>
+          </Fragment>
         ))}
+        {showPlaceholderAtEnd && (
+          <div
+            className="border-primary/50 bg-primary/5 min-h-10 shrink-0 rounded-lg border border-dashed md:min-h-9"
+            aria-hidden
+          />
+        )}
       </div>
+
+      {draggedId &&
+        ghostPosition &&
+        (() => {
+          const question = state.questions.find((q) => q.id === draggedId);
+
+          if (!question) {
+            return null;
+          }
+
+          const TypeIcon = QUESTION_TYPE_ICONS[question.type];
+          const displayText = question.text.trim() || t('untitledQuestion');
+          const index = state.questions.findIndex((q) => q.id === draggedId);
+
+          return createPortal(
+            <div
+              role="presentation"
+              aria-hidden
+              className="bg-background pointer-events-none fixed top-0 left-0 z-50 flex min-h-10 items-center gap-2 rounded-lg px-2 shadow-lg md:min-h-9"
+              style={{
+                transform: `translate3d(${ghostPosition.x}px, ${ghostPosition.y}px, 0)`,
+                width: ghostWidth || 'auto',
+                minWidth: 200,
+                willChange: 'transform',
+              }}
+            >
+              <span className="text-muted-foreground size-4 shrink-0" />
+              <span className="text-muted-foreground shrink-0 text-xs font-medium tabular-nums">
+                {index + 1}.
+              </span>
+              <TypeIcon className="text-muted-foreground size-4 shrink-0" />
+              <span
+                className={cn(
+                  'min-w-0 flex-1 truncate text-xs',
+                  question.text.trim() ? 'text-foreground' : 'text-muted-foreground italic'
+                )}
+              >
+                {displayText}
+              </span>
+              <span className="size-9 shrink-0" />
+            </div>,
+            document.body
+          );
+        })()}
 
       <ConfirmDialog
         open={deleteQuestionId !== null}
