@@ -7,6 +7,7 @@ import {
   BarChart3,
   Calendar,
   Copy,
+  Expand,
   Hash,
   Loader2,
   Pencil,
@@ -74,7 +75,7 @@ const ACTION_CONFIGS = {
     confirm: {
       titleKey: 'confirm.archiveTitle',
       descriptionKey: 'confirm.archiveDescription',
-      variant: 'default' as const,
+      variant: 'warning' as const,
     },
   },
   delete: {
@@ -93,6 +94,8 @@ interface SurveyDetailPanelProps {
   questions: MappedQuestion[] | null;
   onStatusChange: (surveyId: string, action: string) => void;
   embeddedInSheet?: boolean;
+  /** When true, renders as full-page content (main, no sticky). */
+  embeddedInPage?: boolean;
 }
 
 function MetricRow({
@@ -179,6 +182,7 @@ export function SurveyDetailPanel({
   questions,
   onStatusChange,
   embeddedInSheet = false,
+  embeddedInPage = false,
 }: SurveyDetailPanelProps) {
   const t = useTranslations('surveys.dashboard');
   const tCat = useTranslations('surveys.categories');
@@ -243,10 +247,32 @@ export function SurveyDetailPanel({
   const formatDate = (iso: string) =>
     format.dateTime(new Date(iso), { month: 'short', day: 'numeric', year: 'numeric' });
 
+  const titleHeadingClass = embeddedInPage
+    ? 'text-foreground min-w-0 flex-1 truncate text-3xl font-bold leading-tight'
+    : 'text-foreground min-w-0 flex-1 truncate text-base leading-snug font-semibold';
+
   const content = (
     <div className="flex min-w-0 flex-col">
-      {/* Title */}
-      <h3 className="text-foreground text-base leading-snug font-semibold">{survey.title}</h3>
+      <div className="flex min-w-0 items-start justify-between gap-2">
+        {embeddedInPage ? (
+          <h1 className={titleHeadingClass}>{survey.title}</h1>
+        ) : (
+          <h3 className={titleHeadingClass}>{survey.title}</h3>
+        )}
+        {embeddedInSheet && (
+          <Button
+            variant="ghost"
+            size="icon-xs"
+            className="text-muted-foreground shrink-0"
+            aria-label={t('actions.openInFullPage')}
+            asChild
+          >
+            <Link href={`/dashboard/surveys/${survey.id}`}>
+              <Expand className="size-4" aria-hidden />
+            </Link>
+          </Button>
+        )}
+      </div>
 
       {/* Status + Category */}
       <div className="mt-2 flex flex-wrap items-center gap-1.5">
@@ -284,30 +310,32 @@ export function SurveyDetailPanel({
             {t('detailPanel.questions')}
           </div>
         </div>
-        <div className="border-border/50 rounded-md border px-3 py-2.5">
-          <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
-            {survey.completedCount}
-            {survey.maxRespondents != null && (
-              <span className="text-muted-foreground text-xs font-normal">
-                {' '}
-                / {survey.maxRespondents}
-              </span>
+        {!isDraft && (
+          <div className="border-border/50 rounded-md border px-3 py-2.5">
+            <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
+              {survey.completedCount}
+              {survey.maxRespondents != null && (
+                <span className="text-muted-foreground text-xs font-normal">
+                  {' '}
+                  / {survey.maxRespondents}
+                </span>
+              )}
+            </div>
+            <div className="text-muted-foreground mt-1.5 flex items-center gap-1 text-[11px]">
+              <Users className="size-3" aria-hidden />
+              {t('detailPanel.responses')}
+            </div>
+            {respondentProgress != null && (
+              <div className="bg-muted mt-2 h-1 w-full overflow-hidden rounded-full">
+                <div
+                  className="h-full rounded-full bg-emerald-500 transition-all"
+                  style={{ width: `${respondentProgress}%` }}
+                />
+              </div>
             )}
           </div>
-          <div className="text-muted-foreground mt-1.5 flex items-center gap-1 text-[11px]">
-            <Users className="size-3" aria-hidden />
-            {t('detailPanel.responses')}
-          </div>
-          {respondentProgress != null && (
-            <div className="bg-muted mt-2 h-1 w-full overflow-hidden rounded-full">
-              <div
-                className="h-full rounded-full bg-emerald-500 transition-all"
-                style={{ width: `${respondentProgress}%` }}
-              />
-            </div>
-          )}
-        </div>
-        {!isArchived && completionRate != null && (
+        )}
+        {!isArchived && !isDraft && completionRate != null && (
           <div className="border-border/50 rounded-md border px-3 py-2.5">
             <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
               {completionRate}%
@@ -317,7 +345,7 @@ export function SurveyDetailPanel({
             </div>
           </div>
         )}
-        {!isArchived && lastResponseLabel != null && (
+        {!isArchived && !isDraft && lastResponseLabel != null && (
           <div className="border-border/50 rounded-md border px-3 py-2.5">
             <div className="text-foreground text-sm leading-none font-semibold">
               {lastResponseLabel}
@@ -329,7 +357,7 @@ export function SurveyDetailPanel({
         )}
       </div>
 
-      {!isArchived && (
+      {!isArchived && !isDraft && (
         <>
           <Separator className="my-4" />
           <SectionLabel>{t('detailPanel.last14Days')}</SectionLabel>
@@ -379,7 +407,7 @@ export function SurveyDetailPanel({
             <span className="text-muted-foreground min-w-0 flex-1 truncate text-[11px]">
               {shareUrl.replace(/^https?:\/\//, '')}
             </span>
-            <Copy className="text-muted-foreground/60 group-hover:text-foreground size-3.5 shrink-0 transition-colors" />
+            <Copy className="text-muted-foreground group-hover:text-foreground size-3.5 shrink-0 transition-colors" />
           </button>
         </>
       )}
@@ -544,6 +572,15 @@ export function SurveyDetailPanel({
         {content}
         {confirmDialogElement}
       </div>
+    );
+  }
+
+  if (embeddedInPage) {
+    return (
+      <main className="flex min-w-0 flex-col" aria-label={survey.title}>
+        {content}
+        {confirmDialogElement}
+      </main>
     );
   }
 

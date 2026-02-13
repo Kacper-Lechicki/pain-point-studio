@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react';
 
-import { isBuilderPath } from '@/features/dashboard/config/layout';
+import { getDashboardContentMaxWidth, isBuilderPath } from '@/features/dashboard/config/layout';
 import { usePathname } from '@/i18n/routing';
 
 import { DashboardContentArea } from './dashboard-content-area';
@@ -22,13 +22,18 @@ export function DashboardContent({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const { isPinned, hasSubPanel, isDesktop } = useSidebar();
   const isBuilder = isBuilderPath(pathname ?? null);
+  const maxWidth = getDashboardContentMaxWidth(pathname ?? null);
 
   return (
     <main
       className="min-w-0 flex-1 pb-20 transition-[margin-left] duration-200 ease-in-out"
       style={isDesktop ? { marginLeft: getMarginLeft(isPinned, hasSubPanel) } : undefined}
     >
-      {isBuilder ? children : <DashboardContentArea>{children}</DashboardContentArea>}
+      {isBuilder ? (
+        children
+      ) : (
+        <DashboardContentArea maxWidth={maxWidth}>{children}</DashboardContentArea>
+      )}
     </main>
   );
 }

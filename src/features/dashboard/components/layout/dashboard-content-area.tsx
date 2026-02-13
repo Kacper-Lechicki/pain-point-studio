@@ -4,7 +4,7 @@ import { DASHBOARD_CONTENT_MAX_WIDTH } from '@/features/dashboard/config/layout'
 import { cn } from '@/lib/common/utils';
 
 const MAX_WIDTH_CLASSES: Record<NonNullable<DashboardContentAreaProps['maxWidth']>, string> = {
-  narrow: 'max-w-5xl',
+  narrow: 'max-w-4xl',
   content: DASHBOARD_CONTENT_MAX_WIDTH,
   full: '',
 };

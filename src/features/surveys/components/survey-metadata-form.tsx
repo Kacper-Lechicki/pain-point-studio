@@ -339,8 +339,6 @@ const SurveyMetadataForm = ({
       <form className="space-y-6">
         {formFields}
 
-        <Separator />
-
         {/* Actions */}
         <div
           className={`flex items-center gap-3 ${mode === 'edit' ? 'justify-end' : 'justify-between'}`}

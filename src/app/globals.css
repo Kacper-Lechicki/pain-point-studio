@@ -69,6 +69,7 @@
   --disabled-foreground: rgb(145, 150, 162);
   --success: rgb(34, 197, 94);
   --warning: rgb(245, 158, 11);
+  --warning-foreground: rgb(0, 0, 0);
   --error: rgb(239, 68, 68);
   --info: rgb(59, 130, 246);
   --chart-violet: rgb(139, 92, 246);
@@ -139,6 +140,7 @@
   --disabled-foreground: rgb(128, 132, 145);
   --success: rgb(34, 197, 94);
   --warning: rgb(245, 158, 11);
+  --warning-foreground: rgb(0, 0, 0);
   --error: rgb(239, 68, 68);
   --info: rgb(96, 165, 250);
   --chart-violet: rgb(139, 92, 246);
@@ -231,6 +233,7 @@
   --color-disabled-foreground: var(--disabled-foreground);
   --color-success: var(--success);
   --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
   --color-error: var(--error);
   --color-info: var(--info);
   --color-chart-violet: var(--chart-violet);
@@ -276,6 +279,26 @@
 
   body {
     @apply bg-background text-foreground;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  body::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  body::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  body::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+  }
+
+  body::-webkit-scrollbar-thumb:hover {
+    background: var(--muted-foreground);
   }
 
   button {
@@ -357,5 +380,28 @@
     &::-webkit-scrollbar {
       display: none;
     }
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: var(--muted-foreground);
   }
 }

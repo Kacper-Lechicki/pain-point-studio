@@ -1,5 +1,6 @@
 import type { AppRoute } from '@/config/routes';
 import { ROUTES } from '@/config/routes';
+import { locales } from '@/i18n/constants';
 
 /** Path prefix for survey builder (edit questions). Builder uses a standalone full-screen layout. */
 export const BUILDER_PATH_PREFIX = '/dashboard/surveys/new/';
@@ -25,6 +26,10 @@ export function getDashboardBackConfig(pathname: string | null): DashboardBackCo
   }
 
   if (pathname.startsWith('/dashboard/surveys/stats/')) {
+    return { fallbackHref: ROUTES.dashboard.surveys };
+  }
+
+  if (/^\/dashboard\/surveys\/[^/]+$/.test(pathname)) {
     return { fallbackHref: ROUTES.dashboard.surveys };
   }
 
@@ -56,3 +61,68 @@ export const DASHBOARD_CONTENT_PADDING = 'px-4 pt-6 pb-20 sm:px-6 md:pb-8 lg:px-
 export const DASHBOARD_CONTENT_MAX_WIDTH = 'max-w-7xl';
 export const DASHBOARD_PAGE_BODY_GAP = 'mb-8';
 export const DASHBOARD_PAGE_BODY_GAP_TOP = 'mt-8';
+
+export type DashboardContentWidth = 'narrow' | 'content' | 'full';
+
+function pathWithoutLocale(pathname: string): string {
+  const segment = pathname.split('/')[1];
+
+  if (segment && (locales as readonly string[]).includes(segment)) {
+    return '/' + pathname.split('/').slice(2).join('/') || '/';
+  }
+
+  return pathname;
+}
+
+function isFullWidthPath(pathname: string): boolean {
+  const path = pathWithoutLocale(pathname);
+
+  return (
+    path === '/dashboard/surveys' ||
+    path === '/dashboard/surveys/archive' ||
+    path.startsWith('/dashboard/surveys/archive/')
+  );
+}
+
+function isNarrowPath(pathname: string): boolean {
+  const path = pathWithoutLocale(pathname);
+
+  if (path === '/dashboard/surveys/new' || path.startsWith('/dashboard/surveys/new/')) {
+    return true;
+  }
+
+  if (/^\/dashboard\/surveys\/[^/]+$/.test(path) && path !== '/dashboard/surveys/archive') {
+    return true;
+  }
+
+  if (
+    path === '/settings' ||
+    path.startsWith('/settings/') ||
+    path === '/profile' ||
+    path.startsWith('/profile/')
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Content width per route: full (list views, archive), content (default), narrow (forms/settings).
+ * Used by DashboardContent to wrap children in DashboardContentArea with the right max-width.
+ */
+export function getDashboardContentMaxWidth(pathname: string | null): DashboardContentWidth {
+  if (!pathname) {
+    return 'content';
+  }
+
+  if (isNarrowPath(pathname)) {
+    return 'narrow';
+  }
+
+  if (isFullWidthPath(pathname)) {
+    return 'full';
+  }
+
+  return 'content';
+}

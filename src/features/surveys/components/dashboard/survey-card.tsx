@@ -159,7 +159,7 @@ const ACTION_CONFIGS = {
     confirm: {
       titleKey: 'confirm.archiveTitle',
       descriptionKey: 'confirm.archiveDescription',
-      variant: 'default' as const,
+      variant: 'warning' as const,
     },
   },
   delete: {

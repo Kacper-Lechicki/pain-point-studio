@@ -170,7 +170,7 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
               <span className="ml-1">{tDashboard('summary.totalLabel')}</span>
             </span>
           </div>
-          <span className="text-muted-foreground/50 hidden shrink-0 items-center gap-1 text-[11px] md:flex">
+          <span className="text-muted-foreground hidden shrink-0 items-center gap-1 text-[11px] md:flex">
             <MousePointerClick className="size-3" aria-hidden />
             {tDashboard('clickHint')}
           </span>

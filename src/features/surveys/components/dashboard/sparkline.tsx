@@ -8,7 +8,7 @@ const TREND_COLOR: Record<SparklineTrend, string> = {
   rising: 'text-emerald-500',
   declining: 'text-amber-500',
   'sharply-declining': 'text-red-500',
-  flat: 'text-muted-foreground/40',
+  flat: 'text-muted-foreground',
 };
 
 /**

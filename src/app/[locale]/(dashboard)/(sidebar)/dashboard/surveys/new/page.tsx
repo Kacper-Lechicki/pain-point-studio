@@ -15,9 +15,7 @@ export default async function NewSurveyPage() {
         <p className="text-muted-foreground mt-1 text-sm">{t('description')}</p>
       </div>
 
-      <div className="max-w-2xl">
-        <SurveyMetadataForm categoryOptions={formData.categoryOptions} />
-      </div>
+      <SurveyMetadataForm categoryOptions={formData.categoryOptions} />
     </PageTransition>
   );
 }

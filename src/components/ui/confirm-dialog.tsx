@@ -21,7 +21,7 @@ interface ConfirmDialogProps {
   description?: string;
   confirmLabel?: string;
   cancelLabel?: string;
-  variant?: 'default' | 'destructive';
+  variant?: 'default' | 'destructive' | 'warning';
 }
 
 const ConfirmDialog = ({
@@ -45,7 +45,7 @@ const ConfirmDialog = ({
         </AlertDialogHeader>
 
         <AlertDialogFooter>
-          <AlertDialogCancel>{cancelLabel ?? t('cancel')}</AlertDialogCancel>
+          <AlertDialogCancel variant="outline">{cancelLabel ?? t('cancel')}</AlertDialogCancel>
 
           <AlertDialogAction variant={variant} onClick={onConfirm}>
             {confirmLabel ?? t('confirm.action')}

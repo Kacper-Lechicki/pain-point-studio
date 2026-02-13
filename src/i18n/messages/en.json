@@ -404,7 +404,8 @@
         "archive": "Archive",
         "delete": "Delete",
         "moreActions": "More actions",
-        "details": "Details"
+        "details": "Details",
+        "openInFullPage": "Open details in full page"
       },
       "detailPanel": {
         "preview": "Preview",
