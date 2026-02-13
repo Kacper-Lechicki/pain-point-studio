@@ -9,19 +9,10 @@ import { useLocale, useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import { Spinner } from '@/components/ui/spinner';
 import { ROUTES } from '@/config/routes';
 import { UserMenu } from '@/features/auth/components/common/user-menu';
 import { publishSurvey, saveSurveyQuestions } from '@/features/surveys/actions';
-import type { SurveyCategoryOption } from '@/features/surveys/actions';
-import type { SurveyMetadataSchema } from '@/features/surveys/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import Link from '@/i18n/link';
 import type { MessageKey } from '@/i18n/types';
@@ -29,36 +20,32 @@ import { env } from '@/lib/common/env';
 
 import { useQuestionBuilderContext } from '../../hooks/use-question-builder-context';
 import { useUnsavedChangesWarning } from '../../hooks/use-unsaved-changes-warning';
-import { SurveyMetadataForm } from '../survey-metadata-form';
 import { PublishSuccessDialog } from './publish-success-dialog';
 
 interface BuilderTopBarProps {
   surveyId: string;
   surveyTitle: string;
   surveyStatus: string;
-  surveyMetadata: Omit<SurveyMetadataSchema, 'title'>;
-  categoryOptions: SurveyCategoryOption[];
   isDesktop: boolean;
   onToggleSidebar?: () => void;
   onToggleSettings?: () => void;
+  onOpenMetadataPanel?: () => void;
 }
 
 export function BuilderTopBar({
   surveyId,
   surveyTitle,
   surveyStatus,
-  surveyMetadata,
-  categoryOptions,
   isDesktop,
   onToggleSidebar,
   onToggleSettings,
+  onOpenMetadataPanel,
 }: BuilderTopBarProps) {
   const t = useTranslations();
   const locale = useLocale();
   const router = useRouter();
   const { state, dispatch, buildQuestionsPayload } = useQuestionBuilderContext();
   useUnsavedChangesWarning(state.isDirty);
-  const [metadataDialogOpen, setMetadataDialogOpen] = useState(false);
   const [publishedSlug, setPublishedSlug] = useState<string | null>(null);
 
   const saveAction = useFormAction({
@@ -134,7 +121,7 @@ export function BuilderTopBar({
               variant="ghost"
               size="icon-xs"
               className="shrink-0"
-              onClick={() => setMetadataDialogOpen(true)}
+              onClick={() => onOpenMetadataPanel?.()}
               aria-label={t('surveys.builder.editMetadata')}
             >
               <Pencil className="size-3" />
@@ -192,7 +179,7 @@ export function BuilderTopBar({
               variant="ghost"
               size="icon-xs"
               className="shrink-0"
-              onClick={() => setMetadataDialogOpen(true)}
+              onClick={() => onOpenMetadataPanel?.()}
               aria-label={t('surveys.builder.editMetadata')}
             >
               <Pencil className="size-3" />
@@ -264,40 +251,6 @@ export function BuilderTopBar({
           </div>
         </div>
       )}
-
-      <Dialog open={metadataDialogOpen} onOpenChange={setMetadataDialogOpen}>
-        <DialogContent className="flex h-[100dvh] max-w-full flex-col gap-0 overflow-hidden rounded-none p-0 sm:h-auto sm:max-h-[70vh] sm:max-w-2xl sm:rounded-lg">
-          <DialogHeader className="shrink-0 border-b px-6 py-4">
-            <DialogTitle>{t('surveys.builder.editMetadata')}</DialogTitle>
-            <DialogDescription className="sr-only">
-              {t('surveys.builder.editMetadata')}
-            </DialogDescription>
-          </DialogHeader>
-          <SurveyMetadataForm
-            categoryOptions={categoryOptions}
-            surveyId={surveyId}
-            mode="edit"
-            defaultValues={{
-              title: surveyTitle,
-              ...surveyMetadata,
-            }}
-            onSaved={() => {
-              setMetadataDialogOpen(false);
-              router.refresh();
-            }}
-            renderFooter={({ handleSave, isLoading: formLoading }) => (
-              <div className="shrink-0 border-t px-6 py-4">
-                <div className="flex justify-end">
-                  <Button disabled={formLoading} onClick={handleSave}>
-                    {formLoading && <Spinner />}
-                    {t('surveys.create.saveDraft')}
-                  </Button>
-                </div>
-              </div>
-            )}
-          />
-        </DialogContent>
-      </Dialog>
 
       {publishedSlug && (
         <PublishSuccessDialog

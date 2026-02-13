@@ -25,7 +25,7 @@ const SettingsSectionHeader = ({
     variant === 'destructive' ? 'text-destructive text-lg font-semibold' : 'text-lg font-semibold';
 
   const descriptionClass =
-    variant === 'destructive' ? 'text-destructive text-sm' : 'text-muted-foreground text-sm';
+    variant === 'destructive' ? 'text-destructive text-xs' : 'text-muted-foreground text-xs';
 
   return (
     <div

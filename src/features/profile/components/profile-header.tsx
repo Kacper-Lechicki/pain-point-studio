@@ -57,7 +57,7 @@ const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
               {profile.role}
             </Badge>
           ) : (
-            <span className="text-muted-foreground text-sm italic">{t('empty.role')}</span>
+            <span className="text-muted-foreground text-xs italic">{t('empty.role')}</span>
           )}
         </div>
 

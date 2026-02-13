@@ -139,11 +139,13 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {profile.roleOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
+                      {[...profile.roleOptions]
+                        .sort((a, b) => a.label.localeCompare(b.label))
+                        .map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -181,7 +183,7 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="space-y-1">
                   <p className="text-sm font-medium">{t('settings.profile.socialLinks.title')}</p>
-                  <p className="text-muted-foreground text-sm">
+                  <p className="text-muted-foreground text-xs">
                     {t('settings.profile.socialLinks.description')}
                   </p>
                 </div>
@@ -217,7 +219,7 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
                     className="bg-muted/20 space-y-2 rounded-lg border border-dashed p-4"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground text-sm font-medium">
+                      <span className="text-muted-foreground text-xs font-medium">
                         {t('settings.profile.socialLinks.linkLabel', { number: index + 1 })}
                       </span>
                       <Button
@@ -252,11 +254,13 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {profile.socialLinkOptions.map((option) => (
-                                <SelectItem key={option.value} value={option.value}>
-                                  {option.label}
-                                </SelectItem>
-                              ))}
+                              {[...profile.socialLinkOptions]
+                                .sort((a, b) => a.label.localeCompare(b.label))
+                                .map((option) => (
+                                  <SelectItem key={option.value} value={option.value}>
+                                    {option.label}
+                                  </SelectItem>
+                                ))}
                             </SelectContent>
                           </Select>
                           <FormMessage />

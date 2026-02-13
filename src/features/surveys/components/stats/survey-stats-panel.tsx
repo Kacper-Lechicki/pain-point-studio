@@ -93,7 +93,7 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
       <div className="grid gap-4 sm:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-muted-foreground text-sm font-medium">
+            <CardTitle className="text-muted-foreground text-xs font-medium">
               {t('totalResponses')}
             </CardTitle>
           </CardHeader>
@@ -104,7 +104,7 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-muted-foreground text-sm font-medium">
+            <CardTitle className="text-muted-foreground text-xs font-medium">
               {t('completedResponses')}
             </CardTitle>
           </CardHeader>
@@ -115,7 +115,7 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-muted-foreground text-sm font-medium">
+            <CardTitle className="text-muted-foreground text-xs font-medium">
               {t('inProgress')}
             </CardTitle>
           </CardHeader>
@@ -127,7 +127,7 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
 
       {/* Respondent limit progress */}
       {stats.survey.maxRespondents && (
-        <p className="text-muted-foreground text-sm">
+        <p className="text-muted-foreground text-xs">
           {t('progressToLimit', {
             count: stats.completedResponses,
             max: stats.survey.maxRespondents,

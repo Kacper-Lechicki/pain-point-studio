@@ -36,7 +36,7 @@ export const SurveyClosed = ({ title, reason = 'closed' }: SurveyClosedProps) =>
         </div>
         <h1 className="text-foreground mb-2 text-xl font-semibold">{t('title')}</h1>
         <p className="text-muted-foreground mb-6 max-w-sm">{t(reasonKeys[reason])}</p>
-        <p className="text-muted-foreground text-sm">{title}</p>
+        <p className="text-muted-foreground text-xs">{title}</p>
       </div>
     </PageTransition>
   );

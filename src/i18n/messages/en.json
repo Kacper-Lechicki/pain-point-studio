@@ -234,8 +234,6 @@
       "required": "Required",
       "questionType": "Question type",
       "settings": "Settings",
-      "moveUp": "Move up",
-      "moveDown": "Move down",
       "questionActions": "Question actions",
       "dragToReorder": "Drag to reorder",
       "deleteQuestion": "Delete question",
@@ -366,10 +364,16 @@
       },
       "sort": {
         "label": "Sort by",
+        "asc": "Ascending",
+        "desc": "Descending",
         "updated": "Last edited",
         "created": "Date created",
         "responses": "Responses",
-        "title": "Alphabetical"
+        "title": "Alphabetical",
+        "status": "Status",
+        "questions": "Questions",
+        "lastResponse": "Last response",
+        "activity": "Activity"
       },
       "card": {
         "responses": "{count, plural, =0 {No responses} one {1 response} other {# responses}}",
@@ -429,6 +433,7 @@
         "noEndDate": "No end date",
         "status": "Status",
         "surveyLink": "Survey link",
+        "copyLink": "Copy link",
         "linkCopied": "Link copied!",
         "metricsLabel": "Metrics",
         "detailsLabel": "Details",
@@ -439,6 +444,15 @@
         "optionsCount": "{count, plural, one {# option} other {# options}}",
         "allowOther": "\"Other\" option enabled",
         "scale": "{min}–{max}",
+        "scaleLabel": "Scale",
+        "optionsLabel": "Options",
+        "minLabelLabel": "Min label",
+        "maxLabelLabel": "Max label",
+        "placeholderLabel": "Placeholder",
+        "maxLengthLabel": "Max length",
+        "descriptionLabel": "Description",
+        "minSelectionsLabel": "Min selections",
+        "maxSelectionsLabel": "Max selections",
         "loadingQuestions": "Loading questions..."
       },
       "confirm": {
@@ -495,7 +509,11 @@
         "label": "Sort by",
         "updated": "Last edited",
         "created": "Date created",
-        "title": "Alphabetical"
+        "title": "Alphabetical",
+        "status": "Status",
+        "questions": "Questions",
+        "responses": "Responses",
+        "archivedAt": "Archived at"
       },
       "actions": {
         "restore": "Restore",

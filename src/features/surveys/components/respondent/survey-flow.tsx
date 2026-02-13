@@ -6,7 +6,6 @@ import { ArrowLeft, ArrowRight, SkipForward } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { PageTransition } from '@/components/ui/page-transition';
 import type { PublicSurveyData } from '@/features/surveys/types';
@@ -88,16 +87,11 @@ export const SurveyFlow = ({ survey, responseId, slug }: SurveyFlowProps) => {
 
         <div className="flex-1">
           <div className="mb-6">
-            <div className="mb-2 flex items-center gap-2">
+            <div className="mb-2">
               <h2 className="text-foreground text-lg font-medium">{currentQuestion.text}</h2>
-              {currentQuestion.required && (
-                <Badge variant="secondary" className="text-xs">
-                  {t('required')}
-                </Badge>
-              )}
             </div>
             {currentQuestion.description && (
-              <p className="text-muted-foreground text-sm">{currentQuestion.description}</p>
+              <p className="text-muted-foreground text-xs">{currentQuestion.description}</p>
             )}
           </div>
 
@@ -115,12 +109,10 @@ export const SurveyFlow = ({ survey, responseId, slug }: SurveyFlowProps) => {
           </Button>
 
           <div className="flex gap-2">
-            {!currentQuestion.required && (
-              <Button variant="ghost" onClick={skip} className="gap-1.5">
-                {t('skip')}
-                <SkipForward className="size-4" />
-              </Button>
-            )}
+            <Button variant="ghost" onClick={skip} className="gap-1.5">
+              {t('skip')}
+              <SkipForward className="size-4" />
+            </Button>
             <Button onClick={goToNext} className="gap-1.5">
               {isLast ? t('finish') : t('next')}
               {!isLast && <ArrowRight className="size-4" />}

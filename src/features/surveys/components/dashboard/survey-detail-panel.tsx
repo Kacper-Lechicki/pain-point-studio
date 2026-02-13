@@ -1,12 +1,11 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { type ReactNode, useState, useTransition } from 'react';
 
 import {
   Archive,
   BarChart3,
   Calendar,
-  Copy,
   Expand,
   Hash,
   Loader2,
@@ -23,6 +22,7 @@ import { toast } from 'sonner';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { ClipboardInput } from '@/components/ui/clipboard-input';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -134,47 +134,105 @@ function QuestionConfigDetails({
   t: ReturnType<typeof useTranslations<'surveys.dashboard'>>;
 }) {
   const config = question.config;
-  const details: string[] = [];
+  const rows: ReactNode[] = [];
+
+  if (question.description?.trim()) {
+    rows.push(
+      <p key="desc">
+        <span className="font-medium">{t('detailPanel.descriptionLabel')}:</span>{' '}
+        {question.description.trim()}
+      </p>
+    );
+  }
+
+  if (question.type === 'open_text' || question.type === 'short_text') {
+    const placeholder = (config.placeholder as string | undefined)?.trim();
+    const maxLength = config.maxLength as number | undefined;
+
+    if (placeholder) {
+      rows.push(
+        <p key="placeholder">
+          <span className="font-medium">{t('detailPanel.placeholderLabel')}:</span> {placeholder}
+        </p>
+      );
+    }
+
+    if (maxLength != null && maxLength > 0) {
+      rows.push(
+        <p key="maxLength">
+          <span className="font-medium">{t('detailPanel.maxLengthLabel')}:</span> {maxLength}
+        </p>
+      );
+    }
+  }
 
   if (question.type === 'multiple_choice') {
     const options = (config.options as string[] | undefined) ?? [];
-    details.push(t('detailPanel.optionsCount', { count: options.length }));
+    rows.push(
+      <p key="options">
+        <span className="font-medium">{t('detailPanel.optionsLabel')}:</span>{' '}
+        {t('detailPanel.optionsCount', { count: options.length })}
+      </p>
+    );
 
     if (config.allowOther) {
-      details.push(t('detailPanel.allowOther'));
+      rows.push(<p key="other">{t('detailPanel.allowOther')}</p>);
+    }
+
+    const minSel = config.minSelections as number | undefined;
+    const maxSel = config.maxSelections as number | undefined;
+
+    if (minSel != null && minSel > 0) {
+      rows.push(
+        <p key="minSel">
+          <span className="font-medium">{t('detailPanel.minSelectionsLabel')}:</span> {minSel}
+        </p>
+      );
+    }
+
+    if (maxSel != null && maxSel > 0) {
+      rows.push(
+        <p key="maxSel">
+          <span className="font-medium">{t('detailPanel.maxSelectionsLabel')}:</span> {maxSel}
+        </p>
+      );
     }
   }
 
   if (question.type === 'rating_scale') {
     const min = (config.min as number | undefined) ?? 1;
     const max = (config.max as number | undefined) ?? 5;
-    const minLabel = config.minLabel as string | undefined;
-    const maxLabel = config.maxLabel as string | undefined;
-
-    details.push(t('detailPanel.scale', { min, max }));
+    const minLabel = (config.minLabel as string | undefined)?.trim();
+    const maxLabel = (config.maxLabel as string | undefined)?.trim();
+    rows.push(
+      <p key="scale">
+        <span className="font-medium">{t('detailPanel.scaleLabel')}:</span>{' '}
+        {t('detailPanel.scale', { min, max })}
+      </p>
+    );
 
     if (minLabel) {
-      details.push(minLabel);
+      rows.push(
+        <p key="minLabel">
+          <span className="font-medium">{t('detailPanel.minLabelLabel')}:</span> {minLabel}
+        </p>
+      );
     }
 
     if (maxLabel) {
-      details.push(maxLabel);
+      rows.push(
+        <p key="maxLabel">
+          <span className="font-medium">{t('detailPanel.maxLabelLabel')}:</span> {maxLabel}
+        </p>
+      );
     }
   }
 
-  if (details.length === 0) {
+  if (rows.length === 0) {
     return null;
   }
 
-  return (
-    <div className="text-muted-foreground mt-1.5 flex flex-wrap gap-1">
-      {details.map((detail) => (
-        <span key={detail} className="bg-muted rounded px-1.5 py-0.5 text-[10px]">
-          {detail}
-        </span>
-      ))}
-    </div>
-  );
+  return <div className="text-muted-foreground mt-1.5 space-y-0.5 text-[10px]">{rows}</div>;
 }
 
 export function SurveyDetailPanel({
@@ -399,16 +457,12 @@ export function SurveyDetailPanel({
         <>
           <Separator className="my-4" />
           <SectionLabel>{t('detailPanel.surveyLink')}</SectionLabel>
-          <button
-            type="button"
-            onClick={handleCopyLink}
-            className="bg-muted/50 hover:bg-muted group flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left transition-colors"
-          >
-            <span className="text-muted-foreground min-w-0 flex-1 truncate text-[11px]">
-              {shareUrl.replace(/^https?:\/\//, '')}
-            </span>
-            <Copy className="text-muted-foreground group-hover:text-foreground size-3.5 shrink-0 transition-colors" />
-          </button>
+          <ClipboardInput
+            value={shareUrl}
+            className="max-w-full"
+            copyLabel={t('detailPanel.copyLink')}
+            copiedLabel={t('detailPanel.linkCopied')}
+          />
         </>
       )}
 
@@ -440,7 +494,7 @@ export function SurveyDetailPanel({
         )}
       </div>
       {(isActive || isClosed || isDraft || isArchived) && (
-        <div className="border-border/50 mt-3 flex flex-wrap gap-1.5 border-t pt-3">
+        <div className="mt-3 flex flex-wrap gap-1.5">
           {isArchived && (
             <Button
               variant="outline"
@@ -519,31 +573,17 @@ export function SurveyDetailPanel({
                 key={q.id}
                 className="border-border/50 rounded-md border border-dashed px-3 py-2.5"
               >
-                {/* Question number + text */}
                 <p className="text-foreground text-xs leading-snug font-medium">
-                  <span className="text-muted-foreground tabular-nums">{i + 1}.</span>{' '}
+                  <span className="text-muted-foreground tabular-nums">{i + 1}. </span>
                   {q.text || '—'}
                 </p>
-
-                {/* Type + required badges */}
-                <div className="mt-1.5 flex flex-wrap items-center gap-1">
+                <div className="mt-1.5">
                   <Badge variant="secondary" className="gap-1 px-1.5 py-0 text-[10px] font-normal">
                     <TypeIcon className="size-3" aria-hidden />
                     {typeLabel}
                   </Badge>
-                  <Badge
-                    variant="outline"
-                    className={cn(
-                      'px-1.5 py-0 text-[10px] font-normal',
-                      q.required && 'border-emerald-500/30 text-emerald-700 dark:text-emerald-400'
-                    )}
-                  >
-                    {q.required ? t('detailPanel.required') : t('detailPanel.optional')}
-                  </Badge>
+                  <QuestionConfigDetails question={q} t={t} />
                 </div>
-
-                {/* Config details */}
-                <QuestionConfigDetails question={q} t={t} />
               </div>
             );
           })}

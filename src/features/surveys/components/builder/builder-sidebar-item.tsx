@@ -2,7 +2,7 @@
 
 import { useRef } from 'react';
 
-import { ArrowDown, ArrowUp, GripVertical, MoreVertical, Trash2 } from 'lucide-react';
+import { GripVertical, MoreVertical, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
@@ -20,30 +20,22 @@ interface BuilderSidebarItemProps {
   question: QuestionSchema;
   index: number;
   isActive: boolean;
-  isFirst: boolean;
-  isLast: boolean;
   isDragging?: boolean;
   dragHandleProps?: {
     onPointerDown: (e: React.PointerEvent) => void;
   };
   onSelect: () => void;
   onDelete: () => void;
-  onMoveUp: () => void;
-  onMoveDown: () => void;
 }
 
 export function BuilderSidebarItem({
   question,
   index,
   isActive,
-  isFirst,
-  isLast,
   isDragging = false,
   dragHandleProps,
   onSelect,
   onDelete,
-  onMoveUp,
-  onMoveDown,
 }: BuilderSidebarItemProps) {
   const t = useTranslations('surveys.builder');
   const TypeIcon = QUESTION_TYPE_ICONS[question.type];
@@ -133,18 +125,6 @@ export function BuilderSidebarItem({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          {!isFirst && (
-            <DropdownMenuItem onClick={onMoveUp}>
-              <ArrowUp className="size-4" />
-              {t('moveUp')}
-            </DropdownMenuItem>
-          )}
-          {!isLast && (
-            <DropdownMenuItem onClick={onMoveDown}>
-              <ArrowDown className="size-4" />
-              {t('moveDown')}
-            </DropdownMenuItem>
-          )}
           <DropdownMenuItem variant="destructive" onClick={onDelete}>
             <Trash2 className="size-4" />
             {t('deleteQuestion')}

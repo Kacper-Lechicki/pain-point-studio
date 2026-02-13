@@ -22,7 +22,7 @@ const ProfileView = ({ profile, isPreview = false }: ProfileViewProps) => {
       {isPreview && (
         <div className="space-y-1">
           <h1 className="text-xl font-bold tracking-tight">{t('preview.title')}</h1>
-          <p className="text-muted-foreground text-sm">{t('preview.description')}</p>
+          <p className="text-muted-foreground text-xs">{t('preview.description')}</p>
         </div>
       )}
 

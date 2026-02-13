@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-import { ClipboardList, MousePointerClick } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown, ClipboardList, MousePointerClick } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
@@ -28,6 +28,7 @@ import { SurveyListRow } from './survey-list-row';
 import {
   SurveyListToolbar,
   type SurveySortBy,
+  type SurveySortDir,
   type SurveyStatusFilter,
 } from './survey-list-toolbar';
 
@@ -52,6 +53,7 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
   const [statusFilter, setStatusFilter] = useState<SurveyStatusFilter>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<SurveySortBy>('updated');
+  const [sortDir, setSortDir] = useState<SurveySortDir>('desc');
 
   const selectedId = searchParams.get('selected');
   const [questions, setQuestions] = useState<MappedQuestion[] | null>(null);
@@ -116,21 +118,42 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
       );
     }
 
+    const mul = sortDir === 'asc' ? 1 : -1;
     result = [...result].sort((a, b) => {
       switch (sortBy) {
         case 'updated':
-          return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+          return mul * (new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime());
         case 'created':
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          return mul * (new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
         case 'responses':
-          return b.responseCount - a.responseCount;
+          return mul * (a.responseCount - b.responseCount);
         case 'title':
-          return a.title.localeCompare(b.title);
+          return mul * a.title.localeCompare(b.title);
+        case 'status':
+          return mul * (a.status.localeCompare(b.status) || a.title.localeCompare(b.title));
+        case 'questions':
+          return (
+            mul * (a.questionCount - b.questionCount) ||
+            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+          );
+        case 'lastResponse': {
+          const ta = a.lastResponseAt ? new Date(a.lastResponseAt).getTime() : 0;
+          const tb = b.lastResponseAt ? new Date(b.lastResponseAt).getTime() : 0;
+
+          return mul * (ta - tb) || a.title.localeCompare(b.title);
+        }
+
+        case 'activity': {
+          const sumA = a.recentActivity.reduce((s, n) => s + n, 0);
+          const sumB = b.recentActivity.reduce((s, n) => s + n, 0);
+
+          return mul * (sumA - sumB) || a.title.localeCompare(b.title);
+        }
       }
     });
 
     return result;
-  }, [surveys, statusFilter, searchQuery, sortBy]);
+  }, [surveys, statusFilter, searchQuery, sortBy, sortDir]);
 
   const selectedSurvey = useMemo(
     () => (selectedId ? (surveys.find((s) => s.id === selectedId) ?? null) : null),
@@ -160,6 +183,22 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
   );
 
   const isFiltered = statusFilter !== 'all';
+
+  const defaultSortDir = (key: SurveySortBy): SurveySortDir =>
+    key === 'title' || key === 'status' ? 'asc' : 'desc';
+
+  const handleSortByChange = (key: SurveySortBy) => {
+    setSortBy(key);
+    setSortDir(defaultSortDir(key));
+  };
+
+  const handleSortByColumn = (key: SurveySortBy) => {
+    if (sortBy === key) {
+      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
+    } else {
+      handleSortByChange(key);
+    }
+  };
 
   const handleStatusChange = (surveyId: string, action: string) => {
     const newStatus = STATUS_TRANSITIONS[action] as SurveyStatus | null | undefined;
@@ -230,8 +269,11 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
         searchQuery={searchQuery}
         onSearchQueryChange={setSearchQuery}
         sortBy={sortBy}
-        onSortByChange={setSortBy}
+        sortDir={sortDir}
+        onSortByChange={handleSortByChange}
+        onSortDirChange={setSortDir}
         statusCounts={statusCounts}
+        hasSortableColumns={isMd}
       />
 
       {/* List content */}
@@ -266,15 +308,113 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
           <Table className="table-fixed">
             <TableHeader>
               <TableRow className="bg-muted/30 hover:bg-muted/30">
-                <TableHead className="w-[30%]">{t('table.title')}</TableHead>
-                <TableHead className="border-border/30 border-l">{t('table.status')}</TableHead>
-                <TableHead className="border-border/30 border-l">{t('table.questions')}</TableHead>
-                <TableHead className="border-border/30 border-l">{t('table.responses')}</TableHead>
+                <TableHead className="w-[30%]">
+                  <button
+                    type="button"
+                    onClick={() => handleSortByColumn('title')}
+                    className="flex items-center gap-1 font-medium hover:opacity-80"
+                  >
+                    {t('table.title')}
+                    {sortBy === 'title' ? (
+                      sortDir === 'asc' ? (
+                        <ArrowUp className="size-3.5" aria-hidden />
+                      ) : (
+                        <ArrowDown className="size-3.5" aria-hidden />
+                      )
+                    ) : (
+                      <ArrowUpDown className="text-muted-foreground size-3.5" aria-hidden />
+                    )}
+                  </button>
+                </TableHead>
+                <TableHead className="border-border/30 border-l text-center">
+                  <button
+                    type="button"
+                    onClick={() => handleSortByColumn('status')}
+                    className="inline-flex items-center justify-center gap-1 font-medium hover:opacity-80"
+                  >
+                    {t('table.status')}
+                    {sortBy === 'status' ? (
+                      sortDir === 'asc' ? (
+                        <ArrowUp className="size-3.5" aria-hidden />
+                      ) : (
+                        <ArrowDown className="size-3.5" aria-hidden />
+                      )
+                    ) : (
+                      <ArrowUpDown className="text-muted-foreground size-3.5" aria-hidden />
+                    )}
+                  </button>
+                </TableHead>
+                <TableHead className="border-border/30 border-l">
+                  <button
+                    type="button"
+                    onClick={() => handleSortByColumn('questions')}
+                    className="flex items-center gap-1 font-medium hover:opacity-80"
+                  >
+                    {t('table.questions')}
+                    {sortBy === 'questions' ? (
+                      sortDir === 'asc' ? (
+                        <ArrowUp className="size-3.5" aria-hidden />
+                      ) : (
+                        <ArrowDown className="size-3.5" aria-hidden />
+                      )
+                    ) : (
+                      <ArrowUpDown className="text-muted-foreground size-3.5" aria-hidden />
+                    )}
+                  </button>
+                </TableHead>
+                <TableHead className="border-border/30 border-l">
+                  <button
+                    type="button"
+                    onClick={() => handleSortByColumn('responses')}
+                    className="flex items-center gap-1 font-medium hover:opacity-80"
+                  >
+                    {t('table.responses')}
+                    {sortBy === 'responses' ? (
+                      sortDir === 'asc' ? (
+                        <ArrowUp className="size-3.5" aria-hidden />
+                      ) : (
+                        <ArrowDown className="size-3.5" aria-hidden />
+                      )
+                    ) : (
+                      <ArrowUpDown className="text-muted-foreground size-3.5" aria-hidden />
+                    )}
+                  </button>
+                </TableHead>
                 <TableHead className="border-border/30 hidden border-l lg:table-cell">
-                  {t('table.lastResponse')}
+                  <button
+                    type="button"
+                    onClick={() => handleSortByColumn('lastResponse')}
+                    className="flex items-center gap-1 font-medium hover:opacity-80"
+                  >
+                    {t('table.lastResponse')}
+                    {sortBy === 'lastResponse' ? (
+                      sortDir === 'asc' ? (
+                        <ArrowUp className="size-3.5" aria-hidden />
+                      ) : (
+                        <ArrowDown className="size-3.5" aria-hidden />
+                      )
+                    ) : (
+                      <ArrowUpDown className="text-muted-foreground size-3.5" aria-hidden />
+                    )}
+                  </button>
                 </TableHead>
                 <TableHead className="border-border/30 hidden border-l text-center xl:table-cell">
-                  {t('table.activity')}
+                  <button
+                    type="button"
+                    onClick={() => handleSortByColumn('activity')}
+                    className="inline-flex items-center justify-center gap-1 font-medium hover:opacity-80"
+                  >
+                    {t('table.activity')}
+                    {sortBy === 'activity' ? (
+                      sortDir === 'asc' ? (
+                        <ArrowUp className="size-3.5" aria-hidden />
+                      ) : (
+                        <ArrowDown className="size-3.5" aria-hidden />
+                      )
+                    ) : (
+                      <ArrowUpDown className="text-muted-foreground size-3.5" aria-hidden />
+                    )}
+                  </button>
                 </TableHead>
                 <TableHead className="w-10" aria-hidden />
               </TableRow>

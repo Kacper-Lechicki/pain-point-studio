@@ -22,7 +22,7 @@ const ErrorPage = ({ reset, backHref, backLabelKey }: ErrorPageProps) => {
 
       <div className="space-y-2">
         <h1 className="text-xl font-semibold">{t('title')}</h1>
-        <p className="text-muted-foreground text-sm">{t('description')}</p>
+        <p className="text-muted-foreground text-xs">{t('description')}</p>
       </div>
 
       <div className="flex gap-3">

@@ -30,7 +30,7 @@ const DangerZone = ({ userEmail }: DangerZoneProps) => {
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
             <div className="min-w-0 flex-1 space-y-1">
               <p className="text-sm font-medium">{t('deleteAccount')}</p>
-              <p className="text-muted-foreground text-sm">{t('deleteDescription')}</p>
+              <p className="text-muted-foreground text-xs">{t('deleteDescription')}</p>
             </div>
 
             <Button variant="destructive" className="shrink-0" onClick={() => setDialogOpen(true)}>

@@ -41,7 +41,7 @@ export function BuilderCenter() {
   if (!activeQuestion) {
     return (
       <div className="flex flex-1 items-center justify-center">
-        <p className="text-muted-foreground text-sm">{t('noQuestionSelected')}</p>
+        <p className="text-muted-foreground text-xs">{t('noQuestionSelected')}</p>
       </div>
     );
   }

@@ -16,7 +16,7 @@ export const TextAnswersList = ({ answers }: TextAnswersListProps) => {
     .filter((t) => t.trim().length > 0);
 
   if (textAnswers.length === 0) {
-    return <p className="text-muted-foreground text-sm">{t('noTextResponses')}</p>;
+    return <p className="text-muted-foreground text-xs">{t('noTextResponses')}</p>;
   }
 
   return (

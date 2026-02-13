@@ -406,7 +406,7 @@ export function SurveyListRow({
             </p>
           )}
         </TableCell>
-        <TableCell className="border-border/30 border-l">
+        <TableCell className="border-border/30 border-l text-center">
           <Badge
             variant={STATUS_BADGE_VARIANT[survey.status]}
             className={cn('text-[11px]', STATUS_BADGE_CLASS[survey.status])}

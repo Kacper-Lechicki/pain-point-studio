@@ -20,7 +20,6 @@ export type QuestionBuilderAction =
   | { type: 'SELECT_QUESTION'; payload: { questionId: string } }
   | { type: 'UPDATE_QUESTION'; payload: { questionId: string; updates: Partial<QuestionSchema> } }
   | { type: 'CHANGE_QUESTION_TYPE'; payload: { questionId: string; newType: QuestionType } }
-  | { type: 'MOVE_QUESTION'; payload: { questionId: string; direction: 'up' | 'down' } }
   | { type: 'REORDER_QUESTIONS'; payload: { questionIds: string[] } }
   | { type: 'SET_SAVE_STATUS'; payload: { status: QuestionBuilderState['saveStatus'] } }
   | { type: 'MARK_CLEAN' };
@@ -42,7 +41,7 @@ function questionBuilderReducer(
         id: crypto.randomUUID(),
         text: '',
         type,
-        required: true,
+        required: false,
         description: null,
         config: getDefaultConfig(type),
       };
@@ -103,36 +102,6 @@ function questionBuilderReducer(
         questions: state.questions.map((q) =>
           q.id === questionId ? { ...q, type: newType, config: getDefaultConfig(newType) } : q
         ),
-        isDirty: true,
-      };
-    }
-
-    case 'MOVE_QUESTION': {
-      const { questionId, direction } = action.payload;
-      const idx = state.questions.findIndex((q) => q.id === questionId);
-
-      if (idx === -1) {
-        return state;
-      }
-
-      if (direction === 'up' && idx === 0) {
-        return state;
-      }
-
-      if (direction === 'down' && idx === state.questions.length - 1) {
-        return state;
-      }
-
-      const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
-      const reordered = [...state.questions];
-      const a = reordered[idx]!;
-      const b = reordered[swapIdx]!;
-      reordered[idx] = b;
-      reordered[swapIdx] = a;
-
-      return {
-        ...state,
-        questions: reordered,
         isDirty: true,
       };
     }

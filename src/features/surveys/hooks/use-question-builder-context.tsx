@@ -2,8 +2,6 @@
 
 import { type ReactNode, createContext, useContext, useMemo } from 'react';
 
-import { useTranslations } from 'next-intl';
-
 import type { QuestionSchema, QuestionType } from '@/features/surveys/types';
 
 import {
@@ -23,7 +21,6 @@ interface QuestionBuilderContextValue {
   selectQuestion: (id: string) => void;
   updateQuestion: (id: string, updates: Partial<QuestionSchema>) => void;
   changeQuestionType: (id: string, newType: QuestionType) => void;
-  moveQuestion: (id: string, direction: 'up' | 'down') => void;
   reorderQuestions: (questionIds: string[]) => void;
   /** Build the payload for saving questions to the server. */
   buildQuestionsPayload: () => Array<{
@@ -50,7 +47,6 @@ export function QuestionBuilderProvider({
   initialQuestions,
   children,
 }: QuestionBuilderProviderProps) {
-  const t = useTranslations();
   const [state, dispatch] = useQuestionBuilder(initialQuestions);
 
   const contextValue = useMemo<QuestionBuilderContextValue>(
@@ -77,16 +73,13 @@ export function QuestionBuilderProvider({
       changeQuestionType: (id: string, newType: QuestionType) => {
         dispatch({ type: 'CHANGE_QUESTION_TYPE', payload: { questionId: id, newType } });
       },
-      moveQuestion: (id: string, direction: 'up' | 'down') => {
-        dispatch({ type: 'MOVE_QUESTION', payload: { questionId: id, direction } });
-      },
       reorderQuestions: (questionIds: string[]) => {
         dispatch({ type: 'REORDER_QUESTIONS', payload: { questionIds } });
       },
       buildQuestionsPayload: () =>
         state.questions.map((q, i) => ({
           id: q.id,
-          text: q.text || t('surveys.builder.untitledQuestion'),
+          text: q.text?.trim() ?? '',
           type: q.type,
           required: q.required,
           description: q.description ?? null,
@@ -94,7 +87,7 @@ export function QuestionBuilderProvider({
           sortOrder: i,
         })),
     }),
-    [state, dispatch, t]
+    [state, dispatch]
   );
 
   return (

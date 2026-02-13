@@ -16,7 +16,7 @@ export const saveSurveyQuestions = withProtectedAction<typeof surveyQuestionsSch
         id: q.id,
         text: q.text,
         type: q.type,
-        required: q.required,
+        required: false,
         description: q.description ?? null,
         config: q.config,
         sortOrder: q.sortOrder,

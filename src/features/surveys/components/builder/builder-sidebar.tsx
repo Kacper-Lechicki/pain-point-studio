@@ -29,7 +29,7 @@ const ITEM_ID_ATTR = 'data-question-id';
 
 function BuilderSidebarContent({ onItemSelect }: { onItemSelect?: (() => void) | undefined }) {
   const t = useTranslations('surveys.builder');
-  const { state, addQuestion, selectQuestion, deleteQuestion, moveQuestion, reorderQuestions } =
+  const { state, addQuestion, selectQuestion, deleteQuestion, reorderQuestions } =
     useQuestionBuilderContext();
   const [deleteQuestionId, setDeleteQuestionId] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
@@ -94,8 +94,6 @@ function BuilderSidebarContent({ onItemSelect }: { onItemSelect?: (() => void) |
                 question={question}
                 index={index}
                 isActive={question.id === state.activeQuestionId}
-                isFirst={index === 0}
-                isLast={index === state.questions.length - 1}
                 isDragging={isDragging(question.id)}
                 dragHandleProps={{ onPointerDown: (e) => handleDragStart(e, question.id) }}
                 onSelect={() => {
@@ -103,8 +101,6 @@ function BuilderSidebarContent({ onItemSelect }: { onItemSelect?: (() => void) |
                   onItemSelect?.();
                 }}
                 onDelete={() => setDeleteQuestionId(question.id)}
-                onMoveUp={() => moveQuestion(question.id, 'up')}
-                onMoveDown={() => moveQuestion(question.id, 'down')}
               />
             </div>
           </Fragment>

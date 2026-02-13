@@ -158,15 +158,15 @@ const SurveyMetadataForm = ({
                 {...field}
               />
             </FormControl>
-            <div className="flex items-center justify-between gap-2">
-              <FormDescription>{t('surveys.create.surveyDescriptionHelper')}</FormDescription>
-              <span className="text-muted-foreground shrink-0 text-xs">
+            <div className="flex justify-end">
+              <span className="text-muted-foreground text-xs">
                 {t('surveys.create.descriptionCounter', {
                   count: (field.value ?? '').length,
                   max: SURVEY_DESCRIPTION_MAX_LENGTH,
                 })}
               </span>
             </div>
+            <FormDescription>{t('surveys.create.surveyDescriptionHelper')}</FormDescription>
             <FormMessage />
           </FormItem>
         )}
@@ -186,11 +186,13 @@ const SurveyMetadataForm = ({
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                {categoryOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
+                {[...categoryOptions]
+                  .sort((a, b) => a.label.localeCompare(b.label))
+                  .map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
             <FormMessage />
@@ -203,8 +205,8 @@ const SurveyMetadataForm = ({
         control={form.control}
         name="visibility"
         render={({ field }) => (
-          <FormItem className="flex items-center justify-between gap-4 rounded-lg border p-4">
-            <div className="space-y-0.5">
+          <FormItem className="flex flex-col gap-4 rounded-lg border p-3 sm:flex-row sm:items-start sm:justify-between sm:p-4">
+            <div className="min-w-0 space-y-0.5">
               <FormLabel className="flex items-center gap-1.5">
                 {t('surveys.create.visibility')}
                 <TooltipProvider>
@@ -327,7 +329,9 @@ const SurveyMetadataForm = ({
     return (
       <Form {...form}>
         <form className="flex min-h-0 flex-1 flex-col">
-          <div className="min-h-0 flex-1 space-y-6 overflow-y-auto px-6 py-6">{formFields}</div>
+          <div className="min-h-0 flex-1 space-y-6 overflow-y-auto px-4 py-4 sm:px-6 sm:py-6">
+            {formFields}
+          </div>
           {renderFooter({ handleSave, isLoading })}
         </form>
       </Form>

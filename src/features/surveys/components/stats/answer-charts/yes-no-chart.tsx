@@ -16,7 +16,7 @@ export const YesNoChart = ({ answers }: YesNoChartProps) => {
   const total = yesCount + noCount;
 
   if (total === 0) {
-    return <p className="text-muted-foreground text-sm">{t('noChartData')}</p>;
+    return <p className="text-muted-foreground text-xs">{t('noChartData')}</p>;
   }
 
   const yesPercentage = Math.round((yesCount / total) * 100);

@@ -118,11 +118,13 @@ const CompleteProfileModal = ({
                     </FormControl>
 
                     <SelectContent>
-                      {roleOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
+                      {[...roleOptions]
+                        .sort((a, b) => a.label.localeCompare(b.label))
+                        .map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
                     </SelectContent>
                   </Select>
 

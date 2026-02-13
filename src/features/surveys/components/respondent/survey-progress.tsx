@@ -14,8 +14,8 @@ export const SurveyProgress = ({ current, total }: SurveyProgressProps) => {
   return (
     <div className="mb-8">
       <div className="mb-2 flex items-center justify-between">
-        <span className="text-muted-foreground text-sm">{t('questionOf', { current, total })}</span>
-        <span className="text-muted-foreground text-sm">{percentage}%</span>
+        <span className="text-muted-foreground text-xs">{t('questionOf', { current, total })}</span>
+        <span className="text-muted-foreground text-xs">{percentage}%</span>
       </div>
       <div className="bg-muted h-1.5 w-full overflow-hidden rounded-full">
         <div

@@ -24,23 +24,25 @@ const AppearanceSection = () => {
         <p className="text-sm font-medium">{t('accentColor')}</p>
 
         <div className="flex flex-wrap gap-2">
-          {ACCENT_OPTIONS.map((option) => (
-            <button
-              key={option}
-              type="button"
-              data-accent={option}
-              onClick={() => setAccent(option)}
-              className={cn(
-                'flex min-h-10 items-center gap-2.5 rounded-lg border px-4 py-2 text-sm font-medium transition-colors md:min-h-9',
-                accent === option
-                  ? 'border-primary bg-primary/5 text-foreground'
-                  : 'border-border text-muted-foreground md:hover:bg-accent md:hover:text-foreground'
-              )}
-            >
-              <span className={cn('size-3.5 rounded-full', ACCENT_PREVIEW[option])} />
-              {t(`accents.${option}`)}
-            </button>
-          ))}
+          {[...ACCENT_OPTIONS]
+            .sort((a, b) => t(`accents.${a}`).localeCompare(t(`accents.${b}`)))
+            .map((option) => (
+              <button
+                key={option}
+                type="button"
+                data-accent={option}
+                onClick={() => setAccent(option)}
+                className={cn(
+                  'flex min-h-10 items-center gap-2.5 rounded-lg border px-4 py-2 text-sm font-medium transition-colors md:min-h-9',
+                  accent === option
+                    ? 'border-primary bg-primary/5 text-foreground'
+                    : 'border-border text-muted-foreground md:hover:bg-accent md:hover:text-foreground'
+                )}
+              >
+                <span className={cn('size-3.5 rounded-full', ACCENT_PREVIEW[option])} />
+                {t(`accents.${option}`)}
+              </button>
+            ))}
         </div>
       </div>
     </section>

@@ -19,7 +19,7 @@ const AuthHeader = ({ title, description, icon: Icon, linkText, linkHref }: Auth
         {title}
       </h1>
 
-      <p className="text-muted-foreground text-sm">
+      <p className="text-muted-foreground text-xs">
         {description}
 
         {linkText && linkHref && (

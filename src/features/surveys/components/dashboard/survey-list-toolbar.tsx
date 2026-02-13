@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowUpDown, Filter, Search, X } from 'lucide-react';
+import { ArrowDown, ArrowUp, Filter, Search, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Badge } from '@/components/ui/badge';
@@ -8,15 +8,27 @@ import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/common/utils';
 
 export type SurveyStatusFilter = 'all' | 'active' | 'draft' | 'closed';
-export type SurveySortBy = 'updated' | 'created' | 'responses' | 'title';
+export type SurveySortBy =
+  | 'updated'
+  | 'created'
+  | 'responses'
+  | 'title'
+  | 'status'
+  | 'questions'
+  | 'lastResponse'
+  | 'activity';
+
+export type SurveySortDir = 'asc' | 'desc';
 
 interface SurveyListToolbarProps {
   statusFilter: SurveyStatusFilter;
@@ -24,12 +36,28 @@ interface SurveyListToolbarProps {
   searchQuery: string;
   onSearchQueryChange: (query: string) => void;
   sortBy: SurveySortBy;
+  sortDir: SurveySortDir;
   onSortByChange: (sort: SurveySortBy) => void;
+  onSortDirChange: (dir: SurveySortDir) => void;
   statusCounts: Record<SurveyStatusFilter, number>;
+  /** When true, table with sortable column headers is shown – dropdown only offers updated/created. When false (mobile), dropdown offers all options in column order. */
+  hasSortableColumns: boolean;
 }
 
 const STATUS_FILTERS: SurveyStatusFilter[] = ['all', 'active', 'draft', 'closed'];
-const SORT_OPTIONS: SurveySortBy[] = ['updated', 'created', 'responses', 'title'];
+
+const SORT_OPTIONS_DESKTOP: SurveySortBy[] = ['updated', 'created'];
+
+const SORT_OPTIONS_MOBILE: SurveySortBy[] = [
+  'title',
+  'status',
+  'questions',
+  'responses',
+  'lastResponse',
+  'activity',
+  'updated',
+  'created',
+];
 
 export const SurveyListToolbar = ({
   statusFilter,
@@ -37,13 +65,23 @@ export const SurveyListToolbar = ({
   searchQuery,
   onSearchQueryChange,
   sortBy,
+  sortDir,
   onSortByChange,
+  onSortDirChange,
   statusCounts,
+  hasSortableColumns,
 }: SurveyListToolbarProps) => {
   const t = useTranslations('surveys.dashboard');
 
   const isFiltered = statusFilter !== 'all';
   const hasSearch = searchQuery.trim().length > 0;
+  const sortOptions = hasSortableColumns ? SORT_OPTIONS_DESKTOP : SORT_OPTIONS_MOBILE;
+  const sortedStatusFilters = [...STATUS_FILTERS].sort((a, b) =>
+    t(`filters.${a}`).localeCompare(t(`filters.${b}`))
+  );
+  const sortedSortOptions = [...sortOptions].sort((a, b) =>
+    t(`sort.${a}`).localeCompare(t(`sort.${b}`))
+  );
 
   return (
     <div className="flex flex-wrap items-center gap-2">
@@ -91,7 +129,7 @@ export const SurveyListToolbar = ({
             value={statusFilter}
             onValueChange={(v) => onStatusFilterChange(v as SurveyStatusFilter)}
           >
-            {STATUS_FILTERS.map((filter) => (
+            {sortedStatusFilters.map((filter) => (
               <DropdownMenuRadioItem key={filter} value={filter}>
                 <span className="flex-1">{t(`filters.${filter}`)}</span>
                 <span className="text-muted-foreground ml-3 tabular-nums">
@@ -107,21 +145,39 @@ export const SurveyListToolbar = ({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" className="shrink-0 gap-1.5">
-            <ArrowUpDown className="size-4" />
+            {sortDir === 'asc' ? (
+              <ArrowUp className="size-4" aria-hidden />
+            ) : (
+              <ArrowDown className="size-4" aria-hidden />
+            )}
             <span className="hidden sm:inline">{t(`sort.${sortBy}`)}</span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
+        <DropdownMenuContent align="end" className="min-w-40">
           <DropdownMenuRadioGroup
             value={sortBy}
             onValueChange={(v) => onSortByChange(v as SurveySortBy)}
           >
-            {SORT_OPTIONS.map((option) => (
+            {sortedSortOptions.map((option) => (
               <DropdownMenuRadioItem key={option} value={option}>
                 {t(`sort.${option}`)}
               </DropdownMenuRadioItem>
             ))}
           </DropdownMenuRadioGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onSelect={(e) => {
+              e.preventDefault();
+              onSortDirChange(sortDir === 'asc' ? 'desc' : 'asc');
+            }}
+          >
+            {sortDir === 'asc' ? (
+              <ArrowUp className="size-4" aria-hidden />
+            ) : (
+              <ArrowDown className="size-4" aria-hidden />
+            )}
+            {sortDir === 'asc' ? t('sort.asc') : t('sort.desc')}
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

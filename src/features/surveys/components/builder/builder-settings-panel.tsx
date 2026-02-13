@@ -33,7 +33,7 @@ function BuilderSettingsPanelContent() {
   if (!activeQuestion) {
     return (
       <div className="flex flex-1 items-center justify-center">
-        <p className="text-muted-foreground text-sm">{t('surveys.builder.noQuestionSelected')}</p>
+        <p className="text-muted-foreground text-xs">{t('surveys.builder.noQuestionSelected')}</p>
       </div>
     );
   }
@@ -52,44 +52,36 @@ function BuilderSettingsPanelContent() {
           {t('surveys.builder.questionType')}
         </Label>
         <div className="grid grid-cols-3 gap-1.5">
-          {QUESTION_TYPES.map((type) => {
-            const Icon = QUESTION_TYPE_ICONS[type];
-            const labelKey = QUESTION_TYPE_LABEL_KEYS[type];
+          {[...QUESTION_TYPES]
+            .sort((a, b) =>
+              t(QUESTION_TYPE_LABEL_KEYS[a] as Parameters<typeof t>[0]).localeCompare(
+                t(QUESTION_TYPE_LABEL_KEYS[b] as Parameters<typeof t>[0])
+              )
+            )
+            .map((type) => {
+              const Icon = QUESTION_TYPE_ICONS[type];
+              const labelKey = QUESTION_TYPE_LABEL_KEYS[type];
 
-            return (
-              <button
-                key={type}
-                type="button"
-                onClick={() => changeQuestionType(activeQuestion.id, type as QuestionType)}
-                className={cn(
-                  'flex flex-col items-center gap-1 rounded-md p-2 text-center transition-colors',
-                  activeQuestion.type === type
-                    ? 'bg-primary/10 text-primary ring-primary/30 ring-1'
-                    : 'hover:bg-accent text-muted-foreground'
-                )}
-              >
-                <Icon className="size-4" />
-                <span className="text-[10px] leading-tight">
-                  {t(labelKey as Parameters<typeof t>[0])}
-                </span>
-              </button>
-            );
-          })}
+              return (
+                <button
+                  key={type}
+                  type="button"
+                  onClick={() => changeQuestionType(activeQuestion.id, type as QuestionType)}
+                  className={cn(
+                    'flex flex-col items-center gap-1 rounded-md p-2 text-center transition-colors',
+                    activeQuestion.type === type
+                      ? 'bg-primary/10 text-primary ring-primary/30 ring-1'
+                      : 'hover:bg-accent text-muted-foreground'
+                  )}
+                >
+                  <Icon className="size-4" />
+                  <span className="text-[10px] leading-tight">
+                    {t(labelKey as Parameters<typeof t>[0])}
+                  </span>
+                </button>
+              );
+            })}
         </div>
-      </div>
-
-      <Separator />
-
-      {/* Section: Required toggle */}
-      <div className="flex items-center justify-between py-4">
-        <Label htmlFor="required-toggle" className="text-sm font-medium">
-          {t('surveys.builder.required')}
-        </Label>
-        <Switch
-          id="required-toggle"
-          checked={activeQuestion.required}
-          onCheckedChange={(checked) => updateQuestion(activeQuestion.id, { required: checked })}
-        />
       </div>
 
       <Separator />

@@ -61,7 +61,7 @@ export function MultipleChoiceEditor({ question }: MultipleChoiceEditorProps) {
           />
           {options.length > 2 && (
             <Button
-              variant="ghost"
+              variant="ghostDestructive"
               size="icon-xs"
               onClick={() => removeOption(index)}
               aria-label={t('removeOption')}

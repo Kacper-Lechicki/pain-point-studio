@@ -51,7 +51,7 @@ export const RatingDistributionChart = ({ answers }: RatingDistributionChartProp
   }, [answers]);
 
   if (data.length === 0) {
-    return <p className="text-muted-foreground text-sm">{t('noChartData')}</p>;
+    return <p className="text-muted-foreground text-xs">{t('noChartData')}</p>;
   }
 
   return (
