@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl';
 
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Link, usePathname } from '@/i18n/routing';
+import type { MessageKey } from '@/i18n/types';
 import { cn } from '@/lib/common/utils';
 
 import {
@@ -74,7 +75,7 @@ interface SubNavItemsProps {
   groups: SubNavGroup[];
   pathname: string;
   clientState: { search: string; hash: string } | null;
-  t: ReturnType<typeof useTranslations>;
+  t: (key: MessageKey) => string;
   onNavigate: () => void;
 }
 
@@ -94,7 +95,7 @@ function SubNavItems({ groups, pathname, clientState, t, onNavigate }: SubNavIte
   const hash = clientState?.hash ?? '';
 
   return (
-    <nav className="flex flex-1 flex-col gap-2 p-2" onClick={onNavigate}>
+    <nav className="flex flex-1 flex-col gap-2 p-2 pb-8" onClick={onNavigate}>
       {groups.map((group, gi) => (
         <div key={gi}>
           {group.headingKey && (
@@ -253,7 +254,7 @@ export function MobileNav() {
         showCloseButton={false}
         aria-describedby={undefined}
       >
-        <SheetHeader className="flex h-14 items-center justify-center px-3">
+        <SheetHeader className="flex h-14 items-center justify-start px-3">
           <SheetTitle className="sr-only">Navigation</SheetTitle>
           <ProjectSelector className="w-full" />
         </SheetHeader>
@@ -266,9 +267,9 @@ export function MobileNav() {
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: -20, opacity: 0 }}
               transition={TRANSITION}
-              className="flex flex-1 flex-col overflow-y-auto"
+              className="flex flex-1 flex-col overflow-y-auto pb-8"
             >
-              <nav className="flex flex-1 flex-col gap-2 p-2">
+              <nav className="flex flex-1 flex-col gap-2 p-2 pb-8">
                 {SIDEBAR_NAV.map((group, gi) => (
                   <div key={gi} className="flex flex-col gap-2">
                     {group.items.map((item) => {
@@ -347,7 +348,7 @@ export function MobileNav() {
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: 20, opacity: 0 }}
               transition={TRANSITION}
-              className="flex flex-1 flex-col overflow-y-auto"
+              className="flex flex-1 flex-col overflow-y-auto pb-8"
             >
               {/* Back button — same style as other nav items */}
               <div className="px-2 pt-2">

@@ -49,11 +49,27 @@ export function getDashboardBackConfig(pathname: string | null): DashboardBackCo
 /** Tailwind class for sidebar sub-panel width. */
 export const SIDEBAR_SUB_PANEL_WIDTH_CLASS = 'w-[var(--sidebar-sub-panel-width)]';
 
+/** Left offset for main content and page footer (so they start where sidebars end). */
+export function getDashboardContentMarginLeft(isPinned: boolean, hasSubPanel: boolean): string {
+  if (hasSubPanel) {
+    return isPinned
+      ? 'calc(var(--sidebar-width-expanded) + var(--sidebar-sub-panel-width))'
+      : 'calc(var(--sidebar-width-collapsed) + var(--sidebar-sub-panel-width))';
+  }
+
+  return isPinned ? 'var(--sidebar-width-expanded)' : 'var(--sidebar-width-collapsed)';
+}
+
 /** Builder side-panels share the same width for visual symmetry. */
 export const BUILDER_PANEL_WIDTH_CLASS = 'min-w-72 max-w-72';
 
 /** Right-hand settings panel in builder is wider for editing comfort. */
 export const BUILDER_SETTINGS_PANEL_WIDTH_CLASS = 'min-w-72 max-w-72';
+
+// ── Footer (page + sidebar) ──────────────────────────────────────────
+
+/** Height shared by dashboard page footer and sidebar footer (lock). */
+export const DASHBOARD_FOOTER_HEIGHT_CLASS = 'h-12';
 
 // ── Content area ────────────────────────────────────────────────────
 

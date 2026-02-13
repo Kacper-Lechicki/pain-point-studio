@@ -14,12 +14,12 @@ import { ROUTES } from '@/config/routes';
 import { UserMenu } from '@/features/auth/components/common/user-menu';
 import { publishSurvey, saveSurveyQuestions } from '@/features/surveys/actions';
 import { useFormAction } from '@/hooks/common/use-form-action';
+import { useUnsavedChangesWarning } from '@/hooks/unsaved-changes-context';
 import Link from '@/i18n/link';
 import type { MessageKey } from '@/i18n/types';
 import { env } from '@/lib/common/env';
 
 import { useQuestionBuilderContext } from '../../hooks/use-question-builder-context';
-import { useUnsavedChangesWarning } from '../../hooks/use-unsaved-changes-warning';
 import { PublishSuccessDialog } from './publish-success-dialog';
 
 interface BuilderTopBarProps {
@@ -45,7 +45,7 @@ export function BuilderTopBar({
   const locale = useLocale();
   const router = useRouter();
   const { state, dispatch, buildQuestionsPayload } = useQuestionBuilderContext();
-  useUnsavedChangesWarning(state.isDirty);
+  useUnsavedChangesWarning('builder-questions', state.isDirty);
   const [publishedSlug, setPublishedSlug] = useState<string | null>(null);
 
   const saveAction = useFormAction({

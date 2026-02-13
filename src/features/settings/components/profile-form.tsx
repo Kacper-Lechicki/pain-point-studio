@@ -35,6 +35,7 @@ import { SettingsSectionHeader } from '@/features/settings/components/settings-s
 import { BIO_MAX_LENGTH, MAX_SOCIAL_LINKS } from '@/features/settings/config';
 import { UpdateProfileSchema, updateProfileSchema } from '@/features/settings/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
+import { useUnsavedChangesWarning } from '@/hooks/unsaved-changes-context';
 import { Link } from '@/i18n/routing';
 import type { MessageKey } from '@/i18n/types';
 import { getInitials } from '@/lib/common/utils';
@@ -76,6 +77,8 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
     control: form.control,
     name: 'socialLinks',
   });
+
+  useUnsavedChangesWarning('profile-form', form.formState.isDirty);
 
   const fallbackInitials = getInitials(profile.fullName, profile.email);
 

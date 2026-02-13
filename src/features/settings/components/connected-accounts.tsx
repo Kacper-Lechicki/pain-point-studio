@@ -164,8 +164,8 @@ const ConnectedAccounts = ({ identities, hasPassword }: ConnectedAccountsProps) 
       </div>
 
       {!canUnlink && oauthIdentities.length > 0 && (
-        <div className="text-muted-foreground flex items-start gap-2 text-xs">
-          <Info className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+        <div className="text-muted-foreground flex items-center gap-2 text-xs">
+          <Info className="size-4 shrink-0" aria-hidden="true" />
           <p>
             {hasPassword
               ? t('settings.connectedAccounts.cannotUnlinkOnlyOAuth')

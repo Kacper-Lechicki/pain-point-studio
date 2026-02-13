@@ -26,6 +26,7 @@ import { cancelEmailChange, updateEmail } from '@/features/settings/actions';
 import { SettingsSectionHeader } from '@/features/settings/components/settings-section-header';
 import { UpdateEmailSchema, updateEmailSchema } from '@/features/settings/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
+import { useUnsavedChangesWarning } from '@/hooks/unsaved-changes-context';
 import type { MessageKey } from '@/i18n/types';
 
 interface EmailFormProps {
@@ -50,6 +51,8 @@ const EmailForm = ({ currentEmail, pendingEmail, emailChangeConfirmStatus }: Ema
       email: currentEmail,
     },
   });
+
+  useUnsavedChangesWarning('email-form', form.formState.isDirty);
 
   async function onSubmit(data: UpdateEmailSchema) {
     await execute(updateEmail, data);

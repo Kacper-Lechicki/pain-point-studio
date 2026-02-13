@@ -2,7 +2,6 @@
 
 import { withPublicAction } from '@/lib/common/with-public-action';
 
-import { RPC_ERROR } from '../../config';
 import { submitResponseSchema } from '../../types';
 
 export const submitResponse = withPublicAction<typeof submitResponseSchema, void>(
@@ -19,11 +18,7 @@ export const submitResponse = withPublicAction<typeof submitResponseSchema, void
       });
 
       if (error) {
-        if (error.message.includes(RPC_ERROR.REQUIRED_QUESTIONS_UNANSWERED)) {
-          return { error: 'respondent.errors.requiredQuestionsUnanswered' };
-        }
-
-        return { error: 'respondent.errors.submitFailed' };
+        return { error: 'submitFailed' };
       }
 
       return { success: true };

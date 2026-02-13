@@ -26,6 +26,7 @@ import {
   setPasswordSchema,
 } from '@/features/settings/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
+import { useUnsavedChangesWarning } from '@/hooks/unsaved-changes-context';
 import type { MessageKey } from '@/i18n/types';
 
 interface PasswordFormProps {
@@ -53,6 +54,8 @@ const PasswordForm = ({ hasPassword }: PasswordFormProps) => {
       router.refresh();
     },
   });
+
+  useUnsavedChangesWarning('password-form', form.formState.isDirty);
 
   const password = useWatch({
     control: form.control,

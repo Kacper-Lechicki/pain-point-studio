@@ -11,7 +11,7 @@ export type BrandConfig = typeof BRAND;
 
 /**
  * Returns localized copyright string (e.g. "© {year} {author}").
- * @param t - Translation function
+ * @param t - Translation function (useTranslations())
  * @param year - Optional year; defaults to current year
  */
 export const getCopyrightText = (
@@ -22,6 +22,6 @@ export const getCopyrightText = (
 
   return t('brand.copyright', {
     year: currentYear,
-    author: t(BRAND.author),
+    author: t('brand.author'),
   });
 };

@@ -8,6 +8,7 @@ import { usePathname } from '@/i18n/routing';
 
 import { isBuilderPath } from '../../config/layout';
 import { DashboardContent } from './dashboard-content';
+import { DashboardFooter } from './dashboard-footer';
 import { MobileNav } from './mobile-nav';
 import { Navbar } from './navbar';
 import { Sidebar } from './sidebar';
@@ -26,7 +27,8 @@ export function DashboardLayoutChrome({ children, profile }: DashboardLayoutChro
   if (isBuilder) {
     return (
       <div className="flex h-screen max-h-screen min-h-screen flex-col overflow-hidden">
-        {children}
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">{children}</div>
+        <DashboardFooter />
       </div>
     );
   }
@@ -35,11 +37,14 @@ export function DashboardLayoutChrome({ children, profile }: DashboardLayoutChro
     <>
       <div className="flex min-h-screen flex-col pt-14">
         <Navbar />
-        <div className="flex flex-1">
+        <div className="flex min-h-0 flex-1">
           <Sidebar />
           <SubPanel />
           <MobileNav />
-          <DashboardContent>{children}</DashboardContent>
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+            <DashboardContent>{children}</DashboardContent>
+            <DashboardFooter />
+          </div>
         </div>
       </div>
       {needsCompletion && profile && (

@@ -5,19 +5,22 @@ import { BreadcrumbProvider } from '@/features/dashboard/components/layout/bread
 import { DashboardLayoutChrome } from '@/features/dashboard/components/layout/dashboard-layout-chrome';
 import { SidebarProvider } from '@/features/dashboard/components/layout/sidebar-provider';
 import { getProfile } from '@/features/settings/actions';
+import { UnsavedChangesProvider } from '@/hooks/unsaved-changes-context';
 
 const DashboardLayout = async ({ children }: { children: ReactNode }) => {
   const profile = await getProfile();
 
   return (
-    <SidebarProvider>
-      <BreadcrumbProvider>
-        <DashboardLayoutChrome profile={profile}>{children}</DashboardLayoutChrome>
-        <Suspense>
-          <AuthToast />
-        </Suspense>
-      </BreadcrumbProvider>
-    </SidebarProvider>
+    <UnsavedChangesProvider>
+      <SidebarProvider>
+        <BreadcrumbProvider>
+          <DashboardLayoutChrome profile={profile}>{children}</DashboardLayoutChrome>
+          <Suspense>
+            <AuthToast />
+          </Suspense>
+        </BreadcrumbProvider>
+      </SidebarProvider>
+    </UnsavedChangesProvider>
   );
 };
 

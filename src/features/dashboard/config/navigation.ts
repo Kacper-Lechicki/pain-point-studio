@@ -81,14 +81,14 @@ export const SIDEBAR_NAV: NavGroup[] = [
             {
               items: [
                 {
-                  labelKey: 'sidebar.newSurvey',
-                  icon: Plus,
-                  href: '/dashboard/surveys/new' as AppRoute,
-                },
-                {
                   labelKey: 'sidebar.allSurveys',
                   icon: ClipboardList,
                   href: '/dashboard/surveys' as AppRoute,
+                },
+                {
+                  labelKey: 'sidebar.newSurvey',
+                  icon: Plus,
+                  href: '/dashboard/surveys/new' as AppRoute,
                 },
                 {
                   labelKey: 'sidebar.templates',

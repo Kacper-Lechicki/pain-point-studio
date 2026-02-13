@@ -39,6 +39,7 @@ import type { SurveyCategoryOption } from '@/features/surveys/actions';
 import { SURVEY_DESCRIPTION_MAX_LENGTH, SURVEY_TITLE_MAX_LENGTH } from '@/features/surveys/config';
 import { type SurveyMetadataSchema, surveyMetadataSchema } from '@/features/surveys/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
+import { useUnsavedChangesWarning } from '@/hooks/unsaved-changes-context';
 import type { MessageKey } from '@/i18n/types';
 
 interface SurveyMetadataFormProps {
@@ -96,6 +97,8 @@ const SurveyMetadataForm = ({
   });
 
   const isLoading = saveDraftAction.isLoading || nextAction.isLoading;
+
+  useUnsavedChangesWarning('survey-metadata-form', form.formState.isDirty);
 
   const handleSave = () => {
     void form.handleSubmit((data) => onSubmit(data, 'saveDraft'))();

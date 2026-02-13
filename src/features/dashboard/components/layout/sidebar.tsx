@@ -3,6 +3,7 @@
 import { Lock, Unlock } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { DASHBOARD_FOOTER_HEIGHT_CLASS } from '@/features/dashboard/config/layout';
 import { SIDEBAR_BOTTOM_ITEM } from '@/features/dashboard/config/navigation';
 import { cn } from '@/lib/common/utils';
 
@@ -52,8 +53,9 @@ export function Sidebar() {
 
       <div
         className={cn(
-          'border-sidebar-border flex shrink-0 border-t',
-          isExpanded ? 'justify-end px-2 py-4' : 'justify-center px-1 py-4'
+          'border-sidebar-border flex shrink-0 items-center border-t',
+          DASHBOARD_FOOTER_HEIGHT_CLASS,
+          isExpanded ? 'justify-end px-2' : 'justify-center px-1'
         )}
       >
         <button
