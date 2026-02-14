@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 import { useSearchParams } from 'next/navigation';
 
@@ -12,15 +12,8 @@ import { cn } from '@/lib/common/utils';
 
 import { SIDEBAR_NAV_ITEM_CLASSES } from '../../config/nav-styles';
 import type { SubNavConfig } from '../../config/navigation';
+import { useHashSync } from '../../hooks/use-hash-sync';
 import { getSubItemHref, isSubItemActive } from '../../lib/nav-utils';
-
-function getHash(): string {
-  if (typeof window === 'undefined') {
-    return '';
-  }
-
-  return window.location.hash.replace('#', '');
-}
 
 interface SecondaryNavProps {
   titleKey: MessageKey;
@@ -30,27 +23,13 @@ interface SecondaryNavProps {
 export function SecondaryNav({ titleKey, groups }: SecondaryNavProps) {
   const pathname = usePathname();
   const nextSearchParams = useSearchParams();
-  const [hash, setHash] = useState('');
+  const hash = useHashSync();
   const t = useTranslations();
 
   // Convert ReadonlyURLSearchParams to a stable string so we can use it as a
   // dependency and also create a fresh URLSearchParams from it.
   const searchString = nextSearchParams.toString();
   const currentSearchParams = useMemo(() => new URLSearchParams(searchString), [searchString]);
-
-  useEffect(() => {
-    queueMicrotask(() => setHash(getHash()));
-
-    const syncHash = () => setHash(getHash());
-
-    window.addEventListener('hashchange', syncHash);
-    window.addEventListener('popstate', syncHash);
-
-    return () => {
-      window.removeEventListener('hashchange', syncHash);
-      window.removeEventListener('popstate', syncHash);
-    };
-  }, []);
 
   // Collect all search param keys used by any item (for disambiguating "All" vs specific filters)
   const hasSearchParamItems = groups.some((g) => g.items.some((i) => i.searchParams));

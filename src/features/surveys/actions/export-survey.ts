@@ -1,5 +1,6 @@
 'use server';
 
+import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
 
 import { slugifyTitle } from '../lib/generate-slug';
@@ -92,7 +93,7 @@ export const exportSurveyCSV = withProtectedAction<
   { csv: string; filename: string }
 >('export-survey-csv', {
   schema: surveyIdSchema,
-  rateLimit: { limit: 10, windowSeconds: 60 },
+  rateLimit: RATE_LIMITS.export,
   action: async ({ data, user, supabase }) => {
     const result = await fetchExportData(supabase, data.surveyId, user.id);
 
@@ -146,7 +147,7 @@ export const exportSurveyJSON = withProtectedAction<
   { json: string; filename: string }
 >('export-survey-json', {
   schema: surveyIdSchema,
-  rateLimit: { limit: 10, windowSeconds: 60 },
+  rateLimit: RATE_LIMITS.export,
   action: async ({ data, user, supabase }) => {
     const result = await fetchExportData(supabase, data.surveyId, user.id);
 

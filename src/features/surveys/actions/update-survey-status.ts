@@ -1,5 +1,6 @@
 'use server';
 
+import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
 
 import { SURVEY_TRANSITIONS, type SurveyAction } from '../config/survey-status';
@@ -10,7 +11,7 @@ function createStatusAction(action: SurveyAction) {
 
   return withProtectedAction<typeof surveyIdSchema, void>(`${action}-survey`, {
     schema: surveyIdSchema,
-    rateLimit: { limit: 10, windowSeconds: 300 },
+    rateLimit: RATE_LIMITS.crud,
     action: async ({ data, user, supabase }) => {
       const { data: row, error } =
         transition.method === 'delete'

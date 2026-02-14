@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import { ROUTES } from '@/config/routes';
+import { getSurveyStatsUrl } from '@/features/surveys/lib/survey-urls';
 import Link from '@/i18n/link';
 
 import { SurveyShareContent } from './survey-share-content';
@@ -65,7 +66,7 @@ export function PublishSuccessDialog({
             </Link>
           </Button>
           <Button size="sm" asChild>
-            <Link href={`/dashboard/surveys/stats/${surveyId}`}>{t('viewDashboard')}</Link>
+            <Link href={getSurveyStatsUrl(surveyId)}>{t('viewDashboard')}</Link>
           </Button>
         </DialogFooter>
       </DialogContent>

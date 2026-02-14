@@ -22,3 +22,13 @@ export const SHORT_TEXT_DEFAULT_MAX_LENGTH = 500;
 
 // Tolerance when validating start date is not in the past (ms)
 export const START_DATE_TOLERANCE_MS = 60_000;
+
+// localStorage key for tracking completed survey responses
+export const surveyCompletedKey = (slug: string) => `pps_completed_${slug}`;
+
+// Shared date format used in survey detail/stats panels
+export const DATE_FORMAT_SHORT = {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+} as const;

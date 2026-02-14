@@ -1,29 +1,21 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-
-import { ArrowDown, ArrowUp, ArrowUpDown, ClipboardList, MousePointerClick } from 'lucide-react';
+import { ClipboardList, MousePointerClick } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { getSurveyWithQuestions } from '@/features/surveys/actions';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
-import type { MappedQuestion } from '@/features/surveys/lib/map-question-row';
+import { useSurveySelection } from '@/features/surveys/hooks/use-survey-selection';
+import { getDefaultSortDir, getSurveyComparator } from '@/features/surveys/lib/sort-helpers';
 import type { SurveyStatus } from '@/features/surveys/types';
 import { useBreakpoint } from '@/hooks/common/use-breakpoint';
 
-import { SurveyDetailPanel } from './survey-detail-panel';
+import { SortableTableHeader } from './sortable-table-header';
+import { SurveyDetailSheet } from './survey-detail-sheet';
 import { SurveyListRow } from './survey-list-row';
 import {
   SurveyListToolbar,
@@ -45,9 +37,6 @@ interface SurveyListProps {
 
 export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
   const t = useTranslations('surveys.dashboard');
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
   const isMd = useBreakpoint('md');
   const [surveys, setSurveys] = useState(initialSurveys);
   const [statusFilter, setStatusFilter] = useState<SurveyStatusFilter>('all');
@@ -55,27 +44,8 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
   const [sortBy, setSortBy] = useState<SurveySortBy>('updated');
   const [sortDir, setSortDir] = useState<SurveySortDir>('desc');
 
-  const selectedId = searchParams.get('selected');
-  const [questions, setQuestions] = useState<MappedQuestion[] | null>(null);
-  const fetchedForRef = useRef<string | null>(null);
-
-  // Fetch question data when a survey is selected
-  useEffect(() => {
-    if (!selectedId || fetchedForRef.current === selectedId) {
-      return;
-    }
-
-    fetchedForRef.current = selectedId;
-    queueMicrotask(() => setQuestions(null));
-
-    getSurveyWithQuestions(selectedId)
-      .then((data) => {
-        if (data && fetchedForRef.current === selectedId) {
-          setQuestions(data.questions);
-        }
-      })
-      .catch(() => {});
-  }, [selectedId]);
+  const { selectedId, selectedSurvey, questions, showSheet, setSelected } =
+    useSurveySelection(surveys);
 
   const statusCounts = useMemo(() => {
     const counts: Record<SurveyStatusFilter, number> = {
@@ -118,78 +88,45 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
       );
     }
 
-    const mul = sortDir === 'asc' ? 1 : -1;
-    result = [...result].sort((a, b) => {
-      switch (sortBy) {
-        case 'updated':
-          return mul * (new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime());
-        case 'created':
-          return mul * (new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-        case 'responses':
-          return mul * (a.responseCount - b.responseCount);
-        case 'title':
-          return mul * a.title.localeCompare(b.title);
-        case 'status':
-          return mul * (a.status.localeCompare(b.status) || a.title.localeCompare(b.title));
-        case 'questions':
-          return (
-            mul * (a.questionCount - b.questionCount) ||
-            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-          );
-        case 'lastResponse': {
-          const ta = a.lastResponseAt ? new Date(a.lastResponseAt).getTime() : 0;
-          const tb = b.lastResponseAt ? new Date(b.lastResponseAt).getTime() : 0;
+    const common = getSurveyComparator(sortBy, sortDir);
 
-          return mul * (ta - tb) || a.title.localeCompare(b.title);
+    if (common) {
+      result = [...result].sort(common);
+    } else {
+      const mul = sortDir === 'asc' ? 1 : -1;
+
+      result = [...result].sort((a, b) => {
+        switch (sortBy) {
+          case 'responses':
+            return mul * (a.responseCount - b.responseCount);
+          case 'lastResponse': {
+            const ta = a.lastResponseAt ? new Date(a.lastResponseAt).getTime() : 0;
+            const tb = b.lastResponseAt ? new Date(b.lastResponseAt).getTime() : 0;
+
+            return mul * (ta - tb) || a.title.localeCompare(b.title);
+          }
+
+          case 'activity': {
+            const sumA = a.recentActivity.reduce((s, n) => s + n, 0);
+            const sumB = b.recentActivity.reduce((s, n) => s + n, 0);
+
+            return mul * (sumA - sumB) || a.title.localeCompare(b.title);
+          }
+
+          default:
+            return 0;
         }
-
-        case 'activity': {
-          const sumA = a.recentActivity.reduce((s, n) => s + n, 0);
-          const sumB = b.recentActivity.reduce((s, n) => s + n, 0);
-
-          return mul * (sumA - sumB) || a.title.localeCompare(b.title);
-        }
-      }
-    });
+      });
+    }
 
     return result;
   }, [surveys, statusFilter, searchQuery, sortBy, sortDir]);
 
-  const selectedSurvey = useMemo(
-    () => (selectedId ? (surveys.find((s) => s.id === selectedId) ?? null) : null),
-    [surveys, selectedId]
-  );
-
-  const setSelected = useCallback(
-    (id: string | null) => {
-      if (id !== selectedId) {
-        fetchedForRef.current = null;
-        setQuestions(null);
-      }
-
-      const next = new URLSearchParams(searchParams.toString());
-
-      if (id) {
-        next.set('selected', id);
-      } else {
-        next.delete('selected');
-      }
-
-      const q = next.toString();
-
-      router.replace(q ? `${pathname}?${q}` : pathname);
-    },
-    [selectedId, searchParams, router, pathname]
-  );
-
   const isFiltered = statusFilter !== 'all';
-
-  const defaultSortDir = (key: SurveySortBy): SurveySortDir =>
-    key === 'title' || key === 'status' ? 'asc' : 'desc';
 
   const handleSortByChange = (key: SurveySortBy) => {
     setSortBy(key);
-    setSortDir(defaultSortDir(key));
+    setSortDir(getDefaultSortDir(key));
   };
 
   const handleSortByColumn = (key: SurveySortBy) => {
@@ -221,8 +158,6 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
       );
     });
   };
-
-  const showSheet = !!selectedId && !!selectedSurvey;
 
   return (
     <div className="space-y-4">
@@ -308,114 +243,56 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
           <Table className="table-fixed">
             <TableHeader>
               <TableRow className="bg-muted/30 hover:bg-muted/30">
-                <TableHead className="w-[30%]">
-                  <button
-                    type="button"
-                    onClick={() => handleSortByColumn('title')}
-                    className="flex items-center gap-1 font-medium hover:opacity-80"
-                  >
-                    {t('table.title')}
-                    {sortBy === 'title' ? (
-                      sortDir === 'asc' ? (
-                        <ArrowUp className="size-3.5" aria-hidden />
-                      ) : (
-                        <ArrowDown className="size-3.5" aria-hidden />
-                      )
-                    ) : (
-                      <ArrowUpDown className="text-muted-foreground size-3.5" aria-hidden />
-                    )}
-                  </button>
-                </TableHead>
-                <TableHead className="border-border/30 border-l text-center">
-                  <button
-                    type="button"
-                    onClick={() => handleSortByColumn('status')}
-                    className="inline-flex items-center justify-center gap-1 font-medium hover:opacity-80"
-                  >
-                    {t('table.status')}
-                    {sortBy === 'status' ? (
-                      sortDir === 'asc' ? (
-                        <ArrowUp className="size-3.5" aria-hidden />
-                      ) : (
-                        <ArrowDown className="size-3.5" aria-hidden />
-                      )
-                    ) : (
-                      <ArrowUpDown className="text-muted-foreground size-3.5" aria-hidden />
-                    )}
-                  </button>
-                </TableHead>
-                <TableHead className="border-border/30 border-l">
-                  <button
-                    type="button"
-                    onClick={() => handleSortByColumn('questions')}
-                    className="flex items-center gap-1 font-medium hover:opacity-80"
-                  >
-                    {t('table.questions')}
-                    {sortBy === 'questions' ? (
-                      sortDir === 'asc' ? (
-                        <ArrowUp className="size-3.5" aria-hidden />
-                      ) : (
-                        <ArrowDown className="size-3.5" aria-hidden />
-                      )
-                    ) : (
-                      <ArrowUpDown className="text-muted-foreground size-3.5" aria-hidden />
-                    )}
-                  </button>
-                </TableHead>
-                <TableHead className="border-border/30 border-l">
-                  <button
-                    type="button"
-                    onClick={() => handleSortByColumn('responses')}
-                    className="flex items-center gap-1 font-medium hover:opacity-80"
-                  >
-                    {t('table.responses')}
-                    {sortBy === 'responses' ? (
-                      sortDir === 'asc' ? (
-                        <ArrowUp className="size-3.5" aria-hidden />
-                      ) : (
-                        <ArrowDown className="size-3.5" aria-hidden />
-                      )
-                    ) : (
-                      <ArrowUpDown className="text-muted-foreground size-3.5" aria-hidden />
-                    )}
-                  </button>
-                </TableHead>
-                <TableHead className="border-border/30 hidden border-l lg:table-cell">
-                  <button
-                    type="button"
-                    onClick={() => handleSortByColumn('lastResponse')}
-                    className="flex items-center gap-1 font-medium hover:opacity-80"
-                  >
-                    {t('table.lastResponse')}
-                    {sortBy === 'lastResponse' ? (
-                      sortDir === 'asc' ? (
-                        <ArrowUp className="size-3.5" aria-hidden />
-                      ) : (
-                        <ArrowDown className="size-3.5" aria-hidden />
-                      )
-                    ) : (
-                      <ArrowUpDown className="text-muted-foreground size-3.5" aria-hidden />
-                    )}
-                  </button>
-                </TableHead>
-                <TableHead className="border-border/30 hidden border-l text-center xl:table-cell">
-                  <button
-                    type="button"
-                    onClick={() => handleSortByColumn('activity')}
-                    className="inline-flex items-center justify-center gap-1 font-medium hover:opacity-80"
-                  >
-                    {t('table.activity')}
-                    {sortBy === 'activity' ? (
-                      sortDir === 'asc' ? (
-                        <ArrowUp className="size-3.5" aria-hidden />
-                      ) : (
-                        <ArrowDown className="size-3.5" aria-hidden />
-                      )
-                    ) : (
-                      <ArrowUpDown className="text-muted-foreground size-3.5" aria-hidden />
-                    )}
-                  </button>
-                </TableHead>
+                <SortableTableHeader
+                  sortKey="title"
+                  currentSortKey={sortBy}
+                  sortDir={sortDir}
+                  onSort={handleSortByColumn}
+                  label={t('table.title')}
+                  className="w-[30%]"
+                />
+                <SortableTableHeader
+                  sortKey="status"
+                  currentSortKey={sortBy}
+                  sortDir={sortDir}
+                  onSort={handleSortByColumn}
+                  label={t('table.status')}
+                  className="border-border/30 border-l"
+                  centered
+                />
+                <SortableTableHeader
+                  sortKey="questions"
+                  currentSortKey={sortBy}
+                  sortDir={sortDir}
+                  onSort={handleSortByColumn}
+                  label={t('table.questions')}
+                  className="border-border/30 border-l"
+                />
+                <SortableTableHeader
+                  sortKey="responses"
+                  currentSortKey={sortBy}
+                  sortDir={sortDir}
+                  onSort={handleSortByColumn}
+                  label={t('table.responses')}
+                  className="border-border/30 border-l"
+                />
+                <SortableTableHeader
+                  sortKey="lastResponse"
+                  currentSortKey={sortBy}
+                  sortDir={sortDir}
+                  onSort={handleSortByColumn}
+                  label={t('table.lastResponse')}
+                  className="border-border/30 hidden border-l lg:table-cell"
+                />
+                <SortableTableHeader
+                  sortKey="activity"
+                  currentSortKey={sortBy}
+                  sortDir={sortDir}
+                  onSort={handleSortByColumn}
+                  label={t('table.activity')}
+                  className="border-border/30 hidden border-l xl:table-cell"
+                  centered
+                />
                 <TableHead className="w-10" aria-hidden />
               </TableRow>
             </TableHeader>
@@ -448,31 +325,15 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
         </div>
       )}
 
-      {/* Detail sheet — always a sliding sidebar */}
-      <Sheet open={showSheet} onOpenChange={(open) => !open && setSelected(null)}>
-        <SheetContent
-          side="right"
-          className="flex h-full w-[85%] max-w-[420px] flex-col gap-0 overflow-y-auto p-0 sm:max-w-[420px]"
-          showCloseButton={true}
-        >
-          <SheetHeader className="border-border h-14 shrink-0 flex-row items-center gap-0 border-b px-4 py-0 pr-12">
-            <SheetTitle className="text-foreground text-base font-semibold">
-              {t('detailPanel.detailsLabel')}
-            </SheetTitle>
-            <SheetDescription className="sr-only">{selectedSurvey?.title}</SheetDescription>
-          </SheetHeader>
-          {showSheet && selectedSurvey && (
-            <div className="min-h-0 flex-1 overflow-y-auto px-4 pt-4 pb-16">
-              <SurveyDetailPanel
-                survey={selectedSurvey}
-                questions={questions}
-                onStatusChange={handleStatusChange}
-                embeddedInSheet
-              />
-            </div>
-          )}
-        </SheetContent>
-      </Sheet>
+      {/* Detail sheet */}
+      <SurveyDetailSheet
+        open={showSheet}
+        onClose={() => setSelected(null)}
+        survey={selectedSurvey}
+        questions={questions}
+        onStatusChange={handleStatusChange}
+        detailsLabel={t('detailPanel.detailsLabel')}
+      />
     </div>
   );
 };

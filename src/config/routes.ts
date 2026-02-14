@@ -31,6 +31,7 @@ export const ROUTES = {
     surveysNew: '/dashboard/surveys/new' as AppRoute,
     surveysArchive: '/dashboard/surveys/archive' as AppRoute,
     surveysBuilder: '/dashboard/surveys/new/[id]',
+    surveysStats: '/dashboard/surveys/stats',
     analytics: '/dashboard/analytics' as AppRoute,
   },
   profile: {

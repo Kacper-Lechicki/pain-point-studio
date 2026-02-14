@@ -1,5 +1,6 @@
 'use server';
 
+import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
 
 import { PG_ERROR, QUESTIONS_MIN } from '../config';
@@ -10,7 +11,7 @@ export const publishSurvey = withProtectedAction<typeof surveyIdSchema, { slug: 
   'publish-survey',
   {
     schema: surveyIdSchema,
-    rateLimit: { limit: 10, windowSeconds: 300 },
+    rateLimit: RATE_LIMITS.crud,
     action: async ({ data, user, supabase }) => {
       // Verify survey has at least QUESTIONS_MIN questions with non-empty text
       const { count } = await supabase

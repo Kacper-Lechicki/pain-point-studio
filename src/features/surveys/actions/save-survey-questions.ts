@@ -1,5 +1,6 @@
 'use server';
 
+import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
 import { mapSupabaseError } from '@/lib/supabase/errors';
 import type { Json } from '@/lib/supabase/types';
@@ -10,7 +11,7 @@ export const saveSurveyQuestions = withProtectedAction<typeof surveyQuestionsSch
   'save-survey-questions',
   {
     schema: surveyQuestionsSchema,
-    rateLimit: { limit: 60, windowSeconds: 60 },
+    rateLimit: RATE_LIMITS.frequentSave,
     action: async ({ data, user, supabase }) => {
       const questionsPayload = data.questions.map((q) => ({
         id: q.id,

@@ -16,8 +16,13 @@ import { closeSurvey } from '@/features/surveys/actions';
 import type { QuestionStats, SurveyStats } from '@/features/surveys/actions/get-survey-stats';
 import { SurveyStatusBadge } from '@/features/surveys/components/dashboard/survey-status-badge';
 import { MetricRow, SectionLabel } from '@/features/surveys/components/shared/metric-display';
+import { DATE_FORMAT_SHORT } from '@/features/surveys/config';
+import {
+  calculateCompletionRate,
+  calculateRespondentProgress,
+} from '@/features/surveys/lib/calculations';
+import { getSurveyShareUrl } from '@/features/surveys/lib/share-url';
 import type { SurveyStatus } from '@/features/surveys/types';
-import { env } from '@/lib/common/env';
 
 import { ExportButtons } from './export-buttons';
 import { QuestionStatsCard } from './question-stats-card';
@@ -38,9 +43,7 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
 
   const isClosed = stats.survey.status === 'closed' || optimisticallyClosed;
 
-  const shareUrl = stats.survey.slug
-    ? `${env.NEXT_PUBLIC_APP_URL}/${locale}/r/${stats.survey.slug}`
-    : null;
+  const shareUrl = stats.survey.slug ? getSurveyShareUrl(locale, stats.survey.slug) : null;
 
   const handleCloseSurvey = () => {
     startTransition(async () => {
@@ -55,18 +58,14 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
     });
   };
 
-  const completionRate =
-    stats.totalResponses > 0
-      ? Math.round((stats.completedResponses / stats.totalResponses) * 100)
-      : null;
+  const completionRate = calculateCompletionRate(stats.completedResponses, stats.totalResponses);
 
-  const respondentProgress =
-    stats.survey.maxRespondents != null &&
-    stats.survey.maxRespondents > 0 &&
-    Math.min(100, Math.round((stats.completedResponses / stats.survey.maxRespondents) * 100));
+  const respondentProgress = calculateRespondentProgress(
+    stats.completedResponses,
+    stats.survey.maxRespondents
+  );
 
-  const formatDate = (iso: string) =>
-    format.dateTime(new Date(iso), { month: 'short', day: 'numeric', year: 'numeric' });
+  const formatDate = (iso: string) => format.dateTime(new Date(iso), DATE_FORMAT_SHORT);
 
   const hasDetails = stats.survey.startsAt != null || stats.survey.endsAt != null;
 

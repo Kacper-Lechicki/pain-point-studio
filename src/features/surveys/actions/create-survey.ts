@@ -1,6 +1,7 @@
 'use server';
 
 import { createSurveyDraftSchema } from '@/features/surveys/types';
+import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
 import { mapSupabaseError } from '@/lib/supabase/errors';
 
@@ -9,7 +10,7 @@ export const createSurveyDraft = withProtectedAction<
   { surveyId: string }
 >('create-survey-draft', {
   schema: createSurveyDraftSchema,
-  rateLimit: { limit: 20, windowSeconds: 300 },
+  rateLimit: RATE_LIMITS.bulkCreate,
   action: async ({ data, user, supabase }) => {
     if (data.surveyId) {
       const { error } = await supabase

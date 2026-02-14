@@ -22,12 +22,25 @@ import { ClipboardInput } from '@/components/ui/clipboard-input';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Separator } from '@/components/ui/separator';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
-import { QUESTION_TYPE_ICONS, QUESTION_TYPE_LABEL_KEYS } from '@/features/surveys/config';
+import {
+  DATE_FORMAT_SHORT,
+  QUESTION_TYPE_ICONS,
+  QUESTION_TYPE_LABEL_KEYS,
+} from '@/features/surveys/config';
 import { SURVEY_ACTION_UI, getAvailableActions } from '@/features/surveys/config/survey-status';
 import { useSurveyAction } from '@/features/surveys/hooks/use-survey-action';
+import {
+  calculateCompletionRate,
+  calculateRespondentProgress,
+} from '@/features/surveys/lib/calculations';
 import type { MappedQuestion } from '@/features/surveys/lib/map-question-row';
+import { getSurveyShareUrl } from '@/features/surveys/lib/share-url';
+import {
+  getSurveyDetailUrl,
+  getSurveyEditUrl,
+  getSurveyStatsUrl,
+} from '@/features/surveys/lib/survey-urls';
 import Link from '@/i18n/link';
-import { env } from '@/lib/common/env';
 import { cn } from '@/lib/common/utils';
 
 import { MetricRow, SectionLabel } from '../shared/metric-display';
@@ -175,20 +188,17 @@ export function SurveyDetailPanel({
   const isDraft = survey.status === 'draft';
   const isActive = survey.status === 'active';
   const isArchived = survey.status === 'archived';
-  const shareUrl = survey.slug ? `${env.NEXT_PUBLIC_APP_URL}/${locale}/r/${survey.slug}` : null;
+  const shareUrl = survey.slug ? getSurveyShareUrl(locale, survey.slug) : null;
   const sparklineColor = getSparklineColor(survey.recentActivity);
-  const completionRate =
-    survey.responseCount > 0
-      ? Math.round((survey.completedCount / survey.responseCount) * 100)
-      : null;
+  const completionRate = calculateCompletionRate(survey.completedCount, survey.responseCount);
   const lastResponseLabel =
     survey.lastResponseAt != null
       ? format.relativeTime(new Date(survey.lastResponseAt), now)
       : null;
-  const respondentProgress =
-    survey.maxRespondents != null && survey.maxRespondents > 0
-      ? Math.min(100, Math.round((survey.completedCount / survey.maxRespondents) * 100))
-      : null;
+  const respondentProgress = calculateRespondentProgress(
+    survey.completedCount,
+    survey.maxRespondents
+  );
   const availableActions = getAvailableActions(survey.status);
 
   const handleCopyLink = async () => {
@@ -200,8 +210,7 @@ export function SurveyDetailPanel({
     toast.success(t('detailPanel.linkCopied'));
   };
 
-  const formatDate = (iso: string) =>
-    format.dateTime(new Date(iso), { month: 'short', day: 'numeric', year: 'numeric' });
+  const formatDate = (iso: string) => format.dateTime(new Date(iso), DATE_FORMAT_SHORT);
 
   const titleHeadingClass = embeddedInPage
     ? 'text-foreground min-w-0 flex-1 truncate text-3xl font-bold leading-tight'
@@ -223,7 +232,7 @@ export function SurveyDetailPanel({
             aria-label={t('actions.openInFullPage')}
             asChild
           >
-            <Link href={`/dashboard/surveys/${survey.id}`}>
+            <Link href={getSurveyDetailUrl(survey.id)}>
               <Expand className="size-4" aria-hidden />
             </Link>
           </Button>
@@ -366,14 +375,14 @@ export function SurveyDetailPanel({
       <div className="flex flex-col gap-2">
         {isDraft ? (
           <Button asChild size="sm" className="w-full">
-            <Link href={`/dashboard/surveys/new/${survey.id}`}>
+            <Link href={getSurveyEditUrl(survey.id)}>
               <Pencil className="size-4" aria-hidden />
               {t('actions.edit')}
             </Link>
           </Button>
         ) : (
           <Button asChild size="sm" className="w-full">
-            <Link href={`/dashboard/surveys/stats/${survey.id}`}>
+            <Link href={getSurveyStatsUrl(survey.id)}>
               <BarChart3 className="size-4" aria-hidden />
               {t('detailPanel.viewResults')}
             </Link>

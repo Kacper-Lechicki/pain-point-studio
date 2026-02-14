@@ -3,6 +3,7 @@
 import { z } from 'zod';
 
 import { env } from '@/lib/common/env';
+import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
 import { mapSupabaseError } from '@/lib/supabase/errors';
 
@@ -32,7 +33,7 @@ const avatarUrlSchema = z.object({
 
 export const updateAvatarUrl = withProtectedAction('update-avatar-url', {
   schema: avatarUrlSchema,
-  rateLimit: { limit: 10, windowSeconds: 60 },
+  rateLimit: RATE_LIMITS.upload,
   action: async ({ data, user, supabase }) => {
     const { error: profileError } = await supabase
       .from('profiles')

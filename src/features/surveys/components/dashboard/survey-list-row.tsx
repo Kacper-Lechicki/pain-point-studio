@@ -17,8 +17,9 @@ import { TableCell, TableRow } from '@/components/ui/table';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import { SURVEY_ACTION_UI, getAvailableActions } from '@/features/surveys/config/survey-status';
 import { useSurveyAction } from '@/features/surveys/hooks/use-survey-action';
+import { getSurveyShareUrl } from '@/features/surveys/lib/share-url';
+import { getSurveyEditUrl, getSurveyStatsUrl } from '@/features/surveys/lib/survey-urls';
 import Link from '@/i18n/link';
-import { env } from '@/lib/common/env';
 import { cn } from '@/lib/common/utils';
 
 import { Sparkline, getSparklineColor } from './sparkline';
@@ -57,7 +58,7 @@ export function SurveyListRow({
 
   const archivedAtLabel =
     isArchived && survey.updatedAt ? format.relativeTime(new Date(survey.updatedAt), now) : null;
-  const shareUrl = survey.slug ? `${env.NEXT_PUBLIC_APP_URL}/${locale}/r/${survey.slug}` : null;
+  const shareUrl = survey.slug ? getSurveyShareUrl(locale, survey.slug) : null;
   const sparklineColor = getSparklineColor(survey.recentActivity);
   const lastResponseLabel =
     survey.lastResponseAt != null
@@ -106,7 +107,7 @@ export function SurveyListRow({
 
       {!isDraft && (
         <DropdownMenuItem asChild>
-          <Link href={`/dashboard/surveys/stats/${survey.id}`}>
+          <Link href={getSurveyStatsUrl(survey.id)}>
             <BarChart3 className="size-4" aria-hidden />
             {t('actions.viewResults')}
           </Link>
@@ -115,7 +116,7 @@ export function SurveyListRow({
 
       {isDraft && (
         <DropdownMenuItem asChild>
-          <Link href={`/dashboard/surveys/new/${survey.id}`}>
+          <Link href={getSurveyEditUrl(survey.id)}>
             <Pencil className="size-4" aria-hidden />
             {t('actions.edit')}
           </Link>

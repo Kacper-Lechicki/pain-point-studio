@@ -1,8 +1,9 @@
 import type { useTranslations } from 'next-intl';
 
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
+import { calculateCompletionRate } from '@/features/surveys/lib/calculations';
 
-export type HintSeverity = 'warning' | 'info' | 'success';
+type HintSeverity = 'warning' | 'info' | 'success';
 
 export interface CardHint {
   severity: HintSeverity;
@@ -66,7 +67,7 @@ export function computeHint(
 
   if (survey.status === 'closed') {
     if (survey.responseCount > 0) {
-      const rate = Math.round((survey.completedCount / survey.responseCount) * 100);
+      const rate = calculateCompletionRate(survey.completedCount, survey.responseCount)!;
 
       return { severity: 'info', text: t('hints.completionRate', { rate }) };
     }

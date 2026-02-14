@@ -24,6 +24,7 @@ import {
   SIDEBAR_NAV,
   findActiveNavItem,
 } from '../../config/navigation';
+import { getHash } from '../../hooks/use-hash-sync';
 import { getSubItemHref, isSubItemActive } from '../../lib/nav-utils';
 import { ProjectSelector } from './project-selector';
 import { useSidebar } from './sidebar-provider';
@@ -133,7 +134,7 @@ export function MobileNav() {
   const syncFromWindow = useCallback(() => {
     setClientState({
       search: window.location.search.replace('?', ''),
-      hash: window.location.hash.replace('#', ''),
+      hash: getHash(),
     });
   }, []);
 

@@ -1,13 +1,14 @@
 'use server';
 
 import { changePasswordSchema, setPasswordSchema } from '@/features/settings/types';
+import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { mapSupabaseError } from '@/lib/supabase/errors';
 
 export const changePassword = withProtectedAction('change-password', {
   schema: changePasswordSchema,
-  rateLimit: { limit: 3, windowSeconds: 3600 },
+  rateLimit: RATE_LIMITS.sensitive,
   action: async ({ data, supabase }) => {
     // Verify the current password via an RPC that checks the hash directly,
     // instead of signInWithPassword which would create a new session and
@@ -34,7 +35,7 @@ export const changePassword = withProtectedAction('change-password', {
 
 export const setPassword = withProtectedAction('set-password', {
   schema: setPasswordSchema,
-  rateLimit: { limit: 3, windowSeconds: 3600 },
+  rateLimit: RATE_LIMITS.sensitive,
   action: async ({ data, user, supabase }) => {
     const { data: alreadyHasPassword } = await supabase.rpc('has_password');
 

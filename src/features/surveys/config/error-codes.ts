@@ -1,7 +1,7 @@
 // ── Supabase RPC error identifiers ──────────────────────────────────
 // These strings match RAISE EXCEPTION values in PostgreSQL functions.
 
-export const RPC_ERROR = {
+const RPC_ERROR = {
   // start_survey_response
   SURVEY_NOT_FOUND: 'SURVEY_NOT_FOUND',
   SURVEY_NOT_ACTIVE: 'SURVEY_NOT_ACTIVE',

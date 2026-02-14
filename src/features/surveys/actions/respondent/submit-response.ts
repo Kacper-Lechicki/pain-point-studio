@@ -1,5 +1,6 @@
 'use server';
 
+import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withPublicAction } from '@/lib/common/with-public-action';
 
 import { mapRpcError } from '../../config';
@@ -9,7 +10,7 @@ export const submitResponse = withPublicAction<typeof submitResponseSchema, void
   'submit-response',
   {
     schema: submitResponseSchema,
-    rateLimit: { limit: 10, windowSeconds: 300 },
+    rateLimit: RATE_LIMITS.respondentSubmit,
     action: async ({ data, supabase }) => {
       const { error } = await supabase.rpc('submit_survey_response', {
         p_response_id: data.responseId,

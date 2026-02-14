@@ -16,9 +16,11 @@ import {
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import { SURVEY_ACTION_UI, getAvailableActions } from '@/features/surveys/config/survey-status';
 import { useSurveyAction } from '@/features/surveys/hooks/use-survey-action';
+import { calculateCompletionRate } from '@/features/surveys/lib/calculations';
+import { getSurveyShareUrl } from '@/features/surveys/lib/share-url';
 import { computeHint } from '@/features/surveys/lib/survey-hints';
+import { getSurveyEditUrl, getSurveyStatsUrl } from '@/features/surveys/lib/survey-urls';
 import Link from '@/i18n/link';
-import { env } from '@/lib/common/env';
 import { cn } from '@/lib/common/utils';
 
 import { Sparkline, getSparklineColor } from './sparkline';
@@ -45,11 +47,9 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
   const isActive = survey.status === 'active';
   const isArchived = survey.status === 'archived';
 
-  const href = isDraft
-    ? `/dashboard/surveys/new/${survey.id}`
-    : `/dashboard/surveys/stats/${survey.id}`;
+  const href = isDraft ? getSurveyEditUrl(survey.id) : getSurveyStatsUrl(survey.id);
 
-  const shareUrl = survey.slug ? `${env.NEXT_PUBLIC_APP_URL}/${locale}/r/${survey.slug}` : null;
+  const shareUrl = survey.slug ? getSurveyShareUrl(locale, survey.slug) : null;
 
   const hint = computeHint(survey, t);
   const sparklineColor = getSparklineColor(survey.recentActivity);
@@ -84,10 +84,9 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
     return parts.join(', ');
   })();
 
-  const completionRate =
-    !isDraft && survey.responseCount > 0
-      ? Math.round((survey.completedCount / survey.responseCount) * 100)
-      : null;
+  const completionRate = !isDraft
+    ? calculateCompletionRate(survey.completedCount, survey.responseCount)
+    : null;
 
   const lastResponseLabel =
     survey.lastResponseAt != null
@@ -157,7 +156,7 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
 
                 {!isDraft && (
                   <DropdownMenuItem asChild>
-                    <Link href={`/dashboard/surveys/stats/${survey.id}`}>
+                    <Link href={getSurveyStatsUrl(survey.id)}>
                       <BarChart3 className="size-4" />
                       {t('actions.viewResults')}
                     </Link>
@@ -166,7 +165,7 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
 
                 {isDraft && (
                   <DropdownMenuItem asChild>
-                    <Link href={`/dashboard/surveys/new/${survey.id}`}>
+                    <Link href={getSurveyEditUrl(survey.id)}>
                       <Pencil className="size-4" />
                       {t('actions.edit')}
                     </Link>

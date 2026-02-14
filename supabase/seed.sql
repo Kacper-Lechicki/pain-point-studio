@@ -2,37 +2,8 @@
 -- Run with: pnpm supabase:reset (applies migrations + seed)
 -- All seed user passwords: Password1!
 
--- Safety net: ensure lookup data exists even if migration INSERT was skipped.
--- ON CONFLICT DO NOTHING makes this idempotent.
-INSERT INTO public.roles (value, label_key, sort_order, is_active) VALUES
-  ('solo-developer', 'settings.roles.soloDeveloper', 1, true),
-  ('product-manager', 'settings.roles.productManager', 2, true),
-  ('designer',        'settings.roles.designer',       3, true),
-  ('founder',         'settings.roles.founder',         4, true),
-  ('student',         'settings.roles.student',         5, true),
-  ('other',           'settings.roles.other',           6, true)
-ON CONFLICT (value) DO NOTHING;
-
-INSERT INTO public.social_link_types (value, label_key, sort_order, is_active) VALUES
-  ('website',  'settings.profile.socialLinks.labels.website',  1, true),
-  ('github',   'settings.profile.socialLinks.labels.github',   2, true),
-  ('twitter',  'settings.profile.socialLinks.labels.twitter',  3, true),
-  ('linkedin', 'settings.profile.socialLinks.labels.linkedin', 4, true),
-  ('other',    'settings.profile.socialLinks.labels.other',    5, true)
-ON CONFLICT (value) DO NOTHING;
-
-INSERT INTO public.survey_categories (value, label_key, sort_order, is_active) VALUES
-  ('productivity',    'surveys.categories.productivity',    1,  true),
-  ('health',          'surveys.categories.health',          2,  true),
-  ('finance',         'surveys.categories.finance',         3,  true),
-  ('education',       'surveys.categories.education',       4,  true),
-  ('developer-tools', 'surveys.categories.developerTools',  5,  true),
-  ('design',          'surveys.categories.design',          6,  true),
-  ('marketing',       'surveys.categories.marketing',       7,  true),
-  ('communication',   'surveys.categories.communication',   8,  true),
-  ('entertainment',   'surveys.categories.entertainment',   9,  true),
-  ('other',           'surveys.categories.other',           10, true)
-ON CONFLICT (value) DO NOTHING;
+-- Lookup tables (roles, social_link_types, survey_categories) were dropped in
+-- migration 20260214183223. Validation is now app-level via Zod + config files.
 
 -- ============================================================
 -- Helper: lookup user id by email (used by e2e test cleanup)

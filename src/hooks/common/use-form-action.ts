@@ -20,7 +20,7 @@ export function useFormAction<D = undefined>(options: UseFormActionOptions<D> = 
   const [isLoading, setIsLoading] = useState(false);
 
   const {
-    unexpectedErrorMessage = 'auth.unexpectedError' as MessageKey,
+    unexpectedErrorMessage = 'common.errors.unexpected' as MessageKey,
     successMessage,
     onSuccess,
     onError,

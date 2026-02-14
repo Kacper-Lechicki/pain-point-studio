@@ -1,18 +1,8 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-
-import {
-  Archive,
-  ArrowDown,
-  ArrowUp,
-  ArrowUpDown,
-  MousePointerClick,
-  Search,
-  X,
-} from 'lucide-react';
+import { Archive, ArrowDown, ArrowUp, MousePointerClick, Search, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
@@ -27,21 +17,15 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Input } from '@/components/ui/input';
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { getSurveyWithQuestions } from '@/features/surveys/actions';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
-import type { MappedQuestion } from '@/features/surveys/lib/map-question-row';
+import { useSurveySelection } from '@/features/surveys/hooks/use-survey-selection';
+import { getDefaultSortDir, getSurveyComparator } from '@/features/surveys/lib/sort-helpers';
 import { useBreakpoint } from '@/hooks/common/use-breakpoint';
 import { cn } from '@/lib/common/utils';
 
-import { SurveyDetailPanel } from './survey-detail-panel';
+import { SortableTableHeader } from './sortable-table-header';
+import { SurveyDetailSheet } from './survey-detail-sheet';
 import { SurveyListRow } from './survey-list-row';
 
 type ArchiveSortBy =
@@ -72,74 +56,30 @@ const SORT_OPTIONS_MOBILE: ArchiveSortBy[] = [
 export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
   const t = useTranslations('surveys.archive');
   const tDashboard = useTranslations('surveys.dashboard');
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
   const isMd = useBreakpoint('md');
 
-  const selectedId = searchParams.get('selected');
   const [surveys, setSurveys] = useState(initialSurveys);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<ArchiveSortBy>('updated');
   const [sortDir, setSortDir] = useState<ArchiveSortDir>('desc');
-  const [questions, setQuestions] = useState<MappedQuestion[] | null>(null);
-  const fetchedForRef = useRef<string | null>(null);
 
-  useEffect(() => {
-    if (!selectedId || fetchedForRef.current === selectedId) {
-      return;
-    }
-
-    fetchedForRef.current = selectedId;
-    queueMicrotask(() => setQuestions(null));
-
-    getSurveyWithQuestions(selectedId)
-      .then((data) => {
-        if (data && fetchedForRef.current === selectedId) {
-          setQuestions(data.questions);
-        }
-      })
-      .catch(() => {});
-  }, [selectedId]);
-
-  const setSelected = useCallback(
-    (id: string | null) => {
-      if (id !== selectedId) {
-        fetchedForRef.current = null;
-        setQuestions(null);
-      }
-
-      const next = new URLSearchParams(searchParams.toString());
-
-      if (id) {
-        next.set('selected', id);
-      } else {
-        next.delete('selected');
-      }
-
-      const q = next.toString();
-      router.replace(q ? `${pathname}?${q}` : pathname);
-    },
-    [selectedId, searchParams, router, pathname]
-  );
+  const { selectedId, selectedSurvey, questions, showSheet, setSelected } =
+    useSurveySelection(surveys);
 
   const hasSearch = searchQuery.trim().length > 0;
-
-  const defaultSortDir = (key: ArchiveSortBy): ArchiveSortDir =>
-    key === 'title' || key === 'status' ? 'asc' : 'desc';
 
   const handleSortByColumn = (key: ArchiveSortBy) => {
     if (sortBy === key) {
       setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
     } else {
       setSortBy(key);
-      setSortDir(defaultSortDir(key));
+      setSortDir(getDefaultSortDir(key));
     }
   };
 
   const handleSortByChange = (key: ArchiveSortBy) => {
     setSortBy(key);
-    setSortDir(defaultSortDir(key));
+    setSortDir(getDefaultSortDir(key));
   };
 
   const sortOptions = isMd ? SORT_OPTIONS_DESKTOP : SORT_OPTIONS_MOBILE;
@@ -158,23 +98,16 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
       );
     }
 
+    const common = getSurveyComparator(sortBy, sortDir);
+
+    if (common) {
+      return [...result].sort(common);
+    }
+
     const mul = sortDir === 'asc' ? 1 : -1;
 
     return [...result].sort((a, b) => {
       switch (sortBy) {
-        case 'updated':
-          return mul * (new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime());
-        case 'created':
-          return mul * (new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-        case 'title':
-          return mul * a.title.localeCompare(b.title);
-        case 'status':
-          return mul * (a.status.localeCompare(b.status) || a.title.localeCompare(b.title));
-        case 'questions':
-          return (
-            mul * (a.questionCount - b.questionCount) ||
-            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-          );
         case 'responses':
           return mul * (a.responseCount - b.responseCount) || a.title.localeCompare(b.title);
         case 'archivedAt':
@@ -182,6 +115,8 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
             mul * (new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime()) ||
             a.title.localeCompare(b.title)
           );
+        default:
+          return 0;
       }
     });
   }, [surveys, searchQuery, sortBy, sortDir]);
@@ -195,13 +130,6 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
       setSurveys((prev) => prev.filter((s) => s.id !== surveyId));
     }
   };
-
-  const selectedSurvey = useMemo(
-    () => (selectedId ? (surveys.find((s) => s.id === selectedId) ?? null) : null),
-    [surveys, selectedId]
-  );
-
-  const showSheet = !!selectedId && !!selectedSurvey;
 
   if (filteredSurveys.length === 0 && !hasSearch && surveys.length === 0) {
     return (
@@ -307,96 +235,47 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
           <Table className="table-fixed">
             <TableHeader>
               <TableRow className="bg-muted/30 hover:bg-muted/30">
-                <TableHead className="w-[30%]">
-                  <button
-                    type="button"
-                    onClick={() => handleSortByColumn('title')}
-                    className="flex items-center gap-1 font-medium hover:opacity-80"
-                  >
-                    {tDashboard('table.title')}
-                    {sortBy === 'title' ? (
-                      sortDir === 'asc' ? (
-                        <ArrowUp className="size-3.5" aria-hidden />
-                      ) : (
-                        <ArrowDown className="size-3.5" aria-hidden />
-                      )
-                    ) : (
-                      <ArrowUpDown className="text-muted-foreground size-3.5" aria-hidden />
-                    )}
-                  </button>
-                </TableHead>
-                <TableHead className="border-border/30 border-l text-center">
-                  <button
-                    type="button"
-                    onClick={() => handleSortByColumn('status')}
-                    className="inline-flex items-center justify-center gap-1 font-medium hover:opacity-80"
-                  >
-                    {tDashboard('table.status')}
-                    {sortBy === 'status' ? (
-                      sortDir === 'asc' ? (
-                        <ArrowUp className="size-3.5" aria-hidden />
-                      ) : (
-                        <ArrowDown className="size-3.5" aria-hidden />
-                      )
-                    ) : (
-                      <ArrowUpDown className="text-muted-foreground size-3.5" aria-hidden />
-                    )}
-                  </button>
-                </TableHead>
-                <TableHead className="border-border/30 border-l">
-                  <button
-                    type="button"
-                    onClick={() => handleSortByColumn('questions')}
-                    className="flex items-center gap-1 font-medium hover:opacity-80"
-                  >
-                    {tDashboard('table.questions')}
-                    {sortBy === 'questions' ? (
-                      sortDir === 'asc' ? (
-                        <ArrowUp className="size-3.5" aria-hidden />
-                      ) : (
-                        <ArrowDown className="size-3.5" aria-hidden />
-                      )
-                    ) : (
-                      <ArrowUpDown className="text-muted-foreground size-3.5" aria-hidden />
-                    )}
-                  </button>
-                </TableHead>
-                <TableHead className="border-border/30 border-l">
-                  <button
-                    type="button"
-                    onClick={() => handleSortByColumn('responses')}
-                    className="flex items-center gap-1 font-medium hover:opacity-80"
-                  >
-                    {tDashboard('table.responses')}
-                    {sortBy === 'responses' ? (
-                      sortDir === 'asc' ? (
-                        <ArrowUp className="size-3.5" aria-hidden />
-                      ) : (
-                        <ArrowDown className="size-3.5" aria-hidden />
-                      )
-                    ) : (
-                      <ArrowUpDown className="text-muted-foreground size-3.5" aria-hidden />
-                    )}
-                  </button>
-                </TableHead>
-                <TableHead className="border-border/30 border-l">
-                  <button
-                    type="button"
-                    onClick={() => handleSortByColumn('archivedAt')}
-                    className="flex items-center gap-1 font-medium hover:opacity-80"
-                  >
-                    {tDashboard('table.archivedAt')}
-                    {sortBy === 'archivedAt' ? (
-                      sortDir === 'asc' ? (
-                        <ArrowUp className="size-3.5" aria-hidden />
-                      ) : (
-                        <ArrowDown className="size-3.5" aria-hidden />
-                      )
-                    ) : (
-                      <ArrowUpDown className="text-muted-foreground size-3.5" aria-hidden />
-                    )}
-                  </button>
-                </TableHead>
+                <SortableTableHeader
+                  sortKey="title"
+                  currentSortKey={sortBy}
+                  sortDir={sortDir}
+                  onSort={handleSortByColumn}
+                  label={tDashboard('table.title')}
+                  className="w-[30%]"
+                />
+                <SortableTableHeader
+                  sortKey="status"
+                  currentSortKey={sortBy}
+                  sortDir={sortDir}
+                  onSort={handleSortByColumn}
+                  label={tDashboard('table.status')}
+                  className="border-border/30 border-l"
+                  centered
+                />
+                <SortableTableHeader
+                  sortKey="questions"
+                  currentSortKey={sortBy}
+                  sortDir={sortDir}
+                  onSort={handleSortByColumn}
+                  label={tDashboard('table.questions')}
+                  className="border-border/30 border-l"
+                />
+                <SortableTableHeader
+                  sortKey="responses"
+                  currentSortKey={sortBy}
+                  sortDir={sortDir}
+                  onSort={handleSortByColumn}
+                  label={tDashboard('table.responses')}
+                  className="border-border/30 border-l"
+                />
+                <SortableTableHeader
+                  sortKey="archivedAt"
+                  currentSortKey={sortBy}
+                  sortDir={sortDir}
+                  onSort={handleSortByColumn}
+                  label={tDashboard('table.archivedAt')}
+                  className="border-border/30 border-l"
+                />
                 <TableHead className="w-10" aria-hidden />
               </TableRow>
             </TableHeader>
@@ -431,30 +310,14 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
         </div>
       )}
 
-      <Sheet open={showSheet} onOpenChange={(open) => !open && setSelected(null)}>
-        <SheetContent
-          side="right"
-          className="flex h-full w-[85%] max-w-[420px] flex-col gap-0 overflow-y-auto p-0 sm:max-w-[420px]"
-          showCloseButton
-        >
-          <SheetHeader className="border-border h-14 shrink-0 flex-row items-center gap-0 border-b px-4 py-0 pr-12">
-            <SheetTitle className="text-foreground text-base font-semibold">
-              {tDashboard('detailPanel.detailsLabel')}
-            </SheetTitle>
-            <SheetDescription className="sr-only">{selectedSurvey?.title}</SheetDescription>
-          </SheetHeader>
-          {showSheet && selectedSurvey && (
-            <div className="min-h-0 flex-1 overflow-y-auto px-4 pt-4 pb-16">
-              <SurveyDetailPanel
-                survey={selectedSurvey}
-                questions={questions}
-                onStatusChange={handleStatusChange}
-                embeddedInSheet
-              />
-            </div>
-          )}
-        </SheetContent>
-      </Sheet>
+      <SurveyDetailSheet
+        open={showSheet}
+        onClose={() => setSelected(null)}
+        survey={selectedSurvey}
+        questions={questions}
+        onStatusChange={handleStatusChange}
+        detailsLabel={tDashboard('detailPanel.detailsLabel')}
+      />
     </div>
   );
 }

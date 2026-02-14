@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
-import { ArrowLeft, Check, List, Loader2, Pencil, Save, Send, Settings2 } from 'lucide-react';
+import { ArrowLeft, List, Pencil, Save, Send, Settings2 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
@@ -13,14 +13,15 @@ import { Spinner } from '@/components/ui/spinner';
 import { ROUTES } from '@/config/routes';
 import { UserMenu } from '@/features/auth/components/common/user-menu';
 import { publishSurvey, saveSurveyQuestions } from '@/features/surveys/actions';
+import { getSurveyShareUrl } from '@/features/surveys/lib/share-url';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import { useUnsavedChangesWarning } from '@/hooks/unsaved-changes-context';
 import Link from '@/i18n/link';
 import type { MessageKey } from '@/i18n/types';
-import { env } from '@/lib/common/env';
 
 import { useQuestionBuilderContext } from '../../hooks/use-question-builder-context';
 import { PublishSuccessDialog } from './publish-success-dialog';
+import { SaveStatusIndicator } from './save-status-indicator';
 
 interface BuilderTopBarProps {
   surveyId: string;
@@ -128,23 +129,7 @@ export function BuilderTopBar({
             </Button>
           </div>
 
-          <div className="text-muted-foreground flex items-center gap-1.5 text-xs">
-            {state.saveStatus === 'saving' && (
-              <>
-                <Loader2 className="size-3 animate-spin" />
-                {t('surveys.builder.saving')}
-              </>
-            )}
-            {state.saveStatus === 'saved' && (
-              <>
-                <Check className="size-3" />
-                {t('surveys.builder.saved')}
-              </>
-            )}
-            {state.saveStatus === 'error' && (
-              <span className="text-destructive">{t('surveys.builder.saveError')}</span>
-            )}
-          </div>
+          <SaveStatusIndicator status={state.saveStatus} />
 
           <div className="ml-auto flex shrink-0 items-center gap-2">
             <Button variant="outline" size="sm" disabled={isLoading} onClick={handleSave}>
@@ -211,23 +196,7 @@ export function BuilderTopBar({
               </Button>
             </div>
 
-            <div className="text-muted-foreground flex min-w-0 items-center gap-1.5 text-xs">
-              {state.saveStatus === 'saving' && (
-                <>
-                  <Loader2 className="size-3 animate-spin" />
-                  <span className="truncate">{t('surveys.builder.saving')}</span>
-                </>
-              )}
-              {state.saveStatus === 'saved' && (
-                <>
-                  <Check className="size-3" />
-                  <span className="truncate">{t('surveys.builder.saved')}</span>
-                </>
-              )}
-              {state.saveStatus === 'error' && (
-                <span className="text-destructive truncate">{t('surveys.builder.saveError')}</span>
-              )}
-            </div>
+            <SaveStatusIndicator status={state.saveStatus} truncate className="min-w-0" />
 
             <div className="flex shrink-0 items-center gap-2">
               <Button
@@ -255,7 +224,7 @@ export function BuilderTopBar({
       {publishedSlug && (
         <PublishSuccessDialog
           open
-          shareUrl={`${env.NEXT_PUBLIC_APP_URL}/${locale}/r/${publishedSlug}`}
+          shareUrl={getSurveyShareUrl(locale, publishedSlug)}
           surveyId={surveyId}
           surveyTitle={surveyTitle}
           onClose={() => {

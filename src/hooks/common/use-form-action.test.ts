@@ -118,7 +118,7 @@ describe('useFormAction', () => {
       await result.current.execute(action, {});
     });
 
-    expect(mockToastError).toHaveBeenCalledWith('auth.unexpectedError');
+    expect(mockToastError).toHaveBeenCalledWith('common.errors.unexpected');
     expect(result.current.isLoading).toBe(false);
   });
 
@@ -179,7 +179,7 @@ describe('useFormAction', () => {
       actionResult = await result.current.execute(action, {});
     });
 
-    expect(actionResult).toEqual({ error: 'auth.unexpectedError' });
+    expect(actionResult).toEqual({ error: 'common.errors.unexpected' });
   });
 
   // onError callback is invoked when action throws.

@@ -70,11 +70,11 @@ export interface NavGroup {
 export const SIDEBAR_NAV: NavGroup[] = [
   {
     items: [
-      { labelKey: 'sidebar.home', icon: Home, href: '/dashboard' as AppRoute },
+      { labelKey: 'sidebar.home', icon: Home, href: ROUTES.common.dashboard },
       {
         labelKey: 'sidebar.surveys',
         icon: ClipboardList,
-        href: '/dashboard/surveys' as AppRoute,
+        href: ROUTES.dashboard.surveys,
         subNav: {
           titleKey: 'surveys.title',
           groups: [
@@ -83,14 +83,15 @@ export const SIDEBAR_NAV: NavGroup[] = [
                 {
                   labelKey: 'sidebar.allSurveys',
                   icon: ClipboardList,
-                  href: '/dashboard/surveys' as AppRoute,
+                  href: ROUTES.dashboard.surveys,
                 },
                 {
                   labelKey: 'sidebar.newSurvey',
                   icon: Plus,
-                  href: '/dashboard/surveys/new' as AppRoute,
+                  href: ROUTES.dashboard.surveysNew,
                 },
                 {
+                  // Not yet implemented — will move to ROUTES when route exists
                   labelKey: 'sidebar.templates',
                   icon: LayoutTemplate,
                   href: '/dashboard/surveys/templates' as AppRoute,
@@ -102,6 +103,7 @@ export const SIDEBAR_NAV: NavGroup[] = [
               headingKey: 'sidebar.organizeHeading',
               items: [
                 {
+                  // Not yet implemented — will move to ROUTES when route exists
                   labelKey: 'sidebar.folders',
                   icon: FolderOpen,
                   href: '/dashboard/surveys/folders' as AppRoute,
@@ -110,7 +112,7 @@ export const SIDEBAR_NAV: NavGroup[] = [
                 {
                   labelKey: 'sidebar.archive',
                   icon: Archive,
-                  href: '/dashboard/surveys/archive' as AppRoute,
+                  href: ROUTES.dashboard.surveysArchive,
                 },
               ],
             },
@@ -118,12 +120,14 @@ export const SIDEBAR_NAV: NavGroup[] = [
               headingKey: 'sidebar.configureHeading',
               items: [
                 {
+                  // Not yet implemented — will move to ROUTES when route exists
                   labelKey: 'sidebar.surveySettings',
                   icon: Settings,
                   href: '/dashboard/surveys/settings' as AppRoute,
                   disabled: true,
                 },
                 {
+                  // Not yet implemented — will move to ROUTES when route exists
                   labelKey: 'sidebar.integrations',
                   icon: Plug,
                   href: '/dashboard/surveys/integrations' as AppRoute,
@@ -134,7 +138,7 @@ export const SIDEBAR_NAV: NavGroup[] = [
           ],
         },
       },
-      { labelKey: 'sidebar.analytics', icon: BarChart3, href: '/dashboard/analytics' as AppRoute },
+      { labelKey: 'sidebar.analytics', icon: BarChart3, href: ROUTES.dashboard.analytics },
     ],
   },
 ];

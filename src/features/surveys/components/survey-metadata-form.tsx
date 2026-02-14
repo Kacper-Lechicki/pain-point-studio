@@ -37,6 +37,7 @@ import { ROUTES } from '@/config/routes';
 import { createSurveyDraft } from '@/features/surveys/actions';
 import type { SurveyCategoryOption } from '@/features/surveys/actions';
 import { SURVEY_DESCRIPTION_MAX_LENGTH, SURVEY_TITLE_MAX_LENGTH } from '@/features/surveys/config';
+import { getSurveyEditUrl } from '@/features/surveys/lib/survey-urls';
 import { type SurveyMetadataSchema, surveyMetadataSchema } from '@/features/surveys/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import { useUnsavedChangesWarning } from '@/hooks/unsaved-changes-context';
@@ -119,7 +120,7 @@ const SurveyMetadataForm = ({
       });
 
       if (result?.data?.surveyId) {
-        router.push(`/dashboard/surveys/new/${result.data.surveyId}`);
+        router.push(getSurveyEditUrl(result.data.surveyId));
       }
     }
   }

@@ -57,6 +57,11 @@
       "backToDashboard": "Back to Dashboard",
       "backToSignIn": "Back to Sign In"
     },
+    "errors": {
+      "unexpected": "Something went wrong. Please try again.",
+      "rateLimitExceeded": "Too many requests. Please wait a moment and try again.",
+      "invalidData": "The submitted data is invalid. Please check your input."
+    },
     "unsavedChanges": {
       "title": "Unsaved changes",
       "description": "If you leave this page, your unsaved data will be lost. Are you sure you want to leave?",

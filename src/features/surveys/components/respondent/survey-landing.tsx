@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { PageTransition } from '@/components/ui/page-transition';
 import { startResponse } from '@/features/surveys/actions/respondent';
-import { ESTIMATED_SECONDS_PER_QUESTION } from '@/features/surveys/config';
+import { ESTIMATED_SECONDS_PER_QUESTION, surveyCompletedKey } from '@/features/surveys/config';
 import type { CompletedData, PublicSurveyData } from '@/features/surveys/types';
 import type { MessageKey } from '@/i18n/types';
 
@@ -30,7 +30,7 @@ export const SurveyLanding = ({ survey, slug }: SurveyLandingProps) => {
 
   useEffect(() => {
     try {
-      const stored = localStorage.getItem(`pps_completed_${slug}`);
+      const stored = localStorage.getItem(surveyCompletedKey(slug));
 
       if (stored) {
         const parsed = JSON.parse(stored) as CompletedData;

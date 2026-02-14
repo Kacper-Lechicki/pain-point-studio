@@ -1,12 +1,13 @@
 'use server';
 
 import { deleteAccountSchema } from '@/features/settings/types';
+import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
 import { createAdminClient } from '@/lib/supabase/admin';
 
 export const deleteAccount = withProtectedAction('delete-account', {
   schema: deleteAccountSchema,
-  rateLimit: { limit: 1, windowSeconds: 3600 },
+  rateLimit: RATE_LIMITS.destructive,
   validationError: 'settings.errors.confirmationMismatch',
   action: async ({ data, user, supabase }) => {
     if (data.confirmation !== user.email) {

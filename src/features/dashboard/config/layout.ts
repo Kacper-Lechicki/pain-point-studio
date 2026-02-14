@@ -3,7 +3,7 @@ import { ROUTES } from '@/config/routes';
 import { locales } from '@/i18n/constants';
 
 /** Path prefix for survey builder (edit questions). Builder uses a standalone full-screen layout. */
-export const BUILDER_PATH_PREFIX = '/dashboard/surveys/new/';
+export const BUILDER_PATH_PREFIX = ROUTES.dashboard.surveysNew + '/';
 
 export function isBuilderPath(pathname: string | null): boolean {
   return (
@@ -25,7 +25,7 @@ export function getDashboardBackConfig(pathname: string | null): DashboardBackCo
     return null;
   }
 
-  if (pathname.startsWith('/dashboard/surveys/stats/')) {
+  if (pathname.startsWith(ROUTES.dashboard.surveysStats + '/')) {
     return { fallbackHref: ROUTES.dashboard.surveys };
   }
 
@@ -33,7 +33,7 @@ export function getDashboardBackConfig(pathname: string | null): DashboardBackCo
     return { fallbackHref: ROUTES.dashboard.surveys };
   }
 
-  if (pathname === '/profile/preview') {
+  if (pathname === ROUTES.profile.preview) {
     return { fallbackHref: ROUTES.settings.profile };
   }
 
@@ -94,26 +94,26 @@ function isFullWidthPath(pathname: string): boolean {
   const path = pathWithoutLocale(pathname);
 
   return (
-    path === '/dashboard/surveys' ||
-    path === '/dashboard/surveys/archive' ||
-    path.startsWith('/dashboard/surveys/archive/')
+    path === ROUTES.dashboard.surveys ||
+    path === ROUTES.dashboard.surveysArchive ||
+    path.startsWith(ROUTES.dashboard.surveysArchive + '/')
   );
 }
 
 function isNarrowPath(pathname: string): boolean {
   const path = pathWithoutLocale(pathname);
 
-  if (path === '/dashboard/surveys/new' || path.startsWith('/dashboard/surveys/new/')) {
+  if (path === ROUTES.dashboard.surveysNew || path.startsWith(ROUTES.dashboard.surveysNew + '/')) {
     return true;
   }
 
-  if (/^\/dashboard\/surveys\/[^/]+$/.test(path) && path !== '/dashboard/surveys/archive') {
+  if (/^\/dashboard\/surveys\/[^/]+$/.test(path) && path !== ROUTES.dashboard.surveysArchive) {
     return true;
   }
 
   if (
-    path === '/settings' ||
-    path.startsWith('/settings/') ||
+    path === ROUTES.common.settings ||
+    path.startsWith(ROUTES.common.settings + '/') ||
     path === '/profile' ||
     path.startsWith('/profile/')
   ) {

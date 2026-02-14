@@ -58,54 +58,6 @@ export type Database = {
         };
         Relationships: [];
       };
-      roles: {
-        Row: {
-          id: number;
-          is_active: boolean;
-          label_key: string;
-          sort_order: number;
-          value: string;
-        };
-        Insert: {
-          id?: number;
-          is_active?: boolean;
-          label_key: string;
-          sort_order?: number;
-          value: string;
-        };
-        Update: {
-          id?: number;
-          is_active?: boolean;
-          label_key?: string;
-          sort_order?: number;
-          value?: string;
-        };
-        Relationships: [];
-      };
-      social_link_types: {
-        Row: {
-          id: number;
-          is_active: boolean;
-          label_key: string;
-          sort_order: number;
-          value: string;
-        };
-        Insert: {
-          id?: number;
-          is_active?: boolean;
-          label_key: string;
-          sort_order?: number;
-          value: string;
-        };
-        Update: {
-          id?: number;
-          is_active?: boolean;
-          label_key?: string;
-          sort_order?: number;
-          value?: string;
-        };
-        Relationships: [];
-      };
       survey_answers: {
         Row: {
           created_at: string;
@@ -147,30 +99,6 @@ export type Database = {
             referencedColumns: ['id'];
           },
         ];
-      };
-      survey_categories: {
-        Row: {
-          id: number;
-          is_active: boolean;
-          label_key: string;
-          sort_order: number;
-          value: string;
-        };
-        Insert: {
-          id?: number;
-          is_active?: boolean;
-          label_key: string;
-          sort_order?: number;
-          value: string;
-        };
-        Update: {
-          id?: number;
-          is_active?: boolean;
-          label_key?: string;
-          sort_order?: number;
-          value?: string;
-        };
-        Relationships: [];
       };
       survey_questions: {
         Row: {
