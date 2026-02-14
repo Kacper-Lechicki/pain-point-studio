@@ -18,21 +18,23 @@ import { cn } from '@/lib/common/utils';
 const BASE_CLASSES =
   'flex items-center rounded-lg border border-transparent text-sm font-medium whitespace-nowrap transition-all duration-200 ease-in-out ' +
   'text-sidebar-foreground/70 ' +
-  'data-[state=active]:bg-sidebar-primary data-[state=active]:text-sidebar-primary-foreground ' +
+  'data-[state=active]:bg-sidebar-primary-active data-[state=active]:text-sidebar-primary-foreground ' +
   'data-[state=inactive]:md:hover:text-sidebar-foreground data-[state=inactive]:md:hover:border-sidebar-foreground/25 data-[state=inactive]:md:hover:border-dashed';
 
 const EXPANDED_STYLE: CSSProperties = {
-  minHeight: undefined, // handled by Tailwind min-h-10 md:min-h-9
+  minHeight: undefined,
   width: '100%',
-  paddingLeft: 12,
-  paddingRight: 12,
-  gap: 10,
+  paddingLeft: 10,
+  paddingRight: 10,
+  gap: 8,
   justifyContent: 'flex-start',
 };
 
 const COLLAPSED_STYLE: CSSProperties = {
-  width: 36,
-  height: 36,
+  width: '2rem',
+  height: '2rem',
+  minWidth: '2rem',
+  minHeight: '2rem',
   paddingLeft: 0,
   paddingRight: 0,
   gap: 0,
@@ -67,7 +69,7 @@ export function SidebarItem({
 
   const classes = cn(
     BASE_CLASSES,
-    isExpanded ? 'min-h-10 md:min-h-9' : 'size-9',
+    isExpanded ? 'min-h-8' : 'size-8 shrink-0',
     disabled && 'opacity-50 pointer-events-none'
   );
 

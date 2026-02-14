@@ -2,6 +2,7 @@
 
 import { withPublicAction } from '@/lib/common/with-public-action';
 
+import { mapRpcError } from '../../config';
 import { submitResponseSchema } from '../../types';
 
 export const submitResponse = withPublicAction<typeof submitResponseSchema, void>(
@@ -18,7 +19,7 @@ export const submitResponse = withPublicAction<typeof submitResponseSchema, void
       });
 
       if (error) {
-        return { error: 'submitFailed' };
+        return { error: `respondent.${mapRpcError(error.message, 'errors.submitFailed')}` };
       }
 
       return { success: true };

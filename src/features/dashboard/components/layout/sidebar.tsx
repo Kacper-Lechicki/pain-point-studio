@@ -35,14 +35,14 @@ export function Sidebar() {
     >
       <nav
         className={cn(
-          'flex flex-1 flex-col gap-2 overflow-x-hidden overflow-y-auto',
-          isExpanded ? 'px-2 pt-6' : 'px-1 pt-6',
+          'flex flex-1 flex-col gap-1.5 overflow-x-hidden overflow-y-auto pb-4',
+          isExpanded ? 'px-2 pt-4' : 'px-1 pt-4',
           !isExpanded && 'items-center'
         )}
       >
         <SidebarNavList isExpanded={isExpanded} />
 
-        <div className={cn('mt-auto pt-1', !isExpanded && 'flex flex-col items-center')}>
+        <div className={cn('mt-auto pt-4', !isExpanded && 'flex flex-col items-center')}>
           <SidebarItem
             {...SIDEBAR_BOTTOM_ITEM}
             isExpanded={isExpanded}
@@ -60,7 +60,7 @@ export function Sidebar() {
       >
         <button
           onClick={togglePin}
-          className="text-sidebar-foreground/50 hover:text-sidebar-foreground flex size-8 items-center justify-center rounded-md transition-colors"
+          className="text-sidebar-foreground/50 hover:text-sidebar-foreground flex size-7 items-center justify-center rounded-md transition-colors"
           aria-label={isPinned ? t('unpinSidebar') : t('pinSidebar')}
         >
           {isPinned ? <Lock className="size-3.5" /> : <Unlock className="size-3.5" />}

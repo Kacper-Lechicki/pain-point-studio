@@ -434,6 +434,7 @@
         "close": "Close survey",
         "reopen": "Reopen survey",
         "archive": "Archive",
+        "restore": "Restore",
         "delete": "Delete",
         "moreActions": "More actions",
         "details": "Details",
@@ -497,6 +498,7 @@
         "reopened": "Survey reopened.",
         "archived": "Survey archived.",
         "deleted": "Survey deleted.",
+        "restored": "Survey restored.",
         "linkCopied": "Survey link copied!",
         "actionFailed": "Something went wrong. Please try again."
       },

@@ -17,57 +17,18 @@ import {
   SIDEBAR_NAV_ITEM_BASE,
   SIDEBAR_NAV_ITEM_CLASSES,
 } from '../../config/nav-styles';
-import type { SubNavGroup, SubNavItem } from '../../config/navigation';
+import type { SubNavGroup } from '../../config/navigation';
 import {
   type NavItem,
   SIDEBAR_BOTTOM_ITEM,
   SIDEBAR_NAV,
   findActiveNavItem,
 } from '../../config/navigation';
+import { getSubItemHref, isSubItemActive } from '../../lib/nav-utils';
 import { ProjectSelector } from './project-selector';
 import { useSidebar } from './sidebar-provider';
 
 const TRANSITION = { duration: 0.15, ease: [0.25, 0.1, 0.25, 1] as const };
-
-function getSubItemHref(item: SubNavItem): string {
-  if (item.searchParams) {
-    const params = new URLSearchParams(item.searchParams);
-
-    return `${item.href}?${params.toString()}${item.hash ? `#${item.hash}` : ''}`;
-  }
-
-  return item.hash ? `${item.href}#${item.hash}` : item.href;
-}
-
-// ── Shared sub-item active logic (same as secondary-nav) ─────────────
-
-function isSubItemActive(
-  item: SubNavItem,
-  pathname: string,
-  hash: string,
-  currentSearchParams: URLSearchParams,
-  searchParamKeys: string[]
-): boolean {
-  if (item.hash) {
-    return pathname === item.href && hash === item.hash;
-  }
-
-  if (item.searchParams) {
-    if (pathname !== item.href) {
-      return false;
-    }
-
-    return Object.entries(item.searchParams).every(
-      ([key, value]) => currentSearchParams.get(key) === value
-    );
-  }
-
-  if (pathname === item.href) {
-    return searchParamKeys.every((key) => !currentSearchParams.has(key));
-  }
-
-  return item.alsoActiveFor?.includes(pathname) ?? false;
-}
 
 // ── Sub-nav items (extracted to use cn() instead of data-state) ──────
 

@@ -6,7 +6,6 @@ import { Calendar, CheckCircle, Clock, Hash, Inbox, Link2, SquareX } from 'lucid
 import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ClipboardInput } from '@/components/ui/clipboard-input';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
@@ -15,47 +14,16 @@ import { Separator } from '@/components/ui/separator';
 import { useBreadcrumbSegment } from '@/features/dashboard/components/layout/breadcrumb-context';
 import { closeSurvey } from '@/features/surveys/actions';
 import type { QuestionStats, SurveyStats } from '@/features/surveys/actions/get-survey-stats';
+import { SurveyStatusBadge } from '@/features/surveys/components/dashboard/survey-status-badge';
+import { MetricRow, SectionLabel } from '@/features/surveys/components/shared/metric-display';
+import type { SurveyStatus } from '@/features/surveys/types';
 import { env } from '@/lib/common/env';
-import { cn } from '@/lib/common/utils';
 
 import { ExportButtons } from './export-buttons';
 import { QuestionStatsCard } from './question-stats-card';
 
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="text-muted-foreground mb-2 text-[11px] font-medium tracking-wider uppercase">
-      {children}
-    </p>
-  );
-}
-
 interface SurveyStatsPanelProps {
   stats: SurveyStats;
-}
-
-const STATUS_BADGE_CLASS: Record<string, string> = {
-  active: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/25',
-  closed: 'bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/25',
-};
-
-function MetricRow({
-  label,
-  value,
-  icon: Icon,
-}: {
-  label: string;
-  value: React.ReactNode;
-  icon?: React.ComponentType<{ className?: string }>;
-}) {
-  return (
-    <div className="flex items-center justify-between gap-2">
-      <span className="text-muted-foreground flex items-center gap-1.5 text-xs">
-        {Icon != null && <Icon className="size-3.5 shrink-0" aria-hidden />}
-        {label}
-      </span>
-      <span className="text-foreground text-right text-xs font-medium tabular-nums">{value}</span>
-    </div>
-  );
 }
 
 export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
@@ -119,15 +87,7 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
                 {stats.survey.title}
               </h1>
               <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                <Badge
-                  variant={isClosed ? 'outline' : 'default'}
-                  className={cn(
-                    'text-[11px]',
-                    isClosed ? STATUS_BADGE_CLASS.closed : STATUS_BADGE_CLASS.active
-                  )}
-                >
-                  {isClosed ? t('statusClosed') : t('statusActive')}
-                </Badge>
+                <SurveyStatusBadge status={(isClosed ? 'closed' : 'active') as SurveyStatus} />
               </div>
             </div>
             <div className="flex shrink-0 gap-2">

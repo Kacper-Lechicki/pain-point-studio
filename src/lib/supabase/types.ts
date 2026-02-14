@@ -56,15 +56,7 @@ export type Database = {
           social_links?: Json;
           updated_at?: string;
         };
-        Relationships: [
-          {
-            foreignKeyName: 'profiles_role_fk';
-            columns: ['role'];
-            isOneToOne: false;
-            referencedRelation: 'roles';
-            referencedColumns: ['value'];
-          },
-        ];
+        Relationships: [];
       };
       roles: {
         Row: {
@@ -230,8 +222,8 @@ export type Database = {
       survey_responses: {
         Row: {
           completed_at: string | null;
-          contact_email: string | null;
-          contact_name: string | null;
+          contact_email_encrypted: string | null;
+          contact_name_encrypted: string | null;
           created_at: string;
           feedback: string | null;
           id: string;
@@ -242,8 +234,8 @@ export type Database = {
         };
         Insert: {
           completed_at?: string | null;
-          contact_email?: string | null;
-          contact_name?: string | null;
+          contact_email_encrypted?: string | null;
+          contact_name_encrypted?: string | null;
           created_at?: string;
           feedback?: string | null;
           id?: string;
@@ -254,8 +246,8 @@ export type Database = {
         };
         Update: {
           completed_at?: string | null;
-          contact_email?: string | null;
-          contact_name?: string | null;
+          contact_email_encrypted?: string | null;
+          contact_name_encrypted?: string | null;
           created_at?: string;
           feedback?: string | null;
           id?: string;
@@ -320,15 +312,7 @@ export type Database = {
           user_id?: string;
           visibility?: string;
         };
-        Relationships: [
-          {
-            foreignKeyName: 'surveys_category_fk';
-            columns: ['category'];
-            isOneToOne: false;
-            referencedRelation: 'survey_categories';
-            referencedColumns: ['value'];
-          },
-        ];
+        Relationships: [];
       };
     };
     Views: {
@@ -336,11 +320,23 @@ export type Database = {
     };
     Functions: {
       cancel_email_change: { Args: never; Returns: undefined };
+      decrypt_pii: { Args: { encrypted: string }; Returns: string };
+      encrypt_pii: { Args: { plain_text: string }; Returns: string };
       get_email_change_status: {
         Args: never;
         Returns: {
           confirm_status: number;
           new_email: string;
+        }[];
+      };
+      get_export_responses: {
+        Args: { p_survey_id: string; p_user_id: string };
+        Returns: {
+          completed_at: string;
+          contact_email: string;
+          contact_name: string;
+          feedback: string;
+          id: string;
         }[];
       };
       get_survey_response_count: {

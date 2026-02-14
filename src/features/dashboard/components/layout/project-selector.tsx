@@ -24,7 +24,7 @@ export function ProjectSelector({ className }: ProjectSelectorProps) {
       <SelectTrigger
         size="sm"
         className={cn(
-          'border-border/50 min-h-10 w-full rounded-lg px-2 py-0 md:min-h-9',
+          'border-border/50 min-h-8 w-full rounded-lg px-2 py-0',
           'gap-2.5 [&_[data-slot=select-value]]:min-w-0 [&_[data-slot=select-value]]:flex-1 [&_[data-slot=select-value]]:justify-start [&_[data-slot=select-value]]:gap-0',
           className ?? 'w-44'
         )}

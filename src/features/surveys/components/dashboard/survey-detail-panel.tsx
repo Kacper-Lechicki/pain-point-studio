@@ -1,9 +1,8 @@
 'use client';
 
-import { type ReactNode, useState, useTransition } from 'react';
+import type { ReactNode } from 'react';
 
 import {
-  Archive,
   BarChart3,
   Calendar,
   Expand,
@@ -11,121 +10,31 @@ import {
   HelpCircle,
   Loader2,
   Pencil,
-  RotateCcw,
   Share2,
-  SquareX,
   Tag,
-  Trash2,
   Users,
 } from 'lucide-react';
 import { useFormatter, useLocale, useNow, useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ClipboardInput } from '@/components/ui/clipboard-input';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Separator } from '@/components/ui/separator';
-import {
-  archiveSurvey,
-  closeSurvey,
-  deleteSurveyDraft,
-  reopenSurvey,
-  restoreSurvey,
-} from '@/features/surveys/actions';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import { QUESTION_TYPE_ICONS, QUESTION_TYPE_LABEL_KEYS } from '@/features/surveys/config';
+import { SURVEY_ACTION_UI, getAvailableActions } from '@/features/surveys/config/survey-status';
+import { useSurveyAction } from '@/features/surveys/hooks/use-survey-action';
 import type { MappedQuestion } from '@/features/surveys/lib/map-question-row';
-import type { SurveyStatus } from '@/features/surveys/types';
 import Link from '@/i18n/link';
 import { env } from '@/lib/common/env';
 import { cn } from '@/lib/common/utils';
 
+import { MetricRow, SectionLabel } from '../shared/metric-display';
 import { Sparkline, getSparklineColor } from './sparkline';
+import { SurveyStatusBadge } from './survey-status-badge';
 
-const STATUS_BADGE_VARIANT: Record<SurveyStatus, 'default' | 'secondary' | 'outline'> = {
-  active: 'default',
-  draft: 'secondary',
-  closed: 'outline',
-  archived: 'secondary',
-};
-
-const STATUS_BADGE_CLASS: Record<SurveyStatus, string> = {
-  active: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/25',
-  draft: '',
-  closed: 'bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/25',
-  archived: 'opacity-60',
-};
-
-type ConfirmableAction = 'close' | 'archive' | 'delete';
-
-const ACTION_CONFIGS = {
-  close: {
-    fn: closeSurvey,
-    toastKey: 'toast.closed',
-    confirm: {
-      titleKey: 'confirm.closeTitle',
-      descriptionKey: 'confirm.closeDescription',
-      variant: 'destructive' as const,
-    },
-  },
-  reopen: { fn: reopenSurvey, toastKey: 'toast.reopened' },
-  archive: {
-    fn: archiveSurvey,
-    toastKey: 'toast.archived',
-    confirm: {
-      titleKey: 'confirm.archiveTitle',
-      descriptionKey: 'confirm.archiveDescription',
-      variant: 'warning' as const,
-    },
-  },
-  delete: {
-    fn: deleteSurveyDraft,
-    toastKey: 'toast.deleted',
-    confirm: {
-      titleKey: 'confirm.deleteTitle',
-      descriptionKey: 'confirm.deleteDescription',
-      variant: 'destructive' as const,
-    },
-  },
-} as const;
-
-interface SurveyDetailPanelProps {
-  survey: UserSurvey;
-  questions: MappedQuestion[] | null;
-  onStatusChange: (surveyId: string, action: string) => void;
-  embeddedInSheet?: boolean;
-  /** When true, renders as full-page content (main, no sticky). */
-  embeddedInPage?: boolean;
-}
-
-function MetricRow({
-  label,
-  value,
-  icon: Icon,
-}: {
-  label: string;
-  value: React.ReactNode;
-  icon?: React.ComponentType<{ className?: string }>;
-}) {
-  return (
-    <div className="flex items-center justify-between gap-2">
-      <span className="text-muted-foreground flex items-center gap-1.5 text-xs">
-        {Icon && <Icon className="size-3.5 shrink-0" />}
-        {label}
-      </span>
-      <span className="text-foreground text-right text-xs font-medium tabular-nums">{value}</span>
-    </div>
-  );
-}
-
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="text-muted-foreground mb-2 text-[11px] font-medium tracking-wider uppercase">
-      {children}
-    </p>
-  );
-}
+// ── Local layout components ─────────────────────────────────────────
 
 function QuestionConfigDetails({
   question,
@@ -236,6 +145,17 @@ function QuestionConfigDetails({
   return <div className="text-muted-foreground mt-1.5 space-y-0.5 text-[10px]">{rows}</div>;
 }
 
+// ── Component ───────────────────────────────────────────────────────
+
+interface SurveyDetailPanelProps {
+  survey: UserSurvey;
+  questions: MappedQuestion[] | null;
+  onStatusChange: (surveyId: string, action: string) => void;
+  embeddedInSheet?: boolean;
+  /** When true, renders as full-page content (main, no sticky). */
+  embeddedInPage?: boolean;
+}
+
 export function SurveyDetailPanel({
   survey,
   questions,
@@ -249,12 +169,11 @@ export function SurveyDetailPanel({
   const locale = useLocale();
   const format = useFormatter();
   const now = useNow();
-  const [, startTransition] = useTransition();
-  const [confirmDialog, setConfirmDialog] = useState<ConfirmableAction | null>(null);
+
+  const { handleActionClick, confirmDialogProps } = useSurveyAction(survey.id, onStatusChange, t);
 
   const isDraft = survey.status === 'draft';
   const isActive = survey.status === 'active';
-  const isClosed = survey.status === 'closed';
   const isArchived = survey.status === 'archived';
   const shareUrl = survey.slug ? `${env.NEXT_PUBLIC_APP_URL}/${locale}/r/${survey.slug}` : null;
   const sparklineColor = getSparklineColor(survey.recentActivity);
@@ -270,6 +189,7 @@ export function SurveyDetailPanel({
     survey.maxRespondents != null && survey.maxRespondents > 0
       ? Math.min(100, Math.round((survey.completedCount / survey.maxRespondents) * 100))
       : null;
+  const availableActions = getAvailableActions(survey.status);
 
   const handleCopyLink = async () => {
     if (!shareUrl) {
@@ -278,29 +198,6 @@ export function SurveyDetailPanel({
 
     await navigator.clipboard.writeText(shareUrl);
     toast.success(t('detailPanel.linkCopied'));
-  };
-
-  const tArchive = useTranslations('surveys.archive');
-
-  const handleAction = (action: ConfirmableAction | 'reopen' | 'restore') => {
-    startTransition(async () => {
-      const fn = action === 'restore' ? restoreSurvey : ACTION_CONFIGS[action].fn;
-      const result = await fn({ surveyId: survey.id });
-
-      setConfirmDialog(null);
-
-      if (result.success) {
-        if (action === 'restore') {
-          toast.success(tArchive('toast.restored'));
-        } else {
-          toast.success(t(ACTION_CONFIGS[action].toastKey));
-        }
-
-        onStatusChange(survey.id, action);
-      } else {
-        toast.error(t('toast.actionFailed'));
-      }
-    });
   };
 
   const formatDate = (iso: string) =>
@@ -335,16 +232,11 @@ export function SurveyDetailPanel({
 
       {/* Status + Category */}
       <div className="mt-2 flex flex-wrap items-center gap-1.5">
-        <Badge
-          variant={STATUS_BADGE_VARIANT[survey.status]}
-          className={cn('text-[11px]', STATUS_BADGE_CLASS[survey.status])}
-        >
-          {t(`status.${survey.status}`)}
-        </Badge>
+        <SurveyStatusBadge status={survey.status} />
         {survey.category && (
-          <Badge variant="outline" className="text-[11px] font-normal">
+          <span className="bg-border/40 text-muted-foreground inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-normal">
             {tCat(survey.category as Parameters<typeof tCat>[0])}
-          </Badge>
+          </span>
         )}
       </div>
 
@@ -494,63 +386,35 @@ export function SurveyDetailPanel({
           </Button>
         )}
       </div>
-      {(isActive || isClosed || isDraft || isArchived) && (
+
+      {/* Status transition buttons — data-driven from config */}
+      {availableActions.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-1.5">
-          {isArchived && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-7 gap-1 px-2 text-xs hover:bg-transparent md:hover:bg-transparent"
-              onClick={() => handleAction('restore')}
-            >
-              <RotateCcw className="size-3.5" aria-hidden />
-              {tArchive('actions.restore')}
-            </Button>
-          )}
-          {isActive && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="text-destructive hover:text-destructive md:hover:text-destructive border-destructive/30 hover:border-destructive/40 h-7 gap-1 px-2 text-xs hover:bg-transparent md:hover:bg-transparent"
-              onClick={() => setConfirmDialog('close')}
-            >
-              <SquareX className="size-3.5" aria-hidden />
-              {t('actions.close')}
-            </Button>
-          )}
-          {isClosed && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-7 gap-1 px-2 text-xs hover:bg-transparent md:hover:bg-transparent"
-              onClick={() => handleAction('reopen')}
-            >
-              <RotateCcw className="size-3.5" aria-hidden />
-              {t('actions.reopen')}
-            </Button>
-          )}
-          {(isActive || isClosed) && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-7 gap-1 border-amber-500/30 px-2 text-xs text-amber-600 hover:border-amber-500/40 hover:bg-transparent hover:text-amber-600 md:hover:bg-transparent md:hover:text-amber-600 dark:text-amber-500 dark:hover:text-amber-500 dark:md:hover:text-amber-500"
-              onClick={() => setConfirmDialog('archive')}
-            >
-              <Archive className="size-3.5" aria-hidden />
-              {t('actions.archive')}
-            </Button>
-          )}
-          {isDraft && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="text-destructive hover:text-destructive md:hover:text-destructive border-destructive/30 hover:border-destructive/40 h-7 gap-1 px-2 text-xs hover:bg-transparent md:hover:bg-transparent"
-              onClick={() => setConfirmDialog('delete')}
-            >
-              <Trash2 className="size-3.5" aria-hidden />
-              {t('actions.delete')}
-            </Button>
-          )}
+          {availableActions.map((action) => {
+            const ui = SURVEY_ACTION_UI[action];
+            const Icon = ui.icon;
+            const isDestructive = ui.confirm?.variant === 'destructive';
+            const isWarning = ui.confirm?.variant === 'warning';
+
+            return (
+              <Button
+                key={action}
+                variant="outline"
+                size="sm"
+                className={cn(
+                  'h-7 gap-1 px-2 text-xs hover:bg-transparent md:hover:bg-transparent',
+                  isDestructive &&
+                    'text-destructive hover:text-destructive md:hover:text-destructive border-destructive/30 hover:border-destructive/40',
+                  isWarning &&
+                    'border-amber-500/30 text-amber-600 hover:border-amber-500/40 hover:text-amber-600 md:hover:text-amber-600 dark:text-amber-500 dark:hover:text-amber-500 dark:md:hover:text-amber-500'
+                )}
+                onClick={() => handleActionClick(action)}
+              >
+                <Icon className="size-3.5" aria-hidden />
+                {t(`actions.${action}`)}
+              </Button>
+            );
+          })}
         </div>
       )}
 
@@ -584,10 +448,10 @@ export function SurveyDetailPanel({
                   {q.text || '—'}
                 </p>
                 <div className="mt-1.5">
-                  <Badge variant="secondary" className="gap-1 px-1.5 py-0 text-[10px] font-normal">
+                  <span className="bg-secondary text-secondary-foreground inline-flex items-center gap-1 rounded-full border px-1.5 py-0 text-[10px] font-normal">
                     <TypeIcon className="size-3" aria-hidden />
                     {typeLabel}
-                  </Badge>
+                  </span>
                   <QuestionConfigDetails question={q} t={t} />
                 </div>
               </div>
@@ -598,19 +462,7 @@ export function SurveyDetailPanel({
     </div>
   );
 
-  const confirmDialogElement = confirmDialog && (
-    <ConfirmDialog
-      open
-      onOpenChange={(open) => !open && setConfirmDialog(null)}
-      onConfirm={() => handleAction(confirmDialog)}
-      title={t(ACTION_CONFIGS[confirmDialog].confirm.titleKey as Parameters<typeof t>[0])}
-      description={t(
-        ACTION_CONFIGS[confirmDialog].confirm.descriptionKey as Parameters<typeof t>[0]
-      )}
-      confirmLabel={t(`actions.${confirmDialog}`)}
-      variant={ACTION_CONFIGS[confirmDialog].confirm.variant}
-    />
-  );
+  const confirmDialogElement = confirmDialogProps && <ConfirmDialog {...confirmDialogProps} />;
 
   if (embeddedInSheet) {
     return (

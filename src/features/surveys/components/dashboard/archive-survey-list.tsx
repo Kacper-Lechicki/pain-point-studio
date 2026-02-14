@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
@@ -14,7 +14,6 @@ import {
   X,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -36,7 +35,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { getSurveyWithQuestions, restoreSurvey } from '@/features/surveys/actions';
+import { getSurveyWithQuestions } from '@/features/surveys/actions';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import type { MappedQuestion } from '@/features/surveys/lib/map-question-row';
 import { useBreakpoint } from '@/hooks/common/use-breakpoint';
@@ -77,7 +76,6 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const isMd = useBreakpoint('md');
-  const [, startTransition] = useTransition();
 
   const selectedId = searchParams.get('selected');
   const [surveys, setSurveys] = useState(initialSurveys);
@@ -188,27 +186,13 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
     });
   }, [surveys, searchQuery, sortBy, sortDir]);
 
-  const handleRestore = (surveyId: string) => {
-    startTransition(async () => {
-      const result = await restoreSurvey({ surveyId });
-
-      if (result.success) {
-        toast.success(t('toast.restored'));
-
-        if (selectedId === surveyId) {
-          setSelected(null);
-        }
-
-        setSurveys((prev) => prev.filter((s) => s.id !== surveyId));
-      } else {
-        toast.error(t('toast.actionFailed'));
-      }
-    });
-  };
-
   const handleStatusChange = (surveyId: string, action: string) => {
     if (action === 'restore') {
-      handleRestore(surveyId);
+      if (selectedId === surveyId) {
+        setSelected(null);
+      }
+
+      setSurveys((prev) => prev.filter((s) => s.id !== surveyId));
     }
   };
 
@@ -424,7 +408,6 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
                   isSelected={selectedId === survey.id}
                   onSelect={setSelected}
                   onStatusChange={handleStatusChange}
-                  onRestore={handleRestore}
                   variant="table"
                   archivedLayout
                 />
@@ -441,7 +424,6 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
               isSelected={selectedId === survey.id}
               onSelect={setSelected}
               onStatusChange={handleStatusChange}
-              onRestore={handleRestore}
               variant="card"
               archivedLayout
             />

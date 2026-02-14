@@ -2,26 +2,11 @@
 
 import { withProtectedAction } from '@/lib/common/with-protected-action';
 
-import { type SurveyStatus, surveyIdSchema } from '../types';
-
-interface StatusTransition {
-  method: 'update' | 'delete';
-  toStatus?: SurveyStatus;
-  fromStatuses: SurveyStatus[];
-}
-
-const TRANSITIONS = {
-  close: { method: 'update', toStatus: 'closed', fromStatuses: ['active'] },
-  reopen: { method: 'update', toStatus: 'active', fromStatuses: ['closed'] },
-  archive: { method: 'update', toStatus: 'archived', fromStatuses: ['active', 'closed'] },
-  restore: { method: 'update', toStatus: 'closed', fromStatuses: ['archived'] },
-  delete: { method: 'delete', fromStatuses: ['draft'] },
-} as const satisfies Record<string, StatusTransition>;
-
-type SurveyAction = keyof typeof TRANSITIONS;
+import { SURVEY_TRANSITIONS, type SurveyAction } from '../config/survey-status';
+import { surveyIdSchema } from '../types';
 
 function createStatusAction(action: SurveyAction) {
-  const transition = TRANSITIONS[action];
+  const transition = SURVEY_TRANSITIONS[action];
 
   return withProtectedAction<typeof surveyIdSchema, void>(`${action}-survey`, {
     schema: surveyIdSchema,

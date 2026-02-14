@@ -11,7 +11,8 @@ import type { MessageKey } from '@/i18n/types';
 import { cn } from '@/lib/common/utils';
 
 import { SIDEBAR_NAV_ITEM_CLASSES } from '../../config/nav-styles';
-import type { SubNavConfig, SubNavItem } from '../../config/navigation';
+import type { SubNavConfig } from '../../config/navigation';
+import { getSubItemHref, isSubItemActive } from '../../lib/nav-utils';
 
 function getHash(): string {
   if (typeof window === 'undefined') {
@@ -19,50 +20,6 @@ function getHash(): string {
   }
 
   return window.location.hash.replace('#', '');
-}
-
-function getItemHref(item: SubNavItem): string {
-  const base = item.hash ? `${item.href}#${item.hash}` : item.href;
-
-  if (item.searchParams) {
-    const params = new URLSearchParams(item.searchParams);
-
-    return `${item.href}?${params.toString()}${item.hash ? `#${item.hash}` : ''}`;
-  }
-
-  return base;
-}
-
-function isItemActive(
-  item: SubNavItem,
-  pathname: string,
-  hash: string,
-  currentSearchParams: URLSearchParams,
-  searchParamKeys: string[]
-): boolean {
-  // Hash-based items
-  if (item.hash) {
-    return pathname === item.href && hash === item.hash;
-  }
-
-  // Items with searchParams: match pathname + all search params
-  if (item.searchParams) {
-    if (pathname !== item.href) {
-      return false;
-    }
-
-    return Object.entries(item.searchParams).every(
-      ([key, value]) => currentSearchParams.get(key) === value
-    );
-  }
-
-  // Plain items: match pathname exactly, but NOT if current URL has any
-  // of the search param keys used by sibling items
-  if (pathname === item.href) {
-    return searchParamKeys.every((key) => !currentSearchParams.has(key));
-  }
-
-  return item.alsoActiveFor?.includes(pathname) ?? false;
 }
 
 interface SecondaryNavProps {
@@ -109,31 +66,31 @@ export function SecondaryNav({ titleKey, groups }: SecondaryNavProps) {
 
   return (
     <>
-      <div className="shrink-0 pt-6">
-        <div className="flex h-9 items-center px-4">
+      <div className="shrink-0 pt-4">
+        <div className="flex min-h-8 items-center px-3">
           <h2 className="text-sidebar-foreground decoration-sidebar-border text-sm font-semibold underline underline-offset-4">
             {t(titleKey)}
           </h2>
         </div>
       </div>
 
-      <nav className="flex flex-1 flex-col gap-2 overflow-y-auto px-2 pt-2 pb-4">
+      <nav className="flex flex-1 flex-col gap-1.5 overflow-y-auto px-2 pt-1.5 pb-3">
         {groups.map((group, gi) => (
           <div key={gi}>
             {group.headingKey && (
               <div
                 className={cn(
                   'text-sidebar-foreground/50 mb-1 px-2 text-xs font-semibold tracking-wider uppercase',
-                  gi === 0 ? 'mt-0' : 'mt-6'
+                  gi === 0 ? 'mt-0' : 'mt-4'
                 )}
               >
                 {t(group.headingKey)}
               </div>
             )}
 
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1.5">
               {group.items.map((item) => {
-                const href = getItemHref(item);
+                const href = getSubItemHref(item);
 
                 if (item.disabled) {
                   return (
@@ -149,7 +106,7 @@ export function SecondaryNav({ titleKey, groups }: SecondaryNavProps) {
                 }
 
                 const isActive = hasSearchParamItems
-                  ? isItemActive(item, pathname, hash, currentSearchParams, searchParamKeys)
+                  ? isSubItemActive(item, pathname, hash, currentSearchParams, searchParamKeys)
                   : item.hash
                     ? pathname === item.href && hash === item.hash
                     : pathname === item.href || (item.alsoActiveFor?.includes(pathname) ?? false);

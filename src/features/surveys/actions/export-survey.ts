@@ -42,29 +42,21 @@ async function fetchExportData(
   surveyId: string,
   userId: string
 ) {
-  const { data: survey } = await supabase
-    .from('surveys')
-    .select('id, title')
-    .eq('id', surveyId)
-    .eq('user_id', userId)
-    .single();
+  // Fetch survey (ownership verified) and questions in parallel
+  const [{ data: survey }, { data: questions }, { data: responses }] = await Promise.all([
+    supabase.from('surveys').select('id, title').eq('id', surveyId).eq('user_id', userId).single(),
+    supabase
+      .from('survey_questions')
+      .select('id, text, type, sort_order')
+      .eq('survey_id', surveyId)
+      .order('sort_order'),
+    // RPC decrypts PII server-side and verifies ownership
+    supabase.rpc('get_export_responses', { p_survey_id: surveyId, p_user_id: userId }),
+  ]);
 
   if (!survey) {
     return null;
   }
-
-  const { data: questions } = await supabase
-    .from('survey_questions')
-    .select('id, text, type, sort_order')
-    .eq('survey_id', surveyId)
-    .order('sort_order');
-
-  const { data: responses } = await supabase
-    .from('survey_responses')
-    .select('id, completed_at, contact_name, contact_email, feedback')
-    .eq('survey_id', surveyId)
-    .eq('status', 'completed')
-    .order('completed_at');
 
   const responseIds = (responses ?? []).map((r) => r.id);
   let answers: Array<{ response_id: string; question_id: string; value: unknown }> = [];

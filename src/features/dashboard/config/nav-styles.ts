@@ -12,15 +12,15 @@
 
 // ── Base classes (shared by both approaches) ─────────────────────────
 const SIDEBAR_NAV_ITEM_BASE =
-  'flex min-h-10 w-full items-center justify-start gap-2.5 rounded-lg border border-transparent px-3 text-sm font-medium transition-colors md:min-h-9 text-sidebar-foreground/70';
+  'flex min-h-8 w-full items-center justify-start gap-2 rounded-lg border border-transparent px-2.5 text-sm font-medium transition-colors text-sidebar-foreground/70';
 
 const CONTENT_NAV_ITEM_BASE =
-  'flex min-h-10 w-full items-center justify-start gap-2.5 rounded-lg border border-transparent px-3 text-sm font-medium transition-colors md:min-h-9 text-muted-foreground';
+  'flex min-h-8 w-full items-center justify-start gap-2 rounded-lg border border-transparent px-2.5 text-sm font-medium transition-colors text-muted-foreground';
 
 // ── Active / Inactive class sets (for cn()-based usage) ──────────────
 
 /** Sidebar region – active state classes */
-export const SIDEBAR_NAV_ACTIVE = 'bg-sidebar-primary text-sidebar-primary-foreground';
+export const SIDEBAR_NAV_ACTIVE = 'bg-sidebar-primary-active text-sidebar-primary-foreground';
 
 /** Sidebar region – inactive state classes */
 export const SIDEBAR_NAV_INACTIVE =
@@ -41,7 +41,7 @@ export { SIDEBAR_NAV_ITEM_BASE, CONTENT_NAV_ITEM_BASE };
 /** For sidebar region: nav panel + sub-panel (attribute-driven) */
 export const SIDEBAR_NAV_ITEM_CLASSES =
   SIDEBAR_NAV_ITEM_BASE +
-  ' data-[state=active]:bg-sidebar-primary data-[state=active]:text-sidebar-primary-foreground' +
+  ' data-[state=active]:bg-sidebar-primary-active data-[state=active]:text-sidebar-primary-foreground' +
   ' data-[state=inactive]:md:hover:text-sidebar-foreground data-[state=inactive]:md:hover:border-sidebar-foreground/25 data-[state=inactive]:md:hover:border-dashed';
 
 /** For content region: settings nav (attribute-driven) */

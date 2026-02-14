@@ -1,23 +1,9 @@
 'use client';
 
-import { useState, useTransition } from 'react';
-
-import {
-  AlertTriangle,
-  Archive,
-  BarChart3,
-  Eye,
-  MoreHorizontal,
-  Pencil,
-  RotateCcw,
-  Share2,
-  SquareX,
-  Trash2,
-} from 'lucide-react';
+import { AlertTriangle, BarChart3, Eye, MoreHorizontal, Pencil, Share2 } from 'lucide-react';
 import { useFormatter, useLocale, useNow, useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import {
@@ -27,158 +13,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  archiveSurvey,
-  closeSurvey,
-  deleteSurveyDraft,
-  reopenSurvey,
-} from '@/features/surveys/actions';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
-import type { SurveyStatus } from '@/features/surveys/types';
+import { SURVEY_ACTION_UI, getAvailableActions } from '@/features/surveys/config/survey-status';
+import { useSurveyAction } from '@/features/surveys/hooks/use-survey-action';
+import { computeHint } from '@/features/surveys/lib/survey-hints';
 import Link from '@/i18n/link';
 import { env } from '@/lib/common/env';
 import { cn } from '@/lib/common/utils';
 
 import { Sparkline, getSparklineColor } from './sparkline';
-
-// ── Status visual mapping ───────────────────────────────────────────
-
-const STATUS_BADGE_VARIANT: Record<SurveyStatus, 'default' | 'secondary' | 'outline'> = {
-  active: 'default',
-  draft: 'secondary',
-  closed: 'outline',
-  archived: 'secondary',
-};
-
-const STATUS_BADGE_CLASS: Record<SurveyStatus, string> = {
-  active: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/25',
-  draft: '',
-  closed: 'bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/25',
-  archived: 'opacity-60',
-};
-
-// ── Contextual hint logic ───────────────────────────────────────────
-
-type HintSeverity = 'warning' | 'info' | 'success';
-
-interface CardHint {
-  severity: HintSeverity;
-  text: string;
-}
-
-function computeHint(
-  survey: UserSurvey,
-  t: ReturnType<typeof useTranslations<'surveys.dashboard'>>
-): CardHint | null {
-  const now = new Date();
-
-  // ── Drafts ──
-  if (survey.status === 'draft') {
-    if (survey.questionCount === 0) {
-      return { severity: 'info', text: t('hints.noQuestions') };
-    }
-
-    return {
-      severity: 'success',
-      text: t('hints.readyToPublish', { count: survey.questionCount }),
-    };
-  }
-
-  // ── Active — prioritize warnings ──
-  if (survey.status === 'active') {
-    if (survey.maxRespondents) {
-      const pct = survey.responseCount / survey.maxRespondents;
-
-      if (pct >= 1) {
-        return { severity: 'warning', text: t('hints.limitReached') };
-      }
-
-      if (pct >= 0.8) {
-        return {
-          severity: 'warning',
-          text: t('hints.nearingLimit', {
-            current: survey.responseCount,
-            max: survey.maxRespondents,
-          }),
-        };
-      }
-    }
-
-    if (survey.endsAt) {
-      const daysLeft = Math.ceil(
-        (new Date(survey.endsAt).getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
-      );
-
-      if (daysLeft <= 0) {
-        return { severity: 'warning', text: t('hints.expired') };
-      }
-
-      if (daysLeft <= 3) {
-        return { severity: 'warning', text: t('hints.endingSoon', { days: daysLeft }) };
-      }
-    }
-
-    if (survey.responseCount === 0) {
-      return { severity: 'info', text: t('hints.noResponsesYet') };
-    }
-  }
-
-  // ── Closed ──
-  if (survey.status === 'closed') {
-    if (survey.responseCount > 0) {
-      const rate = Math.round((survey.completedCount / survey.responseCount) * 100);
-
-      return { severity: 'info', text: t('hints.completionRate', { rate }) };
-    }
-
-    return { severity: 'info', text: t('hints.noResponsesCollected') };
-  }
-
-  return null;
-}
-
-// ── Action configuration ─────────────────────────────────────────────
-
-type ConfirmableAction = 'close' | 'archive' | 'delete';
-type SurveyAction = ConfirmableAction | 'reopen';
-
-const ACTION_CONFIGS = {
-  close: {
-    fn: closeSurvey,
-    toastKey: 'toast.closed',
-    confirm: {
-      titleKey: 'confirm.closeTitle',
-      descriptionKey: 'confirm.closeDescription',
-      variant: 'default' as const,
-    },
-  },
-  reopen: { fn: reopenSurvey, toastKey: 'toast.reopened' },
-  archive: {
-    fn: archiveSurvey,
-    toastKey: 'toast.archived',
-    confirm: {
-      titleKey: 'confirm.archiveTitle',
-      descriptionKey: 'confirm.archiveDescription',
-      variant: 'warning' as const,
-    },
-  },
-  delete: {
-    fn: deleteSurveyDraft,
-    toastKey: 'toast.deleted',
-    confirm: {
-      titleKey: 'confirm.deleteTitle',
-      descriptionKey: 'confirm.deleteDescription',
-      variant: 'destructive' as const,
-    },
-  },
-} as const;
+import { SurveyStatusBadge } from './survey-status-badge';
 
 // ── Component ────────────────────────────────────────────────────────
 
 interface SurveyCardProps {
   survey: UserSurvey;
   onStatusChange: (surveyId: string, action: string) => void;
-  /** When set, adds "Quick preview" menu item that opens the detail panel (sets URL ?selected=id). */
   onQuickPreview?: (surveyId: string) => void;
 }
 
@@ -188,13 +38,11 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
   const locale = useLocale();
   const format = useFormatter();
   const now = useNow();
-  const [, startTransition] = useTransition();
 
-  const [confirmDialog, setConfirmDialog] = useState<ConfirmableAction | null>(null);
+  const { handleActionClick, confirmDialogProps } = useSurveyAction(survey.id, onStatusChange, t);
 
   const isDraft = survey.status === 'draft';
   const isActive = survey.status === 'active';
-  const isClosed = survey.status === 'closed';
   const isArchived = survey.status === 'archived';
 
   const href = isDraft
@@ -207,6 +55,7 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
   const sparklineColor = getSparklineColor(survey.recentActivity);
   const inProgressCount = survey.responseCount - survey.completedCount;
   const relativeUpdated = format.relativeTime(new Date(survey.updatedAt), now);
+  const availableActions = getAvailableActions(survey.status);
 
   const handleShare = async () => {
     if (!shareUrl) {
@@ -215,21 +64,6 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
 
     await navigator.clipboard.writeText(shareUrl);
     toast.success(t('toast.linkCopied'));
-  };
-
-  const handleAction = (action: SurveyAction) => {
-    startTransition(async () => {
-      const config = ACTION_CONFIGS[action];
-      const result = await config.fn({ surveyId: survey.id });
-      setConfirmDialog(null);
-
-      if (result.success) {
-        toast.success(t(config.toastKey));
-        onStatusChange(survey.id, action);
-      } else {
-        toast.error(t('toast.actionFailed'));
-      }
-    });
   };
 
   const responseDisplay = (() => {
@@ -279,18 +113,7 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
                 <h3 className="text-foreground truncate text-sm leading-snug font-semibold">
                   {survey.title}
                 </h3>
-                <Badge
-                  variant={STATUS_BADGE_VARIANT[survey.status]}
-                  className={cn('text-[11px]', STATUS_BADGE_CLASS[survey.status])}
-                >
-                  {isActive && (
-                    <span className="relative mr-0.5 flex size-1.5">
-                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                      <span className="relative inline-flex size-1.5 rounded-full bg-emerald-500" />
-                    </span>
-                  )}
-                  {t(`status.${survey.status}`)}
-                </Badge>
+                <SurveyStatusBadge status={survey.status} />
               </div>
 
               {/* Row 2: Description */}
@@ -350,45 +173,32 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
                   </DropdownMenuItem>
                 )}
 
-                {(isActive || isClosed) && (
+                {availableActions.length > 0 && (
                   <>
                     <DropdownMenuSeparator />
-                    {isActive && (
-                      <DropdownMenuItem onClick={() => setConfirmDialog('close')}>
-                        <SquareX className="size-4" />
-                        {t('actions.close')}
-                      </DropdownMenuItem>
-                    )}
-                    {isClosed && (
-                      <DropdownMenuItem onClick={() => handleAction('reopen')}>
-                        <RotateCcw className="size-4" />
-                        {t('actions.reopen')}
-                      </DropdownMenuItem>
-                    )}
-                    <DropdownMenuItem onClick={() => setConfirmDialog('archive')}>
-                      <Archive className="size-4" />
-                      {t('actions.archive')}
-                    </DropdownMenuItem>
-                  </>
-                )}
+                    {availableActions.map((action) => {
+                      const ui = SURVEY_ACTION_UI[action];
+                      const Icon = ui.icon;
+                      const isDestructive = ui.confirm?.variant === 'destructive';
 
-                {isDraft && (
-                  <>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      onClick={() => setConfirmDialog('delete')}
-                      className="text-destructive focus:text-destructive"
-                    >
-                      <Trash2 className="size-4" />
-                      {t('actions.delete')}
-                    </DropdownMenuItem>
+                      return (
+                        <DropdownMenuItem
+                          key={action}
+                          onClick={() => handleActionClick(action)}
+                          className={cn(isDestructive && 'text-destructive focus:text-destructive')}
+                        >
+                          <Icon className="size-4" aria-hidden />
+                          {t(`actions.${action}`)}
+                        </DropdownMenuItem>
+                      );
+                    })}
                   </>
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
 
-          {/* Row 3: Metadata and sparkline — stack on narrow (300px+), row on sm+ */}
+          {/* Row 3: Metadata and sparkline */}
           <div className="border-border/50 bg-muted/30 mt-3 flex min-w-0 flex-col gap-2 rounded-lg px-2.5 py-2 sm:flex-row sm:items-end sm:justify-between sm:gap-3 sm:px-3 sm:py-2.5">
             <div className="text-muted-foreground min-w-0 shrink-0 text-xs leading-relaxed">
               <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
@@ -429,7 +239,7 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
             <Sparkline data={survey.recentActivity} className={cn('shrink-0', sparklineColor)} />
           </div>
 
-          {/* Row 4: Contextual hint (when present) */}
+          {/* Row 4: Contextual hint */}
           {hint && (
             <div
               className={cn(
@@ -468,19 +278,7 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
         </Link>
       </div>
 
-      {confirmDialog && (
-        <ConfirmDialog
-          open
-          onOpenChange={(open) => !open && setConfirmDialog(null)}
-          onConfirm={() => handleAction(confirmDialog)}
-          title={t(ACTION_CONFIGS[confirmDialog].confirm.titleKey as Parameters<typeof t>[0])}
-          description={t(
-            ACTION_CONFIGS[confirmDialog].confirm.descriptionKey as Parameters<typeof t>[0]
-          )}
-          confirmLabel={t(`actions.${confirmDialog}`)}
-          variant={ACTION_CONFIGS[confirmDialog].confirm.variant}
-        />
-      )}
+      {confirmDialogProps && <ConfirmDialog {...confirmDialogProps} />}
     </>
   );
 };

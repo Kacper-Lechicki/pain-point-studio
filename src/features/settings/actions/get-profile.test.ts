@@ -21,16 +21,6 @@ const mockGetUser = vi.fn();
 const mockProfileSingle = vi.fn();
 const mockRpc = vi.fn();
 
-const mockRolesData = [
-  { value: 'solo-developer', label_key: 'settings.roles.soloDeveloper' },
-  { value: 'designer', label_key: 'settings.roles.designer' },
-];
-
-const mockSocialLinkTypesData = [
-  { value: 'github', label_key: 'settings.socialLinkTypes.github' },
-  { value: 'twitter', label_key: 'settings.socialLinkTypes.twitter' },
-];
-
 const mockProfile = {
   id: 'user-123',
   full_name: 'John Doe',
@@ -50,9 +40,6 @@ const mockUser = {
   ],
 };
 
-let rolesResponse = { data: mockRolesData };
-let socialLinkTypesResponse = { data: mockSocialLinkTypesData };
-
 vi.mock('@/lib/supabase/server', () => ({
   createClient: vi.fn().mockResolvedValue({
     auth: {
@@ -65,26 +52,6 @@ vi.mock('@/lib/supabase/server', () => ({
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
               single: mockProfileSingle,
-            }),
-          }),
-        };
-      }
-
-      if (table === 'roles') {
-        return {
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
-              order: vi.fn().mockResolvedValue(rolesResponse),
-            }),
-          }),
-        };
-      }
-
-      if (table === 'social_link_types') {
-        return {
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
-              order: vi.fn().mockResolvedValue(socialLinkTypesResponse),
             }),
           }),
         };
@@ -117,10 +84,6 @@ describe('Settings Actions – Get Profile', () => {
 
       return Promise.resolve({ data: null });
     });
-
-    // Reset lookup data
-    rolesResponse = { data: mockRolesData };
-    socialLinkTypesResponse = { data: mockSocialLinkTypesData };
   });
 
   // When getUser returns null, getProfile returns null.
@@ -155,18 +118,25 @@ describe('Settings Actions – Get Profile', () => {
     ]);
   });
 
-  // roleOptions and socialLinkOptions use t() for labels.
+  // roleOptions and socialLinkOptions use t() for labels from static config.
   it('should map roleOptions and socialLinkOptions with translated labels', async () => {
     const { getProfile } = await import('./get-profile');
     const result = await getProfile();
 
     expect(result!.roleOptions).toEqual([
       { value: 'solo-developer', label: 'translated:settings.roles.soloDeveloper' },
+      { value: 'product-manager', label: 'translated:settings.roles.productManager' },
       { value: 'designer', label: 'translated:settings.roles.designer' },
+      { value: 'founder', label: 'translated:settings.roles.founder' },
+      { value: 'student', label: 'translated:settings.roles.student' },
+      { value: 'other', label: 'translated:settings.roles.other' },
     ]);
     expect(result!.socialLinkOptions).toEqual([
-      { value: 'github', label: 'translated:settings.socialLinkTypes.github' },
-      { value: 'twitter', label: 'translated:settings.socialLinkTypes.twitter' },
+      { value: 'website', label: 'translated:settings.profile.socialLinks.labels.website' },
+      { value: 'github', label: 'translated:settings.profile.socialLinks.labels.github' },
+      { value: 'twitter', label: 'translated:settings.profile.socialLinks.labels.twitter' },
+      { value: 'linkedin', label: 'translated:settings.profile.socialLinks.labels.linkedin' },
+      { value: 'other', label: 'translated:settings.profile.socialLinks.labels.other' },
     ]);
   });
 
@@ -183,18 +153,6 @@ describe('Settings Actions – Get Profile', () => {
     expect(result!.bio).toBe('');
     expect(result!.avatarUrl).toBe('');
     expect(result!.socialLinks).toEqual([]);
-  });
-
-  // Null roles/socialLinkTypes data yields empty roleOptions and socialLinkOptions.
-  it('should handle empty lookup tables', async () => {
-    rolesResponse = { data: null as unknown as typeof mockRolesData };
-    socialLinkTypesResponse = { data: null as unknown as typeof mockSocialLinkTypesData };
-
-    const { getProfile } = await import('./get-profile');
-    const result = await getProfile();
-
-    expect(result!.roleOptions).toEqual([]);
-    expect(result!.socialLinkOptions).toEqual([]);
   });
 
   // Non-array social_links (e.g. malformed) yields empty socialLinks array.
