@@ -8,6 +8,7 @@ import {
   Calendar,
   Expand,
   Hash,
+  HelpCircle,
   Loader2,
   Pencil,
   RotateCcw,
@@ -561,9 +562,14 @@ export function SurveyDetailPanel({
           <Loader2 className="size-3.5 animate-spin" aria-hidden />
           {t('detailPanel.loadingQuestions')}
         </div>
+      ) : questions.length === 0 ? (
+        <div className="border-border/50 text-muted-foreground flex items-start gap-2 rounded-md border border-dashed px-3 py-2.5 text-xs">
+          <HelpCircle className="size-3.5 shrink-0 pt-0.5" aria-hidden />
+          <span>{t('detailPanel.questionsEmptyDescription')}</span>
+        </div>
       ) : (
         <div className="space-y-1.5">
-          {questions.map((q, i) => {
+          {questions.map((q: MappedQuestion, i: number) => {
             const TypeIcon = QUESTION_TYPE_ICONS[q.type];
             const labelKey = QUESTION_TYPE_LABEL_KEYS[q.type];
             const typeLabel = tTypes(labelKey.split('.').pop() as Parameters<typeof tTypes>[0]);

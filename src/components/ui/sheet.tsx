@@ -81,9 +81,15 @@ function SheetContent({
         {showCloseButton && (
           <DialogPrimitive.Close
             data-slot="sheet-close"
-            className="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute top-4 right-4 rounded-xs opacity-70 transition-opacity focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none md:hover:opacity-100"
+            className={cn(
+              'inline-flex items-center justify-center rounded-md transition-all outline-none disabled:pointer-events-none',
+              'text-muted-foreground border border-transparent',
+              'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',
+              'md:hover:border-foreground/30 md:hover:text-foreground md:hover:border-dashed',
+              "absolute top-7 right-4 size-6 -translate-y-1/2 [&_svg:not([class*='size-'])]:size-3"
+            )}
           >
-            <XIcon className="size-4" />
+            <XIcon className="size-4" aria-hidden />
             <span className="sr-only">Close</span>
           </DialogPrimitive.Close>
         )}

@@ -73,7 +73,7 @@ export const DASHBOARD_FOOTER_HEIGHT_CLASS = 'h-12';
 
 // ── Content area ────────────────────────────────────────────────────
 
-export const DASHBOARD_CONTENT_PADDING = 'px-4 pt-6 pb-20 sm:px-6 md:pb-8 lg:px-8';
+export const DASHBOARD_CONTENT_PADDING = 'px-4 pt-6 pb-12 sm:px-6 lg:px-8';
 export const DASHBOARD_CONTENT_MAX_WIDTH = 'max-w-7xl';
 export const DASHBOARD_PAGE_BODY_GAP = 'mb-8';
 export const DASHBOARD_PAGE_BODY_GAP_TOP = 'mt-8';

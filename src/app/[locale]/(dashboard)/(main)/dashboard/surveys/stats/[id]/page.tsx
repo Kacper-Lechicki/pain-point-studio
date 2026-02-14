@@ -18,9 +18,11 @@ export default async function SurveyStatsPage({ params }: SurveyStatsPageProps) 
   }
 
   return (
-    <PageTransition>
+    <>
       <DashboardPageBack />
-      <SurveyStatsPanel stats={stats} />
-    </PageTransition>
+      <PageTransition>
+        <SurveyStatsPanel stats={stats} />
+      </PageTransition>
+    </>
   );
 }

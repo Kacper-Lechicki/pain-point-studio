@@ -106,6 +106,18 @@ import { BaseLink, usePathname } from '@/i18n/navigation';
  * push to avoid history buildup. Import via @/i18n/routing.
  */
 
+/**
+ * i18n-aware Link that wraps next-intl's BaseLink. When navigating between routes
+ * in the same SIBLING_GROUPS (e.g. sign-in ↔ sign-up), uses replace instead of
+ * push to avoid history buildup. Import via @/i18n/routing.
+ */
+
+/**
+ * i18n-aware Link that wraps next-intl's BaseLink. When navigating between routes
+ * in the same SIBLING_GROUPS (e.g. sign-in ↔ sign-up), uses replace instead of
+ * push to avoid history buildup. Import via @/i18n/routing.
+ */
+
 type BaseLinkProps = ComponentProps<typeof BaseLink>;
 type Href = BaseLinkProps['href'];
 

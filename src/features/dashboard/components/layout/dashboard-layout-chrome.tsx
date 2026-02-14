@@ -35,13 +35,14 @@ export function DashboardLayoutChrome({ children, profile }: DashboardLayoutChro
 
   return (
     <>
-      <div className="flex min-h-screen flex-col pt-14">
+      <div className="flex h-screen max-h-screen flex-col overflow-hidden">
         <Navbar />
-        <div className="flex min-h-0 flex-1">
+        <div className="flex min-h-0 flex-1 overflow-hidden">
           <Sidebar />
           <SubPanel />
           <MobileNav />
-          <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+          <div className="flex min-h-full min-w-0 flex-1 flex-col overflow-auto">
+            <div className="h-14 shrink-0" aria-hidden="true" />
             <DashboardContent>{children}</DashboardContent>
             <DashboardFooter />
           </div>

@@ -20,7 +20,7 @@ export function DashboardContent({ children }: { children: ReactNode }) {
 
   return (
     <main
-      className="min-h-0 min-w-0 flex-1 overflow-auto pb-20 transition-[margin-left] duration-200 ease-in-out"
+      className="min-h-min min-w-0 flex-1 transition-[margin-left] duration-200 ease-in-out"
       style={
         isDesktop ? { marginLeft: getDashboardContentMarginLeft(isPinned, hasSubPanel) } : undefined
       }

@@ -105,7 +105,7 @@ export function BuilderTopBar({
     <>
       {isDesktop ? (
         /* ── Desktop: single row ─────────────────────────────────────── */
-        <div className="border-border flex h-12 shrink-0 items-center gap-4 border-b px-4">
+        <div className="border-border flex h-12 shrink-0 items-center gap-4 border-b pr-0 pl-4">
           <div className="flex min-w-0 items-center gap-1.5">
             <Link
               href={ROUTES.dashboard.surveys}
@@ -155,7 +155,7 @@ export function BuilderTopBar({
               {publishAction.isLoading && <Spinner />}
               {t('surveys.builder.publish')}
             </Button>
-            <div className="ml-4">
+            <div className="ml-4 pr-4">
               <UserMenu />
             </div>
           </div>

@@ -36,7 +36,7 @@ export function Sidebar() {
       <nav
         className={cn(
           'flex flex-1 flex-col gap-2 overflow-x-hidden overflow-y-auto',
-          isExpanded ? 'px-2 pt-6 pb-4' : 'px-1 pt-6 pb-4',
+          isExpanded ? 'px-2 pt-6' : 'px-1 pt-6',
           !isExpanded && 'items-center'
         )}
       >

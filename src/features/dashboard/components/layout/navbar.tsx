@@ -21,7 +21,7 @@ const Navbar = () => {
   const hasSidebar = isDashboard || isSettings;
 
   return (
-    <nav className="bg-background/80 border-border dashboard:border-b fixed inset-x-0 top-0 z-50 backdrop-blur-md">
+    <nav className="bg-background/80 border-border/80 dashboard:border-b fixed inset-x-0 top-0 z-50 backdrop-blur-md transition-colors duration-300">
       <div className="dashboard:pl-3 dashboard:pr-4 flex h-14 items-center gap-3 px-4">
         {hasSidebar && (
           <Button

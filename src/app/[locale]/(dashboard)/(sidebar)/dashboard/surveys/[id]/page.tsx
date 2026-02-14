@@ -23,9 +23,11 @@ export default async function SurveyDetailPage({ params }: SurveyDetailPageProps
   const questions = detailData?.questions ?? null;
 
   return (
-    <PageTransition>
+    <>
       <DashboardPageBack />
-      <SurveyDetailPageClient survey={survey} questions={questions} />
-    </PageTransition>
+      <PageTransition>
+        <SurveyDetailPageClient survey={survey} questions={questions} />
+      </PageTransition>
+    </>
   );
 }

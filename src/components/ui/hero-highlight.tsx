@@ -27,6 +27,8 @@ type HeroHighlightProps = {
   children: React.ReactNode;
   className?: string;
   containerClassName?: string;
+  /** Rendered above children so backdrop-blur nav can blur the dot pattern. */
+  navbar?: React.ReactNode;
   showDotsOnMobile?: boolean;
 };
 
@@ -34,6 +36,7 @@ export const HeroHighlight = ({
   children,
   className,
   containerClassName,
+  navbar,
   showDotsOnMobile = true,
 }: HeroHighlightProps) => {
   const mouseX = useMotionValue(0);
@@ -161,6 +164,7 @@ export const HeroHighlight = ({
       />
 
       <div className={cn('relative z-20', className)}>{children}</div>
+      {navbar != null ? <div className="relative z-50">{navbar}</div> : null}
     </div>
   );
 };

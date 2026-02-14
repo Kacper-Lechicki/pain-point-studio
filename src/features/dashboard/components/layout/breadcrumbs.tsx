@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 
 import type { AppRoute } from '@/config/routes';
 import { Link, usePathname } from '@/i18n/routing';
+import { cn } from '@/lib/common/utils';
 
 import { useBreadcrumbContext } from './breadcrumb-context';
 
@@ -71,7 +72,6 @@ export function Breadcrumbs() {
     if (key) {
       crumbs.push({ label: t(key as BreadcrumbKey), href });
     } else {
-      // Dynamic segments (UUIDs, etc.) — use label from context if registered
       const dynamicLabel = breadcrumbCtx?.segments[segment];
 
       if (dynamicLabel) {
@@ -83,33 +83,41 @@ export function Breadcrumbs() {
   }
 
   return (
-    <nav aria-label="Breadcrumb">
-      <ol className="flex min-w-0 items-center gap-1 text-xs sm:text-sm">
-        {crumbs.map((crumb, index) => {
-          const isLast = index === crumbs.length - 1;
+    <div className={cn('min-w-0 overflow-hidden', 'hidden sm:block')}>
+      <nav aria-label="Breadcrumb">
+        <ol className="flex min-w-0 items-center gap-1.5 text-sm sm:gap-1 sm:text-sm">
+          {crumbs.map((crumb, index) => {
+            const isLast = index === crumbs.length - 1;
 
-          return (
-            <li
-              key={crumb.href}
-              className={`flex items-center gap-1 ${isLast ? 'min-w-0' : 'shrink-0'}`}
-            >
-              {index > 0 && (
-                <ChevronRight className="text-muted-foreground size-3 shrink-0 sm:size-3.5" />
-              )}
-              {isLast ? (
-                <span className="text-foreground truncate font-medium">{crumb.label}</span>
-              ) : (
-                <Link
-                  href={crumb.href as AppRoute}
-                  className="text-muted-foreground hover:text-foreground shrink-0 whitespace-nowrap transition-colors"
-                >
-                  {crumb.label}
-                </Link>
-              )}
-            </li>
-          );
-        })}
-      </ol>
-    </nav>
+            return (
+              <li
+                key={crumb.href}
+                className={cn(
+                  'flex items-center gap-1.5 sm:gap-1',
+                  isLast ? 'min-w-0' : 'shrink-0'
+                )}
+              >
+                {index > 0 && (
+                  <ChevronRight
+                    className="text-muted-foreground size-4 shrink-0 sm:size-3.5"
+                    aria-hidden="true"
+                  />
+                )}
+                {isLast ? (
+                  <span className="text-foreground truncate font-medium">{crumb.label}</span>
+                ) : (
+                  <Link
+                    href={crumb.href as AppRoute}
+                    className="text-muted-foreground hover:text-foreground shrink-0 whitespace-nowrap transition-colors"
+                  >
+                    {crumb.label}
+                  </Link>
+                )}
+              </li>
+            );
+          })}
+        </ol>
+      </nav>
+    </div>
   );
 }

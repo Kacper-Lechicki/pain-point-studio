@@ -98,11 +98,11 @@ const BackButton = ({ fallbackHref, className }: BackButtonProps) => {
       type="button"
       onClick={handleClick}
       className={cn(
-        'text-muted-foreground md:hover:text-foreground inline-flex items-center gap-2 text-sm transition-colors',
+        'text-muted-foreground md:hover:text-foreground inline-flex min-h-10 min-w-10 touch-manipulation items-center gap-2 text-base transition-colors md:text-sm',
         className
       )}
     >
-      <ArrowLeft className="size-4" aria-hidden="true" />
+      <ArrowLeft className="size-5 shrink-0 md:size-4" aria-hidden="true" />
       {t('common.goBack')}
     </button>
   );

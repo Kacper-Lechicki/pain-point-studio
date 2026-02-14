@@ -267,9 +267,9 @@ export function MobileNav() {
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: -20, opacity: 0 }}
               transition={TRANSITION}
-              className="flex flex-1 flex-col overflow-y-auto pb-8"
+              className="flex flex-1 flex-col overflow-y-auto"
             >
-              <nav className="flex flex-1 flex-col gap-2 p-2 pb-8">
+              <nav className="flex flex-1 flex-col gap-2 p-2">
                 {SIDEBAR_NAV.map((group, gi) => (
                   <div key={gi} className="flex flex-col gap-2">
                     {group.items.map((item) => {
@@ -310,7 +310,7 @@ export function MobileNav() {
                 ))}
               </nav>
 
-              <div className="border-t p-2">
+              <div className="border-t px-2 pt-2">
                 {(() => {
                   const isBottomActive =
                     pathname === SIDEBAR_BOTTOM_ITEM.href ||
@@ -320,7 +320,7 @@ export function MobileNav() {
                     <button
                       type="button"
                       data-state={isBottomActive ? 'active' : 'inactive'}
-                      className={SIDEBAR_NAV_ITEM_CLASSES}
+                      className={cn(SIDEBAR_NAV_ITEM_CLASSES, 'pb-2')}
                       onClick={() => handleItemClick(SIDEBAR_BOTTOM_ITEM)}
                     >
                       <SIDEBAR_BOTTOM_ITEM.icon className="size-4 shrink-0" aria-hidden />
@@ -331,7 +331,7 @@ export function MobileNav() {
                     <Link
                       href={SIDEBAR_BOTTOM_ITEM.href}
                       data-state={isBottomActive ? 'active' : 'inactive'}
-                      className={SIDEBAR_NAV_ITEM_CLASSES}
+                      className={cn(SIDEBAR_NAV_ITEM_CLASSES, 'pb-2')}
                       onClick={() => setMobileOpen(false)}
                     >
                       <SIDEBAR_BOTTOM_ITEM.icon className="size-4 shrink-0" aria-hidden />

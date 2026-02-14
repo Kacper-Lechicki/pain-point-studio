@@ -58,7 +58,7 @@ function BuilderSidebarContent({ onItemSelect }: { onItemSelect?: (() => void) |
 
   return (
     <>
-      <div className="border-border flex items-center justify-between border-b px-4 py-2">
+      <div className="border-border flex items-center justify-between border-b py-2 pr-2 pl-4">
         <span className="text-muted-foreground text-xs font-medium">
           {t('questionsCount', { count: state.questions.length, max: QUESTIONS_MAX })}
         </span>

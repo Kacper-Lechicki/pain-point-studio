@@ -23,7 +23,7 @@ function DashboardContentArea({
   return (
     <div
       className={cn(
-        'px-4 pt-6 pb-20 sm:px-6 md:pb-8 lg:px-8',
+        'px-4 pt-6 pb-12 sm:px-6 lg:px-8',
         maxWidth !== 'full' && MAX_WIDTH_CLASSES[maxWidth],
         'mx-auto w-full',
         className
