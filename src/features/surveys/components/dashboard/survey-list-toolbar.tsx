@@ -17,7 +17,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/common/utils';
 
-export type SurveyStatusFilter = 'all' | 'active' | 'draft' | 'closed';
+export type SurveyStatusFilter = 'all' | 'active' | 'draft' | 'pending' | 'closed' | 'cancelled';
 export type SurveySortBy =
   | 'updated'
   | 'created'
@@ -44,7 +44,14 @@ interface SurveyListToolbarProps {
   hasSortableColumns: boolean;
 }
 
-const STATUS_FILTERS: SurveyStatusFilter[] = ['all', 'active', 'draft', 'closed'];
+const STATUS_FILTERS: SurveyStatusFilter[] = [
+  'all',
+  'active',
+  'draft',
+  'pending',
+  'closed',
+  'cancelled',
+];
 
 const SORT_OPTIONS_DESKTOP: SurveySortBy[] = ['updated', 'created'];
 

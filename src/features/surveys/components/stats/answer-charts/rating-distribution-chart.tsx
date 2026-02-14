@@ -3,21 +3,31 @@
 import { useMemo } from 'react';
 
 import { useTranslations } from 'next-intl';
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 
+import {
+  type ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@/components/ui/chart';
 import type { QuestionAnswerData } from '@/features/surveys/actions/get-survey-stats';
 
 interface RatingDistributionChartProps {
   answers: QuestionAnswerData[];
 }
 
-const DOT_SIZE = 10;
-const DOT_GAP = 4;
-const MAX_DOTS_PER_COL = 4;
-
 export const RatingDistributionChart = ({ answers }: RatingDistributionChartProps) => {
   const t = useTranslations('surveys.stats');
 
-  const { scaleCounts, average, median, min, max, mode } = useMemo(() => {
+  const chartConfig = {
+    count: {
+      label: t('chartResponses'),
+      color: 'var(--chart-rating)',
+    },
+  } satisfies ChartConfig;
+
+  const { data, average, median, min, max, mode } = useMemo(() => {
     const counts = new Map<number, number>();
     const values: number[] = [];
     let sum = 0;
@@ -52,14 +62,14 @@ export const RatingDistributionChart = ({ answers }: RatingDistributionChartProp
 
     const scaleMin = 1;
     const scaleMax = maxVal;
-    const scaleCounts: { rating: number; count: number }[] = [];
+    const chartData: { rating: string; count: number }[] = [];
 
     for (let r = scaleMin; r <= scaleMax; r++) {
-      scaleCounts.push({ rating: r, count: counts.get(r) ?? 0 });
+      chartData.push({ rating: String(r), count: counts.get(r) ?? 0 });
     }
 
     return {
-      scaleCounts,
+      data: chartData,
       average: n > 0 ? sum / n : 0,
       median: medianValue,
       min: minVal,
@@ -68,7 +78,7 @@ export const RatingDistributionChart = ({ answers }: RatingDistributionChartProp
     };
   }, [answers]);
 
-  if (scaleCounts.length === 0) {
+  if (data.length === 0) {
     return <p className="text-muted-foreground text-xs">{t('noChartData')}</p>;
   }
 
@@ -83,57 +93,21 @@ export const RatingDistributionChart = ({ answers }: RatingDistributionChartProp
         <span>{t('mode', { value: mode })}</span>
       </div>
 
-      <div
-        className="flex flex-col items-stretch gap-3 py-2"
-        role="img"
-        aria-label={t('chartResponses')}
-      >
-        <div
-          className="flex items-end justify-between gap-1"
-          style={{
-            minHeight: MAX_DOTS_PER_COL * (DOT_SIZE + DOT_GAP) + DOT_SIZE,
-          }}
-        >
-          {scaleCounts.map(({ rating, count }) => (
-            <div
-              key={rating}
-              className="flex flex-1 flex-col items-center gap-2"
-              title={`${rating}: ${count} ${t('chartResponses').toLowerCase()}`}
-            >
-              <div
-                className="flex flex-col-reverse flex-wrap items-center justify-end gap-0.5"
-                style={{
-                  minHeight:
-                    count > 0 ? Math.min(count, MAX_DOTS_PER_COL) * (DOT_SIZE + DOT_GAP) : DOT_SIZE,
-                }}
-              >
-                {Array.from({ length: Math.min(count, MAX_DOTS_PER_COL) }, (_, i) => (
-                  <div
-                    key={i}
-                    className="shrink-0 rounded-full"
-                    style={{
-                      width: DOT_SIZE,
-                      height: DOT_SIZE,
-                      backgroundColor: 'var(--chart-rating)',
-                    }}
-                  />
-                ))}
-                {count > MAX_DOTS_PER_COL && (
-                  <span
-                    className="text-muted-foreground text-[10px] font-medium tabular-nums"
-                    style={{ color: 'var(--chart-rating)' }}
-                  >
-                    +{count - MAX_DOTS_PER_COL}
-                  </span>
-                )}
-              </div>
-              <span className="text-muted-foreground text-xs font-semibold tabular-nums">
-                {rating}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
+      <ChartContainer config={chartConfig} className="h-36 w-full">
+        <BarChart data={data} margin={{ left: 0, right: 12 }}>
+          <CartesianGrid vertical={false} />
+          <XAxis dataKey="rating" tickLine={false} axisLine={false} tick={{ fontSize: 12 }} />
+          <YAxis
+            allowDecimals={false}
+            tickLine={false}
+            axisLine={false}
+            width={28}
+            tick={{ fontSize: 11 }}
+          />
+          <ChartTooltip content={<ChartTooltipContent />} />
+          <Bar dataKey="count" fill="var(--color-count)" radius={4} />
+        </BarChart>
+      </ChartContainer>
     </div>
   );
 };

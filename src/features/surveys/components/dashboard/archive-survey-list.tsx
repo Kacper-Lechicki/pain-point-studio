@@ -110,11 +110,13 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
       switch (sortBy) {
         case 'responses':
           return mul * (a.responseCount - b.responseCount) || a.title.localeCompare(b.title);
-        case 'archivedAt':
-          return (
-            mul * (new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime()) ||
-            a.title.localeCompare(b.title)
-          );
+        case 'archivedAt': {
+          const ta = a.archivedAt ? new Date(a.archivedAt).getTime() : 0;
+          const tb = b.archivedAt ? new Date(b.archivedAt).getTime() : 0;
+
+          return mul * (ta - tb) || a.title.localeCompare(b.title);
+        }
+
         default:
           return 0;
       }

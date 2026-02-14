@@ -1,6 +1,8 @@
 'use client';
 
-import { AlertTriangle, BarChart3, Eye, MoreHorizontal, Pencil, Share2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+
+import { AlertTriangle, BarChart3, Copy, Eye, MoreHorizontal, Pencil, Share2 } from 'lucide-react';
 import { useFormatter, useLocale, useNow, useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
@@ -13,6 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { duplicateSurvey } from '@/features/surveys/actions';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import { SURVEY_ACTION_UI, getAvailableActions } from '@/features/surveys/config/survey-status';
 import { useSurveyAction } from '@/features/surveys/hooks/use-survey-action';
@@ -40,12 +43,16 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
   const locale = useLocale();
   const format = useFormatter();
   const now = useNow();
+  const router = useRouter();
 
   const { handleActionClick, confirmDialogProps } = useSurveyAction(survey.id, onStatusChange, t);
 
   const isDraft = survey.status === 'draft';
+  const isPending = survey.status === 'pending';
   const isActive = survey.status === 'active';
+  const isClosed = survey.status === 'closed';
   const isArchived = survey.status === 'archived';
+  const hasShareableLink = (isActive || isPending || isClosed) && survey.slug;
 
   const href = isDraft ? getSurveyEditUrl(survey.id) : getSurveyStatsUrl(survey.id);
 
@@ -65,6 +72,17 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
     await navigator.clipboard.writeText(shareUrl);
     toast.success(t('toast.linkCopied'));
   };
+
+  const handleDuplicate = async () => {
+    const result = await duplicateSurvey({ surveyId: survey.id });
+
+    if (result.success && result.data) {
+      toast.success(t('toast.duplicated'));
+      router.push(getSurveyEditUrl(result.data.surveyId));
+    }
+  };
+
+  const canDuplicate = isDraft || isActive || isClosed || survey.status === 'cancelled';
 
   const responseDisplay = (() => {
     const parts: string[] = [];
@@ -147,7 +165,7 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
                   </DropdownMenuItem>
                 )}
 
-                {isActive && shareUrl && (
+                {hasShareableLink && (
                   <DropdownMenuItem onClick={handleShare}>
                     <Share2 className="size-4" aria-hidden />
                     {t('actions.share')}
@@ -169,6 +187,13 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
                       <Pencil className="size-4" />
                       {t('actions.edit')}
                     </Link>
+                  </DropdownMenuItem>
+                )}
+
+                {canDuplicate && (
+                  <DropdownMenuItem onClick={handleDuplicate}>
+                    <Copy className="size-4" aria-hidden />
+                    {t('actions.duplicate')}
                   </DropdownMenuItem>
                 )}
 

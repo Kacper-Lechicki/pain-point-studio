@@ -1,4 +1,5 @@
 export { createSurveyDraft } from './create-survey';
+export { duplicateSurvey } from './duplicate-survey';
 export { exportSurveyCSV, exportSurveyJSON } from './export-survey';
 export { getSurveyFormData } from './get-survey-form-data';
 export type { SurveyCategoryOption, SurveyFormData } from './get-survey-form-data';
@@ -12,8 +13,8 @@ export { publishSurvey } from './publish-survey';
 export { saveSurveyQuestions } from './save-survey-questions';
 export {
   archiveSurvey,
+  cancelSurvey,
   closeSurvey,
   deleteSurveyDraft,
-  reopenSurvey,
   restoreSurvey,
 } from './update-survey-status';

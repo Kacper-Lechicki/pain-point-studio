@@ -3,12 +3,13 @@ import { redirect } from 'next/navigation';
 import { PageTransition } from '@/components/ui/page-transition';
 import { ROUTES } from '@/config';
 import { DashboardPageBack } from '@/features/dashboard/components/layout/dashboard-page-back';
+import { getProfileStatistics } from '@/features/profile/actions/get-profile-statistics';
 import { ProfileView } from '@/features/profile/components';
 import type { ProfilePreviewData } from '@/features/profile/types';
 import { getProfile } from '@/features/settings/actions';
 
 export default async function ProfilePreviewRoute() {
-  const profile = await getProfile();
+  const [profile, statistics] = await Promise.all([getProfile(), getProfileStatistics()]);
 
   if (!profile) {
     redirect(ROUTES.auth.signIn);
@@ -29,7 +30,7 @@ export default async function ProfilePreviewRoute() {
     <>
       <DashboardPageBack />
       <PageTransition>
-        <ProfileView profile={previewData} isPreview />
+        <ProfileView profile={previewData} statistics={statistics} isPreview />
       </PageTransition>
     </>
   );

@@ -27,6 +27,20 @@ export function computeHint(
     };
   }
 
+  if (survey.status === 'pending') {
+    if (survey.startsAt) {
+      const daysUntil = Math.ceil(
+        (new Date(survey.startsAt).getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+      );
+
+      if (daysUntil <= 0) {
+        return { severity: 'info', text: t('hints.activatingSoon') };
+      }
+
+      return { severity: 'info', text: t('hints.startsIn', { days: daysUntil }) };
+    }
+  }
+
   if (survey.status === 'active') {
     if (survey.maxRespondents) {
       const pct = survey.responseCount / survey.maxRespondents;
@@ -73,6 +87,10 @@ export function computeHint(
     }
 
     return { severity: 'info', text: t('hints.noResponsesCollected') };
+  }
+
+  if (survey.status === 'cancelled') {
+    return { severity: 'warning', text: t('hints.withdrawn') };
   }
 
   return null;

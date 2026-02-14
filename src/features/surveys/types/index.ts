@@ -91,7 +91,7 @@ export const QUESTION_TYPES = [
 
 export type QuestionType = (typeof QUESTION_TYPES)[number];
 
-export type SurveyStatus = 'draft' | 'active' | 'closed' | 'archived';
+export type SurveyStatus = 'draft' | 'pending' | 'active' | 'closed' | 'cancelled' | 'archived';
 
 export type SurveyVisibility = 'private' | 'public';
 

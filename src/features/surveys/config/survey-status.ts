@@ -1,4 +1,13 @@
-import { Archive, CircleDot, FilePen, RotateCcw, SquareX, Trash2 } from 'lucide-react';
+import {
+  Archive,
+  Ban,
+  CheckCircle2,
+  CircleDot,
+  Clock,
+  FilePen,
+  RotateCcw,
+  Trash2,
+} from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 import type { SurveyStatus } from '../types';
@@ -23,6 +32,15 @@ export const SURVEY_STATUS_CONFIG: Record<SurveyStatus, StatusConfig> = {
     icon: FilePen,
     badge: { variant: 'secondary', className: '', showPulseDot: false },
   },
+  pending: {
+    labelKey: 'surveys.dashboard.status.pending',
+    icon: Clock,
+    badge: {
+      variant: 'outline',
+      className: 'bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/25',
+      showPulseDot: false,
+    },
+  },
   active: {
     labelKey: 'surveys.dashboard.status.active',
     icon: CircleDot,
@@ -34,10 +52,19 @@ export const SURVEY_STATUS_CONFIG: Record<SurveyStatus, StatusConfig> = {
   },
   closed: {
     labelKey: 'surveys.dashboard.status.closed',
-    icon: SquareX,
+    icon: CheckCircle2,
     badge: {
       variant: 'outline',
-      className: 'bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/25',
+      className: 'bg-sky-500/15 text-sky-700 dark:text-sky-400 border-sky-500/25',
+      showPulseDot: false,
+    },
+  },
+  cancelled: {
+    labelKey: 'surveys.dashboard.status.cancelled',
+    icon: Ban,
+    badge: {
+      variant: 'outline',
+      className: 'bg-red-500/15 text-red-700 dark:text-red-400 border-red-500/25',
       showPulseDot: false,
     },
   },
@@ -56,15 +83,19 @@ export function getStatusBadgeProps(status: SurveyStatus) {
 
 interface StatusTransition {
   method: 'update' | 'delete';
-  toStatus?: SurveyStatus;
+  toStatus?: SurveyStatus | null;
   fromStatuses: readonly SurveyStatus[];
 }
 
 export const SURVEY_TRANSITIONS = {
   close: { method: 'update', toStatus: 'closed', fromStatuses: ['active'] },
-  reopen: { method: 'update', toStatus: 'active', fromStatuses: ['closed'] },
-  archive: { method: 'update', toStatus: 'archived', fromStatuses: ['closed'] },
-  restore: { method: 'update', toStatus: 'closed', fromStatuses: ['archived'] },
+  cancel: { method: 'update', toStatus: 'cancelled', fromStatuses: ['pending', 'active'] },
+  archive: {
+    method: 'update',
+    toStatus: 'archived',
+    fromStatuses: ['closed', 'cancelled', 'draft'],
+  },
+  restore: { method: 'update', toStatus: null, fromStatuses: ['archived'] },
   delete: { method: 'delete', fromStatuses: ['draft'] },
 } as const satisfies Record<string, StatusTransition>;
 
@@ -94,17 +125,22 @@ export interface ActionUIConfig {
 
 export const SURVEY_ACTION_UI: Record<SurveyAction, ActionUIConfig> = {
   close: {
-    icon: SquareX,
+    icon: CheckCircle2,
     toastKey: 'toast.closed',
     confirm: {
       titleKey: 'confirm.closeTitle',
       descriptionKey: 'confirm.closeDescription',
-      variant: 'destructive',
+      variant: 'warning',
     },
   },
-  reopen: {
-    icon: RotateCcw,
-    toastKey: 'toast.reopened',
+  cancel: {
+    icon: Ban,
+    toastKey: 'toast.cancelled',
+    confirm: {
+      titleKey: 'confirm.cancelTitle',
+      descriptionKey: 'confirm.cancelDescription',
+      variant: 'destructive',
+    },
   },
   archive: {
     icon: Archive,

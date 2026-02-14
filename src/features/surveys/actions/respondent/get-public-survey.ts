@@ -12,29 +12,48 @@ export const getPublicSurvey = cache(async (slug: string): Promise<PublicSurveyD
 
   const { data: survey } = await supabase
     .from('surveys')
-    .select('id, title, description, status, starts_at, ends_at, max_respondents')
+    .select('id, title, description, status, starts_at, ends_at, max_respondents, cancelled_at')
     .eq('slug', slug)
-    .eq('status', 'active')
+    .in('status', ['active', 'pending', 'closed', 'cancelled'])
     .single();
 
   if (!survey) {
     return null;
   }
 
-  // Determine if accepting responses
-  const now = new Date();
-  let isAcceptingResponses = true;
-  let closedReason: PublicSurveyData['closedReason'];
+  // Cancelled surveys are only accessible for 30 days after cancellation
+  if (survey.status === 'cancelled') {
+    const cancelledAt = survey.cancelled_at ? new Date(survey.cancelled_at) : null;
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
-  if (survey.starts_at && new Date(survey.starts_at) > now) {
-    isAcceptingResponses = false;
-    closedReason = 'not_started';
-  } else if (survey.ends_at && new Date(survey.ends_at) < now) {
-    isAcceptingResponses = false;
-    closedReason = 'expired';
+    if (!cancelledAt || cancelledAt < thirtyDaysAgo) {
+      return null;
+    }
   }
 
-  // Get questions
+  // Determine if accepting responses
+  const now = new Date();
+  let isAcceptingResponses = survey.status === 'active';
+  let closedReason: PublicSurveyData['closedReason'];
+
+  if (survey.status === 'pending') {
+    isAcceptingResponses = false;
+    closedReason = 'not_started';
+  } else if (survey.status === 'closed') {
+    isAcceptingResponses = false;
+    closedReason = 'closed';
+  } else if (survey.status === 'cancelled') {
+    isAcceptingResponses = false;
+    closedReason = 'cancelled';
+  } else if (survey.status === 'active') {
+    // Active survey — check time and respondent limits
+    if (survey.ends_at && new Date(survey.ends_at) < now) {
+      isAcceptingResponses = false;
+      closedReason = 'expired';
+    }
+  }
+
+  // Get questions (available for active and pending surveys)
   const { data: questions } = await supabase
     .from('survey_questions')
     .select('id, text, type, required, description, config, sort_order')
@@ -46,8 +65,12 @@ export const getPublicSurvey = cache(async (slug: string): Promise<PublicSurveyD
     p_survey_id: survey.id,
   });
 
-  // Check max_respondents limit
-  if (survey.max_respondents && (responseCount ?? 0) >= survey.max_respondents) {
+  // Check max_respondents limit (only relevant for active surveys)
+  if (
+    survey.status === 'active' &&
+    survey.max_respondents &&
+    (responseCount ?? 0) >= survey.max_respondents
+  ) {
     isAcceptingResponses = false;
     closedReason = 'max_reached';
   }
@@ -62,6 +85,7 @@ export const getPublicSurvey = cache(async (slug: string): Promise<PublicSurveyD
     responseCount: responseCount ?? 0,
     isAcceptingResponses,
     ...(closedReason && { closedReason }),
+    ...(survey.status === 'pending' && survey.starts_at && { startsAt: survey.starts_at }),
     questions: mappedQuestions,
   };
 });

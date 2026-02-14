@@ -28,6 +28,10 @@ export interface UserSurvey {
   endsAt: string | null;
   /** Max respondent cap, or null if unlimited. */
   maxRespondents: number | null;
+  /** When the survey was archived, or null. */
+  archivedAt: string | null;
+  /** When the survey was cancelled, or null. */
+  cancelledAt: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -47,6 +51,8 @@ const userSurveySchema = z.object({
   startsAt: z.string().nullable(),
   endsAt: z.string().nullable(),
   maxRespondents: z.number().nullable(),
+  archivedAt: z.string().nullable(),
+  cancelledAt: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
 });

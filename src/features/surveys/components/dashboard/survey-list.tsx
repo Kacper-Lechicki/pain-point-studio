@@ -26,7 +26,7 @@ import {
 
 const STATUS_TRANSITIONS: Record<string, SurveyStatus | null> = {
   close: 'closed',
-  reopen: 'active',
+  cancel: 'cancelled',
   archive: 'archived',
   delete: null,
 } as const;
@@ -52,7 +52,9 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
       all: 0,
       active: 0,
       draft: 0,
+      pending: 0,
       closed: 0,
+      cancelled: 0,
     };
 
     for (const s of surveys) {
@@ -61,7 +63,7 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
       }
     }
 
-    counts.all = counts.active + counts.draft + counts.closed;
+    counts.all = counts.active + counts.draft + counts.pending + counts.closed + counts.cancelled;
 
     return counts;
   }, [surveys]);

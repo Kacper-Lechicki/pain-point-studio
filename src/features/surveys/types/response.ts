@@ -56,6 +56,7 @@ export interface PublicSurveyData {
   questionCount: number;
   responseCount: number;
   isAcceptingResponses: boolean;
-  closedReason?: 'closed' | 'expired' | 'max_reached' | 'not_started';
+  closedReason?: 'closed' | 'expired' | 'max_reached' | 'not_started' | 'cancelled';
+  startsAt?: string;
   questions: PublicSurveyQuestion[];
 }

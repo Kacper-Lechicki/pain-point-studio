@@ -1,6 +1,8 @@
 'use client';
 
-import { BarChart3, Eye, MoreHorizontal, Pencil, Share2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+
+import { BarChart3, Copy, Eye, MoreHorizontal, Pencil, Share2 } from 'lucide-react';
 import { useFormatter, useLocale, useNow, useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
@@ -14,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { TableCell, TableRow } from '@/components/ui/table';
+import { duplicateSurvey } from '@/features/surveys/actions';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import { SURVEY_ACTION_UI, getAvailableActions } from '@/features/surveys/config/survey-status';
 import { useSurveyAction } from '@/features/surveys/hooks/use-survey-action';
@@ -49,15 +52,21 @@ export function SurveyListRow({
   const locale = useLocale();
   const format = useFormatter();
   const now = useNow();
+  const router = useRouter();
 
   const { handleActionClick, confirmDialogProps } = useSurveyAction(survey.id, onStatusChange, t);
 
   const isDraft = survey.status === 'draft';
+  const isPending = survey.status === 'pending';
   const isActive = survey.status === 'active';
+  const isClosed = survey.status === 'closed';
   const isArchived = survey.status === 'archived';
+  const hasShareableLink = (isActive || isPending || isClosed) && survey.slug;
 
   const archivedAtLabel =
-    isArchived && survey.updatedAt ? format.relativeTime(new Date(survey.updatedAt), now) : null;
+    isArchived && (survey.archivedAt ?? survey.updatedAt)
+      ? format.relativeTime(new Date(survey.archivedAt ?? survey.updatedAt), now)
+      : null;
   const shareUrl = survey.slug ? getSurveyShareUrl(locale, survey.slug) : null;
   const sparklineColor = getSparklineColor(survey.recentActivity);
   const lastResponseLabel =
@@ -74,6 +83,17 @@ export function SurveyListRow({
     await navigator.clipboard.writeText(shareUrl);
     toast.success(t('toast.linkCopied'));
   };
+
+  const handleDuplicate = async () => {
+    const result = await duplicateSurvey({ surveyId: survey.id });
+
+    if (result.success && result.data) {
+      toast.success(t('toast.duplicated'));
+      router.push(getSurveyEditUrl(result.data.surveyId));
+    }
+  };
+
+  const canDuplicate = isDraft || isActive || isClosed || survey.status === 'cancelled';
 
   const tableRowInteraction = {
     onClick: () => onSelect(survey.id),
@@ -98,14 +118,14 @@ export function SurveyListRow({
         {t('actions.details')}
       </DropdownMenuItem>
 
-      {isActive && shareUrl && (
+      {hasShareableLink && (
         <DropdownMenuItem onClick={handleShare}>
           <Share2 className="size-4" aria-hidden />
           {t('actions.share')}
         </DropdownMenuItem>
       )}
 
-      {!isDraft && (
+      {!isDraft && !isPending && (
         <DropdownMenuItem asChild>
           <Link href={getSurveyStatsUrl(survey.id)}>
             <BarChart3 className="size-4" aria-hidden />
@@ -114,12 +134,19 @@ export function SurveyListRow({
         </DropdownMenuItem>
       )}
 
-      {isDraft && (
+      {(isDraft || isPending) && (
         <DropdownMenuItem asChild>
           <Link href={getSurveyEditUrl(survey.id)}>
             <Pencil className="size-4" aria-hidden />
             {t('actions.edit')}
           </Link>
+        </DropdownMenuItem>
+      )}
+
+      {canDuplicate && (
+        <DropdownMenuItem onClick={handleDuplicate}>
+          <Copy className="size-4" aria-hidden />
+          {t('actions.duplicate')}
         </DropdownMenuItem>
       )}
 

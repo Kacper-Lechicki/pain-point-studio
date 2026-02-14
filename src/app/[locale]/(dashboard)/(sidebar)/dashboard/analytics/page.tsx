@@ -1,10 +1,29 @@
-import { PageTransition } from '@/components/ui/page-transition';
+import { BarChart3 } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 
-export default function AnalyticsPage() {
+import { EmptyState } from '@/components/ui/empty-state';
+import { PageTransition } from '@/components/ui/page-transition';
+import { getAnalyticsData } from '@/features/analytics/actions/get-analytics-data';
+import { AnalyticsPanel } from '@/features/analytics/components/analytics-panel';
+
+export default async function AnalyticsPage() {
+  const [t, data] = await Promise.all([getTranslations('analytics'), getAnalyticsData()]);
+
+  if (!data || data.surveyComparison.length === 0) {
+    return (
+      <PageTransition>
+        <EmptyState
+          icon={BarChart3}
+          title={t('empty.title')}
+          description={t('empty.description')}
+        />
+      </PageTransition>
+    );
+  }
+
   return (
     <PageTransition>
-      <h1 className="text-3xl font-bold">Analytics</h1>
-      <p className="text-muted-foreground mt-2 text-sm">Coming soon</p>
+      <AnalyticsPanel data={data} />
     </PageTransition>
   );
 }

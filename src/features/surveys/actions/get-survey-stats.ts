@@ -34,6 +34,10 @@ export interface SurveyStats {
   totalResponses: number;
   completedResponses: number;
   inProgressResponses: number;
+  responseTimeline: number[];
+  avgCompletionSeconds: number | null;
+  firstResponseAt: string | null;
+  lastResponseAt: string | null;
   questions: QuestionStats[];
 }
 
@@ -50,6 +54,10 @@ const surveyStatsRpcSchema = z.object({
   totalResponses: z.number(),
   completedResponses: z.number(),
   inProgressResponses: z.number(),
+  responseTimeline: z.array(z.number()).default([]),
+  avgCompletionSeconds: z.number().nullable().default(null),
+  firstResponseAt: z.unknown().transform((v) => (typeof v === 'string' ? v : null)),
+  lastResponseAt: z.unknown().transform((v) => (typeof v === 'string' ? v : null)),
   questions: z
     .array(
       z.object({

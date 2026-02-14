@@ -196,12 +196,16 @@ export type Database = {
       };
       surveys: {
         Row: {
+          archived_at: string | null;
+          cancelled_at: string | null;
           category: string;
+          closed_at: string | null;
           created_at: string;
           description: string;
           ends_at: string | null;
           id: string;
           max_respondents: number | null;
+          previous_status: Database['public']['Enums']['survey_status'] | null;
           slug: string | null;
           starts_at: string | null;
           status: Database['public']['Enums']['survey_status'];
@@ -211,12 +215,16 @@ export type Database = {
           visibility: string;
         };
         Insert: {
+          archived_at?: string | null;
+          cancelled_at?: string | null;
           category: string;
+          closed_at?: string | null;
           created_at?: string;
           description: string;
           ends_at?: string | null;
           id?: string;
           max_respondents?: number | null;
+          previous_status?: Database['public']['Enums']['survey_status'] | null;
           slug?: string | null;
           starts_at?: string | null;
           status?: Database['public']['Enums']['survey_status'];
@@ -226,12 +234,16 @@ export type Database = {
           visibility?: string;
         };
         Update: {
+          archived_at?: string | null;
+          cancelled_at?: string | null;
           category?: string;
+          closed_at?: string | null;
           created_at?: string;
           description?: string;
           ends_at?: string | null;
           id?: string;
           max_respondents?: number | null;
+          previous_status?: Database['public']['Enums']['survey_status'] | null;
           slug?: string | null;
           starts_at?: string | null;
           status?: Database['public']['Enums']['survey_status'];
@@ -250,6 +262,8 @@ export type Database = {
       cancel_email_change: { Args: never; Returns: undefined };
       decrypt_pii: { Args: { encrypted: string }; Returns: string };
       encrypt_pii: { Args: { plain_text: string }; Returns: string };
+      get_analytics_data: { Args: { p_user_id: string }; Returns: Json };
+      get_dashboard_overview: { Args: { p_user_id: string }; Returns: Json };
       get_email_change_status: {
         Args: never;
         Returns: {
@@ -267,6 +281,7 @@ export type Database = {
           id: string;
         }[];
       };
+      get_profile_statistics: { Args: { p_user_id: string }; Returns: Json };
       get_survey_response_count: {
         Args: { p_survey_id: string };
         Returns: number;
@@ -306,7 +321,7 @@ export type Database = {
     };
     Enums: {
       question_type: 'open_text' | 'short_text' | 'multiple_choice' | 'rating_scale' | 'yes_no';
-      survey_status: 'draft' | 'active' | 'closed' | 'archived';
+      survey_status: 'draft' | 'pending' | 'active' | 'closed' | 'cancelled' | 'archived';
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -436,7 +451,7 @@ export const Constants = {
   public: {
     Enums: {
       question_type: ['open_text', 'short_text', 'multiple_choice', 'rating_scale', 'yes_no'],
-      survey_status: ['draft', 'active', 'closed', 'archived'],
+      survey_status: ['draft', 'pending', 'active', 'closed', 'cancelled', 'archived'],
     },
   },
 } as const;

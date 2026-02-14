@@ -24,6 +24,22 @@ export const publishSurvey = withProtectedAction<typeof surveyIdSchema, { slug: 
         return { error: 'surveys.builder.errors.minQuestionsToPublish' };
       }
 
+      // Fetch starts_at to determine pending vs active
+      const { data: survey } = await supabase
+        .from('surveys')
+        .select('starts_at')
+        .eq('id', data.surveyId)
+        .eq('user_id', user.id)
+        .eq('status', 'draft')
+        .maybeSingle();
+
+      if (!survey) {
+        return { error: 'surveys.errors.unexpected' };
+      }
+
+      const targetStatus =
+        survey.starts_at && new Date(survey.starts_at) > new Date() ? 'pending' : 'active';
+
       // Retry loop for slug collision (unique constraint violation)
       const MAX_RETRIES = 3;
 
@@ -32,7 +48,7 @@ export const publishSurvey = withProtectedAction<typeof surveyIdSchema, { slug: 
 
         const { error } = await supabase
           .from('surveys')
-          .update({ status: 'active', slug })
+          .update({ status: targetStatus, slug })
           .eq('id', data.surveyId)
           .eq('user_id', user.id)
           .eq('status', 'draft');

@@ -156,6 +156,22 @@
       "title": "No surveys yet",
       "description": "Create a survey to start collecting user feedback and discover real pain points.",
       "cta": "Create survey"
+    },
+    "overview": {
+      "welcomeBack": "Welcome back",
+      "totalSurveys": "Total surveys",
+      "activeSurveys": "Active surveys",
+      "totalResponses": "Total responses",
+      "avgCompletionRate": "Completion rate",
+      "responseActivity": "Response activity",
+      "topSurveys": "Top surveys",
+      "recentResponses": "Recent responses",
+      "noRecentResponses": "No responses yet.",
+      "completedCount": "{count} completed",
+      "viewStats": "View stats",
+      "viewAll": "View all surveys",
+      "createSurvey": "Create survey",
+      "noFeedback": "No feedback"
     }
   },
   "surveys": {
@@ -325,6 +341,9 @@
       "closeSurvey": "Close Survey",
       "closeSurveyConfirm": "Are you sure you want to close this survey? It will stop accepting new responses.",
       "surveyClosed": "Survey closed successfully.",
+      "cancelSurvey": "Cancel Survey",
+      "cancelSurveyConfirm": "This will withdraw the survey. The survey link will remain accessible for 30 days with a withdrawal notice.",
+      "surveyCancelled": "Survey cancelled successfully.",
       "shareLink": "Share Link",
       "surveyLink": "Survey link",
       "copyLink": "Copy link",
@@ -366,13 +385,23 @@
       "copySurveyLink": "Copy survey link",
       "inProgressHint": "Not yet completed",
       "recentResponses": "Recent Responses",
-      "viewResults": "View Results"
+      "viewResults": "View Results",
+      "avgCompletionTime": "Avg. time",
+      "responseTimeline": "Response timeline",
+      "liveIndicator": "Live",
+      "insightTopChoice": "Most selected: {option} ({pct}%)",
+      "insightAvgRating": "Average: {value}/{max}",
+      "insightMajority": "Majority: {label} ({pct}%)",
+      "insightText": "{count, plural, one {1 response} other {# responses}}, avg. {chars} chars",
+      "topKeywords": "Top keywords"
     },
     "dashboard": {
       "status": {
         "active": "Active",
         "draft": "Draft",
+        "pending": "Pending",
         "closed": "Closed",
+        "cancelled": "Cancelled",
         "archived": "Archived"
       },
       "filters": {
@@ -380,7 +409,9 @@
         "all": "All",
         "active": "Active",
         "draft": "Drafts",
+        "pending": "Pending",
         "closed": "Closed",
+        "cancelled": "Cancelled",
         "archived": "Archived"
       },
       "summary": {
@@ -429,7 +460,10 @@
         "endingSoon": "{days, plural, one {Ends tomorrow} other {Ends in # days}}",
         "expired": "End date has passed",
         "completionRate": "{rate}% completion rate",
-        "noResponsesCollected": "No responses were collected"
+        "noResponsesCollected": "No responses were collected",
+        "startsIn": "{days, plural, one {Starts tomorrow} other {Starts in # days}}",
+        "activatingSoon": "Activating soon\u2026",
+        "withdrawn": "Survey was withdrawn"
       },
       "actions": {
         "share": "Share",
@@ -437,10 +471,11 @@
         "edit": "Edit",
         "quickPreview": "Quick preview",
         "close": "Close survey",
-        "reopen": "Reopen survey",
+        "cancel": "Cancel survey",
         "archive": "Archive",
         "restore": "Restore",
         "delete": "Delete",
+        "duplicate": "Duplicate",
         "moreActions": "More actions",
         "details": "Details",
         "openInFullPage": "Open details in full page"
@@ -459,6 +494,9 @@
         "updated": "Last edited",
         "schedule": "Schedule",
         "respondentCap": "Respondent cap",
+        "autoDeletes": "Auto-deletes",
+        "linkExpires": "Link expires",
+        "inDays": "{days, plural, one {in 1 day} other {in # days}}",
         "startsAt": "Starts",
         "endsAt": "Ends",
         "noLimit": "No limit",
@@ -492,18 +530,21 @@
       },
       "confirm": {
         "closeTitle": "Close survey",
-        "closeDescription": "This will stop the survey from accepting new responses. You can reopen it later.",
+        "closeDescription": "This will permanently close the survey. No more responses will be accepted.",
+        "cancelTitle": "Cancel survey",
+        "cancelDescription": "This will withdraw the survey. The survey link will remain accessible for 30 days with a withdrawal notice.",
         "archiveTitle": "Archive survey",
-        "archiveDescription": "This will archive the survey. Archived surveys cannot be deleted.",
+        "archiveDescription": "This will archive the survey. Archived surveys are automatically deleted after 30 days.",
         "deleteTitle": "Delete survey",
         "deleteDescription": "This will permanently delete the survey and all its questions. This action cannot be undone."
       },
       "toast": {
         "closed": "Survey closed.",
-        "reopened": "Survey reopened.",
+        "cancelled": "Survey cancelled.",
         "archived": "Survey archived.",
         "deleted": "Survey deleted.",
         "restored": "Survey restored.",
+        "duplicated": "Survey duplicated as draft.",
         "linkCopied": "Survey link copied!",
         "actionFailed": "Something went wrong. Please try again."
       },
@@ -570,6 +611,28 @@
       }
     }
   },
+  "analytics": {
+    "title": "Analytics",
+    "description": "Cross-survey insights and performance metrics.",
+    "totalResponses": "Total responses",
+    "completedResponses": "Completed",
+    "avgCompletionRate": "Avg. completion rate",
+    "responseTrends": "Response trends",
+    "categoryBreakdown": "Responses by category",
+    "surveyComparison": "Survey comparison",
+    "columnTitle": "Title",
+    "columnStatus": "Status",
+    "columnCategory": "Category",
+    "columnResponses": "Responses",
+    "columnCompletionRate": "Completion %",
+    "columnQuestions": "Questions",
+    "columnCreated": "Created",
+    "responses": "Responses",
+    "empty": {
+      "title": "No analytics yet",
+      "description": "Analytics will appear once you have surveys with responses."
+    }
+  },
   "respondent": {
     "landing": {
       "questionsCount": "{count, plural, one {# question} other {# questions}}",
@@ -621,10 +684,20 @@
     },
     "closed": {
       "title": "Survey Unavailable",
-      "closed": "This survey is no longer accepting responses.",
+      "closed": "This survey has ended. Thank you for your interest.",
       "expired": "This survey has ended.",
       "maxReached": "This survey has reached its maximum number of responses.",
-      "notStarted": "This survey hasn't started yet. Please check back later."
+      "notStarted": "This survey hasn't started yet. Please check back later.",
+      "cancelled": "This survey has been withdrawn by its creator."
+    },
+    "countdown": {
+      "title": "Survey hasn't started yet",
+      "description": "This survey will open on {date}.",
+      "encouragement": "Check back when it opens!",
+      "days": "days",
+      "hours": "hours",
+      "minutes": "min",
+      "seconds": "sec"
     },
     "errors": {
       "startFailed": "Failed to start the survey. Please try again.",
@@ -1045,7 +1118,11 @@
       },
       "statistics": {
         "title": "Statistics",
-        "emptyDescription": "Statistics will be available once you start collecting responses."
+        "emptyDescription": "Statistics will be available once you start collecting responses.",
+        "totalSurveys": "Surveys created",
+        "totalResponses": "Responses received",
+        "avgCompletionRate": "Completion rate",
+        "memberSince": "Member since"
       }
     }
   }

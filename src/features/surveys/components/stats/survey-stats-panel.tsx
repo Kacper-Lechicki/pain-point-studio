@@ -2,7 +2,17 @@
 
 import { useState, useTransition } from 'react';
 
-import { Calendar, CheckCircle, Clock, Hash, Inbox, Link2, SquareX } from 'lucide-react';
+import {
+  Ban,
+  Calendar,
+  CheckCircle,
+  CheckCircle2,
+  Clock,
+  Hash,
+  Inbox,
+  Link2,
+  Timer,
+} from 'lucide-react';
 import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
@@ -12,14 +22,17 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Separator } from '@/components/ui/separator';
 import { useBreadcrumbSegment } from '@/features/dashboard/components/layout/breadcrumb-context';
-import { closeSurvey } from '@/features/surveys/actions';
+import { cancelSurvey, closeSurvey } from '@/features/surveys/actions';
 import type { QuestionStats, SurveyStats } from '@/features/surveys/actions/get-survey-stats';
 import { SurveyStatusBadge } from '@/features/surveys/components/dashboard/survey-status-badge';
 import { MetricRow, SectionLabel } from '@/features/surveys/components/shared/metric-display';
+import { ResponseTimelineChart } from '@/features/surveys/components/shared/response-timeline-chart';
 import { DATE_FORMAT_SHORT } from '@/features/surveys/config';
+import { useRealtimeResponses } from '@/features/surveys/hooks/use-realtime-responses';
 import {
   calculateCompletionRate,
   calculateRespondentProgress,
+  formatCompletionTime,
 } from '@/features/surveys/lib/calculations';
 import { getSurveyShareUrl } from '@/features/surveys/lib/share-url';
 import type { SurveyStatus } from '@/features/surveys/types';
@@ -37,24 +50,43 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
   const format = useFormatter();
 
   useBreadcrumbSegment(stats.survey.id, stats.survey.title);
+  useRealtimeResponses(stats.survey.id);
+
   const [showCloseDialog, setShowCloseDialog] = useState(false);
-  const [optimisticallyClosed, setOptimisticallyClosed] = useState(false);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [optimisticStatus, setOptimisticStatus] = useState<SurveyStatus | null>(null);
   const [, startTransition] = useTransition();
 
-  const isClosed = stats.survey.status === 'closed' || optimisticallyClosed;
+  const currentStatus = optimisticStatus ?? stats.survey.status;
+  const canClose = currentStatus === 'active';
+  const canCancel = currentStatus === 'active' || currentStatus === 'pending';
 
   const shareUrl = stats.survey.slug ? getSurveyShareUrl(locale, stats.survey.slug) : null;
+  const completionTimeLabel = formatCompletionTime(stats.avgCompletionSeconds);
 
   const handleCloseSurvey = () => {
     startTransition(async () => {
       const result = await closeSurvey({ surveyId: stats.survey.id });
 
       if (result.success) {
-        setOptimisticallyClosed(true);
+        setOptimisticStatus('closed');
         toast.success(t('surveyClosed'));
       }
 
       setShowCloseDialog(false);
+    });
+  };
+
+  const handleCancelSurvey = () => {
+    startTransition(async () => {
+      const result = await cancelSurvey({ surveyId: stats.survey.id });
+
+      if (result.success) {
+        setOptimisticStatus('cancelled');
+        toast.success(t('surveyCancelled'));
+      }
+
+      setShowCancelDialog(false);
     });
   };
 
@@ -86,19 +118,39 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
                 {stats.survey.title}
               </h1>
               <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                <SurveyStatusBadge status={(isClosed ? 'closed' : 'active') as SurveyStatus} />
+                <SurveyStatusBadge status={currentStatus} />
+                {currentStatus === 'active' && (
+                  <span className="text-muted-foreground flex items-center gap-1 text-[11px]">
+                    <span className="relative flex size-2">
+                      <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                      <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
+                    </span>
+                    {t('liveIndicator')}
+                  </span>
+                )}
               </div>
             </div>
             <div className="flex shrink-0 gap-2">
-              {!isClosed && (
+              {canClose && (
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setShowCloseDialog(true)}
                   className="gap-1.5"
                 >
-                  <SquareX className="size-3.5" aria-hidden />
+                  <CheckCircle2 className="size-3.5" aria-hidden />
                   {t('closeSurvey')}
+                </Button>
+              )}
+              {canCancel && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowCancelDialog(true)}
+                  className="gap-1.5"
+                >
+                  <Ban className="size-3.5" aria-hidden />
+                  {t('cancelSurvey')}
                 </Button>
               )}
               <ExportButtons surveyId={stats.survey.id} />
@@ -173,7 +225,26 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
               <div className="text-muted-foreground mt-1.5 text-[11px]">{t('completionRate')}</div>
             </div>
           )}
+          {completionTimeLabel != null && (
+            <div className="border-border/50 rounded-md border px-3 py-2.5">
+              <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
+                {completionTimeLabel}
+              </div>
+              <div className="text-muted-foreground mt-1.5 flex items-center gap-1 text-[11px]">
+                <Timer className="size-3" aria-hidden />
+                {t('avgCompletionTime')}
+              </div>
+            </div>
+          )}
         </div>
+
+        {stats.responseTimeline.length > 0 && stats.responseTimeline.some((v) => v > 0) && (
+          <>
+            <Separator />
+            <SectionLabel>{t('responseTimeline')}</SectionLabel>
+            <ResponseTimelineChart data={stats.responseTimeline} />
+          </>
+        )}
 
         {stats.completedResponses === 0 ? (
           <EmptyState
@@ -237,6 +308,16 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
         title={t('closeSurvey')}
         description={t('closeSurveyConfirm')}
         confirmLabel={t('closeSurvey')}
+      />
+
+      <ConfirmDialog
+        open={showCancelDialog}
+        onOpenChange={setShowCancelDialog}
+        onConfirm={handleCancelSurvey}
+        title={t('cancelSurvey')}
+        description={t('cancelSurveyConfirm')}
+        confirmLabel={t('cancelSurvey')}
+        variant="destructive"
       />
     </main>
   );

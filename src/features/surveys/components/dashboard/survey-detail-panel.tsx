@@ -2,9 +2,12 @@
 
 import type { ReactNode } from 'react';
 
+import { useRouter } from 'next/navigation';
+
 import {
   BarChart3,
   Calendar,
+  Copy,
   Expand,
   Hash,
   HelpCircle,
@@ -21,6 +24,7 @@ import { Button } from '@/components/ui/button';
 import { ClipboardInput } from '@/components/ui/clipboard-input';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Separator } from '@/components/ui/separator';
+import { duplicateSurvey } from '@/features/surveys/actions';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import {
   DATE_FORMAT_SHORT,
@@ -32,6 +36,7 @@ import { useSurveyAction } from '@/features/surveys/hooks/use-survey-action';
 import {
   calculateCompletionRate,
   calculateRespondentProgress,
+  daysUntilExpiry,
 } from '@/features/surveys/lib/calculations';
 import type { MappedQuestion } from '@/features/surveys/lib/map-question-row';
 import { getSurveyShareUrl } from '@/features/surveys/lib/share-url';
@@ -182,13 +187,17 @@ export function SurveyDetailPanel({
   const locale = useLocale();
   const format = useFormatter();
   const now = useNow();
+  const router = useRouter();
 
   const { handleActionClick, confirmDialogProps } = useSurveyAction(survey.id, onStatusChange, t);
 
   const isDraft = survey.status === 'draft';
+  const isPending = survey.status === 'pending';
   const isActive = survey.status === 'active';
+  const isClosed = survey.status === 'closed';
   const isArchived = survey.status === 'archived';
   const shareUrl = survey.slug ? getSurveyShareUrl(locale, survey.slug) : null;
+  const hasShareableLink = (isActive || isPending || isClosed) && shareUrl;
   const sparklineColor = getSparklineColor(survey.recentActivity);
   const completionRate = calculateCompletionRate(survey.completedCount, survey.responseCount);
   const lastResponseLabel =
@@ -209,6 +218,17 @@ export function SurveyDetailPanel({
     await navigator.clipboard.writeText(shareUrl);
     toast.success(t('detailPanel.linkCopied'));
   };
+
+  const handleDuplicate = async () => {
+    const result = await duplicateSurvey({ surveyId: survey.id });
+
+    if (result.success && result.data) {
+      toast.success(t('toast.duplicated'));
+      router.push(getSurveyEditUrl(result.data.surveyId));
+    }
+  };
+
+  const canDuplicate = isDraft || isActive || isClosed || survey.status === 'cancelled';
 
   const formatDate = (iso: string) => format.dateTime(new Date(iso), DATE_FORMAT_SHORT);
 
@@ -352,10 +372,32 @@ export function SurveyDetailPanel({
         {survey.maxRespondents != null && (
           <MetricRow label={t('detailPanel.respondentCap')} value={survey.maxRespondents} />
         )}
+        {isArchived &&
+          (() => {
+            const days = daysUntilExpiry(survey.archivedAt, 30);
+
+            return days != null ? (
+              <MetricRow
+                label={t('detailPanel.autoDeletes')}
+                value={t('detailPanel.inDays', { days })}
+              />
+            ) : null;
+          })()}
+        {survey.status === 'cancelled' &&
+          (() => {
+            const days = daysUntilExpiry(survey.cancelledAt, 30);
+
+            return days != null ? (
+              <MetricRow
+                label={t('detailPanel.linkExpires')}
+                value={t('detailPanel.inDays', { days })}
+              />
+            ) : null;
+          })()}
       </div>
 
-      {/* Share URL (active only) */}
-      {isActive && shareUrl && (
+      {/* Share URL (active, pending, closed) */}
+      {hasShareableLink && (
         <>
           <Separator className="my-4" />
           <SectionLabel>{t('detailPanel.surveyLink')}</SectionLabel>
@@ -373,7 +415,7 @@ export function SurveyDetailPanel({
       {/* Actions */}
       <SectionLabel>{t('detailPanel.actionsLabel')}</SectionLabel>
       <div className="flex flex-col gap-2">
-        {isDraft ? (
+        {isDraft || isPending ? (
           <Button asChild size="sm" className="w-full">
             <Link href={getSurveyEditUrl(survey.id)}>
               <Pencil className="size-4" aria-hidden />
@@ -388,10 +430,16 @@ export function SurveyDetailPanel({
             </Link>
           </Button>
         )}
-        {isActive && shareUrl && (
+        {hasShareableLink && (
           <Button variant="outline" size="sm" className="w-full" onClick={handleCopyLink}>
             <Share2 className="size-4" aria-hidden />
             {t('actions.share')}
+          </Button>
+        )}
+        {canDuplicate && (
+          <Button variant="outline" size="sm" className="w-full" onClick={handleDuplicate}>
+            <Copy className="size-4" aria-hidden />
+            {t('actions.duplicate')}
           </Button>
         )}
       </div>

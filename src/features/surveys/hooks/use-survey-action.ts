@@ -7,9 +7,9 @@ import { toast } from 'sonner';
 
 import {
   archiveSurvey,
+  cancelSurvey,
   closeSurvey,
   deleteSurveyDraft,
-  reopenSurvey,
   restoreSurvey,
 } from '@/features/surveys/actions';
 import { SURVEY_ACTION_UI, type SurveyAction } from '@/features/surveys/config/survey-status';
@@ -20,7 +20,7 @@ import type { ActionResult } from '@/lib/common/types';
 const ACTION_FN: Record<SurveyAction, (data: { surveyId: string }) => Promise<ActionResult<void>>> =
   {
     close: closeSurvey,
-    reopen: reopenSurvey,
+    cancel: cancelSurvey,
     archive: archiveSurvey,
     restore: restoreSurvey,
     delete: deleteSurveyDraft,
@@ -28,7 +28,7 @@ const ACTION_FN: Record<SurveyAction, (data: { surveyId: string }) => Promise<Ac
 
 // ── Confirmable actions ─────────────────────────────────────────────
 
-type ConfirmableAction = Extract<SurveyAction, 'close' | 'archive' | 'delete'>;
+type ConfirmableAction = Extract<SurveyAction, 'close' | 'cancel' | 'archive' | 'delete'>;
 
 export function isConfirmable(action: SurveyAction): action is ConfirmableAction {
   return SURVEY_ACTION_UI[action].confirm != null;

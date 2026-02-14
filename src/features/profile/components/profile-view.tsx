@@ -4,17 +4,20 @@ import { BarChart3, FolderOpen } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Separator } from '@/components/ui/separator';
+import type { ProfileStatistics } from '@/features/profile/actions/get-profile-statistics';
 import { EmptySection } from '@/features/profile/components/empty-section';
 import { ProfileHeader } from '@/features/profile/components/profile-header';
+import { ProfileStatisticsSection } from '@/features/profile/components/profile-statistics';
 import { SocialLinksList } from '@/features/profile/components/social-links-list';
 import type { ProfilePreviewData } from '@/features/profile/types';
 
 interface ProfileViewProps {
   profile: ProfilePreviewData;
+  statistics?: ProfileStatistics | null;
   isPreview?: boolean;
 }
 
-const ProfileView = ({ profile, isPreview = false }: ProfileViewProps) => {
+const ProfileView = ({ profile, statistics, isPreview = false }: ProfileViewProps) => {
   const t = useTranslations('profile');
 
   return (
@@ -47,11 +50,15 @@ const ProfileView = ({ profile, isPreview = false }: ProfileViewProps) => {
 
           <Separator />
 
-          <EmptySection
-            title={t('sections.statistics.title')}
-            description={t('sections.statistics.emptyDescription')}
-            icon={BarChart3}
-          />
+          {statistics && statistics.totalSurveys > 0 ? (
+            <ProfileStatisticsSection statistics={statistics} />
+          ) : (
+            <EmptySection
+              title={t('sections.statistics.title')}
+              description={t('sections.statistics.emptyDescription')}
+              icon={BarChart3}
+            />
+          )}
         </div>
       </div>
     </div>
