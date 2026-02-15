@@ -2,8 +2,9 @@
 
 import * as React from 'react';
 
-import { format, isValid, parse } from 'date-fns';
+import { format, isSameDay, isValid, parse, startOfDay } from 'date-fns';
 import { CalendarIcon, ClockIcon } from 'lucide-react';
+import type { Matcher } from 'react-day-picker';
 
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -24,11 +25,15 @@ interface DateTimePickerProps {
   name?: string;
   placeholder?: string;
   disabled?: boolean;
+  /** Disable all dates before this date. */
+  disabledBefore?: Date | undefined;
+  /** Disable all dates after this date. */
+  disabledAfter?: Date | undefined;
   className?: string;
 }
 
-const HOURS = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'));
-const MINUTES = Array.from({ length: 12 }, (_, i) => String(i * 5).padStart(2, '0'));
+const ALL_HOURS = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'));
+const ALL_MINUTES = Array.from({ length: 12 }, (_, i) => String(i * 5).padStart(2, '0'));
 
 function parseDateTime(value: string | null): Date | undefined {
   if (!value) {
@@ -44,6 +49,21 @@ function formatDateTime(date: Date): string {
   return format(date, "yyyy-MM-dd'T'HH:mm");
 }
 
+/** Clamp a candidate datetime to the [min, max] range. */
+function clampDateTime(candidate: Date, min: Date | undefined, max: Date | undefined): Date {
+  let result = candidate;
+
+  if (min && result < min) {
+    result = new Date(min);
+  }
+
+  if (max && result > max) {
+    result = new Date(max);
+  }
+
+  return result;
+}
+
 function DateTimePicker({
   value,
   onChange,
@@ -51,10 +71,19 @@ function DateTimePicker({
   name,
   placeholder = 'Pick a date & time',
   disabled,
+  disabledBefore,
+  disabledAfter,
   className,
 }: DateTimePickerProps) {
   const [open, setOpen] = React.useState(false);
   const selectedDate = parseDateTime(value);
+
+  /** Emit a clamped value. */
+  function emitClamped(candidate: Date) {
+    const clamped = clampDateTime(candidate, disabledBefore, disabledAfter);
+
+    onChange(formatDateTime(clamped));
+  }
 
   function handleDateSelect(day: Date | undefined) {
     if (!day) {
@@ -68,7 +97,7 @@ function DateTimePicker({
     const merged = new Date(day);
 
     merged.setHours(hours, minutes, 0, 0);
-    onChange(formatDateTime(merged));
+    emitClamped(merged);
   }
 
   function handleHourChange(hour: string) {
@@ -76,7 +105,7 @@ function DateTimePicker({
     const merged = new Date(base);
 
     merged.setHours(Number(hour), merged.getMinutes(), 0, 0);
-    onChange(formatDateTime(merged));
+    emitClamped(merged);
   }
 
   function handleMinuteChange(minute: string) {
@@ -84,13 +113,70 @@ function DateTimePicker({
     const merged = new Date(base);
 
     merged.setHours(merged.getHours(), Number(minute), 0, 0);
-    onChange(formatDateTime(merged));
+    emitClamped(merged);
   }
 
   const currentHour = selectedDate ? String(selectedDate.getHours()).padStart(2, '0') : undefined;
   const currentMinute = selectedDate
     ? String(selectedDate.getMinutes()).padStart(2, '0')
     : undefined;
+
+  // ── Compute allowed hours & minutes based on boundary constraints ──
+
+  const { allowedHours, allowedMinutes } = React.useMemo(() => {
+    let minHour = 0;
+    let maxHour = 23;
+    let minMinuteForCurrentHour = 0;
+    let maxMinuteForCurrentHour = 55;
+
+    const selHour = selectedDate ? selectedDate.getHours() : 0;
+
+    // Lower bound: when selected day === disabledBefore day
+    if (disabledBefore && selectedDate && isSameDay(selectedDate, disabledBefore)) {
+      minHour = disabledBefore.getHours();
+
+      if (selHour === minHour) {
+        minMinuteForCurrentHour = disabledBefore.getMinutes();
+      }
+    }
+
+    // Upper bound: when selected day === disabledAfter day
+    if (disabledAfter && selectedDate && isSameDay(selectedDate, disabledAfter)) {
+      maxHour = disabledAfter.getHours();
+
+      if (selHour === maxHour) {
+        maxMinuteForCurrentHour = disabledAfter.getMinutes();
+      }
+    }
+
+    const hours = ALL_HOURS.filter((h) => {
+      const n = Number(h);
+
+      return n >= minHour && n <= maxHour;
+    });
+
+    const minutes = ALL_MINUTES.filter((m) => {
+      const n = Number(m);
+
+      return n >= minMinuteForCurrentHour && n <= maxMinuteForCurrentHour;
+    });
+
+    return { allowedHours: hours, allowedMinutes: minutes };
+  }, [selectedDate, disabledBefore, disabledAfter]);
+
+  const calendarDisabled = React.useMemo(() => {
+    const matchers: Matcher[] = [];
+
+    if (disabledBefore) {
+      matchers.push({ before: startOfDay(disabledBefore) });
+    }
+
+    if (disabledAfter) {
+      matchers.push({ after: disabledAfter });
+    }
+
+    return matchers;
+  }, [disabledBefore, disabledAfter]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -131,6 +217,7 @@ function DateTimePicker({
           selected={selectedDate}
           onSelect={handleDateSelect}
           {...(selectedDate ? { defaultMonth: selectedDate } : {})}
+          {...(calendarDisabled.length > 0 ? { disabled: calendarDisabled } : {})}
         />
 
         <div className="border-t px-2 py-1.5">
@@ -145,7 +232,7 @@ function DateTimePicker({
               </SelectTrigger>
 
               <SelectContent position="popper" className="max-h-48">
-                {HOURS.map((h) => (
+                {allowedHours.map((h) => (
                   <SelectItem key={h} value={h}>
                     {h}
                   </SelectItem>
@@ -164,7 +251,7 @@ function DateTimePicker({
               </SelectTrigger>
 
               <SelectContent position="popper" className="max-h-48">
-                {MINUTES.map((m) => (
+                {allowedMinutes.map((m) => (
                   <SelectItem key={m} value={m}>
                     {m}
                   </SelectItem>

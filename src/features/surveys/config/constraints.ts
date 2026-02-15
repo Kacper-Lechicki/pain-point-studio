@@ -4,6 +4,9 @@ export const SURVEY_TITLE_MAX_LENGTH = 100;
 export const SURVEY_DESCRIPTION_MAX_LENGTH = 2000;
 export const SURVEY_MAX_RESPONDENTS_MIN = 1;
 
+/** Maximum survey duration in days (from start date to end date). */
+export const SURVEY_MAX_DURATION_DAYS = 30;
+
 // ── Question builder constraints ────────────────────────────────────
 
 export const QUESTIONS_MIN = 1;

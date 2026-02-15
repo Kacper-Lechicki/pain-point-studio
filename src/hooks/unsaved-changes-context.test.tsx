@@ -13,6 +13,7 @@ vi.mock('next-intl', () => ({
 
 vi.mock('@/i18n/routing', () => ({
   useRouter: () => ({ push: mockRouterPush }),
+  usePathname: () => '/dashboard',
 }));
 
 vi.mock('@/components/ui/alert-dialog', () => ({
@@ -231,5 +232,74 @@ describe('useUnsavedChangesWarning', () => {
 
     expect(clickEvent.defaultPrevented).toBe(false);
     document.body.removeChild(anchor);
+  });
+
+  // The module-level popstate listener is always registered (at import time)
+  // but only acts when the guard is active (dirty state).
+  it('should intercept popstate when dirty but not when clean', () => {
+    // When dirty, popstate should not throw and the guard is active.
+    const { unmount } = renderHook(() => useUnsavedChangesWarning('form-1', true), { wrapper });
+
+    expect(() => {
+      act(() => {
+        window.dispatchEvent(new PopStateEvent('popstate'));
+      });
+    }).not.toThrow();
+
+    unmount();
+
+    // When clean, popstate should also not throw — the guard just lets it through.
+    renderHook(() => useUnsavedChangesWarning('form-1', false), { wrapper });
+
+    expect(() => {
+      act(() => {
+        window.dispatchEvent(new PopStateEvent('popstate'));
+      });
+    }).not.toThrow();
+  });
+
+  // When dirty, popstate should trigger the dialog (sets pending state).
+  it('should intercept popstate navigation when dirty', () => {
+    renderHook(() => useUnsavedChangesWarning('form-1', true), { wrapper });
+
+    // popstate handler should not throw
+    expect(() => {
+      act(() => {
+        window.dispatchEvent(new PopStateEvent('popstate'));
+      });
+    }).not.toThrow();
+  });
+
+  // When dirty, pushState to a different URL should trigger router.push to revert.
+  it('should revert pushState navigation when dirty', async () => {
+    renderHook(() => useUnsavedChangesWarning('form-1', true), { wrapper });
+
+    // pushState goes through initially (let-then-revert strategy).
+    act(() => {
+      window.history.pushState(null, '', '/other-page');
+    });
+
+    // Wait for the microtask-based revert to fire.
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    // The guard should have called router.push to revert React to the original page.
+    expect(mockRouterPush).toHaveBeenCalled();
+  });
+
+  // When clean, pushState should go through normally.
+  it('should allow pushState navigation when clean', () => {
+    renderHook(() => useUnsavedChangesWarning('form-1', false), { wrapper });
+
+    const originalPathname = window.location.pathname;
+
+    // pushState to a different URL should work normally.
+    act(() => {
+      window.history.pushState(null, '', '/allowed-page');
+    });
+
+    // Restore original URL for test cleanup.
+    window.history.pushState(null, '', originalPathname);
   });
 });

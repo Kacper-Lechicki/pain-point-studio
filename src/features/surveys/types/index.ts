@@ -12,6 +12,7 @@ import {
   RATING_SCALE_MIN,
   START_DATE_TOLERANCE_MS,
   SURVEY_DESCRIPTION_MAX_LENGTH,
+  SURVEY_MAX_DURATION_DAYS,
   SURVEY_MAX_RESPONDENTS_MIN,
   SURVEY_TITLE_MAX_LENGTH,
 } from '@/features/surveys/config';
@@ -103,6 +104,22 @@ export const surveyMetadataSchema = z
       return true;
     },
     { message: 'surveys.errors.endDateBeforeStart', path: ['endsAt'] }
+  )
+  .refine(
+    (data) => {
+      if (data.startsAt && data.endsAt) {
+        const start = new Date(data.startsAt);
+        const end = new Date(data.endsAt);
+        const maxEnd = new Date(start);
+
+        maxEnd.setDate(maxEnd.getDate() + SURVEY_MAX_DURATION_DAYS);
+
+        return end <= maxEnd;
+      }
+
+      return true;
+    },
+    { message: 'surveys.errors.endDateTooFar', path: ['endsAt'] }
   );
 
 export type SurveyMetadataSchema = z.infer<typeof surveyMetadataSchema>;

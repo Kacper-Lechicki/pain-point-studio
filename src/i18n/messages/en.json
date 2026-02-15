@@ -217,7 +217,7 @@
       "startDate": "Start date",
       "startDateHelper": "Leave empty to start immediately when published.",
       "endDate": "End date",
-      "endDateHelper": "Leave empty for no end date. Survey auto-closes after this date.",
+      "endDateHelper": "Auto-closes after this date. Max 31 days from start.",
       "maxRespondents": "Max respondents",
       "maxRespondentsPlaceholder": "Unlimited",
       "maxRespondentsHelper": "Leave empty for unlimited. Survey auto-closes after reaching the limit.",
@@ -232,6 +232,7 @@
       "maxRespondentsMin": "Must be at least 1.",
       "startDatePast": "Start date cannot be in the past.",
       "endDateBeforeStart": "End date must be after the start date.",
+      "endDateTooFar": "Survey duration cannot exceed 31 days.",
       "unexpected": "Something went wrong. Please try again."
     },
     "builder": {

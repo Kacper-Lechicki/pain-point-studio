@@ -45,10 +45,8 @@ interface SurveyMetadataFormProps {
   categoryOptions: SurveyCategoryOption[];
   defaultValues?: Partial<SurveyMetadataSchema>;
   surveyId?: string;
-  /** When 'edit', hides the Next button and calls onSaved on success. */
   mode?: 'create' | 'edit';
   onSaved?: () => void;
-  /** Render prop for externally positioned footer. When provided, built-in actions are hidden. */
   renderFooter?: (props: { handleSave: () => void; isLoading: boolean }) => React.ReactNode;
 }
 
@@ -125,13 +123,13 @@ const SurveyMetadataForm = ({
 
   const formFields = (
     <>
-      {/* Title */}
       <FormField
         control={form.control}
         name="title"
         render={({ field }) => (
           <FormItem>
             <FormLabel>{t('surveys.create.surveyTitle')}</FormLabel>
+
             <FormControl>
               <Input
                 placeholder={t('surveys.create.surveyTitlePlaceholder')}
@@ -139,20 +137,21 @@ const SurveyMetadataForm = ({
                 {...field}
               />
             </FormControl>
-            <div className="flex justify-end">
-              <span className="text-muted-foreground text-xs">
+
+            <div className="flex items-baseline justify-between gap-2">
+              <FormMessage />
+
+              <span className="text-muted-foreground ml-auto shrink-0 text-xs">
                 {t('surveys.create.titleCounter', {
                   count: (field.value ?? '').length,
                   max: SURVEY_TITLE_MAX_LENGTH,
                 })}
               </span>
             </div>
-            <FormMessage />
           </FormItem>
         )}
       />
 
-      {/* Description */}
       <FormField
         control={form.control}
         name="description"
@@ -160,6 +159,7 @@ const SurveyMetadataForm = ({
           <FormItem>
             <FormLabel>{t('surveys.create.surveyDescription')}</FormLabel>
             <FormDescription>{t('surveys.create.surveyDescriptionHelper')}</FormDescription>
+
             <FormControl>
               <Textarea
                 placeholder={t('surveys.create.surveyDescriptionPlaceholder')}
@@ -169,27 +169,29 @@ const SurveyMetadataForm = ({
                 {...field}
               />
             </FormControl>
-            <div className="flex justify-end">
-              <span className="text-muted-foreground text-xs">
+
+            <div className="flex items-baseline justify-between gap-2">
+              <FormMessage />
+
+              <span className="text-muted-foreground ml-auto shrink-0 text-xs">
                 {t('surveys.create.descriptionCounter', {
                   count: (field.value ?? '').length,
                   max: SURVEY_DESCRIPTION_MAX_LENGTH,
                 })}
               </span>
             </div>
-            <FormMessage />
           </FormItem>
         )}
       />
 
-      {/* Category */}
       <FormField
         control={form.control}
         name="category"
-        render={({ field }) => (
+        render={({ field, fieldState }) => (
           <FormItem>
             <FormLabel>{t('surveys.create.category')}</FormLabel>
             <FormDescription>{t('surveys.create.categoryHelper')}</FormDescription>
+
             <FormControl>
               <Combobox
                 options={[...categoryOptions].sort((a, b) => {
@@ -209,14 +211,15 @@ const SurveyMetadataForm = ({
                 searchPlaceholder={t('common.search')}
                 emptyMessage={t('common.noResults')}
                 aria-label={t('surveys.create.category')}
+                aria-invalid={!!fieldState.error}
               />
             </FormControl>
+
             <FormMessage />
           </FormItem>
         )}
       />
 
-      {/* Visibility */}
       <FormField
         control={form.control}
         name="visibility"
@@ -224,12 +227,14 @@ const SurveyMetadataForm = ({
           <FormItem className="flex items-start justify-between gap-4 rounded-lg border p-3 sm:p-4">
             <div className="min-w-0 space-y-0.5">
               <FormLabel>{t('surveys.create.visibility')}</FormLabel>
+
               <FormDescription>
                 {field.value === 'public'
                   ? t('surveys.create.visibilityPublicDescription')
                   : t('surveys.create.visibilityPrivateDescription')}
               </FormDescription>
             </div>
+
             <FormControl>
               <Switch
                 checked={field.value === 'public'}
@@ -264,10 +269,9 @@ const SurveyMetadataForm = ({
       <form className="space-y-6">
         {formFields}
 
-        {/* Actions */}
         <div
           className={cn(
-            'flex items-center gap-3',
+            'flex items-center gap-3 pt-2',
             mode === 'edit' ? 'justify-end' : 'justify-between'
           )}
         >
