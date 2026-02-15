@@ -20,7 +20,7 @@ const cspDirectives = [
   `style-src 'self' 'unsafe-inline'`,
   `img-src 'self' blob: data: https://lh3.googleusercontent.com https://avatars.githubusercontent.com ${supabaseUrl.origin}`,
   `font-src 'self'`,
-  `connect-src 'self' ${supabaseUrl.origin} https://accounts.google.com https://github.com`,
+  `connect-src 'self' ${supabaseUrl.origin} ${supabaseUrl.origin.replace(/^http/, 'ws')} https://accounts.google.com https://github.com`,
   `frame-src 'self' https://accounts.google.com https://github.com`,
   `object-src 'none'`,
   `base-uri 'self'`,

@@ -1,11 +1,10 @@
 import type { LookupItem } from '@/features/settings/config';
 
-/** Available user roles displayed in the profile form. */
+/** Available user roles displayed in the profile form. "other" must stay last. */
 export const ROLES: readonly LookupItem[] = [
-  { value: 'solo-developer', labelKey: 'settings.roles.soloDeveloper' },
-  { value: 'product-manager', labelKey: 'settings.roles.productManager' },
+  { value: 'developer', labelKey: 'settings.roles.developer' },
   { value: 'designer', labelKey: 'settings.roles.designer' },
-  { value: 'founder', labelKey: 'settings.roles.founder' },
+  { value: 'product-manager', labelKey: 'settings.roles.productManager' },
   { value: 'student', labelKey: 'settings.roles.student' },
   { value: 'other', labelKey: 'settings.roles.other' },
 ] as const;

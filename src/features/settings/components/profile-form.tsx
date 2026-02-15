@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl';
 import { useFieldArray, useForm } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
+import { Combobox } from '@/components/ui/combobox';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import {
   Form,
@@ -19,13 +20,6 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { SubmitButton } from '@/components/ui/submit-button';
 import { Textarea } from '@/components/ui/textarea';
 import { ROUTES } from '@/config';
@@ -136,22 +130,17 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('settings.profile.role')}</FormLabel>
-                  <Select name="role" onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="w-full" aria-label={t('settings.profile.role')}>
-                        <SelectValue placeholder={t('settings.profile.rolePlaceholder')} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {[...profile.roleOptions]
-                        .sort((a, b) => a.label.localeCompare(b.label))
-                        .map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <Combobox
+                      options={profile.roleOptions}
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      placeholder={t('settings.profile.rolePlaceholder')}
+                      searchPlaceholder={t('common.search')}
+                      emptyMessage={t('common.noResults')}
+                      aria-label={t('settings.profile.role')}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

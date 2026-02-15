@@ -50,6 +50,8 @@
     "profile": "Profile",
     "goBack": "Go Back",
     "loading": "Loading...",
+    "search": "Search...",
+    "noResults": "No results found.",
     "error": {
       "title": "Something went wrong",
       "description": "An unexpected error occurred. Please try again.",
@@ -744,16 +746,16 @@
   "marketing": {
     "hero": {
       "badge": "Stop Building Things Nobody Needs",
-      "title": "Discover Real Problems Before Writing Code",
-      "description": "Pain Point Studio helps solo developers validate ideas through structured customer research. Find out what people actually need in 15 minutes, not 3 months."
+      "title": "Discover Real Problems Before You Build",
+      "description": "Pain Point Studio helps makers and teams validate ideas through structured customer research. Find out what people actually need in 15 minutes, not 3 months."
     },
     "problems": {
-      "title": "The Problem Most Developers Face",
-      "description": "70% of side projects are abandoned within 3 months. Not because of bad code, but because they solve problems that don't exist.",
+      "title": "The Problem Most Makers Face",
+      "description": "70% of new products are abandoned within 3 months. Not because of bad execution, but because they solve problems that don't exist.",
       "items": {
         "vacuum": {
           "title": "Building in a Vacuum",
-          "description": "You spend 3 months building a \"better bookmark manager\" only to discover nobody wants it. Your problem isn't everyone's problem."
+          "description": "You spend 3 months building a product only to discover nobody wants it. Your problem isn't everyone's problem."
         },
         "skills": {
           "title": "No Research Skills",
@@ -771,10 +773,10 @@
       "steps": {
         "research": {
           "title": "Choose Your Research Area",
-          "description": "Pick any topic you're curious about. \"Productivity for ADHD\" or \"Developer Tools\" or \"Remote Team Management\". No perfect idea needed.",
+          "description": "Pick any topic you're curious about. \"Productivity for ADHD\" or \"Freelancer Onboarding\" or \"Remote Team Management\". No perfect idea needed.",
           "visualLabel": "Research Area Selection Interface",
-          "exampleTitle": "Example: Developer Productivity",
-          "exampleDescription": "Exploring pain points around focus, task management, and workflow optimization for software engineers."
+          "exampleTitle": "Example: Team Productivity",
+          "exampleDescription": "Exploring pain points around focus, task management, and workflow optimization for busy professionals."
         },
         "questions": {
           "title": "Use Proven Questions",
@@ -820,7 +822,7 @@
       }
     },
     "personas": {
-      "title": "Built for Different Types of Developers",
+      "title": "Built for Different Types of Makers",
       "description": "Whether you prefer working alone or finding collaborators, Pain Point Studio adapts to your style.",
       "items": {
         "solo": {
@@ -870,7 +872,7 @@
         },
         "community": {
           "title": "Community Access",
-          "description": "Find other developers researching similar problems. Form teams. Share insights."
+          "description": "Find other makers researching similar problems. Form teams. Share insights."
         },
         "setup": {
           "title": "Fast Setup",
@@ -880,7 +882,7 @@
     },
     "cta": {
       "title": "Stop Guessing. Start Knowing.",
-      "description": "Join developers who validate ideas before writing code. Your first 5 research missions are free."
+      "description": "Join makers who validate ideas before they build. Your first 5 research missions are free."
     },
     "charts": {
       "ideaTrends": {
@@ -1073,10 +1075,9 @@
       "accountDeleted": "Your account has been deleted."
     },
     "roles": {
-      "soloDeveloper": "Solo Developer",
-      "productManager": "Product Manager",
+      "developer": "Developer",
       "designer": "Designer",
-      "founder": "Founder",
+      "productManager": "Product Manager",
       "student": "Student",
       "other": "Other"
     },

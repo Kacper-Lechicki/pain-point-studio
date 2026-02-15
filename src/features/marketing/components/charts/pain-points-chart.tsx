@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
+import { Bar, BarChart, XAxis } from 'recharts';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
@@ -36,8 +36,6 @@ const PainPointsChart = () => {
       <CardContent className="flex-1 pb-0">
         <ChartContainer id="pain-points" config={chartConfig} className="aspect-auto h-full w-full">
           <BarChart data={PAIN_POINTS_DATA}>
-            <CartesianGrid vertical={false} />
-
             <XAxis
               dataKey="painPoint"
               tickLine={false}
