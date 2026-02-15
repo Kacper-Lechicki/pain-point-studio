@@ -15,7 +15,12 @@ const DEBOUNCE_MS = 1000;
  */
 export function useRealtimeResponses(surveyId: string) {
   const router = useRouter();
+  const routerRef = useRef(router);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    routerRef.current = router;
+  }, [router]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -31,13 +36,12 @@ export function useRealtimeResponses(surveyId: string) {
           filter: `survey_id=eq.${surveyId}`,
         },
         () => {
-          // Debounce to prevent rapid refresh on burst of events
           if (timerRef.current) {
             clearTimeout(timerRef.current);
           }
 
           timerRef.current = setTimeout(() => {
-            router.refresh();
+            routerRef.current.refresh();
           }, DEBOUNCE_MS);
         }
       )
@@ -50,5 +54,5 @@ export function useRealtimeResponses(surveyId: string) {
 
       void supabase.removeChannel(channel);
     };
-  }, [surveyId, router]);
+  }, [surveyId]);
 }

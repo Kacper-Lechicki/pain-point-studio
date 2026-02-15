@@ -13,6 +13,13 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 
+CREATE EXTENSION IF NOT EXISTS "pg_cron" WITH SCHEMA "pg_catalog";
+
+
+
+
+
+
 CREATE EXTENSION IF NOT EXISTS "pg_net" WITH SCHEMA "extensions";
 
 
@@ -73,8 +80,10 @@ ALTER TYPE "public"."question_type" OWNER TO "postgres";
 
 CREATE TYPE "public"."survey_status" AS ENUM (
     'draft',
+    'pending',
     'active',
     'closed',
+    'cancelled',
     'archived'
 );
 
@@ -102,6 +111,304 @@ $$;
 ALTER FUNCTION "public"."cancel_email_change"() OWNER TO "postgres";
 
 
+CREATE OR REPLACE FUNCTION "public"."decrypt_pii"("encrypted" "bytea") RETURNS "text"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO ''
+    AS $$
+DECLARE
+  v_key text;
+BEGIN
+  IF encrypted IS NULL THEN
+    RETURN NULL;
+  END IF;
+
+  SELECT decrypted_secret INTO v_key
+  FROM vault.decrypted_secrets
+  WHERE name = 'pii_encryption_key'
+  LIMIT 1;
+
+  RETURN extensions.pgp_sym_decrypt(encrypted, v_key);
+END;
+$$;
+
+
+ALTER FUNCTION "public"."decrypt_pii"("encrypted" "bytea") OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."encrypt_pii"("plain_text" "text") RETURNS "bytea"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO ''
+    AS $$
+DECLARE
+  v_key text;
+BEGIN
+  IF plain_text IS NULL OR plain_text = '' THEN
+    RETURN NULL;
+  END IF;
+
+  SELECT decrypted_secret INTO v_key
+  FROM vault.decrypted_secrets
+  WHERE name = 'pii_encryption_key'
+  LIMIT 1;
+
+  RETURN extensions.pgp_sym_encrypt(plain_text, v_key);
+END;
+$$;
+
+
+ALTER FUNCTION "public"."encrypt_pii"("plain_text" "text") OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."get_analytics_data"("p_user_id" "uuid") RETURNS "jsonb"
+    LANGUAGE "plpgsql" STABLE SECURITY DEFINER
+    SET "search_path" TO ''
+    AS $$
+DECLARE
+    v_total_responses bigint;
+    v_completed_responses bigint;
+    v_avg_completion_rate int;
+    v_response_timeline jsonb;
+    v_category_breakdown jsonb;
+    v_survey_comparison jsonb;
+BEGIN
+    -- Aggregate response counts
+    SELECT
+        count(*),
+        count(*) FILTER (WHERE r.status = 'completed')
+    INTO v_total_responses, v_completed_responses
+    FROM public.survey_responses r
+    JOIN public.surveys s ON s.id = r.survey_id
+    WHERE s.user_id = p_user_id;
+
+    -- Average completion rate
+    IF v_total_responses > 0 THEN
+        v_avg_completion_rate := round((v_completed_responses::numeric / v_total_responses) * 100);
+    ELSE
+        v_avg_completion_rate := 0;
+    END IF;
+
+    -- 30-day response timeline
+    SELECT COALESCE(jsonb_agg(day_count ORDER BY day), '[]'::jsonb)
+    INTO v_response_timeline
+    FROM (
+        SELECT d.day, COALESCE(cnt.c, 0) AS day_count
+        FROM generate_series(
+            (current_date - interval '29 days')::date,
+            current_date,
+            interval '1 day'
+        ) AS d(day)
+        LEFT JOIN (
+            SELECT r.created_at::date AS rday, count(*) AS c
+            FROM public.survey_responses r
+            JOIN public.surveys s ON s.id = r.survey_id
+            WHERE s.user_id = p_user_id
+              AND r.status = 'completed'
+              AND r.created_at >= (current_date - interval '29 days')
+            GROUP BY r.created_at::date
+        ) cnt ON cnt.rday = d.day
+    ) sub;
+
+    -- Category breakdown: surveys and responses per category
+    SELECT COALESCE(jsonb_agg(
+        jsonb_build_object(
+            'category', sub.category,
+            'count', sub.survey_count,
+            'totalResponses', sub.total_responses
+        ) ORDER BY sub.total_responses DESC
+    ), '[]'::jsonb)
+    INTO v_category_breakdown
+    FROM (
+        SELECT
+            s.category,
+            count(DISTINCT s.id) AS survey_count,
+            count(r.id) FILTER (WHERE r.status = 'completed') AS total_responses
+        FROM public.surveys s
+        LEFT JOIN public.survey_responses r ON r.survey_id = s.id
+        WHERE s.user_id = p_user_id AND s.status NOT IN ('draft', 'archived')
+        GROUP BY s.category
+    ) sub;
+
+    -- Per-survey comparison metrics
+    SELECT COALESCE(jsonb_agg(
+        jsonb_build_object(
+            'id', sub.id,
+            'title', sub.title,
+            'status', sub.status,
+            'category', sub.category,
+            'completedCount', sub.completed_count,
+            'completionRate', sub.completion_rate,
+            'questionCount', sub.question_count,
+            'createdAt', sub.created_at
+        ) ORDER BY sub.completed_count DESC
+    ), '[]'::jsonb)
+    INTO v_survey_comparison
+    FROM (
+        SELECT
+            s.id,
+            s.title,
+            s.status,
+            s.category,
+            s.created_at,
+            COALESCE(cc.cnt, 0) AS completed_count,
+            COALESCE(qc.cnt, 0) AS question_count,
+            CASE WHEN COALESCE(tc.cnt, 0) > 0
+                THEN round((COALESCE(cc.cnt, 0)::numeric / tc.cnt) * 100)::int
+                ELSE 0
+            END AS completion_rate
+        FROM public.surveys s
+        LEFT JOIN (
+            SELECT survey_id, count(*) AS cnt
+            FROM public.survey_responses WHERE status = 'completed'
+            GROUP BY survey_id
+        ) cc ON cc.survey_id = s.id
+        LEFT JOIN (
+            SELECT survey_id, count(*) AS cnt
+            FROM public.survey_responses
+            GROUP BY survey_id
+        ) tc ON tc.survey_id = s.id
+        LEFT JOIN (
+            SELECT survey_id, count(*) AS cnt
+            FROM public.survey_questions
+            GROUP BY survey_id
+        ) qc ON qc.survey_id = s.id
+        WHERE s.user_id = p_user_id AND s.status NOT IN ('draft', 'archived')
+    ) sub;
+
+    RETURN jsonb_build_object(
+        'responseTimeline', v_response_timeline,
+        'totalResponses', v_total_responses,
+        'completedResponses', v_completed_responses,
+        'avgCompletionRate', v_avg_completion_rate,
+        'categoryBreakdown', v_category_breakdown,
+        'surveyComparison', v_survey_comparison
+    );
+END;
+$$;
+
+
+ALTER FUNCTION "public"."get_analytics_data"("p_user_id" "uuid") OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."get_dashboard_overview"("p_user_id" "uuid") RETURNS "jsonb"
+    LANGUAGE "plpgsql" STABLE SECURITY DEFINER
+    SET "search_path" TO ''
+    AS $$
+DECLARE
+    v_result jsonb;
+    v_total_surveys int;
+    v_active_surveys int;
+    v_total_responses bigint;
+    v_completed_responses bigint;
+    v_avg_completion_rate int;
+    v_response_timeline jsonb;
+    v_top_surveys jsonb;
+    v_recent_responses jsonb;
+BEGIN
+    -- Survey counts
+    SELECT
+        count(*) FILTER (WHERE status != 'archived'),
+        count(*) FILTER (WHERE status = 'active')
+    INTO v_total_surveys, v_active_surveys
+    FROM public.surveys
+    WHERE user_id = p_user_id;
+
+    -- Response counts across all user surveys
+    SELECT
+        count(*),
+        count(*) FILTER (WHERE r.status = 'completed')
+    INTO v_total_responses, v_completed_responses
+    FROM public.survey_responses r
+    JOIN public.surveys s ON s.id = r.survey_id
+    WHERE s.user_id = p_user_id;
+
+    -- Average completion rate
+    IF v_total_responses > 0 THEN
+        v_avg_completion_rate := round((v_completed_responses::numeric / v_total_responses) * 100);
+    ELSE
+        v_avg_completion_rate := 0;
+    END IF;
+
+    -- 30-day response timeline across all surveys
+    SELECT COALESCE(jsonb_agg(day_count ORDER BY day), '[]'::jsonb)
+    INTO v_response_timeline
+    FROM (
+        SELECT d.day, COALESCE(cnt.c, 0) AS day_count
+        FROM generate_series(
+            (current_date - interval '29 days')::date,
+            current_date,
+            interval '1 day'
+        ) AS d(day)
+        LEFT JOIN (
+            SELECT r.created_at::date AS rday, count(*) AS c
+            FROM public.survey_responses r
+            JOIN public.surveys s ON s.id = r.survey_id
+            WHERE s.user_id = p_user_id
+              AND r.status = 'completed'
+              AND r.created_at >= (current_date - interval '29 days')
+            GROUP BY r.created_at::date
+        ) cnt ON cnt.rday = d.day
+    ) sub;
+
+    -- Top 5 surveys by completed responses
+    SELECT COALESCE(jsonb_agg(row_data ORDER BY completed_count DESC), '[]'::jsonb)
+    INTO v_top_surveys
+    FROM (
+        SELECT jsonb_build_object(
+            'id', s.id,
+            'title', s.title,
+            'status', s.status,
+            'completedCount', COALESCE(cc.cnt, 0),
+            'slug', s.slug
+        ) AS row_data,
+        COALESCE(cc.cnt, 0) AS completed_count
+        FROM public.surveys s
+        LEFT JOIN (
+            SELECT survey_id, count(*) AS cnt
+            FROM public.survey_responses
+            WHERE status = 'completed'
+            GROUP BY survey_id
+        ) cc ON cc.survey_id = s.id
+        WHERE s.user_id = p_user_id AND s.status != 'archived'
+        ORDER BY COALESCE(cc.cnt, 0) DESC
+        LIMIT 5
+    ) sub;
+
+    -- Latest 10 completed responses
+    SELECT COALESCE(jsonb_agg(row_data), '[]'::jsonb)
+    INTO v_recent_responses
+    FROM (
+        SELECT jsonb_build_object(
+            'surveyId', s.id,
+            'surveyTitle', s.title,
+            'completedAt', r.completed_at,
+            'feedback', r.feedback
+        ) AS row_data
+        FROM public.survey_responses r
+        JOIN public.surveys s ON s.id = r.survey_id
+        WHERE s.user_id = p_user_id AND r.status = 'completed'
+        ORDER BY r.completed_at DESC
+        LIMIT 10
+    ) sub;
+
+    v_result := jsonb_build_object(
+        'totalSurveys', v_total_surveys,
+        'activeSurveys', v_active_surveys,
+        'totalResponses', v_total_responses,
+        'completedResponses', v_completed_responses,
+        'avgCompletionRate', v_avg_completion_rate,
+        'responseTimeline', v_response_timeline,
+        'topSurveys', v_top_surveys,
+        'recentResponses', v_recent_responses
+    );
+
+    RETURN v_result;
+END;
+$$;
+
+
+ALTER FUNCTION "public"."get_dashboard_overview"("p_user_id" "uuid") OWNER TO "postgres";
+
+
 CREATE OR REPLACE FUNCTION "public"."get_email_change_status"() RETURNS TABLE("new_email" "text", "confirm_status" smallint)
     LANGUAGE "sql" STABLE SECURITY DEFINER
     SET "search_path" TO ''
@@ -117,6 +424,87 @@ $$;
 
 
 ALTER FUNCTION "public"."get_email_change_status"() OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."get_export_responses"("p_survey_id" "uuid", "p_user_id" "uuid") RETURNS TABLE("id" "uuid", "completed_at" timestamp with time zone, "contact_name" "text", "contact_email" "text", "feedback" "text")
+    LANGUAGE "plpgsql" STABLE SECURITY DEFINER
+    SET "search_path" TO ''
+    AS $$
+BEGIN
+  -- Verify the caller owns this survey
+  IF NOT EXISTS (
+    SELECT 1 FROM public.surveys
+    WHERE surveys.id = p_survey_id AND surveys.user_id = p_user_id
+  ) THEN
+    RAISE EXCEPTION 'ACCESS_DENIED';
+  END IF;
+
+  RETURN QUERY
+  SELECT
+    sr.id,
+    sr.completed_at,
+    public.decrypt_pii(sr.contact_name_encrypted) AS contact_name,
+    public.decrypt_pii(sr.contact_email_encrypted) AS contact_email,
+    sr.feedback
+  FROM public.survey_responses sr
+  WHERE sr.survey_id = p_survey_id AND sr.status = 'completed'
+  ORDER BY sr.completed_at;
+END;
+$$;
+
+
+ALTER FUNCTION "public"."get_export_responses"("p_survey_id" "uuid", "p_user_id" "uuid") OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."get_profile_statistics"("p_user_id" "uuid") RETURNS "jsonb"
+    LANGUAGE "plpgsql" STABLE SECURITY DEFINER
+    SET "search_path" TO ''
+    AS $$
+DECLARE
+    v_total_surveys int;
+    v_total_responses bigint;
+    v_completed_responses bigint;
+    v_avg_completion_rate int;
+    v_member_since timestamptz;
+BEGIN
+    -- Count non-archived surveys
+    SELECT count(*)
+    INTO v_total_surveys
+    FROM public.surveys
+    WHERE user_id = p_user_id AND status != 'archived';
+
+    -- Count responses across all user surveys
+    SELECT
+        count(*),
+        count(*) FILTER (WHERE r.status = 'completed')
+    INTO v_total_responses, v_completed_responses
+    FROM public.survey_responses r
+    JOIN public.surveys s ON s.id = r.survey_id
+    WHERE s.user_id = p_user_id;
+
+    -- Average completion rate
+    IF v_total_responses > 0 THEN
+        v_avg_completion_rate := round((v_completed_responses::numeric / v_total_responses) * 100);
+    ELSE
+        v_avg_completion_rate := 0;
+    END IF;
+
+    -- Member since from auth.users
+    SELECT created_at INTO v_member_since
+    FROM auth.users
+    WHERE id = p_user_id;
+
+    RETURN jsonb_build_object(
+        'totalSurveys', v_total_surveys,
+        'totalResponses', v_total_responses,
+        'avgCompletionRate', v_avg_completion_rate,
+        'memberSince', v_member_since
+    );
+END;
+$$;
+
+
+ALTER FUNCTION "public"."get_profile_statistics"("p_user_id" "uuid") OWNER TO "postgres";
 
 
 CREATE OR REPLACE FUNCTION "public"."get_survey_response_count"("p_survey_id" "uuid") RETURNS integer
@@ -161,6 +549,38 @@ BEGIN
         'inProgressResponses', (
             SELECT count(*) FROM public.survey_responses
             WHERE survey_id = p_survey_id AND status = 'in_progress'
+        ),
+        -- NEW: 30-day daily response counts
+        'responseTimeline', COALESCE((
+            SELECT jsonb_agg(day_count ORDER BY day)
+            FROM (
+                SELECT d.day, COALESCE(cnt.c, 0) AS day_count
+                FROM generate_series(
+                    (current_date - interval '29 days')::date,
+                    current_date,
+                    interval '1 day'
+                ) AS d(day)
+                LEFT JOIN (
+                    SELECT created_at::date AS rday, count(*) AS c
+                    FROM public.survey_responses
+                    WHERE survey_id = p_survey_id AND status = 'completed'
+                      AND created_at >= (current_date - interval '29 days')
+                    GROUP BY created_at::date
+                ) cnt ON cnt.rday = d.day
+            ) sub
+        ), '[]'::jsonb),
+        -- NEW: average completion time in seconds
+        'avgCompletionSeconds', (
+            SELECT EXTRACT(EPOCH FROM avg(completed_at - started_at))::int
+            FROM public.survey_responses
+            WHERE survey_id = p_survey_id AND status = 'completed' AND completed_at IS NOT NULL AND started_at IS NOT NULL
+        ),
+        -- NEW: first and last response timestamps
+        'firstResponseAt', (
+            SELECT min(created_at) FROM public.survey_responses WHERE survey_id = p_survey_id
+        ),
+        'lastResponseAt', (
+            SELECT max(created_at) FROM public.survey_responses WHERE survey_id = p_survey_id
         ),
         'questions', COALESCE((
             SELECT jsonb_agg(
@@ -213,16 +633,70 @@ BEGIN
                 'status', s.status,
                 'slug', s.slug,
                 'responseCount', COALESCE(rc.cnt, 0),
+                'completedCount', COALESCE(cc.cnt, 0),
+                'questionCount', COALESCE(qc.cnt, 0),
+                'recentActivity', COALESCE(ra.daily, '[]'::jsonb),
+                'lastResponseAt', lr.last_at,
+                'startsAt', s.starts_at,
+                'endsAt', s.ends_at,
+                'maxRespondents', s.max_respondents,
+                'archivedAt', s.archived_at,
+                'cancelledAt', s.cancelled_at,
                 'createdAt', s.created_at,
                 'updatedAt', s.updated_at
             ) ORDER BY s.updated_at DESC
         )
         FROM public.surveys s
+
+        -- Total response count
         LEFT JOIN (
             SELECT survey_id, count(*) AS cnt
             FROM public.survey_responses
             GROUP BY survey_id
         ) rc ON rc.survey_id = s.id
+
+        -- Completed response count
+        LEFT JOIN (
+            SELECT survey_id, count(*) AS cnt
+            FROM public.survey_responses
+            WHERE status = 'completed'
+            GROUP BY survey_id
+        ) cc ON cc.survey_id = s.id
+
+        -- Question count
+        LEFT JOIN (
+            SELECT survey_id, count(*) AS cnt
+            FROM public.survey_questions
+            GROUP BY survey_id
+        ) qc ON qc.survey_id = s.id
+
+        -- Most recent response timestamp
+        LEFT JOIN (
+            SELECT survey_id, max(created_at) AS last_at
+            FROM public.survey_responses
+            GROUP BY survey_id
+        ) lr ON lr.survey_id = s.id
+
+        -- 14-day daily activity (response counts per day, newest last)
+        LEFT JOIN LATERAL (
+            SELECT jsonb_agg(day_count ORDER BY day) AS daily
+            FROM (
+                SELECT d.day, COALESCE(cnt.c, 0) AS day_count
+                FROM generate_series(
+                    (current_date - interval '13 days')::date,
+                    current_date,
+                    interval '1 day'
+                ) AS d(day)
+                LEFT JOIN (
+                    SELECT created_at::date AS rday, count(*) AS c
+                    FROM public.survey_responses
+                    WHERE survey_id = s.id
+                      AND created_at >= (current_date - interval '13 days')
+                    GROUP BY created_at::date
+                ) cnt ON cnt.rday = d.day
+            ) sub
+        ) ra ON true
+
         WHERE s.user_id = p_user_id
     ), '[]'::jsonb);
 END;
@@ -395,9 +869,7 @@ CREATE OR REPLACE FUNCTION "public"."submit_survey_response"("p_response_id" "uu
 DECLARE
     v_survey_id uuid;
     v_status text;
-    v_missing_count int;
 BEGIN
-    -- 1. Verify response exists and is in_progress
     SELECT survey_id, status
       INTO v_survey_id, v_status
       FROM survey_responses
@@ -411,30 +883,13 @@ BEGIN
         RAISE EXCEPTION 'RESPONSE_ALREADY_COMPLETED';
     END IF;
 
-    -- 2. Check all required questions have non-empty answers
-    SELECT COUNT(*)
-      INTO v_missing_count
-      FROM survey_questions q
-     WHERE q.survey_id = v_survey_id
-       AND q.required = true
-       AND NOT EXISTS (
-           SELECT 1
-           FROM survey_answers a
-           WHERE a.response_id = p_response_id
-             AND a.question_id = q.id
-             AND a.value IS NOT NULL
-             AND a.value != '{}'::jsonb
-       );
+    -- Empty submissions are allowed — they count as a completed response
+    -- with 0% per-question response rate in analytics.
 
-    IF v_missing_count > 0 THEN
-        RAISE EXCEPTION 'REQUIRED_QUESTIONS_UNANSWERED';
-    END IF;
-
-    -- 3. Mark as completed
     UPDATE survey_responses
     SET status = 'completed',
-        contact_name = p_contact_name,
-        contact_email = p_contact_email,
+        contact_name_encrypted = public.encrypt_pii(p_contact_name),
+        contact_email_encrypted = public.encrypt_pii(p_contact_email),
         feedback = p_feedback,
         completed_at = now(),
         updated_at = now()
@@ -494,17 +949,26 @@ BEGIN
         RAISE EXCEPTION 'QUESTION_SURVEY_MISMATCH';
     END IF;
 
-    -- 4. Type-specific validation
+    -- 4. Type-specific validation (with safe coercion)
     CASE v_question_type
         WHEN 'rating_scale' THEN
-            v_rating := (p_value->>'rating')::int;
+            BEGIN
+                v_rating := (p_value->>'rating')::int;
+            EXCEPTION WHEN OTHERS THEN
+                RAISE EXCEPTION 'RATING_INVALID_FORMAT';
+            END;
 
             IF v_rating IS NULL THEN
                 RAISE EXCEPTION 'RATING_REQUIRED';
             END IF;
 
-            v_min_rating := COALESCE((v_question_config->>'min')::int, 1);
-            v_max_rating := COALESCE((v_question_config->>'max')::int, 5);
+            BEGIN
+                v_min_rating := COALESCE((v_question_config->>'min')::int, 1);
+                v_max_rating := COALESCE((v_question_config->>'max')::int, 5);
+            EXCEPTION WHEN OTHERS THEN
+                v_min_rating := 1;
+                v_max_rating := 5;
+            END;
 
             IF v_rating < v_min_rating OR v_rating > v_max_rating THEN
                 RAISE EXCEPTION 'RATING_OUT_OF_BOUNDS';
@@ -517,8 +981,13 @@ BEGIN
                 RAISE EXCEPTION 'SELECTED_MUST_BE_ARRAY';
             END IF;
 
-            v_max_selections := (v_question_config->>'maxSelections')::int;
-            v_min_selections := (v_question_config->>'minSelections')::int;
+            BEGIN
+                v_max_selections := (v_question_config->>'maxSelections')::int;
+                v_min_selections := (v_question_config->>'minSelections')::int;
+            EXCEPTION WHEN OTHERS THEN
+                v_max_selections := NULL;
+                v_min_selections := NULL;
+            END;
 
             IF v_max_selections IS NOT NULL AND jsonb_array_length(v_selected) > v_max_selections THEN
                 RAISE EXCEPTION 'MAX_SELECTIONS_EXCEEDED';
@@ -528,7 +997,6 @@ BEGIN
                 RAISE EXCEPTION 'MIN_SELECTIONS_NOT_MET';
             END IF;
 
-            -- Validate each option exists in config (unless allowOther is true)
             IF NOT COALESCE((v_question_config->>'allowOther')::boolean, false) THEN
                 IF EXISTS (
                     SELECT 1
@@ -553,7 +1021,11 @@ BEGIN
             v_text_value := p_value->>'text';
 
             IF v_text_value IS NOT NULL THEN
-                v_max_length := (v_question_config->>'maxLength')::int;
+                BEGIN
+                    v_max_length := (v_question_config->>'maxLength')::int;
+                EXCEPTION WHEN OTHERS THEN
+                    v_max_length := NULL;
+                END;
 
                 IF v_max_length IS NOT NULL AND char_length(v_text_value) > v_max_length THEN
                     RAISE EXCEPTION 'TEXT_TOO_LONG';
@@ -614,62 +1086,6 @@ CREATE TABLE IF NOT EXISTS "public"."profiles" (
 ALTER TABLE "public"."profiles" OWNER TO "postgres";
 
 
-CREATE TABLE IF NOT EXISTS "public"."roles" (
-    "id" integer NOT NULL,
-    "value" "text" NOT NULL,
-    "label_key" "text" NOT NULL,
-    "sort_order" integer DEFAULT 0 NOT NULL,
-    "is_active" boolean DEFAULT true NOT NULL
-);
-
-
-ALTER TABLE "public"."roles" OWNER TO "postgres";
-
-
-CREATE SEQUENCE IF NOT EXISTS "public"."roles_id_seq"
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE "public"."roles_id_seq" OWNER TO "postgres";
-
-
-ALTER SEQUENCE "public"."roles_id_seq" OWNED BY "public"."roles"."id";
-
-
-
-CREATE TABLE IF NOT EXISTS "public"."social_link_types" (
-    "id" integer NOT NULL,
-    "value" "text" NOT NULL,
-    "label_key" "text" NOT NULL,
-    "sort_order" integer DEFAULT 0 NOT NULL,
-    "is_active" boolean DEFAULT true NOT NULL
-);
-
-
-ALTER TABLE "public"."social_link_types" OWNER TO "postgres";
-
-
-CREATE SEQUENCE IF NOT EXISTS "public"."social_link_types_id_seq"
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE "public"."social_link_types_id_seq" OWNER TO "postgres";
-
-
-ALTER SEQUENCE "public"."social_link_types_id_seq" OWNED BY "public"."social_link_types"."id";
-
-
-
 CREATE TABLE IF NOT EXISTS "public"."survey_answers" (
     "id" "uuid" DEFAULT "extensions"."uuid_generate_v4"() NOT NULL,
     "response_id" "uuid" NOT NULL,
@@ -682,34 +1098,6 @@ CREATE TABLE IF NOT EXISTS "public"."survey_answers" (
 
 
 ALTER TABLE "public"."survey_answers" OWNER TO "postgres";
-
-
-CREATE TABLE IF NOT EXISTS "public"."survey_categories" (
-    "id" integer NOT NULL,
-    "value" "text" NOT NULL,
-    "label_key" "text" NOT NULL,
-    "sort_order" integer DEFAULT 0 NOT NULL,
-    "is_active" boolean DEFAULT true NOT NULL
-);
-
-
-ALTER TABLE "public"."survey_categories" OWNER TO "postgres";
-
-
-CREATE SEQUENCE IF NOT EXISTS "public"."survey_categories_id_seq"
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE "public"."survey_categories_id_seq" OWNER TO "postgres";
-
-
-ALTER SEQUENCE "public"."survey_categories_id_seq" OWNED BY "public"."survey_categories"."id";
-
 
 
 CREATE TABLE IF NOT EXISTS "public"."survey_questions" (
@@ -737,18 +1125,18 @@ CREATE TABLE IF NOT EXISTS "public"."survey_responses" (
     "id" "uuid" DEFAULT "extensions"."uuid_generate_v4"() NOT NULL,
     "survey_id" "uuid" NOT NULL,
     "status" "text" DEFAULT 'in_progress'::"text" NOT NULL,
-    "contact_name" "text",
-    "contact_email" "text",
     "feedback" "text",
     "started_at" timestamp with time zone DEFAULT "now"() NOT NULL,
     "completed_at" timestamp with time zone,
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
     "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL,
-    CONSTRAINT "survey_responses_contact_email_check" CHECK ((("contact_email" IS NULL) OR ("char_length"("contact_email") <= 320))),
-    CONSTRAINT "survey_responses_contact_name_check" CHECK ((("contact_name" IS NULL) OR ("char_length"("contact_name") <= 100))),
+    "contact_name_encrypted" "bytea",
+    "contact_email_encrypted" "bytea",
     CONSTRAINT "survey_responses_feedback_check" CHECK ((("feedback" IS NULL) OR ("char_length"("feedback") <= 2000))),
     CONSTRAINT "survey_responses_status_check" CHECK (("status" = ANY (ARRAY['in_progress'::"text", 'completed'::"text"])))
 );
+
+ALTER TABLE ONLY "public"."survey_responses" REPLICA IDENTITY FULL;
 
 
 ALTER TABLE "public"."survey_responses" OWNER TO "postgres";
@@ -768,6 +1156,10 @@ CREATE TABLE IF NOT EXISTS "public"."surveys" (
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
     "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL,
     "slug" "text",
+    "closed_at" timestamp with time zone,
+    "cancelled_at" timestamp with time zone,
+    "archived_at" timestamp with time zone,
+    "previous_status" "public"."survey_status",
     CONSTRAINT "surveys_dates_check" CHECK ((("ends_at" IS NULL) OR ("starts_at" IS NULL) OR ("ends_at" > "starts_at"))),
     CONSTRAINT "surveys_description_check" CHECK (("char_length"("description") <= 2000)),
     CONSTRAINT "surveys_max_respondents_check" CHECK ((("max_respondents" IS NULL) OR ("max_respondents" >= 1))),
@@ -780,40 +1172,8 @@ CREATE TABLE IF NOT EXISTS "public"."surveys" (
 ALTER TABLE "public"."surveys" OWNER TO "postgres";
 
 
-ALTER TABLE ONLY "public"."roles" ALTER COLUMN "id" SET DEFAULT "nextval"('"public"."roles_id_seq"'::"regclass");
-
-
-
-ALTER TABLE ONLY "public"."social_link_types" ALTER COLUMN "id" SET DEFAULT "nextval"('"public"."social_link_types_id_seq"'::"regclass");
-
-
-
-ALTER TABLE ONLY "public"."survey_categories" ALTER COLUMN "id" SET DEFAULT "nextval"('"public"."survey_categories_id_seq"'::"regclass");
-
-
-
 ALTER TABLE ONLY "public"."profiles"
     ADD CONSTRAINT "profiles_pkey" PRIMARY KEY ("id");
-
-
-
-ALTER TABLE ONLY "public"."roles"
-    ADD CONSTRAINT "roles_pkey" PRIMARY KEY ("id");
-
-
-
-ALTER TABLE ONLY "public"."roles"
-    ADD CONSTRAINT "roles_value_key" UNIQUE ("value");
-
-
-
-ALTER TABLE ONLY "public"."social_link_types"
-    ADD CONSTRAINT "social_link_types_pkey" PRIMARY KEY ("id");
-
-
-
-ALTER TABLE ONLY "public"."social_link_types"
-    ADD CONSTRAINT "social_link_types_value_key" UNIQUE ("value");
 
 
 
@@ -824,16 +1184,6 @@ ALTER TABLE ONLY "public"."survey_answers"
 
 ALTER TABLE ONLY "public"."survey_answers"
     ADD CONSTRAINT "survey_answers_response_question_unique" UNIQUE ("response_id", "question_id");
-
-
-
-ALTER TABLE ONLY "public"."survey_categories"
-    ADD CONSTRAINT "survey_categories_pkey" PRIMARY KEY ("id");
-
-
-
-ALTER TABLE ONLY "public"."survey_categories"
-    ADD CONSTRAINT "survey_categories_value_key" UNIQUE ("value");
 
 
 
@@ -913,11 +1263,6 @@ ALTER TABLE ONLY "public"."profiles"
 
 
 
-ALTER TABLE ONLY "public"."profiles"
-    ADD CONSTRAINT "profiles_role_fk" FOREIGN KEY ("role") REFERENCES "public"."roles"("value") ON UPDATE CASCADE ON DELETE RESTRICT;
-
-
-
 ALTER TABLE ONLY "public"."survey_answers"
     ADD CONSTRAINT "survey_answers_question_id_fkey" FOREIGN KEY ("question_id") REFERENCES "public"."survey_questions"("id") ON DELETE CASCADE;
 
@@ -939,11 +1284,6 @@ ALTER TABLE ONLY "public"."survey_responses"
 
 
 ALTER TABLE ONLY "public"."surveys"
-    ADD CONSTRAINT "surveys_category_fk" FOREIGN KEY ("category") REFERENCES "public"."survey_categories"("value") ON UPDATE CASCADE ON DELETE RESTRICT;
-
-
-
-ALTER TABLE ONLY "public"."surveys"
     ADD CONSTRAINT "surveys_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "auth"."users"("id") ON DELETE CASCADE;
 
 
@@ -960,13 +1300,17 @@ CREATE POLICY "Anyone can insert answer for in-progress response" ON "public"."s
 
 
 
-CREATE POLICY "Anyone can read active surveys by slug" ON "public"."surveys" FOR SELECT USING ((("status" = 'active'::"public"."survey_status") AND ("slug" IS NOT NULL)));
+CREATE POLICY "Anyone can read published surveys by slug" ON "public"."surveys" FOR SELECT USING ((("status" = ANY (ARRAY['active'::"public"."survey_status", 'pending'::"public"."survey_status", 'closed'::"public"."survey_status"])) AND ("slug" IS NOT NULL)));
 
 
 
-CREATE POLICY "Anyone can read questions for active surveys" ON "public"."survey_questions" FOR SELECT USING ((EXISTS ( SELECT 1
+CREATE POLICY "Anyone can read questions for published surveys" ON "public"."survey_questions" FOR SELECT USING ((EXISTS ( SELECT 1
    FROM "public"."surveys"
-  WHERE (("surveys"."id" = "survey_questions"."survey_id") AND ("surveys"."status" = 'active'::"public"."survey_status") AND ("surveys"."slug" IS NOT NULL)))));
+  WHERE (("surveys"."id" = "survey_questions"."survey_id") AND ("surveys"."status" = ANY (ARRAY['active'::"public"."survey_status", 'pending'::"public"."survey_status", 'closed'::"public"."survey_status"])) AND ("surveys"."slug" IS NOT NULL)))));
+
+
+
+CREATE POLICY "Anyone can read recently cancelled surveys by slug" ON "public"."surveys" FOR SELECT USING ((("status" = 'cancelled'::"public"."survey_status") AND ("slug" IS NOT NULL) AND ("cancelled_at" IS NOT NULL) AND ("cancelled_at" > ("now"() - '30 days'::interval))));
 
 
 
@@ -990,18 +1334,6 @@ CREATE POLICY "Owners can read answers for own surveys" ON "public"."survey_answ
 CREATE POLICY "Owners can read responses for own surveys" ON "public"."survey_responses" FOR SELECT USING ((EXISTS ( SELECT 1
    FROM "public"."surveys"
   WHERE (("surveys"."id" = "survey_responses"."survey_id") AND ("surveys"."user_id" = ( SELECT "auth"."uid"() AS "uid"))))));
-
-
-
-CREATE POLICY "Roles are publicly readable" ON "public"."roles" FOR SELECT USING (true);
-
-
-
-CREATE POLICY "Social link types are publicly readable" ON "public"."social_link_types" FOR SELECT USING (true);
-
-
-
-CREATE POLICY "Survey categories are publicly readable" ON "public"."survey_categories" FOR SELECT USING (true);
 
 
 
@@ -1062,16 +1394,7 @@ CREATE POLICY "Users can update questions for own surveys" ON "public"."survey_q
 ALTER TABLE "public"."profiles" ENABLE ROW LEVEL SECURITY;
 
 
-ALTER TABLE "public"."roles" ENABLE ROW LEVEL SECURITY;
-
-
-ALTER TABLE "public"."social_link_types" ENABLE ROW LEVEL SECURITY;
-
-
 ALTER TABLE "public"."survey_answers" ENABLE ROW LEVEL SECURITY;
-
-
-ALTER TABLE "public"."survey_categories" ENABLE ROW LEVEL SECURITY;
 
 
 ALTER TABLE "public"."survey_questions" ENABLE ROW LEVEL SECURITY;
@@ -1086,6 +1409,13 @@ ALTER TABLE "public"."surveys" ENABLE ROW LEVEL SECURITY;
 
 
 ALTER PUBLICATION "supabase_realtime" OWNER TO "postgres";
+
+
+ALTER PUBLICATION "supabase_realtime" ADD TABLE ONLY "public"."survey_responses";
+
+
+
+
 
 
 
@@ -1254,15 +1584,64 @@ GRANT USAGE ON SCHEMA "public" TO "service_role";
 
 
 
-GRANT ALL ON FUNCTION "public"."cancel_email_change"() TO "anon";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 GRANT ALL ON FUNCTION "public"."cancel_email_change"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."cancel_email_change"() TO "service_role";
 
 
 
-GRANT ALL ON FUNCTION "public"."get_email_change_status"() TO "anon";
+GRANT ALL ON FUNCTION "public"."decrypt_pii"("encrypted" "bytea") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."decrypt_pii"("encrypted" "bytea") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."encrypt_pii"("plain_text" "text") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."encrypt_pii"("plain_text" "text") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."get_analytics_data"("p_user_id" "uuid") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."get_analytics_data"("p_user_id" "uuid") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."get_dashboard_overview"("p_user_id" "uuid") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."get_dashboard_overview"("p_user_id" "uuid") TO "service_role";
+
+
+
 GRANT ALL ON FUNCTION "public"."get_email_change_status"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."get_email_change_status"() TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."get_export_responses"("p_survey_id" "uuid", "p_user_id" "uuid") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."get_export_responses"("p_survey_id" "uuid", "p_user_id" "uuid") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."get_profile_statistics"("p_user_id" "uuid") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."get_profile_statistics"("p_user_id" "uuid") TO "service_role";
 
 
 
@@ -1272,13 +1651,11 @@ GRANT ALL ON FUNCTION "public"."get_survey_response_count"("p_survey_id" "uuid")
 
 
 
-GRANT ALL ON FUNCTION "public"."get_survey_stats_data"("p_survey_id" "uuid", "p_user_id" "uuid") TO "anon";
 GRANT ALL ON FUNCTION "public"."get_survey_stats_data"("p_survey_id" "uuid", "p_user_id" "uuid") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."get_survey_stats_data"("p_survey_id" "uuid", "p_user_id" "uuid") TO "service_role";
 
 
 
-GRANT ALL ON FUNCTION "public"."get_user_surveys_with_counts"("p_user_id" "uuid") TO "anon";
 GRANT ALL ON FUNCTION "public"."get_user_surveys_with_counts"("p_user_id" "uuid") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."get_user_surveys_with_counts"("p_user_id" "uuid") TO "service_role";
 
@@ -1290,7 +1667,6 @@ GRANT ALL ON FUNCTION "public"."handle_new_user"() TO "service_role";
 
 
 
-GRANT ALL ON FUNCTION "public"."has_password"() TO "anon";
 GRANT ALL ON FUNCTION "public"."has_password"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."has_password"() TO "service_role";
 
@@ -1302,7 +1678,6 @@ GRANT ALL ON FUNCTION "public"."prevent_clearing_required_fields"() TO "service_
 
 
 
-GRANT ALL ON FUNCTION "public"."save_survey_questions"("p_survey_id" "uuid", "p_user_id" "uuid", "p_questions" "jsonb") TO "anon";
 GRANT ALL ON FUNCTION "public"."save_survey_questions"("p_survey_id" "uuid", "p_user_id" "uuid", "p_questions" "jsonb") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."save_survey_questions"("p_survey_id" "uuid", "p_user_id" "uuid", "p_questions" "jsonb") TO "service_role";
 
@@ -1332,9 +1707,14 @@ GRANT ALL ON FUNCTION "public"."validate_and_save_answer"("p_response_id" "uuid"
 
 
 
-GRANT ALL ON FUNCTION "public"."verify_password"("current_plain_password" "text") TO "anon";
 GRANT ALL ON FUNCTION "public"."verify_password"("current_plain_password" "text") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."verify_password"("current_plain_password" "text") TO "service_role";
+
+
+
+
+
+
 
 
 
@@ -1359,45 +1739,9 @@ GRANT ALL ON TABLE "public"."profiles" TO "service_role";
 
 
 
-GRANT ALL ON TABLE "public"."roles" TO "anon";
-GRANT ALL ON TABLE "public"."roles" TO "authenticated";
-GRANT ALL ON TABLE "public"."roles" TO "service_role";
-
-
-
-GRANT ALL ON SEQUENCE "public"."roles_id_seq" TO "anon";
-GRANT ALL ON SEQUENCE "public"."roles_id_seq" TO "authenticated";
-GRANT ALL ON SEQUENCE "public"."roles_id_seq" TO "service_role";
-
-
-
-GRANT ALL ON TABLE "public"."social_link_types" TO "anon";
-GRANT ALL ON TABLE "public"."social_link_types" TO "authenticated";
-GRANT ALL ON TABLE "public"."social_link_types" TO "service_role";
-
-
-
-GRANT ALL ON SEQUENCE "public"."social_link_types_id_seq" TO "anon";
-GRANT ALL ON SEQUENCE "public"."social_link_types_id_seq" TO "authenticated";
-GRANT ALL ON SEQUENCE "public"."social_link_types_id_seq" TO "service_role";
-
-
-
 GRANT ALL ON TABLE "public"."survey_answers" TO "anon";
 GRANT ALL ON TABLE "public"."survey_answers" TO "authenticated";
 GRANT ALL ON TABLE "public"."survey_answers" TO "service_role";
-
-
-
-GRANT ALL ON TABLE "public"."survey_categories" TO "anon";
-GRANT ALL ON TABLE "public"."survey_categories" TO "authenticated";
-GRANT ALL ON TABLE "public"."survey_categories" TO "service_role";
-
-
-
-GRANT ALL ON SEQUENCE "public"."survey_categories_id_seq" TO "anon";
-GRANT ALL ON SEQUENCE "public"."survey_categories_id_seq" TO "authenticated";
-GRANT ALL ON SEQUENCE "public"."survey_categories_id_seq" TO "service_role";
 
 
 

@@ -1,11 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-
-import { useRouter } from 'next/navigation';
-
 import { ArrowLeft, List, Pencil, Save, Send, Settings2 } from 'lucide-react';
-import { useLocale, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -14,13 +10,11 @@ import { ROUTES } from '@/config/routes';
 import { UserMenu } from '@/features/auth/components/common/user-menu';
 import { publishSurvey, saveSurveyQuestions } from '@/features/surveys/actions';
 import { useQuestionBuilderContext } from '@/features/surveys/hooks/use-question-builder-context';
-import { getSurveyShareUrl } from '@/features/surveys/lib/share-url';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import { useUnsavedChangesWarning } from '@/hooks/unsaved-changes-context';
 import Link from '@/i18n/link';
 import type { MessageKey } from '@/i18n/types';
 
-import { PublishSuccessDialog } from './publish-success-dialog';
 import { SaveStatusIndicator } from './save-status-indicator';
 
 interface BuilderTopBarProps {
@@ -31,6 +25,7 @@ interface BuilderTopBarProps {
   onToggleSidebar?: () => void;
   onToggleSettings?: () => void;
   onOpenMetadataPanel?: () => void;
+  onPublished?: (slug: string) => void;
 }
 
 export function BuilderTopBar({
@@ -41,13 +36,11 @@ export function BuilderTopBar({
   onToggleSidebar,
   onToggleSettings,
   onOpenMetadataPanel,
+  onPublished,
 }: BuilderTopBarProps) {
   const t = useTranslations();
-  const locale = useLocale();
-  const router = useRouter();
   const { state, dispatch, buildQuestionsPayload } = useQuestionBuilderContext();
   useUnsavedChangesWarning('builder-questions', state.isDirty);
-  const [publishedSlug, setPublishedSlug] = useState<string | null>(null);
 
   const saveAction = useFormAction({
     successMessage: 'surveys.create.draftSaved' as MessageKey,
@@ -66,9 +59,7 @@ export function BuilderTopBar({
     unexpectedErrorMessage: 'surveys.errors.unexpected' as MessageKey,
     onSuccess: (data) => {
       if (data?.slug) {
-        setPublishedSlug(data.slug);
-      } else {
-        router.push(ROUTES.dashboard.surveys);
+        onPublished?.(data.slug);
       }
     },
   });
@@ -229,19 +220,6 @@ export function BuilderTopBar({
             </div>
           </div>
         </div>
-      )}
-
-      {publishedSlug && (
-        <PublishSuccessDialog
-          open
-          shareUrl={getSurveyShareUrl(locale, publishedSlug)}
-          surveyId={surveyId}
-          surveyTitle={surveyTitle}
-          onClose={() => {
-            setPublishedSlug(null);
-            router.push(ROUTES.dashboard.surveys);
-          }}
-        />
       )}
     </>
   );

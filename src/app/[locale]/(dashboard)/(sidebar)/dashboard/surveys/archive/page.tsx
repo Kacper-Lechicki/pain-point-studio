@@ -1,6 +1,7 @@
 import { Archive, Info } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { EmptyState } from '@/components/ui/empty-state';
 import { PageTransition } from '@/components/ui/page-transition';
 import { DASHBOARD_PAGE_BODY_GAP_TOP } from '@/features/dashboard/config/layout';
@@ -19,10 +20,10 @@ export default async function SurveysArchivePage() {
 
         <p className="text-muted-foreground mt-1 text-sm">{t('surveys.archive.description')}</p>
         {archivedSurveys.length > 0 && (
-          <div className="bg-muted/50 text-muted-foreground mt-4 flex items-start gap-2.5 rounded-lg border border-dashed px-3.5 py-3 text-xs leading-relaxed">
-            <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden />
-            <span>{t('surveys.archive.retentionNotice')}</span>
-          </div>
+          <Alert variant="info" className="mt-4 text-xs">
+            <Info className="size-3.5" />
+            <AlertDescription>{t('surveys.archive.retentionNotice')}</AlertDescription>
+          </Alert>
         )}
       </div>
 

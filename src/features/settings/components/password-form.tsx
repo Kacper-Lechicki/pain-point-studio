@@ -7,6 +7,7 @@ import { Info } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useForm, useWatch } from 'react-hook-form';
 
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
   Form,
   FormControl,
@@ -147,10 +148,10 @@ const PasswordForm = ({ hasPassword }: PasswordFormProps) => {
         </form>
       </Form>
 
-      <div className="text-muted-foreground flex items-start gap-2 text-xs">
-        <Info className="size-4 shrink-0" aria-hidden="true" />
-        <p>{hintContent}</p>
-      </div>
+      <Alert variant="info" className="text-xs">
+        <Info className="size-3.5" />
+        <AlertDescription>{hintContent}</AlertDescription>
+      </Alert>
     </section>
   );
 };

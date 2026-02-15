@@ -10,6 +10,7 @@ import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -144,10 +145,10 @@ const EmailForm = ({ currentEmail, pendingEmail, emailChangeConfirmStatus }: Ema
         </Form>
       )}
 
-      <div className="text-muted-foreground flex items-start gap-2 text-xs">
-        <Info className="size-4 shrink-0" aria-hidden="true" />
-        <p>{t('settings.email.doubleConfirmHint')}</p>
-      </div>
+      <Alert variant="info" className="text-xs">
+        <Info className="size-3.5" />
+        <AlertDescription>{t('settings.email.doubleConfirmHint')}</AlertDescription>
+      </Alert>
     </section>
   );
 };

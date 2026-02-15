@@ -1,6 +1,7 @@
 import { HelpCircle, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { QUESTION_TYPE_ICONS, QUESTION_TYPE_LABEL_KEYS } from '@/features/surveys/config';
 import type { MappedQuestion } from '@/features/surveys/lib/map-question-row';
 
@@ -23,10 +24,12 @@ export function DetailQuestionsList({ questions }: DetailQuestionsListProps) {
           {t('surveys.dashboard.detailPanel.loadingQuestions')}
         </div>
       ) : questions.length === 0 ? (
-        <div className="border-border/50 text-muted-foreground flex items-start gap-2 rounded-md border border-dashed px-3 py-2.5 text-xs">
-          <HelpCircle className="size-3.5 shrink-0 pt-0.5" aria-hidden />
-          <span>{t('surveys.dashboard.detailPanel.questionsEmptyDescription')}</span>
-        </div>
+        <Alert variant="info" className="text-xs">
+          <HelpCircle className="size-3.5" />
+          <AlertDescription>
+            {t('surveys.dashboard.detailPanel.questionsEmptyDescription')}
+          </AlertDescription>
+        </Alert>
       ) : (
         <div className="space-y-1.5">
           {questions.map((q: MappedQuestion, i: number) => {

@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { Info, KeyRound, LinkIcon, Unlink } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
@@ -164,14 +165,14 @@ const ConnectedAccounts = ({ identities, hasPassword }: ConnectedAccountsProps) 
       </div>
 
       {!canUnlink && oauthIdentities.length > 0 && (
-        <div className="text-muted-foreground flex items-start gap-2 text-xs">
-          <Info className="size-4 shrink-0" aria-hidden="true" />
-          <p>
+        <Alert variant="info" className="text-xs">
+          <Info className="size-3.5" />
+          <AlertDescription>
             {hasPassword
               ? t('settings.connectedAccounts.cannotUnlinkOnlyOAuth')
               : t('settings.connectedAccounts.cannotUnlinkHint')}
-          </p>
-        </div>
+          </AlertDescription>
+        </Alert>
       )}
 
       <ConfirmDialog

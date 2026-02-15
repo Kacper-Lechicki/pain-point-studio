@@ -1,6 +1,14 @@
 'use client';
 
-import { type ReactNode, createContext, useCallback, useContext, useEffect, useState } from 'react';
+import {
+  type ReactNode,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 type SegmentMap = Record<string, string>;
 
@@ -32,11 +40,12 @@ export function BreadcrumbProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  return (
-    <BreadcrumbContext.Provider value={{ segments, setSegment, removeSegment }}>
-      {children}
-    </BreadcrumbContext.Provider>
+  const value = useMemo(
+    () => ({ segments, setSegment, removeSegment }),
+    [segments, setSegment, removeSegment]
   );
+
+  return <BreadcrumbContext.Provider value={value}>{children}</BreadcrumbContext.Provider>;
 }
 
 export function useBreadcrumbSegment(segment: string, label: string) {
@@ -50,7 +59,9 @@ export function useBreadcrumbSegment(segment: string, label: string) {
     ctx.setSegment(segment, label);
 
     return () => ctx.removeSegment(segment);
-  }, [segment, label, ctx]);
+    // setSegment / removeSegment are stable (useCallback with [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [segment, label]);
 }
 
 export function useBreadcrumbContext() {

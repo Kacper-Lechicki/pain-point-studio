@@ -331,7 +331,8 @@
       "email": "Email",
       "reddit": "Reddit",
       "viewDashboard": "View Dashboard",
-      "createAnother": "Create Another Research"
+      "createAnother": "Create Another Research",
+      "panelTitle": "Published"
     },
     "stats": {
       "title": "Survey Results",
@@ -810,8 +811,8 @@
           "description": "See \"Start New Research\". Click it. Fill form. Get link. Send to people. Collect answers. That's it. 15 minutes from signup to first feedback."
         },
         "bloat": {
-          "title": "No Dashboard Bloat",
-          "description": "Your dashboard shows your research missions. Click one to see responses. No widgets. No graphs. No features that look impressive but distract from the goal."
+          "title": "A Dashboard That Works for You",
+          "description": "Your dashboard shows your research missions with real-time response tracking, completion metrics, and a timeline chart. Every element earns its place — no vanity widgets, no clutter."
         },
         "solo": {
           "title": "Solo First, Social Optional",

@@ -21,6 +21,8 @@ function RedditIcon({ className }: { className?: string }) {
 interface SurveyShareContentProps {
   shareUrl: string;
   surveyTitle: string;
+  /** Render in a narrow sidebar layout (smaller QR, stacked buttons). */
+  compact?: boolean;
 }
 
 function buildShareUrls(url: string, title: string, body: string, emailSubject: string) {
@@ -38,7 +40,11 @@ function buildShareUrls(url: string, title: string, body: string, emailSubject: 
   };
 }
 
-export function SurveyShareContent({ shareUrl, surveyTitle }: SurveyShareContentProps) {
+export function SurveyShareContent({
+  shareUrl,
+  surveyTitle,
+  compact = false,
+}: SurveyShareContentProps) {
   const t = useTranslations();
   const qrRef = useRef<HTMLCanvasElement>(null);
 
@@ -67,18 +73,22 @@ export function SurveyShareContent({ shareUrl, surveyTitle }: SurveyShareContent
     { key: 'reddit', href: urls.reddit, icon: RedditIcon, label: t('surveys.publish.reddit') },
   ] as const;
 
+  const qrSize = compact ? 120 : 160;
+
   return (
-    <div className="space-y-5">
+    <div className={compact ? 'space-y-4' : 'space-y-5'}>
       {/* Copy link */}
-      <div className="space-y-2">
-        <label className="text-sm font-medium">{t('surveys.publish.shareLink')}</label>
+      <div className="space-y-1.5">
+        <label className={compact ? 'text-xs font-medium' : 'text-sm font-medium'}>
+          {t('surveys.publish.shareLink')}
+        </label>
         <ClipboardInput value={shareUrl} />
       </div>
 
       {/* QR code */}
-      <div className="flex flex-col items-center gap-3">
-        <div className="border-border rounded-lg border p-3">
-          <QRCodeCanvas ref={qrRef} value={shareUrl} size={160} level="M" />
+      <div className="flex flex-col items-center gap-2">
+        <div className="border-border rounded-lg border p-2">
+          <QRCodeCanvas ref={qrRef} value={shareUrl} size={qrSize} level="M" />
         </div>
         <Button variant="outline" size="sm" onClick={handleDownloadQR}>
           <Download className="size-3.5" />
@@ -89,9 +99,13 @@ export function SurveyShareContent({ shareUrl, surveyTitle }: SurveyShareContent
       <Separator />
 
       {/* Social sharing */}
-      <div className="space-y-2">
-        <label className="text-sm font-medium">{t('surveys.publish.shareVia')}</label>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+      <div className="space-y-1.5">
+        <label className={compact ? 'text-xs font-medium' : 'text-sm font-medium'}>
+          {t('surveys.publish.shareVia')}
+        </label>
+        <div
+          className={compact ? 'grid grid-cols-2 gap-1.5' : 'grid grid-cols-2 gap-2 sm:grid-cols-4'}
+        >
           {socialButtons.map(({ key, href, icon: Icon, label }) => (
             <Button key={key} variant="outline" size="sm" asChild>
               <a href={href} target="_blank" rel="noopener noreferrer">
