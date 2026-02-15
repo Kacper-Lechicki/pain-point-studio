@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import {
   archiveSurvey,
   cancelSurvey,
-  closeSurvey,
+  completeSurvey,
   deleteSurveyDraft,
   restoreSurvey,
 } from '@/features/surveys/actions';
@@ -21,7 +21,7 @@ type T = ReturnType<typeof useTranslations>;
 
 const ACTION_FN: Record<SurveyAction, (data: { surveyId: string }) => Promise<ActionResult<void>>> =
   {
-    close: closeSurvey,
+    complete: completeSurvey,
     cancel: cancelSurvey,
     archive: archiveSurvey,
     restore: restoreSurvey,
@@ -32,7 +32,7 @@ const ACTION_FN: Record<SurveyAction, (data: { surveyId: string }) => Promise<Ac
 
 type ConfirmableAction = Extract<
   SurveyAction,
-  'close' | 'cancel' | 'archive' | 'restore' | 'delete'
+  'complete' | 'cancel' | 'archive' | 'restore' | 'delete'
 >;
 
 export function isConfirmable(action: SurveyAction): action is ConfirmableAction {

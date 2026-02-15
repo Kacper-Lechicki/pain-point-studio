@@ -28,7 +28,7 @@ const validPayload = {
   activeSurveys: 3,
   totalResponses: 120,
   completedResponses: 95,
-  avgCompletionRate: 79.2,
+  avgSubmissionRate: 79.2,
   responseTimeline: [5, 12, 8],
   topSurveys: [
     { id: 's1', title: 'Survey 1', status: 'active', completedCount: 50, slug: 'survey-1' },
@@ -146,7 +146,7 @@ describe('getDashboardOverview', () => {
         activeSurveys: 0,
         totalResponses: 0,
         completedResponses: 0,
-        avgCompletionRate: 0,
+        avgSubmissionRate: 0,
       },
       error: null,
     });
@@ -159,7 +159,7 @@ describe('getDashboardOverview', () => {
       activeSurveys: 0,
       totalResponses: 0,
       completedResponses: 0,
-      avgCompletionRate: 0,
+      avgSubmissionRate: 0,
       responseTimeline: [],
       topSurveys: [],
       recentResponses: [],

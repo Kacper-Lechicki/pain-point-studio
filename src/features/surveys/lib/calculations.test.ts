@@ -1,34 +1,62 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
-  calculateCompletionRate,
+  calculateAvgQuestionCompletion,
   calculateRespondentProgress,
+  calculateSubmissionRate,
   daysUntilExpiry,
   formatCompletionTime,
 } from './calculations';
 
-// ── calculateCompletionRate ─────────────────────────────────────────
+// ── calculateSubmissionRate ─────────────────────────────────────────
 
-describe('calculateCompletionRate', () => {
+describe('calculateSubmissionRate', () => {
   it('returns rounded percentage', () => {
-    expect(calculateCompletionRate(3, 10)).toBe(30);
+    expect(calculateSubmissionRate(3, 10)).toBe(30);
   });
 
   it('returns 100 when completed equals total', () => {
-    expect(calculateCompletionRate(5, 5)).toBe(100);
+    expect(calculateSubmissionRate(5, 5)).toBe(100);
   });
 
   it('returns 0 when no completions', () => {
-    expect(calculateCompletionRate(0, 10)).toBe(0);
+    expect(calculateSubmissionRate(0, 10)).toBe(0);
   });
 
   it('rounds to nearest integer', () => {
-    expect(calculateCompletionRate(1, 3)).toBe(33);
-    expect(calculateCompletionRate(2, 3)).toBe(67);
+    expect(calculateSubmissionRate(1, 3)).toBe(33);
+    expect(calculateSubmissionRate(2, 3)).toBe(67);
   });
 
   it('returns null when total is 0', () => {
-    expect(calculateCompletionRate(0, 0)).toBeNull();
+    expect(calculateSubmissionRate(0, 0)).toBeNull();
+  });
+});
+
+// ── calculateAvgQuestionCompletion ──────────────────────────────────
+
+describe('calculateAvgQuestionCompletion', () => {
+  it('returns 100 when all questions answered by all respondents', () => {
+    // 3 questions, 5 completed responses, each question has 5 answers
+    expect(calculateAvgQuestionCompletion([5, 5, 5], 5)).toBe(100);
+  });
+
+  it('returns correct percentage for partial completion', () => {
+    // 4 questions, 10 completed, answers: [10, 8, 6, 4] = 28 / 40 = 70%
+    expect(calculateAvgQuestionCompletion([10, 8, 6, 4], 10)).toBe(70);
+  });
+
+  it('returns null when no questions', () => {
+    expect(calculateAvgQuestionCompletion([], 5)).toBeNull();
+  });
+
+  it('returns null when no completed responses', () => {
+    expect(calculateAvgQuestionCompletion([3, 2, 1], 0)).toBeNull();
+  });
+
+  it('rounds to nearest integer', () => {
+    // 2 questions, 3 completed, answers: [2, 1] = 3 / 6 = 50%
+    expect(calculateAvgQuestionCompletion([2, 1], 3)).toBe(50);
   });
 });
 
@@ -70,34 +98,34 @@ describe('daysUntilExpiry', () => {
   it('returns remaining days when not expired', () => {
     vi.setSystemTime(new Date('2025-01-01T00:00:00Z'));
 
-    // Archived 10 days ago, 30-day limit → 20 days left
-    const result = daysUntilExpiry('2024-12-22T00:00:00Z', 30);
+    // Archived 10 days ago, 14-day limit → 4 days left
+    const result = daysUntilExpiry('2024-12-22T00:00:00Z', 14);
 
-    expect(result).toBe(20);
+    expect(result).toBe(4);
   });
 
   it('returns null when expired', () => {
-    vi.setSystemTime(new Date('2025-02-01T00:00:00Z'));
+    vi.setSystemTime(new Date('2025-01-16T00:00:00Z'));
 
-    // Archived 31 days ago, 30-day limit → expired
-    const result = daysUntilExpiry('2025-01-01T00:00:00Z', 30);
+    // Archived 15 days ago, 14-day limit → expired
+    const result = daysUntilExpiry('2025-01-01T00:00:00Z', 14);
 
     expect(result).toBeNull();
   });
 
   it('returns null when timestampAt is null', () => {
-    expect(daysUntilExpiry(null, 30)).toBeNull();
+    expect(daysUntilExpiry(null, 14)).toBeNull();
   });
 
   it('returns null when timestampAt is undefined', () => {
-    expect(daysUntilExpiry(undefined, 30)).toBeNull();
+    expect(daysUntilExpiry(undefined, 14)).toBeNull();
   });
 
   it('returns 1 on the last day before expiry', () => {
-    vi.setSystemTime(new Date('2025-01-30T12:00:00Z'));
+    vi.setSystemTime(new Date('2025-01-14T12:00:00Z'));
 
-    // Archived exactly 29 days ago, 30-day limit → 1 day left
-    const result = daysUntilExpiry('2025-01-01T00:00:00Z', 30);
+    // Archived exactly 13 days ago, 14-day limit → 1 day left
+    const result = daysUntilExpiry('2025-01-01T00:00:00Z', 14);
 
     expect(result).toBe(1);
   });

@@ -2,12 +2,7 @@
 
 import { z } from 'zod';
 
-import {
-  PG_ERROR,
-  QUESTIONS_MIN,
-  SURVEY_MAX_DURATION_DAYS,
-  SURVEY_MAX_RESPONDENTS_MIN,
-} from '@/features/surveys/config';
+import { PG_ERROR, QUESTIONS_MIN, SURVEY_MAX_RESPONDENTS_MIN } from '@/features/surveys/config';
 import { generateSurveySlug } from '@/features/surveys/lib/generate-slug';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
@@ -49,13 +44,10 @@ export const publishSurvey = withProtectedAction<typeof publishSurveySchema, { s
         return { error: 'surveys.errors.unexpected' };
       }
 
-      // Validate end date if provided
+      // Validate end date if provided — must be in the future.
+      // DateTimePicker already emits an ISO 8601 string (UTC).
       if (data.endsAt) {
-        const endsAtDate = new Date(data.endsAt);
-        const now = new Date();
-        const maxEnd = new Date(now.getTime() + SURVEY_MAX_DURATION_DAYS * 24 * 60 * 60 * 1000);
-
-        if (endsAtDate <= now || endsAtDate > maxEnd) {
+        if (new Date(data.endsAt) <= new Date()) {
           return { error: 'surveys.errors.unexpected' };
         }
       }

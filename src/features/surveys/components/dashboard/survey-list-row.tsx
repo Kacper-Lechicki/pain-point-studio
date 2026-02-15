@@ -1,13 +1,14 @@
 'use client';
 
 import { MoreHorizontal } from 'lucide-react';
-import { useFormatter, useNow, useTranslations } from 'next-intl';
+import { useFormatter, useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { DropdownMenu, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { TableCell, TableRow } from '@/components/ui/table';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
+import { SURVEY_RETENTION_DAYS } from '@/features/surveys/config';
 import { deriveSurveyFlags, getAvailableActions } from '@/features/surveys/config/survey-status';
 import { useSurveyAction } from '@/features/surveys/hooks/use-survey-action';
 import { useSurveyCardActions } from '@/features/surveys/hooks/use-survey-card-actions';
@@ -16,12 +17,15 @@ import { cn } from '@/lib/common/utils';
 
 import { Sparkline, getSparklineColor } from './sparkline';
 import { SurveyActionMenuContent } from './survey-action-menu';
+import { SurveyShareDialog } from './survey-share-dialog';
 import { SurveyStatusBadge } from './survey-status-badge';
 
 // ── Component ───────────────────────────────────────────────────────
 
 interface SurveyListRowProps {
   survey: UserSurvey;
+  /** Shared clock from the parent list — keeps relative times consistent across rows and the detail panel. */
+  now: Date;
   isSelected: boolean;
   onSelect: (surveyId: string) => void;
   onStatusChange: (surveyId: string, action: string) => void;
@@ -32,6 +36,7 @@ interface SurveyListRowProps {
 
 export function SurveyListRow({
   survey,
+  now,
   isSelected,
   onSelect,
   onStatusChange,
@@ -40,13 +45,16 @@ export function SurveyListRow({
 }: SurveyListRowProps) {
   const t = useTranslations();
   const format = useFormatter();
-  const now = useNow();
 
   const { handleActionClick, confirmDialogProps } = useSurveyAction(survey.id, onStatusChange, t);
-  const { handleShare } = useSurveyCardActions(survey.slug);
+  const { shareUrl, shareDialogOpen, setShareDialogOpen, handleShare } = useSurveyCardActions(
+    survey.slug
+  );
 
-  const { isDraft, isActive, isClosed, isArchived } = deriveSurveyFlags(survey.status);
-  const hasShareableLink = (isActive || isClosed) && !!survey.slug;
+  const { isDraft, isActive, isCompleted, isCancelled, isArchived } = deriveSurveyFlags(
+    survey.status
+  );
+  const hasShareableLink = (isActive || isCompleted || isCancelled) && !!survey.slug;
 
   const archivedAtLabel =
     isArchived && (survey.archivedAt ?? survey.updatedAt)
@@ -61,7 +69,16 @@ export function SurveyListRow({
   const availableActions = getAvailableActions(survey.status);
 
   const tableRowInteraction = {
-    onClick: () => onSelect(survey.id),
+    onClick: () => {
+      /* Ignore clicks that fire while a dialog overlay is mounted (e.g. the
+         status-info modal). Radix dismisses the overlay on pointerdown, but
+         the subsequent click still reaches the row underneath. */
+      if (document.querySelector('[data-slot="dialog-overlay"]')) {
+        return;
+      }
+
+      onSelect(survey.id);
+    },
     role: 'button' as const,
     tabIndex: 0,
     onKeyDown: (e: React.KeyboardEvent) => {
@@ -88,6 +105,14 @@ export function SurveyListRow({
   );
 
   const confirmDialogElement = confirmDialogProps && <ConfirmDialog {...confirmDialogProps} />;
+  const shareDialogElement = hasShareableLink && shareUrl && (
+    <SurveyShareDialog
+      open={shareDialogOpen}
+      onOpenChange={setShareDialogOpen}
+      shareUrl={shareUrl}
+      surveyTitle={survey.title}
+    />
+  );
 
   // ── Card variant ────────────────────────────────────────────────
 
@@ -157,7 +182,7 @@ export function SurveyListRow({
                   <span>{t('surveys.dashboard.table.autoDeletes')}</span>
                   <span className="text-foreground font-medium tabular-nums">
                     {(() => {
-                      const days = daysUntilExpiry(survey.archivedAt, 30);
+                      const days = daysUntilExpiry(survey.archivedAt, SURVEY_RETENTION_DAYS);
 
                       return days != null
                         ? t('surveys.dashboard.detailPanel.inDays', { days })
@@ -185,7 +210,21 @@ export function SurveyListRow({
                     {lastResponseLabel ?? '—'}
                   </span>
                 </div>
-                {!isClosed && (
+                {isCompleted || isCancelled ? (
+                  (() => {
+                    const timestamp = isCompleted ? survey.completedAt : survey.cancelledAt;
+                    const days = daysUntilExpiry(timestamp, SURVEY_RETENTION_DAYS);
+
+                    return days != null ? (
+                      <div className="flex flex-col gap-0.5">
+                        <span>{t('surveys.dashboard.detailPanel.linkExpires')}</span>
+                        <span className="text-foreground font-medium tabular-nums">
+                          {t('surveys.dashboard.detailPanel.inDays', { days })}
+                        </span>
+                      </div>
+                    ) : null;
+                  })()
+                ) : (
                   <div className="flex flex-col gap-0.5">
                     <span>{t('surveys.dashboard.table.activity')}</span>
                     <Sparkline
@@ -199,6 +238,7 @@ export function SurveyListRow({
           </div>
         </div>
         {confirmDialogElement}
+        {shareDialogElement}
       </>
     );
   }
@@ -234,7 +274,7 @@ export function SurveyListRow({
             </TableCell>
             <TableCell className="text-muted-foreground border-border/30 min-w-0 truncate border-l text-xs tabular-nums">
               {(() => {
-                const days = daysUntilExpiry(survey.archivedAt, 30);
+                const days = daysUntilExpiry(survey.archivedAt, SURVEY_RETENTION_DAYS);
 
                 return days != null ? t('surveys.dashboard.detailPanel.inDays', { days }) : '—';
               })()}
@@ -259,7 +299,7 @@ export function SurveyListRow({
               {isDraft ? '—' : (lastResponseLabel ?? '—')}
             </TableCell>
             <TableCell className="border-border/30 hidden min-w-0 border-l text-center 2xl:table-cell">
-              {isDraft || isClosed ? (
+              {isDraft || isCompleted || isCancelled ? (
                 <span className="text-muted-foreground text-xs">—</span>
               ) : (
                 <Sparkline
@@ -290,6 +330,7 @@ export function SurveyListRow({
         </TableCell>
       </TableRow>
       {confirmDialogElement}
+      {shareDialogElement}
     </>
   );
 }

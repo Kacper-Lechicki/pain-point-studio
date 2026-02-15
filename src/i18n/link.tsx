@@ -16,6 +16,10 @@ import { BaseLink, usePathname } from '@/i18n/navigation';
 
 // i18n Link: wraps next-intl BaseLink; uses replace for SIBLING_GROUPS (e.g. sign-in ↔ sign-up). Import from @/i18n/routing.
 
+// i18n Link: wraps next-intl BaseLink; uses replace for SIBLING_GROUPS (e.g. sign-in ↔ sign-up). Import from @/i18n/routing.
+
+// i18n Link: wraps next-intl BaseLink; uses replace for SIBLING_GROUPS (e.g. sign-in ↔ sign-up). Import from @/i18n/routing.
+
 type BaseLinkProps = ComponentProps<typeof BaseLink>;
 type Href = BaseLinkProps['href'];
 

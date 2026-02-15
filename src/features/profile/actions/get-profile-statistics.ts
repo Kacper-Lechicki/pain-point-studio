@@ -11,7 +11,7 @@ import { createClient } from '@/lib/supabase/server';
 const profileStatisticsSchema = z.object({
   totalSurveys: z.number(),
   totalResponses: z.number(),
-  avgCompletionRate: z.number(),
+  avgSubmissionRate: z.number(),
   memberSince: z.string(),
 });
 

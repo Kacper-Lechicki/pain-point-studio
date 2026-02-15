@@ -82,7 +82,7 @@ CREATE TYPE "public"."survey_status" AS ENUM (
     'draft',
     'pending',
     'active',
-    'closed',
+    'completed',
     'cancelled',
     'archived'
 );
@@ -109,6 +109,25 @@ $$;
 
 
 ALTER FUNCTION "public"."cancel_email_change"() OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."complete_expired_surveys"() RETURNS "void"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO ''
+    AS $$
+BEGIN
+    UPDATE public.surveys
+    SET status = 'completed',
+        completed_at = now(),
+        updated_at = now()
+    WHERE status = 'active'
+      AND ends_at IS NOT NULL
+      AND ends_at <= now();
+END;
+$$;
+
+
+ALTER FUNCTION "public"."complete_expired_surveys"() OWNER TO "postgres";
 
 
 CREATE OR REPLACE FUNCTION "public"."decrypt_pii"("encrypted" "bytea") RETURNS "text"
@@ -166,28 +185,26 @@ CREATE OR REPLACE FUNCTION "public"."get_analytics_data"("p_user_id" "uuid") RET
 DECLARE
     v_total_responses bigint;
     v_completed_responses bigint;
-    v_avg_completion_rate int;
+    v_avg_submission_rate int;
     v_response_timeline jsonb;
     v_category_breakdown jsonb;
     v_survey_comparison jsonb;
 BEGIN
-    -- Aggregate response counts
     SELECT
         count(*),
         count(*) FILTER (WHERE r.status = 'completed')
     INTO v_total_responses, v_completed_responses
     FROM public.survey_responses r
     JOIN public.surveys s ON s.id = r.survey_id
-    WHERE s.user_id = p_user_id;
+    WHERE s.user_id = p_user_id
+      AND s.status IN ('active', 'completed');
 
-    -- Average completion rate
     IF v_total_responses > 0 THEN
-        v_avg_completion_rate := round((v_completed_responses::numeric / v_total_responses) * 100);
+        v_avg_submission_rate := round((v_completed_responses::numeric / v_total_responses) * 100);
     ELSE
-        v_avg_completion_rate := 0;
+        v_avg_submission_rate := 0;
     END IF;
 
-    -- 30-day response timeline
     SELECT COALESCE(jsonb_agg(day_count ORDER BY day), '[]'::jsonb)
     INTO v_response_timeline
     FROM (
@@ -202,13 +219,13 @@ BEGIN
             FROM public.survey_responses r
             JOIN public.surveys s ON s.id = r.survey_id
             WHERE s.user_id = p_user_id
+              AND s.status IN ('active', 'completed')
               AND r.status = 'completed'
               AND r.created_at >= (current_date - interval '29 days')
             GROUP BY r.created_at::date
         ) cnt ON cnt.rday = d.day
     ) sub;
 
-    -- Category breakdown: surveys and responses per category
     SELECT COALESCE(jsonb_agg(
         jsonb_build_object(
             'category', sub.category,
@@ -224,11 +241,10 @@ BEGIN
             count(r.id) FILTER (WHERE r.status = 'completed') AS total_responses
         FROM public.surveys s
         LEFT JOIN public.survey_responses r ON r.survey_id = s.id
-        WHERE s.user_id = p_user_id AND s.status NOT IN ('draft', 'archived')
+        WHERE s.user_id = p_user_id AND s.status IN ('active', 'completed')
         GROUP BY s.category
     ) sub;
 
-    -- Per-survey comparison metrics
     SELECT COALESCE(jsonb_agg(
         jsonb_build_object(
             'id', sub.id,
@@ -236,7 +252,7 @@ BEGIN
             'status', sub.status,
             'category', sub.category,
             'completedCount', sub.completed_count,
-            'completionRate', sub.completion_rate,
+            'submissionRate', sub.submission_rate,
             'questionCount', sub.question_count,
             'createdAt', sub.created_at
         ) ORDER BY sub.completed_count DESC
@@ -254,7 +270,7 @@ BEGIN
             CASE WHEN COALESCE(tc.cnt, 0) > 0
                 THEN round((COALESCE(cc.cnt, 0)::numeric / tc.cnt) * 100)::int
                 ELSE 0
-            END AS completion_rate
+            END AS submission_rate
         FROM public.surveys s
         LEFT JOIN (
             SELECT survey_id, count(*) AS cnt
@@ -271,14 +287,14 @@ BEGIN
             FROM public.survey_questions
             GROUP BY survey_id
         ) qc ON qc.survey_id = s.id
-        WHERE s.user_id = p_user_id AND s.status NOT IN ('draft', 'archived')
+        WHERE s.user_id = p_user_id AND s.status IN ('active', 'completed')
     ) sub;
 
     RETURN jsonb_build_object(
         'responseTimeline', v_response_timeline,
         'totalResponses', v_total_responses,
         'completedResponses', v_completed_responses,
-        'avgCompletionRate', v_avg_completion_rate,
+        'avgSubmissionRate', v_avg_submission_rate,
         'categoryBreakdown', v_category_breakdown,
         'surveyComparison', v_survey_comparison
     );
@@ -299,36 +315,33 @@ DECLARE
     v_active_surveys int;
     v_total_responses bigint;
     v_completed_responses bigint;
-    v_avg_completion_rate int;
+    v_avg_submission_rate int;
     v_response_timeline jsonb;
     v_top_surveys jsonb;
     v_recent_responses jsonb;
 BEGIN
-    -- Survey counts
     SELECT
-        count(*) FILTER (WHERE status != 'archived'),
+        count(*) FILTER (WHERE status IN ('active', 'completed')),
         count(*) FILTER (WHERE status = 'active')
     INTO v_total_surveys, v_active_surveys
     FROM public.surveys
     WHERE user_id = p_user_id;
 
-    -- Response counts across all user surveys
     SELECT
         count(*),
         count(*) FILTER (WHERE r.status = 'completed')
     INTO v_total_responses, v_completed_responses
     FROM public.survey_responses r
     JOIN public.surveys s ON s.id = r.survey_id
-    WHERE s.user_id = p_user_id;
+    WHERE s.user_id = p_user_id
+      AND s.status IN ('active', 'completed');
 
-    -- Average completion rate
     IF v_total_responses > 0 THEN
-        v_avg_completion_rate := round((v_completed_responses::numeric / v_total_responses) * 100);
+        v_avg_submission_rate := round((v_completed_responses::numeric / v_total_responses) * 100);
     ELSE
-        v_avg_completion_rate := 0;
+        v_avg_submission_rate := 0;
     END IF;
 
-    -- 30-day response timeline across all surveys
     SELECT COALESCE(jsonb_agg(day_count ORDER BY day), '[]'::jsonb)
     INTO v_response_timeline
     FROM (
@@ -343,13 +356,13 @@ BEGIN
             FROM public.survey_responses r
             JOIN public.surveys s ON s.id = r.survey_id
             WHERE s.user_id = p_user_id
+              AND s.status IN ('active', 'completed')
               AND r.status = 'completed'
               AND r.created_at >= (current_date - interval '29 days')
             GROUP BY r.created_at::date
         ) cnt ON cnt.rday = d.day
     ) sub;
 
-    -- Top 5 surveys by completed responses
     SELECT COALESCE(jsonb_agg(row_data ORDER BY completed_count DESC), '[]'::jsonb)
     INTO v_top_surveys
     FROM (
@@ -368,12 +381,11 @@ BEGIN
             WHERE status = 'completed'
             GROUP BY survey_id
         ) cc ON cc.survey_id = s.id
-        WHERE s.user_id = p_user_id AND s.status != 'archived'
+        WHERE s.user_id = p_user_id AND s.status IN ('active', 'completed')
         ORDER BY COALESCE(cc.cnt, 0) DESC
         LIMIT 5
     ) sub;
 
-    -- Latest 10 completed responses
     SELECT COALESCE(jsonb_agg(row_data), '[]'::jsonb)
     INTO v_recent_responses
     FROM (
@@ -385,7 +397,9 @@ BEGIN
         ) AS row_data
         FROM public.survey_responses r
         JOIN public.surveys s ON s.id = r.survey_id
-        WHERE s.user_id = p_user_id AND r.status = 'completed'
+        WHERE s.user_id = p_user_id
+          AND s.status IN ('active', 'completed')
+          AND r.status = 'completed'
         ORDER BY r.completed_at DESC
         LIMIT 10
     ) sub;
@@ -395,7 +409,7 @@ BEGIN
         'activeSurveys', v_active_surveys,
         'totalResponses', v_total_responses,
         'completedResponses', v_completed_responses,
-        'avgCompletionRate', v_avg_completion_rate,
+        'avgSubmissionRate', v_avg_submission_rate,
         'responseTimeline', v_response_timeline,
         'topSurveys', v_top_surveys,
         'recentResponses', v_recent_responses
@@ -464,32 +478,29 @@ DECLARE
     v_total_surveys int;
     v_total_responses bigint;
     v_completed_responses bigint;
-    v_avg_completion_rate int;
+    v_avg_submission_rate int;
     v_member_since timestamptz;
 BEGIN
-    -- Count non-archived surveys
     SELECT count(*)
     INTO v_total_surveys
     FROM public.surveys
-    WHERE user_id = p_user_id AND status != 'archived';
+    WHERE user_id = p_user_id AND status IN ('active', 'completed');
 
-    -- Count responses across all user surveys
     SELECT
         count(*),
         count(*) FILTER (WHERE r.status = 'completed')
     INTO v_total_responses, v_completed_responses
     FROM public.survey_responses r
     JOIN public.surveys s ON s.id = r.survey_id
-    WHERE s.user_id = p_user_id;
+    WHERE s.user_id = p_user_id
+      AND s.status IN ('active', 'completed');
 
-    -- Average completion rate
     IF v_total_responses > 0 THEN
-        v_avg_completion_rate := round((v_completed_responses::numeric / v_total_responses) * 100);
+        v_avg_submission_rate := round((v_completed_responses::numeric / v_total_responses) * 100);
     ELSE
-        v_avg_completion_rate := 0;
+        v_avg_submission_rate := 0;
     END IF;
 
-    -- Member since from auth.users
     SELECT created_at INTO v_member_since
     FROM auth.users
     WHERE id = p_user_id;
@@ -497,7 +508,8 @@ BEGIN
     RETURN jsonb_build_object(
         'totalSurveys', v_total_surveys,
         'totalResponses', v_total_responses,
-        'avgCompletionRate', v_avg_completion_rate,
+        'completedResponses', v_completed_responses,
+        'avgSubmissionRate', v_avg_submission_rate,
         'memberSince', v_member_since
     );
 END;
@@ -642,8 +654,11 @@ BEGIN
                 'maxRespondents', s.max_respondents,
                 'archivedAt', s.archived_at,
                 'cancelledAt', s.cancelled_at,
+                'completedAt', s.completed_at,
                 'createdAt', s.created_at,
-                'updatedAt', s.updated_at
+                'updatedAt', s.updated_at,
+                'avgCompletionSeconds', ct.avg_secs,
+                'avgQuestionCompletion', aqc.avg_pct
             ) ORDER BY s.updated_at DESC
         )
         FROM public.surveys s
@@ -670,10 +685,12 @@ BEGIN
             GROUP BY survey_id
         ) qc ON qc.survey_id = s.id
 
-        -- Most recent response timestamp
+        -- Most recent completed response timestamp
         LEFT JOIN (
-            SELECT survey_id, max(created_at) AS last_at
+            SELECT survey_id, max(completed_at) AS last_at
             FROM public.survey_responses
+            WHERE status = 'completed'
+              AND completed_at IS NOT NULL
             GROUP BY survey_id
         ) lr ON lr.survey_id = s.id
 
@@ -696,6 +713,39 @@ BEGIN
                 ) cnt ON cnt.rday = d.day
             ) sub
         ) ra ON true
+
+        -- Average completion time (seconds) for completed responses
+        LEFT JOIN (
+            SELECT survey_id,
+                   round(avg(extract(epoch FROM (completed_at - started_at))))::int AS avg_secs
+            FROM public.survey_responses
+            WHERE status = 'completed'
+              AND completed_at IS NOT NULL
+              AND started_at IS NOT NULL
+            GROUP BY survey_id
+        ) ct ON ct.survey_id = s.id
+
+        -- Count total answers from completed responses for this survey
+        LEFT JOIN LATERAL (
+            SELECT count(*) AS total_answers
+            FROM public.survey_answers a
+            JOIN public.survey_responses r ON r.id = a.response_id
+            WHERE r.survey_id = s.id
+              AND r.status = 'completed'
+        ) ac ON true
+
+        -- Average question completion % across completed responses
+        -- (total answers given / (completed_responses × question_count) × 100)
+        LEFT JOIN LATERAL (
+            SELECT CASE
+                       WHEN COALESCE(cc.cnt, 0) = 0 OR COALESCE(qc.cnt, 0) = 0 THEN NULL
+                       ELSE round(
+                           COALESCE(ac.total_answers, 0)::numeric
+                           / (COALESCE(cc.cnt, 0) * COALESCE(qc.cnt, 0))
+                           * 100
+                       )::int
+                   END AS avg_pct
+        ) aqc ON true
 
         WHERE s.user_id = p_user_id
     ), '[]'::jsonb);
@@ -869,6 +919,8 @@ CREATE OR REPLACE FUNCTION "public"."submit_survey_response"("p_response_id" "uu
 DECLARE
     v_survey_id uuid;
     v_status text;
+    v_max integer;
+    v_completed integer;
 BEGIN
     SELECT survey_id, status
       INTO v_survey_id, v_status
@@ -883,9 +935,6 @@ BEGIN
         RAISE EXCEPTION 'RESPONSE_ALREADY_COMPLETED';
     END IF;
 
-    -- Empty submissions are allowed — they count as a completed response
-    -- with 0% per-question response rate in analytics.
-
     UPDATE survey_responses
     SET status = 'completed',
         contact_name_encrypted = public.encrypt_pii(p_contact_name),
@@ -894,6 +943,29 @@ BEGIN
         completed_at = now(),
         updated_at = now()
     WHERE id = p_response_id;
+
+    -- Auto-complete the survey if the max respondents cap has been reached.
+    SELECT max_respondents
+      INTO v_max
+      FROM surveys
+     WHERE id = v_survey_id;
+
+    IF v_max IS NOT NULL THEN
+        SELECT count(*)
+          INTO v_completed
+          FROM survey_responses
+         WHERE survey_id = v_survey_id
+           AND status = 'completed';
+
+        IF v_completed >= v_max THEN
+            UPDATE surveys
+            SET status = 'completed',
+                completed_at = now(),
+                updated_at = now()
+            WHERE id = v_survey_id
+              AND status = 'active';
+        END IF;
+    END IF;
 END;
 $$;
 
@@ -1156,7 +1228,7 @@ CREATE TABLE IF NOT EXISTS "public"."surveys" (
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
     "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL,
     "slug" "text",
-    "closed_at" timestamp with time zone,
+    "completed_at" timestamp with time zone,
     "cancelled_at" timestamp with time zone,
     "archived_at" timestamp with time zone,
     "previous_status" "public"."survey_status",
@@ -1300,17 +1372,27 @@ CREATE POLICY "Anyone can insert answer for in-progress response" ON "public"."s
 
 
 
-CREATE POLICY "Anyone can read published surveys by slug" ON "public"."surveys" FOR SELECT USING ((("status" = ANY (ARRAY['active'::"public"."survey_status", 'pending'::"public"."survey_status", 'closed'::"public"."survey_status"])) AND ("slug" IS NOT NULL)));
+CREATE POLICY "Anyone can read active or pending surveys by slug" ON "public"."surveys" FOR SELECT USING ((("status" = ANY (ARRAY['active'::"public"."survey_status", 'pending'::"public"."survey_status"])) AND ("slug" IS NOT NULL)));
 
 
 
 CREATE POLICY "Anyone can read questions for published surveys" ON "public"."survey_questions" FOR SELECT USING ((EXISTS ( SELECT 1
    FROM "public"."surveys"
-  WHERE (("surveys"."id" = "survey_questions"."survey_id") AND ("surveys"."status" = ANY (ARRAY['active'::"public"."survey_status", 'pending'::"public"."survey_status", 'closed'::"public"."survey_status"])) AND ("surveys"."slug" IS NOT NULL)))));
+  WHERE (("surveys"."id" = "survey_questions"."survey_id") AND ("surveys"."status" = ANY (ARRAY['active'::"public"."survey_status", 'pending'::"public"."survey_status", 'completed'::"public"."survey_status"])) AND ("surveys"."slug" IS NOT NULL)))));
 
 
 
-CREATE POLICY "Anyone can read recently cancelled surveys by slug" ON "public"."surveys" FOR SELECT USING ((("status" = 'cancelled'::"public"."survey_status") AND ("slug" IS NOT NULL) AND ("cancelled_at" IS NOT NULL) AND ("cancelled_at" > ("now"() - '30 days'::interval))));
+CREATE POLICY "Anyone can read questions of published surveys" ON "public"."survey_questions" FOR SELECT USING ((EXISTS ( SELECT 1
+   FROM "public"."surveys"
+  WHERE (("surveys"."id" = "survey_questions"."survey_id") AND ("surveys"."slug" IS NOT NULL) AND (("surveys"."status" = ANY (ARRAY['active'::"public"."survey_status", 'pending'::"public"."survey_status"])) OR (("surveys"."status" = 'completed'::"public"."survey_status") AND ("surveys"."completed_at" IS NOT NULL) AND ("surveys"."completed_at" > ("now"() - '14 days'::interval))) OR (("surveys"."status" = 'cancelled'::"public"."survey_status") AND ("surveys"."cancelled_at" IS NOT NULL) AND ("surveys"."cancelled_at" > ("now"() - '14 days'::interval))))))));
+
+
+
+CREATE POLICY "Anyone can read recently cancelled surveys by slug" ON "public"."surveys" FOR SELECT USING ((("status" = 'cancelled'::"public"."survey_status") AND ("slug" IS NOT NULL) AND ("cancelled_at" IS NOT NULL) AND ("cancelled_at" > ("now"() - '14 days'::interval))));
+
+
+
+CREATE POLICY "Anyone can read recently completed surveys by slug" ON "public"."surveys" FOR SELECT USING ((("status" = 'completed'::"public"."survey_status") AND ("slug" IS NOT NULL) AND ("completed_at" IS NOT NULL) AND ("completed_at" > ("now"() - '14 days'::interval))));
 
 
 
@@ -1321,6 +1403,12 @@ CREATE POLICY "Anyone can update answer for in-progress response" ON "public"."s
 
 
 CREATE POLICY "Anyone can update in-progress response" ON "public"."survey_responses" FOR UPDATE USING (("status" = 'in_progress'::"text")) WITH CHECK (("status" = ANY (ARRAY['in_progress'::"text", 'completed'::"text"])));
+
+
+
+CREATE POLICY "Owners can delete responses for own surveys" ON "public"."survey_responses" FOR DELETE USING ((EXISTS ( SELECT 1
+   FROM "public"."surveys"
+  WHERE (("surveys"."id" = "survey_responses"."survey_id") AND ("surveys"."user_id" = ( SELECT "auth"."uid"() AS "uid"))))));
 
 
 
@@ -1412,6 +1500,10 @@ ALTER PUBLICATION "supabase_realtime" OWNER TO "postgres";
 
 
 ALTER PUBLICATION "supabase_realtime" ADD TABLE ONLY "public"."survey_responses";
+
+
+
+ALTER PUBLICATION "supabase_realtime" ADD TABLE ONLY "public"."surveys";
 
 
 
@@ -1605,41 +1697,55 @@ GRANT USAGE ON SCHEMA "public" TO "service_role";
 
 
 
+GRANT ALL ON FUNCTION "public"."cancel_email_change"() TO "anon";
 GRANT ALL ON FUNCTION "public"."cancel_email_change"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."cancel_email_change"() TO "service_role";
 
 
 
+GRANT ALL ON FUNCTION "public"."complete_expired_surveys"() TO "anon";
+GRANT ALL ON FUNCTION "public"."complete_expired_surveys"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."complete_expired_surveys"() TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."decrypt_pii"("encrypted" "bytea") TO "anon";
 GRANT ALL ON FUNCTION "public"."decrypt_pii"("encrypted" "bytea") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."decrypt_pii"("encrypted" "bytea") TO "service_role";
 
 
 
+GRANT ALL ON FUNCTION "public"."encrypt_pii"("plain_text" "text") TO "anon";
 GRANT ALL ON FUNCTION "public"."encrypt_pii"("plain_text" "text") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."encrypt_pii"("plain_text" "text") TO "service_role";
 
 
 
+GRANT ALL ON FUNCTION "public"."get_analytics_data"("p_user_id" "uuid") TO "anon";
 GRANT ALL ON FUNCTION "public"."get_analytics_data"("p_user_id" "uuid") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."get_analytics_data"("p_user_id" "uuid") TO "service_role";
 
 
 
+GRANT ALL ON FUNCTION "public"."get_dashboard_overview"("p_user_id" "uuid") TO "anon";
 GRANT ALL ON FUNCTION "public"."get_dashboard_overview"("p_user_id" "uuid") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."get_dashboard_overview"("p_user_id" "uuid") TO "service_role";
 
 
 
+GRANT ALL ON FUNCTION "public"."get_email_change_status"() TO "anon";
 GRANT ALL ON FUNCTION "public"."get_email_change_status"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."get_email_change_status"() TO "service_role";
 
 
 
+GRANT ALL ON FUNCTION "public"."get_export_responses"("p_survey_id" "uuid", "p_user_id" "uuid") TO "anon";
 GRANT ALL ON FUNCTION "public"."get_export_responses"("p_survey_id" "uuid", "p_user_id" "uuid") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."get_export_responses"("p_survey_id" "uuid", "p_user_id" "uuid") TO "service_role";
 
 
 
+GRANT ALL ON FUNCTION "public"."get_profile_statistics"("p_user_id" "uuid") TO "anon";
 GRANT ALL ON FUNCTION "public"."get_profile_statistics"("p_user_id" "uuid") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."get_profile_statistics"("p_user_id" "uuid") TO "service_role";
 
@@ -1651,11 +1757,13 @@ GRANT ALL ON FUNCTION "public"."get_survey_response_count"("p_survey_id" "uuid")
 
 
 
+GRANT ALL ON FUNCTION "public"."get_survey_stats_data"("p_survey_id" "uuid", "p_user_id" "uuid") TO "anon";
 GRANT ALL ON FUNCTION "public"."get_survey_stats_data"("p_survey_id" "uuid", "p_user_id" "uuid") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."get_survey_stats_data"("p_survey_id" "uuid", "p_user_id" "uuid") TO "service_role";
 
 
 
+GRANT ALL ON FUNCTION "public"."get_user_surveys_with_counts"("p_user_id" "uuid") TO "anon";
 GRANT ALL ON FUNCTION "public"."get_user_surveys_with_counts"("p_user_id" "uuid") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."get_user_surveys_with_counts"("p_user_id" "uuid") TO "service_role";
 
@@ -1667,6 +1775,7 @@ GRANT ALL ON FUNCTION "public"."handle_new_user"() TO "service_role";
 
 
 
+GRANT ALL ON FUNCTION "public"."has_password"() TO "anon";
 GRANT ALL ON FUNCTION "public"."has_password"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."has_password"() TO "service_role";
 
@@ -1678,6 +1787,7 @@ GRANT ALL ON FUNCTION "public"."prevent_clearing_required_fields"() TO "service_
 
 
 
+GRANT ALL ON FUNCTION "public"."save_survey_questions"("p_survey_id" "uuid", "p_user_id" "uuid", "p_questions" "jsonb") TO "anon";
 GRANT ALL ON FUNCTION "public"."save_survey_questions"("p_survey_id" "uuid", "p_user_id" "uuid", "p_questions" "jsonb") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."save_survey_questions"("p_survey_id" "uuid", "p_user_id" "uuid", "p_questions" "jsonb") TO "service_role";
 
@@ -1707,6 +1817,7 @@ GRANT ALL ON FUNCTION "public"."validate_and_save_answer"("p_response_id" "uuid"
 
 
 
+GRANT ALL ON FUNCTION "public"."verify_password"("current_plain_password" "text") TO "anon";
 GRANT ALL ON FUNCTION "public"."verify_password"("current_plain_password" "text") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."verify_password"("current_plain_password" "text") TO "service_role";
 

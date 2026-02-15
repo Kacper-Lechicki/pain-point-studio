@@ -199,7 +199,7 @@ export type Database = {
           archived_at: string | null;
           cancelled_at: string | null;
           category: string;
-          closed_at: string | null;
+          completed_at: string | null;
           created_at: string;
           description: string;
           ends_at: string | null;
@@ -218,7 +218,7 @@ export type Database = {
           archived_at?: string | null;
           cancelled_at?: string | null;
           category: string;
-          closed_at?: string | null;
+          completed_at?: string | null;
           created_at?: string;
           description: string;
           ends_at?: string | null;
@@ -237,7 +237,7 @@ export type Database = {
           archived_at?: string | null;
           cancelled_at?: string | null;
           category?: string;
-          closed_at?: string | null;
+          completed_at?: string | null;
           created_at?: string;
           description?: string;
           ends_at?: string | null;
@@ -321,7 +321,7 @@ export type Database = {
     };
     Enums: {
       question_type: 'open_text' | 'short_text' | 'multiple_choice' | 'rating_scale' | 'yes_no';
-      survey_status: 'draft' | 'pending' | 'active' | 'closed' | 'cancelled' | 'archived';
+      survey_status: 'draft' | 'pending' | 'active' | 'completed' | 'cancelled' | 'archived';
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -451,7 +451,7 @@ export const Constants = {
   public: {
     Enums: {
       question_type: ['open_text', 'short_text', 'multiple_choice', 'rating_scale', 'yes_no'],
-      survey_status: ['draft', 'pending', 'active', 'closed', 'cancelled', 'archived'],
+      survey_status: ['draft', 'pending', 'active', 'completed', 'cancelled', 'archived'],
     },
   },
 } as const;

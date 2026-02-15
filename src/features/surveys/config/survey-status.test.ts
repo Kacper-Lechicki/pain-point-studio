@@ -14,7 +14,7 @@ import {
 // ── SURVEY_STATUS_CONFIG ────────────────────────────────────────────
 
 describe('SURVEY_STATUS_CONFIG', () => {
-  const statuses: SurveyStatus[] = ['draft', 'active', 'closed', 'cancelled', 'archived'];
+  const statuses: SurveyStatus[] = ['draft', 'active', 'completed', 'cancelled', 'archived'];
 
   it('has an entry for every status', () => {
     for (const status of statuses) {
@@ -43,12 +43,12 @@ describe('SURVEY_STATUS_CONFIG', () => {
 // ── canTransition ───────────────────────────────────────────────────
 
 describe('canTransition', () => {
-  it('allows closing an active survey', () => {
-    expect(canTransition('active', 'close')).toBe(true);
+  it('allows completing an active survey', () => {
+    expect(canTransition('active', 'complete')).toBe(true);
   });
 
-  it('does not allow closing a draft', () => {
-    expect(canTransition('draft', 'close')).toBe(false);
+  it('does not allow completing a draft', () => {
+    expect(canTransition('draft', 'complete')).toBe(false);
   });
 
   it('allows cancelling an active survey', () => {
@@ -63,8 +63,8 @@ describe('canTransition', () => {
     expect(canTransition('draft', 'archive')).toBe(true);
   });
 
-  it('allows archiving a closed survey', () => {
-    expect(canTransition('closed', 'archive')).toBe(true);
+  it('allows archiving a completed survey', () => {
+    expect(canTransition('completed', 'archive')).toBe(true);
   });
 
   it('allows archiving a cancelled survey', () => {
@@ -100,13 +100,13 @@ describe('getAvailableActions', () => {
 
     expect(actions).toContain('archive');
     expect(actions).toContain('delete');
-    expect(actions).not.toContain('close');
+    expect(actions).not.toContain('complete');
   });
 
-  it('active can be closed or cancelled', () => {
+  it('active can be completed or cancelled', () => {
     const actions = getAvailableActions('active');
 
-    expect(actions).toContain('close');
+    expect(actions).toContain('complete');
     expect(actions).toContain('cancel');
   });
 
@@ -118,8 +118,8 @@ describe('getAvailableActions', () => {
     expect(actions).toHaveLength(2);
   });
 
-  it('closed can only be archived', () => {
-    const actions = getAvailableActions('closed');
+  it('completed can only be archived', () => {
+    const actions = getAvailableActions('completed');
 
     expect(actions).toEqual(['archive']);
   });
@@ -163,8 +163,8 @@ describe('SURVEY_TRANSITIONS', () => {
     expect(SURVEY_TRANSITIONS.delete.method).toBe('delete');
   });
 
-  it('close uses method "update"', () => {
-    expect(SURVEY_TRANSITIONS.close.method).toBe('update');
+  it('complete uses method "update"', () => {
+    expect(SURVEY_TRANSITIONS.complete.method).toBe('update');
   });
 });
 

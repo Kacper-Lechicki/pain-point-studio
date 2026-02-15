@@ -17,7 +17,7 @@ export default async function SurveyRespondPage({ params }: SurveyRespondPagePro
   }
 
   if (!survey.isAcceptingResponses) {
-    return <SurveyClosed reason={survey.closedReason ?? 'closed'} title={survey.title} />;
+    return <SurveyClosed reason={survey.closedReason ?? 'completed'} title={survey.title} />;
   }
 
   return <SurveyLanding survey={survey} slug={slug} />;

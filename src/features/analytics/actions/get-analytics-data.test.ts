@@ -27,7 +27,7 @@ const validPayload = {
   responseTimeline: [5, 12, 8, 15],
   totalResponses: 40,
   completedResponses: 35,
-  avgCompletionRate: 87.5,
+  avgSubmissionRate: 87.5,
   categoryBreakdown: [
     { category: 'ux', count: 3, totalResponses: 25 },
     { category: 'pricing', count: 2, totalResponses: 15 },
@@ -39,7 +39,7 @@ const validPayload = {
       status: 'active',
       category: 'ux',
       completedCount: 20,
-      completionRate: 80,
+      submissionRate: 80,
       questionCount: 5,
       createdAt: '2026-01-15T10:00:00Z',
     },
@@ -137,7 +137,7 @@ describe('Analytics Actions – Get Analytics Data', () => {
     const minimalPayload = {
       totalResponses: 10,
       completedResponses: 8,
-      avgCompletionRate: 80,
+      avgSubmissionRate: 80,
     };
 
     mockRpc.mockResolvedValue({ data: minimalPayload, error: null });

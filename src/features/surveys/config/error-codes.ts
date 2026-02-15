@@ -37,8 +37,8 @@ export const PG_ERROR = {
 // Maps RPC error identifiers → i18n keys (relative to `surveys.respondent`).
 
 const RPC_ERROR_I18N: Record<string, string> = {
-  [RPC_ERROR.SURVEY_NOT_FOUND]: 'closed.closed',
-  [RPC_ERROR.SURVEY_NOT_ACTIVE]: 'closed.closed',
+  [RPC_ERROR.SURVEY_NOT_FOUND]: 'closed.completed',
+  [RPC_ERROR.SURVEY_NOT_ACTIVE]: 'closed.completed',
   [RPC_ERROR.MAX_RESPONDENTS_REACHED]: 'closed.maxReached',
   [RPC_ERROR.RESPONSE_NOT_FOUND]: 'errors.startFailed',
   [RPC_ERROR.RESPONSE_ALREADY_COMPLETED]: 'errors.submitFailed',

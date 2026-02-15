@@ -14,7 +14,7 @@ const dashboardOverviewSchema = z.object({
   activeSurveys: z.number(),
   totalResponses: z.number(),
   completedResponses: z.number(),
-  avgCompletionRate: z.number(),
+  avgSubmissionRate: z.number(),
   responseTimeline: z.array(z.number()).default([]),
   topSurveys: z
     .array(

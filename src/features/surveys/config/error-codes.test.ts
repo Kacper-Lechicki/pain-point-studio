@@ -3,12 +3,12 @@ import { describe, expect, it } from 'vitest';
 import { mapRpcError } from './error-codes';
 
 describe('mapRpcError', () => {
-  it('maps SURVEY_NOT_FOUND to closed.closed', () => {
-    expect(mapRpcError('SURVEY_NOT_FOUND')).toBe('closed.closed');
+  it('maps SURVEY_NOT_FOUND to closed.completed', () => {
+    expect(mapRpcError('SURVEY_NOT_FOUND')).toBe('closed.completed');
   });
 
-  it('maps SURVEY_NOT_ACTIVE to closed.closed', () => {
-    expect(mapRpcError('SURVEY_NOT_ACTIVE')).toBe('closed.closed');
+  it('maps SURVEY_NOT_ACTIVE to closed.completed', () => {
+    expect(mapRpcError('SURVEY_NOT_ACTIVE')).toBe('closed.completed');
   });
 
   it('maps MAX_RESPONDENTS_REACHED to closed.maxReached', () => {
@@ -32,6 +32,6 @@ describe('mapRpcError', () => {
   });
 
   it('extracts code from longer error message', () => {
-    expect(mapRpcError('RPC error: SURVEY_NOT_FOUND in function')).toBe('closed.closed');
+    expect(mapRpcError('RPC error: SURVEY_NOT_FOUND in function')).toBe('closed.completed');
   });
 });

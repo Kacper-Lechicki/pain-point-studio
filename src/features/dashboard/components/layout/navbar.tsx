@@ -21,7 +21,7 @@ const Navbar = () => {
 
   return (
     <nav className="bg-background/80 border-border/80 dashboard:border-b fixed inset-x-0 top-0 z-50 backdrop-blur-md transition-colors duration-300">
-      <div className="dashboard:pl-3 dashboard:pr-4 flex h-14 items-center gap-3 px-4">
+      <div className="dashboard:px-4 flex h-14 items-center gap-3 px-4">
         {hasSidebar && (
           <Button
             variant="ghost"
@@ -36,7 +36,7 @@ const Navbar = () => {
 
         {isDesktop && (
           <div
-            className="dashboard:flex -ml-1 hidden shrink-0"
+            className="dashboard:flex hidden shrink-0"
             style={{ width: 'calc(var(--sidebar-width-expanded) - 1rem)' }}
           >
             <ProjectSelector className="w-full" />

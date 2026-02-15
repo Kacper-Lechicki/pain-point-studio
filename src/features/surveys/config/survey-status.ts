@@ -33,8 +33,8 @@ export const SURVEY_STATUS_CONFIG: Record<SurveyStatus, StatusConfig> = {
       showPulseDot: false,
     },
   },
-  closed: {
-    labelKey: 'surveys.dashboard.status.closed',
+  completed: {
+    labelKey: 'surveys.dashboard.status.completed',
     icon: CheckCircle2,
     badge: {
       variant: 'outline',
@@ -77,12 +77,12 @@ interface StatusTransition {
 
 /** Survey state-machine: maps action names to their target status and valid source statuses. */
 export const SURVEY_TRANSITIONS = {
-  close: { method: 'update', toStatus: 'closed', fromStatuses: ['active'] },
+  complete: { method: 'update', toStatus: 'completed', fromStatuses: ['active'] },
   cancel: { method: 'update', toStatus: 'cancelled', fromStatuses: ['active'] },
   archive: {
     method: 'update',
     toStatus: 'archived',
-    fromStatuses: ['closed', 'cancelled', 'draft'],
+    fromStatuses: ['completed', 'cancelled', 'draft'],
   },
   restore: { method: 'update', toStatus: 'draft', fromStatuses: ['archived'] },
   delete: { method: 'delete', fromStatuses: ['draft', 'archived'] },
@@ -108,7 +108,7 @@ export function getAvailableActions(status: SurveyStatus): SurveyAction[] {
 export interface SurveyStatusFlags {
   isDraft: boolean;
   isActive: boolean;
-  isClosed: boolean;
+  isCompleted: boolean;
   isCancelled: boolean;
   isArchived: boolean;
 }
@@ -118,7 +118,7 @@ export function deriveSurveyFlags(status: SurveyStatus): SurveyStatusFlags {
   return {
     isDraft: status === 'draft',
     isActive: status === 'active',
-    isClosed: status === 'closed',
+    isCompleted: status === 'completed',
     isCancelled: status === 'cancelled',
     isArchived: status === 'archived',
   };
@@ -141,13 +141,13 @@ export interface ActionUIConfig {
 
 /** Maps each survey action to its icon, toast key, and optional confirmation dialog config. */
 export const SURVEY_ACTION_UI: Record<SurveyAction, ActionUIConfig> = {
-  close: {
+  complete: {
     icon: CheckCircle2,
-    toastKey: 'toast.closed',
+    toastKey: 'toast.completed',
     buttonColor: 'accent',
     confirm: {
-      titleKey: 'confirm.closeTitle',
-      descriptionKey: 'confirm.closeDescription',
+      titleKey: 'confirm.completeTitle',
+      descriptionKey: 'confirm.completeDescription',
       variant: 'accent',
     },
   },

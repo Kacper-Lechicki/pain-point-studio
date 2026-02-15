@@ -1,7 +1,7 @@
 import type { useTranslations } from 'next-intl';
 
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
-import { calculateCompletionRate } from '@/features/surveys/lib/calculations';
+import { calculateSubmissionRate } from '@/features/surveys/lib/calculations';
 
 type HintSeverity = 'warning' | 'info' | 'success';
 
@@ -77,14 +77,14 @@ export function computeHint(
     }
   }
 
-  if (survey.status === 'closed') {
+  if (survey.status === 'completed') {
     if (survey.responseCount > 0) {
-      const rate = calculateCompletionRate(survey.completedCount, survey.responseCount)!;
+      const rate = calculateSubmissionRate(survey.completedCount, survey.responseCount)!;
 
       return {
         severity: 'info',
         text: t(
-          'surveys.dashboard.hints.completionRate' as Parameters<typeof t>[0],
+          'surveys.dashboard.hints.submissionRate' as Parameters<typeof t>[0],
           { rate } as never
         ),
       };

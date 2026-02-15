@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 
 import { Archive, ArrowDown, ArrowUp, MousePointerClick, Search, X } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useNow, useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -46,6 +46,7 @@ const SORT_OPTIONS: ArchiveSortBy[] = [
 
 export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
   const t = useTranslations();
+  const now = useNow({ updateInterval: 60_000 });
   const isMd = useBreakpoint('md');
 
   const [surveys, setSurveys] = useState(initialSurveys);
@@ -283,6 +284,7 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
                 <SurveyListRow
                   key={survey.id}
                   survey={survey}
+                  now={now}
                   isSelected={selectedId === survey.id}
                   onSelect={setSelected}
                   onStatusChange={handleStatusChange}
@@ -299,6 +301,7 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
             <SurveyListRow
               key={survey.id}
               survey={survey}
+              now={now}
               isSelected={selectedId === survey.id}
               onSelect={setSelected}
               onStatusChange={handleStatusChange}
@@ -314,6 +317,7 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
         onClose={() => setSelected(null)}
         survey={selectedSurvey}
         questions={questions}
+        now={now}
         onStatusChange={handleStatusChange}
         detailsLabel={t('surveys.dashboard.detailPanel.detailsLabel')}
       />

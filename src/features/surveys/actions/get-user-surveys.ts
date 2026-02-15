@@ -31,8 +31,14 @@ export interface UserSurvey {
   archivedAt: string | null;
   /** When the survey was cancelled, or null. */
   cancelledAt: string | null;
+  /** When the survey was completed, or null. */
+  completedAt: string | null;
   createdAt: string;
   updatedAt: string;
+  /** Average completion time in seconds for completed responses, or null. */
+  avgCompletionSeconds: number | null;
+  /** Average question completion percentage across completed responses, or null. */
+  avgQuestionCompletion: number | null;
 }
 
 const userSurveySchema = z.object({
@@ -52,8 +58,11 @@ const userSurveySchema = z.object({
   maxRespondents: z.number().nullable(),
   archivedAt: z.string().nullable(),
   cancelledAt: z.string().nullable(),
+  completedAt: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
+  avgCompletionSeconds: z.number().nullable(),
+  avgQuestionCompletion: z.number().nullable(),
 });
 
 const userSurveysRpcSchema = z.array(userSurveySchema);

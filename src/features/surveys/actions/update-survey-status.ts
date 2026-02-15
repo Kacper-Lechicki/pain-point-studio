@@ -9,7 +9,7 @@ import { withProtectedAction } from '@/lib/common/with-protected-action';
 // ── Timestamp columns set on specific transitions ───────────────────
 
 const TIMESTAMP_COLUMNS: Partial<Record<SurveyStatus, string>> = {
-  closed: 'closed_at',
+  completed: 'completed_at',
   cancelled: 'cancelled_at',
   archived: 'archived_at',
 };
@@ -41,12 +41,20 @@ function createStatusAction(action: SurveyAction) {
         return { success: true };
       }
 
-      // Restore: always reset to draft status
+      // Restore: reset to a clean draft state.
+      // Clear all publication-related fields so the next publish cycle starts
+      // fresh, and delete old responses so metrics don't carry over.
       if (action === 'restore') {
         const { data: row, error } = await supabase
           .from('surveys')
           .update({
             status: 'draft' as SurveyStatus,
+            slug: null,
+            starts_at: null,
+            ends_at: null,
+            max_respondents: null,
+            completed_at: null,
+            cancelled_at: null,
             archived_at: null,
             previous_status: null,
           })
@@ -59,6 +67,9 @@ function createStatusAction(action: SurveyAction) {
         if (error || !row) {
           return { error: 'surveys.errors.unexpected' };
         }
+
+        // Delete old responses so metrics start from zero on re-publish.
+        await supabase.from('survey_responses').delete().eq('survey_id', data.surveyId);
 
         return { success: true };
       }
@@ -119,7 +130,7 @@ function createStatusAction(action: SurveyAction) {
   });
 }
 
-export const closeSurvey = createStatusAction('close');
+export const completeSurvey = createStatusAction('complete');
 export const cancelSurvey = createStatusAction('cancel');
 export const archiveSurvey = createStatusAction('archive');
 export const restoreSurvey = createStatusAction('restore');

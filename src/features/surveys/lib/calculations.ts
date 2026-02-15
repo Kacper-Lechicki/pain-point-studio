@@ -1,5 +1,38 @@
-export function calculateCompletionRate(completed: number, total: number): number | null {
+/**
+ * Submission rate: % of respondents who started **and** completed the survey.
+ * `completed / total * 100`, rounded to the nearest integer.
+ */
+export function calculateSubmissionRate(completed: number, total: number): number | null {
   return total > 0 ? Math.round((completed / total) * 100) : null;
+}
+
+/** @deprecated Use `calculateSubmissionRate` instead. */
+export const calculateCompletionRate = calculateSubmissionRate;
+
+/**
+ * Average question completion: across all completed responses, what % of
+ * questions were actually answered on average?
+ *
+ * Calculated as: `totalAnswersGiven / (completedResponses × totalQuestions) × 100`
+ *
+ * @param answersPerQuestion - Array with the number of answers for each question
+ *                             (i.e. `question.answers.length` for each question)
+ * @param completedResponses - Number of completed survey responses
+ */
+export function calculateAvgQuestionCompletion(
+  answersPerQuestion: number[],
+  completedResponses: number
+): number | null {
+  const totalQuestions = answersPerQuestion.length;
+
+  if (totalQuestions === 0 || completedResponses === 0) {
+    return null;
+  }
+
+  const totalAnswers = answersPerQuestion.reduce((sum, count) => sum + count, 0);
+  const possible = completedResponses * totalQuestions;
+
+  return Math.round((totalAnswers / possible) * 100);
 }
 
 export function calculateRespondentProgress(
@@ -14,7 +47,7 @@ export function calculateRespondentProgress(
  * Returns null if the timestamp is missing, or if the item has already expired.
  *
  * @param timestampAt - ISO timestamp when the countdown started (e.g. `archived_at`, `cancelled_at`)
- * @param limitDays - Number of days after `timestampAt` before expiry (e.g. 30)
+ * @param limitDays - Number of days after `timestampAt` before expiry (e.g. 14)
  */
 export function daysUntilExpiry(
   timestampAt: string | null | undefined,

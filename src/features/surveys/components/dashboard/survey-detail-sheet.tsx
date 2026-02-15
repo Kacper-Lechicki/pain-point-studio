@@ -17,6 +17,8 @@ interface SurveyDetailSheetProps {
   onClose: () => void;
   survey: UserSurvey | null;
   questions: MappedQuestion[] | null;
+  /** Shared clock from the parent list — keeps relative times consistent. */
+  now: Date;
   onStatusChange: (surveyId: string, action: string) => void;
   detailsLabel: string;
 }
@@ -26,6 +28,7 @@ export function SurveyDetailSheet({
   onClose,
   survey,
   questions,
+  now,
   onStatusChange,
   detailsLabel,
 }: SurveyDetailSheetProps) {
@@ -47,6 +50,7 @@ export function SurveyDetailSheet({
             <SurveyDetailPanel
               survey={survey}
               questions={questions}
+              now={now}
               onStatusChange={onStatusChange}
               embeddedInSheet
             />

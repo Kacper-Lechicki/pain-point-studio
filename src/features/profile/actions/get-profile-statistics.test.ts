@@ -24,7 +24,7 @@ vi.mock('@/lib/supabase/server', () => ({
 const validPayload = {
   totalSurveys: 12,
   totalResponses: 85,
-  avgCompletionRate: 72.5,
+  avgSubmissionRate: 72.5,
   memberSince: '2024-03-15T00:00:00Z',
 };
 

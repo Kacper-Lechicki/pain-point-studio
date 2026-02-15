@@ -11,7 +11,7 @@ import { SurveyStatusBadge } from '@/features/surveys/components/dashboard/surve
 import { DATE_FORMAT_SHORT } from '@/features/surveys/config';
 import Link from '@/i18n/link';
 
-type SortColumn = 'title' | 'completedCount' | 'completionRate' | 'questionCount' | 'createdAt';
+type SortColumn = 'title' | 'completedCount' | 'submissionRate' | 'questionCount' | 'createdAt';
 type SortDir = 'asc' | 'desc';
 
 interface SurveyComparisonTableProps {
@@ -39,8 +39,8 @@ export const SurveyComparisonTable = ({ surveys }: SurveyComparisonTableProps) =
         case 'completedCount':
           cmp = a.completedCount - b.completedCount;
           break;
-        case 'completionRate':
-          cmp = a.completionRate - b.completionRate;
+        case 'submissionRate':
+          cmp = a.submissionRate - b.submissionRate;
           break;
         case 'questionCount':
           cmp = a.questionCount - b.questionCount;
@@ -97,11 +97,11 @@ export const SurveyComparisonTable = ({ surveys }: SurveyComparisonTableProps) =
             </Th>
 
             <Th
-              col="completionRate"
-              label={t('analytics.columnCompletionRate')}
+              col="submissionRate"
+              label={t('analytics.columnSubmissionRate')}
               toggleSort={toggleSort}
             >
-              <SortIcon col="completionRate" sortCol={sortCol} sortDir={sortDir} />
+              <SortIcon col="submissionRate" sortCol={sortCol} sortDir={sortDir} />
             </Th>
 
             <Th col="questionCount" label={t('analytics.columnQuestions')} toggleSort={toggleSort}>
@@ -138,7 +138,7 @@ export const SurveyComparisonTable = ({ surveys }: SurveyComparisonTableProps) =
               </td>
 
               <td className="px-2 py-2.5 tabular-nums">{survey.completedCount}</td>
-              <td className="px-2 py-2.5 tabular-nums">{survey.completionRate}%</td>
+              <td className="px-2 py-2.5 tabular-nums">{survey.submissionRate}%</td>
               <td className="px-2 py-2.5 tabular-nums">{survey.questionCount}</td>
 
               <td className="text-muted-foreground px-2 py-2.5 text-xs">

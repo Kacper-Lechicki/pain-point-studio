@@ -2,6 +2,7 @@
 
 import { cache } from 'react';
 
+import { SURVEY_RETENTION_DAYS } from '@/features/surveys/config';
 import { mapQuestionRow } from '@/features/surveys/lib/map-question-row';
 import type { PublicSurveyData } from '@/features/surveys/types';
 import { createClient } from '@/lib/supabase/server';
@@ -11,21 +12,28 @@ export const getPublicSurvey = cache(async (slug: string): Promise<PublicSurveyD
 
   const { data: survey } = await supabase
     .from('surveys')
-    .select('id, title, description, status, ends_at, max_respondents, cancelled_at')
+    .select('id, title, description, status, ends_at, max_respondents, completed_at, cancelled_at')
     .eq('slug', slug)
-    .in('status', ['active', 'closed', 'cancelled'])
+    .in('status', ['active', 'completed', 'cancelled'])
     .single();
 
   if (!survey) {
     return null;
   }
 
-  // Cancelled surveys are only accessible for 30 days after cancellation
-  if (survey.status === 'cancelled') {
-    const cancelledAt = survey.cancelled_at ? new Date(survey.cancelled_at) : null;
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  // Completed and cancelled surveys are only accessible for SURVEY_RETENTION_DAYS
+  if (survey.status === 'completed' || survey.status === 'cancelled') {
+    const closedAt =
+      survey.status === 'completed'
+        ? survey.completed_at
+          ? new Date(survey.completed_at)
+          : null
+        : survey.cancelled_at
+          ? new Date(survey.cancelled_at)
+          : null;
+    const retentionCutoff = new Date(Date.now() - SURVEY_RETENTION_DAYS * 24 * 60 * 60 * 1000);
 
-    if (!cancelledAt || cancelledAt < thirtyDaysAgo) {
+    if (!closedAt || closedAt < retentionCutoff) {
       return null;
     }
   }
@@ -35,9 +43,9 @@ export const getPublicSurvey = cache(async (slug: string): Promise<PublicSurveyD
   let isAcceptingResponses = survey.status === 'active';
   let closedReason: PublicSurveyData['closedReason'];
 
-  if (survey.status === 'closed') {
+  if (survey.status === 'completed') {
     isAcceptingResponses = false;
-    closedReason = 'closed';
+    closedReason = 'completed';
   } else if (survey.status === 'cancelled') {
     isAcceptingResponses = false;
     closedReason = 'cancelled';

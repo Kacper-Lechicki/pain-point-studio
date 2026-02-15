@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
@@ -14,12 +14,15 @@ const DEBOUNCE_MS = 1500;
  * which re-runs the server component and passes fresh `initialSurveys`.
  *
  * Used on the dashboard list page so response counts, activity, and status
- * changes (including auto-close) are reflected without a manual reload.
+ * changes (including auto-complete) are reflected without a manual reload.
+ *
+ * Returns `isConnected` — true when the channel is in the SUBSCRIBED state.
  */
 export function useRealtimeSurveyList() {
   const router = useRouter();
   const routerRef = useRef(router);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
     routerRef.current = router;
@@ -58,7 +61,9 @@ export function useRealtimeSurveyList() {
         },
         debouncedRefresh
       )
-      .subscribe();
+      .subscribe((status) => {
+        setIsConnected(status === 'SUBSCRIBED');
+      });
 
     return () => {
       if (timerRef.current) {
@@ -68,4 +73,6 @@ export function useRealtimeSurveyList() {
       void supabase.removeChannel(channel);
     };
   }, []);
+
+  return { isConnected };
 }

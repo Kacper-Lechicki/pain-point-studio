@@ -6,7 +6,7 @@ import { cn } from '@/lib/common/utils';
 const MAX_WIDTH_CLASSES: Record<NonNullable<DashboardContentAreaProps['maxWidth']>, string> = {
   narrow: 'max-w-4xl',
   content: DASHBOARD_CONTENT_MAX_WIDTH,
-  full: '',
+  full: 'max-w-7xl',
 };
 
 interface DashboardContentAreaProps {

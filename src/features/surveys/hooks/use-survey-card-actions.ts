@@ -1,24 +1,24 @@
 'use client';
 
-import { useLocale, useTranslations } from 'next-intl';
-import { toast } from 'sonner';
+import { useState } from 'react';
+
+import { useLocale } from 'next-intl';
 
 import { getSurveyShareUrl } from '@/features/surveys/lib/share-url';
 
 export function useSurveyCardActions(slug: string | null) {
-  const t = useTranslations();
   const locale = useLocale();
 
   const shareUrl = slug ? getSurveyShareUrl(locale, slug) : null;
+  const [shareDialogOpen, setShareDialogOpen] = useState(false);
 
-  const handleShare = async () => {
+  const handleShare = () => {
     if (!shareUrl) {
       return;
     }
 
-    await navigator.clipboard.writeText(shareUrl);
-    toast.success(t('surveys.dashboard.toast.linkCopied'));
+    setShareDialogOpen(true);
   };
 
-  return { shareUrl, handleShare };
+  return { shareUrl, shareDialogOpen, setShareDialogOpen, handleShare };
 }

@@ -2,10 +2,8 @@
 
 import { useEffect, useMemo, useState } from 'react';
 
-import { useRouter } from 'next/navigation';
-
 import { ClipboardList, MousePointerClick, RefreshCw } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useNow, useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -16,6 +14,7 @@ import { useSurveySelection } from '@/features/surveys/hooks/use-survey-selectio
 import { getDefaultSortDir, getSurveyComparator } from '@/features/surveys/lib/sort-helpers';
 import type { SurveyStatus } from '@/features/surveys/types';
 import { useBreakpoint } from '@/hooks/common/use-breakpoint';
+import { useRefresh } from '@/hooks/common/use-refresh';
 import { cn } from '@/lib/common/utils';
 
 import { SortableTableHeader } from './sortable-table-header';
@@ -33,12 +32,12 @@ const STATUS_KPI_COLOR: Record<string, string> = {
   all: 'text-foreground',
   active: 'text-emerald-600 dark:text-emerald-400',
   draft: 'text-foreground',
-  closed: 'text-violet-600 dark:text-violet-400',
+  completed: 'text-violet-600 dark:text-violet-400',
   cancelled: 'text-red-600 dark:text-red-400',
 };
 
 const STATUS_TRANSITIONS: Record<string, SurveyStatus | null> = {
-  close: 'closed',
+  complete: 'completed',
   cancel: 'cancelled',
   archive: 'archived',
   delete: null,
@@ -50,8 +49,9 @@ interface SurveyListProps {
 
 export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
   const t = useTranslations();
-  const router = useRouter();
+  const now = useNow({ updateInterval: 60_000 });
   const isMd = useBreakpoint('md');
+  const { isRefreshing, refresh } = useRefresh();
   const [surveys, setSurveys] = useState(initialSurveys);
 
   // Sync local state when the server re-renders with fresh data (e.g. from
@@ -61,8 +61,8 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
   }, [initialSurveys]);
 
   // Subscribe to Realtime so response counts, activity, and status changes
-  // (including auto-close) are reflected without a manual page reload.
-  useRealtimeSurveyList();
+  // (including auto-complete) are reflected without a manual page reload.
+  const { isConnected: isRealtimeConnected } = useRealtimeSurveyList();
   const [statusFilter, setStatusFilter] = useState<SurveyStatusFilter>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<SurveySortBy>('updated');
@@ -76,7 +76,7 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
       all: 0,
       active: 0,
       draft: 0,
-      closed: 0,
+      completed: 0,
       cancelled: 0,
     };
 
@@ -86,13 +86,18 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
       }
     }
 
-    counts.all = counts.active + counts.draft + counts.closed + counts.cancelled;
+    counts.all = counts.active + counts.draft + counts.completed + counts.cancelled;
 
     return counts;
   }, [surveys]);
 
   const kpiStatuses = useMemo(() => {
-    const order: Exclude<SurveyStatusFilter, 'all'>[] = ['active', 'draft', 'closed', 'cancelled'];
+    const order: Exclude<SurveyStatusFilter, 'all'>[] = [
+      'active',
+      'draft',
+      'completed',
+      'cancelled',
+    ];
 
     return order.filter((s) => statusCounts[s] > 0);
   }, [statusCounts]);
@@ -226,15 +231,25 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
               <MousePointerClick className="size-3" aria-hidden />
               {t('surveys.dashboard.clickHint')}
             </span>
-            <Button
-              variant="ghost"
-              size="icon-xs"
-              onClick={() => router.refresh()}
-              aria-label={t('surveys.dashboard.refresh')}
-              title={t('surveys.dashboard.refresh')}
-            >
-              <RefreshCw className="size-3" aria-hidden />
-            </Button>
+            <div className="relative">
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                onClick={refresh}
+                disabled={isRefreshing}
+                aria-label={t('surveys.dashboard.refresh')}
+                title={t('surveys.dashboard.refresh')}
+              >
+                <RefreshCw className={cn('size-3', isRefreshing && 'animate-spin')} aria-hidden />
+              </Button>
+              <span
+                className={cn(
+                  'absolute -top-px -right-px size-1.5 rounded-full',
+                  isRealtimeConnected ? 'bg-emerald-500' : 'bg-amber-500'
+                )}
+                aria-hidden
+              />
+            </div>
           </div>
         </div>
       )}
@@ -344,6 +359,7 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
                 <SurveyListRow
                   key={survey.id}
                   survey={survey}
+                  now={now}
                   isSelected={selectedId === survey.id}
                   onSelect={setSelected}
                   onStatusChange={handleStatusChange}
@@ -359,6 +375,7 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
             <SurveyListRow
               key={survey.id}
               survey={survey}
+              now={now}
               isSelected={selectedId === survey.id}
               onSelect={setSelected}
               onStatusChange={handleStatusChange}
@@ -374,6 +391,7 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
         onClose={() => setSelected(null)}
         survey={selectedSurvey}
         questions={questions}
+        now={now}
         onStatusChange={handleStatusChange}
         detailsLabel={t('surveys.dashboard.detailPanel.detailsLabel')}
       />

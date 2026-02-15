@@ -12,20 +12,20 @@ interface SurveyClosedProps {
 }
 
 const reasonIcons: Record<ClosedReason, typeof CheckCircle2> = {
-  closed: CheckCircle2,
+  completed: CheckCircle2,
   expired: Clock,
   max_reached: Users,
   cancelled: Ban,
 };
 
 const reasonKeys: Record<ClosedReason, string> = {
-  closed: 'closed',
+  completed: 'completed',
   expired: 'expired',
   max_reached: 'maxReached',
   cancelled: 'cancelled',
 };
 
-export const SurveyClosed = ({ title, reason = 'closed' }: SurveyClosedProps) => {
+export const SurveyClosed = ({ title, reason = 'completed' }: SurveyClosedProps) => {
   const t = useTranslations();
   const Icon = reasonIcons[reason];
 

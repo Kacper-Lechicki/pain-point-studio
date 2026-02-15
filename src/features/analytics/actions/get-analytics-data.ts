@@ -13,7 +13,7 @@ const analyticsDataSchema = z.object({
   responseTimeline: z.array(z.number()).default([]),
   totalResponses: z.number(),
   completedResponses: z.number(),
-  avgCompletionRate: z.number(),
+  avgSubmissionRate: z.number(),
   categoryBreakdown: z
     .array(
       z.object({
@@ -31,7 +31,7 @@ const analyticsDataSchema = z.object({
         status: z.enum(SURVEY_STATUSES),
         category: z.string(),
         completedCount: z.number(),
-        completionRate: z.number(),
+        submissionRate: z.number(),
         questionCount: z.number(),
         createdAt: z.string(),
       })

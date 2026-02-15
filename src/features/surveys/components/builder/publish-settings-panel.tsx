@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from 'react';
 
-import { addDays } from 'date-fns';
 import { Info } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
@@ -21,7 +20,6 @@ import {
 } from '@/components/ui/sheet';
 import { Spinner } from '@/components/ui/spinner';
 import { publishSurvey, saveSurveyQuestions } from '@/features/surveys/actions';
-import { SURVEY_MAX_DURATION_DAYS } from '@/features/surveys/config';
 import { useQuestionBuilderContext } from '@/features/surveys/hooks/use-question-builder-context';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import type { MessageKey } from '@/i18n/types';
@@ -46,7 +44,6 @@ export function PublishSettingsPanel({
   const [maxRespondents, setMaxRespondents] = useState<number | null>(null);
 
   const now = useMemo(() => new Date(), []);
-  const maxEndDate = useMemo(() => addDays(now, SURVEY_MAX_DURATION_DAYS), [now]);
 
   const saveAction = useFormAction({
     unexpectedErrorMessage: 'surveys.builder.errors.saveFailed' as MessageKey,
@@ -126,7 +123,6 @@ export function PublishSettingsPanel({
               onChange={setEndsAt}
               placeholder={t('surveys.publish.noEndDate')}
               disabledBefore={now}
-              disabledAfter={maxEndDate}
             />
           </div>
 

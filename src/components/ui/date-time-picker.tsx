@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 
-import { format, isSameDay, isValid, parse, startOfDay } from 'date-fns';
+import { format, isSameDay, isValid, startOfDay } from 'date-fns';
 import { CalendarIcon, ClockIcon } from 'lucide-react';
 import type { Matcher } from 'react-day-picker';
 
@@ -40,13 +40,15 @@ function parseDateTime(value: string | null): Date | undefined {
     return undefined;
   }
 
-  const date = parse(value, "yyyy-MM-dd'T'HH:mm", new Date());
+  // Accept both ISO strings (from DB / toISOString) and the legacy "yyyy-MM-ddTHH:mm" format.
+  const date = new Date(value);
 
   return isValid(date) ? date : undefined;
 }
 
+/** Emit an ISO 8601 string so the server always receives an unambiguous UTC instant. */
 function formatDateTime(date: Date): string {
-  return format(date, "yyyy-MM-dd'T'HH:mm");
+  return date.toISOString();
 }
 
 /** Clamp a candidate datetime to the [min, max] range. */

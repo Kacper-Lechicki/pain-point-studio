@@ -14,7 +14,7 @@ export { saveSurveyQuestions } from './save-survey-questions';
 export {
   archiveSurvey,
   cancelSurvey,
-  closeSurvey,
+  completeSurvey,
   deleteSurveyDraft,
   restoreSurvey,
 } from './update-survey-status';

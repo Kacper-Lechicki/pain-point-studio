@@ -1,7 +1,5 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-
 import { CircleDot, ClipboardList, Hash, Info, Plus, RefreshCw, TrendingUp } from 'lucide-react';
 import { useFormatter, useNow, useTranslations } from 'next-intl';
 
@@ -13,7 +11,9 @@ import { SurveyStatusBadge } from '@/features/surveys/components/dashboard/surve
 import { SectionLabel } from '@/features/surveys/components/shared/metric-display';
 import { ResponseTimelineChart } from '@/features/surveys/components/shared/response-timeline-chart';
 import { useRealtimeSurveyList } from '@/features/surveys/hooks/use-realtime-survey-list';
+import { useRefresh } from '@/hooks/common/use-refresh';
 import Link from '@/i18n/link';
+import { cn } from '@/lib/common/utils';
 
 interface DashboardOverviewPanelProps {
   overview: DashboardOverview;
@@ -22,10 +22,10 @@ interface DashboardOverviewPanelProps {
 export const DashboardOverviewPanel = ({ overview }: DashboardOverviewPanelProps) => {
   const t = useTranslations();
   const format = useFormatter();
-  const now = useNow();
-  const router = useRouter();
+  const now = useNow({ updateInterval: 60_000 });
+  const { isRefreshing, refresh } = useRefresh();
 
-  useRealtimeSurveyList();
+  const { isConnected: isRealtimeConnected } = useRealtimeSurveyList();
 
   return (
     <div className="space-y-6">
@@ -51,15 +51,25 @@ export const DashboardOverviewPanel = ({ overview }: DashboardOverviewPanelProps
           <Info className="size-3.5 shrink-0" aria-hidden />
           {t('dashboard.overview.excludedNote')}
         </p>
-        <Button
-          variant="ghost"
-          size="icon-xs"
-          onClick={() => router.refresh()}
-          aria-label={t('dashboard.overview.refresh')}
-          title={t('dashboard.overview.refresh')}
-        >
-          <RefreshCw className="size-3" aria-hidden />
-        </Button>
+        <div className="relative">
+          <Button
+            variant="ghost"
+            size="icon-xs"
+            onClick={refresh}
+            disabled={isRefreshing}
+            aria-label={t('dashboard.overview.refresh')}
+            title={t('dashboard.overview.refresh')}
+          >
+            <RefreshCw className={cn('size-3', isRefreshing && 'animate-spin')} aria-hidden />
+          </Button>
+          <span
+            className={cn(
+              'absolute -top-px -right-px size-1.5 rounded-full',
+              isRealtimeConnected ? 'bg-emerald-500' : 'bg-amber-500'
+            )}
+            aria-hidden
+          />
+        </div>
       </div>
 
       <Separator />
@@ -86,8 +96,8 @@ export const DashboardOverviewPanel = ({ overview }: DashboardOverviewPanelProps
         />
 
         <MetricCard
-          value={`${overview.avgCompletionRate}%`}
-          label={t('dashboard.overview.avgCompletionRate')}
+          value={`${overview.avgSubmissionRate}%`}
+          label={t('dashboard.overview.avgSubmissionRate')}
           icon={TrendingUp}
         />
       </div>

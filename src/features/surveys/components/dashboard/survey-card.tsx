@@ -10,7 +10,7 @@ import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import { deriveSurveyFlags, getAvailableActions } from '@/features/surveys/config/survey-status';
 import { useSurveyAction } from '@/features/surveys/hooks/use-survey-action';
 import { useSurveyCardActions } from '@/features/surveys/hooks/use-survey-card-actions';
-import { calculateCompletionRate } from '@/features/surveys/lib/calculations';
+import { calculateSubmissionRate } from '@/features/surveys/lib/calculations';
 import { computeHint } from '@/features/surveys/lib/survey-hints';
 import { getSurveyEditUrl, getSurveyStatsUrl } from '@/features/surveys/lib/survey-urls';
 import Link from '@/i18n/link';
@@ -18,6 +18,7 @@ import { cn } from '@/lib/common/utils';
 
 import { Sparkline, getSparklineColor } from './sparkline';
 import { SurveyActionMenuContent } from './survey-action-menu';
+import { SurveyShareDialog } from './survey-share-dialog';
 import { SurveyStatusBadge } from './survey-status-badge';
 
 // ── Component ────────────────────────────────────────────────────────
@@ -31,13 +32,17 @@ interface SurveyCardProps {
 export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCardProps) => {
   const t = useTranslations();
   const format = useFormatter();
-  const now = useNow();
+  const now = useNow({ updateInterval: 60_000 });
 
   const { handleActionClick, confirmDialogProps } = useSurveyAction(survey.id, onStatusChange, t);
-  const { handleShare } = useSurveyCardActions(survey.slug);
+  const { shareUrl, shareDialogOpen, setShareDialogOpen, handleShare } = useSurveyCardActions(
+    survey.slug
+  );
 
-  const { isDraft, isActive, isClosed, isArchived } = deriveSurveyFlags(survey.status);
-  const hasShareableLink = (isActive || isClosed) && !!survey.slug;
+  const { isDraft, isActive, isCompleted, isCancelled, isArchived } = deriveSurveyFlags(
+    survey.status
+  );
+  const hasShareableLink = (isActive || isCompleted || isCancelled) && !!survey.slug;
   const href = isDraft ? getSurveyEditUrl(survey.id) : getSurveyStatsUrl(survey.id);
 
   const hint = computeHint(survey, t);
@@ -67,8 +72,8 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
     return parts.join(', ');
   })();
 
-  const completionRate = !isDraft
-    ? calculateCompletionRate(survey.completedCount, survey.responseCount)
+  const submissionRate = !isDraft
+    ? calculateSubmissionRate(survey.completedCount, survey.responseCount)
     : null;
 
   const lastResponseLabel =
@@ -162,13 +167,13 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
                   )}
                 >
                   <span>{responseDisplay}</span>
-                  {completionRate !== null && (
+                  {submissionRate !== null && (
                     <>
                       <span className="text-border/60 shrink-0" aria-hidden>
                         ·
                       </span>
                       <span>
-                        {t('surveys.dashboard.card.completionRate', { rate: completionRate })}
+                        {t('surveys.dashboard.card.submissionRate', { rate: submissionRate })}
                       </span>
                     </>
                   )}
@@ -178,7 +183,9 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
                 <div className="mt-0.5 truncate">{lastResponseLabel}</div>
               )}
             </div>
-            <Sparkline data={survey.recentActivity} className={cn('shrink-0', sparklineColor)} />
+            {!isCancelled && (
+              <Sparkline data={survey.recentActivity} className={cn('shrink-0', sparklineColor)} />
+            )}
           </div>
 
           {/* Row 4: Contextual hint */}
@@ -221,6 +228,14 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
       </div>
 
       {confirmDialogProps && <ConfirmDialog {...confirmDialogProps} />}
+      {hasShareableLink && shareUrl && (
+        <SurveyShareDialog
+          open={shareDialogOpen}
+          onOpenChange={setShareDialogOpen}
+          shareUrl={shareUrl}
+          surveyTitle={survey.title}
+        />
+      )}
     </>
   );
 };

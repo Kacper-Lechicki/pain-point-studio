@@ -30,8 +30,8 @@ export const ProfileStatisticsSection = ({ statistics }: ProfileStatisticsSectio
         />
         <StatCard
           icon={TrendingUp}
-          label={t('profile.sections.statistics.avgCompletionRate')}
-          value={`${statistics.avgCompletionRate}%`}
+          label={t('profile.sections.statistics.avgSubmissionRate')}
+          value={`${statistics.avgSubmissionRate}%`}
         />
         <StatCard
           icon={Calendar}
