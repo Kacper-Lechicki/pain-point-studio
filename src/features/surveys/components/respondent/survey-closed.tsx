@@ -1,6 +1,6 @@
 'use client';
 
-import { Ban, CalendarClock, CheckCircle2, Clock, Users } from 'lucide-react';
+import { Ban, CheckCircle2, Clock, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { PageTransition } from '@/components/ui/page-transition';
@@ -15,7 +15,6 @@ const reasonIcons: Record<ClosedReason, typeof CheckCircle2> = {
   closed: CheckCircle2,
   expired: Clock,
   max_reached: Users,
-  not_started: CalendarClock,
   cancelled: Ban,
 };
 
@@ -23,7 +22,6 @@ const reasonKeys: Record<ClosedReason, string> = {
   closed: 'closed',
   expired: 'expired',
   max_reached: 'maxReached',
-  not_started: 'notStarted',
   cancelled: 'cancelled',
 };
 

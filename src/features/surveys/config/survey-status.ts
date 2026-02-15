@@ -1,13 +1,4 @@
-import {
-  Archive,
-  Ban,
-  CheckCircle2,
-  CircleDot,
-  Clock,
-  FilePen,
-  RotateCcw,
-  Trash2,
-} from 'lucide-react';
+import { Archive, Ban, CheckCircle2, CircleDot, FilePen, RotateCcw, Trash2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 import type { SurveyStatus } from '@/features/surveys/types';
@@ -33,22 +24,13 @@ export const SURVEY_STATUS_CONFIG: Record<SurveyStatus, StatusConfig> = {
     icon: FilePen,
     badge: { variant: 'secondary', className: '', showPulseDot: false },
   },
-  pending: {
-    labelKey: 'surveys.dashboard.status.pending',
-    icon: Clock,
-    badge: {
-      variant: 'outline',
-      className: 'bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/25',
-      showPulseDot: false,
-    },
-  },
   active: {
     labelKey: 'surveys.dashboard.status.active',
     icon: CircleDot,
     badge: {
       variant: 'default',
       className: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/25',
-      showPulseDot: true,
+      showPulseDot: false,
     },
   },
   closed: {
@@ -56,7 +38,7 @@ export const SURVEY_STATUS_CONFIG: Record<SurveyStatus, StatusConfig> = {
     icon: CheckCircle2,
     badge: {
       variant: 'outline',
-      className: 'bg-sky-500/15 text-sky-700 dark:text-sky-400 border-sky-500/25',
+      className: 'bg-violet-500/15 text-violet-700 dark:text-violet-400 border-violet-500/25',
       showPulseDot: false,
     },
   },
@@ -72,7 +54,11 @@ export const SURVEY_STATUS_CONFIG: Record<SurveyStatus, StatusConfig> = {
   archived: {
     labelKey: 'surveys.dashboard.status.archived',
     icon: Archive,
-    badge: { variant: 'secondary', className: 'opacity-60', showPulseDot: false },
+    badge: {
+      variant: 'outline',
+      className: 'bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/25',
+      showPulseDot: false,
+    },
   },
 };
 
@@ -92,14 +78,14 @@ interface StatusTransition {
 /** Survey state-machine: maps action names to their target status and valid source statuses. */
 export const SURVEY_TRANSITIONS = {
   close: { method: 'update', toStatus: 'closed', fromStatuses: ['active'] },
-  cancel: { method: 'update', toStatus: 'cancelled', fromStatuses: ['pending', 'active'] },
+  cancel: { method: 'update', toStatus: 'cancelled', fromStatuses: ['active'] },
   archive: {
     method: 'update',
     toStatus: 'archived',
     fromStatuses: ['closed', 'cancelled', 'draft'],
   },
-  restore: { method: 'update', toStatus: null, fromStatuses: ['archived'] },
-  delete: { method: 'delete', fromStatuses: ['draft'] },
+  restore: { method: 'update', toStatus: 'draft', fromStatuses: ['archived'] },
+  delete: { method: 'delete', fromStatuses: ['draft', 'archived'] },
 } as const satisfies Record<string, StatusTransition>;
 
 export type SurveyAction = keyof typeof SURVEY_TRANSITIONS;
@@ -121,31 +107,20 @@ export function getAvailableActions(status: SurveyStatus): SurveyAction[] {
 /** Boolean flags derived from a survey's current status. */
 export interface SurveyStatusFlags {
   isDraft: boolean;
-  isPending: boolean;
   isActive: boolean;
   isClosed: boolean;
   isCancelled: boolean;
   isArchived: boolean;
-  canDuplicate: boolean;
 }
 
 /** Derives boolean convenience flags from a survey's current status. */
 export function deriveSurveyFlags(status: SurveyStatus): SurveyStatusFlags {
-  const isDraft = status === 'draft';
-  const isPending = status === 'pending';
-  const isActive = status === 'active';
-  const isClosed = status === 'closed';
-  const isCancelled = status === 'cancelled';
-  const isArchived = status === 'archived';
-
   return {
-    isDraft,
-    isPending,
-    isActive,
-    isClosed,
-    isCancelled,
-    isArchived,
-    canDuplicate: isDraft || isActive || isClosed || isCancelled,
+    isDraft: status === 'draft',
+    isActive: status === 'active',
+    isClosed: status === 'closed',
+    isCancelled: status === 'cancelled',
+    isArchived: status === 'archived',
   };
 }
 
@@ -155,10 +130,12 @@ export function deriveSurveyFlags(status: SurveyStatus): SurveyStatusFlags {
 export interface ActionUIConfig {
   icon: LucideIcon;
   toastKey: string;
+  /** Button color in the detail panel: 'destructive' (red), 'warning' (amber), 'accent' (violet), or undefined (neutral). */
+  buttonColor?: 'destructive' | 'warning' | 'accent';
   confirm?: {
     titleKey: string;
     descriptionKey: string;
-    variant: 'default' | 'warning' | 'destructive';
+    variant: 'default' | 'warning' | 'destructive' | 'accent';
   };
 }
 
@@ -167,15 +144,17 @@ export const SURVEY_ACTION_UI: Record<SurveyAction, ActionUIConfig> = {
   close: {
     icon: CheckCircle2,
     toastKey: 'toast.closed',
+    buttonColor: 'accent',
     confirm: {
       titleKey: 'confirm.closeTitle',
       descriptionKey: 'confirm.closeDescription',
-      variant: 'warning',
+      variant: 'accent',
     },
   },
   cancel: {
     icon: Ban,
     toastKey: 'toast.cancelled',
+    buttonColor: 'destructive',
     confirm: {
       titleKey: 'confirm.cancelTitle',
       descriptionKey: 'confirm.cancelDescription',
@@ -185,6 +164,7 @@ export const SURVEY_ACTION_UI: Record<SurveyAction, ActionUIConfig> = {
   archive: {
     icon: Archive,
     toastKey: 'toast.archived',
+    buttonColor: 'warning',
     confirm: {
       titleKey: 'confirm.archiveTitle',
       descriptionKey: 'confirm.archiveDescription',
@@ -194,10 +174,16 @@ export const SURVEY_ACTION_UI: Record<SurveyAction, ActionUIConfig> = {
   restore: {
     icon: RotateCcw,
     toastKey: 'toast.restored',
+    confirm: {
+      titleKey: 'confirm.restoreTitle',
+      descriptionKey: 'confirm.restoreDescription',
+      variant: 'default',
+    },
   },
   delete: {
     icon: Trash2,
     toastKey: 'toast.deleted',
+    buttonColor: 'destructive',
     confirm: {
       titleKey: 'confirm.deleteTitle',
       descriptionKey: 'confirm.deleteDescription',

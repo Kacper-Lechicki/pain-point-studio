@@ -14,14 +14,7 @@ import {
 // ── SURVEY_STATUS_CONFIG ────────────────────────────────────────────
 
 describe('SURVEY_STATUS_CONFIG', () => {
-  const statuses: SurveyStatus[] = [
-    'draft',
-    'pending',
-    'active',
-    'closed',
-    'cancelled',
-    'archived',
-  ];
+  const statuses: SurveyStatus[] = ['draft', 'active', 'closed', 'cancelled', 'archived'];
 
   it('has an entry for every status', () => {
     for (const status of statuses) {
@@ -40,10 +33,10 @@ describe('SURVEY_STATUS_CONFIG', () => {
     }
   });
 
-  it('only "active" has showPulseDot enabled', () => {
-    expect(SURVEY_STATUS_CONFIG.active.badge.showPulseDot).toBe(true);
-    expect(SURVEY_STATUS_CONFIG.draft.badge.showPulseDot).toBe(false);
-    expect(SURVEY_STATUS_CONFIG.closed.badge.showPulseDot).toBe(false);
+  it('no status has showPulseDot enabled', () => {
+    for (const config of Object.values(SURVEY_STATUS_CONFIG)) {
+      expect(config.badge.showPulseDot).toBe(false);
+    }
   });
 });
 
@@ -60,10 +53,6 @@ describe('canTransition', () => {
 
   it('allows cancelling an active survey', () => {
     expect(canTransition('active', 'cancel')).toBe(true);
-  });
-
-  it('allows cancelling a pending survey', () => {
-    expect(canTransition('pending', 'cancel')).toBe(true);
   });
 
   it('does not allow cancelling a draft', () => {
@@ -94,6 +83,10 @@ describe('canTransition', () => {
     expect(canTransition('draft', 'delete')).toBe(true);
   });
 
+  it('allows deleting an archived survey', () => {
+    expect(canTransition('archived', 'delete')).toBe(true);
+  });
+
   it('does not allow deleting an active survey', () => {
     expect(canTransition('active', 'delete')).toBe(false);
   });
@@ -117,22 +110,18 @@ describe('getAvailableActions', () => {
     expect(actions).toContain('cancel');
   });
 
-  it('archived can only be restored', () => {
+  it('archived can be restored or deleted', () => {
     const actions = getAvailableActions('archived');
 
-    expect(actions).toEqual(['restore']);
+    expect(actions).toContain('restore');
+    expect(actions).toContain('delete');
+    expect(actions).toHaveLength(2);
   });
 
   it('closed can only be archived', () => {
     const actions = getAvailableActions('closed');
 
     expect(actions).toEqual(['archive']);
-  });
-
-  it('pending can only be cancelled', () => {
-    const actions = getAvailableActions('pending');
-
-    expect(actions).toEqual(['cancel']);
   });
 });
 
@@ -144,7 +133,6 @@ describe('deriveSurveyFlags', () => {
 
     expect(flags.isDraft).toBe(true);
     expect(flags.isActive).toBe(false);
-    expect(flags.canDuplicate).toBe(true);
   });
 
   it('sets isActive for active status', () => {
@@ -152,26 +140,12 @@ describe('deriveSurveyFlags', () => {
 
     expect(flags.isActive).toBe(true);
     expect(flags.isDraft).toBe(false);
-    expect(flags.canDuplicate).toBe(true);
   });
 
   it('sets isArchived for archived status', () => {
     const flags = deriveSurveyFlags('archived');
 
     expect(flags.isArchived).toBe(true);
-    expect(flags.canDuplicate).toBe(false);
-  });
-
-  it('canDuplicate is true for draft, active, closed, cancelled', () => {
-    expect(deriveSurveyFlags('draft').canDuplicate).toBe(true);
-    expect(deriveSurveyFlags('active').canDuplicate).toBe(true);
-    expect(deriveSurveyFlags('closed').canDuplicate).toBe(true);
-    expect(deriveSurveyFlags('cancelled').canDuplicate).toBe(true);
-  });
-
-  it('canDuplicate is false for pending and archived', () => {
-    expect(deriveSurveyFlags('pending').canDuplicate).toBe(false);
-    expect(deriveSurveyFlags('archived').canDuplicate).toBe(false);
   });
 });
 
@@ -194,6 +168,17 @@ describe('SURVEY_TRANSITIONS', () => {
   });
 });
 
+describe('SURVEY_TRANSITIONS – restore always targets draft', () => {
+  it('restore toStatus is draft', () => {
+    expect(SURVEY_TRANSITIONS.restore.toStatus).toBe('draft');
+  });
+
+  it('delete fromStatuses includes both draft and archived', () => {
+    expect(SURVEY_TRANSITIONS.delete.fromStatuses).toContain('draft');
+    expect(SURVEY_TRANSITIONS.delete.fromStatuses).toContain('archived');
+  });
+});
+
 // ── SURVEY_ACTION_UI ────────────────────────────────────────────────
 
 describe('SURVEY_ACTION_UI', () => {
@@ -203,8 +188,8 @@ describe('SURVEY_ACTION_UI', () => {
     }
   });
 
-  it('restore has no confirm dialog', () => {
-    expect(SURVEY_ACTION_UI.restore.confirm).toBeUndefined();
+  it('restore has default confirm dialog', () => {
+    expect(SURVEY_ACTION_UI.restore.confirm?.variant).toBe('default');
   });
 
   it('delete has destructive confirm dialog', () => {

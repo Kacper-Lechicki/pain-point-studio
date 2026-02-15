@@ -21,7 +21,7 @@ interface ConfirmDialogProps {
   description?: string;
   confirmLabel?: string;
   cancelLabel?: string;
-  variant?: 'default' | 'destructive' | 'warning';
+  variant?: 'default' | 'destructive' | 'warning' | 'accent';
 }
 
 const ConfirmDialog = ({

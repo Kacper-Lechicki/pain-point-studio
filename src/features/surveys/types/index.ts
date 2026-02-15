@@ -9,10 +9,7 @@ import {
   QUESTION_TEXT_MAX_LENGTH,
   RATING_SCALE_MAX,
   RATING_SCALE_MIN,
-  START_DATE_TOLERANCE_MS,
   SURVEY_DESCRIPTION_MAX_LENGTH,
-  SURVEY_MAX_DURATION_DAYS,
-  SURVEY_MAX_RESPONDENTS_MIN,
   SURVEY_TITLE_MAX_LENGTH,
 } from '@/features/surveys/config';
 
@@ -30,14 +27,7 @@ export const QUESTION_TYPES = [
 export type QuestionType = (typeof QUESTION_TYPES)[number];
 
 /** All survey lifecycle statuses as a const tuple (source of truth). */
-export const SURVEY_STATUSES = [
-  'draft',
-  'pending',
-  'active',
-  'closed',
-  'cancelled',
-  'archived',
-] as const;
+export const SURVEY_STATUSES = ['draft', 'active', 'closed', 'cancelled', 'archived'] as const;
 
 export type SurveyStatus = (typeof SURVEY_STATUSES)[number];
 
@@ -60,66 +50,19 @@ export const surveyIdSchema = z.object({
 
 // ── Survey metadata schemas ─────────────────────────────────────────
 
-/** Schema for survey metadata fields (title, description, dates, limits). */
-export const surveyMetadataSchema = z
-  .object({
-    title: z
-      .string()
-      .min(1, 'surveys.errors.fieldRequired')
-      .max(SURVEY_TITLE_MAX_LENGTH, 'surveys.errors.titleTooLong'),
-    description: z
-      .string()
-      .min(1, 'surveys.errors.fieldRequired')
-      .max(SURVEY_DESCRIPTION_MAX_LENGTH, 'surveys.errors.descriptionTooLong'),
-    category: z.string().min(1, 'surveys.errors.fieldRequired'),
-    visibility: z.enum(SURVEY_VISIBILITY_VALUES),
-    startsAt: z.string().nullable(),
-    endsAt: z.string().nullable(),
-    maxRespondents: z
-      .number()
-      .int()
-      .min(SURVEY_MAX_RESPONDENTS_MIN, 'surveys.errors.maxRespondentsMin')
-      .nullable(),
-  })
-  .refine(
-    (data) => {
-      if (data.startsAt) {
-        const startDate = new Date(data.startsAt);
-        const now = new Date(Date.now() - START_DATE_TOLERANCE_MS);
-
-        return startDate >= now;
-      }
-
-      return true;
-    },
-    { message: 'surveys.errors.startDatePast', path: ['startsAt'] }
-  )
-  .refine(
-    (data) => {
-      if (data.startsAt && data.endsAt) {
-        return new Date(data.endsAt) > new Date(data.startsAt);
-      }
-
-      return true;
-    },
-    { message: 'surveys.errors.endDateBeforeStart', path: ['endsAt'] }
-  )
-  .refine(
-    (data) => {
-      if (data.startsAt && data.endsAt) {
-        const start = new Date(data.startsAt);
-        const end = new Date(data.endsAt);
-        const maxEnd = new Date(start);
-
-        maxEnd.setDate(maxEnd.getDate() + SURVEY_MAX_DURATION_DAYS);
-
-        return end <= maxEnd;
-      }
-
-      return true;
-    },
-    { message: 'surveys.errors.endDateTooFar', path: ['endsAt'] }
-  );
+/** Schema for survey metadata fields (title, description, category, visibility). */
+export const surveyMetadataSchema = z.object({
+  title: z
+    .string()
+    .min(1, 'surveys.errors.fieldRequired')
+    .max(SURVEY_TITLE_MAX_LENGTH, 'surveys.errors.titleTooLong'),
+  description: z
+    .string()
+    .min(1, 'surveys.errors.fieldRequired')
+    .max(SURVEY_DESCRIPTION_MAX_LENGTH, 'surveys.errors.descriptionTooLong'),
+  category: z.string().min(1, 'surveys.errors.fieldRequired'),
+  visibility: z.enum(SURVEY_VISIBILITY_VALUES),
+});
 
 export type SurveyMetadataSchema = z.infer<typeof surveyMetadataSchema>;
 

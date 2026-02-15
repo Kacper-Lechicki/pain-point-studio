@@ -28,27 +28,18 @@ import { SortableTableHeader } from './sortable-table-header';
 import { SurveyDetailSheet } from './survey-detail-sheet';
 import { SurveyListRow } from './survey-list-row';
 
-type ArchiveSortBy =
-  | 'updated'
-  | 'created'
-  | 'title'
-  | 'status'
-  | 'questions'
-  | 'responses'
-  | 'archivedAt';
+type ArchiveSortBy = 'updated' | 'created' | 'title' | 'questions' | 'autoDeletes' | 'archivedAt';
 type ArchiveSortDir = 'asc' | 'desc';
 
 interface ArchiveSurveyListProps {
   initialSurveys: UserSurvey[];
 }
 
-const SORT_OPTIONS_DESKTOP: ArchiveSortBy[] = ['updated', 'created'];
-const SORT_OPTIONS_MOBILE: ArchiveSortBy[] = [
+const SORT_OPTIONS: ArchiveSortBy[] = [
   'title',
-  'status',
   'questions',
-  'responses',
   'archivedAt',
+  'autoDeletes',
   'updated',
   'created',
 ];
@@ -81,13 +72,12 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
     setSortDir(getDefaultSortDir(key));
   };
 
-  const sortOptions = isMd ? SORT_OPTIONS_DESKTOP : SORT_OPTIONS_MOBILE;
   const sortedSortOptions = useMemo(
     () =>
-      [...sortOptions].sort((a, b) =>
+      [...SORT_OPTIONS].sort((a, b) =>
         t(`surveys.archive.sort.${a}`).localeCompare(t(`surveys.archive.sort.${b}`))
       ),
-    [t, sortOptions]
+    [t]
   );
 
   const filteredSurveys = useMemo(() => {
@@ -110,9 +100,9 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
 
     return [...result].sort((a, b) => {
       switch (sortBy) {
-        case 'responses':
-          return mul * (a.responseCount - b.responseCount) || a.title.localeCompare(b.title);
-        case 'archivedAt': {
+        case 'archivedAt':
+        case 'autoDeletes': {
+          // Both sort by archivedAt timestamp (autoDeletes is derived from it)
           const ta = a.archivedAt ? new Date(a.archivedAt).getTime() : 0;
           const tb = b.archivedAt ? new Date(b.archivedAt).getTime() : 0;
 
@@ -126,7 +116,7 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
   }, [surveys, searchQuery, sortBy, sortDir]);
 
   const handleStatusChange = (surveyId: string, action: string) => {
-    if (action === 'restore') {
+    if (action === 'restore' || action === 'delete') {
       if (selectedId === surveyId) {
         setSelected(null);
       }
@@ -262,15 +252,6 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
                   className="w-[30%]"
                 />
                 <SortableTableHeader
-                  sortKey="status"
-                  currentSortKey={sortBy}
-                  sortDir={sortDir}
-                  onSort={handleSortByColumn}
-                  label={t('surveys.dashboard.table.status')}
-                  className="border-border/30 border-l"
-                  centered
-                />
-                <SortableTableHeader
                   sortKey="questions"
                   currentSortKey={sortBy}
                   sortDir={sortDir}
@@ -279,19 +260,19 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
                   className="border-border/30 border-l"
                 />
                 <SortableTableHeader
-                  sortKey="responses"
-                  currentSortKey={sortBy}
-                  sortDir={sortDir}
-                  onSort={handleSortByColumn}
-                  label={t('surveys.dashboard.table.responses')}
-                  className="border-border/30 border-l"
-                />
-                <SortableTableHeader
                   sortKey="archivedAt"
                   currentSortKey={sortBy}
                   sortDir={sortDir}
                   onSort={handleSortByColumn}
                   label={t('surveys.dashboard.table.archivedAt')}
+                  className="border-border/30 border-l"
+                />
+                <SortableTableHeader
+                  sortKey="autoDeletes"
+                  currentSortKey={sortBy}
+                  sortDir={sortDir}
+                  onSort={handleSortByColumn}
+                  label={t('surveys.dashboard.table.autoDeletes')}
                   className="border-border/30 border-l"
                 />
                 <TableHead className="w-10" aria-hidden />

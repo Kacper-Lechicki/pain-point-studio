@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import {
   multipleChoiceConfigSchema,
@@ -29,23 +29,11 @@ describe('surveyIdSchema', () => {
 // ── surveyMetadataSchema ────────────────────────────────────────────
 
 describe('surveyMetadataSchema', () => {
-  beforeEach(() => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date('2025-06-01T12:00:00Z'));
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
-  });
-
   const validData = {
     title: 'My Survey',
     description: 'A test survey',
     category: 'productivity',
     visibility: 'public' as const,
-    startsAt: null,
-    endsAt: null,
-    maxRespondents: null,
   };
 
   it('accepts valid minimal data', () => {
@@ -74,47 +62,6 @@ describe('surveyMetadataSchema', () => {
 
   it('rejects empty category', () => {
     const result = surveyMetadataSchema.safeParse({ ...validData, category: '' });
-
-    expect(result.success).toBe(false);
-  });
-
-  it('accepts valid date range', () => {
-    const result = surveyMetadataSchema.safeParse({
-      ...validData,
-      startsAt: '2025-06-15T00:00:00Z',
-      endsAt: '2025-07-01T00:00:00Z',
-    });
-
-    expect(result.success).toBe(true);
-  });
-
-  it('rejects start date in the past', () => {
-    const result = surveyMetadataSchema.safeParse({
-      ...validData,
-      startsAt: '2025-01-01T00:00:00Z',
-    });
-
-    expect(result.success).toBe(false);
-  });
-
-  it('rejects end date before start date', () => {
-    const result = surveyMetadataSchema.safeParse({
-      ...validData,
-      startsAt: '2025-06-15T00:00:00Z',
-      endsAt: '2025-06-10T00:00:00Z',
-    });
-
-    expect(result.success).toBe(false);
-  });
-
-  it('accepts maxRespondents as positive integer', () => {
-    const result = surveyMetadataSchema.safeParse({ ...validData, maxRespondents: 100 });
-
-    expect(result.success).toBe(true);
-  });
-
-  it('rejects maxRespondents below minimum', () => {
-    const result = surveyMetadataSchema.safeParse({ ...validData, maxRespondents: 0 });
 
     expect(result.success).toBe(false);
   });

@@ -1,7 +1,6 @@
-import { HelpCircle, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { QUESTION_TYPE_ICONS, QUESTION_TYPE_LABEL_KEYS } from '@/features/surveys/config';
 import type { MappedQuestion } from '@/features/surveys/lib/map-question-row';
 
@@ -15,21 +14,23 @@ interface DetailQuestionsListProps {
 export function DetailQuestionsList({ questions }: DetailQuestionsListProps) {
   const t = useTranslations();
 
+  if (questions != null && questions.length === 0) {
+    return null;
+  }
+
   return (
     <>
-      <SectionLabel>{t('surveys.dashboard.detailPanel.questionsLabel')}</SectionLabel>
+      <SectionLabel>
+        {t('surveys.dashboard.detailPanel.questionsLabel')}
+        {questions != null && questions.length > 0 && (
+          <span className="ml-1 tabular-nums">({questions.length})</span>
+        )}
+      </SectionLabel>
       {questions === null ? (
         <div className="text-muted-foreground flex items-center gap-2 py-2 text-xs">
           <Loader2 className="size-3.5 animate-spin" aria-hidden />
           {t('surveys.dashboard.detailPanel.loadingQuestions')}
         </div>
-      ) : questions.length === 0 ? (
-        <Alert variant="info" className="text-xs">
-          <HelpCircle className="size-3.5" />
-          <AlertDescription>
-            {t('surveys.dashboard.detailPanel.questionsEmptyDescription')}
-          </AlertDescription>
-        </Alert>
       ) : (
         <div className="space-y-1.5">
           {questions.map((q: MappedQuestion, i: number) => {

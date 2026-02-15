@@ -1,18 +1,22 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
-import { ClipboardList, MousePointerClick } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+
+import { ClipboardList, MousePointerClick, RefreshCw } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
+import { useRealtimeSurveyList } from '@/features/surveys/hooks/use-realtime-survey-list';
 import { useSurveySelection } from '@/features/surveys/hooks/use-survey-selection';
 import { getDefaultSortDir, getSurveyComparator } from '@/features/surveys/lib/sort-helpers';
 import type { SurveyStatus } from '@/features/surveys/types';
 import { useBreakpoint } from '@/hooks/common/use-breakpoint';
+import { cn } from '@/lib/common/utils';
 
 import { SortableTableHeader } from './sortable-table-header';
 import { SurveyDetailSheet } from './survey-detail-sheet';
@@ -23,6 +27,15 @@ import {
   type SurveySortDir,
   type SurveyStatusFilter,
 } from './survey-list-toolbar';
+
+/** Text color classes for each status in the KPI summary. */
+const STATUS_KPI_COLOR: Record<string, string> = {
+  all: 'text-foreground',
+  active: 'text-emerald-600 dark:text-emerald-400',
+  draft: 'text-foreground',
+  closed: 'text-violet-600 dark:text-violet-400',
+  cancelled: 'text-red-600 dark:text-red-400',
+};
 
 const STATUS_TRANSITIONS: Record<string, SurveyStatus | null> = {
   close: 'closed',
@@ -37,8 +50,19 @@ interface SurveyListProps {
 
 export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
   const t = useTranslations();
+  const router = useRouter();
   const isMd = useBreakpoint('md');
   const [surveys, setSurveys] = useState(initialSurveys);
+
+  // Sync local state when the server re-renders with fresh data (e.g. from
+  // router.refresh() triggered by the realtime subscription).
+  useEffect(() => {
+    setSurveys(initialSurveys);
+  }, [initialSurveys]);
+
+  // Subscribe to Realtime so response counts, activity, and status changes
+  // (including auto-close) are reflected without a manual page reload.
+  useRealtimeSurveyList();
   const [statusFilter, setStatusFilter] = useState<SurveyStatusFilter>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<SurveySortBy>('updated');
@@ -52,7 +76,6 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
       all: 0,
       active: 0,
       draft: 0,
-      pending: 0,
       closed: 0,
       cancelled: 0,
     };
@@ -63,25 +86,22 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
       }
     }
 
-    counts.all = counts.active + counts.draft + counts.pending + counts.closed + counts.cancelled;
+    counts.all = counts.active + counts.draft + counts.closed + counts.cancelled;
 
     return counts;
   }, [surveys]);
 
-  const kpiSummary = useMemo(() => {
-    const activeCount = surveys.filter((s) => s.status === 'active').length;
-    const totalResponses = surveys.reduce((sum, s) => sum + s.completedCount, 0);
+  const kpiStatuses = useMemo(() => {
+    const order: Exclude<SurveyStatusFilter, 'all'>[] = ['active', 'draft', 'closed', 'cancelled'];
 
-    return {
-      surveyCount: surveys.length,
-      activeCount,
-      totalResponses,
-    };
-  }, [surveys]);
+    return order.filter((s) => statusCounts[s] > 0);
+  }, [statusCounts]);
 
   const filteredSurveys = useMemo(() => {
     let result =
-      statusFilter === 'all' ? surveys : surveys.filter((s) => s.status === statusFilter);
+      statusFilter === 'all'
+        ? surveys.filter((s) => s.status !== 'archived')
+        : surveys.filter((s) => s.status === statusFilter);
 
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
@@ -146,12 +166,13 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
       return;
     }
 
+    // Close sidebar when the survey is removed from the current view (delete or archive)
+    if ((newStatus === null || newStatus === 'archived') && selectedId === surveyId) {
+      setSelected(null);
+    }
+
     setSurveys((prev) => {
       if (newStatus === null) {
-        if (selectedId === surveyId) {
-          setSelected(null);
-        }
-
         return prev.filter((s) => s.id !== surveyId);
       }
 
@@ -164,38 +185,57 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
   return (
     <div className="space-y-4">
       {/* KPI summary */}
-      {kpiSummary.surveyCount > 0 && (
+      {kpiStatuses.length > 0 && (
         <div className="flex min-w-0 flex-wrap items-center justify-between gap-x-4 gap-y-1">
           <div className="text-muted-foreground flex min-w-0 flex-wrap items-center gap-x-3 text-xs">
-            <span className="shrink-0">
-              <span className="text-foreground text-base font-semibold tabular-nums">
-                {kpiSummary.surveyCount}
+            {/* All total */}
+            <span>
+              <span className={cn('text-base font-semibold tabular-nums', STATUS_KPI_COLOR.all)}>
+                {statusCounts.all}
               </span>
               <span className="ml-1">{t('surveys.dashboard.summary.totalLabel')}</span>
             </span>
-            <span className="text-border shrink-0" aria-hidden>
+
+            <span className="text-border" aria-hidden>
               /
             </span>
-            <span className="shrink-0">
-              <span className="text-base font-semibold text-emerald-600 tabular-nums dark:text-emerald-400">
-                {kpiSummary.activeCount}
+
+            {/* Per-status breakdown */}
+            {kpiStatuses.map((status, i) => (
+              <span key={status} className="flex shrink-0 items-center gap-x-3">
+                {i > 0 && (
+                  <span className="text-border" aria-hidden>
+                    /
+                  </span>
+                )}
+                <span>
+                  <span
+                    className={cn('text-base font-semibold tabular-nums', STATUS_KPI_COLOR[status])}
+                  >
+                    {statusCounts[status]}
+                  </span>
+                  <span className="ml-1">
+                    {t(`surveys.dashboard.status.${status}` as Parameters<typeof t>[0])}
+                  </span>
+                </span>
               </span>
-              <span className="ml-1">{t('surveys.dashboard.summary.activeLabel')}</span>
-            </span>
-            <span className="text-border shrink-0" aria-hidden>
-              /
-            </span>
-            <span className="shrink-0">
-              <span className="text-foreground text-base font-semibold tabular-nums">
-                {kpiSummary.totalResponses}
-              </span>
-              <span className="ml-1">{t('surveys.dashboard.summary.responsesLabel')}</span>
-            </span>
+            ))}
           </div>
-          <span className="text-muted-foreground hidden shrink-0 items-center gap-1 text-[11px] md:flex">
-            <MousePointerClick className="size-3" aria-hidden />
-            {t('surveys.dashboard.clickHint')}
-          </span>
+          <div className="flex shrink-0 items-center gap-2">
+            <span className="text-muted-foreground hidden items-center gap-1 text-[11px] md:flex">
+              <MousePointerClick className="size-3" aria-hidden />
+              {t('surveys.dashboard.clickHint')}
+            </span>
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              onClick={() => router.refresh()}
+              aria-label={t('surveys.dashboard.refresh')}
+              title={t('surveys.dashboard.refresh')}
+            >
+              <RefreshCw className="size-3" aria-hidden />
+            </Button>
+          </div>
         </div>
       )}
 
@@ -210,7 +250,6 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
         onSortByChange={handleSortByChange}
         onSortDirChange={setSortDir}
         statusCounts={statusCounts}
-        hasSortableColumns={isMd}
       />
 
       {/* List content */}
@@ -265,14 +304,6 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
                   centered
                 />
                 <SortableTableHeader
-                  sortKey="questions"
-                  currentSortKey={sortBy}
-                  sortDir={sortDir}
-                  onSort={handleSortByColumn}
-                  label={t('surveys.dashboard.table.questions')}
-                  className="border-border/30 border-l"
-                />
-                <SortableTableHeader
                   sortKey="responses"
                   currentSortKey={sortBy}
                   sortDir={sortDir}
@@ -281,12 +312,20 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
                   className="border-border/30 border-l"
                 />
                 <SortableTableHeader
+                  sortKey="questions"
+                  currentSortKey={sortBy}
+                  sortDir={sortDir}
+                  onSort={handleSortByColumn}
+                  label={t('surveys.dashboard.table.questions')}
+                  className="border-border/30 hidden border-l lg:table-cell"
+                />
+                <SortableTableHeader
                   sortKey="lastResponse"
                   currentSortKey={sortBy}
                   sortDir={sortDir}
                   onSort={handleSortByColumn}
                   label={t('surveys.dashboard.table.lastResponse')}
-                  className="border-border/30 hidden border-l lg:table-cell"
+                  className="border-border/30 hidden border-l xl:table-cell"
                 />
                 <SortableTableHeader
                   sortKey="activity"
@@ -294,7 +333,7 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
                   sortDir={sortDir}
                   onSort={handleSortByColumn}
                   label={t('surveys.dashboard.table.activity')}
-                  className="border-border/30 hidden border-l xl:table-cell"
+                  className="border-border/30 hidden border-l 2xl:table-cell"
                   centered
                 />
                 <TableHead className="w-10" aria-hidden />

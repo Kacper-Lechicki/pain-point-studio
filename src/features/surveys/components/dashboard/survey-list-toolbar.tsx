@@ -17,7 +17,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/common/utils';
 
-export type SurveyStatusFilter = 'all' | 'active' | 'draft' | 'pending' | 'closed' | 'cancelled';
+export type SurveyStatusFilter = 'all' | 'active' | 'draft' | 'closed' | 'cancelled';
 export type SurveySortBy =
   | 'updated'
   | 'created'
@@ -40,22 +40,11 @@ interface SurveyListToolbarProps {
   onSortByChange: (sort: SurveySortBy) => void;
   onSortDirChange: (dir: SurveySortDir) => void;
   statusCounts: Record<SurveyStatusFilter, number>;
-  /** When true, table with sortable column headers is shown – dropdown only offers updated/created. When false (mobile), dropdown offers all options in column order. */
-  hasSortableColumns: boolean;
 }
 
-const STATUS_FILTERS: SurveyStatusFilter[] = [
-  'all',
-  'active',
-  'draft',
-  'pending',
-  'closed',
-  'cancelled',
-];
+const STATUS_FILTERS: SurveyStatusFilter[] = ['all', 'active', 'draft', 'closed', 'cancelled'];
 
-const SORT_OPTIONS_DESKTOP: SurveySortBy[] = ['updated', 'created'];
-
-const SORT_OPTIONS_MOBILE: SurveySortBy[] = [
+const SORT_OPTIONS: SurveySortBy[] = [
   'title',
   'status',
   'questions',
@@ -76,17 +65,18 @@ export const SurveyListToolbar = ({
   onSortByChange,
   onSortDirChange,
   statusCounts,
-  hasSortableColumns,
 }: SurveyListToolbarProps) => {
   const t = useTranslations();
 
   const isFiltered = statusFilter !== 'all';
   const hasSearch = searchQuery.trim().length > 0;
-  const sortOptions = hasSortableColumns ? SORT_OPTIONS_DESKTOP : SORT_OPTIONS_MOBILE;
-  const sortedStatusFilters = [...STATUS_FILTERS].sort((a, b) =>
-    t(`surveys.dashboard.filters.${a}`).localeCompare(t(`surveys.dashboard.filters.${b}`))
-  );
-  const sortedSortOptions = [...sortOptions].sort((a, b) =>
+  const sortedStatusFilters = [
+    'all' as SurveyStatusFilter,
+    ...STATUS_FILTERS.filter((s) => s !== 'all').sort((a, b) =>
+      t(`surveys.dashboard.filters.${a}`).localeCompare(t(`surveys.dashboard.filters.${b}`))
+    ),
+  ];
+  const sortedSortOptions = [...SORT_OPTIONS].sort((a, b) =>
     t(`surveys.dashboard.sort.${a}`).localeCompare(t(`surveys.dashboard.sort.${b}`))
   );
 

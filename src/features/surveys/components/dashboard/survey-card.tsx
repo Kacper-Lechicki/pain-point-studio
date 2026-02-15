@@ -34,12 +34,10 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
   const now = useNow();
 
   const { handleActionClick, confirmDialogProps } = useSurveyAction(survey.id, onStatusChange, t);
-  const { handleShare, handleDuplicate } = useSurveyCardActions(survey.id, survey.slug);
+  const { handleShare } = useSurveyCardActions(survey.slug);
 
-  const { isDraft, isPending, isActive, isClosed, isArchived, canDuplicate } = deriveSurveyFlags(
-    survey.status
-  );
-  const hasShareableLink = (isActive || isPending || isClosed) && !!survey.slug;
+  const { isDraft, isActive, isClosed, isArchived } = deriveSurveyFlags(survey.status);
+  const hasShareableLink = (isActive || isClosed) && !!survey.slug;
   const href = isDraft ? getSurveyEditUrl(survey.id) : getSurveyStatsUrl(survey.id);
 
   const hint = computeHint(survey, t);
@@ -123,10 +121,14 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
               </DropdownMenuTrigger>
               <SurveyActionMenuContent
                 surveyId={survey.id}
-                flags={{ isDraft, isPending, canDuplicate, hasShareableLink }}
+                flags={{
+                  isDraft,
+                  isArchived,
+                  hasShareableLink,
+                  questionCount: survey.questionCount,
+                }}
                 availableActions={availableActions}
                 onShare={handleShare}
-                onDuplicate={handleDuplicate}
                 handleActionClick={handleActionClick}
                 {...(onQuickPreview && { onDetails: () => onQuickPreview(survey.id) })}
                 detailsLabelKey="quickPreview"

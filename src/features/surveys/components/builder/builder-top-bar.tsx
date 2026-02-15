@@ -2,13 +2,12 @@
 
 import { ArrowLeft, List, Pencil, Save, Send, Settings2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { ROUTES } from '@/config/routes';
 import { UserMenu } from '@/features/auth/components/common/user-menu';
-import { publishSurvey, saveSurveyQuestions } from '@/features/surveys/actions';
+import { saveSurveyQuestions } from '@/features/surveys/actions';
 import { useQuestionBuilderContext } from '@/features/surveys/hooks/use-question-builder-context';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import { useUnsavedChangesWarning } from '@/hooks/unsaved-changes-context';
@@ -25,7 +24,7 @@ interface BuilderTopBarProps {
   onToggleSidebar?: () => void;
   onToggleSettings?: () => void;
   onOpenMetadataPanel?: () => void;
-  onPublished?: (slug: string) => void;
+  onOpenPublishSettings?: () => void;
 }
 
 export function BuilderTopBar({
@@ -36,7 +35,7 @@ export function BuilderTopBar({
   onToggleSidebar,
   onToggleSettings,
   onOpenMetadataPanel,
-  onPublished,
+  onOpenPublishSettings,
 }: BuilderTopBarProps) {
   const t = useTranslations();
   const { state, dispatch, buildQuestionsPayload } = useQuestionBuilderContext();
@@ -54,16 +53,6 @@ export function BuilderTopBar({
     },
   });
 
-  const publishAction = useFormAction<{ slug: string }>({
-    successMessage: 'surveys.builder.published' as MessageKey,
-    unexpectedErrorMessage: 'surveys.errors.unexpected' as MessageKey,
-    onSuccess: (data) => {
-      if (data?.slug) {
-        onPublished?.(data.slug);
-      }
-    },
-  });
-
   const hasQuestions = state.questions.some((q) => q.text.trim().length > 0);
   const canPublish = hasQuestions && surveyStatus === 'draft';
 
@@ -75,23 +64,7 @@ export function BuilderTopBar({
     });
   }
 
-  async function handlePublish() {
-    dispatch({ type: 'SET_SAVE_STATUS', payload: { status: 'saving' } });
-    const saveResult = await saveAction.execute(saveSurveyQuestions, {
-      surveyId,
-      questions: buildQuestionsPayload(),
-    });
-
-    if (saveResult?.error) {
-      toast.error(t('surveys.builder.errors.saveFailed' as MessageKey));
-
-      return;
-    }
-
-    await publishAction.execute(publishSurvey, { surveyId });
-  }
-
-  const isLoading = saveAction.isLoading || publishAction.isLoading;
+  const isLoading = saveAction.isLoading;
 
   return (
     <>
@@ -132,8 +105,11 @@ export function BuilderTopBar({
               {saveAction.isLoading && <Spinner />}
               {t('surveys.builder.saveDraft')}
             </Button>
-            <Button size="sm" disabled={isLoading || !canPublish} onClick={handlePublish}>
-              {publishAction.isLoading && <Spinner />}
+            <Button
+              size="sm"
+              disabled={isLoading || !canPublish}
+              onClick={() => onOpenPublishSettings?.()}
+            >
               {t('surveys.builder.publish')}
             </Button>
             <div className="ml-4 pr-4">
@@ -212,10 +188,10 @@ export function BuilderTopBar({
               <Button
                 size="icon-sm"
                 disabled={isLoading || !canPublish}
-                onClick={handlePublish}
+                onClick={() => onOpenPublishSettings?.()}
                 aria-label={t('surveys.builder.publish')}
               >
-                {publishAction.isLoading ? <Spinner /> : <Send className="size-4" />}
+                <Send className="size-4" />
               </Button>
             </div>
           </div>

@@ -66,7 +66,7 @@ export const getSurveyWithQuestions = cache(
         startsAt: survey.starts_at,
         endsAt: survey.ends_at,
         maxRespondents: survey.max_respondents,
-        status: survey.status,
+        status: survey.status as SurveyStatus,
       },
       questions: (questions ?? []).map(mapQuestionRow),
     };

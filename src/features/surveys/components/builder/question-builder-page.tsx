@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from 'react';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { useLocale } from 'next-intl';
 
@@ -18,6 +18,7 @@ import { BuilderMetadataPanel } from './builder-metadata-panel';
 import { BuilderSettingsPanel } from './builder-settings-panel';
 import { BuilderSidebar } from './builder-sidebar';
 import { BuilderTopBar } from './builder-top-bar';
+import { PublishSettingsPanel } from './publish-settings-panel';
 import { PublishSuccessPanel } from './publish-success-panel';
 
 interface QuestionBuilderPageProps {
@@ -40,9 +41,13 @@ export function QuestionBuilderPage({
   const isDesktop = useBreakpoint('xl');
   const locale = useLocale();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [metadataPanelOpen, setMetadataPanelOpen] = useState(false);
+  const [publishSettingsOpen, setPublishSettingsOpen] = useState(
+    () => searchParams.get('publish') === 'true'
+  );
   const [publishedSlug, setPublishedSlug] = useState<string | null>(null);
 
   function openMetadataPanel() {
@@ -55,8 +60,15 @@ export function QuestionBuilderPage({
     setSettingsOpen(true);
   }
 
+  function openPublishSettings() {
+    setSettingsOpen(false);
+    setMetadataPanelOpen(false);
+    setPublishSettingsOpen(true);
+  }
+
   const handlePublished = useCallback((slug: string) => {
     setPublishedSlug(slug);
+    setPublishSettingsOpen(false);
     setSettingsOpen(false);
     setMetadataPanelOpen(false);
   }, []);
@@ -74,7 +86,7 @@ export function QuestionBuilderPage({
           onToggleSidebar={() => setSidebarOpen(true)}
           onToggleSettings={openSettingsPanel}
           onOpenMetadataPanel={openMetadataPanel}
-          onPublished={handlePublished}
+          onOpenPublishSettings={openPublishSettings}
         />
         <div className="flex min-h-0 flex-1 overflow-hidden">
           <BuilderSidebar isDesktop={isDesktop} open={sidebarOpen} onOpenChange={setSidebarOpen} />
@@ -92,6 +104,13 @@ export function QuestionBuilderPage({
             surveyTitle={surveyTitle}
             surveyMetadata={surveyMetadata}
             categoryOptions={categoryOptions}
+          />
+
+          <PublishSettingsPanel
+            open={publishSettingsOpen}
+            onOpenChange={setPublishSettingsOpen}
+            surveyId={surveyId}
+            onPublished={handlePublished}
           />
 
           {isPublished && (

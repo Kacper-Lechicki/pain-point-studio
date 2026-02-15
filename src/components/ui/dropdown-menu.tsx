@@ -54,7 +54,7 @@ function DropdownMenuItem({
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Item> & {
   inset?: boolean;
-  variant?: 'default' | 'destructive';
+  variant?: 'default' | 'destructive' | 'warning' | 'accent';
 }) {
   return (
     <DropdownMenuPrimitive.Item
@@ -62,7 +62,7 @@ function DropdownMenuItem({
       data-inset={inset}
       data-variant={variant}
       className={cn(
-        "focus:border-foreground/30 focus:text-foreground data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:border-destructive/30 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:text-destructive! [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-pointer items-center gap-2 rounded-lg border border-transparent px-2 py-1.5 text-sm outline-hidden transition-colors select-none focus:border-dashed data-disabled:pointer-events-none data-disabled:opacity-50 data-inset:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "focus:border-foreground/30 focus:text-foreground data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:border-destructive/30 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:text-destructive! [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-pointer items-center gap-2 rounded-lg border border-transparent px-2 py-1.5 text-sm outline-hidden transition-colors select-none focus:border-dashed data-disabled:pointer-events-none data-disabled:opacity-50 data-inset:pl-8 data-[variant=accent]:text-violet-600 data-[variant=accent]:focus:border-violet-600/30 data-[variant=accent]:focus:text-violet-600 data-[variant=warning]:text-amber-600 data-[variant=warning]:focus:border-amber-600/30 data-[variant=warning]:focus:text-amber-600 data-[variant=accent]:dark:text-violet-400 data-[variant=accent]:dark:focus:text-violet-400 data-[variant=warning]:dark:text-amber-500 data-[variant=warning]:dark:focus:text-amber-500 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 data-[variant=accent]:*:[svg]:text-violet-600! data-[variant=warning]:*:[svg]:text-amber-600! data-[variant=accent]:dark:*:[svg]:text-violet-400! data-[variant=warning]:dark:*:[svg]:text-amber-500!",
         className
       )}
       {...props}

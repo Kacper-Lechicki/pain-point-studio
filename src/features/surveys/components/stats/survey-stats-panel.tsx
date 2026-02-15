@@ -2,7 +2,9 @@
 
 import { useState, useTransition } from 'react';
 
-import { Ban, Calendar, CheckCircle2, Inbox, Link2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+
+import { Ban, Calendar, CheckCircle2, Inbox, Link2, RefreshCw } from 'lucide-react';
 import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
@@ -39,6 +41,7 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
   const t = useTranslations();
   const locale = useLocale();
   const format = useFormatter();
+  const router = useRouter();
 
   useBreadcrumbSegment(stats.survey.id, stats.survey.title);
   useRealtimeResponses(stats.survey.id);
@@ -50,7 +53,7 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
 
   const currentStatus = optimisticStatus ?? stats.survey.status;
   const canClose = currentStatus === 'active';
-  const canCancel = currentStatus === 'active' || currentStatus === 'pending';
+  const canCancel = currentStatus === 'active';
 
   const shareUrl = stats.survey.slug ? getSurveyShareUrl(locale, stats.survey.slug) : null;
   const completionTimeLabel = formatCompletionTime(stats.avgCompletionSeconds);
@@ -122,6 +125,15 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
               </div>
             </div>
             <div className="flex shrink-0 gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => router.refresh()}
+                className="gap-1.5"
+              >
+                <RefreshCw className="size-3.5" aria-hidden />
+                {t('surveys.stats.refresh')}
+              </Button>
               {canClose && (
                 <Button
                   variant="outline"

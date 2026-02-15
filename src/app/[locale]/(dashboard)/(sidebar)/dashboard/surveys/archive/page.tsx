@@ -16,7 +16,10 @@ export default async function SurveysArchivePage() {
   return (
     <PageTransition>
       <div>
-        <h1 className="text-3xl font-bold">{t('surveys.archive.title')}</h1>
+        <h1 className="flex items-center gap-2 text-3xl font-bold">
+          <Archive className="size-7 shrink-0" aria-hidden />
+          {t('surveys.archive.title')}
+        </h1>
 
         <p className="text-muted-foreground mt-1 text-sm">{t('surveys.archive.description')}</p>
         {archivedSurveys.length > 0 && (

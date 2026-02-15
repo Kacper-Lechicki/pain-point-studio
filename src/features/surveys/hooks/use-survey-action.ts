@@ -30,7 +30,10 @@ const ACTION_FN: Record<SurveyAction, (data: { surveyId: string }) => Promise<Ac
 
 // ── Confirmable actions ─────────────────────────────────────────────
 
-type ConfirmableAction = Extract<SurveyAction, 'close' | 'cancel' | 'archive' | 'delete'>;
+type ConfirmableAction = Extract<
+  SurveyAction,
+  'close' | 'cancel' | 'archive' | 'restore' | 'delete'
+>;
 
 export function isConfirmable(action: SurveyAction): action is ConfirmableAction {
   return SURVEY_ACTION_UI[action].confirm != null;
@@ -50,7 +53,7 @@ interface UseSurveyActionReturn {
     title: string;
     description: string;
     confirmLabel: string;
-    variant: 'default' | 'warning' | 'destructive';
+    variant: 'default' | 'warning' | 'destructive' | 'accent';
   } | null;
 }
 

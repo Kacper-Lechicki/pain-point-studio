@@ -1,4 +1,4 @@
-import { BarChart3, Copy, Eye, Pencil, Share2 } from 'lucide-react';
+import { BarChart3, Eye, Pencil, Send, Share2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import {
@@ -6,25 +6,28 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
+import { QUESTIONS_MIN } from '@/features/surveys/config/constraints';
 import type { SurveyAction } from '@/features/surveys/config/survey-status';
 import { SURVEY_ACTION_UI } from '@/features/surveys/config/survey-status';
-import { getSurveyEditUrl, getSurveyStatsUrl } from '@/features/surveys/lib/survey-urls';
+import {
+  getSurveyEditUrl,
+  getSurveyPublishUrl,
+  getSurveyStatsUrl,
+} from '@/features/surveys/lib/survey-urls';
 import Link from '@/i18n/link';
-import { cn } from '@/lib/common/utils';
 
 interface SurveyActionMenuContentProps {
   surveyId: string;
   /** Flags derived from survey status. */
   flags: {
     isDraft: boolean;
-    isPending: boolean;
-    canDuplicate: boolean;
+    isArchived: boolean;
     hasShareableLink: boolean;
+    questionCount: number;
   };
   /** Status-transition actions available for this survey. */
   availableActions: SurveyAction[];
   onShare: () => void;
-  onDuplicate: () => void;
   handleActionClick: (action: SurveyAction) => void;
   /** Show a "Quick Preview" / "Details" item. */
   onDetails?: () => void;
@@ -37,13 +40,13 @@ export function SurveyActionMenuContent({
   flags,
   availableActions,
   onShare,
-  onDuplicate,
   handleActionClick,
   onDetails,
   detailsLabelKey = 'details',
 }: SurveyActionMenuContentProps) {
   const t = useTranslations();
-  const { isDraft, isPending, canDuplicate, hasShareableLink } = flags;
+  const { isDraft, isArchived, hasShareableLink, questionCount } = flags;
+  const canPublish = isDraft && questionCount >= QUESTIONS_MIN;
 
   return (
     <DropdownMenuContent align="end">
@@ -61,7 +64,7 @@ export function SurveyActionMenuContent({
         </DropdownMenuItem>
       )}
 
-      {!isDraft && !isPending && (
+      {!isDraft && !isArchived && (
         <DropdownMenuItem asChild>
           <Link href={getSurveyStatsUrl(surveyId)}>
             <BarChart3 className="size-4" aria-hidden />
@@ -70,7 +73,7 @@ export function SurveyActionMenuContent({
         </DropdownMenuItem>
       )}
 
-      {(isDraft || isPending) && (
+      {isDraft && (
         <DropdownMenuItem asChild>
           <Link href={getSurveyEditUrl(surveyId)}>
             <Pencil className="size-4" aria-hidden />
@@ -79,10 +82,12 @@ export function SurveyActionMenuContent({
         </DropdownMenuItem>
       )}
 
-      {canDuplicate && (
-        <DropdownMenuItem onClick={onDuplicate}>
-          <Copy className="size-4" aria-hidden />
-          {t('surveys.dashboard.actions.duplicate')}
+      {canPublish && (
+        <DropdownMenuItem asChild>
+          <Link href={getSurveyPublishUrl(surveyId)}>
+            <Send className="size-4" aria-hidden />
+            {t('surveys.dashboard.actions.publish')}
+          </Link>
         </DropdownMenuItem>
       )}
 
@@ -92,13 +97,12 @@ export function SurveyActionMenuContent({
           {availableActions.map((action) => {
             const ui = SURVEY_ACTION_UI[action];
             const Icon = ui.icon;
-            const isDestructive = ui.confirm?.variant === 'destructive';
 
             return (
               <DropdownMenuItem
                 key={action}
+                variant={ui.buttonColor ?? 'default'}
                 onClick={() => handleActionClick(action)}
-                className={cn(isDestructive && 'text-destructive focus:text-destructive')}
               >
                 <Icon className="size-4" aria-hidden />
                 {t(`surveys.dashboard.actions.${action}`)}

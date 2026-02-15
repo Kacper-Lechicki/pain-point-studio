@@ -1,6 +1,8 @@
 'use client';
 
-import { CircleDot, ClipboardList, Hash, Plus, TrendingUp } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+
+import { CircleDot, ClipboardList, Hash, Info, Plus, RefreshCw, TrendingUp } from 'lucide-react';
 import { useFormatter, useNow, useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
@@ -10,6 +12,7 @@ import type { DashboardOverview } from '@/features/dashboard/actions/get-dashboa
 import { SurveyStatusBadge } from '@/features/surveys/components/dashboard/survey-status-badge';
 import { SectionLabel } from '@/features/surveys/components/shared/metric-display';
 import { ResponseTimelineChart } from '@/features/surveys/components/shared/response-timeline-chart';
+import { useRealtimeSurveyList } from '@/features/surveys/hooks/use-realtime-survey-list';
 import Link from '@/i18n/link';
 
 interface DashboardOverviewPanelProps {
@@ -20,6 +23,9 @@ export const DashboardOverviewPanel = ({ overview }: DashboardOverviewPanelProps
   const t = useTranslations();
   const format = useFormatter();
   const now = useNow();
+  const router = useRouter();
+
+  useRealtimeSurveyList();
 
   return (
     <div className="space-y-6">
@@ -38,6 +44,22 @@ export const DashboardOverviewPanel = ({ overview }: DashboardOverviewPanelProps
             </Link>
           </Button>
         </div>
+      </div>
+
+      <div className="text-muted-foreground flex items-center justify-between gap-2 text-xs">
+        <p className="flex items-center gap-1.5">
+          <Info className="size-3.5 shrink-0" aria-hidden />
+          {t('dashboard.overview.excludedNote')}
+        </p>
+        <Button
+          variant="ghost"
+          size="icon-xs"
+          onClick={() => router.refresh()}
+          aria-label={t('dashboard.overview.refresh')}
+          title={t('dashboard.overview.refresh')}
+        >
+          <RefreshCw className="size-3" aria-hidden />
+        </Button>
       </div>
 
       <Separator />

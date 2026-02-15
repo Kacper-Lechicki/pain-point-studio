@@ -20,14 +20,12 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
 import { Spinner } from '@/components/ui/spinner';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { ROUTES } from '@/config/routes';
 import { createSurveyDraft } from '@/features/surveys/actions';
 import type { SurveyCategoryOption } from '@/features/surveys/actions';
-import { SurveySchedulingFields } from '@/features/surveys/components/survey-scheduling-fields';
 import { SURVEY_DESCRIPTION_MAX_LENGTH, SURVEY_TITLE_MAX_LENGTH } from '@/features/surveys/config';
 import { getSurveyEditUrl } from '@/features/surveys/lib/survey-urls';
 import {
@@ -91,9 +89,6 @@ const SurveyMetadataForm = ({
       description: defaultValues?.description ?? '',
       category: defaultValues?.category ?? '',
       visibility: defaultValues?.visibility ?? SURVEY_VISIBILITY_VALUES[0],
-      startsAt: defaultValues?.startsAt ?? null,
-      endsAt: defaultValues?.endsAt ?? null,
-      maxRespondents: defaultValues?.maxRespondents ?? null,
     },
   });
 
@@ -248,10 +243,6 @@ const SurveyMetadataForm = ({
           </FormItem>
         )}
       />
-
-      <Separator />
-
-      <SurveySchedulingFields control={form.control} />
     </>
   );
 

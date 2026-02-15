@@ -30,26 +30,6 @@ export function computeHint(
     };
   }
 
-  if (survey.status === 'pending') {
-    if (survey.startsAt) {
-      const daysUntil = Math.ceil(
-        (new Date(survey.startsAt).getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
-      );
-
-      if (daysUntil <= 0) {
-        return { severity: 'info', text: t('surveys.dashboard.hints.activatingSoon') };
-      }
-
-      return {
-        severity: 'info',
-        text: t(
-          'surveys.dashboard.hints.startsIn' as Parameters<typeof t>[0],
-          { days: daysUntil } as never
-        ),
-      };
-    }
-  }
-
   if (survey.status === 'active') {
     if (survey.maxRespondents) {
       const pct = survey.responseCount / survey.maxRespondents;

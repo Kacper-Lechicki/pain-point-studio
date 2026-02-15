@@ -20,9 +20,6 @@ export const createSurveyDraft = withProtectedAction<
           description: data.description,
           category: data.category,
           visibility: data.visibility,
-          starts_at: data.startsAt,
-          ends_at: data.endsAt,
-          max_respondents: data.maxRespondents,
         })
         .eq('id', data.surveyId)
         .eq('user_id', user.id);
@@ -43,9 +40,6 @@ export const createSurveyDraft = withProtectedAction<
         category: data.category,
         visibility: data.visibility,
         status: 'draft',
-        starts_at: data.startsAt,
-        ends_at: data.endsAt,
-        max_respondents: data.maxRespondents,
       })
       .select('id')
       .single();

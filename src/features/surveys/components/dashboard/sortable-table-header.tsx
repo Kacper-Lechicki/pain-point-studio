@@ -26,12 +26,12 @@ export function SortableTableHeader<T extends string>({
   const isActive = currentSortKey === sortKey;
 
   return (
-    <TableHead className={cn(centered && 'text-center', className)}>
+    <TableHead className={cn('pr-3', centered && 'text-center', className)}>
       <button
         type="button"
         onClick={() => onSort(sortKey)}
         className={cn(
-          'gap-1 font-medium hover:opacity-80',
+          'gap-1 font-medium whitespace-nowrap hover:opacity-80',
           centered ? 'inline-flex items-center justify-center' : 'flex items-center'
         )}
       >

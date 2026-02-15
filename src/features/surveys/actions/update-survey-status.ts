@@ -25,21 +25,12 @@ function createStatusAction(action: SurveyAction) {
     action: async ({ data, user, supabase }) => {
       // Delete actions
       if (transition.method === 'delete') {
-        const { data: row, error } = await (
-          transition.fromStatuses.length === 1
-            ? supabase
-                .from('surveys')
-                .delete()
-                .eq('id', data.surveyId)
-                .eq('user_id', user.id)
-                .eq('status', transition.fromStatuses[0])
-            : supabase
-                .from('surveys')
-                .delete()
-                .eq('id', data.surveyId)
-                .eq('user_id', user.id)
-                .in('status', [...transition.fromStatuses])
-        )
+        const { data: row, error } = await supabase
+          .from('surveys')
+          .delete()
+          .eq('id', data.surveyId)
+          .eq('user_id', user.id)
+          .in('status', [...transition.fromStatuses])
           .select('id')
           .maybeSingle();
 
@@ -50,24 +41,12 @@ function createStatusAction(action: SurveyAction) {
         return { success: true };
       }
 
-      // Restore: dynamic target status from previous_status column
+      // Restore: always reset to draft status
       if (action === 'restore') {
-        const { data: current } = await supabase
-          .from('surveys')
-          .select('previous_status')
-          .eq('id', data.surveyId)
-          .eq('user_id', user.id)
-          .eq('status', 'archived')
-          .maybeSingle();
-
-        if (!current?.previous_status) {
-          return { error: 'surveys.errors.unexpected' };
-        }
-
         const { data: row, error } = await supabase
           .from('surveys')
           .update({
-            status: current.previous_status as SurveyStatus,
+            status: 'draft' as SurveyStatus,
             archived_at: null,
             previous_status: null,
           })

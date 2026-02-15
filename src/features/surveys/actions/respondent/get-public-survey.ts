@@ -11,9 +11,9 @@ export const getPublicSurvey = cache(async (slug: string): Promise<PublicSurveyD
 
   const { data: survey } = await supabase
     .from('surveys')
-    .select('id, title, description, status, starts_at, ends_at, max_respondents, cancelled_at')
+    .select('id, title, description, status, ends_at, max_respondents, cancelled_at')
     .eq('slug', slug)
-    .in('status', ['active', 'pending', 'closed', 'cancelled'])
+    .in('status', ['active', 'closed', 'cancelled'])
     .single();
 
   if (!survey) {
@@ -35,10 +35,7 @@ export const getPublicSurvey = cache(async (slug: string): Promise<PublicSurveyD
   let isAcceptingResponses = survey.status === 'active';
   let closedReason: PublicSurveyData['closedReason'];
 
-  if (survey.status === 'pending') {
-    isAcceptingResponses = false;
-    closedReason = 'not_started';
-  } else if (survey.status === 'closed') {
+  if (survey.status === 'closed') {
     isAcceptingResponses = false;
     closedReason = 'closed';
   } else if (survey.status === 'cancelled') {
@@ -52,7 +49,7 @@ export const getPublicSurvey = cache(async (slug: string): Promise<PublicSurveyD
     }
   }
 
-  // Get questions (available for active and pending surveys)
+  // Get questions
   const { data: questions } = await supabase
     .from('survey_questions')
     .select('id, text, type, required, description, config, sort_order')
@@ -84,7 +81,6 @@ export const getPublicSurvey = cache(async (slug: string): Promise<PublicSurveyD
     responseCount: responseCount ?? 0,
     isAcceptingResponses,
     ...(closedReason && { closedReason }),
-    ...(survey.status === 'pending' && survey.starts_at && { startsAt: survey.starts_at }),
     questions: mappedQuestions,
   };
 });

@@ -39,7 +39,7 @@ export function DetailMetricsGrid({
             {t('surveys.dashboard.detailPanel.questions')}
           </div>
         </div>
-        {!isDraft && (
+        {!isDraft && !isArchived && (
           <div className="border-border/50 rounded-md border px-3 py-2.5">
             <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
               {completedCount}

@@ -1,6 +1,6 @@
 'use client';
 
-import { CheckCircle2, Plus } from 'lucide-react';
+import { CheckCircle2, ClipboardList, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
@@ -76,6 +76,12 @@ export function PublishSuccessPanel({
               <Link href={ROUTES.dashboard.surveysNew}>
                 <Plus className="size-3.5" />
                 {t('surveys.publish.createAnother')}
+              </Link>
+            </Button>
+            <Button variant="ghost" size="sm" asChild>
+              <Link href={ROUTES.dashboard.surveys}>
+                <ClipboardList className="size-3.5" />
+                {t('surveys.publish.backToSurveys')}
               </Link>
             </Button>
           </div>

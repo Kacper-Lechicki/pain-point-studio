@@ -11,6 +11,7 @@ import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import { deriveSurveyFlags, getAvailableActions } from '@/features/surveys/config/survey-status';
 import { useSurveyAction } from '@/features/surveys/hooks/use-survey-action';
 import { useSurveyCardActions } from '@/features/surveys/hooks/use-survey-card-actions';
+import { daysUntilExpiry } from '@/features/surveys/lib/calculations';
 import { cn } from '@/lib/common/utils';
 
 import { Sparkline, getSparklineColor } from './sparkline';
@@ -42,18 +43,17 @@ export function SurveyListRow({
   const now = useNow();
 
   const { handleActionClick, confirmDialogProps } = useSurveyAction(survey.id, onStatusChange, t);
-  const { handleShare, handleDuplicate } = useSurveyCardActions(survey.id, survey.slug);
+  const { handleShare } = useSurveyCardActions(survey.slug);
 
-  const { isDraft, isPending, isActive, isClosed, isArchived, canDuplicate } = deriveSurveyFlags(
-    survey.status
-  );
-  const hasShareableLink = (isActive || isPending || isClosed) && !!survey.slug;
+  const { isDraft, isActive, isClosed, isArchived } = deriveSurveyFlags(survey.status);
+  const hasShareableLink = (isActive || isClosed) && !!survey.slug;
 
   const archivedAtLabel =
     isArchived && (survey.archivedAt ?? survey.updatedAt)
       ? format.relativeTime(new Date(survey.archivedAt ?? survey.updatedAt), now)
       : null;
   const sparklineColor = getSparklineColor(survey.recentActivity);
+  const updatedAtLabel = format.relativeTime(new Date(survey.updatedAt), now);
   const lastResponseLabel =
     survey.lastResponseAt != null
       ? format.relativeTime(new Date(survey.lastResponseAt), now)
@@ -79,10 +79,9 @@ export function SurveyListRow({
   const menuContent = (
     <SurveyActionMenuContent
       surveyId={survey.id}
-      flags={{ isDraft, isPending, canDuplicate, hasShareableLink }}
+      flags={{ isDraft, isArchived, hasShareableLink, questionCount: survey.questionCount }}
       availableActions={availableActions}
       onShare={handleShare}
-      onDuplicate={handleDuplicate}
       handleActionClick={handleActionClick}
       onDetails={() => onSelect(survey.id)}
     />
@@ -134,7 +133,7 @@ export function SurveyListRow({
           <div
             className={cn(
               'text-muted-foreground grid gap-x-4 gap-y-2 text-xs',
-              isArchived || archivedLayout ? 'grid-cols-3' : 'grid-cols-2'
+              !isDraft && (isArchived || archivedLayout) ? 'grid-cols-3' : 'grid-cols-2'
             )}
           >
             <div className="flex flex-col gap-0.5">
@@ -143,37 +142,58 @@ export function SurveyListRow({
                 {survey.questionCount}
               </span>
             </div>
-            <div className="flex flex-col gap-0.5">
-              <span>{t('surveys.dashboard.table.responses')}</span>
-              <span className="text-foreground font-medium tabular-nums">
-                {survey.maxRespondents != null
-                  ? t('surveys.dashboard.card.responsesOfMax', {
-                      completed: survey.completedCount,
-                      max: survey.maxRespondents,
-                    })
-                  : survey.completedCount}
-              </span>
-            </div>
-            {(isArchived || archivedLayout) && archivedAtLabel != null ? (
+            {isDraft ? (
               <div className="flex flex-col gap-0.5">
-                <span>{t('surveys.dashboard.table.archivedAt')}</span>
-                <span className="text-foreground font-medium tabular-nums">{archivedAtLabel}</span>
+                <span>{t('surveys.dashboard.table.lastEdited')}</span>
+                <span className="text-foreground font-medium">{updatedAtLabel}</span>
               </div>
+            ) : isArchived || archivedLayout ? (
+              <>
+                <div className="flex flex-col gap-0.5">
+                  <span>{t('surveys.dashboard.table.archivedAt')}</span>
+                  <span className="text-foreground font-medium">{archivedAtLabel ?? '—'}</span>
+                </div>
+                <div className="flex flex-col gap-0.5">
+                  <span>{t('surveys.dashboard.table.autoDeletes')}</span>
+                  <span className="text-foreground font-medium tabular-nums">
+                    {(() => {
+                      const days = daysUntilExpiry(survey.archivedAt, 30);
+
+                      return days != null
+                        ? t('surveys.dashboard.detailPanel.inDays', { days })
+                        : '—';
+                    })()}
+                  </span>
+                </div>
+              </>
             ) : (
               <>
+                <div className="flex flex-col gap-0.5">
+                  <span>{t('surveys.dashboard.table.responses')}</span>
+                  <span className="text-foreground font-medium tabular-nums">
+                    {survey.maxRespondents != null
+                      ? t('surveys.dashboard.card.responsesOfMax', {
+                          completed: survey.completedCount,
+                          max: survey.maxRespondents,
+                        })
+                      : survey.completedCount}
+                  </span>
+                </div>
                 <div className="flex flex-col gap-0.5">
                   <span>{t('surveys.dashboard.table.lastResponse')}</span>
                   <span className="text-foreground font-medium tabular-nums">
                     {lastResponseLabel ?? '—'}
                   </span>
                 </div>
-                <div className="flex flex-col gap-0.5">
-                  <span>{t('surveys.dashboard.table.activity')}</span>
-                  <Sparkline
-                    data={survey.recentActivity}
-                    className={cn('shrink-0', sparklineColor)}
-                  />
-                </div>
+                {!isClosed && (
+                  <div className="flex flex-col gap-0.5">
+                    <span>{t('surveys.dashboard.table.activity')}</span>
+                    <Sparkline
+                      data={survey.recentActivity}
+                      className={cn('shrink-0', sparklineColor)}
+                    />
+                  </div>
+                )}
               </>
             )}
           </div>
@@ -204,31 +224,49 @@ export function SurveyListRow({
             </p>
           )}
         </TableCell>
-        <TableCell className="border-border/30 min-w-0 border-l text-center">
-          <SurveyStatusBadge status={survey.status} />
-        </TableCell>
-        <TableCell className="text-muted-foreground border-border/30 min-w-0 truncate border-l text-xs tabular-nums">
-          {survey.questionCount}
-        </TableCell>
-        <TableCell className="text-muted-foreground border-border/30 min-w-0 truncate border-l text-xs tabular-nums">
-          {survey.maxRespondents != null
-            ? `${survey.completedCount}/${survey.maxRespondents}`
-            : survey.completedCount}
-        </TableCell>
-        {archivedLayout && archivedAtLabel != null ? (
-          <TableCell className="text-muted-foreground border-border/30 min-w-0 truncate border-l text-xs">
-            {archivedAtLabel}
-          </TableCell>
+        {archivedLayout ? (
+          <>
+            <TableCell className="text-muted-foreground border-border/30 min-w-0 truncate border-l text-xs tabular-nums">
+              {survey.questionCount}
+            </TableCell>
+            <TableCell className="text-muted-foreground border-border/30 min-w-0 truncate border-l text-xs">
+              {archivedAtLabel ?? '—'}
+            </TableCell>
+            <TableCell className="text-muted-foreground border-border/30 min-w-0 truncate border-l text-xs tabular-nums">
+              {(() => {
+                const days = daysUntilExpiry(survey.archivedAt, 30);
+
+                return days != null ? t('surveys.dashboard.detailPanel.inDays', { days }) : '—';
+              })()}
+            </TableCell>
+          </>
         ) : (
           <>
-            <TableCell className="text-muted-foreground border-border/30 hidden min-w-0 truncate border-l pr-4 pl-3 text-xs lg:table-cell">
-              {lastResponseLabel ?? '—'}
+            <TableCell className="border-border/30 min-w-0 border-l text-center">
+              <SurveyStatusBadge status={survey.status} />
             </TableCell>
-            <TableCell className="border-border/30 hidden min-w-0 border-l text-center xl:table-cell">
-              <Sparkline
-                data={survey.recentActivity}
-                className={cn('mx-auto shrink-0', sparklineColor)}
-              />
+            <TableCell className="text-muted-foreground border-border/30 min-w-0 truncate border-l text-xs tabular-nums">
+              {isDraft
+                ? '—'
+                : survey.maxRespondents != null
+                  ? `${survey.completedCount}/${survey.maxRespondents}`
+                  : survey.completedCount}
+            </TableCell>
+            <TableCell className="text-muted-foreground border-border/30 hidden min-w-0 truncate border-l text-xs tabular-nums lg:table-cell">
+              {survey.questionCount}
+            </TableCell>
+            <TableCell className="text-muted-foreground border-border/30 hidden min-w-0 truncate border-l pr-4 pl-3 text-xs xl:table-cell">
+              {isDraft ? '—' : (lastResponseLabel ?? '—')}
+            </TableCell>
+            <TableCell className="border-border/30 hidden min-w-0 border-l text-center 2xl:table-cell">
+              {isDraft || isClosed ? (
+                <span className="text-muted-foreground text-xs">—</span>
+              ) : (
+                <Sparkline
+                  data={survey.recentActivity}
+                  className={cn('mx-auto shrink-0', sparklineColor)}
+                />
+              )}
             </TableCell>
           </>
         )}

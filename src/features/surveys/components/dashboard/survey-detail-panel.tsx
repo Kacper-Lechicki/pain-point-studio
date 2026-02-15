@@ -1,6 +1,22 @@
 'use client';
 
-import { BarChart3, Calendar, Copy, Expand, Pencil, Share2, Tag } from 'lucide-react';
+import {
+  BarChart3,
+  Calendar,
+  CalendarClock,
+  CalendarX2,
+  Clock,
+  Expand,
+  Hash,
+  MessageSquare,
+  Pencil,
+  Percent,
+  Send,
+  Share2,
+  Tag,
+  Timer,
+  Users,
+} from 'lucide-react';
 import { useFormatter, useNow, useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
@@ -11,9 +27,11 @@ import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import { DetailMetricsGrid } from '@/features/surveys/components/shared/detail-metrics-grid';
 import { DetailQuestionsList } from '@/features/surveys/components/shared/detail-questions-list';
 import { MetricRow, SectionLabel } from '@/features/surveys/components/shared/metric-display';
-import { DATE_FORMAT_SHORT } from '@/features/surveys/config';
+import { DATE_FORMAT_SHORT, QUESTIONS_MIN } from '@/features/surveys/config';
+import { SURVEY_CATEGORIES } from '@/features/surveys/config/survey-categories';
 import {
   SURVEY_ACTION_UI,
+  SURVEY_STATUS_CONFIG,
   deriveSurveyFlags,
   getAvailableActions,
 } from '@/features/surveys/config/survey-status';
@@ -28,6 +46,7 @@ import type { MappedQuestion } from '@/features/surveys/lib/map-question-row';
 import {
   getSurveyDetailUrl,
   getSurveyEditUrl,
+  getSurveyPublishUrl,
   getSurveyStatsUrl,
 } from '@/features/surveys/lib/survey-urls';
 import Link from '@/i18n/link';
@@ -59,11 +78,10 @@ export function SurveyDetailPanel({
   const now = useNow();
 
   const { handleActionClick, confirmDialogProps } = useSurveyAction(survey.id, onStatusChange, t);
-  const { shareUrl, handleShare, handleDuplicate } = useSurveyCardActions(survey.id, survey.slug);
+  const { shareUrl, handleShare } = useSurveyCardActions(survey.slug);
 
-  const { isDraft, isPending, isActive, isClosed, isCancelled, isArchived, canDuplicate } =
-    deriveSurveyFlags(survey.status);
-  const hasShareableLink = (isActive || isPending || isClosed) && !!shareUrl;
+  const { isDraft, isActive, isClosed, isCancelled, isArchived } = deriveSurveyFlags(survey.status);
+  const hasShareableLink = (isActive || isClosed) && !!shareUrl;
   const sparklineColor = getSparklineColor(survey.recentActivity);
   const completionRate = calculateCompletionRate(survey.completedCount, survey.responseCount);
   const lastResponseLabel =
@@ -75,6 +93,7 @@ export function SurveyDetailPanel({
     survey.maxRespondents
   );
   const availableActions = getAvailableActions(survey.status);
+  const canPublish = isDraft && survey.questionCount >= QUESTIONS_MIN;
 
   const formatDate = (iso: string) => format.dateTime(new Date(iso), DATE_FORMAT_SHORT);
 
@@ -105,16 +124,6 @@ export function SurveyDetailPanel({
         )}
       </div>
 
-      {/* Status + Category */}
-      <div className="mt-2 flex flex-wrap items-center gap-1.5">
-        <SurveyStatusBadge status={survey.status} />
-        {survey.category && (
-          <span className="bg-border/40 text-muted-foreground inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-normal">
-            {t(`surveys.categories.${survey.category}` as Parameters<typeof t>[0])}
-          </span>
-        )}
-      </div>
-
       {/* Description */}
       {survey.description && (
         <p className="text-muted-foreground mt-2.5 line-clamp-3 text-xs leading-relaxed">
@@ -136,7 +145,7 @@ export function SurveyDetailPanel({
         isArchived={isArchived}
       />
 
-      {!isArchived && !isDraft && (
+      {!isArchived && !isDraft && !isClosed && (
         <>
           <Separator className="my-4" />
           <SectionLabel>{t('surveys.dashboard.detailPanel.last14Days')}</SectionLabel>
@@ -149,36 +158,75 @@ export function SurveyDetailPanel({
       {/* Details Section */}
       <SectionLabel>{t('surveys.dashboard.detailPanel.detailsLabel')}</SectionLabel>
       <div className="space-y-2">
-        {survey.category && (
-          <MetricRow
-            icon={Tag}
-            label={t('surveys.dashboard.detailPanel.category')}
-            value={t(`surveys.categories.${survey.category}` as Parameters<typeof t>[0])}
-          />
-        )}
+        <MetricRow
+          icon={SURVEY_STATUS_CONFIG[survey.status].icon}
+          label={t('surveys.dashboard.detailPanel.status')}
+          value={<SurveyStatusBadge status={survey.status} />}
+        />
+        {survey.category &&
+          (() => {
+            const cat = SURVEY_CATEGORIES.find((c) => c.value === survey.category);
+
+            return cat ? (
+              <MetricRow
+                icon={Tag}
+                label={t('surveys.dashboard.detailPanel.category')}
+                value={t(cat.labelKey as Parameters<typeof t>[0])}
+              />
+            ) : null;
+          })()}
         <MetricRow
           icon={Calendar}
           label={t('surveys.dashboard.detailPanel.created')}
           value={formatDate(survey.createdAt)}
         />
         <MetricRow
+          icon={Clock}
           label={t('surveys.dashboard.detailPanel.updated')}
           value={formatDate(survey.updatedAt)}
         />
-        {survey.startsAt && (
+        {!isDraft && !isArchived && (
           <MetricRow
+            icon={Hash}
+            label={t('surveys.dashboard.detailPanel.responses')}
+            value={
+              survey.maxRespondents != null
+                ? `${survey.completedCount} / ${survey.maxRespondents}`
+                : survey.completedCount
+            }
+          />
+        )}
+        {!isDraft && !isArchived && completionRate != null && (
+          <MetricRow
+            icon={Percent}
+            label={t('surveys.dashboard.detailPanel.completionRate')}
+            value={`${completionRate}%`}
+          />
+        )}
+        {!isDraft && !isArchived && (
+          <MetricRow
+            icon={MessageSquare}
+            label={t('surveys.dashboard.detailPanel.lastResponse')}
+            value={lastResponseLabel ?? '—'}
+          />
+        )}
+        {!isDraft && survey.startsAt && (
+          <MetricRow
+            icon={CalendarClock}
             label={t('surveys.dashboard.detailPanel.startsAt')}
             value={formatDate(survey.startsAt)}
           />
         )}
-        {survey.endsAt && (
+        {!isDraft && survey.endsAt && (
           <MetricRow
+            icon={CalendarX2}
             label={t('surveys.dashboard.detailPanel.endsAt')}
             value={formatDate(survey.endsAt)}
           />
         )}
-        {survey.maxRespondents != null && (
+        {!isDraft && survey.maxRespondents != null && (
           <MetricRow
+            icon={Users}
             label={t('surveys.dashboard.detailPanel.respondentCap')}
             value={survey.maxRespondents}
           />
@@ -189,6 +237,7 @@ export function SurveyDetailPanel({
 
             return days != null ? (
               <MetricRow
+                icon={Timer}
                 label={t('surveys.dashboard.detailPanel.autoDeletes')}
                 value={t('surveys.dashboard.detailPanel.inDays', { days })}
               />
@@ -200,6 +249,7 @@ export function SurveyDetailPanel({
 
             return days != null ? (
               <MetricRow
+                icon={Timer}
                 label={t('surveys.dashboard.detailPanel.linkExpires')}
                 value={t('surveys.dashboard.detailPanel.inDays', { days })}
               />
@@ -207,7 +257,7 @@ export function SurveyDetailPanel({
           })()}
       </div>
 
-      {/* Share URL (active, pending, closed) */}
+      {/* Share URL (active, closed) */}
       {hasShareableLink && shareUrl && (
         <>
           <Separator className="my-4" />
@@ -226,14 +276,25 @@ export function SurveyDetailPanel({
       {/* Actions */}
       <SectionLabel>{t('surveys.dashboard.detailPanel.actionsLabel')}</SectionLabel>
       <div className="flex flex-col gap-2">
-        {isDraft || isPending ? (
-          <Button asChild size="sm" className="w-full">
-            <Link href={getSurveyEditUrl(survey.id)}>
-              <Pencil className="size-4" aria-hidden />
-              {t('surveys.dashboard.actions.edit')}
-            </Link>
-          </Button>
-        ) : (
+        {isDraft && (
+          <>
+            {canPublish && (
+              <Button size="sm" className="w-full" asChild>
+                <Link href={getSurveyPublishUrl(survey.id)}>
+                  <Send className="size-4" aria-hidden />
+                  {t('surveys.builder.publish')}
+                </Link>
+              </Button>
+            )}
+            <Button variant="outline" size="sm" className="w-full" asChild>
+              <Link href={getSurveyEditUrl(survey.id)}>
+                <Pencil className="size-4" aria-hidden />
+                {t('surveys.dashboard.actions.edit')}
+              </Link>
+            </Button>
+          </>
+        )}
+        {!isDraft && !isArchived && (
           <Button asChild size="sm" className="w-full">
             <Link href={getSurveyStatsUrl(survey.id)}>
               <BarChart3 className="size-4" aria-hidden />
@@ -247,12 +308,6 @@ export function SurveyDetailPanel({
             {t('surveys.dashboard.actions.share')}
           </Button>
         )}
-        {canDuplicate && (
-          <Button variant="outline" size="sm" className="w-full" onClick={handleDuplicate}>
-            <Copy className="size-4" aria-hidden />
-            {t('surveys.dashboard.actions.duplicate')}
-          </Button>
-        )}
       </div>
 
       {/* Status transition buttons */}
@@ -261,8 +316,6 @@ export function SurveyDetailPanel({
           {availableActions.map((action) => {
             const ui = SURVEY_ACTION_UI[action];
             const Icon = ui.icon;
-            const isDestructive = ui.confirm?.variant === 'destructive';
-            const isWarning = ui.confirm?.variant === 'warning';
 
             return (
               <Button
@@ -271,10 +324,12 @@ export function SurveyDetailPanel({
                 size="sm"
                 className={cn(
                   'h-7 gap-1 px-2 text-xs hover:bg-transparent md:hover:bg-transparent',
-                  isDestructive &&
+                  ui.buttonColor === 'destructive' &&
                     'text-destructive hover:text-destructive md:hover:text-destructive border-destructive/30 hover:border-destructive/40',
-                  isWarning &&
-                    'border-amber-500/30 text-amber-600 hover:border-amber-500/40 hover:text-amber-600 md:hover:text-amber-600 dark:text-amber-500 dark:hover:text-amber-500 dark:md:hover:text-amber-500'
+                  ui.buttonColor === 'warning' &&
+                    'border-amber-500/30 text-amber-600 hover:border-amber-500/40 hover:text-amber-600 md:hover:text-amber-600 dark:text-amber-500 dark:hover:text-amber-500 dark:md:hover:text-amber-500',
+                  ui.buttonColor === 'accent' &&
+                    'border-violet-500/30 text-violet-600 hover:border-violet-500/40 hover:text-violet-600 md:hover:text-violet-600 dark:text-violet-400 dark:hover:text-violet-400 dark:md:hover:text-violet-400'
                 )}
                 onClick={() => handleActionClick(action)}
               >
@@ -287,8 +342,12 @@ export function SurveyDetailPanel({
       )}
 
       {/* Questions */}
-      <Separator className="my-4" />
-      <DetailQuestionsList questions={questions} />
+      {!(questions != null && questions.length === 0) && (
+        <>
+          <Separator className="my-4" />
+          <DetailQuestionsList questions={questions} />
+        </>
+      )}
     </div>
   );
 

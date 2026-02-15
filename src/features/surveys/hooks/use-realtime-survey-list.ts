@@ -6,18 +6,17 @@ import { useRouter } from 'next/navigation';
 
 import { createClient } from '@/lib/supabase/client';
 
-const DEBOUNCE_MS = 1000;
+const DEBOUNCE_MS = 1500;
 
 /**
- * Subscribes to Supabase Realtime changes on `survey_responses` and `surveys`
- * for a given survey. On any INSERT/UPDATE/DELETE, triggers `router.refresh()`
- * (debounced at 1 s) so the server component re-fetches the cached stats RPC.
+ * Subscribes to Supabase Realtime changes on both `survey_responses` and
+ * `surveys` tables. On any change, triggers a debounced `router.refresh()`
+ * which re-runs the server component and passes fresh `initialSurveys`.
  *
- * Listening to both tables ensures:
- * - New/updated responses update stats in real time
- * - Survey status changes (e.g. auto-close when cap is reached) are picked up
+ * Used on the dashboard list page so response counts, activity, and status
+ * changes (including auto-close) are reflected without a manual reload.
  */
-export function useRealtimeResponses(surveyId: string) {
+export function useRealtimeSurveyList() {
   const router = useRouter();
   const routerRef = useRef(router);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -40,14 +39,13 @@ export function useRealtimeResponses(surveyId: string) {
     };
 
     const channel = supabase
-      .channel(`survey-stats:${surveyId}`)
+      .channel('dashboard-survey-list')
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
           table: 'survey_responses',
-          filter: `survey_id=eq.${surveyId}`,
         },
         debouncedRefresh
       )
@@ -57,7 +55,6 @@ export function useRealtimeResponses(surveyId: string) {
           event: 'UPDATE',
           schema: 'public',
           table: 'surveys',
-          filter: `id=eq.${surveyId}`,
         },
         debouncedRefresh
       )
@@ -70,5 +67,5 @@ export function useRealtimeResponses(surveyId: string) {
 
       void supabase.removeChannel(channel);
     };
-  }, [surveyId]);
+  }, []);
 }

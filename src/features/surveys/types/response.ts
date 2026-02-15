@@ -32,13 +32,7 @@ export type SubmitResponseSchema = z.infer<typeof submitResponseSchema>;
  * All possible reasons a survey is not accepting responses (source of truth).
  * Defined here (not in index.ts) to avoid circular module dependency.
  */
-export const CLOSED_REASONS = [
-  'closed',
-  'expired',
-  'max_reached',
-  'not_started',
-  'cancelled',
-] as const;
+export const CLOSED_REASONS = ['closed', 'expired', 'max_reached', 'cancelled'] as const;
 
 export type ClosedReason = (typeof CLOSED_REASONS)[number];
 
@@ -82,6 +76,5 @@ export interface PublicSurveyData {
   responseCount: number;
   isAcceptingResponses: boolean;
   closedReason?: ClosedReason;
-  startsAt?: string;
   questions: PublicSurveyQuestion[];
 }
