@@ -2,7 +2,6 @@ import { z } from 'zod';
 
 import {
   QUESTIONS_MAX,
-  QUESTIONS_MIN,
   QUESTION_DESCRIPTION_MAX_LENGTH,
   QUESTION_OPTIONS_MAX,
   QUESTION_OPTIONS_MIN,
@@ -187,17 +186,25 @@ export const questionSchema = z.object({
 
 export type QuestionSchema = z.infer<typeof questionSchema>;
 
+/** Relaxed question schema for saving drafts (empty text allowed). */
+const draftQuestionSchema = z.object({
+  id: z.string().uuid(),
+  text: z.string().max(QUESTION_TEXT_MAX_LENGTH, 'surveys.builder.errors.questionTextTooLong'),
+  type: z.enum(QUESTION_TYPES),
+  required: z.boolean(),
+  description: z
+    .string()
+    .max(QUESTION_DESCRIPTION_MAX_LENGTH, 'surveys.builder.errors.descriptionTooLong')
+    .nullable()
+    .optional(),
+  config: z.record(z.string(), z.unknown()).default({}),
+  sortOrder: z.number().int().min(0),
+});
+
 /** Schema for saving a full set of survey questions with sort order. */
 export const surveyQuestionsSchema = z.object({
   surveyId: z.string().uuid(),
-  questions: z
-    .array(
-      questionSchema.extend({
-        sortOrder: z.number().int().min(0),
-      })
-    )
-    .min(QUESTIONS_MIN, 'surveys.builder.errors.minQuestions')
-    .max(QUESTIONS_MAX, 'surveys.builder.errors.maxQuestions'),
+  questions: z.array(draftQuestionSchema).max(QUESTIONS_MAX, 'surveys.builder.errors.maxQuestions'),
 });
 
 export type SurveyQuestionsSchema = z.infer<typeof surveyQuestionsSchema>;

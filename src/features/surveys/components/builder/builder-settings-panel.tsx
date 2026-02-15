@@ -63,7 +63,7 @@ function BuilderSettingsPanelContent() {
                   type="button"
                   onClick={() => changeQuestionType(activeQuestion.id, type as QuestionType)}
                   className={cn(
-                    'flex flex-col items-center gap-1 rounded-md p-2 text-center transition-colors',
+                    'flex aspect-square flex-col items-center justify-center gap-1 overflow-hidden rounded-md p-1.5 text-center transition-colors',
                     activeQuestion.type === type
                       ? 'bg-primary/10 text-primary ring-primary/30 ring-1'
                       : 'hover:bg-accent text-muted-foreground'

@@ -129,10 +129,15 @@ export function BuilderTopBar({
             </Button>
           </div>
 
-          <SaveStatusIndicator status={state.saveStatus} />
+          <SaveStatusIndicator status={state.saveStatus} isDirty={state.isDirty} />
 
           <div className="ml-auto flex shrink-0 items-center gap-2">
-            <Button variant="outline" size="sm" disabled={isLoading} onClick={handleSave}>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={isLoading || !state.isDirty}
+              onClick={handleSave}
+            >
               {saveAction.isLoading && <Spinner />}
               {t('surveys.builder.saveDraft')}
             </Button>
@@ -196,13 +201,18 @@ export function BuilderTopBar({
               </Button>
             </div>
 
-            <SaveStatusIndicator status={state.saveStatus} truncate className="min-w-0" />
+            <SaveStatusIndicator
+              status={state.saveStatus}
+              isDirty={state.isDirty}
+              truncate
+              className="min-w-0"
+            />
 
             <div className="flex shrink-0 items-center gap-2">
               <Button
                 variant="outline"
                 size="icon-sm"
-                disabled={isLoading}
+                disabled={isLoading || !state.isDirty}
                 onClick={handleSave}
                 aria-label={t('surveys.builder.saveDraft')}
               >

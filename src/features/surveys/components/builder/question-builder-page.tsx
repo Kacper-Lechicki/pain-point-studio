@@ -30,7 +30,7 @@ export function QuestionBuilderPage({
   categoryOptions,
   initialQuestions,
 }: QuestionBuilderPageProps) {
-  const isDesktop = useBreakpoint('lg');
+  const isDesktop = useBreakpoint('xl');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [metadataPanelOpen, setMetadataPanelOpen] = useState(false);

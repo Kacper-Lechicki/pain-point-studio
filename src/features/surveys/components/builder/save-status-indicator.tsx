@@ -5,6 +5,8 @@ import { cn } from '@/lib/common/utils';
 
 interface SaveStatusIndicatorProps {
   status: 'idle' | 'saving' | 'saved' | 'error';
+  /** When false and status is idle, show "Saved" indicator. */
+  isDirty: boolean;
   /** Add truncate to text labels (used in mobile layout) */
   truncate?: boolean;
   className?: string;
@@ -12,12 +14,15 @@ interface SaveStatusIndicatorProps {
 
 export function SaveStatusIndicator({
   status,
+  isDirty,
   truncate = false,
   className,
 }: SaveStatusIndicatorProps) {
   const t = useTranslations();
 
-  if (status === 'idle') {
+  const showSaved = status === 'saved' || (status === 'idle' && !isDirty);
+
+  if (status === 'idle' && isDirty) {
     return null;
   }
 
@@ -29,7 +34,7 @@ export function SaveStatusIndicator({
           <span className={cn(truncate && 'truncate')}>{t('surveys.builder.saving')}</span>
         </>
       )}
-      {status === 'saved' && (
+      {showSaved && (
         <>
           <Check className="size-3" />
           <span className={cn(truncate && 'truncate')}>{t('surveys.builder.saved')}</span>

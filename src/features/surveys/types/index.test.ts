@@ -296,13 +296,22 @@ describe('surveyQuestionsSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('rejects empty questions array', () => {
+  it('accepts empty questions array (draft save)', () => {
     const result = surveyQuestionsSchema.safeParse({
       surveyId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
       questions: [],
     });
 
-    expect(result.success).toBe(false);
+    expect(result.success).toBe(true);
+  });
+
+  it('accepts question with empty text (draft save)', () => {
+    const result = surveyQuestionsSchema.safeParse({
+      surveyId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+      questions: [{ ...makeQuestion(0), text: '' }],
+    });
+
+    expect(result.success).toBe(true);
   });
 
   it('rejects more than 15 questions', () => {

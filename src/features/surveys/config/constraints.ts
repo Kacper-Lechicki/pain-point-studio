@@ -22,10 +22,18 @@ export const RATING_SCALE_MAX = 10;
 /** Estimated seconds per question (used to calculate survey completion time). */
 export const ESTIMATED_SECONDS_PER_QUESTION = 30;
 
-// ── Text question defaults ──────────────────────────────────────────
+// ── Selection constraints ───────────────────────────────────────────
+
+export const SELECTION_MIN = 1;
+
+// ── Text question constraints ──────────────────────────────────────
 
 export const OPEN_TEXT_DEFAULT_MAX_LENGTH = 5000;
 export const SHORT_TEXT_DEFAULT_MAX_LENGTH = 500;
+export const TEXT_MAX_LENGTH_MIN = 1;
+export const TEXT_MAX_LENGTH_MAX = 10_000;
+export const TEXT_PLACEHOLDER_MAX_LENGTH = 200;
+export const RATING_LABEL_MAX_LENGTH = 100;
 
 /** Tolerance when validating that the start date is not in the past (ms). */
 export const START_DATE_TOLERANCE_MS = 60_000;

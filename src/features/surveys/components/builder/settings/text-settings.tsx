@@ -2,8 +2,21 @@ import { useTranslations } from 'next-intl';
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { TEXT_PLACEHOLDER_MAX_LENGTH } from '@/features/surveys/config';
 
 import type { SettingsProps } from './types';
+
+const MAX_LENGTH_OPTIONS = [100, 200, 500, 1000, 2000, 5000, 10_000] as const;
+
+/** Sentinel string used in the Select to represent "no limit". */
+const NO_LIMIT = 'none';
 
 export function TextSettings({ config, onUpdate }: SettingsProps) {
   const t = useTranslations();
@@ -20,23 +33,30 @@ export function TextSettings({ config, onUpdate }: SettingsProps) {
         <Input
           value={placeholder}
           onChange={(e) => onUpdate({ placeholder: e.target.value })}
-          maxLength={200}
+          maxLength={TEXT_PLACEHOLDER_MAX_LENGTH}
           className="h-8"
         />
       </div>
       <div>
         <Label className="mb-1 block text-xs">{t('surveys.builder.typeSettings.maxLength')}</Label>
-        <Input
-          type="number"
-          min={1}
-          value={maxLength ?? ''}
-          onChange={(e) =>
-            onUpdate({
-              maxLength: e.target.value === '' ? undefined : Number(e.target.value),
-            })
+        <Select
+          value={maxLength !== undefined ? String(maxLength) : NO_LIMIT}
+          onValueChange={(val) =>
+            onUpdate({ maxLength: val === NO_LIMIT ? undefined : Number(val) })
           }
-          className="h-8"
-        />
+        >
+          <SelectTrigger className="h-8 w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={NO_LIMIT}>{t('surveys.builder.typeSettings.noLimit')}</SelectItem>
+            {MAX_LENGTH_OPTIONS.map((n) => (
+              <SelectItem key={n} value={String(n)}>
+                {n.toLocaleString()}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
     </div>
   );

@@ -299,7 +299,8 @@
         "minLabel": "Min label",
         "minLabelPlaceholder": "e.g., Not at all",
         "maxLabel": "Max label",
-        "maxLabelPlaceholder": "e.g., Extremely"
+        "maxLabelPlaceholder": "e.g., Extremely",
+        "noLimit": "No limit"
       },
       "errors": {
         "questionTextRequired": "Question text is required.",

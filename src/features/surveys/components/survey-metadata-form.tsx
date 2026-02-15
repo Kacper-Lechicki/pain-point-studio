@@ -47,7 +47,11 @@ interface SurveyMetadataFormProps {
   surveyId?: string;
   mode?: 'create' | 'edit';
   onSaved?: () => void;
-  renderFooter?: (props: { handleSave: () => void; isLoading: boolean }) => React.ReactNode;
+  renderFooter?: (props: {
+    handleSave: () => void;
+    isLoading: boolean;
+    isDirty: boolean;
+  }) => React.ReactNode;
 }
 
 const SurveyMetadataForm = ({
@@ -258,7 +262,7 @@ const SurveyMetadataForm = ({
           <div className="min-h-0 flex-1 space-y-6 overflow-y-auto px-4 py-4 sm:px-6 sm:py-6">
             {formFields}
           </div>
-          {renderFooter({ handleSave, isLoading })}
+          {renderFooter({ handleSave, isLoading, isDirty: form.formState.isDirty })}
         </form>
       </Form>
     );

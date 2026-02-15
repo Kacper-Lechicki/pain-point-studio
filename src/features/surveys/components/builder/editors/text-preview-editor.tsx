@@ -19,8 +19,8 @@ export function TextPreviewEditor({ config, variant }: TextPreviewEditorProps) {
       <Textarea
         disabled
         placeholder={placeholder}
-        className="min-h-[100px] resize-none opacity-60"
-        rows={4}
+        className="min-h-[160px] resize-none opacity-60"
+        rows={6}
       />
     );
   }

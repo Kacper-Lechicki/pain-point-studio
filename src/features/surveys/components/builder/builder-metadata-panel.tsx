@@ -65,9 +65,13 @@ export function BuilderMetadataPanel({
               onOpenChange(false);
               router.refresh();
             }}
-            renderFooter={({ handleSave, isLoading: formLoading }) => (
+            renderFooter={({ handleSave, isLoading: formLoading, isDirty: formDirty }) => (
               <div className="border-border shrink-0 border-t px-3 py-4 sm:px-4">
-                <Button className="w-full" disabled={formLoading} onClick={handleSave}>
+                <Button
+                  className="w-full"
+                  disabled={formLoading || !formDirty}
+                  onClick={handleSave}
+                >
                   {formLoading && <Spinner />}
                   {t('surveys.create.saveDraft')}
                 </Button>
