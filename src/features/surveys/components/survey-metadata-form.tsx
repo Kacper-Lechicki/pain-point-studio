@@ -5,7 +5,6 @@ import type React from 'react';
 import { useRouter } from 'next/navigation';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Info } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 
@@ -25,7 +24,6 @@ import { Separator } from '@/components/ui/separator';
 import { Spinner } from '@/components/ui/spinner';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ROUTES } from '@/config/routes';
 import { createSurveyDraft } from '@/features/surveys/actions';
 import type { SurveyCategoryOption } from '@/features/surveys/actions';
@@ -141,6 +139,14 @@ const SurveyMetadataForm = ({
                 {...field}
               />
             </FormControl>
+            <div className="flex justify-end">
+              <span className="text-muted-foreground text-xs">
+                {t('surveys.create.titleCounter', {
+                  count: (field.value ?? '').length,
+                  max: SURVEY_TITLE_MAX_LENGTH,
+                })}
+              </span>
+            </div>
             <FormMessage />
           </FormItem>
         )}
@@ -153,6 +159,7 @@ const SurveyMetadataForm = ({
         render={({ field }) => (
           <FormItem>
             <FormLabel>{t('surveys.create.surveyDescription')}</FormLabel>
+            <FormDescription>{t('surveys.create.surveyDescriptionHelper')}</FormDescription>
             <FormControl>
               <Textarea
                 placeholder={t('surveys.create.surveyDescriptionPlaceholder')}
@@ -170,7 +177,6 @@ const SurveyMetadataForm = ({
                 })}
               </span>
             </div>
-            <FormDescription>{t('surveys.create.surveyDescriptionHelper')}</FormDescription>
             <FormMessage />
           </FormItem>
         )}
@@ -183,12 +189,17 @@ const SurveyMetadataForm = ({
         render={({ field }) => (
           <FormItem>
             <FormLabel>{t('surveys.create.category')}</FormLabel>
+            <FormDescription>{t('surveys.create.categoryHelper')}</FormDescription>
             <FormControl>
               <Combobox
                 options={[...categoryOptions].sort((a, b) => {
-                  if (a.value === 'other') {return 1;}
+                  if (a.value === 'other') {
+                    return 1;
+                  }
 
-                  if (b.value === 'other') {return -1;}
+                  if (b.value === 'other') {
+                    return -1;
+                  }
 
                   return a.label.localeCompare(b.label);
                 })}
@@ -212,21 +223,7 @@ const SurveyMetadataForm = ({
         render={({ field }) => (
           <FormItem className="flex flex-col gap-4 rounded-lg border p-3 sm:flex-row sm:items-start sm:justify-between sm:p-4">
             <div className="min-w-0 space-y-0.5">
-              <FormLabel className="flex items-center gap-1.5">
-                {t('surveys.create.visibility')}
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button type="button" className="inline-flex">
-                        <Info className="text-muted-foreground size-4" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent side="right" className="max-w-xs">
-                      {t('surveys.create.visibilityTooltip')}
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </FormLabel>
+              <FormLabel>{t('surveys.create.visibility')}</FormLabel>
               <FormDescription>
                 {field.value === 'public'
                   ? t('surveys.create.visibilityPublicDescription')

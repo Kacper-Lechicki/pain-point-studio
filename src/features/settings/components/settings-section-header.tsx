@@ -1,13 +1,10 @@
 import type { ReactNode } from 'react';
 
-import { InfoHint } from '@/components/ui/info-hint';
 import { cn } from '@/lib/common/utils';
 
 interface SettingsSectionHeaderProps {
   title: string;
   description: string;
-  hintContent?: string;
-  hintDialogTitle?: string;
   action?: ReactNode;
   variant?: 'default' | 'destructive';
 }
@@ -17,8 +14,6 @@ const isDestructive = (variant: string) => variant === 'destructive';
 const SettingsSectionHeader = ({
   title,
   description,
-  hintContent,
-  hintDialogTitle,
   action,
   variant = 'default',
 }: SettingsSectionHeaderProps) => {
@@ -30,18 +25,9 @@ const SettingsSectionHeader = ({
       )}
     >
       <div className="space-y-1">
-        <div className="flex items-center gap-2">
-          <h2 className={cn('text-lg font-semibold', isDestructive(variant) && 'text-destructive')}>
-            {title}
-          </h2>
-
-          {hintContent && (
-            <InfoHint
-              content={hintContent}
-              {...(hintDialogTitle && { dialogTitle: hintDialogTitle })}
-            />
-          )}
-        </div>
+        <h2 className={cn('text-lg font-semibold', isDestructive(variant) && 'text-destructive')}>
+          {title}
+        </h2>
 
         <p
           className={cn(

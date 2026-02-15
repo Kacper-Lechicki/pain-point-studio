@@ -32,6 +32,7 @@ export function SurveySchedulingFields({ control }: SurveySchedulingFieldsProps)
           render={({ field }) => (
             <FormItem>
               <FormLabel>{t('surveys.create.startDate')}</FormLabel>
+              <FormDescription>{t('surveys.create.startDateHelper')}</FormDescription>
               <FormControl>
                 <DateTimePicker
                   value={field.value}
@@ -41,9 +42,6 @@ export function SurveySchedulingFields({ control }: SurveySchedulingFieldsProps)
                   placeholder={t('surveys.create.pickDate')}
                 />
               </FormControl>
-              <FormDescription className="min-h-[2.5rem]">
-                {t('surveys.create.startDateHelper')}
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -56,6 +54,7 @@ export function SurveySchedulingFields({ control }: SurveySchedulingFieldsProps)
           render={({ field }) => (
             <FormItem>
               <FormLabel>{t('surveys.create.endDate')}</FormLabel>
+              <FormDescription>{t('surveys.create.endDateHelper')}</FormDescription>
               <FormControl>
                 <DateTimePicker
                   value={field.value}
@@ -65,9 +64,6 @@ export function SurveySchedulingFields({ control }: SurveySchedulingFieldsProps)
                   placeholder={t('surveys.create.pickDate')}
                 />
               </FormControl>
-              <FormDescription className="min-h-[2.5rem]">
-                {t('surveys.create.endDateHelper')}
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -81,6 +77,7 @@ export function SurveySchedulingFields({ control }: SurveySchedulingFieldsProps)
         render={({ field }) => (
           <FormItem>
             <FormLabel>{t('surveys.create.maxRespondents')}</FormLabel>
+            <FormDescription>{t('surveys.create.maxRespondentsHelper')}</FormDescription>
             <FormControl>
               <Input
                 type="number"
@@ -96,7 +93,6 @@ export function SurveySchedulingFields({ control }: SurveySchedulingFieldsProps)
                 className="sm:max-w-[200px]"
               />
             </FormControl>
-            <FormDescription>{t('surveys.create.maxRespondentsHelper')}</FormDescription>
             <FormMessage />
           </FormItem>
         )}

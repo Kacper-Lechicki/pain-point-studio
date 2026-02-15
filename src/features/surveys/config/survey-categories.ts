@@ -1,16 +1,15 @@
 import type { LookupItem } from '@/lib/common/types';
 
-/** Available survey categories for classification. */
+/** Available survey categories for classification. "other" must stay last. */
 export const SURVEY_CATEGORIES: readonly LookupItem[] = [
-  { value: 'productivity', labelKey: 'surveys.categories.productivity' },
-  { value: 'health', labelKey: 'surveys.categories.health' },
-  { value: 'finance', labelKey: 'surveys.categories.finance' },
-  { value: 'education', labelKey: 'surveys.categories.education' },
-  { value: 'developer-tools', labelKey: 'surveys.categories.developerTools' },
-  { value: 'design', labelKey: 'surveys.categories.design' },
-  { value: 'marketing', labelKey: 'surveys.categories.marketing' },
-  { value: 'communication', labelKey: 'surveys.categories.communication' },
-  { value: 'entertainment', labelKey: 'surveys.categories.entertainment' },
+  { value: 'problem-validation', labelKey: 'surveys.categories.problemValidation' },
+  { value: 'solution-validation', labelKey: 'surveys.categories.solutionValidation' },
+  { value: 'market-demand', labelKey: 'surveys.categories.marketDemand' },
+  { value: 'willingness-to-pay', labelKey: 'surveys.categories.willingnessToPay' },
+  { value: 'target-audience', labelKey: 'surveys.categories.targetAudience' },
+  { value: 'competitive-landscape', labelKey: 'surveys.categories.competitiveLandscape' },
+  { value: 'user-habits', labelKey: 'surveys.categories.userHabits' },
+  { value: 'satisfaction', labelKey: 'surveys.categories.satisfaction' },
   { value: 'other', labelKey: 'surveys.categories.other' },
 ] as const;
 

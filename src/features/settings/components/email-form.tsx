@@ -5,7 +5,7 @@ import { useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Mail } from 'lucide-react';
+import { Info, Mail } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -78,8 +78,6 @@ const EmailForm = ({ currentEmail, pendingEmail, emailChangeConfirmStatus }: Ema
       <SettingsSectionHeader
         title={t('settings.email.title')}
         description={t('settings.email.description')}
-        hintContent={t('settings.email.doubleConfirmHint')}
-        hintDialogTitle={t('settings.email.title')}
       />
 
       {pendingEmail && (
@@ -145,6 +143,11 @@ const EmailForm = ({ currentEmail, pendingEmail, emailChangeConfirmStatus }: Ema
           </form>
         </Form>
       )}
+
+      <div className="text-muted-foreground flex items-center gap-2 text-xs">
+        <Info className="size-4 shrink-0" aria-hidden="true" />
+        <p>{t('settings.email.doubleConfirmHint')}</p>
+      </div>
     </section>
   );
 };

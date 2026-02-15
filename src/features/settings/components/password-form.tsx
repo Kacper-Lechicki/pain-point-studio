@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Info } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useForm, useWatch } from 'react-hook-form';
 
@@ -84,8 +85,6 @@ const PasswordForm = ({ hasPassword }: PasswordFormProps) => {
             ? t('settings.password.description')
             : t('settings.password.setFirstDescription')
         }
-        hintContent={hintContent}
-        hintDialogTitle={t('settings.password.title')}
       />
 
       <Form {...form}>
@@ -147,6 +146,11 @@ const PasswordForm = ({ hasPassword }: PasswordFormProps) => {
           </div>
         </form>
       </Form>
+
+      <div className="text-muted-foreground flex items-center gap-2 text-xs">
+        <Info className="size-4 shrink-0" aria-hidden="true" />
+        <p>{hintContent}</p>
+      </div>
     </section>
   );
 };
