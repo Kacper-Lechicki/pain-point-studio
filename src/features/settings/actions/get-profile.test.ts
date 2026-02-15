@@ -124,10 +124,9 @@ describe('Settings Actions – Get Profile', () => {
     const result = await getProfile();
 
     expect(result!.roleOptions).toEqual([
-      { value: 'solo-developer', label: 'translated:settings.roles.soloDeveloper' },
-      { value: 'product-manager', label: 'translated:settings.roles.productManager' },
+      { value: 'developer', label: 'translated:settings.roles.developer' },
       { value: 'designer', label: 'translated:settings.roles.designer' },
-      { value: 'founder', label: 'translated:settings.roles.founder' },
+      { value: 'product-manager', label: 'translated:settings.roles.productManager' },
       { value: 'student', label: 'translated:settings.roles.student' },
       { value: 'other', label: 'translated:settings.roles.other' },
     ]);

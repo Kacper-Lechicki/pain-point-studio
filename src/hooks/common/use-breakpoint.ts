@@ -11,6 +11,10 @@ import { BREAKPOINTS, type Breakpoint } from '@/config';
 
 // Returns true when viewport is >= breakpoint. useSyncExternalStore + resize so no setState in effect; getServerSnapshot = false for SSR.
 
+// Returns true when viewport is >= breakpoint. useSyncExternalStore + resize so no setState in effect; getServerSnapshot = false for SSR.
+
+// Returns true when viewport is >= breakpoint. useSyncExternalStore + resize so no setState in effect; getServerSnapshot = false for SSR.
+
 function getSnapshot(breakpoint: Breakpoint): boolean {
   if (typeof window === 'undefined') {
     return false;

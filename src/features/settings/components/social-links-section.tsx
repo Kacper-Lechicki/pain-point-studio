@@ -91,9 +91,13 @@ export function SocialLinksSection({
                   <FormControl>
                     <Combobox
                       options={[...socialLinkOptions].sort((a, b) => {
-                        if (a.value === 'other') {return 1;}
+                        if (a.value === 'other') {
+                          return 1;
+                        }
 
-                        if (b.value === 'other') {return -1;}
+                        if (b.value === 'other') {
+                          return -1;
+                        }
 
                         return a.label.localeCompare(b.label);
                       })}

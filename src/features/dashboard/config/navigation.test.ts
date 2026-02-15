@@ -1,11 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-  SIDEBAR_BOTTOM_ITEM,
-  SIDEBAR_NAV,
-  findActiveNavItem,
-  hasSubNavForPath,
-} from './navigation';
+import { ROUTES } from '@/config/routes';
+
+import { SIDEBAR_NAV, findActiveNavItem, hasSubNavForPath } from './navigation';
 
 // ── findActiveNavItem ───────────────────────────────────────────────
 
@@ -29,14 +26,14 @@ describe('findActiveNavItem', () => {
     const result = findActiveNavItem('/settings');
 
     expect(result).toBeDefined();
-    expect(result!.href).toBe(SIDEBAR_BOTTOM_ITEM.href);
+    expect(result!.href).toBe(ROUTES.common.settings);
   });
 
   it('returns settings nav item for settings sub-paths', () => {
     const result = findActiveNavItem('/settings/profile');
 
     expect(result).toBeDefined();
-    expect(result!.href).toBe(SIDEBAR_BOTTOM_ITEM.href);
+    expect(result!.href).toBe(ROUTES.common.settings);
   });
 
   it('returns undefined for /dashboard (no subNav)', () => {
