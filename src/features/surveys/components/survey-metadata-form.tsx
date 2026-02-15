@@ -221,7 +221,7 @@ const SurveyMetadataForm = ({
         control={form.control}
         name="visibility"
         render={({ field }) => (
-          <FormItem className="flex flex-col gap-4 rounded-lg border p-3 sm:flex-row sm:items-start sm:justify-between sm:p-4">
+          <FormItem className="flex items-start justify-between gap-4 rounded-lg border p-3 sm:p-4">
             <div className="min-w-0 space-y-0.5">
               <FormLabel>{t('surveys.create.visibility')}</FormLabel>
               <FormDescription>

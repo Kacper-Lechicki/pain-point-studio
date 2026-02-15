@@ -144,7 +144,7 @@ const EmailForm = ({ currentEmail, pendingEmail, emailChangeConfirmStatus }: Ema
         </Form>
       )}
 
-      <div className="text-muted-foreground flex items-center gap-2 text-xs">
+      <div className="text-muted-foreground flex items-start gap-2 text-xs">
         <Info className="size-4 shrink-0" aria-hidden="true" />
         <p>{t('settings.email.doubleConfirmHint')}</p>
       </div>
