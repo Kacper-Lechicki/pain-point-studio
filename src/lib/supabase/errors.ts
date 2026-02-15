@@ -1,3 +1,8 @@
+/**
+ * Maps Supabase Auth (GoTrue) and API error messages to i18n keys so the UI
+ * can show localized, user-friendly messages. Unrecognized messages fall back
+ * to auth.errors.unexpected.
+ */
 const SUPABASE_ERROR_MAP: Record<string, string> = {
   'Invalid login credentials': 'auth.errors.invalidCredentials',
   'Email not confirmed': 'auth.errors.emailNotConfirmed',
@@ -13,6 +18,7 @@ const SUPABASE_ERROR_MAP: Record<string, string> = {
   'User must have at least one identity': 'settings.connectedAccounts.errors.cannotUnlinkLast',
 };
 
+/** Returns the i18n key for a given Supabase error message; exact match first, then prefix match. */
 export function mapSupabaseError(supabaseMessage: string): string {
   const exactMatch = SUPABASE_ERROR_MAP[supabaseMessage];
 

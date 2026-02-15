@@ -1,11 +1,10 @@
 'use server';
 
+import { mapRpcError } from '@/features/surveys/config';
+import { saveAnswerSchema } from '@/features/surveys/types';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withPublicAction } from '@/lib/common/with-public-action';
 import type { Json } from '@/lib/supabase/types';
-
-import { mapRpcError } from '../../config';
-import { saveAnswerSchema } from '../../types';
 
 export const saveAnswer = withPublicAction<typeof saveAnswerSchema, void>('save-answer', {
   schema: saveAnswerSchema,

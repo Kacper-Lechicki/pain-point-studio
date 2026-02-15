@@ -5,25 +5,20 @@ import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { PAIN_POINTS_CONFIG, PAIN_POINTS_DATA } from '@/features/marketing/config';
+import {
+  PAIN_POINTS_CONFIG,
+  PAIN_POINTS_DATA,
+  localizeChartConfig,
+} from '@/features/marketing/config';
 
 const PainPointsChart = () => {
-  const t = useTranslations('marketing.charts.painPoints');
-  const title = t('title');
-  const description = t('description');
+  const t = useTranslations();
+  const title = t('marketing.charts.painPoints.title');
+  const description = t('marketing.charts.painPoints.description');
 
-  const chartConfig = {
-    ...PAIN_POINTS_CONFIG,
-    ...Object.fromEntries(
-      Object.entries(PAIN_POINTS_CONFIG).map(([key, value]) => [
-        key,
-        {
-          ...value,
-          label: value.label ? t(`chart.${value.label}` as Parameters<typeof t>[0]) : undefined,
-        },
-      ])
-    ),
-  };
+  const chartConfig = localizeChartConfig(PAIN_POINTS_CONFIG, (key) =>
+    t(`marketing.charts.painPoints.${key}` as Parameters<typeof t>[0])
+  );
 
   const formatPainPointTick = (value: string): string => {
     const config = chartConfig[value.toLowerCase() as keyof typeof chartConfig];

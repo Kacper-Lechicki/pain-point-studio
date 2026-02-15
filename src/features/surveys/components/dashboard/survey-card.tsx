@@ -1,32 +1,23 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-
-import { AlertTriangle, BarChart3, Copy, Eye, MoreHorizontal, Pencil, Share2 } from 'lucide-react';
-import { useFormatter, useLocale, useNow, useTranslations } from 'next-intl';
-import { toast } from 'sonner';
+import { AlertTriangle, MoreHorizontal } from 'lucide-react';
+import { useFormatter, useNow, useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { duplicateSurvey } from '@/features/surveys/actions';
+import { DropdownMenu, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
-import { SURVEY_ACTION_UI, getAvailableActions } from '@/features/surveys/config/survey-status';
+import { deriveSurveyFlags, getAvailableActions } from '@/features/surveys/config/survey-status';
 import { useSurveyAction } from '@/features/surveys/hooks/use-survey-action';
+import { useSurveyCardActions } from '@/features/surveys/hooks/use-survey-card-actions';
 import { calculateCompletionRate } from '@/features/surveys/lib/calculations';
-import { getSurveyShareUrl } from '@/features/surveys/lib/share-url';
 import { computeHint } from '@/features/surveys/lib/survey-hints';
 import { getSurveyEditUrl, getSurveyStatsUrl } from '@/features/surveys/lib/survey-urls';
 import Link from '@/i18n/link';
 import { cn } from '@/lib/common/utils';
 
 import { Sparkline, getSparklineColor } from './sparkline';
+import { SurveyActionMenuContent } from './survey-action-menu';
 import { SurveyStatusBadge } from './survey-status-badge';
 
 // ── Component ────────────────────────────────────────────────────────
@@ -38,25 +29,18 @@ interface SurveyCardProps {
 }
 
 export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCardProps) => {
-  const t = useTranslations('surveys.dashboard');
-  const tCategories = useTranslations('surveys.categories');
-  const locale = useLocale();
+  const t = useTranslations();
   const format = useFormatter();
   const now = useNow();
-  const router = useRouter();
 
   const { handleActionClick, confirmDialogProps } = useSurveyAction(survey.id, onStatusChange, t);
+  const { handleShare, handleDuplicate } = useSurveyCardActions(survey.id, survey.slug);
 
-  const isDraft = survey.status === 'draft';
-  const isPending = survey.status === 'pending';
-  const isActive = survey.status === 'active';
-  const isClosed = survey.status === 'closed';
-  const isArchived = survey.status === 'archived';
-  const hasShareableLink = (isActive || isPending || isClosed) && survey.slug;
-
+  const { isDraft, isPending, isActive, isClosed, isArchived, canDuplicate } = deriveSurveyFlags(
+    survey.status
+  );
+  const hasShareableLink = (isActive || isPending || isClosed) && !!survey.slug;
   const href = isDraft ? getSurveyEditUrl(survey.id) : getSurveyStatsUrl(survey.id);
-
-  const shareUrl = survey.slug ? getSurveyShareUrl(locale, survey.slug) : null;
 
   const hint = computeHint(survey, t);
   const sparklineColor = getSparklineColor(survey.recentActivity);
@@ -64,39 +48,22 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
   const relativeUpdated = format.relativeTime(new Date(survey.updatedAt), now);
   const availableActions = getAvailableActions(survey.status);
 
-  const handleShare = async () => {
-    if (!shareUrl) {
-      return;
-    }
-
-    await navigator.clipboard.writeText(shareUrl);
-    toast.success(t('toast.linkCopied'));
-  };
-
-  const handleDuplicate = async () => {
-    const result = await duplicateSurvey({ surveyId: survey.id });
-
-    if (result.success && result.data) {
-      toast.success(t('toast.duplicated'));
-      router.push(getSurveyEditUrl(result.data.surveyId));
-    }
-  };
-
-  const canDuplicate = isDraft || isActive || isClosed || survey.status === 'cancelled';
-
   const responseDisplay = (() => {
     const parts: string[] = [];
 
     if (survey.maxRespondents) {
       parts.push(
-        t('card.responsesOfMax', { completed: survey.completedCount, max: survey.maxRespondents })
+        t('surveys.dashboard.card.responsesOfMax', {
+          completed: survey.completedCount,
+          max: survey.maxRespondents,
+        })
       );
     } else {
-      parts.push(t('card.completedCount', { count: survey.completedCount }));
+      parts.push(t('surveys.dashboard.card.completedCount', { count: survey.completedCount }));
     }
 
     if (inProgressCount > 0) {
-      parts.push(t('card.inProgressCount', { count: inProgressCount }));
+      parts.push(t('surveys.dashboard.card.inProgressCount', { count: inProgressCount }));
     }
 
     return parts.join(', ');
@@ -108,7 +75,7 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
 
   const lastResponseLabel =
     survey.lastResponseAt != null
-      ? t('card.lastResponse', {
+      ? t('surveys.dashboard.card.lastResponse', {
           time: format.relativeTime(new Date(survey.lastResponseAt), now),
         })
       : null;
@@ -135,90 +102,35 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
 
               {/* Row 2: Description */}
               <p className="text-muted-foreground mt-1 line-clamp-1 text-xs leading-relaxed">
-                {survey.description || <span className="italic">{t('card.noDescription')}</span>}
+                {survey.description || (
+                  <span className="italic">{t('surveys.dashboard.card.noDescription')}</span>
+                )}
               </p>
             </div>
 
-            {/* Menu — always visible */}
+            {/* Menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon-xs"
                   className="text-muted-foreground shrink-0"
-                  aria-label={t('actions.moreActions')}
+                  aria-label={t('surveys.dashboard.actions.moreActions')}
                   onClick={(e) => e.preventDefault()}
                 >
                   <MoreHorizontal className="size-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {onQuickPreview && (
-                  <DropdownMenuItem
-                    onClick={(e) => {
-                      e.preventDefault();
-                      onQuickPreview(survey.id);
-                    }}
-                  >
-                    <Eye className="size-4" aria-hidden />
-                    {t('actions.quickPreview')}
-                  </DropdownMenuItem>
-                )}
-
-                {hasShareableLink && (
-                  <DropdownMenuItem onClick={handleShare}>
-                    <Share2 className="size-4" aria-hidden />
-                    {t('actions.share')}
-                  </DropdownMenuItem>
-                )}
-
-                {!isDraft && (
-                  <DropdownMenuItem asChild>
-                    <Link href={getSurveyStatsUrl(survey.id)}>
-                      <BarChart3 className="size-4" />
-                      {t('actions.viewResults')}
-                    </Link>
-                  </DropdownMenuItem>
-                )}
-
-                {isDraft && (
-                  <DropdownMenuItem asChild>
-                    <Link href={getSurveyEditUrl(survey.id)}>
-                      <Pencil className="size-4" />
-                      {t('actions.edit')}
-                    </Link>
-                  </DropdownMenuItem>
-                )}
-
-                {canDuplicate && (
-                  <DropdownMenuItem onClick={handleDuplicate}>
-                    <Copy className="size-4" aria-hidden />
-                    {t('actions.duplicate')}
-                  </DropdownMenuItem>
-                )}
-
-                {availableActions.length > 0 && (
-                  <>
-                    <DropdownMenuSeparator />
-                    {availableActions.map((action) => {
-                      const ui = SURVEY_ACTION_UI[action];
-                      const Icon = ui.icon;
-                      const isDestructive = ui.confirm?.variant === 'destructive';
-
-                      return (
-                        <DropdownMenuItem
-                          key={action}
-                          onClick={() => handleActionClick(action)}
-                          className={cn(isDestructive && 'text-destructive focus:text-destructive')}
-                        >
-                          <Icon className="size-4" aria-hidden />
-                          {t(`actions.${action}`)}
-                        </DropdownMenuItem>
-                      );
-                    })}
-                  </>
-                )}
-              </DropdownMenuContent>
+              <SurveyActionMenuContent
+                surveyId={survey.id}
+                flags={{ isDraft, isPending, canDuplicate, hasShareableLink }}
+                availableActions={availableActions}
+                onShare={handleShare}
+                onDuplicate={handleDuplicate}
+                handleActionClick={handleActionClick}
+                {...(onQuickPreview && { onDetails: () => onQuickPreview(survey.id) })}
+                detailsLabelKey="quickPreview"
+              />
             </DropdownMenu>
           </div>
 
@@ -226,12 +138,14 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
           <div className="border-border/50 bg-muted/30 mt-3 flex min-w-0 flex-col gap-2 rounded-lg px-2.5 py-2 sm:flex-row sm:items-end sm:justify-between sm:gap-3 sm:px-3 sm:py-2.5">
             <div className="text-muted-foreground min-w-0 shrink-0 text-xs leading-relaxed">
               <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
-                <span className="truncate">{tCategories(survey.category as never)}</span>
+                <span className="truncate">
+                  {t(`surveys.categories.${survey.category}` as Parameters<typeof t>[0])}
+                </span>
                 <span className="text-border/60 shrink-0" aria-hidden>
                   ·
                 </span>
                 <span className="shrink-0">
-                  {t('card.questions', { count: survey.questionCount })}
+                  {t('surveys.dashboard.card.questions', { count: survey.questionCount })}
                 </span>
                 <span className="text-border/60 shrink-0" aria-hidden>
                   ·
@@ -251,7 +165,9 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
                       <span className="text-border/60 shrink-0" aria-hidden>
                         ·
                       </span>
-                      <span>{t('card.completionRate', { rate: completionRate })}</span>
+                      <span>
+                        {t('surveys.dashboard.card.completionRate', { rate: completionRate })}
+                      </span>
                     </>
                   )}
                 </div>

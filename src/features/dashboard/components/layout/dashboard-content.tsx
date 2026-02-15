@@ -2,15 +2,14 @@
 
 import type { ReactNode } from 'react';
 
+import { DashboardContentArea } from '@/features/dashboard/components/layout/dashboard-content-area';
+import { useSidebar } from '@/features/dashboard/components/layout/sidebar-provider';
 import {
   getDashboardContentMarginLeft,
   getDashboardContentMaxWidth,
   isBuilderPath,
 } from '@/features/dashboard/config/layout';
 import { usePathname } from '@/i18n/routing';
-
-import { DashboardContentArea } from './dashboard-content-area';
-import { useSidebar } from './sidebar-provider';
 
 export function DashboardContent({ children }: { children: ReactNode }) {
   const pathname = usePathname();

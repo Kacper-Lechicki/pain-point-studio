@@ -2,10 +2,9 @@
 
 import { cache } from 'react';
 
+import { mapQuestionRow } from '@/features/surveys/lib/map-question-row';
+import type { PublicSurveyData } from '@/features/surveys/types';
 import { createClient } from '@/lib/supabase/server';
-
-import { mapQuestionRow } from '../../lib/map-question-row';
-import type { PublicSurveyData } from '../../types';
 
 export const getPublicSurvey = cache(async (slug: string): Promise<PublicSurveyData | null> => {
   const supabase = await createClient();

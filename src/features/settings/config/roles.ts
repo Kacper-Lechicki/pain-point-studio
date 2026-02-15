@@ -1,8 +1,6 @@
-interface LookupItem {
-  value: string;
-  labelKey: string;
-}
+import type { LookupItem } from '@/features/settings/config';
 
+/** Available user roles displayed in the profile form. */
 export const ROLES: readonly LookupItem[] = [
   { value: 'solo-developer', labelKey: 'settings.roles.soloDeveloper' },
   { value: 'product-manager', labelKey: 'settings.roles.productManager' },

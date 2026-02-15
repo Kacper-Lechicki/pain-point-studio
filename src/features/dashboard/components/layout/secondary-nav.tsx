@@ -6,14 +6,17 @@ import { useSearchParams } from 'next/navigation';
 
 import { useTranslations } from 'next-intl';
 
+import { SIDEBAR_NAV_ITEM_CLASSES } from '@/features/dashboard/config/nav-styles';
+import type { SubNavConfig } from '@/features/dashboard/config/navigation';
+import { useHashSync } from '@/features/dashboard/hooks/use-hash-sync';
+import {
+  collectSearchParamKeys,
+  getSubItemHref,
+  isSubItemActive,
+} from '@/features/dashboard/lib/nav-utils';
 import { Link, usePathname } from '@/i18n/routing';
 import type { MessageKey } from '@/i18n/types';
 import { cn } from '@/lib/common/utils';
-
-import { SIDEBAR_NAV_ITEM_CLASSES } from '../../config/nav-styles';
-import type { SubNavConfig } from '../../config/navigation';
-import { useHashSync } from '../../hooks/use-hash-sync';
-import { getSubItemHref, isSubItemActive } from '../../lib/nav-utils';
 
 interface SecondaryNavProps {
   titleKey: MessageKey;
@@ -26,22 +29,10 @@ export function SecondaryNav({ titleKey, groups }: SecondaryNavProps) {
   const hash = useHashSync();
   const t = useTranslations();
 
-  // Convert ReadonlyURLSearchParams to a stable string so we can use it as a
-  // dependency and also create a fresh URLSearchParams from it.
   const searchString = nextSearchParams.toString();
   const currentSearchParams = useMemo(() => new URLSearchParams(searchString), [searchString]);
 
-  // Collect all search param keys used by any item (for disambiguating "All" vs specific filters)
-  const hasSearchParamItems = groups.some((g) => g.items.some((i) => i.searchParams));
-  const searchParamKeys = hasSearchParamItems
-    ? [
-        ...new Set(
-          groups.flatMap((g) =>
-            g.items.flatMap((i) => (i.searchParams ? Object.keys(i.searchParams) : []))
-          )
-        ),
-      ]
-    : [];
+  const searchParamKeys = collectSearchParamKeys(groups);
 
   return (
     <>
@@ -84,11 +75,12 @@ export function SecondaryNav({ titleKey, groups }: SecondaryNavProps) {
                   );
                 }
 
-                const isActive = hasSearchParamItems
-                  ? isSubItemActive(item, pathname, hash, currentSearchParams, searchParamKeys)
-                  : item.hash
-                    ? pathname === item.href && hash === item.hash
-                    : pathname === item.href || (item.alsoActiveFor?.includes(pathname) ?? false);
+                const isActive =
+                  searchParamKeys.length > 0
+                    ? isSubItemActive(item, pathname, hash, currentSearchParams, searchParamKeys)
+                    : item.hash
+                      ? pathname === item.href && hash === item.hash
+                      : pathname === item.href || (item.alsoActiveFor?.includes(pathname) ?? false);
 
                 if (item.hash) {
                   return (

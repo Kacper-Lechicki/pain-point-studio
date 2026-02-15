@@ -1,3 +1,4 @@
+/** Parsed rating scale configuration with pre-computed values array. */
 export interface RatingScaleConfig {
   min: number;
   max: number;
@@ -6,6 +7,7 @@ export interface RatingScaleConfig {
   maxLabel: string;
 }
 
+/** Parses a raw question config record into a typed `RatingScaleConfig` with defaults. */
 export function getRatingScaleConfig(config: Record<string, unknown>): RatingScaleConfig {
   const min = (config.min as number) ?? 1;
   const max = (config.max as number) ?? 5;

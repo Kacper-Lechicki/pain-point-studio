@@ -34,7 +34,7 @@ export function PublishSuccessDialog({
   surveyTitle,
   onClose,
 }: PublishSuccessDialogProps) {
-  const t = useTranslations('surveys.publish');
+  const t = useTranslations();
 
   return (
     <Dialog
@@ -50,8 +50,8 @@ export function PublishSuccessDialog({
           <div className="bg-success/10 mb-2 flex size-14 items-center justify-center rounded-full">
             <CheckCircle2 className="text-success size-7" />
           </div>
-          <DialogTitle>{t('successTitle', { name: surveyTitle })}</DialogTitle>
-          <DialogDescription>{t('successDescription')}</DialogDescription>
+          <DialogTitle>{t('surveys.publish.successTitle', { name: surveyTitle })}</DialogTitle>
+          <DialogDescription>{t('surveys.publish.successDescription')}</DialogDescription>
         </DialogHeader>
 
         <SurveyShareContent shareUrl={shareUrl} surveyTitle={surveyTitle} />
@@ -62,11 +62,11 @@ export function PublishSuccessDialog({
           <Button variant="outline" size="sm" asChild>
             <Link href={ROUTES.dashboard.surveysNew}>
               <Plus className="size-3.5" />
-              {t('createAnother')}
+              {t('surveys.publish.createAnother')}
             </Link>
           </Button>
           <Button size="sm" asChild>
-            <Link href={getSurveyStatsUrl(surveyId)}>{t('viewDashboard')}</Link>
+            <Link href={getSurveyStatsUrl(surveyId)}>{t('surveys.publish.viewDashboard')}</Link>
           </Button>
         </DialogFooter>
       </DialogContent>

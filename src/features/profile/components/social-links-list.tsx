@@ -4,6 +4,7 @@ import { Github, Globe, Link as LinkIcon, Linkedin, Twitter } from 'lucide-react
 import { useTranslations } from 'next-intl';
 
 import type { SocialLink } from '@/features/settings/types';
+import { cn } from '@/lib/common/utils';
 
 const SOCIAL_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   website: Globe,
@@ -21,7 +22,8 @@ const SOCIAL_COLORS: Record<string, string> = {
   other: 'md:hover:border-primary/30 md:hover:bg-primary/5',
 };
 
-function getDisplayUrl(url: string): string {
+/** Strip protocol and trailing slash from a URL for compact display (e.g. "github.com/user"). */
+export function getDisplayUrl(url: string): string {
   try {
     const parsed = new URL(url);
     const host = parsed.hostname.replace(/^www\./, '');
@@ -45,17 +47,20 @@ const SocialLinksList = ({ links }: SocialLinksListProps) => {
       <h3 className="text-sm font-medium">{t('profile.sections.socialLinks')}</h3>
 
       <div className="flex flex-wrap gap-2">
-        {links.map((link, index) => {
+        {links.map((link) => {
           const Icon = SOCIAL_ICONS[link.label] ?? LinkIcon;
           const colorClass = SOCIAL_COLORS[link.label] ?? SOCIAL_COLORS.other;
 
           return (
             <a
-              key={index}
+              key={link.url}
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"
-              className={`border-border/60 text-muted-foreground md:hover:text-foreground inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors ${colorClass}`}
+              className={cn(
+                'border-border/60 text-muted-foreground md:hover:text-foreground inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors',
+                colorClass
+              )}
             >
               <Icon className="size-4 shrink-0" />
               <span>{getDisplayUrl(link.url)}</span>

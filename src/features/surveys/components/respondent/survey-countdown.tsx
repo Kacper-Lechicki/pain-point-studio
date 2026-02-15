@@ -37,7 +37,7 @@ function getTimeLeft(startsAt: string): TimeLeft | null {
 }
 
 export const SurveyCountdown = ({ title, startsAt }: SurveyCountdownProps) => {
-  const t = useTranslations('respondent.countdown');
+  const t = useTranslations();
   const format = useFormatter();
   const router = useRouter();
   const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(() => getTimeLeft(startsAt));
@@ -73,21 +73,25 @@ export const SurveyCountdown = ({ title, startsAt }: SurveyCountdownProps) => {
         <div className="bg-muted mb-6 flex size-16 items-center justify-center rounded-full">
           <CalendarClock className="text-muted-foreground size-8" />
         </div>
-        <h1 className="text-foreground mb-2 text-xl font-semibold">{t('title')}</h1>
+        <h1 className="text-foreground mb-2 text-xl font-semibold">
+          {t('respondent.countdown.title')}
+        </h1>
         <p className="text-muted-foreground mb-8 max-w-sm">
-          {t('description', { date: formattedDate })}
+          {t('respondent.countdown.description', { date: formattedDate })}
         </p>
 
         {timeLeft && (
           <div className="mb-8 flex gap-3">
-            {timeLeft.days > 0 && <CountdownUnit value={timeLeft.days} label={t('days')} />}
-            <CountdownUnit value={timeLeft.hours} label={t('hours')} />
-            <CountdownUnit value={timeLeft.minutes} label={t('minutes')} />
-            <CountdownUnit value={timeLeft.seconds} label={t('seconds')} />
+            {timeLeft.days > 0 && (
+              <CountdownUnit value={timeLeft.days} label={t('respondent.countdown.days')} />
+            )}
+            <CountdownUnit value={timeLeft.hours} label={t('respondent.countdown.hours')} />
+            <CountdownUnit value={timeLeft.minutes} label={t('respondent.countdown.minutes')} />
+            <CountdownUnit value={timeLeft.seconds} label={t('respondent.countdown.seconds')} />
           </div>
         )}
 
-        <p className="text-muted-foreground text-sm">{t('encouragement')}</p>
+        <p className="text-muted-foreground text-sm">{t('respondent.countdown.encouragement')}</p>
         <p className="text-muted-foreground mt-4 text-xs">{title}</p>
       </div>
     </PageTransition>

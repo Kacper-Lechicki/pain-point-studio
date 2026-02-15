@@ -2,17 +2,16 @@
 
 import type { ReactNode } from 'react';
 
+import { DashboardContent } from '@/features/dashboard/components/layout/dashboard-content';
+import { DashboardFooter } from '@/features/dashboard/components/layout/dashboard-footer';
+import { MobileNav } from '@/features/dashboard/components/layout/mobile-nav';
+import { Navbar } from '@/features/dashboard/components/layout/navbar';
+import { Sidebar } from '@/features/dashboard/components/layout/sidebar';
+import { SubPanel } from '@/features/dashboard/components/layout/sub-panel';
+import { isBuilderPath } from '@/features/dashboard/config/layout';
 import type { ProfileData } from '@/features/settings/actions';
 import { CompleteProfileModal } from '@/features/settings/components/complete-profile-modal';
 import { usePathname } from '@/i18n/routing';
-
-import { isBuilderPath } from '../../config/layout';
-import { DashboardContent } from './dashboard-content';
-import { DashboardFooter } from './dashboard-footer';
-import { MobileNav } from './mobile-nav';
-import { Navbar } from './navbar';
-import { Sidebar } from './sidebar';
-import { SubPanel } from './sub-panel';
 
 interface DashboardLayoutChromeProps {
   children: ReactNode;
@@ -37,10 +36,12 @@ export function DashboardLayoutChrome({ children, profile }: DashboardLayoutChro
     <>
       <div className="flex h-screen max-h-screen flex-col overflow-hidden">
         <Navbar />
+
         <div className="flex min-h-0 flex-1 overflow-hidden">
           <Sidebar />
           <SubPanel />
           <MobileNav />
+
           <div className="flex min-h-full min-w-0 flex-1 flex-col overflow-auto">
             <div className="h-14 shrink-0" aria-hidden="true" />
             <DashboardContent>{children}</DashboardContent>
@@ -48,6 +49,7 @@ export function DashboardLayoutChrome({ children, profile }: DashboardLayoutChro
           </div>
         </div>
       </div>
+
       {needsCompletion && profile && (
         <CompleteProfileModal
           roleOptions={profile.roleOptions}

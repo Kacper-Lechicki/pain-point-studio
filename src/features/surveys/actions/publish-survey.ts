@@ -1,11 +1,10 @@
 'use server';
 
+import { PG_ERROR, QUESTIONS_MIN } from '@/features/surveys/config';
+import { generateSurveySlug } from '@/features/surveys/lib/generate-slug';
+import { surveyIdSchema } from '@/features/surveys/types';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
-
-import { PG_ERROR, QUESTIONS_MIN } from '../config';
-import { generateSurveySlug } from '../lib/generate-slug';
-import { surveyIdSchema } from '../types';
 
 export const publishSurvey = withProtectedAction<typeof surveyIdSchema, { slug: string }>(
   'publish-survey',

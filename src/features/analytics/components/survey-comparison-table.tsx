@@ -6,32 +6,21 @@ import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/config/routes';
+import type { AnalyticsData } from '@/features/analytics/actions/get-analytics-data';
 import { SurveyStatusBadge } from '@/features/surveys/components/dashboard/survey-status-badge';
 import { DATE_FORMAT_SHORT } from '@/features/surveys/config';
-import type { SurveyStatus } from '@/features/surveys/types';
 import Link from '@/i18n/link';
 
 type SortColumn = 'title' | 'completedCount' | 'completionRate' | 'questionCount' | 'createdAt';
 type SortDir = 'asc' | 'desc';
 
-interface SurveyRow {
-  id: string;
-  title: string;
-  status: string;
-  category: string;
-  completedCount: number;
-  completionRate: number;
-  questionCount: number;
-  createdAt: string;
-}
-
 interface SurveyComparisonTableProps {
-  surveys: SurveyRow[];
+  surveys: AnalyticsData['surveyComparison'];
 }
 
 export const SurveyComparisonTable = ({ surveys }: SurveyComparisonTableProps) => {
-  const t = useTranslations('analytics');
-  const tCategories = useTranslations('surveys.categories');
+  const t = useTranslations();
+  const tCategories = useTranslations();
   const format = useFormatter();
 
   const [sortCol, setSortCol] = useState<SortColumn>('completedCount');
@@ -78,7 +67,7 @@ export const SurveyComparisonTable = ({ surveys }: SurveyComparisonTableProps) =
 
   const translateCategory = (category: string): string => {
     try {
-      return tCategories(category as Parameters<typeof tCategories>[0]);
+      return tCategories(`surveys.categories.${category}` as Parameters<typeof tCategories>[0]);
     } catch {
       return category.charAt(0).toUpperCase() + category.slice(1);
     }
@@ -91,29 +80,40 @@ export const SurveyComparisonTable = ({ surveys }: SurveyComparisonTableProps) =
       <table className="w-full min-w-[640px] text-sm">
         <thead>
           <tr className="border-border/50 border-b">
-            <Th col="title" label={t('columnTitle')} toggleSort={toggleSort}>
+            <Th col="title" label={t('analytics.columnTitle')} toggleSort={toggleSort}>
               <SortIcon col="title" sortCol={sortCol} sortDir={sortDir} />
             </Th>
+
             <th className="text-muted-foreground px-2 py-2 text-left text-xs font-medium">
-              {t('columnStatus')}
+              {t('analytics.columnStatus')}
             </th>
+
             <th className="text-muted-foreground px-2 py-2 text-left text-xs font-medium">
-              {t('columnCategory')}
+              {t('analytics.columnCategory')}
             </th>
-            <Th col="completedCount" label={t('columnResponses')} toggleSort={toggleSort}>
+
+            <Th col="completedCount" label={t('analytics.columnResponses')} toggleSort={toggleSort}>
               <SortIcon col="completedCount" sortCol={sortCol} sortDir={sortDir} />
             </Th>
-            <Th col="completionRate" label={t('columnCompletionRate')} toggleSort={toggleSort}>
+
+            <Th
+              col="completionRate"
+              label={t('analytics.columnCompletionRate')}
+              toggleSort={toggleSort}
+            >
               <SortIcon col="completionRate" sortCol={sortCol} sortDir={sortDir} />
             </Th>
-            <Th col="questionCount" label={t('columnQuestions')} toggleSort={toggleSort}>
+
+            <Th col="questionCount" label={t('analytics.columnQuestions')} toggleSort={toggleSort}>
               <SortIcon col="questionCount" sortCol={sortCol} sortDir={sortDir} />
             </Th>
-            <Th col="createdAt" label={t('columnCreated')} toggleSort={toggleSort}>
+
+            <Th col="createdAt" label={t('analytics.columnCreated')} toggleSort={toggleSort}>
               <SortIcon col="createdAt" sortCol={sortCol} sortDir={sortDir} />
             </Th>
           </tr>
         </thead>
+
         <tbody>
           {sorted.map((survey) => (
             <tr
@@ -128,15 +128,19 @@ export const SurveyComparisonTable = ({ surveys }: SurveyComparisonTableProps) =
                   {survey.title}
                 </Link>
               </td>
+
               <td className="px-2 py-2.5">
-                <SurveyStatusBadge status={survey.status as SurveyStatus} />
+                <SurveyStatusBadge status={survey.status} />
               </td>
+
               <td className="text-muted-foreground px-2 py-2.5 text-xs">
                 {translateCategory(survey.category)}
               </td>
+
               <td className="px-2 py-2.5 tabular-nums">{survey.completedCount}</td>
               <td className="px-2 py-2.5 tabular-nums">{survey.completionRate}%</td>
               <td className="px-2 py-2.5 tabular-nums">{survey.questionCount}</td>
+
               <td className="text-muted-foreground px-2 py-2.5 text-xs">
                 {formatDate(survey.createdAt)}
               </td>

@@ -39,7 +39,7 @@ function buildShareUrls(url: string, title: string, body: string, emailSubject: 
 }
 
 export function SurveyShareContent({ shareUrl, surveyTitle }: SurveyShareContentProps) {
-  const t = useTranslations('surveys.publish');
+  const t = useTranslations();
   const qrRef = useRef<HTMLCanvasElement>(null);
 
   function handleDownloadQR() {
@@ -56,22 +56,22 @@ export function SurveyShareContent({ shareUrl, surveyTitle }: SurveyShareContent
     a.click();
   }
 
-  const shareBody = t('shareBody', { title: surveyTitle, url: shareUrl });
-  const emailSubject = t('shareEmailSubject', { title: surveyTitle });
+  const shareBody = t('surveys.publish.shareBody', { title: surveyTitle, url: shareUrl });
+  const emailSubject = t('surveys.publish.shareEmailSubject', { title: surveyTitle });
   const urls = buildShareUrls(shareUrl, surveyTitle, shareBody, emailSubject);
 
   const socialButtons = [
-    { key: 'twitter', href: urls.twitter, icon: Twitter, label: t('twitter') },
-    { key: 'linkedin', href: urls.linkedin, icon: Linkedin, label: t('linkedin') },
-    { key: 'email', href: urls.email, icon: Mail, label: t('email') },
-    { key: 'reddit', href: urls.reddit, icon: RedditIcon, label: t('reddit') },
+    { key: 'twitter', href: urls.twitter, icon: Twitter, label: t('surveys.publish.twitter') },
+    { key: 'linkedin', href: urls.linkedin, icon: Linkedin, label: t('surveys.publish.linkedin') },
+    { key: 'email', href: urls.email, icon: Mail, label: t('surveys.publish.email') },
+    { key: 'reddit', href: urls.reddit, icon: RedditIcon, label: t('surveys.publish.reddit') },
   ] as const;
 
   return (
     <div className="space-y-5">
       {/* Copy link */}
       <div className="space-y-2">
-        <label className="text-sm font-medium">{t('shareLink')}</label>
+        <label className="text-sm font-medium">{t('surveys.publish.shareLink')}</label>
         <ClipboardInput value={shareUrl} />
       </div>
 
@@ -82,7 +82,7 @@ export function SurveyShareContent({ shareUrl, surveyTitle }: SurveyShareContent
         </div>
         <Button variant="outline" size="sm" onClick={handleDownloadQR}>
           <Download className="size-3.5" />
-          {t('downloadQR')}
+          {t('surveys.publish.downloadQR')}
         </Button>
       </div>
 
@@ -90,7 +90,7 @@ export function SurveyShareContent({ shareUrl, surveyTitle }: SurveyShareContent
 
       {/* Social sharing */}
       <div className="space-y-2">
-        <label className="text-sm font-medium">{t('shareVia')}</label>
+        <label className="text-sm font-medium">{t('surveys.publish.shareVia')}</label>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           {socialButtons.map(({ key, href, icon: Icon, label }) => (
             <Button key={key} variant="outline" size="sm" asChild>

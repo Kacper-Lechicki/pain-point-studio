@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+/** Password policy: thresholds and individual requirement checkers. */
 export const PASSWORD_CONFIG = {
   MIN_LENGTH: 8,
   STRONG_LENGTH: 12,
@@ -13,6 +14,7 @@ export const PASSWORD_CONFIG = {
   },
 } as const;
 
+/** Scores password strength 0–5 based on how many requirements are met. */
 export const calculatePasswordStrength = (password: string): number => {
   if (!password) {
     return 0;
@@ -47,6 +49,7 @@ export const calculatePasswordStrength = (password: string): number => {
   return Math.min(Math.floor(score * (5 / 6)), 5);
 };
 
+/** Zod schema enforcing all mandatory password requirements (length, upper, lower, digit, special). */
 export const basePasswordSchema = z
   .string()
   .min(PASSWORD_CONFIG.MIN_LENGTH, 'auth.passwordRequirements')

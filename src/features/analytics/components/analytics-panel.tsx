@@ -15,64 +15,59 @@ interface AnalyticsPanelProps {
 }
 
 export const AnalyticsPanel = ({ data }: AnalyticsPanelProps) => {
-  const t = useTranslations('analytics');
+  const t = useTranslations();
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div>
-        <h1 className="text-foreground text-3xl leading-tight font-bold">{t('title')}</h1>
-        <p className="text-muted-foreground mt-1 text-sm">{t('description')}</p>
+        <h1 className="text-foreground text-3xl leading-tight font-bold">{t('analytics.title')}</h1>
+        <p className="text-muted-foreground mt-1 text-sm">{t('analytics.description')}</p>
       </div>
 
       <Separator />
 
-      {/* Summary metrics */}
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-        <MetricCard value={data.totalResponses} label={t('totalResponses')} icon={Hash} />
+        <MetricCard value={data.totalResponses} label={t('analytics.totalResponses')} icon={Hash} />
+
         <MetricCard
           value={data.completedResponses}
-          label={t('completedResponses')}
+          label={t('analytics.completedResponses')}
           icon={CheckCircle}
         />
+
         <MetricCard
           value={`${data.avgCompletionRate}%`}
-          label={t('avgCompletionRate')}
+          label={t('analytics.avgCompletionRate')}
           icon={TrendingUp}
         />
       </div>
 
-      {/* Response trends */}
       {data.responseTimeline.length > 0 && data.responseTimeline.some((v) => v > 0) && (
         <>
           <Separator />
-          <SectionLabel>{t('responseTrends')}</SectionLabel>
+          <SectionLabel>{t('analytics.responseTrends')}</SectionLabel>
           <ResponseTimelineChart data={data.responseTimeline} />
         </>
       )}
 
-      {/* Category breakdown */}
       {data.categoryBreakdown.length > 0 && (
         <>
           <Separator />
-          <SectionLabel>{t('categoryBreakdown')}</SectionLabel>
+          <SectionLabel>{t('analytics.categoryBreakdown')}</SectionLabel>
           <CategoryBreakdownChart data={data.categoryBreakdown} />
         </>
       )}
 
-      {/* Survey comparison */}
       {data.surveyComparison.length > 0 && (
         <>
           <Separator />
-          <SectionLabel>{t('surveyComparison')}</SectionLabel>
+          <SectionLabel>{t('analytics.surveyComparison')}</SectionLabel>
           <SurveyComparisonTable surveys={data.surveyComparison} />
         </>
       )}
     </div>
   );
 };
-
-/* ---------- Internal metric card ---------- */
 
 function MetricCard({
   value,
@@ -86,6 +81,7 @@ function MetricCard({
   return (
     <div className="border-border/50 rounded-md border px-3 py-2.5">
       <div className="text-foreground text-lg leading-none font-semibold tabular-nums">{value}</div>
+
       <div className="text-muted-foreground mt-1.5 flex items-center gap-1 text-[11px]">
         <Icon className="size-3" aria-hidden />
         {label}

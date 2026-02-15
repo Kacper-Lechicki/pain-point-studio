@@ -25,6 +25,7 @@ export default async function SurveyDetailPage({ params }: SurveyDetailPageProps
   return (
     <>
       <DashboardPageBack />
+
       <PageTransition>
         <SurveyDetailPageClient survey={survey} questions={questions} />
       </PageTransition>

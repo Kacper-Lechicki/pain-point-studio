@@ -4,9 +4,8 @@ import { cache } from 'react';
 
 import { z } from 'zod';
 
+import { type SurveyStatus } from '@/features/surveys/types';
 import { createClient } from '@/lib/supabase/server';
-
-import type { SurveyStatus } from '../types';
 
 export interface UserSurvey {
   id: string;

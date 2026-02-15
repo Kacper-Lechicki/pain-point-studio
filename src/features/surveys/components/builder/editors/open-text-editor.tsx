@@ -9,8 +9,8 @@ interface OpenTextEditorProps {
 }
 
 export function OpenTextEditor({ config }: OpenTextEditorProps) {
-  const t = useTranslations('surveys.builder');
-  const placeholder = (config.placeholder as string) || t('defaultTextPlaceholder');
+  const t = useTranslations();
+  const placeholder = (config.placeholder as string) || t('surveys.builder.defaultTextPlaceholder');
 
   return (
     <Textarea

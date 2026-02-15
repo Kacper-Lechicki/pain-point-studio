@@ -6,12 +6,7 @@ import { z } from 'zod';
 
 import { createClient } from '@/lib/supabase/server';
 
-export interface ProfileStatistics {
-  totalSurveys: number;
-  totalResponses: number;
-  avgCompletionRate: number;
-  memberSince: string;
-}
+// ── Validation schema for the get_profile_statistics RPC response ───
 
 const profileStatisticsSchema = z.object({
   totalSurveys: z.number(),
@@ -20,6 +15,14 @@ const profileStatisticsSchema = z.object({
   memberSince: z.string(),
 });
 
+/** Profile statistics: survey/response counts and membership date. */
+export type ProfileStatistics = z.infer<typeof profileStatisticsSchema>;
+
+/**
+ * Fetch profile statistics via get_profile_statistics RPC.
+ * Returns null when unauthenticated, on RPC error, or when the response fails validation.
+ * Wrapped with React `cache()` for per-request deduplication.
+ */
 export const getProfileStatistics = cache(async (): Promise<ProfileStatistics | null> => {
   const supabase = await createClient();
 

@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 
 import { getCopyrightText } from '@/config/brand';
+import { useSidebar } from '@/features/dashboard/components/layout/sidebar-provider';
 import {
   DASHBOARD_FOOTER_HEIGHT_CLASS,
   getDashboardContentMarginLeft,
@@ -10,8 +11,6 @@ import {
 } from '@/features/dashboard/config/layout';
 import { usePathname } from '@/i18n/routing';
 import { cn } from '@/lib/common/utils';
-
-import { useSidebar } from './sidebar-provider';
 
 export function DashboardFooter() {
   const t = useTranslations();

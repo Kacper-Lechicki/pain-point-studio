@@ -5,11 +5,10 @@ import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
-
-import { useQuestionBuilderContext } from '../../hooks/use-question-builder-context';
+import { useQuestionBuilderContext } from '@/features/surveys/hooks/use-question-builder-context';
 
 export function BuilderEmptyState() {
-  const t = useTranslations('surveys.builder.emptyState');
+  const t = useTranslations();
   const { addQuestion } = useQuestionBuilderContext();
 
   return (
@@ -17,12 +16,12 @@ export function BuilderEmptyState() {
       <div className="mx-auto w-full max-w-3xl">
         <EmptyState
           icon={ClipboardList}
-          title={t('title')}
-          description={t('description')}
+          title={t('surveys.builder.emptyState.title')}
+          description={t('surveys.builder.emptyState.description')}
           action={
             <Button onClick={() => addQuestion()}>
               <Plus className="size-4" aria-hidden />
-              {t('addQuestion')}
+              {t('surveys.builder.emptyState.addQuestion')}
             </Button>
           }
         />

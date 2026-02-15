@@ -4,9 +4,8 @@ import { cache } from 'react';
 
 import { z } from 'zod';
 
+import { QUESTION_TYPES, type QuestionType, type SurveyStatus } from '@/features/surveys/types';
 import { createClient } from '@/lib/supabase/server';
-
-import { QUESTION_TYPES, type QuestionType, type SurveyStatus } from '../types';
 
 export interface QuestionAnswerData {
   value: Record<string, unknown>;

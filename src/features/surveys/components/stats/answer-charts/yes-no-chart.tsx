@@ -13,14 +13,14 @@ interface YesNoChartProps {
 }
 
 export const YesNoChart = ({ answers }: YesNoChartProps) => {
-  const t = useTranslations('surveys.stats');
+  const t = useTranslations();
 
   const yesCount = answers.filter((a) => a.value.answer === true).length;
   const noCount = answers.filter((a) => a.value.answer === false).length;
   const total = yesCount + noCount;
 
   if (total === 0) {
-    return <p className="text-muted-foreground text-xs">{t('noChartData')}</p>;
+    return <p className="text-muted-foreground text-xs">{t('surveys.stats.noChartData')}</p>;
   }
 
   const yesPercentage = Math.round((yesCount / total) * 100);
@@ -28,8 +28,8 @@ export const YesNoChart = ({ answers }: YesNoChartProps) => {
   const majorityYes = yesCount >= noCount;
 
   const chartConfig = {
-    yes: { label: t('yesLabel'), color: 'var(--chart-emerald)' },
-    no: { label: t('noLabel'), color: 'var(--chart-rose)' },
+    yes: { label: t('surveys.stats.yesLabel'), color: 'var(--chart-emerald)' },
+    no: { label: t('surveys.stats.noLabel'), color: 'var(--chart-rose)' },
   } satisfies ChartConfig;
 
   const pieData = [
@@ -43,8 +43,8 @@ export const YesNoChart = ({ answers }: YesNoChartProps) => {
     <div className="space-y-4">
       <p className="text-muted-foreground text-xs font-medium">
         {majorityYes
-          ? t('majorityYes', { pct: yesPercentage })
-          : t('majorityNo', { pct: noPercentage })}
+          ? t('surveys.stats.majorityYes', { pct: yesPercentage })
+          : t('surveys.stats.majorityNo', { pct: noPercentage })}
       </p>
 
       <div className="flex items-center gap-6">
@@ -113,7 +113,7 @@ export const YesNoChart = ({ answers }: YesNoChartProps) => {
               )}
             >
               <Check className="size-4 shrink-0" aria-hidden />
-              {t('yesLabel')}: {yesCount}
+              {t('surveys.stats.yesLabel')}: {yesCount}
               <span className="text-muted-foreground font-normal">({yesPercentage}%)</span>
             </span>
             <span
@@ -123,7 +123,7 @@ export const YesNoChart = ({ answers }: YesNoChartProps) => {
               )}
             >
               <X className="size-4 shrink-0" aria-hidden />
-              {t('noLabel')}: {noCount}
+              {t('surveys.stats.noLabel')}: {noCount}
               <span className="text-muted-foreground font-normal">({noPercentage}%)</span>
             </span>
           </div>

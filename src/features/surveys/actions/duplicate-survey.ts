@@ -1,9 +1,8 @@
 'use server';
 
+import { surveyIdSchema } from '@/features/surveys/types';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
-
-import { surveyIdSchema } from '../types';
 
 export const duplicateSurvey = withProtectedAction<typeof surveyIdSchema, { surveyId: string }>(
   'duplicate-survey',

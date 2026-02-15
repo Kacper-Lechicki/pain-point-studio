@@ -38,7 +38,7 @@ function downloadBlob(content: string, filename: string, mimeType: string) {
 }
 
 export const ExportButtons = ({ surveyId }: ExportButtonsProps) => {
-  const t = useTranslations('surveys.stats');
+  const t = useTranslations();
   const [exporting, setExporting] = useState<ExportFormat | null>(null);
 
   const handleExport = async (format: ExportFormat) => {
@@ -52,10 +52,10 @@ export const ExportButtons = ({ surveyId }: ExportButtonsProps) => {
         const content = (result.data as Record<string, string>)[field]!;
         downloadBlob(content, result.data.filename, mime);
       } else {
-        toast.error(t('exportFailed'));
+        toast.error(t('surveys.stats.exportFailed'));
       }
     } catch {
-      toast.error(t('exportFailed'));
+      toast.error(t('surveys.stats.exportFailed'));
     } finally {
       setExporting(null);
     }
@@ -73,7 +73,9 @@ export const ExportButtons = ({ surveyId }: ExportButtonsProps) => {
           className="gap-1.5"
         >
           <Download className="size-3.5" />
-          {exporting === format ? t('exporting') : t(EXPORT_CONFIG[format].labelKey)}
+          {exporting === format
+            ? t('surveys.stats.exporting')
+            : t(`surveys.stats.${EXPORT_CONFIG[format].labelKey}`)}
         </Button>
       ))}
     </div>

@@ -1,45 +1,30 @@
 'use client';
 
-import type { ReactNode } from 'react';
-
-import { useRouter } from 'next/navigation';
-
-import {
-  BarChart3,
-  Calendar,
-  Copy,
-  Expand,
-  Hash,
-  HelpCircle,
-  Loader2,
-  Pencil,
-  Share2,
-  Tag,
-  Users,
-} from 'lucide-react';
-import { useFormatter, useLocale, useNow, useTranslations } from 'next-intl';
-import { toast } from 'sonner';
+import { BarChart3, Calendar, Copy, Expand, Pencil, Share2, Tag } from 'lucide-react';
+import { useFormatter, useNow, useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { ClipboardInput } from '@/components/ui/clipboard-input';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Separator } from '@/components/ui/separator';
-import { duplicateSurvey } from '@/features/surveys/actions';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
+import { DetailMetricsGrid } from '@/features/surveys/components/shared/detail-metrics-grid';
+import { DetailQuestionsList } from '@/features/surveys/components/shared/detail-questions-list';
+import { MetricRow, SectionLabel } from '@/features/surveys/components/shared/metric-display';
+import { DATE_FORMAT_SHORT } from '@/features/surveys/config';
 import {
-  DATE_FORMAT_SHORT,
-  QUESTION_TYPE_ICONS,
-  QUESTION_TYPE_LABEL_KEYS,
-} from '@/features/surveys/config';
-import { SURVEY_ACTION_UI, getAvailableActions } from '@/features/surveys/config/survey-status';
+  SURVEY_ACTION_UI,
+  deriveSurveyFlags,
+  getAvailableActions,
+} from '@/features/surveys/config/survey-status';
 import { useSurveyAction } from '@/features/surveys/hooks/use-survey-action';
+import { useSurveyCardActions } from '@/features/surveys/hooks/use-survey-card-actions';
 import {
   calculateCompletionRate,
   calculateRespondentProgress,
   daysUntilExpiry,
 } from '@/features/surveys/lib/calculations';
 import type { MappedQuestion } from '@/features/surveys/lib/map-question-row';
-import { getSurveyShareUrl } from '@/features/surveys/lib/share-url';
 import {
   getSurveyDetailUrl,
   getSurveyEditUrl,
@@ -48,120 +33,8 @@ import {
 import Link from '@/i18n/link';
 import { cn } from '@/lib/common/utils';
 
-import { MetricRow, SectionLabel } from '../shared/metric-display';
 import { Sparkline, getSparklineColor } from './sparkline';
 import { SurveyStatusBadge } from './survey-status-badge';
-
-// ── Local layout components ─────────────────────────────────────────
-
-function QuestionConfigDetails({
-  question,
-  t,
-}: {
-  question: MappedQuestion;
-  t: ReturnType<typeof useTranslations<'surveys.dashboard'>>;
-}) {
-  const config = question.config;
-  const rows: ReactNode[] = [];
-
-  if (question.description?.trim()) {
-    rows.push(
-      <p key="desc">
-        <span className="font-medium">{t('detailPanel.descriptionLabel')}:</span>{' '}
-        {question.description.trim()}
-      </p>
-    );
-  }
-
-  if (question.type === 'open_text' || question.type === 'short_text') {
-    const placeholder = (config.placeholder as string | undefined)?.trim();
-    const maxLength = config.maxLength as number | undefined;
-
-    if (placeholder) {
-      rows.push(
-        <p key="placeholder">
-          <span className="font-medium">{t('detailPanel.placeholderLabel')}:</span> {placeholder}
-        </p>
-      );
-    }
-
-    if (maxLength != null && maxLength > 0) {
-      rows.push(
-        <p key="maxLength">
-          <span className="font-medium">{t('detailPanel.maxLengthLabel')}:</span> {maxLength}
-        </p>
-      );
-    }
-  }
-
-  if (question.type === 'multiple_choice') {
-    const options = (config.options as string[] | undefined) ?? [];
-    rows.push(
-      <p key="options">
-        <span className="font-medium">{t('detailPanel.optionsLabel')}:</span>{' '}
-        {t('detailPanel.optionsCount', { count: options.length })}
-      </p>
-    );
-
-    if (config.allowOther) {
-      rows.push(<p key="other">{t('detailPanel.allowOther')}</p>);
-    }
-
-    const minSel = config.minSelections as number | undefined;
-    const maxSel = config.maxSelections as number | undefined;
-
-    if (minSel != null && minSel > 0) {
-      rows.push(
-        <p key="minSel">
-          <span className="font-medium">{t('detailPanel.minSelectionsLabel')}:</span> {minSel}
-        </p>
-      );
-    }
-
-    if (maxSel != null && maxSel > 0) {
-      rows.push(
-        <p key="maxSel">
-          <span className="font-medium">{t('detailPanel.maxSelectionsLabel')}:</span> {maxSel}
-        </p>
-      );
-    }
-  }
-
-  if (question.type === 'rating_scale') {
-    const min = (config.min as number | undefined) ?? 1;
-    const max = (config.max as number | undefined) ?? 5;
-    const minLabel = (config.minLabel as string | undefined)?.trim();
-    const maxLabel = (config.maxLabel as string | undefined)?.trim();
-    rows.push(
-      <p key="scale">
-        <span className="font-medium">{t('detailPanel.scaleLabel')}:</span>{' '}
-        {t('detailPanel.scale', { min, max })}
-      </p>
-    );
-
-    if (minLabel) {
-      rows.push(
-        <p key="minLabel">
-          <span className="font-medium">{t('detailPanel.minLabelLabel')}:</span> {minLabel}
-        </p>
-      );
-    }
-
-    if (maxLabel) {
-      rows.push(
-        <p key="maxLabel">
-          <span className="font-medium">{t('detailPanel.maxLabelLabel')}:</span> {maxLabel}
-        </p>
-      );
-    }
-  }
-
-  if (rows.length === 0) {
-    return null;
-  }
-
-  return <div className="text-muted-foreground mt-1.5 space-y-0.5 text-[10px]">{rows}</div>;
-}
 
 // ── Component ───────────────────────────────────────────────────────
 
@@ -181,23 +54,16 @@ export function SurveyDetailPanel({
   embeddedInSheet = false,
   embeddedInPage = false,
 }: SurveyDetailPanelProps) {
-  const t = useTranslations('surveys.dashboard');
-  const tCat = useTranslations('surveys.categories');
-  const tTypes = useTranslations('surveys.builder.types');
-  const locale = useLocale();
+  const t = useTranslations();
   const format = useFormatter();
   const now = useNow();
-  const router = useRouter();
 
   const { handleActionClick, confirmDialogProps } = useSurveyAction(survey.id, onStatusChange, t);
+  const { shareUrl, handleShare, handleDuplicate } = useSurveyCardActions(survey.id, survey.slug);
 
-  const isDraft = survey.status === 'draft';
-  const isPending = survey.status === 'pending';
-  const isActive = survey.status === 'active';
-  const isClosed = survey.status === 'closed';
-  const isArchived = survey.status === 'archived';
-  const shareUrl = survey.slug ? getSurveyShareUrl(locale, survey.slug) : null;
-  const hasShareableLink = (isActive || isPending || isClosed) && shareUrl;
+  const { isDraft, isPending, isActive, isClosed, isCancelled, isArchived, canDuplicate } =
+    deriveSurveyFlags(survey.status);
+  const hasShareableLink = (isActive || isPending || isClosed) && !!shareUrl;
   const sparklineColor = getSparklineColor(survey.recentActivity);
   const completionRate = calculateCompletionRate(survey.completedCount, survey.responseCount);
   const lastResponseLabel =
@@ -209,26 +75,6 @@ export function SurveyDetailPanel({
     survey.maxRespondents
   );
   const availableActions = getAvailableActions(survey.status);
-
-  const handleCopyLink = async () => {
-    if (!shareUrl) {
-      return;
-    }
-
-    await navigator.clipboard.writeText(shareUrl);
-    toast.success(t('detailPanel.linkCopied'));
-  };
-
-  const handleDuplicate = async () => {
-    const result = await duplicateSurvey({ surveyId: survey.id });
-
-    if (result.success && result.data) {
-      toast.success(t('toast.duplicated'));
-      router.push(getSurveyEditUrl(result.data.surveyId));
-    }
-  };
-
-  const canDuplicate = isDraft || isActive || isClosed || survey.status === 'cancelled';
 
   const formatDate = (iso: string) => format.dateTime(new Date(iso), DATE_FORMAT_SHORT);
 
@@ -249,7 +95,7 @@ export function SurveyDetailPanel({
             variant="ghost"
             size="icon-xs"
             className="text-muted-foreground shrink-0"
-            aria-label={t('actions.openInFullPage')}
+            aria-label={t('surveys.dashboard.actions.openInFullPage')}
             asChild
           >
             <Link href={getSurveyDetailUrl(survey.id)}>
@@ -264,7 +110,7 @@ export function SurveyDetailPanel({
         <SurveyStatusBadge status={survey.status} />
         {survey.category && (
           <span className="bg-border/40 text-muted-foreground inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-normal">
-            {tCat(survey.category as Parameters<typeof tCat>[0])}
+            {t(`surveys.categories.${survey.category}` as Parameters<typeof t>[0])}
           </span>
         )}
       </div>
@@ -279,68 +125,21 @@ export function SurveyDetailPanel({
       <Separator className="my-4" />
 
       {/* Key Metrics */}
-      <SectionLabel>{t('detailPanel.metricsLabel')}</SectionLabel>
-      <div className="grid grid-cols-2 gap-2">
-        <div className="border-border/50 rounded-md border px-3 py-2.5">
-          <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
-            {survey.questionCount}
-          </div>
-          <div className="text-muted-foreground mt-1.5 flex items-center gap-1 text-[11px]">
-            <Hash className="size-3" aria-hidden />
-            {t('detailPanel.questions')}
-          </div>
-        </div>
-        {!isDraft && (
-          <div className="border-border/50 rounded-md border px-3 py-2.5">
-            <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
-              {survey.completedCount}
-              {survey.maxRespondents != null && (
-                <span className="text-muted-foreground text-xs font-normal">
-                  {' '}
-                  / {survey.maxRespondents}
-                </span>
-              )}
-            </div>
-            <div className="text-muted-foreground mt-1.5 flex items-center gap-1 text-[11px]">
-              <Users className="size-3" aria-hidden />
-              {t('detailPanel.responses')}
-            </div>
-            {respondentProgress != null && (
-              <div className="bg-muted mt-2 h-1 w-full overflow-hidden rounded-full">
-                <div
-                  className="h-full rounded-full bg-emerald-500 transition-all"
-                  style={{ width: `${respondentProgress}%` }}
-                />
-              </div>
-            )}
-          </div>
-        )}
-        {!isArchived && !isDraft && completionRate != null && (
-          <div className="border-border/50 rounded-md border px-3 py-2.5">
-            <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
-              {completionRate}%
-            </div>
-            <div className="text-muted-foreground mt-1.5 text-[11px]">
-              {t('detailPanel.completionRate')}
-            </div>
-          </div>
-        )}
-        {!isArchived && !isDraft && lastResponseLabel != null && (
-          <div className="border-border/50 rounded-md border px-3 py-2.5">
-            <div className="text-foreground text-sm leading-none font-semibold">
-              {lastResponseLabel}
-            </div>
-            <div className="text-muted-foreground mt-1.5 text-[11px]">
-              {t('detailPanel.lastResponse')}
-            </div>
-          </div>
-        )}
-      </div>
+      <DetailMetricsGrid
+        questionCount={survey.questionCount}
+        completedCount={survey.completedCount}
+        maxRespondents={survey.maxRespondents}
+        completionRate={completionRate}
+        lastResponseLabel={lastResponseLabel}
+        respondentProgress={respondentProgress}
+        isDraft={isDraft}
+        isArchived={isArchived}
+      />
 
       {!isArchived && !isDraft && (
         <>
           <Separator className="my-4" />
-          <SectionLabel>{t('detailPanel.last14Days')}</SectionLabel>
+          <SectionLabel>{t('surveys.dashboard.detailPanel.last14Days')}</SectionLabel>
           <Sparkline data={survey.recentActivity} className={cn('h-10 w-full', sparklineColor)} />
         </>
       )}
@@ -348,29 +147,41 @@ export function SurveyDetailPanel({
       <Separator className="my-4" />
 
       {/* Details Section */}
-      <SectionLabel>{t('detailPanel.detailsLabel')}</SectionLabel>
+      <SectionLabel>{t('surveys.dashboard.detailPanel.detailsLabel')}</SectionLabel>
       <div className="space-y-2">
         {survey.category && (
           <MetricRow
             icon={Tag}
-            label={t('detailPanel.category')}
-            value={tCat(survey.category as Parameters<typeof tCat>[0])}
+            label={t('surveys.dashboard.detailPanel.category')}
+            value={t(`surveys.categories.${survey.category}` as Parameters<typeof t>[0])}
           />
         )}
         <MetricRow
           icon={Calendar}
-          label={t('detailPanel.created')}
+          label={t('surveys.dashboard.detailPanel.created')}
           value={formatDate(survey.createdAt)}
         />
-        <MetricRow label={t('detailPanel.updated')} value={formatDate(survey.updatedAt)} />
+        <MetricRow
+          label={t('surveys.dashboard.detailPanel.updated')}
+          value={formatDate(survey.updatedAt)}
+        />
         {survey.startsAt && (
-          <MetricRow label={t('detailPanel.startsAt')} value={formatDate(survey.startsAt)} />
+          <MetricRow
+            label={t('surveys.dashboard.detailPanel.startsAt')}
+            value={formatDate(survey.startsAt)}
+          />
         )}
         {survey.endsAt && (
-          <MetricRow label={t('detailPanel.endsAt')} value={formatDate(survey.endsAt)} />
+          <MetricRow
+            label={t('surveys.dashboard.detailPanel.endsAt')}
+            value={formatDate(survey.endsAt)}
+          />
         )}
         {survey.maxRespondents != null && (
-          <MetricRow label={t('detailPanel.respondentCap')} value={survey.maxRespondents} />
+          <MetricRow
+            label={t('surveys.dashboard.detailPanel.respondentCap')}
+            value={survey.maxRespondents}
+          />
         )}
         {isArchived &&
           (() => {
@@ -378,34 +189,34 @@ export function SurveyDetailPanel({
 
             return days != null ? (
               <MetricRow
-                label={t('detailPanel.autoDeletes')}
-                value={t('detailPanel.inDays', { days })}
+                label={t('surveys.dashboard.detailPanel.autoDeletes')}
+                value={t('surveys.dashboard.detailPanel.inDays', { days })}
               />
             ) : null;
           })()}
-        {survey.status === 'cancelled' &&
+        {isCancelled &&
           (() => {
             const days = daysUntilExpiry(survey.cancelledAt, 30);
 
             return days != null ? (
               <MetricRow
-                label={t('detailPanel.linkExpires')}
-                value={t('detailPanel.inDays', { days })}
+                label={t('surveys.dashboard.detailPanel.linkExpires')}
+                value={t('surveys.dashboard.detailPanel.inDays', { days })}
               />
             ) : null;
           })()}
       </div>
 
       {/* Share URL (active, pending, closed) */}
-      {hasShareableLink && (
+      {hasShareableLink && shareUrl && (
         <>
           <Separator className="my-4" />
-          <SectionLabel>{t('detailPanel.surveyLink')}</SectionLabel>
+          <SectionLabel>{t('surveys.dashboard.detailPanel.surveyLink')}</SectionLabel>
           <ClipboardInput
             value={shareUrl}
             className="max-w-full"
-            copyLabel={t('detailPanel.copyLink')}
-            copiedLabel={t('detailPanel.linkCopied')}
+            copyLabel={t('surveys.dashboard.detailPanel.copyLink')}
+            copiedLabel={t('surveys.dashboard.detailPanel.linkCopied')}
           />
         </>
       )}
@@ -413,38 +224,38 @@ export function SurveyDetailPanel({
       <Separator className="my-4" />
 
       {/* Actions */}
-      <SectionLabel>{t('detailPanel.actionsLabel')}</SectionLabel>
+      <SectionLabel>{t('surveys.dashboard.detailPanel.actionsLabel')}</SectionLabel>
       <div className="flex flex-col gap-2">
         {isDraft || isPending ? (
           <Button asChild size="sm" className="w-full">
             <Link href={getSurveyEditUrl(survey.id)}>
               <Pencil className="size-4" aria-hidden />
-              {t('actions.edit')}
+              {t('surveys.dashboard.actions.edit')}
             </Link>
           </Button>
         ) : (
           <Button asChild size="sm" className="w-full">
             <Link href={getSurveyStatsUrl(survey.id)}>
               <BarChart3 className="size-4" aria-hidden />
-              {t('detailPanel.viewResults')}
+              {t('surveys.dashboard.detailPanel.viewResults')}
             </Link>
           </Button>
         )}
         {hasShareableLink && (
-          <Button variant="outline" size="sm" className="w-full" onClick={handleCopyLink}>
+          <Button variant="outline" size="sm" className="w-full" onClick={handleShare}>
             <Share2 className="size-4" aria-hidden />
-            {t('actions.share')}
+            {t('surveys.dashboard.actions.share')}
           </Button>
         )}
         {canDuplicate && (
           <Button variant="outline" size="sm" className="w-full" onClick={handleDuplicate}>
             <Copy className="size-4" aria-hidden />
-            {t('actions.duplicate')}
+            {t('surveys.dashboard.actions.duplicate')}
           </Button>
         )}
       </div>
 
-      {/* Status transition buttons — data-driven from config */}
+      {/* Status transition buttons */}
       {availableActions.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-1.5">
           {availableActions.map((action) => {
@@ -468,7 +279,7 @@ export function SurveyDetailPanel({
                 onClick={() => handleActionClick(action)}
               >
                 <Icon className="size-3.5" aria-hidden />
-                {t(`actions.${action}`)}
+                {t(`surveys.dashboard.actions.${action}`)}
               </Button>
             );
           })}
@@ -477,45 +288,7 @@ export function SurveyDetailPanel({
 
       {/* Questions */}
       <Separator className="my-4" />
-      <SectionLabel>{t('detailPanel.questionsLabel')}</SectionLabel>
-      {questions === null ? (
-        <div className="text-muted-foreground flex items-center gap-2 py-2 text-xs">
-          <Loader2 className="size-3.5 animate-spin" aria-hidden />
-          {t('detailPanel.loadingQuestions')}
-        </div>
-      ) : questions.length === 0 ? (
-        <div className="border-border/50 text-muted-foreground flex items-start gap-2 rounded-md border border-dashed px-3 py-2.5 text-xs">
-          <HelpCircle className="size-3.5 shrink-0 pt-0.5" aria-hidden />
-          <span>{t('detailPanel.questionsEmptyDescription')}</span>
-        </div>
-      ) : (
-        <div className="space-y-1.5">
-          {questions.map((q: MappedQuestion, i: number) => {
-            const TypeIcon = QUESTION_TYPE_ICONS[q.type];
-            const labelKey = QUESTION_TYPE_LABEL_KEYS[q.type];
-            const typeLabel = tTypes(labelKey.split('.').pop() as Parameters<typeof tTypes>[0]);
-
-            return (
-              <div
-                key={q.id}
-                className="border-border/50 rounded-md border border-dashed px-3 py-2.5"
-              >
-                <p className="text-foreground text-xs leading-snug font-medium">
-                  <span className="text-muted-foreground tabular-nums">{i + 1}. </span>
-                  {q.text || '—'}
-                </p>
-                <div className="mt-1.5">
-                  <span className="bg-secondary text-secondary-foreground inline-flex items-center gap-1 rounded-full border px-1.5 py-0 text-[10px] font-normal">
-                    <TypeIcon className="size-3" aria-hidden />
-                    {typeLabel}
-                  </span>
-                  <QuestionConfigDetails question={q} t={t} />
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+      <DetailQuestionsList questions={questions} />
     </div>
   );
 

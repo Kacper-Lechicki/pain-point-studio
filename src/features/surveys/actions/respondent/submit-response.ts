@@ -1,10 +1,9 @@
 'use server';
 
+import { mapRpcError } from '@/features/surveys/config';
+import { submitResponseSchema } from '@/features/surveys/types';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withPublicAction } from '@/lib/common/with-public-action';
-
-import { mapRpcError } from '../../config';
-import { submitResponseSchema } from '../../types';
 
 export const submitResponse = withPublicAction<typeof submitResponseSchema, void>(
   'submit-response',

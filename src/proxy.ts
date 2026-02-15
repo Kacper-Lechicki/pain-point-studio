@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { ROUTES } from '@/config';
 import i18nMiddleware from '@/i18n/config';
-import { defaultLocale, locales } from '@/i18n/constants';
+import { type Locale, defaultLocale, locales } from '@/i18n/constants';
 import { isAuthenticated, isProtectionEnabled } from '@/lib/common/deploy-credentials';
 import { updateSession } from '@/lib/supabase/middleware';
 
@@ -20,20 +20,24 @@ const PUBLIC_ROUTES = [
 // Auth pages — logged-in users are redirected to dashboard when visiting these.
 const AUTH_ROUTES = [ROUTES.auth.signIn, ROUTES.auth.signUp, ROUTES.auth.forgotPassword];
 
-function getPathnameWithoutLocale(pathname: string): string {
-  const segments = pathname.split('/');
-  const maybeLocale = segments[1];
+const LOCALE_LIST: readonly string[] = locales;
 
-  if (maybeLocale && (locales as readonly string[]).includes(maybeLocale)) {
-    return segments.length > 2 ? '/' + segments.slice(2).join('/') : '/';
+function getPathnameAndLocale(pathname: string): { pathname: string; locale: Locale } {
+  const segments = pathname.split('/').filter(Boolean);
+  const maybeLocale = segments[0];
+
+  if (maybeLocale && LOCALE_LIST.includes(maybeLocale)) {
+    const pathWithoutLocale = segments.length > 1 ? '/' + segments.slice(1).join('/') : '/';
+
+    return { pathname: pathWithoutLocale, locale: maybeLocale as Locale };
   }
 
-  return pathname || '/';
+  return { pathname: pathname && pathname.startsWith('/') ? pathname : '/', locale: defaultLocale };
 }
 
 function copyCookies(from: NextResponse, to: NextResponse): void {
-  from.cookies.getAll().forEach(({ name, value, ...options }) => {
-    to.cookies.set(name, value, options);
+  from.cookies.getAll().forEach((cookie) => {
+    to.cookies.set(cookie.name, cookie.value, cookie);
   });
 }
 
@@ -50,11 +54,10 @@ const middleware = async (req: NextRequest) => {
     });
   }
 
-  const pathname = getPathnameWithoutLocale(req.nextUrl.pathname);
-  const locale = req.nextUrl.pathname.split('/')[1] || defaultLocale;
+  const { pathname, locale } = getPathnameAndLocale(req.nextUrl.pathname);
 
-  const isPublicRoute = PUBLIC_ROUTES.some((route) =>
-    route === ROUTES.common.home ? pathname === ROUTES.common.home : pathname.startsWith(route)
+  const isPublicRoute = PUBLIC_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith(route + '/')
   );
 
   // Unauthenticated on protected route — redirect to sign-in and forward session cookies.

@@ -34,21 +34,25 @@ const ConfirmDialog = ({
   cancelLabel,
   variant = 'destructive',
 }: ConfirmDialogProps) => {
-  const t = useTranslations('common');
+  const t = useTranslations();
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>{title ?? t('confirm.title')}</AlertDialogTitle>
-          <AlertDialogDescription>{description ?? t('confirm.description')}</AlertDialogDescription>
+          <AlertDialogTitle>{title ?? t('common.confirm.title')}</AlertDialogTitle>
+          <AlertDialogDescription>
+            {description ?? t('common.confirm.description')}
+          </AlertDialogDescription>
         </AlertDialogHeader>
 
         <AlertDialogFooter>
-          <AlertDialogCancel variant="outline">{cancelLabel ?? t('cancel')}</AlertDialogCancel>
+          <AlertDialogCancel variant="outline">
+            {cancelLabel ?? t('common.cancel')}
+          </AlertDialogCancel>
 
           <AlertDialogAction variant={variant} onClick={onConfirm}>
-            {confirmLabel ?? t('confirm.action')}
+            {confirmLabel ?? t('common.confirm.action')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { StepContent } from '@/features/marketing/components/common/step-content';
 import { StepExtra } from '@/features/marketing/components/common/step-extra';
 import { StepVisual } from '@/features/marketing/components/common/step-visual';
-import { HowItWorksStep } from '@/features/marketing/config';
+import type { HowItWorksStep } from '@/features/marketing/config';
 import type { MessageKey } from '@/i18n/types';
 import { cn } from '@/lib/common/utils';
 

@@ -15,6 +15,7 @@ const DashboardLayout = async ({ children }: { children: ReactNode }) => {
       <SidebarProvider>
         <BreadcrumbProvider>
           <DashboardLayoutChrome profile={profile}>{children}</DashboardLayoutChrome>
+
           <Suspense>
             <AuthToast />
           </Suspense>

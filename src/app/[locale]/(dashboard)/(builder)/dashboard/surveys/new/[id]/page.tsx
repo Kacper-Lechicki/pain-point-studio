@@ -10,6 +10,7 @@ interface Props {
 
 export default async function SurveyBuilderRoute({ params }: Props) {
   const { id } = await params;
+
   const [data, formData] = await Promise.all([getSurveyWithQuestions(id), getSurveyFormData()]);
 
   if (!data) {

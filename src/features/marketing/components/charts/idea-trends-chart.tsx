@@ -11,27 +11,22 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { IDEA_TRENDS_CONFIG, IDEA_TRENDS_DATA } from '@/features/marketing/config';
+import {
+  IDEA_TRENDS_CONFIG,
+  IDEA_TRENDS_DATA,
+  localizeChartConfig,
+} from '@/features/marketing/config';
 
 const formatMonthTick = (value: string): string => value.slice(0, 3);
 
 const IdeaTrendsChart = () => {
-  const t = useTranslations('marketing.charts.ideaTrends');
-  const title = t('title');
-  const description = t('description');
+  const t = useTranslations();
+  const title = t('marketing.charts.ideaTrends.title');
+  const description = t('marketing.charts.ideaTrends.description');
 
-  const chartConfig = {
-    ...IDEA_TRENDS_CONFIG,
-    ...Object.fromEntries(
-      Object.entries(IDEA_TRENDS_CONFIG).map(([key, value]) => [
-        key,
-        {
-          ...value,
-          label: value.label ? t(`chart.${value.label}` as Parameters<typeof t>[0]) : undefined,
-        },
-      ])
-    ),
-  };
+  const chartConfig = localizeChartConfig(IDEA_TRENDS_CONFIG, (key) =>
+    t(`marketing.charts.ideaTrends.${key}` as Parameters<typeof t>[0])
+  );
 
   return (
     <Card className="flex h-full w-full flex-col border-0 bg-transparent shadow-none">

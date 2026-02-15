@@ -4,8 +4,8 @@ import { Suspense } from 'react';
 
 import { AnimatePresence, motion } from 'motion/react';
 
-import { SecondaryNav } from './secondary-nav';
-import { useSidebar } from './sidebar-provider';
+import { SecondaryNav } from '@/features/dashboard/components/layout/secondary-nav';
+import { useSidebar } from '@/features/dashboard/components/layout/sidebar-provider';
 
 export function SubPanel() {
   const { activeNavItem, hasSubPanel, isPinned } = useSidebar();

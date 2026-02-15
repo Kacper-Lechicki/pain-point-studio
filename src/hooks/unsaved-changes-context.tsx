@@ -28,7 +28,7 @@ const UnsavedChangesContext = createContext<UnsavedChangesContextValue | null>(n
 function isInternalLink(anchor: HTMLAnchorElement): boolean {
   const href = anchor.getAttribute('href');
 
-  if (!href || href === '#' || href.startsWith('#')) {
+  if (!href || href.startsWith('#')) {
     return false;
   }
 
@@ -47,13 +47,15 @@ function isInternalLink(anchor: HTMLAnchorElement): boolean {
   }
 }
 
-/** Pathname for next-intl router: without locale prefix (router adds it). */
+const LOCALE_LIST: readonly string[] = locales;
+
 function toPathnameForRouter(href: string): string {
   const path = href.startsWith('http') ? new URL(href).pathname : href;
-  const segment = path.split('/').filter(Boolean)[0];
+  const parts = path.split('/').filter(Boolean);
+  const segment = parts[0];
 
-  if (segment && (locales as readonly string[]).includes(segment)) {
-    return '/' + path.split('/').slice(2).join('/');
+  if (segment && LOCALE_LIST.includes(segment)) {
+    return '/' + parts.slice(1).join('/');
   }
 
   return path || '/';
@@ -64,7 +66,7 @@ interface UnsavedChangesProviderProps {
 }
 
 function UnsavedChangesProvider({ children }: UnsavedChangesProviderProps) {
-  const t = useTranslations('common.unsavedChanges');
+  const t = useTranslations();
   const router = useRouter();
   const [dirtyIds, setDirtyIds] = useState<Set<string>>(new Set());
   const [pending, setPending] = useState<PendingNavigation | null>(null);
@@ -99,6 +101,7 @@ function UnsavedChangesProvider({ children }: UnsavedChangesProviderProps) {
 
       e.preventDefault();
       e.stopPropagation();
+
       const href = anchor.getAttribute('href');
 
       if (href) {
@@ -109,6 +112,21 @@ function UnsavedChangesProvider({ children }: UnsavedChangesProviderProps) {
     document.addEventListener('click', handleClick, true);
 
     return () => document.removeEventListener('click', handleClick, true);
+  }, [hasUnsavedChanges]);
+
+  useEffect(() => {
+    if (!hasUnsavedChanges) {
+      return;
+    }
+
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = '';
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [hasUnsavedChanges]);
 
   const open = pending !== null;
@@ -125,6 +143,7 @@ function UnsavedChangesProvider({ children }: UnsavedChangesProviderProps) {
     }
 
     const pathname = toPathnameForRouter(pending.href);
+
     router.push(pathname as Parameters<typeof router.push>[0]);
     setPending(null);
   }, [pending, router]);
@@ -135,13 +154,17 @@ function UnsavedChangesProvider({ children }: UnsavedChangesProviderProps) {
       <AlertDialog open={open} onOpenChange={handleClose}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('title')}</AlertDialogTitle>
-            <AlertDialogDescription>{t('description')}</AlertDialogDescription>
+            <AlertDialogTitle>{t('common.unsavedChanges.title')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('common.unsavedChanges.description')}
+            </AlertDialogDescription>
           </AlertDialogHeader>
+
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+            <AlertDialogCancel>{t('common.unsavedChanges.cancel')}</AlertDialogCancel>
+
             <AlertDialogAction variant="destructive" onClick={handleConfirmLeave}>
-              {t('leave')}
+              {t('common.unsavedChanges.leave')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -162,6 +185,7 @@ function useUnsavedChangesContext(): UnsavedChangesContextValue {
 
 function useUnsavedChangesWarning(id: string, isDirty: boolean): void {
   const { register } = useUnsavedChangesContext();
+
   useEffect(() => {
     register(id, isDirty);
 

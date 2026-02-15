@@ -18,11 +18,11 @@ interface ChoiceDistributionChartProps {
 }
 
 export const ChoiceDistributionChart = ({ answers }: ChoiceDistributionChartProps) => {
-  const t = useTranslations('surveys.stats');
+  const t = useTranslations();
 
   const chartConfig = {
     count: {
-      label: t('chartResponses'),
+      label: t('surveys.stats.chartResponses'),
       color: 'var(--chart-choice)',
     },
   } satisfies ChartConfig;
@@ -40,7 +40,7 @@ export const ChoiceDistributionChart = ({ answers }: ChoiceDistributionChartProp
       const other = a.value.other as string | undefined;
 
       if (other) {
-        const otherKey = `${t('otherLabel')}: ${other}`;
+        const otherKey = `${t('surveys.stats.otherLabel')}: ${other}`;
         counts.set(otherKey, (counts.get(otherKey) ?? 0) + 1);
       }
     }
@@ -54,7 +54,7 @@ export const ChoiceDistributionChart = ({ answers }: ChoiceDistributionChartProp
   }, [answers, t]);
 
   if (data.length === 0) {
-    return <p className="text-muted-foreground text-xs">{t('noChartData')}</p>;
+    return <p className="text-muted-foreground text-xs">{t('surveys.stats.noChartData')}</p>;
   }
 
   const showSelectionsFromRespondents = total > respondentCount;
@@ -69,7 +69,7 @@ export const ChoiceDistributionChart = ({ answers }: ChoiceDistributionChartProp
     <div>
       {showSelectionsFromRespondents && (
         <p className="text-muted-foreground mb-2 text-[11px]">
-          {t('totalSelectionsFromRespondents', {
+          {t('surveys.stats.totalSelectionsFromRespondents', {
             selections: total,
             respondents: respondentCount,
           })}

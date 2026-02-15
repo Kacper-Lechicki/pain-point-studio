@@ -8,156 +8,18 @@ import { useTranslations } from 'next-intl';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import type { QuestionAnswerData } from '@/features/surveys/actions/get-survey-stats';
+import { STOPWORDS } from '@/features/surveys/lib/stopwords';
 
 const INITIAL_VISIBLE = 5;
 const MAX_KEYWORDS = 8;
 const MIN_WORD_LENGTH = 3;
-
-// Common English stopwords to filter out of keyword extraction
-const STOPWORDS = new Set([
-  'the',
-  'a',
-  'an',
-  'and',
-  'or',
-  'but',
-  'in',
-  'on',
-  'at',
-  'to',
-  'for',
-  'of',
-  'with',
-  'by',
-  'from',
-  'is',
-  'it',
-  'its',
-  'was',
-  'are',
-  'be',
-  'been',
-  'being',
-  'have',
-  'has',
-  'had',
-  'do',
-  'does',
-  'did',
-  'will',
-  'would',
-  'could',
-  'should',
-  'may',
-  'might',
-  'shall',
-  'can',
-  'not',
-  'no',
-  'nor',
-  'so',
-  'as',
-  'if',
-  'then',
-  'than',
-  'too',
-  'very',
-  'just',
-  'that',
-  'this',
-  'these',
-  'those',
-  'they',
-  'them',
-  'their',
-  'there',
-  'here',
-  'where',
-  'when',
-  'how',
-  'what',
-  'which',
-  'who',
-  'whom',
-  'all',
-  'each',
-  'every',
-  'both',
-  'few',
-  'more',
-  'most',
-  'other',
-  'some',
-  'such',
-  'only',
-  'own',
-  'same',
-  'also',
-  'about',
-  'into',
-  'over',
-  'after',
-  'before',
-  'between',
-  'under',
-  'again',
-  'because',
-  'while',
-  'during',
-  'through',
-  'above',
-  'below',
-  'out',
-  'off',
-  'up',
-  'down',
-  'any',
-  'don',
-  'doesn',
-  'didn',
-  'won',
-  'isn',
-  'aren',
-  'wasn',
-  'weren',
-  'hasn',
-  'haven',
-  'hadn',
-  'wouldn',
-  'couldn',
-  'shouldn',
-  'really',
-  'much',
-  'many',
-  'like',
-  'well',
-  'get',
-  'got',
-  'make',
-  'made',
-  'still',
-  'even',
-  'back',
-  'way',
-  'our',
-  'you',
-  'your',
-  'his',
-  'her',
-  'she',
-  'him',
-  'my',
-  'me',
-  'we',
-  'us',
-]);
 
 interface TextAnswersListProps {
   answers: QuestionAnswerData[];
 }
 
 export const TextAnswersList = ({ answers }: TextAnswersListProps) => {
-  const t = useTranslations('surveys.stats');
+  const t = useTranslations();
   const [expanded, setExpanded] = useState(false);
 
   const textAnswers = answers
@@ -192,7 +54,7 @@ export const TextAnswersList = ({ answers }: TextAnswersListProps) => {
   }, [textAnswers]);
 
   if (textAnswers.length === 0) {
-    return <p className="text-muted-foreground text-xs">{t('noTextResponses')}</p>;
+    return <p className="text-muted-foreground text-xs">{t('surveys.stats.noTextResponses')}</p>;
   }
 
   const totalChars = textAnswers.reduce((sum, txt) => sum + txt.length, 0);
@@ -207,19 +69,21 @@ export const TextAnswersList = ({ answers }: TextAnswersListProps) => {
       <div className="bg-muted/40 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg px-3 py-2">
         <span className="text-muted-foreground flex items-center gap-1.5 text-xs font-medium">
           <MessageSquare className="size-3.5" aria-hidden />
-          {t('responsesCount', { count: textAnswers.length })}
+          {t('surveys.stats.responsesCount', { count: textAnswers.length })}
         </span>
         <span className="text-border/60 text-xs" aria-hidden>
           ·
         </span>
         <span className="text-muted-foreground text-xs">
-          {t('averageLength', { chars: avgLength })}
+          {t('surveys.stats.averageLength', { chars: avgLength })}
         </span>
       </div>
 
       {keywords.length > 0 && (
         <div className="space-y-1.5">
-          <p className="text-muted-foreground text-[11px] font-medium">{t('topKeywords')}</p>
+          <p className="text-muted-foreground text-[11px] font-medium">
+            {t('surveys.stats.topKeywords')}
+          </p>
           <div className="flex flex-wrap gap-1.5">
             {keywords.map(({ word, count }) => (
               <Badge key={word} variant="outline" className="text-[11px] font-normal">
@@ -245,7 +109,7 @@ export const TextAnswersList = ({ answers }: TextAnswersListProps) => {
                   className="text-muted-foreground mt-1.5 block text-[11px] tabular-nums"
                   aria-hidden
                 >
-                  {t('charactersCount', { count: len })}
+                  {t('surveys.stats.charactersCount', { count: len })}
                 </span>
               </blockquote>
             </li>
@@ -264,12 +128,12 @@ export const TextAnswersList = ({ answers }: TextAnswersListProps) => {
           {expanded ? (
             <>
               <ChevronUp className="size-3.5 shrink-0" aria-hidden />
-              {t('showLess')}
+              {t('surveys.stats.showLess')}
             </>
           ) : (
             <>
               <ChevronDown className="size-3.5 shrink-0" aria-hidden />
-              {t('showMore')} ({textAnswers.length - INITIAL_VISIBLE})
+              {t('surveys.stats.showMore')} ({textAnswers.length - INITIAL_VISIBLE})
             </>
           )}
         </Button>

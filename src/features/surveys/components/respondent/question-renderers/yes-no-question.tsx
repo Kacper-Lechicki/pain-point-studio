@@ -11,10 +11,10 @@ interface YesNoQuestionProps {
 }
 
 export const YesNoQuestion = ({ value, onChange }: YesNoQuestionProps) => {
-  const t = useTranslations('respondent.questions');
+  const t = useTranslations();
 
   return (
-    <div role="radiogroup" aria-label={t('yesNoGroup')} className="flex gap-3">
+    <div role="radiogroup" aria-label={t('respondent.questions.yesNoGroup')} className="flex gap-3">
       <button
         type="button"
         role="radio"
@@ -28,7 +28,7 @@ export const YesNoQuestion = ({ value, onChange }: YesNoQuestionProps) => {
         )}
       >
         <ThumbsUp className="size-4" />
-        {t('yesLabel')}
+        {t('respondent.questions.yesLabel')}
       </button>
       <button
         type="button"
@@ -43,7 +43,7 @@ export const YesNoQuestion = ({ value, onChange }: YesNoQuestionProps) => {
         )}
       >
         <ThumbsDown className="size-4" />
-        {t('noLabel')}
+        {t('respondent.questions.noLabel')}
       </button>
     </div>
   );

@@ -1,31 +1,20 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-
-import { BarChart3, Copy, Eye, MoreHorizontal, Pencil, Share2 } from 'lucide-react';
-import { useFormatter, useLocale, useNow, useTranslations } from 'next-intl';
-import { toast } from 'sonner';
+import { MoreHorizontal } from 'lucide-react';
+import { useFormatter, useNow, useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { TableCell, TableRow } from '@/components/ui/table';
-import { duplicateSurvey } from '@/features/surveys/actions';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
-import { SURVEY_ACTION_UI, getAvailableActions } from '@/features/surveys/config/survey-status';
+import { deriveSurveyFlags, getAvailableActions } from '@/features/surveys/config/survey-status';
 import { useSurveyAction } from '@/features/surveys/hooks/use-survey-action';
-import { getSurveyShareUrl } from '@/features/surveys/lib/share-url';
-import { getSurveyEditUrl, getSurveyStatsUrl } from '@/features/surveys/lib/survey-urls';
-import Link from '@/i18n/link';
+import { useSurveyCardActions } from '@/features/surveys/hooks/use-survey-card-actions';
 import { cn } from '@/lib/common/utils';
 
 import { Sparkline, getSparklineColor } from './sparkline';
+import { SurveyActionMenuContent } from './survey-action-menu';
 import { SurveyStatusBadge } from './survey-status-badge';
 
 // ── Component ───────────────────────────────────────────────────────
@@ -48,52 +37,28 @@ export function SurveyListRow({
   variant = 'table',
   archivedLayout = false,
 }: SurveyListRowProps) {
-  const t = useTranslations('surveys.dashboard');
-  const locale = useLocale();
+  const t = useTranslations();
   const format = useFormatter();
   const now = useNow();
-  const router = useRouter();
 
   const { handleActionClick, confirmDialogProps } = useSurveyAction(survey.id, onStatusChange, t);
+  const { handleShare, handleDuplicate } = useSurveyCardActions(survey.id, survey.slug);
 
-  const isDraft = survey.status === 'draft';
-  const isPending = survey.status === 'pending';
-  const isActive = survey.status === 'active';
-  const isClosed = survey.status === 'closed';
-  const isArchived = survey.status === 'archived';
-  const hasShareableLink = (isActive || isPending || isClosed) && survey.slug;
+  const { isDraft, isPending, isActive, isClosed, isArchived, canDuplicate } = deriveSurveyFlags(
+    survey.status
+  );
+  const hasShareableLink = (isActive || isPending || isClosed) && !!survey.slug;
 
   const archivedAtLabel =
     isArchived && (survey.archivedAt ?? survey.updatedAt)
       ? format.relativeTime(new Date(survey.archivedAt ?? survey.updatedAt), now)
       : null;
-  const shareUrl = survey.slug ? getSurveyShareUrl(locale, survey.slug) : null;
   const sparklineColor = getSparklineColor(survey.recentActivity);
   const lastResponseLabel =
     survey.lastResponseAt != null
       ? format.relativeTime(new Date(survey.lastResponseAt), now)
       : null;
   const availableActions = getAvailableActions(survey.status);
-
-  const handleShare = async () => {
-    if (!shareUrl) {
-      return;
-    }
-
-    await navigator.clipboard.writeText(shareUrl);
-    toast.success(t('toast.linkCopied'));
-  };
-
-  const handleDuplicate = async () => {
-    const result = await duplicateSurvey({ surveyId: survey.id });
-
-    if (result.success && result.data) {
-      toast.success(t('toast.duplicated'));
-      router.push(getSurveyEditUrl(result.data.surveyId));
-    }
-  };
-
-  const canDuplicate = isDraft || isActive || isClosed || survey.status === 'cancelled';
 
   const tableRowInteraction = {
     onClick: () => onSelect(survey.id),
@@ -109,72 +74,19 @@ export function SurveyListRow({
     'aria-label': survey.title,
   };
 
-  // ── Shared dropdown menu content ────────────────────────────────
+  // ── Shared menu + confirm dialog ─────────────────────────────────
 
   const menuContent = (
-    <DropdownMenuContent align="end">
-      <DropdownMenuItem onClick={() => onSelect(survey.id)}>
-        <Eye className="size-4" aria-hidden />
-        {t('actions.details')}
-      </DropdownMenuItem>
-
-      {hasShareableLink && (
-        <DropdownMenuItem onClick={handleShare}>
-          <Share2 className="size-4" aria-hidden />
-          {t('actions.share')}
-        </DropdownMenuItem>
-      )}
-
-      {!isDraft && !isPending && (
-        <DropdownMenuItem asChild>
-          <Link href={getSurveyStatsUrl(survey.id)}>
-            <BarChart3 className="size-4" aria-hidden />
-            {t('actions.viewResults')}
-          </Link>
-        </DropdownMenuItem>
-      )}
-
-      {(isDraft || isPending) && (
-        <DropdownMenuItem asChild>
-          <Link href={getSurveyEditUrl(survey.id)}>
-            <Pencil className="size-4" aria-hidden />
-            {t('actions.edit')}
-          </Link>
-        </DropdownMenuItem>
-      )}
-
-      {canDuplicate && (
-        <DropdownMenuItem onClick={handleDuplicate}>
-          <Copy className="size-4" aria-hidden />
-          {t('actions.duplicate')}
-        </DropdownMenuItem>
-      )}
-
-      {availableActions.length > 0 && (
-        <>
-          <DropdownMenuSeparator />
-          {availableActions.map((action) => {
-            const ui = SURVEY_ACTION_UI[action];
-            const Icon = ui.icon;
-            const isDestructive = ui.confirm?.variant === 'destructive';
-
-            return (
-              <DropdownMenuItem
-                key={action}
-                onClick={() => handleActionClick(action)}
-                className={cn(isDestructive && 'text-destructive focus:text-destructive')}
-              >
-                <Icon className="size-4" aria-hidden />
-                {t(`actions.${action}`)}
-              </DropdownMenuItem>
-            );
-          })}
-        </>
-      )}
-    </DropdownMenuContent>
+    <SurveyActionMenuContent
+      surveyId={survey.id}
+      flags={{ isDraft, isPending, canDuplicate, hasShareableLink }}
+      availableActions={availableActions}
+      onShare={handleShare}
+      onDuplicate={handleDuplicate}
+      handleActionClick={handleActionClick}
+      onDetails={() => onSelect(survey.id)}
+    />
   );
-
-  // ── Shared confirm dialog ───────────────────────────────────────
 
   const confirmDialogElement = confirmDialogProps && <ConfirmDialog {...confirmDialogProps} />;
 
@@ -202,7 +114,7 @@ export function SurveyListRow({
                     variant="ghost"
                     size="icon-xs"
                     className="text-muted-foreground"
-                    aria-label={t('actions.moreActions')}
+                    aria-label={t('surveys.dashboard.actions.moreActions')}
                     onClick={(e) => e.preventDefault()}
                   >
                     <MoreHorizontal className="size-4" aria-hidden />
@@ -226,16 +138,16 @@ export function SurveyListRow({
             )}
           >
             <div className="flex flex-col gap-0.5">
-              <span>{t('table.questions')}</span>
+              <span>{t('surveys.dashboard.table.questions')}</span>
               <span className="text-foreground font-medium tabular-nums">
                 {survey.questionCount}
               </span>
             </div>
             <div className="flex flex-col gap-0.5">
-              <span>{t('table.responses')}</span>
+              <span>{t('surveys.dashboard.table.responses')}</span>
               <span className="text-foreground font-medium tabular-nums">
                 {survey.maxRespondents != null
-                  ? t('card.responsesOfMax', {
+                  ? t('surveys.dashboard.card.responsesOfMax', {
                       completed: survey.completedCount,
                       max: survey.maxRespondents,
                     })
@@ -244,19 +156,19 @@ export function SurveyListRow({
             </div>
             {(isArchived || archivedLayout) && archivedAtLabel != null ? (
               <div className="flex flex-col gap-0.5">
-                <span>{t('table.archivedAt')}</span>
+                <span>{t('surveys.dashboard.table.archivedAt')}</span>
                 <span className="text-foreground font-medium tabular-nums">{archivedAtLabel}</span>
               </div>
             ) : (
               <>
                 <div className="flex flex-col gap-0.5">
-                  <span>{t('table.lastResponse')}</span>
+                  <span>{t('surveys.dashboard.table.lastResponse')}</span>
                   <span className="text-foreground font-medium tabular-nums">
                     {lastResponseLabel ?? '—'}
                   </span>
                 </div>
                 <div className="flex flex-col gap-0.5">
-                  <span>{t('table.activity')}</span>
+                  <span>{t('surveys.dashboard.table.activity')}</span>
                   <Sparkline
                     data={survey.recentActivity}
                     className={cn('shrink-0', sparklineColor)}
@@ -328,7 +240,7 @@ export function SurveyListRow({
                   variant="ghost"
                   size="icon-xs"
                   className="text-muted-foreground"
-                  aria-label={t('actions.moreActions')}
+                  aria-label={t('surveys.dashboard.actions.moreActions')}
                   onClick={(e) => e.preventDefault()}
                 >
                   <MoreHorizontal className="size-4" aria-hidden />

@@ -5,25 +5,20 @@ import { Bar, BarChart, XAxis, YAxis } from 'recharts';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { QUESTION_ENGAGEMENT_CONFIG, QUESTION_ENGAGEMENT_DATA } from '@/features/marketing/config';
+import {
+  QUESTION_ENGAGEMENT_CONFIG,
+  QUESTION_ENGAGEMENT_DATA,
+  localizeChartConfig,
+} from '@/features/marketing/config';
 
 const QuestionEngagementChart = () => {
-  const t = useTranslations('marketing.charts.questionEngagement');
-  const title = t('title');
-  const description = t('description');
+  const t = useTranslations();
+  const title = t('marketing.charts.questionEngagement.title');
+  const description = t('marketing.charts.questionEngagement.description');
 
-  const chartConfig = {
-    ...QUESTION_ENGAGEMENT_CONFIG,
-    ...Object.fromEntries(
-      Object.entries(QUESTION_ENGAGEMENT_CONFIG).map(([key, value]) => [
-        key,
-        {
-          ...value,
-          label: value.label ? t(`chart.${value.label}` as Parameters<typeof t>[0]) : undefined,
-        },
-      ])
-    ),
-  };
+  const chartConfig = localizeChartConfig(QUESTION_ENGAGEMENT_CONFIG, (key) =>
+    t(`marketing.charts.questionEngagement.${key}` as Parameters<typeof t>[0])
+  );
 
   const formatActivityTick = (value: string): string => {
     return chartConfig[value as keyof typeof chartConfig]?.label ?? value;

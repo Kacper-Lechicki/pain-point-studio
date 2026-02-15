@@ -12,20 +12,24 @@ interface RatingScaleQuestionProps {
 }
 
 export const RatingScaleQuestion = ({ value, config, onChange }: RatingScaleQuestionProps) => {
-  const t = useTranslations('respondent.questions');
+  const t = useTranslations();
   const { values, minLabel, maxLabel } = getRatingScaleConfig(config);
   const max = values[values.length - 1] ?? 0;
 
   return (
     <div>
-      <div role="radiogroup" aria-label={t('ratingScale')} className="flex flex-wrap gap-2">
+      <div
+        role="radiogroup"
+        aria-label={t('respondent.questions.ratingScale')}
+        className="flex flex-wrap gap-2"
+      >
         {values.map((n) => (
           <button
             key={n}
             type="button"
             role="radio"
             aria-checked={value === n}
-            aria-label={t('ratingLabel', { value: n, max })}
+            aria-label={t('respondent.questions.ratingLabel', { value: n, max })}
             onClick={() => onChange({ rating: n })}
             className={cn(
               'flex min-h-10 min-w-10 items-center justify-center rounded-lg border text-sm font-medium transition-colors md:min-h-9 md:min-w-9',

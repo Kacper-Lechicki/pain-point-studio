@@ -16,14 +16,51 @@ import {
   SURVEY_TITLE_MAX_LENGTH,
 } from '@/features/surveys/config';
 
+// ── Enum tuples (source of truth) ───────────────────────────────────
+
+/** All supported question types as a const tuple (source of truth). */
+export const QUESTION_TYPES = [
+  'open_text',
+  'short_text',
+  'multiple_choice',
+  'rating_scale',
+  'yes_no',
+] as const;
+
+export type QuestionType = (typeof QUESTION_TYPES)[number];
+
+/** All survey lifecycle statuses as a const tuple (source of truth). */
+export const SURVEY_STATUSES = [
+  'draft',
+  'pending',
+  'active',
+  'closed',
+  'cancelled',
+  'archived',
+] as const;
+
+export type SurveyStatus = (typeof SURVEY_STATUSES)[number];
+
+/** All survey visibility options as a const tuple (source of truth). */
+export const SURVEY_VISIBILITY_VALUES = ['private', 'public'] as const;
+
+export type SurveyVisibility = (typeof SURVEY_VISIBILITY_VALUES)[number];
+
+/** Possible actions when saving a survey draft. */
+export const DRAFT_ACTIONS = ['saveDraft', 'next'] as const;
+
+export type DraftAction = (typeof DRAFT_ACTIONS)[number];
+
 // ── Shared schemas ──────────────────────────────────────────────────
 
+/** Schema for validating a single survey UUID. */
 export const surveyIdSchema = z.object({
   surveyId: z.string().uuid(),
 });
 
 // ── Survey metadata schemas ─────────────────────────────────────────
 
+/** Schema for survey metadata fields (title, description, dates, limits). */
 export const surveyMetadataSchema = z
   .object({
     title: z
@@ -35,7 +72,7 @@ export const surveyMetadataSchema = z
       .min(1, 'surveys.errors.fieldRequired')
       .max(SURVEY_DESCRIPTION_MAX_LENGTH, 'surveys.errors.descriptionTooLong'),
     category: z.string().min(1, 'surveys.errors.fieldRequired'),
-    visibility: z.enum(['private', 'public']),
+    visibility: z.enum(SURVEY_VISIBILITY_VALUES),
     startsAt: z.string().nullable(),
     endsAt: z.string().nullable(),
     maxRespondents: z
@@ -70,33 +107,19 @@ export const surveyMetadataSchema = z
 
 export type SurveyMetadataSchema = z.infer<typeof surveyMetadataSchema>;
 
+/** Extends metadata schema with optional surveyId and action for draft creation. */
 export const createSurveyDraftSchema = surveyMetadataSchema.and(
   z.object({
     surveyId: z.string().uuid().optional(),
-    action: z.enum(['saveDraft', 'next']),
+    action: z.enum(DRAFT_ACTIONS),
   })
 );
 
 export type CreateSurveyDraftSchema = z.infer<typeof createSurveyDraftSchema>;
 
-// ── Question type enum ──────────────────────────────────────────────
-
-export const QUESTION_TYPES = [
-  'open_text',
-  'short_text',
-  'multiple_choice',
-  'rating_scale',
-  'yes_no',
-] as const;
-
-export type QuestionType = (typeof QUESTION_TYPES)[number];
-
-export type SurveyStatus = 'draft' | 'pending' | 'active' | 'closed' | 'cancelled' | 'archived';
-
-export type SurveyVisibility = 'private' | 'public';
-
 // ── Type-specific config schemas ────────────────────────────────────
 
+/** Config schema for multiple-choice questions (options, selection limits). */
 export const multipleChoiceConfigSchema = z.object({
   options: z
     .array(z.string().max(QUESTION_OPTION_MAX_LENGTH, 'surveys.builder.errors.optionTooLong'))
@@ -107,6 +130,7 @@ export const multipleChoiceConfigSchema = z.object({
   allowOther: z.boolean().optional(),
 });
 
+/** Config schema for rating-scale questions (min/max values, labels). */
 export const ratingScaleConfigSchema = z
   .object({
     min: z.number().int().min(RATING_SCALE_MIN, 'surveys.builder.errors.ratingMinValue'),
@@ -119,6 +143,7 @@ export const ratingScaleConfigSchema = z
     path: ['max'],
   });
 
+/** Config schema for text questions (placeholder, max length). */
 export const textConfigSchema = z.object({
   placeholder: z.string().max(200).optional(),
   maxLength: z.number().int().min(1).optional(),
@@ -126,6 +151,7 @@ export const textConfigSchema = z.object({
 
 // ── Question schema ─────────────────────────────────────────────────
 
+/** Schema for a single survey question (text, type, required flag, config). */
 export const questionSchema = z.object({
   id: z.string().uuid(),
   text: z
@@ -144,6 +170,7 @@ export const questionSchema = z.object({
 
 export type QuestionSchema = z.infer<typeof questionSchema>;
 
+/** Schema for saving a full set of survey questions with sort order. */
 export const surveyQuestionsSchema = z.object({
   surveyId: z.string().uuid(),
   questions: z

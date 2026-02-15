@@ -14,28 +14,30 @@ interface DangerZoneProps {
 }
 
 const DangerZone = ({ userEmail }: DangerZoneProps) => {
-  const t = useTranslations('settings.dangerZone');
+  const t = useTranslations();
   const [dialogOpen, setDialogOpen] = useState(false);
 
   return (
     <>
       <section className="space-y-8">
         <SettingsSectionHeader
-          title={t('title')}
-          description={t('description')}
+          title={t('settings.dangerZone.title')}
+          description={t('settings.dangerZone.description')}
           variant="destructive"
         />
 
         <div className="border-destructive/30 bg-destructive/5 rounded-lg border px-4 py-4">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
             <div className="min-w-0 flex-1 space-y-1">
-              <p className="text-sm font-medium">{t('deleteAccount')}</p>
-              <p className="text-muted-foreground text-xs">{t('deleteDescription')}</p>
+              <p className="text-sm font-medium">{t('settings.dangerZone.deleteAccount')}</p>
+              <p className="text-muted-foreground text-xs">
+                {t('settings.dangerZone.deleteDescription')}
+              </p>
             </div>
 
             <Button variant="destructive" className="shrink-0" onClick={() => setDialogOpen(true)}>
               <Trash2 className="size-4" aria-hidden="true" />
-              {t('deleteAccount')}
+              {t('settings.dangerZone.deleteAccount')}
             </Button>
           </div>
         </div>

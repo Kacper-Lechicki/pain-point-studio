@@ -29,7 +29,7 @@ const AvatarUpload = ({
   fallbackInitials,
   onAvatarChange,
 }: AvatarUploadProps) => {
-  const t = useTranslations('settings');
+  const t = useTranslations();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
@@ -44,13 +44,13 @@ const AvatarUpload = ({
     }
 
     if (!AVATAR_ACCEPTED_TYPES.includes(file.type)) {
-      toast.error(t('errors.avatarInvalidType'));
+      toast.error(t('settings.errors.avatarInvalidType'));
 
       return;
     }
 
     if (file.size > AVATAR_MAX_SIZE) {
-      toast.error(t('errors.avatarTooLarge'));
+      toast.error(t('settings.errors.avatarTooLarge'));
 
       return;
     }
@@ -85,7 +85,7 @@ const AvatarUpload = ({
         .upload(filePath, blob, { upsert: true, contentType: blob.type });
 
       if (uploadError) {
-        toast.error(t('errors.uploadFailed'));
+        toast.error(t('settings.errors.uploadFailed'));
 
         return;
       }
@@ -105,14 +105,14 @@ const AvatarUpload = ({
       const result = await updateAvatarUrl({ avatarUrl: publicUrl });
 
       if (result.error) {
-        toast.error(t(result.error as Parameters<typeof t>[0]));
+        toast.error(t(`settings.${result.error}` as Parameters<typeof t>[0]));
       } else {
         onAvatarChange(publicUrl);
         window.dispatchEvent(new Event('auth:refresh'));
-        toast.success(t('profile.avatarUpdated'));
+        toast.success(t('settings.profile.avatarUpdated'));
       }
     } catch {
-      toast.error(t('errors.uploadFailed'));
+      toast.error(t('settings.errors.uploadFailed'));
     } finally {
       setIsUploading(false);
     }
@@ -145,14 +145,14 @@ const AvatarUpload = ({
       const result = await updateAvatarUrl({ avatarUrl: '' });
 
       if (result.error) {
-        toast.error(t(result.error as Parameters<typeof t>[0]));
+        toast.error(t(`settings.${result.error}` as Parameters<typeof t>[0]));
       } else {
         onAvatarChange('');
         window.dispatchEvent(new Event('auth:refresh'));
-        toast.success(t('profile.avatarRemoved'));
+        toast.success(t('settings.profile.avatarRemoved'));
       }
     } catch {
-      toast.error(t('errors.uploadFailed'));
+      toast.error(t('settings.errors.uploadFailed'));
     } finally {
       setIsUploading(false);
     }
@@ -161,7 +161,10 @@ const AvatarUpload = ({
   return (
     <div className="bg-muted/20 flex flex-col items-center gap-4 rounded-lg border border-dashed p-4 sm:flex-row sm:items-center">
       <Avatar className="ring-offset-background ring-border/50 size-20 shrink-0 ring-2 ring-offset-2">
-        <AvatarImage src={proxyImageUrl(currentUrl || undefined)} alt={t('profile.avatar')} />
+        <AvatarImage
+          src={proxyImageUrl(currentUrl || undefined)}
+          alt={t('settings.profile.avatar')}
+        />
         <AvatarFallback className="text-lg">{fallbackInitials}</AvatarFallback>
       </Avatar>
 
@@ -179,7 +182,7 @@ const AvatarUpload = ({
               <Upload className="size-4" aria-hidden="true" />
             )}
 
-            {currentUrl ? t('profile.changeAvatar') : t('profile.uploadAvatar')}
+            {currentUrl ? t('settings.profile.changeAvatar') : t('settings.profile.uploadAvatar')}
           </Button>
 
           {currentUrl && (
@@ -190,13 +193,13 @@ const AvatarUpload = ({
               disabled={isUploading}
             >
               <X className="size-4" aria-hidden="true" />
-              {t('profile.removeAvatar')}
+              {t('settings.profile.removeAvatar')}
             </Button>
           )}
         </div>
 
         <p className="text-muted-foreground text-center text-xs sm:text-left">
-          {t('profile.avatarHint')}
+          {t('settings.profile.avatarHint')}
         </p>
       </div>
 
@@ -207,7 +210,7 @@ const AvatarUpload = ({
         type="file"
         accept={AVATAR_ACCEPTED_TYPES.join(',')}
         onChange={handleFileSelect}
-        aria-label={t('profile.uploadAvatar')}
+        aria-label={t('settings.profile.uploadAvatar')}
         className="sr-only"
         tabIndex={-1}
       />
@@ -216,9 +219,9 @@ const AvatarUpload = ({
         open={showRemoveConfirm}
         onOpenChange={setShowRemoveConfirm}
         onConfirm={handleRemove}
-        title={t('profile.removeAvatarConfirmTitle')}
-        description={t('profile.removeAvatarConfirmDescription')}
-        confirmLabel={t('profile.removeAvatar')}
+        title={t('settings.profile.removeAvatarConfirmTitle')}
+        description={t('settings.profile.removeAvatarConfirmDescription')}
+        confirmLabel={t('settings.profile.removeAvatar')}
       />
 
       {selectedFile && (

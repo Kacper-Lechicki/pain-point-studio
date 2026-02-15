@@ -1,4 +1,28 @@
-import { ChartConfig } from '@/components/ui/chart';
+import type { ChartConfig } from '@/components/ui/chart';
+
+/**
+ * Translate chart config labels using a scoped i18n `t()` function.
+ * Each config entry's `label` is resolved via `t(`chart.${label}`)`.
+ */
+export function localizeChartConfig<T extends ChartConfig>(
+  config: T,
+  t: (key: string) => string
+): T {
+  return {
+    ...config,
+    ...Object.fromEntries(
+      Object.entries(config).map(([key, value]) => [
+        key,
+        {
+          ...value,
+          label: value.label ? t(`chart.${value.label}`) : undefined,
+        },
+      ])
+    ),
+  } as T;
+}
+
+// ── Idea Trends (line chart) ────────────────────────────────────────
 
 export interface IdeaTrendsDataPoint {
   month: string;
@@ -25,6 +49,8 @@ export const IDEA_TRENDS_CONFIG = {
     color: 'var(--chart-cyan)',
   },
 } satisfies ChartConfig;
+
+// ── Pain Points (bar chart) ─────────────────────────────────────────
 
 export interface PainPointsDataPoint {
   painPoint: string;
@@ -61,6 +87,8 @@ export const PAIN_POINTS_CONFIG = {
   },
 } satisfies ChartConfig;
 
+// ── Question Engagement (horizontal bar chart) ─────────────────────
+
 export interface QuestionEngagementDataPoint {
   activity: string;
   count: number;
@@ -95,6 +123,8 @@ export const QUESTION_ENGAGEMENT_CONFIG = {
     color: 'var(--chart-rose)',
   },
 } satisfies ChartConfig;
+
+// ── Responses Growth (area chart) ───────────────────────────────────
 
 export interface ResponsesGrowthDataPoint {
   day: string;

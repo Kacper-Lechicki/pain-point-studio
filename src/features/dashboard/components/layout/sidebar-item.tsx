@@ -10,11 +10,6 @@ import { Link, usePathname } from '@/i18n/routing';
 import type { MessageKey } from '@/i18n/types';
 import { cn } from '@/lib/common/utils';
 
-/**
- * Base styling shared across both collapsed & expanded states.
- * Layout props (width, padding, gap, justify) are set via inline styles
- * so CSS transition can smoothly animate between states.
- */
 const BASE_CLASSES =
   'flex items-center rounded-lg border border-transparent text-sm font-medium whitespace-nowrap transition-all duration-200 ease-in-out ' +
   'text-sidebar-foreground/70 ' +

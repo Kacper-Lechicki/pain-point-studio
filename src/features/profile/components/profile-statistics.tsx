@@ -10,32 +10,32 @@ interface ProfileStatisticsSectionProps {
 }
 
 export const ProfileStatisticsSection = ({ statistics }: ProfileStatisticsSectionProps) => {
-  const t = useTranslations('profile.sections.statistics');
+  const t = useTranslations();
   const format = useFormatter();
 
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-medium">{t('title')}</h3>
+      <h3 className="text-sm font-medium">{t('profile.sections.statistics.title')}</h3>
 
       <div className="grid grid-cols-2 gap-2">
         <StatCard
           icon={ClipboardList}
-          label={t('totalSurveys')}
+          label={t('profile.sections.statistics.totalSurveys')}
           value={String(statistics.totalSurveys)}
         />
         <StatCard
           icon={MessageSquare}
-          label={t('totalResponses')}
+          label={t('profile.sections.statistics.totalResponses')}
           value={String(statistics.totalResponses)}
         />
         <StatCard
           icon={TrendingUp}
-          label={t('avgCompletionRate')}
+          label={t('profile.sections.statistics.avgCompletionRate')}
           value={`${statistics.avgCompletionRate}%`}
         />
         <StatCard
           icon={Calendar}
-          label={t('memberSince')}
+          label={t('profile.sections.statistics.memberSince')}
           value={format.dateTime(new Date(statistics.memberSince), {
             month: 'short',
             year: 'numeric',

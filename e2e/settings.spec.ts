@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 import { makeApiSignIn, scopedEmail } from './helpers/auth';
-import { ROUTES, SECTION_TO_HASH, url } from './helpers/routes';
+import { ROUTES, url } from './helpers/routes';
 import { deleteUserByEmail, ensureUser } from './helpers/supabase-admin';
 
 // Serial: 1 test per browser project at a time (max 5 concurrent).
@@ -9,8 +9,6 @@ test.describe.configure({ mode: 'serial' });
 
 // ── Selectors ────────────────────────────────────────────────────
 const sel = {
-  navTabs: '[data-testid="settings-nav"]',
-  navSelect: '[data-testid="settings-nav-select"]',
   fullName: 'form#profile-form input[name="fullName"]',
   bio: 'textarea[name="bio"]',
   profileSubmit: 'form#profile-form button[type="submit"]',
@@ -32,39 +30,9 @@ function profileInMain(page: import('@playwright/test').Page) {
 
 const PASSWORD = 'E2eSettingsPass1!';
 
-/**
- * Navigate to a settings section (desktop tabs or mobile select).
- * Retries to survive hydration layout flips.
- */
-async function navigateToSection(
-  page: import('@playwright/test').Page,
-  section: 'profile' | 'email' | 'password' | 'appearance' | 'connectedAccounts' | 'dangerZone',
-  waitForSelector: string
-) {
-  await expect(async () => {
-    const tabs = page.locator(sel.navTabs);
-    const select = page.locator(sel.navSelect);
-
-    if (await tabs.isVisible().catch(() => false)) {
-      await tabs.locator(`[data-section="${section}"]`).click();
-    } else {
-      const isOpen = await select.getAttribute('data-state').catch(() => null);
-
-      if (isOpen === 'open') {
-        await page.keyboard.press('Escape');
-      }
-
-      await select.click({ timeout: 3_000 });
-      await page.locator(`[data-section="${section}"][role="option"]`).click({ timeout: 3_000 });
-    }
-
-    await expect(page.locator(waitForSelector)).toBeVisible({ timeout: 3_000 });
-  }).toPass({ timeout: 15_000 });
-}
-
 // ─────────────────────────────────────────────────────────────────
 // Settings – Core Flow
-// Profile update, section navigation, email validation, accent color
+// Profile update, route navigation, email validation, accent color
 // ─────────────────────────────────────────────────────────────────
 test.describe('Settings – Core Flow', () => {
   let email: string;
@@ -83,8 +51,8 @@ test.describe('Settings – Core Flow', () => {
 
   test('profile update → section nav → email validation → accent color', async ({ page }) => {
     await signIn(page);
-    await page.goto(url(ROUTES.common.settings));
-    await expect(page).toHaveURL(/\/settings/);
+    await page.goto(url(ROUTES.settings.profile));
+    await expect(page).toHaveURL(/\/settings\/profile/);
 
     // ── Profile section visible by default (scope to main to avoid Complete Profile modal) ──
     const main = profileInMain(page);
@@ -106,16 +74,18 @@ test.describe('Settings – Core Flow', () => {
     }).toPass({ timeout: 20_000 });
 
     // ── Navigate to email → verify pre-filled → reject invalid ──
-    await navigateToSection(page, 'email', sel.email);
+    await page.goto(url(ROUTES.settings.email));
+    await expect(page.locator(sel.email)).toBeVisible({ timeout: 15_000 });
     await expect(page.locator(sel.email)).toHaveValue(email);
 
     await page.locator(sel.email).clear();
     await page.locator(sel.email).fill('not-an-email');
     await page.locator(sel.emailSubmit).click();
-    await expect(page).toHaveURL(/\/settings/);
+    await expect(page).toHaveURL(/\/settings\/email/);
 
     // ── Navigate to appearance → switch accent color → persists ──
-    await navigateToSection(page, 'appearance', 'button[data-accent="blue"]');
+    await page.goto(url(ROUTES.settings.appearance));
+    await expect(page.locator('button[data-accent="blue"]')).toBeVisible({ timeout: 15_000 });
 
     const html = page.locator('html');
     await page.locator('button[data-accent="teal"]').click();
@@ -130,22 +100,23 @@ test.describe('Settings – Core Flow', () => {
     await expect(html).toHaveAttribute('data-accent', 'blue');
   });
 
-  test('hash navigation and browser back', async ({ page }) => {
+  test('direct route navigation and browser back', async ({ page }) => {
     await signIn(page);
 
-    // Direct hash navigation
-    await page.goto(url(ROUTES.common.settings, SECTION_TO_HASH.email));
+    // Direct route navigation to email
+    await page.goto(url(ROUTES.settings.email));
     await expect(page.locator(sel.email)).toBeVisible({ timeout: 15_000 });
 
-    // Click nav updates hash
-    await navigateToSection(page, 'password', sel.password);
-    await expect(page).toHaveURL(/#password/);
+    // Navigate to password via route
+    await page.goto(url(ROUTES.settings.password));
+    await expect(page.locator(sel.password)).toBeVisible({ timeout: 15_000 });
+    await expect(page).toHaveURL(/\/settings\/password/);
 
-    // Browser back returns to dashboard (hash changes use replaceState)
+    // Browser back returns to email
     await page.goBack();
-    await expect(page).toHaveURL(/\/dashboard/, { timeout: 10_000 });
+    await expect(page).toHaveURL(/\/settings\/email/, { timeout: 10_000 });
 
-    // No hash defaults to profile
+    // Settings index redirects to profile
     await page.goto(url(ROUTES.common.settings));
     await expect(profileInMain(page).locator(sel.fullName)).toBeVisible({ timeout: 15_000 });
   });
@@ -171,20 +142,20 @@ test.describe('Settings – Password', () => {
 
   test('rejects invalid → updates password successfully', async ({ page }) => {
     await signIn(page);
-    await page.goto(url(ROUTES.common.settings, SECTION_TO_HASH.password));
+    await page.goto(url(ROUTES.settings.password));
     await expect(page.locator(sel.password)).toBeVisible({ timeout: 15_000 });
 
     // Weak password rejected (client-side Zod validation)
     await page.locator(sel.password).fill('weak');
     await page.locator(sel.confirmPassword).fill('weak');
     await page.locator(sel.passwordSubmit).click();
-    await expect(page).toHaveURL(/\/settings/);
+    await expect(page).toHaveURL(/\/settings\/password/);
 
     // Mismatched passwords rejected (client-side Zod validation)
     await page.locator(sel.password).fill('NewStrongPass1!');
     await page.locator(sel.confirmPassword).fill('DifferentPass1!');
     await page.locator(sel.passwordSubmit).click();
-    await expect(page).toHaveURL(/\/settings/);
+    await expect(page).toHaveURL(/\/settings\/password/);
 
     // Valid password update
     const cpwField = page.locator(sel.currentPassword);
@@ -217,7 +188,7 @@ test.describe('Settings – Password', () => {
     // behaviour after server actions is unreliable on webkit-based
     // engines in CI (fields keep their DOM value despite React state reset).
     await expect(page.locator(sel.toast).first()).toBeVisible({ timeout: 15_000 });
-    await expect(page).toHaveURL(/\/settings/);
+    await expect(page).toHaveURL(/\/settings\/password/);
   });
 });
 
@@ -238,7 +209,7 @@ test.describe('Settings – Delete Account', () => {
     await ensureUser(email, PASSWORD);
     await signIn(page);
 
-    await page.goto(url(ROUTES.common.settings, SECTION_TO_HASH.dangerZone));
+    await page.goto(url(ROUTES.settings.dangerZone));
     await expect(page.locator(sel.deleteButton)).toBeVisible({ timeout: 15_000 });
 
     // Open dialog

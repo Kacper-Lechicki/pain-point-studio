@@ -54,8 +54,7 @@ const SORT_OPTIONS_MOBILE: ArchiveSortBy[] = [
 ];
 
 export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
-  const t = useTranslations('surveys.archive');
-  const tDashboard = useTranslations('surveys.dashboard');
+  const t = useTranslations();
   const isMd = useBreakpoint('md');
 
   const [surveys, setSurveys] = useState(initialSurveys);
@@ -84,7 +83,10 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
 
   const sortOptions = isMd ? SORT_OPTIONS_DESKTOP : SORT_OPTIONS_MOBILE;
   const sortedSortOptions = useMemo(
-    () => [...sortOptions].sort((a, b) => t(`sort.${a}`).localeCompare(t(`sort.${b}`))),
+    () =>
+      [...sortOptions].sort((a, b) =>
+        t(`surveys.archive.sort.${a}`).localeCompare(t(`surveys.archive.sort.${b}`))
+      ),
     [t, sortOptions]
   );
 
@@ -135,7 +137,11 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
 
   if (filteredSurveys.length === 0 && !hasSearch && surveys.length === 0) {
     return (
-      <EmptyState icon={Archive} title={t('empty.title')} description={t('empty.description')} />
+      <EmptyState
+        icon={Archive}
+        title={t('surveys.archive.empty.title')}
+        description={t('surveys.archive.empty.description')}
+      />
     );
   }
 
@@ -148,12 +154,12 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
               <span className="text-foreground text-base font-semibold tabular-nums">
                 {surveys.length}
               </span>
-              <span className="ml-1">{tDashboard('summary.totalLabel')}</span>
+              <span className="ml-1">{t('surveys.dashboard.summary.totalLabel')}</span>
             </span>
           </div>
           <span className="text-muted-foreground hidden shrink-0 items-center gap-1 text-[11px] md:flex">
             <MousePointerClick className="size-3" aria-hidden />
-            {tDashboard('clickHint')}
+            {t('surveys.dashboard.clickHint')}
           </span>
         </div>
       )}
@@ -164,7 +170,7 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
           <Input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={tDashboard('search.placeholder')}
+            placeholder={t('surveys.dashboard.search.placeholder')}
             className={cn('pl-9', hasSearch && 'pr-9')}
           />
           {hasSearch && (
@@ -187,7 +193,7 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
               ) : (
                 <ArrowDown className="size-4" aria-hidden />
               )}
-              <span className="hidden sm:inline">{t(`sort.${sortBy}`)}</span>
+              <span className="hidden sm:inline">{t(`surveys.archive.sort.${sortBy}`)}</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="min-w-40">
@@ -197,7 +203,7 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
             >
               {sortedSortOptions.map((option) => (
                 <DropdownMenuRadioItem key={option} value={option}>
-                  {t(`sort.${option}`)}
+                  {t(`surveys.archive.sort.${option}`)}
                 </DropdownMenuRadioItem>
               ))}
             </DropdownMenuRadioGroup>
@@ -213,7 +219,9 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
               ) : (
                 <ArrowDown className="size-4" aria-hidden />
               )}
-              {sortDir === 'asc' ? tDashboard('sort.asc') : tDashboard('sort.desc')}
+              {sortDir === 'asc'
+                ? t('surveys.dashboard.sort.asc')
+                : t('surveys.dashboard.sort.desc')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -222,12 +230,20 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
       {filteredSurveys.length === 0 ? (
         <EmptyState
           icon={Archive}
-          title={hasSearch ? t('emptySearch.title', { query: searchQuery }) : t('empty.title')}
-          description={hasSearch ? t('emptySearch.description') : t('empty.description')}
+          title={
+            hasSearch
+              ? t('surveys.archive.emptySearch.title', { query: searchQuery })
+              : t('surveys.archive.empty.title')
+          }
+          description={
+            hasSearch
+              ? t('surveys.archive.emptySearch.description')
+              : t('surveys.archive.empty.description')
+          }
           action={
             hasSearch && (
               <Button variant="outline" size="sm" onClick={() => setSearchQuery('')}>
-                {tDashboard('clearFilters')}
+                {t('surveys.dashboard.clearFilters')}
               </Button>
             )
           }
@@ -242,7 +258,7 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
                   currentSortKey={sortBy}
                   sortDir={sortDir}
                   onSort={handleSortByColumn}
-                  label={tDashboard('table.title')}
+                  label={t('surveys.dashboard.table.title')}
                   className="w-[30%]"
                 />
                 <SortableTableHeader
@@ -250,7 +266,7 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
                   currentSortKey={sortBy}
                   sortDir={sortDir}
                   onSort={handleSortByColumn}
-                  label={tDashboard('table.status')}
+                  label={t('surveys.dashboard.table.status')}
                   className="border-border/30 border-l"
                   centered
                 />
@@ -259,7 +275,7 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
                   currentSortKey={sortBy}
                   sortDir={sortDir}
                   onSort={handleSortByColumn}
-                  label={tDashboard('table.questions')}
+                  label={t('surveys.dashboard.table.questions')}
                   className="border-border/30 border-l"
                 />
                 <SortableTableHeader
@@ -267,7 +283,7 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
                   currentSortKey={sortBy}
                   sortDir={sortDir}
                   onSort={handleSortByColumn}
-                  label={tDashboard('table.responses')}
+                  label={t('surveys.dashboard.table.responses')}
                   className="border-border/30 border-l"
                 />
                 <SortableTableHeader
@@ -275,7 +291,7 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
                   currentSortKey={sortBy}
                   sortDir={sortDir}
                   onSort={handleSortByColumn}
-                  label={tDashboard('table.archivedAt')}
+                  label={t('surveys.dashboard.table.archivedAt')}
                   className="border-border/30 border-l"
                 />
                 <TableHead className="w-10" aria-hidden />
@@ -318,7 +334,7 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
         survey={selectedSurvey}
         questions={questions}
         onStatusChange={handleStatusChange}
-        detailsLabel={tDashboard('detailPanel.detailsLabel')}
+        detailsLabel={t('surveys.dashboard.detailPanel.detailsLabel')}
       />
     </div>
   );

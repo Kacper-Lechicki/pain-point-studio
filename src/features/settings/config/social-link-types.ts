@@ -1,8 +1,6 @@
-interface LookupItem {
-  value: string;
-  labelKey: string;
-}
+import type { LookupItem } from '@/features/settings/config';
 
+/** Available social link types displayed in the profile form. */
 export const SOCIAL_LINK_TYPES: readonly LookupItem[] = [
   { value: 'website', labelKey: 'settings.profile.socialLinks.labels.website' },
   { value: 'github', labelKey: 'settings.profile.socialLinks.labels.github' },

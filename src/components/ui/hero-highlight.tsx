@@ -49,21 +49,12 @@ export const HeroHighlight = ({
 
   const dotPatterns = React.useMemo(() => {
     if (!mounted) {
-      return {
-        light: { default: '', hover: '' },
-        dark: { default: '', hover: '' },
-      };
+      return { default: '', hover: '' };
     }
 
     return {
-      light: {
-        default: getEncodedPattern(getComputedColor('--dot-default')),
-        hover: getEncodedPattern(getComputedColor('--dot-hover')),
-      },
-      dark: {
-        default: getEncodedPattern(getComputedColor('--dot-default')),
-        hover: getEncodedPattern(getComputedColor('--dot-hover')),
-      },
+      default: getEncodedPattern(getComputedColor('--dot-default')),
+      hover: getEncodedPattern(getComputedColor('--dot-hover')),
     };
   }, [mounted]);
 
@@ -93,7 +84,7 @@ export const HeroHighlight = ({
           !showDotsOnMobile && 'max-lg:hidden!'
         )}
         style={{
-          backgroundImage: dotPatterns.light.default,
+          backgroundImage: dotPatterns.default,
         }}
       />
 
@@ -103,7 +94,7 @@ export const HeroHighlight = ({
           !showDotsOnMobile && 'max-lg:hidden!'
         )}
         style={{
-          backgroundImage: dotPatterns.dark.default,
+          backgroundImage: dotPatterns.default,
         }}
       />
 
@@ -113,7 +104,7 @@ export const HeroHighlight = ({
           !showDotsOnMobile && 'max-lg:hidden!'
         )}
         style={{
-          backgroundImage: dotPatterns.light.hover,
+          backgroundImage: dotPatterns.hover,
           WebkitMaskImage: useMotionTemplate`
             radial-gradient(
               250px circle at ${mouseX}px ${mouseY}px,
@@ -141,7 +132,7 @@ export const HeroHighlight = ({
           !showDotsOnMobile && 'max-lg:hidden!'
         )}
         style={{
-          backgroundImage: dotPatterns.dark.hover,
+          backgroundImage: dotPatterns.hover,
           WebkitMaskImage: useMotionTemplate`
             radial-gradient(
               250px circle at ${mouseX}px ${mouseY}px,

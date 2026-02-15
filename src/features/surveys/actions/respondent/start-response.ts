@@ -1,10 +1,9 @@
 'use server';
 
+import { mapRpcError } from '@/features/surveys/config';
+import { startResponseSchema } from '@/features/surveys/types';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withPublicAction } from '@/lib/common/with-public-action';
-
-import { mapRpcError } from '../../config';
-import { startResponseSchema } from '../../types';
 
 export const startResponse = withPublicAction<typeof startResponseSchema, { responseId: string }>(
   'start-response',

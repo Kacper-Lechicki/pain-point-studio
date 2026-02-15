@@ -11,10 +11,10 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { BUILDER_PANEL_WIDTH_CLASS } from '@/features/dashboard/config/layout';
 import { QUESTIONS_MAX } from '@/features/surveys/config';
 import { QUESTION_TYPE_ICONS } from '@/features/surveys/config';
+import { useQuestionBuilderContext } from '@/features/surveys/hooks/use-question-builder-context';
 import { useSortableList } from '@/hooks/use-sortable-list';
 import { cn } from '@/lib/common/utils';
 
-import { useQuestionBuilderContext } from '../../hooks/use-question-builder-context';
 import { BuilderSidebarItem } from './builder-sidebar-item';
 import { ResponsivePanel } from './responsive-panel';
 
@@ -28,7 +28,7 @@ interface BuilderSidebarProps {
 const ITEM_ID_ATTR = 'data-question-id';
 
 function BuilderSidebarContent({ onItemSelect }: { onItemSelect?: (() => void) | undefined }) {
-  const t = useTranslations('surveys.builder');
+  const t = useTranslations();
   const { state, addQuestion, selectQuestion, deleteQuestion, reorderQuestions } =
     useQuestionBuilderContext();
   const [deleteQuestionId, setDeleteQuestionId] = useState<string | null>(null);
@@ -60,14 +60,17 @@ function BuilderSidebarContent({ onItemSelect }: { onItemSelect?: (() => void) |
     <>
       <div className="border-border flex items-center justify-between border-b py-2 pr-2 pl-4">
         <span className="text-muted-foreground text-xs font-medium">
-          {t('questionsCount', { count: state.questions.length, max: QUESTIONS_MAX })}
+          {t('surveys.builder.questionsCount', {
+            count: state.questions.length,
+            max: QUESTIONS_MAX,
+          })}
         </span>
         <Button
           variant="ghost"
           size="icon-xs"
           onClick={() => addQuestion()}
           disabled={state.questions.length >= QUESTIONS_MAX}
-          aria-label={t('addQuestion')}
+          aria-label={t('surveys.builder.addQuestion')}
         >
           <Plus className="size-4" />
         </Button>
@@ -123,7 +126,7 @@ function BuilderSidebarContent({ onItemSelect }: { onItemSelect?: (() => void) |
           }
 
           const TypeIcon = QUESTION_TYPE_ICONS[question.type];
-          const displayText = question.text.trim() || t('untitledQuestion');
+          const displayText = question.text.trim() || t('surveys.builder.untitledQuestion');
           const index = state.questions.findIndex((q) => q.id === draggedId);
 
           return createPortal(
@@ -166,16 +169,16 @@ function BuilderSidebarContent({ onItemSelect }: { onItemSelect?: (() => void) |
             setDeleteQuestionId(null);
           }
         }}
-        title={t('deleteQuestionConfirmTitle')}
-        description={t('deleteQuestionConfirm')}
-        confirmLabel={t('deleteQuestion')}
+        title={t('surveys.builder.deleteQuestionConfirmTitle')}
+        description={t('surveys.builder.deleteQuestionConfirm')}
+        confirmLabel={t('surveys.builder.deleteQuestion')}
       />
     </>
   );
 }
 
 export function BuilderSidebar({ isDesktop, open, onOpenChange }: BuilderSidebarProps) {
-  const t = useTranslations('surveys.builder');
+  const t = useTranslations();
 
   return (
     <ResponsivePanel
@@ -183,7 +186,7 @@ export function BuilderSidebar({ isDesktop, open, onOpenChange }: BuilderSidebar
       open={open}
       onOpenChange={onOpenChange}
       side="left"
-      title={t('questions')}
+      title={t('surveys.builder.questions')}
       desktopClassName={`border-border flex ${BUILDER_PANEL_WIDTH_CLASS} flex-col border-r`}
     >
       <BuilderSidebarContent

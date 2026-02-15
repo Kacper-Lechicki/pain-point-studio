@@ -13,19 +13,26 @@ const ACCENT_PREVIEW: Record<Accent, string> = {
 };
 
 const AppearanceSection = () => {
-  const t = useTranslations('settings.appearance');
+  const t = useTranslations();
   const { accent, setAccent } = useAccent();
 
   return (
     <section className="space-y-8">
-      <SettingsSectionHeader title={t('title')} description={t('description')} />
+      <SettingsSectionHeader
+        title={t('settings.appearance.title')}
+        description={t('settings.appearance.description')}
+      />
 
       <div className="space-y-3">
-        <p className="text-sm font-medium">{t('accentColor')}</p>
+        <p className="text-sm font-medium">{t('settings.appearance.accentColor')}</p>
 
         <div className="flex flex-wrap gap-2">
           {[...ACCENT_OPTIONS]
-            .sort((a, b) => t(`accents.${a}`).localeCompare(t(`accents.${b}`)))
+            .sort((a, b) =>
+              t(`settings.appearance.accents.${a}` as Parameters<typeof t>[0]).localeCompare(
+                t(`settings.appearance.accents.${b}` as Parameters<typeof t>[0])
+              )
+            )
             .map((option) => (
               <button
                 key={option}
@@ -40,7 +47,7 @@ const AppearanceSection = () => {
                 )}
               >
                 <span className={cn('size-3.5 rounded-full', ACCENT_PREVIEW[option])} />
-                {t(`accents.${option}`)}
+                {t(`settings.appearance.accents.${option}` as Parameters<typeof t>[0])}
               </button>
             ))}
         </div>

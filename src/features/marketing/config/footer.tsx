@@ -1,6 +1,7 @@
-import { AppRoute, ROUTES } from '@/config';
+import { type AppRoute, ROUTES } from '@/config';
 import type { MessageKey } from '@/i18n/types';
 
+/** Single link in a footer column. */
 export interface FooterItem {
   label: MessageKey;
   href: AppRoute | '#';
@@ -8,11 +9,13 @@ export interface FooterItem {
   external?: boolean;
 }
 
+/** Footer column with heading and list of links. */
 export interface FooterSection {
   title: MessageKey;
   items: FooterItem[];
 }
 
+/** Marketing site footer columns (all links disabled until pages are built). */
 export const FOOTER_SECTIONS: FooterSection[] = [
   {
     title: 'common.product',

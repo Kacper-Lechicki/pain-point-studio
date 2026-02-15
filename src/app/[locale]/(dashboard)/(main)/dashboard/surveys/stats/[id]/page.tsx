@@ -20,6 +20,7 @@ export default async function SurveyStatsPage({ params }: SurveyStatsPageProps) 
   return (
     <>
       <DashboardPageBack />
+
       <PageTransition>
         <SurveyStatsPanel stats={stats} />
       </PageTransition>

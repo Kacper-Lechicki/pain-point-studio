@@ -11,7 +11,7 @@ import { SurveyList } from '@/features/surveys/components/dashboard/survey-list'
 import Link from '@/i18n/link';
 
 export default async function SurveysPage() {
-  const [surveys, t] = await Promise.all([getUserSurveys(), getTranslations('surveys')]);
+  const [surveys, t] = await Promise.all([getUserSurveys(), getTranslations()]);
 
   const activeSurveys = surveys?.filter((s) => s.status !== 'archived') ?? [];
   const hasSurveys = activeSurveys.length > 0;
@@ -20,15 +20,15 @@ export default async function SurveysPage() {
     <PageTransition>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold">{t('title')}</h1>
-          <p className="text-muted-foreground mt-1 text-sm">{t('description')}</p>
+          <h1 className="text-3xl font-bold">{t('surveys.title')}</h1>
+          <p className="text-muted-foreground mt-1 text-sm">{t('surveys.description')}</p>
         </div>
 
         {hasSurveys && (
           <Button asChild className="w-full sm:w-auto">
             <Link href={ROUTES.dashboard.surveysNew}>
               <Plus className="size-4" aria-hidden />
-              {t('createSurvey')}
+              {t('surveys.createSurvey')}
             </Link>
           </Button>
         )}
@@ -40,13 +40,13 @@ export default async function SurveysPage() {
         ) : (
           <EmptyState
             icon={ClipboardList}
-            title={t('empty.title')}
-            description={t('empty.description')}
+            title={t('surveys.empty.title')}
+            description={t('surveys.empty.description')}
             action={
               <Button asChild>
                 <Link href={ROUTES.dashboard.surveysNew}>
                   <Plus className="size-4" aria-hidden />
-                  {t('empty.cta')}
+                  {t('surveys.empty.cta')}
                 </Link>
               </Button>
             }

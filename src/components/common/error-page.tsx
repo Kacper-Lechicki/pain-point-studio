@@ -14,28 +14,28 @@ interface ErrorPageProps {
 }
 
 const ErrorPage = ({ reset, backHref, backLabelKey }: ErrorPageProps) => {
-  const t = useTranslations('common.error');
+  const t = useTranslations();
 
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center gap-6 text-center">
       <AlertTriangle className="text-destructive size-12" />
 
       <div className="space-y-2">
-        <h1 className="text-xl font-semibold">{t('title')}</h1>
-        <p className="text-muted-foreground text-xs">{t('description')}</p>
+        <h1 className="text-xl font-semibold">{t('common.error.title')}</h1>
+        <p className="text-muted-foreground text-xs">{t('common.error.description')}</p>
       </div>
 
       <div className="flex gap-3">
         <Button variant="default" asChild>
           <Link href={backHref}>
             <ArrowLeft className="size-4" />
-            {t(backLabelKey as 'backToSignIn' | 'backToDashboard')}
+            {t(`common.error.${backLabelKey}` as Parameters<typeof t>[0])}
           </Link>
         </Button>
 
         <Button variant="outline" onClick={reset}>
           <RotateCcw className="size-4" />
-          {t('retry')}
+          {t('common.error.retry')}
         </Button>
       </div>
     </div>

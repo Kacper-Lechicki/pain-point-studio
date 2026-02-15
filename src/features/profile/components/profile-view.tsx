@@ -18,14 +18,14 @@ interface ProfileViewProps {
 }
 
 const ProfileView = ({ profile, statistics, isPreview = false }: ProfileViewProps) => {
-  const t = useTranslations('profile');
+  const t = useTranslations();
 
   return (
     <div className="space-y-8">
       {isPreview && (
         <div className="space-y-1">
-          <h1 className="text-xl font-bold tracking-tight">{t('preview.title')}</h1>
-          <p className="text-muted-foreground text-xs">{t('preview.description')}</p>
+          <h1 className="text-xl font-bold tracking-tight">{t('profile.preview.title')}</h1>
+          <p className="text-muted-foreground text-xs">{t('profile.preview.description')}</p>
         </div>
       )}
 
@@ -43,8 +43,8 @@ const ProfileView = ({ profile, statistics, isPreview = false }: ProfileViewProp
           <Separator />
 
           <EmptySection
-            title={t('sections.projects.title')}
-            description={t('sections.projects.emptyDescription')}
+            title={t('profile.sections.projects.title')}
+            description={t('profile.sections.projects.emptyDescription')}
             icon={FolderOpen}
           />
 
@@ -54,8 +54,8 @@ const ProfileView = ({ profile, statistics, isPreview = false }: ProfileViewProp
             <ProfileStatisticsSection statistics={statistics} />
           ) : (
             <EmptySection
-              title={t('sections.statistics.title')}
-              description={t('sections.statistics.emptyDescription')}
+              title={t('profile.sections.statistics.title')}
+              description={t('profile.sections.statistics.emptyDescription')}
               icon={BarChart3}
             />
           )}

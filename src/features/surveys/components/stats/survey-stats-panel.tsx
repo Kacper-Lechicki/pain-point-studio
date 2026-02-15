@@ -2,17 +2,7 @@
 
 import { useState, useTransition } from 'react';
 
-import {
-  Ban,
-  Calendar,
-  CheckCircle,
-  CheckCircle2,
-  Clock,
-  Hash,
-  Inbox,
-  Link2,
-  Timer,
-} from 'lucide-react';
+import { Ban, Calendar, CheckCircle2, Inbox, Link2 } from 'lucide-react';
 import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
@@ -39,13 +29,14 @@ import type { SurveyStatus } from '@/features/surveys/types';
 
 import { ExportButtons } from './export-buttons';
 import { QuestionStatsCard } from './question-stats-card';
+import { StatsMetricsGrid } from './stats-metrics-grid';
 
 interface SurveyStatsPanelProps {
   stats: SurveyStats;
 }
 
 export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
-  const t = useTranslations('surveys.stats');
+  const t = useTranslations();
   const locale = useLocale();
   const format = useFormatter();
 
@@ -70,7 +61,7 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
 
       if (result.success) {
         setOptimisticStatus('closed');
-        toast.success(t('surveyClosed'));
+        toast.success(t('surveys.stats.surveyClosed'));
       }
 
       setShowCloseDialog(false);
@@ -83,7 +74,7 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
 
       if (result.success) {
         setOptimisticStatus('cancelled');
-        toast.success(t('surveyCancelled'));
+        toast.success(t('surveys.stats.surveyCancelled'));
       }
 
       setShowCancelDialog(false);
@@ -104,7 +95,7 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
   const handleCopyEmpty = async () => {
     if (shareUrl) {
       await navigator.clipboard.writeText(shareUrl);
-      toast.success(t('linkCopied'));
+      toast.success(t('surveys.stats.linkCopied'));
     }
   };
 
@@ -125,7 +116,7 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
                       <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75" />
                       <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
                     </span>
-                    {t('liveIndicator')}
+                    {t('surveys.stats.liveIndicator')}
                   </span>
                 )}
               </div>
@@ -139,7 +130,7 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
                   className="gap-1.5"
                 >
                   <CheckCircle2 className="size-3.5" aria-hidden />
-                  {t('closeSurvey')}
+                  {t('surveys.stats.closeSurvey')}
                 </Button>
               )}
               {canCancel && (
@@ -150,7 +141,7 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
                   className="gap-1.5"
                 >
                   <Ban className="size-3.5" aria-hidden />
-                  {t('cancelSurvey')}
+                  {t('surveys.stats.cancelSurvey')}
                 </Button>
               )}
               <ExportButtons surveyId={stats.survey.id} />
@@ -160,7 +151,7 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
           {shareUrl && (
             <>
               <Separator />
-              <SectionLabel>{t('surveyLink')}</SectionLabel>
+              <SectionLabel>{t('surveys.stats.surveyLink')}</SectionLabel>
               <div className="flex items-center gap-2">
                 <Link2 className="text-muted-foreground size-4 shrink-0" aria-hidden />
                 <ClipboardInput value={shareUrl} className="max-w-md" />
@@ -171,77 +162,21 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
 
         <Separator />
 
-        <SectionLabel>{t('metricsLabel')}</SectionLabel>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-          <div className="border-border/50 rounded-md border px-3 py-2.5">
-            <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
-              {stats.totalResponses}
-            </div>
-            <div className="text-muted-foreground mt-1.5 flex items-center gap-1 text-[11px]">
-              <Hash className="size-3" aria-hidden />
-              {t('totalResponses')}
-            </div>
-          </div>
-          <div className="border-border/50 rounded-md border px-3 py-2.5">
-            <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
-              {stats.completedResponses}
-              {stats.survey.maxRespondents != null && (
-                <span className="text-muted-foreground text-xs font-normal">
-                  {' '}
-                  / {stats.survey.maxRespondents}
-                </span>
-              )}
-            </div>
-            <div className="text-muted-foreground mt-1.5 flex items-center gap-1 text-[11px]">
-              <CheckCircle className="size-3" aria-hidden />
-              {t('completedResponses')}
-            </div>
-            {respondentProgress != null && (
-              <div className="bg-muted mt-2 h-1 w-full overflow-hidden rounded-full">
-                <div
-                  className="h-full rounded-full bg-emerald-500 transition-all"
-                  style={{ width: `${respondentProgress}%` }}
-                />
-              </div>
-            )}
-          </div>
-          <div className="border-border/50 rounded-md border px-3 py-2.5">
-            <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
-              {stats.inProgressResponses}
-            </div>
-            <div className="text-muted-foreground mt-1.5 flex items-center gap-1 text-[11px]">
-              <Clock className="size-3" aria-hidden />
-              {t('inProgress')}
-            </div>
-            {stats.inProgressResponses > 0 && (
-              <p className="text-muted-foreground mt-1 text-[10px]">{t('inProgressHint')}</p>
-            )}
-          </div>
-          {completionRate !== null && (
-            <div className="border-border/50 rounded-md border px-3 py-2.5">
-              <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
-                {completionRate}%
-              </div>
-              <div className="text-muted-foreground mt-1.5 text-[11px]">{t('completionRate')}</div>
-            </div>
-          )}
-          {completionTimeLabel != null && (
-            <div className="border-border/50 rounded-md border px-3 py-2.5">
-              <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
-                {completionTimeLabel}
-              </div>
-              <div className="text-muted-foreground mt-1.5 flex items-center gap-1 text-[11px]">
-                <Timer className="size-3" aria-hidden />
-                {t('avgCompletionTime')}
-              </div>
-            </div>
-          )}
-        </div>
+        <SectionLabel>{t('surveys.stats.metricsLabel')}</SectionLabel>
+        <StatsMetricsGrid
+          totalResponses={stats.totalResponses}
+          completedResponses={stats.completedResponses}
+          inProgressResponses={stats.inProgressResponses}
+          maxRespondents={stats.survey.maxRespondents}
+          completionRate={completionRate}
+          respondentProgress={respondentProgress}
+          completionTimeLabel={completionTimeLabel}
+        />
 
         {stats.responseTimeline.length > 0 && stats.responseTimeline.some((v) => v > 0) && (
           <>
             <Separator />
-            <SectionLabel>{t('responseTimeline')}</SectionLabel>
+            <SectionLabel>{t('surveys.stats.responseTimeline')}</SectionLabel>
             <ResponseTimelineChart data={stats.responseTimeline} />
           </>
         )}
@@ -249,13 +184,13 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
         {stats.completedResponses === 0 ? (
           <EmptyState
             icon={Inbox}
-            title={t('noResponses')}
-            description={t('noResponsesDescription')}
+            title={t('surveys.stats.noResponses')}
+            description={t('surveys.stats.noResponsesDescription')}
             action={
               shareUrl ? (
                 <Button size="sm" onClick={handleCopyEmpty} className="gap-1.5">
                   <Link2 className="size-4" aria-hidden />
-                  {t('copySurveyLink')}
+                  {t('surveys.stats.copySurveyLink')}
                 </Button>
               ) : undefined
             }
@@ -263,7 +198,7 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
         ) : (
           <>
             <Separator />
-            <SectionLabel>{t('questionBreakdown')}</SectionLabel>
+            <SectionLabel>{t('surveys.stats.questionBreakdown')}</SectionLabel>
             <div className="space-y-3">
               {stats.questions.map((q: QuestionStats, i: number) => (
                 <QuestionStatsCard
@@ -280,19 +215,19 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
         {hasDetails && (
           <>
             <Separator />
-            <SectionLabel>{t('detailsLabel')}</SectionLabel>
+            <SectionLabel>{t('surveys.stats.detailsLabel')}</SectionLabel>
             <div className="space-y-2">
               {stats.survey.startsAt != null && (
                 <MetricRow
                   icon={Calendar}
-                  label={t('startsAt')}
+                  label={t('surveys.stats.startsAt')}
                   value={formatDate(stats.survey.startsAt)}
                 />
               )}
               {stats.survey.endsAt != null && (
                 <MetricRow
                   icon={Calendar}
-                  label={t('endsAt')}
+                  label={t('surveys.stats.endsAt')}
                   value={formatDate(stats.survey.endsAt)}
                 />
               )}
@@ -305,18 +240,18 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
         open={showCloseDialog}
         onOpenChange={setShowCloseDialog}
         onConfirm={handleCloseSurvey}
-        title={t('closeSurvey')}
-        description={t('closeSurveyConfirm')}
-        confirmLabel={t('closeSurvey')}
+        title={t('surveys.stats.closeSurvey')}
+        description={t('surveys.stats.closeSurveyConfirm')}
+        confirmLabel={t('surveys.stats.closeSurvey')}
       />
 
       <ConfirmDialog
         open={showCancelDialog}
         onOpenChange={setShowCancelDialog}
         onConfirm={handleCancelSurvey}
-        title={t('cancelSurvey')}
-        description={t('cancelSurveyConfirm')}
-        confirmLabel={t('cancelSurvey')}
+        title={t('surveys.stats.cancelSurvey')}
+        description={t('surveys.stats.cancelSurveyConfirm')}
+        confirmLabel={t('surveys.stats.cancelSurvey')}
         variant="destructive"
       />
     </main>

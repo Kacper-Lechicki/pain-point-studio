@@ -8,9 +8,9 @@ import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { PageTransition } from '@/components/ui/page-transition';
+import { useSurveyFlow } from '@/features/surveys/hooks/use-survey-flow';
 import type { PublicSurveyData } from '@/features/surveys/types';
 
-import { useSurveyFlow } from '../../hooks/use-survey-flow';
 import { QuestionRenderer } from './question-renderers';
 import { SurveyCompletion } from './survey-completion';
 import { SurveyProgress } from './survey-progress';
@@ -25,12 +25,12 @@ interface SurveyFlowProps {
 }
 
 export const SurveyFlow = ({ survey, responseId, slug }: SurveyFlowProps) => {
-  const t = useTranslations('respondent.flow');
-  const tErrors = useTranslations('respondent.errors');
+  const t = useTranslations();
+  const tErrors = useTranslations();
   const [screen, setScreen] = useState<FlowScreen>('questions');
 
   const handleSaveError = useCallback(() => {
-    toast.error(tErrors('saveFailed'));
+    toast.error(tErrors('respondent.errors.saveFailed'));
   }, [tErrors]);
 
   const {
@@ -105,16 +105,16 @@ export const SurveyFlow = ({ survey, responseId, slug }: SurveyFlowProps) => {
         <div className="mt-8 flex items-center justify-between gap-3">
           <Button variant="ghost" onClick={goToPrevious} disabled={isFirst} className="gap-1.5">
             <ArrowLeft className="size-4" />
-            {t('previous')}
+            {t('respondent.flow.previous')}
           </Button>
 
           <div className="flex gap-2">
             <Button variant="ghost" onClick={skip} className="gap-1.5">
-              {t('skip')}
+              {t('respondent.flow.skip')}
               <SkipForward className="size-4" />
             </Button>
             <Button onClick={goToNext} className="gap-1.5">
-              {isLast ? t('finish') : t('next')}
+              {isLast ? t('respondent.flow.finish') : t('respondent.flow.next')}
               {!isLast && <ArrowRight className="size-4" />}
             </Button>
           </div>

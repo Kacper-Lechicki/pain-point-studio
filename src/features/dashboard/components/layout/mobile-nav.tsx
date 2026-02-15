@@ -2,117 +2,22 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Link, usePathname } from '@/i18n/routing';
-import type { MessageKey } from '@/i18n/types';
-import { cn } from '@/lib/common/utils';
-
 import {
-  SIDEBAR_NAV_ACTIVE,
-  SIDEBAR_NAV_INACTIVE,
-  SIDEBAR_NAV_ITEM_BASE,
-  SIDEBAR_NAV_ITEM_CLASSES,
-} from '../../config/nav-styles';
-import type { SubNavGroup } from '../../config/navigation';
-import {
-  type NavItem,
-  SIDEBAR_BOTTOM_ITEM,
-  SIDEBAR_NAV,
-  findActiveNavItem,
-} from '../../config/navigation';
-import { getHash } from '../../hooks/use-hash-sync';
-import { getSubItemHref, isSubItemActive } from '../../lib/nav-utils';
-import { ProjectSelector } from './project-selector';
-import { useSidebar } from './sidebar-provider';
+  MobileNavMainLevel,
+  MobileNavSubLevel,
+} from '@/features/dashboard/components/layout/mobile-nav-levels';
+import { ProjectSelector } from '@/features/dashboard/components/layout/project-selector';
+import { useSidebar } from '@/features/dashboard/components/layout/sidebar-provider';
+import type { NavItem } from '@/features/dashboard/config/navigation';
+import { findActiveNavItem } from '@/features/dashboard/config/navigation';
+import { getHash } from '@/features/dashboard/hooks/use-hash-sync';
+import { usePathname } from '@/i18n/routing';
 
 const TRANSITION = { duration: 0.15, ease: [0.25, 0.1, 0.25, 1] as const };
-
-// ── Sub-nav items (extracted to use cn() instead of data-state) ──────
-
-interface SubNavItemsProps {
-  groups: SubNavGroup[];
-  pathname: string;
-  clientState: { search: string; hash: string } | null;
-  t: (key: MessageKey) => string;
-  onNavigate: () => void;
-}
-
-function SubNavItems({ groups, pathname, clientState, t, onNavigate }: SubNavItemsProps) {
-  const hasSearchParamItems = groups.some((g) => g.items.some((i) => i.searchParams));
-  const searchParamKeys = hasSearchParamItems
-    ? [
-        ...new Set(
-          groups.flatMap((g) =>
-            g.items.flatMap((i) => (i.searchParams ? Object.keys(i.searchParams) : []))
-          )
-        ),
-      ]
-    : [];
-
-  const currentSearchParams = clientState ? new URLSearchParams(clientState.search) : null;
-  const hash = clientState?.hash ?? '';
-
-  return (
-    <nav className="flex flex-1 flex-col gap-2 p-2 pb-8" onClick={onNavigate}>
-      {groups.map((group, gi) => (
-        <div key={gi}>
-          {group.headingKey && (
-            <div
-              className={cn(
-                'text-muted-foreground mb-1 px-3 text-xs font-semibold tracking-wider uppercase',
-                gi === 0 ? 'mt-0' : 'mt-6'
-              )}
-            >
-              {t(group.headingKey)}
-            </div>
-          )}
-
-          <div className="flex flex-col gap-2">
-            {group.items.map((subItem) => {
-              const href = getSubItemHref(subItem);
-
-              const isActive =
-                clientState && currentSearchParams
-                  ? hasSearchParamItems
-                    ? isSubItemActive(subItem, pathname, hash, currentSearchParams, searchParamKeys)
-                    : subItem.hash
-                      ? pathname === subItem.href && hash === subItem.hash
-                      : pathname === subItem.href ||
-                        (subItem.alsoActiveFor?.includes(pathname) ?? false)
-                  : false;
-
-              const stateClasses = isActive ? SIDEBAR_NAV_ACTIVE : SIDEBAR_NAV_INACTIVE;
-
-              if (subItem.hash) {
-                return (
-                  <a
-                    key={href}
-                    href={`#${subItem.hash}`}
-                    className={cn(SIDEBAR_NAV_ITEM_BASE, stateClasses)}
-                  >
-                    <subItem.icon className="size-4 shrink-0" aria-hidden />
-                    <span className="truncate">{t(subItem.labelKey)}</span>
-                  </a>
-                );
-              }
-
-              return (
-                <Link key={href} href={href} className={cn(SIDEBAR_NAV_ITEM_BASE, stateClasses)}>
-                  <subItem.icon className="size-4 shrink-0" aria-hidden />
-                  <span className="truncate">{t(subItem.labelKey)}</span>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-      ))}
-    </nav>
-  );
-}
 
 export function MobileNav() {
   const { isMobileOpen, setMobileOpen } = useSidebar();
@@ -123,9 +28,6 @@ export function MobileNav() {
   const [selectedItem, setSelectedItem] = useState<NavItem | null>(null);
   const [skipSubEnterAnimation, setSkipSubEnterAnimation] = useState(false);
 
-  // Read search params and hash exclusively on the client via
-  // window.location to avoid the hydration mismatch caused by
-  // useSearchParams() returning empty params during SSR.
   const [clientState, setClientState] = useState<{
     search: string;
     hash: string;
@@ -149,15 +51,10 @@ export function MobileNav() {
     };
   }, [syncFromWindow]);
 
-  // Re-sync when pathname changes (client-side navigation via Next.js router)
   useEffect(() => {
     queueMicrotask(syncFromWindow);
   }, [pathname, syncFromWindow]);
 
-  // When opening, detect if we're on a nested page and jump straight to its sub-nav.
-  // This runs as a useEffect (not in onOpenChange) because the hamburger button in
-  // navbar.tsx sets isMobileOpen directly — Radix's onOpenChange only fires on
-  // internal state changes (overlay click, escape), not when the open prop changes.
   useEffect(() => {
     if (!isMobileOpen) {
       return;
@@ -231,77 +128,12 @@ export function MobileNav() {
               transition={TRANSITION}
               className="flex flex-1 flex-col overflow-y-auto"
             >
-              <nav className="flex flex-1 flex-col gap-2 p-2">
-                {SIDEBAR_NAV.map((group, gi) => (
-                  <div key={gi} className="flex flex-col gap-2">
-                    {group.items.map((item) => {
-                      const isActive = item.subNav
-                        ? pathname === item.href || pathname.startsWith(item.href + '/')
-                        : pathname === item.href;
-
-                      if (item.subNav) {
-                        return (
-                          <button
-                            key={item.href}
-                            type="button"
-                            data-state={isActive ? 'active' : 'inactive'}
-                            onClick={() => handleItemClick(item)}
-                            className={SIDEBAR_NAV_ITEM_CLASSES}
-                          >
-                            <item.icon className="size-4 shrink-0" aria-hidden />
-                            <span className="truncate">{t(item.labelKey)}</span>
-                            <ChevronRight className="ml-auto size-4 opacity-50" />
-                          </button>
-                        );
-                      }
-
-                      return (
-                        <Link
-                          key={item.href}
-                          href={item.href}
-                          data-state={isActive ? 'active' : 'inactive'}
-                          onClick={() => handleItemClick(item)}
-                          className={SIDEBAR_NAV_ITEM_CLASSES}
-                        >
-                          <item.icon className="size-4 shrink-0" aria-hidden />
-                          <span className="truncate">{t(item.labelKey)}</span>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                ))}
-              </nav>
-
-              <div className="border-t px-2 pt-2">
-                {(() => {
-                  const isBottomActive =
-                    pathname === SIDEBAR_BOTTOM_ITEM.href ||
-                    pathname.startsWith(SIDEBAR_BOTTOM_ITEM.href + '/');
-
-                  return SIDEBAR_BOTTOM_ITEM.subNav ? (
-                    <button
-                      type="button"
-                      data-state={isBottomActive ? 'active' : 'inactive'}
-                      className={cn(SIDEBAR_NAV_ITEM_CLASSES, 'pb-2')}
-                      onClick={() => handleItemClick(SIDEBAR_BOTTOM_ITEM)}
-                    >
-                      <SIDEBAR_BOTTOM_ITEM.icon className="size-4 shrink-0" aria-hidden />
-                      <span className="truncate">{t(SIDEBAR_BOTTOM_ITEM.labelKey)}</span>
-                      <ChevronRight className="ml-auto size-4 opacity-50" />
-                    </button>
-                  ) : (
-                    <Link
-                      href={SIDEBAR_BOTTOM_ITEM.href}
-                      data-state={isBottomActive ? 'active' : 'inactive'}
-                      className={cn(SIDEBAR_NAV_ITEM_CLASSES, 'pb-2')}
-                      onClick={() => setMobileOpen(false)}
-                    >
-                      <SIDEBAR_BOTTOM_ITEM.icon className="size-4 shrink-0" aria-hidden />
-                      <span className="truncate">{t(SIDEBAR_BOTTOM_ITEM.labelKey)}</span>
-                    </Link>
-                  );
-                })()}
-              </div>
+              <MobileNavMainLevel
+                pathname={pathname}
+                t={t}
+                onItemClick={handleItemClick}
+                onClose={() => setMobileOpen(false)}
+              />
             </motion.div>
           ) : (
             <motion.div
@@ -312,34 +144,12 @@ export function MobileNav() {
               transition={TRANSITION}
               className="flex flex-1 flex-col overflow-y-auto pb-8"
             >
-              {/* Back button — same style as other nav items */}
-              <div className="px-2 pt-2">
-                <button
-                  type="button"
-                  onClick={handleBack}
-                  data-state="inactive"
-                  className={SIDEBAR_NAV_ITEM_CLASSES}
-                >
-                  <ChevronLeft className="size-4 shrink-0" aria-hidden />
-                  <span className="truncate">{t('sidebar.back')}</span>
-                </button>
-              </div>
-
-              {/* Title — matches desktop sub-panel style */}
-              <div className="shrink-0 pt-2">
-                <div className="flex h-9 items-center px-5">
-                  <h3 className="decoration-border text-sm font-semibold underline underline-offset-4">
-                    {t(selectedItem!.subNav!.titleKey)}
-                  </h3>
-                </div>
-              </div>
-
-              {/* Sub-nav items */}
-              <SubNavItems
-                groups={selectedItem!.subNav!.groups}
+              <MobileNavSubLevel
+                selectedItem={selectedItem!}
                 pathname={pathname}
                 clientState={clientState}
                 t={t}
+                onBack={handleBack}
                 onNavigate={() => setMobileOpen(false)}
               />
             </motion.div>

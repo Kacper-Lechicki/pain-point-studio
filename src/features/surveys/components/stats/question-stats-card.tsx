@@ -25,7 +25,7 @@ interface QuestionStatsCardProps {
 function computeInsight(
   type: QuestionStats['type'],
   answers: QuestionAnswerData[],
-  t: ReturnType<typeof useTranslations<'surveys.stats'>>
+  t: ReturnType<typeof useTranslations>
 ): string | null {
   if (answers.length === 0) {
     return null;
@@ -60,7 +60,10 @@ function computeInsight(
       const total = Array.from(counts.values()).reduce((s, c) => s + c, 0);
       const pct = Math.round((topCount / total) * 100);
 
-      return t('insightTopChoice', { option: topOption, pct });
+      return t(
+        'surveys.stats.insightTopChoice' as Parameters<typeof t>[0],
+        { option: topOption, pct } as never
+      );
     }
 
     case 'rating_scale': {
@@ -87,7 +90,10 @@ function computeInsight(
 
       const avg = (sum / count).toFixed(1);
 
-      return t('insightAvgRating', { value: avg, max: maxRating });
+      return t(
+        'surveys.stats.insightAvgRating' as Parameters<typeof t>[0],
+        { value: avg, max: maxRating } as never
+      );
     }
 
     case 'yes_no': {
@@ -102,10 +108,13 @@ function computeInsight(
       const majorityYes = yesCount >= noCount;
       const pct = Math.round(((majorityYes ? yesCount : noCount) / total) * 100);
 
-      return t('insightMajority', {
-        label: majorityYes ? t('yesLabel') : t('noLabel'),
-        pct,
-      });
+      return t(
+        'surveys.stats.insightMajority' as Parameters<typeof t>[0],
+        {
+          label: majorityYes ? t('surveys.stats.yesLabel') : t('surveys.stats.noLabel'),
+          pct,
+        } as never
+      );
     }
 
     case 'open_text':
@@ -121,7 +130,10 @@ function computeInsight(
       const totalChars = texts.reduce((s, txt) => s + txt.length, 0);
       const avgChars = Math.round(totalChars / texts.length);
 
-      return t('insightText', { count: texts.length, chars: avgChars });
+      return t(
+        'surveys.stats.insightText' as Parameters<typeof t>[0],
+        { count: texts.length, chars: avgChars } as never
+      );
     }
 
     default:
@@ -134,12 +146,11 @@ export const QuestionStatsCard = ({
   index,
   completedResponses,
 }: QuestionStatsCardProps) => {
-  const t = useTranslations('surveys.stats');
-  const tTypes = useTranslations('surveys.builder.types');
+  const t = useTranslations();
 
   const TypeIcon = QUESTION_TYPE_ICONS[question.type];
   const typeLabelKey = QUESTION_TYPE_LABEL_KEYS[question.type];
-  const typeLabel = tTypes(typeLabelKey.split('.').pop() as Parameters<typeof tTypes>[0]);
+  const typeLabel = t(typeLabelKey as Parameters<typeof t>[0]);
   const responseCount = question.answers.length;
   const showAnsweredOfTotal = completedResponses > 0 && responseCount < completedResponses;
 
@@ -176,11 +187,15 @@ export const QuestionStatsCard = ({
           {typeLabel}
         </Badge>
         <span className="text-muted-foreground text-[11px]">
-          {t('responsesCount', { count: responseCount })}
+          {t('surveys.stats.responsesCount', { count: responseCount })}
         </span>
         {showAnsweredOfTotal && (
           <span className="text-muted-foreground text-[11px]">
-            · {t('ofRespondentsAnswered', { answered: responseCount, total: completedResponses })}
+            ·{' '}
+            {t('surveys.stats.ofRespondentsAnswered', {
+              answered: responseCount,
+              total: completedResponses,
+            })}
           </span>
         )}
       </div>

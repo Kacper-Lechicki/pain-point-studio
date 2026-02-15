@@ -78,16 +78,16 @@ export const SurveyListToolbar = ({
   statusCounts,
   hasSortableColumns,
 }: SurveyListToolbarProps) => {
-  const t = useTranslations('surveys.dashboard');
+  const t = useTranslations();
 
   const isFiltered = statusFilter !== 'all';
   const hasSearch = searchQuery.trim().length > 0;
   const sortOptions = hasSortableColumns ? SORT_OPTIONS_DESKTOP : SORT_OPTIONS_MOBILE;
   const sortedStatusFilters = [...STATUS_FILTERS].sort((a, b) =>
-    t(`filters.${a}`).localeCompare(t(`filters.${b}`))
+    t(`surveys.dashboard.filters.${a}`).localeCompare(t(`surveys.dashboard.filters.${b}`))
   );
   const sortedSortOptions = [...sortOptions].sort((a, b) =>
-    t(`sort.${a}`).localeCompare(t(`sort.${b}`))
+    t(`surveys.dashboard.sort.${a}`).localeCompare(t(`surveys.dashboard.sort.${b}`))
   );
 
   return (
@@ -98,7 +98,7 @@ export const SurveyListToolbar = ({
         <Input
           value={searchQuery}
           onChange={(e) => onSearchQueryChange(e.target.value)}
-          placeholder={t('search.placeholder')}
+          placeholder={t('surveys.dashboard.search.placeholder')}
           className={cn('pl-9', hasSearch && 'pr-9')}
         />
         {hasSearch && (
@@ -122,7 +122,9 @@ export const SurveyListToolbar = ({
           >
             <Filter className="size-4" />
             <span className="hidden sm:inline">
-              {isFiltered ? t(`filters.${statusFilter}`) : t('filters.label')}
+              {isFiltered
+                ? t(`surveys.dashboard.filters.${statusFilter}`)
+                : t('surveys.dashboard.filters.label')}
             </span>
             {isFiltered && (
               <Badge variant="secondary" className="ml-0.5 size-5 px-0 text-[10px]">
@@ -138,7 +140,7 @@ export const SurveyListToolbar = ({
           >
             {sortedStatusFilters.map((filter) => (
               <DropdownMenuRadioItem key={filter} value={filter}>
-                <span className="flex-1">{t(`filters.${filter}`)}</span>
+                <span className="flex-1">{t(`surveys.dashboard.filters.${filter}`)}</span>
                 <span className="text-muted-foreground ml-3 tabular-nums">
                   {statusCounts[filter]}
                 </span>
@@ -157,7 +159,7 @@ export const SurveyListToolbar = ({
             ) : (
               <ArrowDown className="size-4" aria-hidden />
             )}
-            <span className="hidden sm:inline">{t(`sort.${sortBy}`)}</span>
+            <span className="hidden sm:inline">{t(`surveys.dashboard.sort.${sortBy}`)}</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="min-w-40">
@@ -167,7 +169,7 @@ export const SurveyListToolbar = ({
           >
             {sortedSortOptions.map((option) => (
               <DropdownMenuRadioItem key={option} value={option}>
-                {t(`sort.${option}`)}
+                {t(`surveys.dashboard.sort.${option}`)}
               </DropdownMenuRadioItem>
             ))}
           </DropdownMenuRadioGroup>
@@ -183,7 +185,7 @@ export const SurveyListToolbar = ({
             ) : (
               <ArrowDown className="size-4" aria-hidden />
             )}
-            {sortDir === 'asc' ? t('sort.asc') : t('sort.desc')}
+            {sortDir === 'asc' ? t('surveys.dashboard.sort.asc') : t('surveys.dashboard.sort.desc')}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

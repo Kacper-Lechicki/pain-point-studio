@@ -12,10 +12,9 @@ import {
   useSyncExternalStore,
 } from 'react';
 
+import { type NavItem, findActiveNavItem } from '@/features/dashboard/config/navigation';
 import { useBreakpoint } from '@/hooks/common/use-breakpoint';
 import { usePathname } from '@/i18n/routing';
-
-import { type NavItem, findActiveNavItem } from '../../config/navigation';
 
 const STORAGE_KEY = 'sidebar-pinned';
 const HOVER_DELAY = 75;

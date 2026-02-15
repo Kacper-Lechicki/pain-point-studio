@@ -96,23 +96,28 @@ export function useSortableList(options: UseSortableListOptions): UseSortableLis
   const handleDragStart = useCallback(
     (e: React.PointerEvent, itemId: string) => {
       e.stopPropagation();
+
       const container = containerRef.current;
       const row = container?.querySelector<HTMLElement>(`[${itemIdAttribute}="${itemId}"]`);
 
       if (row) {
         const rect = row.getBoundingClientRect();
+
         dragOffsetRef.current = {
           x: e.clientX - rect.left,
           y: e.clientY - rect.top,
         };
+
         setGhostWidth(rect.width);
         ghostPositionRef.current = { x: rect.left, y: rect.top };
         setGhostPosition({ x: rect.left, y: rect.top });
       }
 
       const fromIndex = itemIds.indexOf(itemId);
+
       placeholderIndexRef.current = fromIndex >= 0 ? fromIndex : 0;
       draggedIdRef.current = itemId;
+
       setDraggedId(itemId);
       setPlaceholderIndex(placeholderIndexRef.current);
     },
@@ -129,6 +134,7 @@ export function useSortableList(options: UseSortableListOptions): UseSortableLis
 
       const x = e.clientX - dragOffsetRef.current.x;
       const y = e.clientY - dragOffsetRef.current.y;
+
       ghostPositionRef.current = { x, y };
 
       const container = containerRef.current;
@@ -141,6 +147,7 @@ export function useSortableList(options: UseSortableListOptions): UseSortableLis
           e.clientY,
           currentDraggedId
         );
+
         placeholderIndexRef.current = newIndex;
       }
 
@@ -175,6 +182,7 @@ export function useSortableList(options: UseSortableListOptions): UseSortableLis
         const reordered = [...ids];
         const [removed] = reordered.splice(fromIndex, 1);
         const insertAt = fromIndex < toIndex ? Math.min(toIndex - 1, reordered.length) : toIndex;
+
         reordered.splice(insertAt, 0, removed!);
         onReorder(reordered);
       }
@@ -195,6 +203,7 @@ export function useSortableList(options: UseSortableListOptions): UseSortableLis
     const onUp = () => handlePointerUpRef.current();
 
     const moveOpts: AddEventListenerOptions = { capture: true, passive: true };
+
     window.addEventListener('pointermove', onMove, moveOpts);
     window.addEventListener('pointerup', onUp, true);
     window.addEventListener('pointercancel', onUp, true);

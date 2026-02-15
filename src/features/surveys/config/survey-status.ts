@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
-import type { SurveyStatus } from '../types';
+import type { SurveyStatus } from '@/features/surveys/types';
 
 // ── Status visual config ────────────────────────────────────────────
 
@@ -26,6 +26,7 @@ interface StatusConfig {
   badge: StatusBadgeConfig;
 }
 
+/** Maps each survey status to its icon, i18n label key, and badge styling. */
 export const SURVEY_STATUS_CONFIG: Record<SurveyStatus, StatusConfig> = {
   draft: {
     labelKey: 'surveys.dashboard.status.draft',
@@ -75,6 +76,7 @@ export const SURVEY_STATUS_CONFIG: Record<SurveyStatus, StatusConfig> = {
   },
 };
 
+/** Returns badge variant, className, and pulse-dot flag for a given status. */
 export function getStatusBadgeProps(status: SurveyStatus) {
   return SURVEY_STATUS_CONFIG[status].badge;
 }
@@ -87,6 +89,7 @@ interface StatusTransition {
   fromStatuses: readonly SurveyStatus[];
 }
 
+/** Survey state-machine: maps action names to their target status and valid source statuses. */
 export const SURVEY_TRANSITIONS = {
   close: { method: 'update', toStatus: 'closed', fromStatuses: ['active'] },
   cancel: { method: 'update', toStatus: 'cancelled', fromStatuses: ['pending', 'active'] },
@@ -101,18 +104,54 @@ export const SURVEY_TRANSITIONS = {
 
 export type SurveyAction = keyof typeof SURVEY_TRANSITIONS;
 
+/** Checks if a given action is valid from the current status. */
 export function canTransition(from: SurveyStatus, action: SurveyAction): boolean {
   return (SURVEY_TRANSITIONS[action].fromStatuses as readonly string[]).includes(from);
 }
 
+/** Returns all valid actions that can be performed on a survey with the given status. */
 export function getAvailableActions(status: SurveyStatus): SurveyAction[] {
   return (Object.keys(SURVEY_TRANSITIONS) as SurveyAction[]).filter((action) =>
     canTransition(status, action)
   );
 }
 
+// ── Derived status flags ─────────────────────────────────────────────
+
+/** Boolean flags derived from a survey's current status. */
+export interface SurveyStatusFlags {
+  isDraft: boolean;
+  isPending: boolean;
+  isActive: boolean;
+  isClosed: boolean;
+  isCancelled: boolean;
+  isArchived: boolean;
+  canDuplicate: boolean;
+}
+
+/** Derives boolean convenience flags from a survey's current status. */
+export function deriveSurveyFlags(status: SurveyStatus): SurveyStatusFlags {
+  const isDraft = status === 'draft';
+  const isPending = status === 'pending';
+  const isActive = status === 'active';
+  const isClosed = status === 'closed';
+  const isCancelled = status === 'cancelled';
+  const isArchived = status === 'archived';
+
+  return {
+    isDraft,
+    isPending,
+    isActive,
+    isClosed,
+    isCancelled,
+    isArchived,
+    canDuplicate: isDraft || isActive || isClosed || isCancelled,
+  };
+}
+
 // ── Action UI config (icons, toasts, confirmation dialogs) ──────────
 
+/** UI metadata for a survey action (icon, toast key, optional confirmation dialog). */
 export interface ActionUIConfig {
   icon: LucideIcon;
   toastKey: string;
@@ -123,6 +162,7 @@ export interface ActionUIConfig {
   };
 }
 
+/** Maps each survey action to its icon, toast key, and optional confirmation dialog config. */
 export const SURVEY_ACTION_UI: Record<SurveyAction, ActionUIConfig> = {
   close: {
     icon: CheckCircle2,

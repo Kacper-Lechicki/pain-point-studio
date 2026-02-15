@@ -5,6 +5,7 @@ import { locales } from '@/i18n/constants';
 /** Path prefix for survey builder (edit questions). Builder uses a standalone full-screen layout. */
 export const BUILDER_PATH_PREFIX = ROUTES.dashboard.surveysNew + '/';
 
+/** Check if the pathname points to the survey builder (creating/editing questions). */
 export function isBuilderPath(pathname: string | null): boolean {
   return (
     pathname?.startsWith(BUILDER_PATH_PREFIX) === true &&
@@ -80,6 +81,7 @@ export const DASHBOARD_PAGE_BODY_GAP_TOP = 'mt-8';
 
 export type DashboardContentWidth = 'narrow' | 'content' | 'full';
 
+/** Strip the leading locale segment (e.g. '/en/dashboard' → '/dashboard'). No-op if absent. */
 function pathWithoutLocale(pathname: string): string {
   const segment = pathname.split('/')[1];
 
@@ -90,6 +92,7 @@ function pathWithoutLocale(pathname: string): string {
   return pathname;
 }
 
+/** Routes rendered at full content width (survey list, archive). */
 function isFullWidthPath(pathname: string): boolean {
   const path = pathWithoutLocale(pathname);
 
@@ -100,6 +103,7 @@ function isFullWidthPath(pathname: string): boolean {
   );
 }
 
+/** Routes rendered at narrow content width (builder, survey detail, settings, profile). */
 function isNarrowPath(pathname: string): boolean {
   const path = pathWithoutLocale(pathname);
 

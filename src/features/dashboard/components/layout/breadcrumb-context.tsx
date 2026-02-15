@@ -2,12 +2,6 @@
 
 import { type ReactNode, createContext, useCallback, useContext, useEffect, useState } from 'react';
 
-/**
- * Lightweight context that lets page-level components register dynamic
- * breadcrumb labels for URL segments the generic Breadcrumbs component
- * can't resolve from its static SEGMENT_KEYS map (e.g. UUIDs → survey title).
- */
-
 type SegmentMap = Record<string, string>;
 
 interface BreadcrumbContextValue {
@@ -45,8 +39,6 @@ export function BreadcrumbProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// ── Hook for page components to register a dynamic breadcrumb ────────
-
 export function useBreadcrumbSegment(segment: string, label: string) {
   const ctx = useContext(BreadcrumbContext);
 
@@ -58,13 +50,8 @@ export function useBreadcrumbSegment(segment: string, label: string) {
     ctx.setSegment(segment, label);
 
     return () => ctx.removeSegment(segment);
-    // setSegment and removeSegment are stable (useCallback), so we only
-    // depend on the primitive values to avoid infinite re-render loops.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [segment, label]);
+  }, [segment, label, ctx]);
 }
-
-// ── Hook for Breadcrumbs component to read dynamic segments ──────────
 
 export function useBreadcrumbContext() {
   return useContext(BreadcrumbContext);

@@ -10,18 +10,18 @@ import { DashboardOverviewPanel } from '@/features/dashboard/components/dashboar
 import Link from '@/i18n/link';
 
 export default async function DashboardPage() {
-  const [t, overview] = await Promise.all([getTranslations('dashboard'), getDashboardOverview()]);
+  const [t, overview] = await Promise.all([getTranslations(), getDashboardOverview()]);
 
   if (!overview || overview.totalSurveys === 0) {
     return (
       <PageTransition>
         <EmptyState
           icon={ClipboardList}
-          title={t('surveysEmpty.title')}
-          description={t('surveysEmpty.description')}
+          title={t('dashboard.surveysEmpty.title')}
+          description={t('dashboard.surveysEmpty.description')}
           action={
             <Button asChild>
-              <Link href={ROUTES.dashboard.surveysNew}>{t('surveysEmpty.cta')}</Link>
+              <Link href={ROUTES.dashboard.surveysNew}>{t('dashboard.surveysEmpty.cta')}</Link>
             </Button>
           }
         />

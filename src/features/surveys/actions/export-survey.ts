@@ -1,10 +1,9 @@
 'use server';
 
+import { slugifyTitle } from '@/features/surveys/lib/generate-slug';
+import { type QuestionType, surveyIdSchema } from '@/features/surveys/types';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
-
-import { slugifyTitle } from '../lib/generate-slug';
-import { type QuestionType, surveyIdSchema } from '../types';
 
 function formatAnswerValue(type: QuestionType, value: Record<string, unknown>): string {
   switch (type) {

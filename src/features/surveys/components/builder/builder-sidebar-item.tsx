@@ -37,9 +37,9 @@ export function BuilderSidebarItem({
   onSelect,
   onDelete,
 }: BuilderSidebarItemProps) {
-  const t = useTranslations('surveys.builder');
+  const t = useTranslations();
   const TypeIcon = QUESTION_TYPE_ICONS[question.type];
-  const displayText = question.text.trim() || t('untitledQuestion');
+  const displayText = question.text.trim() || t('surveys.builder.untitledQuestion');
   const menuOpenRef = useRef(false);
 
   return (
@@ -75,7 +75,7 @@ export function BuilderSidebarItem({
             dragHandleProps.onPointerDown(e);
             e.currentTarget.setPointerCapture(e.pointerId);
           }}
-          aria-label={t('dragToReorder')}
+          aria-label={t('surveys.builder.dragToReorder')}
           role="button"
           tabIndex={-1}
         >
@@ -119,7 +119,7 @@ export function BuilderSidebarItem({
             size="icon-xs"
             className="shrink-0"
             onClick={(e) => e.stopPropagation()}
-            aria-label={t('questionActions')}
+            aria-label={t('surveys.builder.questionActions')}
           >
             <MoreVertical className="size-3.5" />
           </Button>
@@ -127,7 +127,7 @@ export function BuilderSidebarItem({
         <DropdownMenuContent align="end">
           <DropdownMenuItem variant="destructive" onClick={onDelete}>
             <Trash2 className="size-4" />
-            {t('deleteQuestion')}
+            {t('surveys.builder.deleteQuestion')}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

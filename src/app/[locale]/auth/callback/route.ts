@@ -11,7 +11,6 @@ function isValidCallbackType(value: string | null): value is CallbackType {
   return ALLOWED_CALLBACK_TYPES.includes(value as CallbackType);
 }
 
-/** Allowlist of path prefixes that are valid redirect targets after auth callback. */
 const SAFE_REDIRECT_PREFIXES = [
   ROUTES.common.dashboard,
   ROUTES.common.settings,
@@ -24,7 +23,6 @@ function getSafeRedirectPath(next: string | null, locale: string, fallback: stri
     return fallback;
   }
 
-  // Strip locale prefix if present so we match against route definitions
   const withoutLocale = next.startsWith(`/${locale}/`)
     ? next.slice(`/${locale}`.length)
     : next.startsWith(`/${locale}`)

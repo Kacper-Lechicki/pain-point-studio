@@ -1,6 +1,13 @@
+// Theme accent (data-accent on <html>). useSyncExternalStore: getServerSnapshot = default, getSnapshot = localStorage — no hydration mismatch.
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
+
+// Theme accent (data-accent on <html>). useSyncExternalStore: getServerSnapshot = default, getSnapshot = localStorage — no hydration mismatch.
+
+// Theme accent (data-accent on <html>). useSyncExternalStore: getServerSnapshot = default, getSnapshot = localStorage — no hydration mismatch.
+
+// Theme accent (data-accent on <html>). useSyncExternalStore: getServerSnapshot = default, getSnapshot = localStorage — no hydration mismatch.
 
 const ACCENT_STORAGE_KEY = 'accent';
 const ACCENT_ATTRIBUTE = 'data-accent';
@@ -23,16 +30,22 @@ function getStoredAccent(): Accent {
   return ACCENT_OPTIONS.includes(stored as Accent) ? (stored as Accent) : DEFAULT_ACCENT;
 }
 
+function subscribeToAccent(): () => void {
+  return () => {};
+}
+
 export function useAccent() {
-  const [accent, setAccentState] = useState<Accent>(() => getStoredAccent());
+  const accent = useSyncExternalStore(subscribeToAccent, getStoredAccent, () => DEFAULT_ACCENT);
+
+  const [, setTick] = useState(0);
 
   useEffect(() => {
     document.documentElement.setAttribute(ACCENT_ATTRIBUTE, accent);
   }, [accent]);
 
   const setAccent = useCallback((newAccent: Accent) => {
-    setAccentState(newAccent);
     localStorage.setItem(ACCENT_STORAGE_KEY, newAccent);
+    setTick((t) => t + 1);
   }, []);
 
   return { accent, setAccent } as const;

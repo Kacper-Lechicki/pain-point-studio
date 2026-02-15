@@ -3,18 +3,17 @@
 import { Lock, Unlock } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { SidebarItem } from '@/features/dashboard/components/layout/sidebar-item';
+import { SidebarNavList } from '@/features/dashboard/components/layout/sidebar-nav-list';
+import { useSidebar } from '@/features/dashboard/components/layout/sidebar-provider';
 import { DASHBOARD_FOOTER_HEIGHT_CLASS } from '@/features/dashboard/config/layout';
 import { SIDEBAR_BOTTOM_ITEM } from '@/features/dashboard/config/navigation';
 import { cn } from '@/lib/common/utils';
 
-import { SidebarItem } from './sidebar-item';
-import { SidebarNavList } from './sidebar-nav-list';
-import { useSidebar } from './sidebar-provider';
-
 export function Sidebar() {
   const { isExpanded, isPinned, hasSubPanel, togglePin, handleMouseEnter, handleMouseLeave } =
     useSidebar();
-  const t = useTranslations('sidebar');
+  const t = useTranslations();
 
   return (
     <aside
@@ -25,10 +24,6 @@ export function Sidebar() {
       }}
       className={cn(
         'bg-sidebar border-sidebar-border dashboard:flex fixed top-14 left-0 z-40 hidden h-[calc(100vh-3.5rem)] flex-col overflow-hidden transition-[width] duration-200 ease-in-out',
-        // border-r logic:
-        // – no sub-panel → always border-r
-        // – sub-panel + overlay (hover, unpinned) → border-r (floats above sub-panel)
-        // – sub-panel + pinned OR collapsed → no border-r (sub-panel's border-l suffices)
         (!hasSubPanel || (isExpanded && !isPinned)) && 'border-r',
         isExpanded && !isPinned && 'shadow-lg'
       )}
@@ -61,7 +56,7 @@ export function Sidebar() {
         <button
           onClick={togglePin}
           className="text-sidebar-foreground/50 hover:text-sidebar-foreground flex size-7 items-center justify-center rounded-md transition-colors"
-          aria-label={isPinned ? t('unpinSidebar') : t('pinSidebar')}
+          aria-label={isPinned ? t('sidebar.unpinSidebar') : t('sidebar.pinSidebar')}
         >
           {isPinned ? <Lock className="size-3.5" /> : <Unlock className="size-3.5" />}
         </button>

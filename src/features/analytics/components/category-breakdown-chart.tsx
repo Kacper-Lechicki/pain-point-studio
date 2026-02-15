@@ -17,12 +17,12 @@ interface CategoryBreakdownChartProps {
 }
 
 export const CategoryBreakdownChart = ({ data }: CategoryBreakdownChartProps) => {
-  const t = useTranslations('analytics');
-  const tCategories = useTranslations('surveys.categories');
+  const t = useTranslations();
+  const tCategories = useTranslations();
 
   const chartConfig = {
     totalResponses: {
-      label: t('responses'),
+      label: t('analytics.responses'),
       color: 'var(--chart-choice)',
     },
   } satisfies ChartConfig;
@@ -58,12 +58,11 @@ export const CategoryBreakdownChart = ({ data }: CategoryBreakdownChartProps) =>
 
 function translateCategory(
   category: string,
-  tCategories: ReturnType<typeof useTranslations<'surveys.categories'>>
+  tCategories: ReturnType<typeof useTranslations>
 ): string {
   try {
-    return tCategories(category as Parameters<typeof tCategories>[0]);
+    return tCategories(`surveys.categories.${category}` as Parameters<typeof tCategories>[0]);
   } catch {
-    // Fallback for unknown categories — capitalize first letter
     return category.charAt(0).toUpperCase() + category.slice(1);
   }
 }

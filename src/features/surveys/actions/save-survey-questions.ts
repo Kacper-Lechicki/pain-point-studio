@@ -1,11 +1,10 @@
 'use server';
 
+import { surveyQuestionsSchema } from '@/features/surveys/types';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
 import { mapSupabaseError } from '@/lib/supabase/errors';
 import type { Json } from '@/lib/supabase/types';
-
-import { surveyQuestionsSchema } from '../types';
 
 export const saveSurveyQuestions = withProtectedAction<typeof surveyQuestionsSchema, void>(
   'save-survey-questions',

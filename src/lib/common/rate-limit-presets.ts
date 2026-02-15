@@ -6,7 +6,10 @@
  * adjusted in one place.
  */
 
-type RateLimitPreset = { limit: number; windowSeconds: number };
+export interface RateLimitPreset {
+  limit: number;
+  windowSeconds: number;
+}
 
 export const RATE_LIMITS = {
   /** Auth flows: sign-in, complete-profile */
@@ -15,10 +18,10 @@ export const RATE_LIMITS = {
   /** Strict auth: sign-up */
   authStrict: { limit: 3, windowSeconds: 300 },
 
-  /** Sensitive operations: password change, email change, unlink identity, cancel email */
+  /** Sensitive operations: password change, email change, cancel email change */
   sensitive: { limit: 3, windowSeconds: 3600 },
 
-  /** Less sensitive auth-adjacent: password update (reset flow), unlink identity */
+  /** Less sensitive: password update (reset flow), unlink identity */
   sensitiveRelaxed: { limit: 5, windowSeconds: 3600 },
 
   /** Destructive: delete account */

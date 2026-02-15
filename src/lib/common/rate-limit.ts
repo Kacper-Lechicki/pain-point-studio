@@ -2,7 +2,10 @@
  * In-memory rate limiter keyed by IP (x-forwarded-for). Used by withProtectedAction
  * and withPublicAction to cap request frequency per action. Disabled outside
  * production and when CI is set (avoids failing E2E that share an IP).
- * TODO(scaling): Replace with Redis-backed implementation for multi-instance deployments.
+ * In production, requests without x-forwarded-for are treated as rate limited to avoid
+ * a single shared bucket for all such clients.
+ * TODO(scaling): Replace with Redis-backed implementation for multi-instance deployments
+ * and atomic increments under concurrent requests.
  */
 import { headers } from 'next/headers';
 

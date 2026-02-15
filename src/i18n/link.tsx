@@ -1,8 +1,4 @@
-/**
- * i18n-aware Link that wraps next-intl's BaseLink. When navigating between routes
- * in the same SIBLING_GROUPS (e.g. sign-in ↔ sign-up), uses replace instead of
- * push to avoid history buildup. Import via @/i18n/routing.
- */
+// i18n Link: wraps next-intl BaseLink; uses replace for SIBLING_GROUPS (e.g. sign-in ↔ sign-up). Import from @/i18n/routing.
 'use client';
 
 import { ComponentProps, forwardRef } from 'react';
@@ -10,149 +6,11 @@ import { ComponentProps, forwardRef } from 'react';
 import { type AppRoute, SIBLING_GROUPS } from '@/config/routes';
 import { BaseLink, usePathname } from '@/i18n/navigation';
 
-/**
- * i18n-aware Link that wraps next-intl's BaseLink. When navigating between routes
- * in the same SIBLING_GROUPS (e.g. sign-in ↔ sign-up), uses replace instead of
- * push to avoid history buildup. Import via @/i18n/routing.
- */
+// i18n Link: wraps next-intl BaseLink; uses replace for SIBLING_GROUPS (e.g. sign-in ↔ sign-up). Import from @/i18n/routing.
 
-/**
- * i18n-aware Link that wraps next-intl's BaseLink. When navigating between routes
- * in the same SIBLING_GROUPS (e.g. sign-in ↔ sign-up), uses replace instead of
- * push to avoid history buildup. Import via @/i18n/routing.
- */
+// i18n Link: wraps next-intl BaseLink; uses replace for SIBLING_GROUPS (e.g. sign-in ↔ sign-up). Import from @/i18n/routing.
 
-/**
- * i18n-aware Link that wraps next-intl's BaseLink. When navigating between routes
- * in the same SIBLING_GROUPS (e.g. sign-in ↔ sign-up), uses replace instead of
- * push to avoid history buildup. Import via @/i18n/routing.
- */
-
-/**
- * i18n-aware Link that wraps next-intl's BaseLink. When navigating between routes
- * in the same SIBLING_GROUPS (e.g. sign-in ↔ sign-up), uses replace instead of
- * push to avoid history buildup. Import via @/i18n/routing.
- */
-
-/**
- * i18n-aware Link that wraps next-intl's BaseLink. When navigating between routes
- * in the same SIBLING_GROUPS (e.g. sign-in ↔ sign-up), uses replace instead of
- * push to avoid history buildup. Import via @/i18n/routing.
- */
-
-/**
- * i18n-aware Link that wraps next-intl's BaseLink. When navigating between routes
- * in the same SIBLING_GROUPS (e.g. sign-in ↔ sign-up), uses replace instead of
- * push to avoid history buildup. Import via @/i18n/routing.
- */
-
-/**
- * i18n-aware Link that wraps next-intl's BaseLink. When navigating between routes
- * in the same SIBLING_GROUPS (e.g. sign-in ↔ sign-up), uses replace instead of
- * push to avoid history buildup. Import via @/i18n/routing.
- */
-
-/**
- * i18n-aware Link that wraps next-intl's BaseLink. When navigating between routes
- * in the same SIBLING_GROUPS (e.g. sign-in ↔ sign-up), uses replace instead of
- * push to avoid history buildup. Import via @/i18n/routing.
- */
-
-/**
- * i18n-aware Link that wraps next-intl's BaseLink. When navigating between routes
- * in the same SIBLING_GROUPS (e.g. sign-in ↔ sign-up), uses replace instead of
- * push to avoid history buildup. Import via @/i18n/routing.
- */
-
-/**
- * i18n-aware Link that wraps next-intl's BaseLink. When navigating between routes
- * in the same SIBLING_GROUPS (e.g. sign-in ↔ sign-up), uses replace instead of
- * push to avoid history buildup. Import via @/i18n/routing.
- */
-
-/**
- * i18n-aware Link that wraps next-intl's BaseLink. When navigating between routes
- * in the same SIBLING_GROUPS (e.g. sign-in ↔ sign-up), uses replace instead of
- * push to avoid history buildup. Import via @/i18n/routing.
- */
-
-/**
- * i18n-aware Link that wraps next-intl's BaseLink. When navigating between routes
- * in the same SIBLING_GROUPS (e.g. sign-in ↔ sign-up), uses replace instead of
- * push to avoid history buildup. Import via @/i18n/routing.
- */
-
-/**
- * i18n-aware Link that wraps next-intl's BaseLink. When navigating between routes
- * in the same SIBLING_GROUPS (e.g. sign-in ↔ sign-up), uses replace instead of
- * push to avoid history buildup. Import via @/i18n/routing.
- */
-
-/**
- * i18n-aware Link that wraps next-intl's BaseLink. When navigating between routes
- * in the same SIBLING_GROUPS (e.g. sign-in ↔ sign-up), uses replace instead of
- * push to avoid history buildup. Import via @/i18n/routing.
- */
-
-/**
- * i18n-aware Link that wraps next-intl's BaseLink. When navigating between routes
- * in the same SIBLING_GROUPS (e.g. sign-in ↔ sign-up), uses replace instead of
- * push to avoid history buildup. Import via @/i18n/routing.
- */
-
-/**
- * i18n-aware Link that wraps next-intl's BaseLink. When navigating between routes
- * in the same SIBLING_GROUPS (e.g. sign-in ↔ sign-up), uses replace instead of
- * push to avoid history buildup. Import via @/i18n/routing.
- */
-
-/**
- * i18n-aware Link that wraps next-intl's BaseLink. When navigating between routes
- * in the same SIBLING_GROUPS (e.g. sign-in ↔ sign-up), uses replace instead of
- * push to avoid history buildup. Import via @/i18n/routing.
- */
-
-/**
- * i18n-aware Link that wraps next-intl's BaseLink. When navigating between routes
- * in the same SIBLING_GROUPS (e.g. sign-in ↔ sign-up), uses replace instead of
- * push to avoid history buildup. Import via @/i18n/routing.
- */
-
-/**
- * i18n-aware Link that wraps next-intl's BaseLink. When navigating between routes
- * in the same SIBLING_GROUPS (e.g. sign-in ↔ sign-up), uses replace instead of
- * push to avoid history buildup. Import via @/i18n/routing.
- */
-
-/**
- * i18n-aware Link that wraps next-intl's BaseLink. When navigating between routes
- * in the same SIBLING_GROUPS (e.g. sign-in ↔ sign-up), uses replace instead of
- * push to avoid history buildup. Import via @/i18n/routing.
- */
-
-/**
- * i18n-aware Link that wraps next-intl's BaseLink. When navigating between routes
- * in the same SIBLING_GROUPS (e.g. sign-in ↔ sign-up), uses replace instead of
- * push to avoid history buildup. Import via @/i18n/routing.
- */
-
-/**
- * i18n-aware Link that wraps next-intl's BaseLink. When navigating between routes
- * in the same SIBLING_GROUPS (e.g. sign-in ↔ sign-up), uses replace instead of
- * push to avoid history buildup. Import via @/i18n/routing.
- */
-
-/**
- * i18n-aware Link that wraps next-intl's BaseLink. When navigating between routes
- * in the same SIBLING_GROUPS (e.g. sign-in ↔ sign-up), uses replace instead of
- * push to avoid history buildup. Import via @/i18n/routing.
- */
-
-/**
- * i18n-aware Link that wraps next-intl's BaseLink. When navigating between routes
- * in the same SIBLING_GROUPS (e.g. sign-in ↔ sign-up), uses replace instead of
- * push to avoid history buildup. Import via @/i18n/routing.
- */
+// i18n Link: wraps next-intl BaseLink; uses replace for SIBLING_GROUPS (e.g. sign-in ↔ sign-up). Import from @/i18n/routing.
 
 type BaseLinkProps = ComponentProps<typeof BaseLink>;
 type Href = BaseLinkProps['href'];
@@ -163,9 +21,7 @@ interface LinkProps extends Omit<BaseLinkProps, 'href'> {
 
 /** Strips query and hash so pathnames can be compared for sibling detection. */
 function pathnameOnly(path: string): string {
-  const withoutQuery = path.split('?')[0] ?? path;
-
-  return withoutQuery.split('#')[0] ?? withoutQuery;
+  return path.split('?')[0]!.split('#')[0]!;
 }
 
 /** Resolves href (string or pathname object) to a pathname-only string. */

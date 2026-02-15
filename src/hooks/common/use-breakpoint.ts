@@ -1,23 +1,38 @@
+// Returns true when viewport is >= breakpoint. useSyncExternalStore + resize so no setState in effect; getServerSnapshot = false for SSR.
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 
 import { BREAKPOINTS, type Breakpoint } from '@/config';
 
-export function useBreakpoint(breakpoint: Breakpoint) {
-  const [isAbove, setIsAbove] = useState<boolean>(false);
+// Returns true when viewport is >= breakpoint. useSyncExternalStore + resize so no setState in effect; getServerSnapshot = false for SSR.
 
-  useEffect(() => {
-    const checkBreakpoint = () => {
-      setIsAbove(window.innerWidth >= BREAKPOINTS[breakpoint]);
-    };
+// Returns true when viewport is >= breakpoint. useSyncExternalStore + resize so no setState in effect; getServerSnapshot = false for SSR.
 
-    checkBreakpoint();
+// Returns true when viewport is >= breakpoint. useSyncExternalStore + resize so no setState in effect; getServerSnapshot = false for SSR.
 
-    window.addEventListener('resize', checkBreakpoint);
+function getSnapshot(breakpoint: Breakpoint): boolean {
+  if (typeof window === 'undefined') {
+    return false;
+  }
 
-    return () => window.removeEventListener('resize', checkBreakpoint);
-  }, [breakpoint]);
+  return window.innerWidth >= BREAKPOINTS[breakpoint];
+}
 
-  return isAbove;
+function getServerSnapshot(): boolean {
+  return false;
+}
+
+function subscribe(breakpoint: Breakpoint, onStoreChange: () => void): () => void {
+  window.addEventListener('resize', onStoreChange);
+
+  return () => window.removeEventListener('resize', onStoreChange);
+}
+
+export function useBreakpoint(breakpoint: Breakpoint): boolean {
+  return useSyncExternalStore(
+    (onStoreChange) => subscribe(breakpoint, onStoreChange),
+    () => getSnapshot(breakpoint),
+    getServerSnapshot
+  );
 }

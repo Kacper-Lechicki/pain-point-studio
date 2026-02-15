@@ -25,11 +25,7 @@ export function withPublicAction<TSchema extends ZodType, TData = undefined>(
   config: PublicActionConfig<TSchema, TData>
 ) {
   return async (formData: z.infer<TSchema>): Promise<ActionResult<TData>> => {
-    const { limited } = await rateLimit({
-      key,
-      limit: config.rateLimit.limit,
-      windowSeconds: config.rateLimit.windowSeconds,
-    });
+    const { limited } = await rateLimit({ key, ...config.rateLimit });
 
     if (limited) {
       return { error: config.rateLimitError ?? 'common.errors.rateLimitExceeded' };

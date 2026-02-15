@@ -17,7 +17,7 @@ interface Requirement {
 }
 
 const PasswordStrength = ({ password = '', isError = false }: PasswordStrengthProps) => {
-  const t = useTranslations('auth');
+  const t = useTranslations();
   const strength = calculatePasswordStrength(password);
 
   const requirements = [
@@ -32,15 +32,15 @@ const PasswordStrength = ({ password = '', isError = false }: PasswordStrengthPr
     switch (score) {
       case 0:
       case 1:
-        return t('strength.tooWeak');
+        return t('auth.strength.tooWeak');
       case 2:
-        return t('strength.weak');
+        return t('auth.strength.weak');
       case 3:
-        return t('strength.medium');
+        return t('auth.strength.medium');
       case 4:
-        return t('strength.strong');
+        return t('auth.strength.strong');
       case 5:
-        return t('strength.veryStrong');
+        return t('auth.strength.veryStrong');
       default:
         return '';
     }
@@ -71,7 +71,7 @@ const PasswordStrength = ({ password = '', isError = false }: PasswordStrengthPr
   return (
     <div className="mt-1.5 space-y-2">
       <div className="flex items-center justify-between text-[10px]">
-        <span className="text-muted-foreground">{t('passwordStrength')}</span>
+        <span className="text-muted-foreground">{t('auth.passwordStrength')}</span>
         <span
           className={cn(
             'font-semibold',
@@ -89,7 +89,10 @@ const PasswordStrength = ({ password = '', isError = false }: PasswordStrengthPr
         />
       </div>
 
-      <ul className="grid grid-cols-1 gap-1 sm:grid-cols-2" aria-label={t('passwordRequirements')}>
+      <ul
+        className="grid grid-cols-1 gap-1 sm:grid-cols-2"
+        aria-label={t('auth.passwordRequirements')}
+      >
         {requirements.map((req: Requirement) => (
           <li key={req.key} className="flex items-center gap-1.5 text-[10px]">
             {req.met ? (
@@ -106,7 +109,7 @@ const PasswordStrength = ({ password = '', isError = false }: PasswordStrengthPr
                 !req.met && (password || isError) && 'text-destructive/80'
               )}
             >
-              {t(`requirements.${req.key}` as Parameters<typeof t>[0])}
+              {t(`auth.requirements.${req.key}` as Parameters<typeof t>[0])}
             </span>
           </li>
         ))}

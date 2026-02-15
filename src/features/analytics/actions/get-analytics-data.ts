@@ -4,29 +4,10 @@ import { cache } from 'react';
 
 import { z } from 'zod';
 
+import { SURVEY_STATUSES } from '@/features/surveys/types';
 import { createClient } from '@/lib/supabase/server';
 
-export interface AnalyticsData {
-  responseTimeline: number[];
-  totalResponses: number;
-  completedResponses: number;
-  avgCompletionRate: number;
-  categoryBreakdown: {
-    category: string;
-    count: number;
-    totalResponses: number;
-  }[];
-  surveyComparison: {
-    id: string;
-    title: string;
-    status: string;
-    category: string;
-    completedCount: number;
-    completionRate: number;
-    questionCount: number;
-    createdAt: string;
-  }[];
-}
+// ── Validation schema for the get_analytics_data RPC response ───────
 
 const analyticsDataSchema = z.object({
   responseTimeline: z.array(z.number()).default([]),
@@ -47,7 +28,7 @@ const analyticsDataSchema = z.object({
       z.object({
         id: z.string(),
         title: z.string(),
-        status: z.string(),
+        status: z.enum(SURVEY_STATUSES),
         category: z.string(),
         completedCount: z.number(),
         completionRate: z.number(),
@@ -58,6 +39,12 @@ const analyticsDataSchema = z.object({
     .default([]),
 });
 
+/** Aggregated analytics derived from the user's surveys and responses. */
+export type AnalyticsData = z.infer<typeof analyticsDataSchema>;
+
+// ── Cached server action ────────────────────────────────────────────
+
+/** Fetches aggregated analytics for the authenticated user via Supabase RPC. */
 export const getAnalyticsData = cache(async (): Promise<AnalyticsData | null> => {
   const supabase = await createClient();
 

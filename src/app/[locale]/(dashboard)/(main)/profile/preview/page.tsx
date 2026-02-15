@@ -29,6 +29,7 @@ export default async function ProfilePreviewRoute() {
   return (
     <>
       <DashboardPageBack />
+
       <PageTransition>
         <ProfileView profile={previewData} statistics={statistics} isPreview />
       </PageTransition>

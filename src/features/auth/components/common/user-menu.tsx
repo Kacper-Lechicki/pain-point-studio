@@ -12,8 +12,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { ROUTES } from '@/config';
 import { signOut } from '@/features/auth/actions';
 import { useAuth } from '@/features/auth/hooks/use-auth';
-import { useRouter } from '@/i18n/routing';
-import { Link } from '@/i18n/routing';
+import { Link, useRouter } from '@/i18n/routing';
 import { cn, proxyImageUrl } from '@/lib/common/utils';
 
 const UserMenu = () => {

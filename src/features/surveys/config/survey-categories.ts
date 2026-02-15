@@ -1,8 +1,6 @@
-interface LookupItem {
-  value: string;
-  labelKey: string;
-}
+import type { LookupItem } from '@/lib/common/types';
 
+/** Available survey categories for classification. */
 export const SURVEY_CATEGORIES: readonly LookupItem[] = [
   { value: 'productivity', labelKey: 'surveys.categories.productivity' },
   { value: 'health', labelKey: 'surveys.categories.health' },

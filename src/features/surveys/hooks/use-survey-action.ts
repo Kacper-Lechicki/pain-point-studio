@@ -15,6 +15,8 @@ import {
 import { SURVEY_ACTION_UI, type SurveyAction } from '@/features/surveys/config/survey-status';
 import type { ActionResult } from '@/lib/common/types';
 
+type T = ReturnType<typeof useTranslations>;
+
 // ── Server action dispatch ──────────────────────────────────────────
 
 const ACTION_FN: Record<SurveyAction, (data: { surveyId: string }) => Promise<ActionResult<void>>> =
@@ -55,7 +57,7 @@ interface UseSurveyActionReturn {
 export function useSurveyAction(
   surveyId: string,
   onStatusChange: (surveyId: string, action: string) => void,
-  t: ReturnType<typeof useTranslations<'surveys.dashboard'>>
+  t: T
 ): UseSurveyActionReturn {
   const [isPending, startTransition] = useTransition();
   const [confirmDialog, setConfirmDialog] = useState<ConfirmableAction | null>(null);
@@ -66,10 +68,12 @@ export function useSurveyAction(
       setConfirmDialog(null);
 
       if (result.success) {
-        toast.success(t(SURVEY_ACTION_UI[action].toastKey as Parameters<typeof t>[0]));
+        toast.success(
+          t(`surveys.dashboard.${SURVEY_ACTION_UI[action].toastKey}` as Parameters<typeof t>[0])
+        );
         onStatusChange(surveyId, action);
       } else {
-        toast.error(t('toast.actionFailed'));
+        toast.error(t('surveys.dashboard.toast.actionFailed'));
       }
     });
   };
@@ -87,11 +91,17 @@ export function useSurveyAction(
         open: true as const,
         onOpenChange: (open: boolean) => !open && setConfirmDialog(null),
         onConfirm: () => executeAction(confirmDialog),
-        title: t(SURVEY_ACTION_UI[confirmDialog].confirm!.titleKey as Parameters<typeof t>[0]),
-        description: t(
-          SURVEY_ACTION_UI[confirmDialog].confirm!.descriptionKey as Parameters<typeof t>[0]
+        title: t(
+          `surveys.dashboard.${SURVEY_ACTION_UI[confirmDialog].confirm!.titleKey}` as Parameters<
+            typeof t
+          >[0]
         ),
-        confirmLabel: t(`actions.${confirmDialog}`),
+        description: t(
+          `surveys.dashboard.${SURVEY_ACTION_UI[confirmDialog].confirm!.descriptionKey}` as Parameters<
+            typeof t
+          >[0]
+        ),
+        confirmLabel: t(`surveys.dashboard.actions.${confirmDialog}`),
         variant: SURVEY_ACTION_UI[confirmDialog].confirm!.variant,
       }
     : null;

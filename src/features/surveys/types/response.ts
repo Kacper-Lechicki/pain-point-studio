@@ -29,6 +29,31 @@ export type SubmitResponseSchema = z.infer<typeof submitResponseSchema>;
 // ── Public survey data shape (returned to client) ───────────────────
 
 /**
+ * All possible reasons a survey is not accepting responses (source of truth).
+ * Defined here (not in index.ts) to avoid circular module dependency.
+ */
+export const CLOSED_REASONS = [
+  'closed',
+  'expired',
+  'max_reached',
+  'not_started',
+  'cancelled',
+] as const;
+
+export type ClosedReason = (typeof CLOSED_REASONS)[number];
+
+/**
+ * Question type union; keep in sync with `QUESTION_TYPES` in `types/index.ts`.
+ * Defined here to avoid circular dependency (types/index re-exports this file).
+ */
+export type PublicQuestionType =
+  | 'open_text'
+  | 'short_text'
+  | 'multiple_choice'
+  | 'rating_scale'
+  | 'yes_no';
+
+/**
  * Public-facing question shape — structurally identical to `MappedQuestion`
  * from `lib/map-question-row.ts`. Defined here independently to avoid a
  * circular module dependency (types → lib → types) that Turbopack cannot
@@ -37,7 +62,7 @@ export type SubmitResponseSchema = z.infer<typeof submitResponseSchema>;
 export interface PublicSurveyQuestion {
   id: string;
   text: string;
-  type: 'open_text' | 'short_text' | 'multiple_choice' | 'rating_scale' | 'yes_no';
+  type: PublicQuestionType;
   required: boolean;
   description: string | null;
   config: Record<string, unknown>;
@@ -56,7 +81,7 @@ export interface PublicSurveyData {
   questionCount: number;
   responseCount: number;
   isAcceptingResponses: boolean;
-  closedReason?: 'closed' | 'expired' | 'max_reached' | 'not_started' | 'cancelled';
+  closedReason?: ClosedReason;
   startsAt?: string;
   questions: PublicSurveyQuestion[];
 }

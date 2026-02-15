@@ -13,13 +13,13 @@ import { Spinner } from '@/components/ui/spinner';
 import { ROUTES } from '@/config/routes';
 import { UserMenu } from '@/features/auth/components/common/user-menu';
 import { publishSurvey, saveSurveyQuestions } from '@/features/surveys/actions';
+import { useQuestionBuilderContext } from '@/features/surveys/hooks/use-question-builder-context';
 import { getSurveyShareUrl } from '@/features/surveys/lib/share-url';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import { useUnsavedChangesWarning } from '@/hooks/unsaved-changes-context';
 import Link from '@/i18n/link';
 import type { MessageKey } from '@/i18n/types';
 
-import { useQuestionBuilderContext } from '../../hooks/use-question-builder-context';
 import { PublishSuccessDialog } from './publish-success-dialog';
 import { SaveStatusIndicator } from './save-status-indicator';
 

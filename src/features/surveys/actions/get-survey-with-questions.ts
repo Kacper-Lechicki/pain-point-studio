@@ -2,11 +2,14 @@
 
 import { cache } from 'react';
 
+import type { MappedQuestion } from '@/features/surveys/lib/map-question-row';
+import { mapQuestionRow } from '@/features/surveys/lib/map-question-row';
+import {
+  SURVEY_VISIBILITY_VALUES,
+  type SurveyStatus,
+  type SurveyVisibility,
+} from '@/features/surveys/types';
 import { createClient } from '@/lib/supabase/server';
-
-import type { MappedQuestion } from '../lib/map-question-row';
-import { mapQuestionRow } from '../lib/map-question-row';
-import type { SurveyStatus, SurveyVisibility } from '../types';
 
 export interface SurveyBuilderData {
   survey: {
@@ -59,7 +62,7 @@ export const getSurveyWithQuestions = cache(
         title: survey.title,
         description: survey.description ?? '',
         category: survey.category ?? '',
-        visibility: (survey.visibility as SurveyVisibility) ?? 'private',
+        visibility: (survey.visibility as SurveyVisibility) ?? SURVEY_VISIBILITY_VALUES[0],
         startsAt: survey.starts_at,
         endsAt: survey.ends_at,
         maxRespondents: survey.max_respondents,

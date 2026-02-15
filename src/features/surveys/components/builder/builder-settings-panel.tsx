@@ -2,23 +2,18 @@
 
 import { useTranslations } from 'next-intl';
 
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Switch } from '@/components/ui/switch';
 import { BUILDER_SETTINGS_PANEL_WIDTH_CLASS } from '@/features/dashboard/config/layout';
-import {
-  QUESTION_OPTIONS_MAX,
-  QUESTION_TYPE_ICONS,
-  QUESTION_TYPE_LABEL_KEYS,
-  RATING_SCALE_MAX,
-  RATING_SCALE_MIN,
-} from '@/features/surveys/config';
+import { QUESTION_TYPE_ICONS, QUESTION_TYPE_LABEL_KEYS } from '@/features/surveys/config';
+import { useQuestionBuilderContext } from '@/features/surveys/hooks/use-question-builder-context';
 import { QUESTION_TYPES, type QuestionType } from '@/features/surveys/types';
 import { cn } from '@/lib/common/utils';
 
-import { useQuestionBuilderContext } from '../../hooks/use-question-builder-context';
 import { ResponsivePanel } from './responsive-panel';
+import { MultipleChoiceSettings } from './settings/multiple-choice-settings';
+import { RatingScaleSettings } from './settings/rating-scale-settings';
+import { TextSettings } from './settings/text-settings';
 
 interface BuilderSettingsPanelProps {
   isDesktop: boolean;
@@ -115,7 +110,7 @@ function BuilderSettingsPanelContent() {
 }
 
 export function BuilderSettingsPanel({ isDesktop, open, onOpenChange }: BuilderSettingsPanelProps) {
-  const t = useTranslations('surveys.builder');
+  const t = useTranslations();
 
   return (
     <ResponsivePanel
@@ -123,161 +118,10 @@ export function BuilderSettingsPanel({ isDesktop, open, onOpenChange }: BuilderS
       open={open}
       onOpenChange={onOpenChange}
       side="right"
-      title={t('questionSettings')}
+      title={t('surveys.builder.questionSettings')}
       desktopClassName={`border-border flex ${BUILDER_SETTINGS_PANEL_WIDTH_CLASS} flex-col border-l`}
     >
       <BuilderSettingsPanelContent />
     </ResponsivePanel>
-  );
-}
-
-// ── Type-specific settings components ───────────────────────────────
-
-interface SettingsProps {
-  config: Record<string, unknown>;
-  onUpdate: (updates: Record<string, unknown>) => void;
-}
-
-function MultipleChoiceSettings({ config, onUpdate }: SettingsProps) {
-  const t = useTranslations('surveys.builder.typeSettings');
-
-  const minSelections = (config.minSelections as number) ?? undefined;
-  const maxSelections = (config.maxSelections as number) ?? undefined;
-  const allowOther = (config.allowOther as boolean) ?? false;
-  const options = (config.options as string[]) ?? [];
-
-  return (
-    <div className="space-y-3">
-      <div>
-        <Label className="mb-1 block text-xs">{t('minSelections')}</Label>
-        <Input
-          type="number"
-          min={1}
-          max={options.length}
-          value={minSelections ?? ''}
-          onChange={(e) =>
-            onUpdate({
-              minSelections: e.target.value === '' ? undefined : Number(e.target.value),
-            })
-          }
-          className="h-8"
-        />
-      </div>
-      <div>
-        <Label className="mb-1 block text-xs">{t('maxSelections')}</Label>
-        <Input
-          type="number"
-          min={1}
-          max={QUESTION_OPTIONS_MAX}
-          value={maxSelections ?? ''}
-          onChange={(e) =>
-            onUpdate({
-              maxSelections: e.target.value === '' ? undefined : Number(e.target.value),
-            })
-          }
-          className="h-8"
-        />
-      </div>
-      <div className="flex items-center justify-between">
-        <Label className="text-xs">{t('allowOther')}</Label>
-        <Switch
-          checked={allowOther}
-          onCheckedChange={(checked) => onUpdate({ allowOther: checked })}
-        />
-      </div>
-    </div>
-  );
-}
-
-function RatingScaleSettings({ config, onUpdate }: SettingsProps) {
-  const t = useTranslations('surveys.builder.typeSettings');
-
-  const min = (config.min as number) ?? RATING_SCALE_MIN;
-  const max = (config.max as number) ?? 5;
-  const minLabel = (config.minLabel as string) ?? '';
-  const maxLabel = (config.maxLabel as string) ?? '';
-
-  return (
-    <div className="space-y-3">
-      <div className="grid grid-cols-2 gap-2">
-        <div>
-          <Label className="mb-1 block text-xs">{t('scaleMin')}</Label>
-          <Input
-            type="number"
-            min={RATING_SCALE_MIN}
-            max={max - 1}
-            value={min}
-            onChange={(e) => onUpdate({ min: Number(e.target.value) })}
-            className="h-8"
-          />
-        </div>
-        <div>
-          <Label className="mb-1 block text-xs">{t('scaleMax')}</Label>
-          <Input
-            type="number"
-            min={min + 1}
-            max={RATING_SCALE_MAX}
-            value={max}
-            onChange={(e) => onUpdate({ max: Number(e.target.value) })}
-            className="h-8"
-          />
-        </div>
-      </div>
-      <div>
-        <Label className="mb-1 block text-xs">{t('minLabel')}</Label>
-        <Input
-          value={minLabel}
-          onChange={(e) => onUpdate({ minLabel: e.target.value })}
-          placeholder={t('minLabelPlaceholder')}
-          maxLength={100}
-          className="h-8"
-        />
-      </div>
-      <div>
-        <Label className="mb-1 block text-xs">{t('maxLabel')}</Label>
-        <Input
-          value={maxLabel}
-          onChange={(e) => onUpdate({ maxLabel: e.target.value })}
-          placeholder={t('maxLabelPlaceholder')}
-          maxLength={100}
-          className="h-8"
-        />
-      </div>
-    </div>
-  );
-}
-
-function TextSettings({ config, onUpdate }: SettingsProps) {
-  const t = useTranslations('surveys.builder.typeSettings');
-
-  const placeholder = (config.placeholder as string) ?? '';
-  const maxLength = (config.maxLength as number) ?? undefined;
-
-  return (
-    <div className="space-y-3">
-      <div>
-        <Label className="mb-1 block text-xs">{t('placeholder')}</Label>
-        <Input
-          value={placeholder}
-          onChange={(e) => onUpdate({ placeholder: e.target.value })}
-          maxLength={200}
-          className="h-8"
-        />
-      </div>
-      <div>
-        <Label className="mb-1 block text-xs">{t('maxLength')}</Label>
-        <Input
-          type="number"
-          min={1}
-          value={maxLength ?? ''}
-          onChange={(e) =>
-            onUpdate({
-              maxLength: e.target.value === '' ? undefined : Number(e.target.value),
-            })
-          }
-          className="h-8"
-        />
-      </div>
-    </div>
   );
 }

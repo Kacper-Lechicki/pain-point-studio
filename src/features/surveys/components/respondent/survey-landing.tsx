@@ -22,7 +22,7 @@ interface SurveyLandingProps {
 
 export const SurveyLanding = ({ survey, slug }: SurveyLandingProps) => {
   const t = useTranslations();
-  const tLanding = useTranslations('respondent.landing');
+  const tLanding = useTranslations();
   const [responseId, setResponseId] = useState<string | null>(null);
   const [completedData, setCompletedData] = useState<CompletedData | null>(null);
   const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
@@ -77,42 +77,42 @@ export const SurveyLanding = ({ survey, slug }: SurveyLandingProps) => {
         <div className="text-muted-foreground mb-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm">
           <span className="flex items-center gap-1.5">
             <MessageSquare className="size-4" />
-            {tLanding('questionsCount', { count: survey.questionCount })}
+            {tLanding('respondent.landing.questionsCount', { count: survey.questionCount })}
           </span>
           <span className="flex items-center gap-1.5">
             <Clock className="size-4" />
-            {tLanding('estimatedTime', { minutes: estimatedMinutes })}
+            {tLanding('respondent.landing.estimatedTime', { minutes: estimatedMinutes })}
           </span>
           {survey.responseCount > 0 && (
             <span className="flex items-center gap-1.5">
               <Users className="size-4" />
-              {tLanding('responsesCount', { count: survey.responseCount })}
+              {tLanding('respondent.landing.responsesCount', { count: survey.responseCount })}
             </span>
           )}
         </div>
 
         <div className="text-muted-foreground mb-8 flex items-center gap-1.5 text-xs">
           <ShieldCheck className="size-3.5" />
-          {tLanding('anonymousInfo')}
+          {tLanding('respondent.landing.anonymousInfo')}
         </div>
 
         {showDuplicateWarning && completedData ? (
           <div className="bg-muted mb-6 w-full max-w-sm rounded-lg p-4 text-center">
             <p className="text-foreground mb-1 text-sm font-medium">
-              {tLanding('alreadyCompleted.title')}
+              {tLanding('respondent.landing.alreadyCompleted.title')}
             </p>
             <p className="text-muted-foreground mb-3 text-xs">
-              {tLanding('alreadyCompleted.description', {
+              {tLanding('respondent.landing.alreadyCompleted.description', {
                 date: new Date(completedData.timestamp).toLocaleDateString(),
               })}
             </p>
             <Button variant="outline" size="sm" onClick={() => setShowDuplicateWarning(false)}>
-              {tLanding('alreadyCompleted.respondAgain')}
+              {tLanding('respondent.landing.alreadyCompleted.respondAgain')}
             </Button>
           </div>
         ) : (
           <Button onClick={handleStart} disabled={isPending} className="min-w-48">
-            {tLanding('start')}
+            {tLanding('respondent.landing.start')}
           </Button>
         )}
       </div>

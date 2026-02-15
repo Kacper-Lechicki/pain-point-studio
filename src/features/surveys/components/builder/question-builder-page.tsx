@@ -3,10 +3,10 @@
 import { useState } from 'react';
 
 import type { SurveyCategoryOption } from '@/features/surveys/actions';
+import { QuestionBuilderProvider } from '@/features/surveys/hooks/use-question-builder-context';
 import type { QuestionSchema, SurveyMetadataSchema } from '@/features/surveys/types';
 import { useBreakpoint } from '@/hooks/common/use-breakpoint';
 
-import { QuestionBuilderProvider } from '../../hooks/use-question-builder-context';
 import { BuilderCenter } from './builder-center';
 import { BuilderMetadataPanel } from './builder-metadata-panel';
 import { BuilderSettingsPanel } from './builder-settings-panel';

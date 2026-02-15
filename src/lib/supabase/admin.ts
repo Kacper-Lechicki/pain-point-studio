@@ -1,3 +1,8 @@
+/**
+ * Supabase client using the service role key. Bypasses RLS; use only in trusted
+ * server code (server actions, scripts, webhooks). Never expose this client
+ * or the service role key to the browser or untrusted callers.
+ */
 import { createClient } from '@supabase/supabase-js';
 
 import { env } from '@/lib/common/env';

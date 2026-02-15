@@ -10,7 +10,6 @@ import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
-import { DateTimePicker } from '@/components/ui/date-time-picker';
 import {
   Form,
   FormControl,
@@ -36,12 +35,19 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { ROUTES } from '@/config/routes';
 import { createSurveyDraft } from '@/features/surveys/actions';
 import type { SurveyCategoryOption } from '@/features/surveys/actions';
+import { SurveySchedulingFields } from '@/features/surveys/components/survey-scheduling-fields';
 import { SURVEY_DESCRIPTION_MAX_LENGTH, SURVEY_TITLE_MAX_LENGTH } from '@/features/surveys/config';
 import { getSurveyEditUrl } from '@/features/surveys/lib/survey-urls';
-import { type SurveyMetadataSchema, surveyMetadataSchema } from '@/features/surveys/types';
+import {
+  type DraftAction,
+  SURVEY_VISIBILITY_VALUES,
+  type SurveyMetadataSchema,
+  surveyMetadataSchema,
+} from '@/features/surveys/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import { useUnsavedChangesWarning } from '@/hooks/unsaved-changes-context';
 import type { MessageKey } from '@/i18n/types';
+import { cn } from '@/lib/common/utils';
 
 interface SurveyMetadataFormProps {
   categoryOptions: SurveyCategoryOption[];
@@ -90,7 +96,7 @@ const SurveyMetadataForm = ({
       title: defaultValues?.title ?? '',
       description: defaultValues?.description ?? '',
       category: defaultValues?.category ?? '',
-      visibility: defaultValues?.visibility ?? 'private',
+      visibility: defaultValues?.visibility ?? SURVEY_VISIBILITY_VALUES[0],
       startsAt: defaultValues?.startsAt ?? null,
       endsAt: defaultValues?.endsAt ?? null,
       maxRespondents: defaultValues?.maxRespondents ?? null,
@@ -105,7 +111,7 @@ const SurveyMetadataForm = ({
     void form.handleSubmit((data) => onSubmit(data, 'saveDraft'))();
   };
 
-  async function onSubmit(data: SurveyMetadataSchema, actionType: 'saveDraft' | 'next') {
+  async function onSubmit(data: SurveyMetadataSchema, actionType: DraftAction) {
     if (actionType === 'saveDraft') {
       await saveDraftAction.execute(createSurveyDraft, {
         ...data,
@@ -244,88 +250,7 @@ const SurveyMetadataForm = ({
 
       <Separator />
 
-      {/* Scheduling section */}
-      <div className="space-y-4">
-        <h3 className="text-sm font-medium">{t('surveys.create.scheduling')}</h3>
-
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:items-start">
-          {/* Start date */}
-          <FormField
-            control={form.control}
-            name="startsAt"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('surveys.create.startDate')}</FormLabel>
-                <FormControl>
-                  <DateTimePicker
-                    value={field.value}
-                    onChange={field.onChange}
-                    onBlur={field.onBlur}
-                    name={field.name}
-                    placeholder={t('surveys.create.pickDate')}
-                  />
-                </FormControl>
-                <FormDescription className="min-h-[2.5rem]">
-                  {t('surveys.create.startDateHelper')}
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* End date */}
-          <FormField
-            control={form.control}
-            name="endsAt"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('surveys.create.endDate')}</FormLabel>
-                <FormControl>
-                  <DateTimePicker
-                    value={field.value}
-                    onChange={field.onChange}
-                    onBlur={field.onBlur}
-                    name={field.name}
-                    placeholder={t('surveys.create.pickDate')}
-                  />
-                </FormControl>
-                <FormDescription className="min-h-[2.5rem]">
-                  {t('surveys.create.endDateHelper')}
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        {/* Max respondents */}
-        <FormField
-          control={form.control}
-          name="maxRespondents"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('surveys.create.maxRespondents')}</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  min={1}
-                  placeholder={t('surveys.create.maxRespondentsPlaceholder')}
-                  value={field.value ?? ''}
-                  onChange={(e) =>
-                    field.onChange(e.target.value === '' ? null : Number(e.target.value))
-                  }
-                  onBlur={field.onBlur}
-                  name={field.name}
-                  ref={field.ref}
-                  className="sm:max-w-[200px]"
-                />
-              </FormControl>
-              <FormDescription>{t('surveys.create.maxRespondentsHelper')}</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
+      <SurveySchedulingFields control={form.control} />
     </>
   );
 
@@ -349,7 +274,10 @@ const SurveyMetadataForm = ({
 
         {/* Actions */}
         <div
-          className={`flex items-center gap-3 ${mode === 'edit' ? 'justify-end' : 'justify-between'}`}
+          className={cn(
+            'flex items-center gap-3',
+            mode === 'edit' ? 'justify-end' : 'justify-between'
+          )}
         >
           <Button
             type="button"

@@ -12,14 +12,14 @@ import {
   QUESTION_DESCRIPTION_MAX_LENGTH,
   QUESTION_TEXT_MAX_LENGTH,
 } from '@/features/surveys/config';
+import { useQuestionBuilderContext } from '@/features/surveys/hooks/use-question-builder-context';
 import { cn } from '@/lib/common/utils';
 
-import { useQuestionBuilderContext } from '../../hooks/use-question-builder-context';
 import { BuilderEmptyState } from './builder-empty-state';
 import { QuestionEditor } from './editors/question-editor';
 
 export function BuilderCenter() {
-  const t = useTranslations('surveys.builder');
+  const t = useTranslations();
   const { state, activeQuestion, updateQuestion, selectQuestion } = useQuestionBuilderContext();
   const textInputRef = useRef<HTMLInputElement>(null);
 
@@ -41,7 +41,7 @@ export function BuilderCenter() {
   if (!activeQuestion) {
     return (
       <div className="flex flex-1 items-center justify-center">
-        <p className="text-muted-foreground text-xs">{t('noQuestionSelected')}</p>
+        <p className="text-muted-foreground text-xs">{t('surveys.builder.noQuestionSelected')}</p>
       </div>
     );
   }
@@ -80,7 +80,7 @@ export function BuilderCenter() {
           ref={textInputRef}
           value={activeQuestion.text}
           onChange={(e) => updateQuestion(activeQuestion.id, { text: e.target.value })}
-          placeholder={t('questionTextPlaceholder')}
+          placeholder={t('surveys.builder.questionTextPlaceholder')}
           maxLength={QUESTION_TEXT_MAX_LENGTH}
         />
 
@@ -90,7 +90,7 @@ export function BuilderCenter() {
             <Textarea
               value={activeQuestion.description ?? ''}
               onChange={(e) => updateQuestion(activeQuestion.id, { description: e.target.value })}
-              placeholder={t('descriptionPlaceholder')}
+              placeholder={t('surveys.builder.descriptionPlaceholder')}
               maxLength={QUESTION_DESCRIPTION_MAX_LENGTH}
               className="min-h-[60px] resize-none"
               rows={2}
@@ -102,7 +102,7 @@ export function BuilderCenter() {
               onClick={() => updateQuestion(activeQuestion.id, { description: null })}
             >
               <X className="size-4" aria-hidden />
-              {t('removeDescription')}
+              {t('surveys.builder.removeDescription')}
             </Button>
           </div>
         ) : (
@@ -113,7 +113,7 @@ export function BuilderCenter() {
             onClick={() => updateQuestion(activeQuestion.id, { description: '' })}
           >
             <Plus className="size-4" aria-hidden />
-            {t('addDescription')}
+            {t('surveys.builder.addDescription')}
           </Button>
         )}
 

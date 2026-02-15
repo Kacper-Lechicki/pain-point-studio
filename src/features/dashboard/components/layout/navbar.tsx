@@ -5,16 +5,15 @@ import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { UserMenu } from '@/features/auth/components/common/user-menu';
+import { Breadcrumbs } from '@/features/dashboard/components/layout/breadcrumbs';
+import { ProjectSelector } from '@/features/dashboard/components/layout/project-selector';
+import { useSidebar } from '@/features/dashboard/components/layout/sidebar-provider';
 import { usePathname } from '@/i18n/routing';
 import { cn } from '@/lib/common/utils';
 
-import { Breadcrumbs } from './breadcrumbs';
-import { ProjectSelector } from './project-selector';
-import { useSidebar } from './sidebar-provider';
-
 const Navbar = () => {
   const { setMobileOpen, isDesktop } = useSidebar();
-  const t = useTranslations('navbar');
+  const t = useTranslations();
   const pathname = usePathname();
   const isDashboard = pathname.startsWith('/dashboard');
   const isSettings = pathname.startsWith('/settings');
@@ -29,7 +28,7 @@ const Navbar = () => {
             size="icon-md"
             className={cn('-ml-2', 'dashboard:hidden')}
             onClick={() => setMobileOpen(true)}
-            aria-label={t('openMenu')}
+            aria-label={t('navbar.openMenu')}
           >
             <Menu className="size-5" />
           </Button>

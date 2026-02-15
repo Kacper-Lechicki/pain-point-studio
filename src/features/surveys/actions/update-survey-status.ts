@@ -1,11 +1,10 @@
 'use server';
 
+import { SURVEY_TRANSITIONS, type SurveyAction } from '@/features/surveys/config/survey-status';
+import type { SurveyStatus } from '@/features/surveys/types';
+import { surveyIdSchema } from '@/features/surveys/types';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
-
-import { SURVEY_TRANSITIONS, type SurveyAction } from '../config/survey-status';
-import type { SurveyStatus } from '../types';
-import { surveyIdSchema } from '../types';
 
 // ── Timestamp columns set on specific transitions ───────────────────
 

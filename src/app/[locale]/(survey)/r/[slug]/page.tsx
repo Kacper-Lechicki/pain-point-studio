@@ -18,7 +18,6 @@ export default async function SurveyRespondPage({ params }: SurveyRespondPagePro
   }
 
   if (!survey.isAcceptingResponses) {
-    // Pending survey with a start date — show live countdown
     if (survey.closedReason === 'not_started' && survey.startsAt) {
       return <SurveyCountdown title={survey.title} startsAt={survey.startsAt} />;
     }

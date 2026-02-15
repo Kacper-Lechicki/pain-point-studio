@@ -9,8 +9,8 @@ interface ShortTextEditorProps {
 }
 
 export function ShortTextEditor({ config }: ShortTextEditorProps) {
-  const t = useTranslations('surveys.builder');
-  const placeholder = (config.placeholder as string) || t('defaultTextPlaceholder');
+  const t = useTranslations();
+  const placeholder = (config.placeholder as string) || t('surveys.builder.defaultTextPlaceholder');
 
   return <Input disabled placeholder={placeholder} className="opacity-60" />;
 }

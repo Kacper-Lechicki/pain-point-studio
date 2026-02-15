@@ -36,7 +36,7 @@ interface SurveyListProps {
 }
 
 export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
-  const t = useTranslations('surveys.dashboard');
+  const t = useTranslations();
   const isMd = useBreakpoint('md');
   const [surveys, setSurveys] = useState(initialSurveys);
   const [statusFilter, setStatusFilter] = useState<SurveyStatusFilter>('all');
@@ -171,7 +171,7 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
               <span className="text-foreground text-base font-semibold tabular-nums">
                 {kpiSummary.surveyCount}
               </span>
-              <span className="ml-1">{t('summary.totalLabel')}</span>
+              <span className="ml-1">{t('surveys.dashboard.summary.totalLabel')}</span>
             </span>
             <span className="text-border shrink-0" aria-hidden>
               /
@@ -180,7 +180,7 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
               <span className="text-base font-semibold text-emerald-600 tabular-nums dark:text-emerald-400">
                 {kpiSummary.activeCount}
               </span>
-              <span className="ml-1">{t('summary.activeLabel')}</span>
+              <span className="ml-1">{t('surveys.dashboard.summary.activeLabel')}</span>
             </span>
             <span className="text-border shrink-0" aria-hidden>
               /
@@ -189,12 +189,12 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
               <span className="text-foreground text-base font-semibold tabular-nums">
                 {kpiSummary.totalResponses}
               </span>
-              <span className="ml-1">{t('summary.responsesLabel')}</span>
+              <span className="ml-1">{t('surveys.dashboard.summary.responsesLabel')}</span>
             </span>
           </div>
           <span className="text-muted-foreground hidden shrink-0 items-center gap-1 text-[11px] md:flex">
             <MousePointerClick className="size-3" aria-hidden />
-            {t('clickHint')}
+            {t('surveys.dashboard.clickHint')}
           </span>
         </div>
       )}
@@ -219,11 +219,13 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
           icon={ClipboardList}
           title={
             searchQuery.trim()
-              ? t('emptySearch.title', { query: searchQuery })
-              : t('emptyFilter.title')
+              ? t('surveys.dashboard.emptySearch.title', { query: searchQuery })
+              : t('surveys.dashboard.emptyFilter.title')
           }
           description={
-            searchQuery.trim() ? t('emptySearch.description') : t('emptyFilter.description')
+            searchQuery.trim()
+              ? t('surveys.dashboard.emptySearch.description')
+              : t('surveys.dashboard.emptyFilter.description')
           }
           action={
             (searchQuery.trim() || isFiltered) && (
@@ -235,7 +237,7 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
                   setStatusFilter('all');
                 }}
               >
-                {t('clearFilters')}
+                {t('surveys.dashboard.clearFilters')}
               </Button>
             )
           }
@@ -250,7 +252,7 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
                   currentSortKey={sortBy}
                   sortDir={sortDir}
                   onSort={handleSortByColumn}
-                  label={t('table.title')}
+                  label={t('surveys.dashboard.table.title')}
                   className="w-[30%]"
                 />
                 <SortableTableHeader
@@ -258,7 +260,7 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
                   currentSortKey={sortBy}
                   sortDir={sortDir}
                   onSort={handleSortByColumn}
-                  label={t('table.status')}
+                  label={t('surveys.dashboard.table.status')}
                   className="border-border/30 border-l"
                   centered
                 />
@@ -267,7 +269,7 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
                   currentSortKey={sortBy}
                   sortDir={sortDir}
                   onSort={handleSortByColumn}
-                  label={t('table.questions')}
+                  label={t('surveys.dashboard.table.questions')}
                   className="border-border/30 border-l"
                 />
                 <SortableTableHeader
@@ -275,7 +277,7 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
                   currentSortKey={sortBy}
                   sortDir={sortDir}
                   onSort={handleSortByColumn}
-                  label={t('table.responses')}
+                  label={t('surveys.dashboard.table.responses')}
                   className="border-border/30 border-l"
                 />
                 <SortableTableHeader
@@ -283,7 +285,7 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
                   currentSortKey={sortBy}
                   sortDir={sortDir}
                   onSort={handleSortByColumn}
-                  label={t('table.lastResponse')}
+                  label={t('surveys.dashboard.table.lastResponse')}
                   className="border-border/30 hidden border-l lg:table-cell"
                 />
                 <SortableTableHeader
@@ -291,7 +293,7 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
                   currentSortKey={sortBy}
                   sortDir={sortDir}
                   onSort={handleSortByColumn}
-                  label={t('table.activity')}
+                  label={t('surveys.dashboard.table.activity')}
                   className="border-border/30 hidden border-l xl:table-cell"
                   centered
                 />
@@ -334,7 +336,7 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
         survey={selectedSurvey}
         questions={questions}
         onStatusChange={handleStatusChange}
-        detailsLabel={t('detailPanel.detailsLabel')}
+        detailsLabel={t('surveys.dashboard.detailPanel.detailsLabel')}
       />
     </div>
   );

@@ -1,16 +1,18 @@
 import { AlignLeft, ListChecks, Star, ToggleLeft, Type } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
-import type { QuestionType } from '../types';
+import type { QuestionType } from '@/features/surveys/types';
 
 // ── Unified question type config ────────────────────────────────────
 
+/** Visual and default config for a single question type. */
 interface QuestionTypeConfig {
   icon: LucideIcon;
   labelKey: string;
   defaultConfig: Record<string, unknown>;
 }
 
+/** Maps each question type to its icon, i18n label key, and default config. */
 export const QUESTION_TYPE_CONFIG: Record<QuestionType, QuestionTypeConfig> = {
   open_text: {
     icon: AlignLeft,
@@ -51,6 +53,7 @@ export const QUESTION_TYPE_LABEL_KEYS: Record<QuestionType, string> = Object.fro
 
 // ── Utilities ───────────────────────────────────────────────────────
 
+/** Returns a shallow copy of the default config for a given question type. */
 export const getDefaultConfig = (type: QuestionType): Record<string, unknown> => ({
   ...QUESTION_TYPE_CONFIG[type].defaultConfig,
 });

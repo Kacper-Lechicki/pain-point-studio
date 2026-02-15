@@ -4,29 +4,10 @@ import { cache } from 'react';
 
 import { z } from 'zod';
 
+import { SURVEY_STATUSES } from '@/features/surveys/types';
 import { createClient } from '@/lib/supabase/server';
 
-export interface DashboardOverview {
-  totalSurveys: number;
-  activeSurveys: number;
-  totalResponses: number;
-  completedResponses: number;
-  avgCompletionRate: number;
-  responseTimeline: number[];
-  topSurveys: {
-    id: string;
-    title: string;
-    status: string;
-    completedCount: number;
-    slug: string | null;
-  }[];
-  recentResponses: {
-    surveyId: string;
-    surveyTitle: string;
-    completedAt: string;
-    feedback: string | null;
-  }[];
-}
+// ── Validation schema for the get_dashboard_overview RPC response ────
 
 const dashboardOverviewSchema = z.object({
   totalSurveys: z.number(),
@@ -40,7 +21,7 @@ const dashboardOverviewSchema = z.object({
       z.object({
         id: z.string(),
         title: z.string(),
-        status: z.string(),
+        status: z.enum(SURVEY_STATUSES),
         completedCount: z.number(),
         slug: z.string().nullable(),
       })
@@ -58,6 +39,14 @@ const dashboardOverviewSchema = z.object({
     .default([]),
 });
 
+/** Dashboard overview data: KPIs, top surveys, and recent responses. */
+export type DashboardOverview = z.infer<typeof dashboardOverviewSchema>;
+
+/**
+ * Fetch dashboard overview KPIs via get_dashboard_overview RPC.
+ * Returns null when unauthenticated, on RPC error, or when the response fails validation.
+ * Wrapped with React `cache()` for per-request deduplication.
+ */
 export const getDashboardOverview = cache(async (): Promise<DashboardOverview | null> => {
   const supabase = await createClient();
 

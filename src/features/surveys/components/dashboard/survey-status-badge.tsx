@@ -1,10 +1,9 @@
 import { useTranslations } from 'next-intl';
 
 import { Badge } from '@/components/ui/badge';
+import { getStatusBadgeProps } from '@/features/surveys/config/survey-status';
+import type { SurveyStatus } from '@/features/surveys/types';
 import { cn } from '@/lib/common/utils';
-
-import { getStatusBadgeProps } from '../../config/survey-status';
-import type { SurveyStatus } from '../../types';
 
 interface SurveyStatusBadgeProps {
   status: SurveyStatus;
@@ -12,7 +11,7 @@ interface SurveyStatusBadgeProps {
 }
 
 export function SurveyStatusBadge({ status, className }: SurveyStatusBadgeProps) {
-  const t = useTranslations('surveys.dashboard');
+  const t = useTranslations();
   const { variant, className: badgeClass, showPulseDot } = getStatusBadgeProps(status);
 
   return (
@@ -23,7 +22,7 @@ export function SurveyStatusBadge({ status, className }: SurveyStatusBadgeProps)
           <span className="relative inline-flex size-1.5 rounded-full bg-emerald-500" />
         </span>
       )}
-      {t(`status.${status}`)}
+      {t(`surveys.dashboard.status.${status}`)}
     </Badge>
   );
 }

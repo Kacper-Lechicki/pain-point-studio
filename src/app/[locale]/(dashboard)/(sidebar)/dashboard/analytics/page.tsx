@@ -7,15 +7,15 @@ import { getAnalyticsData } from '@/features/analytics/actions/get-analytics-dat
 import { AnalyticsPanel } from '@/features/analytics/components/analytics-panel';
 
 export default async function AnalyticsPage() {
-  const [t, data] = await Promise.all([getTranslations('analytics'), getAnalyticsData()]);
+  const [t, data] = await Promise.all([getTranslations(), getAnalyticsData()]);
 
   if (!data || data.surveyComparison.length === 0) {
     return (
       <PageTransition>
         <EmptyState
           icon={BarChart3}
-          title={t('empty.title')}
-          description={t('empty.description')}
+          title={t('analytics.empty.title')}
+          description={t('analytics.empty.description')}
         />
       </PageTransition>
     );

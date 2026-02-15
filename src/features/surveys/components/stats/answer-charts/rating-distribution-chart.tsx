@@ -18,11 +18,11 @@ interface RatingDistributionChartProps {
 }
 
 export const RatingDistributionChart = ({ answers }: RatingDistributionChartProps) => {
-  const t = useTranslations('surveys.stats');
+  const t = useTranslations();
 
   const chartConfig = {
     count: {
-      label: t('chartResponses'),
+      label: t('surveys.stats.chartResponses'),
       color: 'var(--chart-rating)',
     },
   } satisfies ChartConfig;
@@ -79,7 +79,7 @@ export const RatingDistributionChart = ({ answers }: RatingDistributionChartProp
   }, [answers]);
 
   if (data.length === 0) {
-    return <p className="text-muted-foreground text-xs">{t('noChartData')}</p>;
+    return <p className="text-muted-foreground text-xs">{t('surveys.stats.noChartData')}</p>;
   }
 
   const showRange = min !== max;
@@ -87,10 +87,12 @@ export const RatingDistributionChart = ({ answers }: RatingDistributionChartProp
   return (
     <div className="space-y-4">
       <div className="text-muted-foreground flex flex-wrap items-baseline gap-x-3 gap-y-1 text-sm">
-        <span>{t('average', { value: average.toFixed(1) })}</span>
-        {median !== average && <span>{t('median', { value: median.toFixed(1) })}</span>}
-        {showRange && <span>{t('minMax', { min, max })}</span>}
-        <span>{t('mode', { value: mode })}</span>
+        <span>{t('surveys.stats.average', { value: average.toFixed(1) })}</span>
+        {median !== average && (
+          <span>{t('surveys.stats.median', { value: median.toFixed(1) })}</span>
+        )}
+        {showRange && <span>{t('surveys.stats.minMax', { min, max })}</span>}
+        <span>{t('surveys.stats.mode', { value: mode })}</span>
       </div>
 
       <ChartContainer config={chartConfig} className="h-36 w-full">

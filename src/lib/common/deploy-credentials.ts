@@ -21,12 +21,14 @@ export function isProtectionEnabled(): boolean {
 function safeEqual(a: string, b: string): boolean {
   const bufA = Buffer.from(a);
   const bufB = Buffer.from(b);
+  const maxLen = Math.max(bufA.length, bufB.length);
+  const paddedA = Buffer.alloc(maxLen);
+  const paddedB = Buffer.alloc(maxLen);
 
-  if (bufA.length !== bufB.length) {
-    return false;
-  }
+  bufA.copy(paddedA);
+  bufB.copy(paddedB);
 
-  return timingSafeEqual(bufA, bufB);
+  return bufA.length === bufB.length && timingSafeEqual(paddedA, paddedB);
 }
 
 /** Validates Authorization: Basic <base64(user:password)> against env credentials. */

@@ -4,12 +4,10 @@ import { ChevronRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { AppRoute } from '@/config/routes';
+import { useBreadcrumbContext } from '@/features/dashboard/components/layout/breadcrumb-context';
 import { Link, usePathname } from '@/i18n/routing';
 import { cn } from '@/lib/common/utils';
 
-import { useBreadcrumbContext } from './breadcrumb-context';
-
-/** Known URL segments → breadcrumbs namespace keys */
 const SEGMENT_KEYS: Record<string, string> = {
   dashboard: 'dashboard',
   surveys: 'surveys',
@@ -22,10 +20,6 @@ const SEGMENT_KEYS: Record<string, string> = {
   archive: 'archive',
 };
 
-/**
- * Multi-segment paths that should collapse into a single breadcrumb.
- * E.g. "/profile/preview" → single "Profile" crumb instead of "Profile > Preview".
- */
 const COLLAPSED_PATHS: Record<string, string> = {
   'profile/preview': 'profile',
 };
@@ -37,7 +31,7 @@ interface Crumb {
 
 export function Breadcrumbs() {
   const pathname = usePathname();
-  const t = useTranslations('breadcrumbs');
+  const t = useTranslations();
   const breadcrumbCtx = useBreadcrumbContext();
 
   const segments = pathname.split('/').filter(Boolean);
@@ -45,8 +39,6 @@ export function Breadcrumbs() {
   if (segments.length === 0) {
     return null;
   }
-
-  type BreadcrumbKey = Parameters<typeof t>[0];
 
   const crumbs: Crumb[] = [];
   let i = 0;
@@ -60,7 +52,7 @@ export function Breadcrumbs() {
 
       if (collapsedKey) {
         const href = '/' + segments.slice(0, i + 2).join('/');
-        crumbs.push({ label: t(collapsedKey as BreadcrumbKey), href });
+        crumbs.push({ label: t(`breadcrumbs.${collapsedKey}` as Parameters<typeof t>[0]), href });
         i += 2;
         continue;
       }
@@ -70,7 +62,7 @@ export function Breadcrumbs() {
     const key = SEGMENT_KEYS[segment];
 
     if (key) {
-      crumbs.push({ label: t(key as BreadcrumbKey), href });
+      crumbs.push({ label: t(`breadcrumbs.${key}` as Parameters<typeof t>[0]), href });
     } else {
       const dynamicLabel = breadcrumbCtx?.segments[segment];
 

@@ -6,14 +6,16 @@ import { getTranslations } from 'next-intl/server';
 
 import { ROLES } from '@/features/settings/config/roles';
 import { SOCIAL_LINK_TYPES } from '@/features/settings/config/social-link-types';
-import { SocialLink } from '@/features/settings/types';
+import type { SocialLink } from '@/features/settings/types';
 import { createClient } from '@/lib/supabase/server';
 
+/** A translated lookup option (value + localized display label). */
 export interface LookupValue {
   value: string;
   label: string;
 }
 
+/** Aggregated profile data for the settings page (auth, profile row, identities, lookups). */
 export interface ProfileData {
   id: string;
   email: string;
@@ -31,6 +33,10 @@ export interface ProfileData {
   socialLinkOptions: LookupValue[];
 }
 
+/**
+ * Fetch the authenticated user's full profile data for the settings page.
+ * Returns null when unauthenticated. Wrapped with React `cache()` for per-request deduplication.
+ */
 export const getProfile = cache(async (): Promise<ProfileData | null> => {
   const supabase = await createClient();
 
