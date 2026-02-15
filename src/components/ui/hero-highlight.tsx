@@ -107,7 +107,7 @@ export const HeroHighlight = ({
           backgroundImage: dotPatterns.hover,
           WebkitMaskImage: useMotionTemplate`
             radial-gradient(
-              250px circle at ${mouseX}px ${mouseY}px,
+              180px circle at ${mouseX}px ${mouseY}px,
               black 60%,
               transparent 100%
             ),
@@ -115,7 +115,7 @@ export const HeroHighlight = ({
           `,
           maskImage: useMotionTemplate`
             radial-gradient(
-              250px circle at ${mouseX}px ${mouseY}px,
+              180px circle at ${mouseX}px ${mouseY}px,
               black 60%,
               transparent 100%
             ),
@@ -135,7 +135,7 @@ export const HeroHighlight = ({
           backgroundImage: dotPatterns.hover,
           WebkitMaskImage: useMotionTemplate`
             radial-gradient(
-              250px circle at ${mouseX}px ${mouseY}px,
+              180px circle at ${mouseX}px ${mouseY}px,
               black 60%,
               transparent 100%
             ),
@@ -143,7 +143,7 @@ export const HeroHighlight = ({
           `,
           maskImage: useMotionTemplate`
             radial-gradient(
-              250px circle at ${mouseX}px ${mouseY}px,
+              180px circle at ${mouseX}px ${mouseY}px,
               black 60%,
               transparent 100%
             ),

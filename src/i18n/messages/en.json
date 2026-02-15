@@ -182,8 +182,8 @@
     "createSurvey": "New survey",
     "empty": {
       "title": "No surveys yet",
-      "description": "Surveys help you validate ideas fast. Create your first one and start collecting feedback in minutes.",
-      "cta": "New survey"
+      "description": "Create a short survey, share the link, and get real feedback from your audience — all in under 15 minutes.",
+      "cta": "Create survey"
     },
     "categories": {
       "productivity": "Productivity",
