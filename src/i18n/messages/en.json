@@ -953,20 +953,9 @@
       "profile": "Profile",
       "email": "Email",
       "password": "Password",
-      "appearance": "Appearance",
       "connectedAccounts": "Accounts",
       "dangerZone": "Danger Zone",
       "label": "Settings section"
-    },
-    "appearance": {
-      "title": "Appearance",
-      "description": "Customize the look and feel of your interface.",
-      "accentColor": "Accent Color",
-      "accents": {
-        "blue": "Blue",
-        "teal": "Teal",
-        "indigo": "Indigo"
-      }
     },
     "profile": {
       "title": "Profile Information",
@@ -975,7 +964,7 @@
       "uploadAvatar": "Upload Photo",
       "changeAvatar": "Change Photo",
       "removeAvatar": "Remove Photo",
-      "avatarHint": "JPG, PNG, WebP or GIF. Max 5MB.",
+      "avatarHint": "JPG/JPEG, PNG or WebP. Max 5MB.",
       "fullName": "Full Name",
       "fullNamePlaceholder": "Enter your full name",
       "role": "Role / Occupation",
@@ -1092,7 +1081,7 @@
       "passwordsMismatch": "Passwords do not match.",
       "confirmationMismatch": "Please type the exact confirmation text.",
       "avatarTooLarge": "Image must be smaller than 5MB.",
-      "avatarInvalidType": "Only JPG, PNG, WebP, and GIF images are allowed.",
+      "avatarInvalidType": "Only JPG/JPEG, PNG, and WebP images are allowed.",
       "uploadFailed": "Failed to upload image. Please try again.",
       "deleteFailed": "Failed to delete account. Please try again.",
       "rateLimitExceeded": "Too many attempts. Please wait a moment and try again.",

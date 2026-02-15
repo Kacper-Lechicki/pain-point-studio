@@ -15,7 +15,7 @@ const EmptyState = ({ icon: Icon, title, description, action }: EmptyStateProps)
   return (
     <HeroHighlight
       showDotsOnMobile={false}
-      containerClassName="border-border w-full rounded-lg border border-dashed"
+      containerClassName="w-full md:rounded-lg md:border md:border-dashed md:border-border"
     >
       <div className="flex w-full flex-col items-center px-8 py-16 text-center sm:px-10 md:py-20">
         <div className="text-muted-foreground mb-4 flex size-10 items-center justify-center">

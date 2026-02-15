@@ -148,8 +148,20 @@ export function MobileNavMainLevel({ pathname, t, onItemClick, onClose }: Mobile
         ))}
       </nav>
 
-      <div className="border-t px-2 pt-2">
+      <div className="px-2 pb-4">
         {(() => {
+          if (SIDEBAR_BOTTOM_ITEM.disabled) {
+            return (
+              <span
+                data-state="inactive"
+                className={cn(SIDEBAR_NAV_ITEM_CLASSES, 'pointer-events-none opacity-50')}
+              >
+                <SIDEBAR_BOTTOM_ITEM.icon className="size-4 shrink-0" aria-hidden />
+                <span className="truncate">{t(SIDEBAR_BOTTOM_ITEM.labelKey)}</span>
+              </span>
+            );
+          }
+
           const isBottomActive =
             pathname === SIDEBAR_BOTTOM_ITEM.href ||
             pathname.startsWith(SIDEBAR_BOTTOM_ITEM.href + '/');
@@ -158,7 +170,7 @@ export function MobileNavMainLevel({ pathname, t, onItemClick, onClose }: Mobile
             <button
               type="button"
               data-state={isBottomActive ? 'active' : 'inactive'}
-              className={cn(SIDEBAR_NAV_ITEM_CLASSES, 'pb-2')}
+              className={SIDEBAR_NAV_ITEM_CLASSES}
               onClick={() => onItemClick(SIDEBAR_BOTTOM_ITEM)}
             >
               <SIDEBAR_BOTTOM_ITEM.icon className="size-4 shrink-0" aria-hidden />
@@ -169,7 +181,7 @@ export function MobileNavMainLevel({ pathname, t, onItemClick, onClose }: Mobile
             <Link
               href={SIDEBAR_BOTTOM_ITEM.href}
               data-state={isBottomActive ? 'active' : 'inactive'}
-              className={cn(SIDEBAR_NAV_ITEM_CLASSES, 'pb-2')}
+              className={SIDEBAR_NAV_ITEM_CLASSES}
               onClick={() => onClose()}
             >
               <SIDEBAR_BOTTOM_ITEM.icon className="size-4 shrink-0" aria-hidden />

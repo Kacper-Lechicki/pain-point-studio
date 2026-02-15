@@ -32,7 +32,7 @@ const PASSWORD = 'E2eSettingsPass1!';
 
 // ─────────────────────────────────────────────────────────────────
 // Settings – Core Flow
-// Profile update, route navigation, email validation, accent color
+// Profile update, route navigation, email validation
 // ─────────────────────────────────────────────────────────────────
 test.describe('Settings – Core Flow', () => {
   let email: string;
@@ -49,7 +49,7 @@ test.describe('Settings – Core Flow', () => {
     await deleteUserByEmail(e).catch(() => {});
   });
 
-  test('profile update → section nav → email validation → accent color', async ({ page }) => {
+  test('profile update → section nav → email validation', async ({ page }) => {
     await signIn(page);
     await page.goto(url(ROUTES.settings.profile));
     await expect(page).toHaveURL(/\/settings\/profile/);
@@ -82,22 +82,6 @@ test.describe('Settings – Core Flow', () => {
     await page.locator(sel.email).fill('not-an-email');
     await page.locator(sel.emailSubmit).click();
     await expect(page).toHaveURL(/\/settings\/email/);
-
-    // ── Navigate to appearance → switch accent color → persists ──
-    await page.goto(url(ROUTES.settings.appearance));
-    await expect(page.locator('button[data-accent="blue"]')).toBeVisible({ timeout: 15_000 });
-
-    const html = page.locator('html');
-    await page.locator('button[data-accent="teal"]').click();
-    await expect(html).toHaveAttribute('data-accent', 'teal');
-
-    await page.reload();
-    await expect(html).toHaveAttribute('data-accent', 'teal', { timeout: 5_000 });
-
-    // Reset to default
-    await expect(page.locator('button[data-accent="blue"]')).toBeVisible({ timeout: 15_000 });
-    await page.locator('button[data-accent="blue"]').click();
-    await expect(html).toHaveAttribute('data-accent', 'blue');
   });
 
   test('direct route navigation and browser back', async ({ page }) => {

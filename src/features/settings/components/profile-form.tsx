@@ -176,7 +176,15 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
               control={form.control}
               fields={fields}
               append={append}
-              onRemoveRequest={setRemoveLinkIndex}
+              onRemoveRequest={(index) => {
+                const url = form.getValues(`socialLinks.${index}.url`);
+
+                if (url.trim()) {
+                  setRemoveLinkIndex(index);
+                } else {
+                  remove(index);
+                }
+              }}
               socialLinkOptions={profile.socialLinkOptions}
             />
 

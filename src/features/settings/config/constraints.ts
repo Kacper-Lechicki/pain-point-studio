@@ -10,6 +10,6 @@ export const MAX_SOCIAL_LINKS = 5;
 
 /** Maximum avatar file size in bytes (5 MB). */
 export const AVATAR_MAX_SIZE = 5 * 1024 * 1024;
-export const AVATAR_ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+export const AVATAR_ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 /** Square output dimension in pixels after cropping. */
 export const AVATAR_OUTPUT_SIZE = 512;

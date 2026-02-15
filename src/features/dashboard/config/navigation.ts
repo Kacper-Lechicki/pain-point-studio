@@ -10,7 +10,6 @@ import {
   Link2,
   type LucideIcon,
   Mail,
-  Palette,
   Plug,
   Plus,
   Settings,
@@ -143,11 +142,10 @@ export const SIDEBAR_NAV: NavGroup[] = [
   },
 ];
 
-const SETTINGS_SUB_NAV_ITEMS: SubNavItem[] = [
+const USER_SETTINGS_SUB_NAV_ITEMS: SubNavItem[] = [
   { labelKey: 'settings.nav.profile', icon: CircleUserRound, href: ROUTES.settings.profile },
   { labelKey: 'settings.nav.email', icon: Mail, href: ROUTES.settings.email },
   { labelKey: 'settings.nav.password', icon: KeyRound, href: ROUTES.settings.password },
-  { labelKey: 'settings.nav.appearance', icon: Palette, href: ROUTES.settings.appearance },
   {
     labelKey: 'settings.nav.connectedAccounts',
     icon: Link2,
@@ -156,14 +154,26 @@ const SETTINGS_SUB_NAV_ITEMS: SubNavItem[] = [
   { labelKey: 'settings.nav.dangerZone', icon: Trash2, href: ROUTES.settings.dangerZone },
 ];
 
-export const SIDEBAR_BOTTOM_ITEM: NavItem = {
+/**
+ * Virtual nav item for user account settings (not shown in sidebar).
+ * Returned by `findActiveNavItem` so the sub-panel renders when
+ * the user navigates to /settings/* via the user menu.
+ */
+const USER_SETTINGS_NAV_ITEM: NavItem = {
   labelKey: 'sidebar.settings',
   icon: Settings,
   href: ROUTES.common.settings,
   subNav: {
     titleKey: 'settings.title',
-    groups: [{ items: SETTINGS_SUB_NAV_ITEMS }],
+    groups: [{ items: USER_SETTINGS_SUB_NAV_ITEMS }],
   },
+};
+
+export const SIDEBAR_BOTTOM_ITEM: NavItem = {
+  labelKey: 'sidebar.projectSettings',
+  icon: Settings,
+  href: '/project-settings' as AppRoute,
+  disabled: true,
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────
@@ -186,12 +196,12 @@ export function findActiveNavItem(pathname: string): NavItem | undefined {
     }
   }
 
+  // User account settings — accessible via user menu, sub-panel still needed
   if (
-    (pathname === SIDEBAR_BOTTOM_ITEM.href ||
-      pathname.startsWith(SIDEBAR_BOTTOM_ITEM.href + '/')) &&
-    SIDEBAR_BOTTOM_ITEM.subNav
+    pathname === USER_SETTINGS_NAV_ITEM.href ||
+    pathname.startsWith(USER_SETTINGS_NAV_ITEM.href + '/')
   ) {
-    return SIDEBAR_BOTTOM_ITEM;
+    return USER_SETTINGS_NAV_ITEM;
   }
 
   return undefined;

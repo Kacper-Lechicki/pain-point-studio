@@ -21,9 +21,6 @@ export const PATHNAMES = {
   '/settings/password': {
     en: '/settings/password',
   },
-  '/settings/appearance': {
-    en: '/settings/appearance',
-  },
   '/settings/connected-accounts': {
     en: '/settings/connected-accounts',
   },

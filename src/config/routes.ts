@@ -22,7 +22,6 @@ export const ROUTES = {
     profile: '/settings/profile' as AppRoute,
     email: '/settings/email' as AppRoute,
     password: '/settings/password' as AppRoute,
-    appearance: '/settings/appearance' as AppRoute,
     connectedAccounts: '/settings/connected-accounts' as AppRoute,
     dangerZone: '/settings/danger-zone' as AppRoute,
   },
@@ -57,7 +56,6 @@ export const SETTINGS_SECTION_VALUES = [
   'profile',
   'email',
   'password',
-  'appearance',
   'connectedAccounts',
   'dangerZone',
 ] as const;
@@ -69,7 +67,6 @@ export const SECTION_TO_HASH: Record<SettingsSectionValue, string> = {
   profile: 'profile',
   email: 'email',
   password: 'password',
-  appearance: 'appearance',
   connectedAccounts: 'connected-accounts',
   dangerZone: 'danger-zone',
 };

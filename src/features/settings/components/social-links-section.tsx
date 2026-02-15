@@ -3,15 +3,9 @@ import { useTranslations } from 'next-intl';
 import type { Control, UseFieldArrayReturn } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
+import { Combobox } from '@/components/ui/combobox';
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { MAX_SOCIAL_LINKS } from '@/features/settings/config';
 import type { UpdateProfileSchema } from '@/features/settings/types';
 
@@ -94,31 +88,23 @@ export function SocialLinksSection({
               name={`socialLinks.${index}.label`}
               render={({ field: labelField }) => (
                 <FormItem className="w-full">
-                  <Select
-                    name={`socialLinks.${index}.label`}
-                    onValueChange={labelField.onChange}
-                    value={labelField.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger
-                        className="w-full"
-                        aria-label={t('settings.profile.socialLinks.labelPlaceholder')}
-                      >
-                        <SelectValue
-                          placeholder={t('settings.profile.socialLinks.labelPlaceholder')}
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {[...socialLinkOptions]
-                        .sort((a, b) => a.label.localeCompare(b.label))
-                        .map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <Combobox
+                      options={[...socialLinkOptions].sort((a, b) => {
+                        if (a.value === 'other') {return 1;}
+
+                        if (b.value === 'other') {return -1;}
+
+                        return a.label.localeCompare(b.label);
+                      })}
+                      value={labelField.value}
+                      onValueChange={labelField.onChange}
+                      placeholder={t('settings.profile.socialLinks.labelPlaceholder')}
+                      searchPlaceholder={t('common.search')}
+                      emptyMessage={t('common.noResults')}
+                      aria-label={t('settings.profile.socialLinks.labelPlaceholder')}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

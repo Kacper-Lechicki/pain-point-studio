@@ -10,6 +10,7 @@ import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
+import { Combobox } from '@/components/ui/combobox';
 import {
   Form,
   FormControl,
@@ -20,13 +21,6 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Spinner } from '@/components/ui/spinner';
 import { Switch } from '@/components/ui/switch';
@@ -189,22 +183,23 @@ const SurveyMetadataForm = ({
         render={({ field }) => (
           <FormItem>
             <FormLabel>{t('surveys.create.category')}</FormLabel>
-            <Select name="category" onValueChange={field.onChange} value={field.value}>
-              <FormControl>
-                <SelectTrigger className="w-full" aria-label={t('surveys.create.category')}>
-                  <SelectValue placeholder={t('surveys.create.categoryPlaceholder')} />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {[...categoryOptions]
-                  .sort((a, b) => a.label.localeCompare(b.label))
-                  .map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
+            <FormControl>
+              <Combobox
+                options={[...categoryOptions].sort((a, b) => {
+                  if (a.value === 'other') {return 1;}
+
+                  if (b.value === 'other') {return -1;}
+
+                  return a.label.localeCompare(b.label);
+                })}
+                value={field.value}
+                onValueChange={field.onChange}
+                placeholder={t('surveys.create.categoryPlaceholder')}
+                searchPlaceholder={t('common.search')}
+                emptyMessage={t('common.noResults')}
+                aria-label={t('surveys.create.category')}
+              />
+            </FormControl>
             <FormMessage />
           </FormItem>
         )}
