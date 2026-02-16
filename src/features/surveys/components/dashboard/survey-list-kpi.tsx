@@ -1,10 +1,10 @@
 import { MousePointerClick } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { RefreshRealtimeButton } from '@/components/ui/refresh-realtime-button';
 import { KPI_COLOR_ALL, SURVEY_STATUS_CONFIG } from '@/features/surveys/config/survey-status';
 import { cn } from '@/lib/common/utils';
 
-import { RefreshRealtimeButton } from '../shared/refresh-realtime-button';
 import type { SurveyStatusFilter } from './survey-list-toolbar';
 
 interface SurveyListKpiProps {

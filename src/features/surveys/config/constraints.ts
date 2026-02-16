@@ -72,6 +72,10 @@ export const RATING_THRESHOLDS = {
 /** Change ratio below which a sparkline trend is considered "sharply declining". */
 export const SPARKLINE_SHARPLY_DECLINING_THRESHOLD = -0.4;
 
+/** SVG viewBox dimensions used by the `<Sparkline>` component. */
+export const SPARKLINE_VIEWBOX_WIDTH = 64;
+export const SPARKLINE_VIEWBOX_HEIGHT = 20;
+
 // ── Misc helpers ──────────────────────────────────────────────────
 
 /** Build the localStorage key for tracking completed survey responses. */

@@ -1,10 +1,10 @@
 import { Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { SectionLabel } from '@/features/surveys/components/shared/metric-display';
 import { QUESTION_TYPE_ICONS, QUESTION_TYPE_LABEL_KEYS } from '@/features/surveys/config';
 import type { MappedQuestion } from '@/features/surveys/lib/map-question-row';
 
-import { SectionLabel } from './metric-display';
 import { QuestionConfigDetails } from './question-config-details';
 
 interface DetailQuestionsListProps {

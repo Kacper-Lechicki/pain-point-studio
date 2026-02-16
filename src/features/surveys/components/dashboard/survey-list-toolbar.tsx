@@ -13,9 +13,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { SearchInput } from '@/components/ui/search-input';
+import { SortDropdown } from '@/components/ui/sort-dropdown';
 import { cn } from '@/lib/common/utils';
-
-import { SortDropdown } from '../shared/sort-dropdown';
 
 export type SurveyStatusFilter = 'all' | 'active' | 'draft' | 'completed' | 'cancelled';
 export type SurveySortBy =

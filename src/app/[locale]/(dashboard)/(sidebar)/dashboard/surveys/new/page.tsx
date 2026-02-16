@@ -3,7 +3,7 @@ import { getTranslations } from 'next-intl/server';
 import { PageTransition } from '@/components/ui/page-transition';
 import { DASHBOARD_PAGE_BODY_GAP } from '@/features/dashboard/config/layout';
 import { getSurveyFormData } from '@/features/surveys/actions';
-import { SurveyMetadataForm } from '@/features/surveys/components/survey-metadata-form';
+import { SurveyMetadataForm } from '@/features/surveys/components/builder/survey-metadata-form';
 
 export default async function NewSurveyPage() {
   const [formData, t] = await Promise.all([getSurveyFormData(), getTranslations()]);

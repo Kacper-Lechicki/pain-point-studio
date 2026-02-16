@@ -1,6 +1,10 @@
 import { useId } from 'react';
 
-import { SPARKLINE_SHARPLY_DECLINING_THRESHOLD } from '@/features/surveys/config';
+import {
+  SPARKLINE_SHARPLY_DECLINING_THRESHOLD,
+  SPARKLINE_VIEWBOX_HEIGHT,
+  SPARKLINE_VIEWBOX_WIDTH,
+} from '@/features/surveys/config';
 import { cn } from '@/lib/common/utils';
 
 type SparklineTrend = 'rising' | 'declining' | 'sharply-declining' | 'flat';
@@ -73,8 +77,8 @@ export function Sparkline({ data, className }: SparklineProps) {
     return <span className={cn('inline-block h-5 w-16', className)} />;
   }
 
-  const h = 20;
-  const w = 64;
+  const h = SPARKLINE_VIEWBOX_HEIGHT;
+  const w = SPARKLINE_VIEWBOX_WIDTH;
   const step = w / (data.length - 1);
 
   // Flat line when all zeros

@@ -1,10 +1,9 @@
 import { Clock, ListChecks, MousePointerClick, Percent, Timer, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { SectionLabel } from '@/features/surveys/components/shared/metric-display';
 import { formatCompletionTime } from '@/features/surveys/lib/calculations';
 import { cn } from '@/lib/common/utils';
-
-import { SectionLabel } from './metric-display';
 
 interface DetailMetricsGridProps {
   completedCount: number;

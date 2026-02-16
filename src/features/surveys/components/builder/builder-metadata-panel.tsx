@@ -14,8 +14,9 @@ import {
 } from '@/components/ui/sheet';
 import { Spinner } from '@/components/ui/spinner';
 import type { SurveyCategoryOption } from '@/features/surveys/actions';
-import { SurveyMetadataForm } from '@/features/surveys/components/survey-metadata-form';
 import type { SurveyMetadataSchema } from '@/features/surveys/types';
+
+import { SurveyMetadataForm } from './survey-metadata-form';
 
 interface BuilderMetadataPanelProps {
   open: boolean;

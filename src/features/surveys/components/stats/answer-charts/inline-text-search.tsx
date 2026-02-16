@@ -16,12 +16,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { SearchInput } from '@/components/ui/search-input';
+import { SortDropdown } from '@/components/ui/sort-dropdown';
 import { TEXT_SEARCH_INITIAL_VISIBLE, TEXT_SEARCH_MAX_VISIBLE } from '@/features/surveys/config';
 import { useKeywordExtraction } from '@/features/surveys/hooks/use-keyword-extraction';
 import { buildHighlightRegex, highlightText } from '@/lib/common/text-highlight';
 import { cn } from '@/lib/common/utils';
 
-import { SortDropdown } from '../../shared/sort-dropdown';
 import { SingleResponseDialog } from './single-response-dialog';
 import { TextResponseList } from './text-response-list';
 

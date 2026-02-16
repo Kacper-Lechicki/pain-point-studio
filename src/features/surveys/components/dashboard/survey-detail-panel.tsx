@@ -16,8 +16,6 @@ import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Separator } from '@/components/ui/separator';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
-import { DetailQuestionsList } from '@/features/surveys/components/shared/detail-questions-list';
-import { ExpiryMetricRow } from '@/features/surveys/components/shared/expiry-metric-row';
 import { MetricRow, SectionLabel } from '@/features/surveys/components/shared/metric-display';
 import { DATE_FORMAT_SHORT, NOW_UPDATE_INTERVAL_MS } from '@/features/surveys/config';
 import { SURVEY_CATEGORIES } from '@/features/surveys/config/survey-categories';
@@ -39,6 +37,8 @@ import { cn } from '@/lib/common/utils';
 
 import { DetailPanelActions } from './detail-panel-actions';
 import { DetailPanelMetrics } from './detail-panel-metrics';
+import { DetailQuestionsList } from './detail-questions-list';
+import { ExpiryMetricRow } from './expiry-metric-row';
 import { Sparkline, getSparklineColor } from './sparkline';
 import { SurveyShareDialog } from './survey-share-dialog';
 import { SurveyStatusBadge } from './survey-status-badge';

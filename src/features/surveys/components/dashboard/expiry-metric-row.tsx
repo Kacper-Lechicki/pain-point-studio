@@ -1,10 +1,9 @@
 import { Timer } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { MetricRow } from '@/features/surveys/components/shared/metric-display';
 import { SURVEY_RETENTION_DAYS } from '@/features/surveys/config';
 import { daysUntilExpiry } from '@/features/surveys/lib/calculations';
-
-import { MetricRow } from './metric-display';
 
 interface ExpiryMetricRowProps {
   timestampAt: string | null | undefined;

@@ -16,15 +16,14 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { EmptyState } from '@/components/ui/empty-state';
+import { RefreshRealtimeButton } from '@/components/ui/refresh-realtime-button';
 import { Separator } from '@/components/ui/separator';
 import { useBreadcrumbSegment } from '@/features/dashboard/components/layout/breadcrumb-context';
 import { cancelSurvey, completeSurvey } from '@/features/surveys/actions';
 import type { QuestionStats, SurveyStats } from '@/features/surveys/actions/get-survey-stats';
 import { SurveyShareDialog } from '@/features/surveys/components/dashboard/survey-share-dialog';
 import { SurveyStatusBadge } from '@/features/surveys/components/dashboard/survey-status-badge';
-import { DetailMetricsGrid } from '@/features/surveys/components/shared/detail-metrics-grid';
 import { SectionLabel } from '@/features/surveys/components/shared/metric-display';
-import { ResponseTimelineChart } from '@/features/surveys/components/shared/response-timeline-chart';
 import { NOW_UPDATE_INTERVAL_MS } from '@/features/surveys/config';
 import { deriveSurveyFlags } from '@/features/surveys/config/survey-status';
 import { useRealtimeResponses } from '@/features/surveys/hooks/use-realtime-responses';
@@ -37,10 +36,11 @@ import {
 import type { SurveyStatus } from '@/features/surveys/types';
 import { useRefresh } from '@/hooks/common/use-refresh';
 
-import { RefreshRealtimeButton } from '../shared/refresh-realtime-button';
+import { DetailMetricsGrid } from './detail-metrics-grid';
 import { DeviceBreakdownChart } from './device-breakdown-chart';
 import { ExportMenuItems } from './export-buttons';
 import { QuestionStatsCard } from './question-stats-card';
+import { ResponseTimelineChart } from './response-timeline-chart';
 
 interface SurveyStatsPanelProps {
   stats: SurveyStats;
