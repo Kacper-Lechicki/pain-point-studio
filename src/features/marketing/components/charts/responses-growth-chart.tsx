@@ -5,27 +5,22 @@ import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { RESPONSES_GROWTH_CONFIG, RESPONSES_GROWTH_DATA } from '@/features/marketing/config';
+import {
+  RESPONSES_GROWTH_CONFIG,
+  RESPONSES_GROWTH_DATA,
+  localizeChartConfig,
+} from '@/features/marketing/config';
 
 const formatDayTick = (value: string): string => value.slice(0, 3);
 
 const ResponsesGrowthChart = () => {
-  const t = useTranslations('marketing.charts.responsesGrowth');
-  const title = t('title');
-  const description = t('description');
+  const t = useTranslations();
+  const title = t('marketing.charts.responsesGrowth.title');
+  const description = t('marketing.charts.responsesGrowth.description');
 
-  const chartConfig = {
-    ...RESPONSES_GROWTH_CONFIG,
-    ...Object.fromEntries(
-      Object.entries(RESPONSES_GROWTH_CONFIG).map(([key, value]) => [
-        key,
-        {
-          ...value,
-          label: value.label ? t(`chart.${value.label}` as Parameters<typeof t>[0]) : undefined,
-        },
-      ])
-    ),
-  };
+  const chartConfig = localizeChartConfig(RESPONSES_GROWTH_CONFIG, (key) =>
+    t(`marketing.charts.responsesGrowth.${key}` as Parameters<typeof t>[0])
+  );
 
   return (
     <Card className="flex h-full w-full flex-col border-0 bg-transparent shadow-none">

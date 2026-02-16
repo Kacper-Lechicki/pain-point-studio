@@ -9,18 +9,33 @@ export const ROUTES = {
     signOut: '/sign-out' as AppRoute,
     forgotPassword: '/forgot-password' as AppRoute,
     updatePassword: '/update-password' as AppRoute,
+    callback: '/auth/callback',
   },
   common: {
     home: '/' as AppRoute,
     dashboard: '/dashboard' as AppRoute,
     settings: '/settings' as AppRoute,
   },
+  settings: {
+    profile: '/settings/profile' as AppRoute,
+    email: '/settings/email' as AppRoute,
+    password: '/settings/password' as AppRoute,
+    connectedAccounts: '/settings/connected-accounts' as AppRoute,
+    dangerZone: '/settings/danger-zone' as AppRoute,
+  },
   dashboard: {
     surveys: '/dashboard/surveys' as AppRoute,
+    surveysNew: '/dashboard/surveys/new' as AppRoute,
+    surveysArchive: '/dashboard/surveys/archive' as AppRoute,
+    surveysBuilder: '/dashboard/surveys/new/[id]',
+    surveysStats: '/dashboard/surveys/stats',
     analytics: '/dashboard/analytics' as AppRoute,
   },
   profile: {
     preview: '/profile/preview' as AppRoute,
+  },
+  survey: {
+    respond: '/r',
   },
 } as const;
 
@@ -38,7 +53,6 @@ export const SETTINGS_SECTION_VALUES = [
   'profile',
   'email',
   'password',
-  'appearance',
   'connectedAccounts',
   'dangerZone',
 ] as const;
@@ -49,7 +63,6 @@ export const SECTION_TO_HASH: Record<SettingsSectionValue, string> = {
   profile: 'profile',
   email: 'email',
   password: 'password',
-  appearance: 'appearance',
   connectedAccounts: 'connected-accounts',
   dangerZone: 'danger-zone',
 };

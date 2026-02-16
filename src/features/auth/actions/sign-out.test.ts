@@ -25,6 +25,7 @@ describe('Auth Actions – Sign Out', () => {
     vi.clearAllMocks();
   });
 
+  // signOut calls Supabase signOut and returns success when no error.
   it('should call supabase.auth.signOut and return success', async () => {
     mockSignOut.mockResolvedValue({ error: null });
 
@@ -35,6 +36,7 @@ describe('Auth Actions – Sign Out', () => {
     expect(result).toEqual({ success: true });
   });
 
+  // When Supabase signOut returns error, action returns error result.
   it('should return an error when sign-out fails', async () => {
     mockSignOut.mockResolvedValue({ error: { message: 'Sign out failed' } });
 

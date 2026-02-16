@@ -3,12 +3,37 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ROUTES } from '@/config';
 import { createClient } from '@/lib/supabase/server';
 
-function getSafeRedirectPath(next: string | null, fallback: string): string {
-  if (!next || !next.startsWith('/') || next.startsWith('//')) {
+const ALLOWED_CALLBACK_TYPES = ['signup', 'email_change'] as const;
+
+type CallbackType = (typeof ALLOWED_CALLBACK_TYPES)[number];
+
+function isValidCallbackType(value: string | null): value is CallbackType {
+  return ALLOWED_CALLBACK_TYPES.includes(value as CallbackType);
+}
+
+const SAFE_REDIRECT_PREFIXES = [
+  ROUTES.common.dashboard,
+  ROUTES.common.settings,
+  ROUTES.auth.updatePassword,
+  ROUTES.profile.preview,
+] as const;
+
+function getSafeRedirectPath(next: string | null, locale: string, fallback: string): string {
+  if (!next) {
     return fallback;
   }
 
-  return next;
+  const withoutLocale = next.startsWith(`/${locale}/`)
+    ? next.slice(`/${locale}`.length)
+    : next.startsWith(`/${locale}`)
+      ? next.slice(`/${locale}`.length) || '/'
+      : next;
+
+  const isSafe = SAFE_REDIRECT_PREFIXES.some(
+    (prefix) => withoutLocale === prefix || withoutLocale.startsWith(`${prefix}/`)
+  );
+
+  return isSafe ? next : fallback;
 }
 
 export async function GET(
@@ -27,9 +52,6 @@ export async function GET(
     const { error, data } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
-      // Restore custom avatar: OAuth sign-in overwrites user_metadata.avatar_url
-      // with the provider's avatar. If the user set a custom one (stored in
-      // profiles.avatar_url), sync it back to user_metadata.
       if (data.user) {
         const { data: profile } = await supabase
           .from('profiles')
@@ -45,11 +67,11 @@ export async function GET(
       }
 
       const fallbackPath = `/${locale}${ROUTES.common.dashboard}`;
-      const redirectPath = getSafeRedirectPath(next, fallbackPath);
+      const redirectPath = getSafeRedirectPath(next, locale, fallbackPath);
 
       const redirectUrl = new URL(redirectPath, request.url);
 
-      if (redirectPath === fallbackPath || type === 'email_change') {
+      if (redirectPath === fallbackPath || (isValidCallbackType(type) && type === 'email_change')) {
         const toastKey =
           type === 'signup'
             ? 'emailConfirmed'

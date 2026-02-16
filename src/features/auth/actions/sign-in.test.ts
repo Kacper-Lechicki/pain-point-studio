@@ -1,17 +1,14 @@
 // @vitest-environment node
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-// Mock redirect
 vi.mock('next/navigation', () => ({
   redirect: vi.fn(),
 }));
 
-// Mock next-intl/server
 vi.mock('next-intl/server', () => ({
   getLocale: vi.fn().mockResolvedValue('en'),
 }));
 
-// Mock env
 vi.mock('@/lib/common/env', () => ({
   env: {
     NODE_ENV: 'production',
@@ -21,12 +18,10 @@ vi.mock('@/lib/common/env', () => ({
   },
 }));
 
-// Mock rate limiter — allow all by default
 vi.mock('@/lib/common/rate-limit', () => ({
   rateLimit: vi.fn().mockResolvedValue({ limited: false }),
 }));
 
-// Mock Supabase server client
 const mockSignInWithPassword = vi.fn();
 const mockSignInWithOAuth = vi.fn();
 

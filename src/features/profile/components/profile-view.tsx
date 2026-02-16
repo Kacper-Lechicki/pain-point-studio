@@ -4,29 +4,32 @@ import { BarChart3, FolderOpen } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Separator } from '@/components/ui/separator';
+import type { ProfileStatistics } from '@/features/profile/actions/get-profile-statistics';
 import { EmptySection } from '@/features/profile/components/empty-section';
 import { ProfileHeader } from '@/features/profile/components/profile-header';
+import { ProfileStatisticsSection } from '@/features/profile/components/profile-statistics';
 import { SocialLinksList } from '@/features/profile/components/social-links-list';
 import type { ProfilePreviewData } from '@/features/profile/types';
 
 interface ProfileViewProps {
   profile: ProfilePreviewData;
+  statistics?: ProfileStatistics | null;
   isPreview?: boolean;
 }
 
-const ProfileView = ({ profile, isPreview = false }: ProfileViewProps) => {
-  const t = useTranslations('profile');
+const ProfileView = ({ profile, statistics, isPreview = false }: ProfileViewProps) => {
+  const t = useTranslations();
 
   return (
     <div className="space-y-8">
       {isPreview && (
         <div className="space-y-1">
-          <h1 className="text-xl font-bold tracking-tight">{t('preview.title')}</h1>
-          <p className="text-muted-foreground text-sm">{t('preview.description')}</p>
+          <h1 className="text-xl font-bold tracking-tight">{t('profile.preview.title')}</h1>
+          <p className="text-muted-foreground text-xs">{t('profile.preview.description')}</p>
         </div>
       )}
 
-      <div className="sm:border-border/50 sm:bg-card/80 rounded-xl sm:border sm:p-6 sm:shadow-xl sm:backdrop-blur-sm lg:p-10">
+      <div>
         <div className="space-y-8">
           <ProfileHeader profile={profile} />
 
@@ -40,18 +43,22 @@ const ProfileView = ({ profile, isPreview = false }: ProfileViewProps) => {
           <Separator />
 
           <EmptySection
-            title={t('sections.projects.title')}
-            description={t('sections.projects.emptyDescription')}
+            title={t('profile.sections.projects.title')}
+            description={t('profile.sections.projects.emptyDescription')}
             icon={FolderOpen}
           />
 
           <Separator />
 
-          <EmptySection
-            title={t('sections.statistics.title')}
-            description={t('sections.statistics.emptyDescription')}
-            icon={BarChart3}
-          />
+          {statistics && statistics.totalSurveys > 0 ? (
+            <ProfileStatisticsSection statistics={statistics} />
+          ) : (
+            <EmptySection
+              title={t('profile.sections.statistics.title')}
+              description={t('profile.sections.statistics.emptyDescription')}
+              icon={BarChart3}
+            />
+          )}
         </div>
       </div>
     </div>

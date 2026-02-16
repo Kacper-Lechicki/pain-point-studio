@@ -224,6 +224,7 @@ function ChartTooltipContent({
                           {itemConfig?.label || item.name}
                         </span>
                       </div>
+
                       {formattedValue && (
                         <span className="text-foreground font-mono font-medium tabular-nums">
                           {formattedValue}

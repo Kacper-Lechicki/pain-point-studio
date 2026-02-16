@@ -1,3 +1,8 @@
+/**
+ * Supabase client for the browser. Uses the anon key and cookie-based session;
+ * RLS applies. Use in client components only. For server-side code use
+ * createClient from @/lib/supabase/server.
+ */
 import { createBrowserClient } from '@supabase/ssr';
 
 import { env } from '@/lib/common/env';

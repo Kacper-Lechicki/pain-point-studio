@@ -1,5 +1,6 @@
 import { AVATAR_OUTPUT_SIZE } from '@/features/settings/config';
 
+/** Pixel coordinates and dimensions of the crop region. */
 export interface CropArea {
   x: number;
   y: number;
@@ -7,6 +8,7 @@ export interface CropArea {
   height: number;
 }
 
+/** Crop and resize an image to a square blob using an off-screen canvas. */
 export async function cropImage(
   imageSrc: string,
   cropArea: CropArea,
@@ -52,6 +54,7 @@ export async function cropImage(
   });
 }
 
+/** Load an image element from a source URL with CORS enabled. */
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();

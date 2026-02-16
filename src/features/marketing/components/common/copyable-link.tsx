@@ -9,7 +9,7 @@ interface CopyableLinkProps {
 }
 
 export const CopyableLink = ({ link }: CopyableLinkProps) => {
-  const t = useTranslations('marketing.components.copyableLink');
+  const t = useTranslations();
 
   return (
     <div className="bg-card text-card-foreground mt-6 rounded-lg border p-4 text-left shadow-sm">
@@ -17,14 +17,14 @@ export const CopyableLink = ({ link }: CopyableLinkProps) => {
         htmlFor="research-link"
         className="text-muted-foreground mb-2 block text-xs font-semibold tracking-wider"
       >
-        {t('label')}
+        {t('marketing.components.copyableLink.label')}
       </label>
 
       <ClipboardInput
         id="research-link"
         value={link}
-        copyLabel={t('copy')}
-        copiedLabel={t('copied')}
+        copyLabel={t('marketing.components.copyableLink.copy')}
+        copiedLabel={t('marketing.components.copyableLink.copied')}
       />
     </div>
   );

@@ -27,6 +27,7 @@ type HeroHighlightProps = {
   children: React.ReactNode;
   className?: string;
   containerClassName?: string;
+  navbar?: React.ReactNode;
   showDotsOnMobile?: boolean;
 };
 
@@ -34,6 +35,7 @@ export const HeroHighlight = ({
   children,
   className,
   containerClassName,
+  navbar,
   showDotsOnMobile = true,
 }: HeroHighlightProps) => {
   const mouseX = useMotionValue(0);
@@ -46,21 +48,12 @@ export const HeroHighlight = ({
 
   const dotPatterns = React.useMemo(() => {
     if (!mounted) {
-      return {
-        light: { default: '', hover: '' },
-        dark: { default: '', hover: '' },
-      };
+      return { default: '', hover: '' };
     }
 
     return {
-      light: {
-        default: getEncodedPattern(getComputedColor('--dot-default')),
-        hover: getEncodedPattern(getComputedColor('--dot-hover')),
-      },
-      dark: {
-        default: getEncodedPattern(getComputedColor('--dot-default')),
-        hover: getEncodedPattern(getComputedColor('--dot-hover')),
-      },
+      default: getEncodedPattern(getComputedColor('--dot-default')),
+      hover: getEncodedPattern(getComputedColor('--dot-hover')),
     };
   }, [mounted]);
 
@@ -90,7 +83,7 @@ export const HeroHighlight = ({
           !showDotsOnMobile && 'max-lg:hidden!'
         )}
         style={{
-          backgroundImage: dotPatterns.light.default,
+          backgroundImage: dotPatterns.default,
         }}
       />
 
@@ -100,7 +93,7 @@ export const HeroHighlight = ({
           !showDotsOnMobile && 'max-lg:hidden!'
         )}
         style={{
-          backgroundImage: dotPatterns.dark.default,
+          backgroundImage: dotPatterns.default,
         }}
       />
 
@@ -110,10 +103,10 @@ export const HeroHighlight = ({
           !showDotsOnMobile && 'max-lg:hidden!'
         )}
         style={{
-          backgroundImage: dotPatterns.light.hover,
+          backgroundImage: dotPatterns.hover,
           WebkitMaskImage: useMotionTemplate`
             radial-gradient(
-              250px circle at ${mouseX}px ${mouseY}px,
+              180px circle at ${mouseX}px ${mouseY}px,
               black 60%,
               transparent 100%
             ),
@@ -121,7 +114,7 @@ export const HeroHighlight = ({
           `,
           maskImage: useMotionTemplate`
             radial-gradient(
-              250px circle at ${mouseX}px ${mouseY}px,
+              180px circle at ${mouseX}px ${mouseY}px,
               black 60%,
               transparent 100%
             ),
@@ -138,10 +131,10 @@ export const HeroHighlight = ({
           !showDotsOnMobile && 'max-lg:hidden!'
         )}
         style={{
-          backgroundImage: dotPatterns.dark.hover,
+          backgroundImage: dotPatterns.hover,
           WebkitMaskImage: useMotionTemplate`
             radial-gradient(
-              250px circle at ${mouseX}px ${mouseY}px,
+              180px circle at ${mouseX}px ${mouseY}px,
               black 60%,
               transparent 100%
             ),
@@ -149,7 +142,7 @@ export const HeroHighlight = ({
           `,
           maskImage: useMotionTemplate`
             radial-gradient(
-              250px circle at ${mouseX}px ${mouseY}px,
+              180px circle at ${mouseX}px ${mouseY}px,
               black 60%,
               transparent 100%
             ),
@@ -161,6 +154,7 @@ export const HeroHighlight = ({
       />
 
       <div className={cn('relative z-20', className)}>{children}</div>
+      {navbar != null ? <div className="relative z-50">{navbar}</div> : null}
     </div>
   );
 };

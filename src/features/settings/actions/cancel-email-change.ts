@@ -2,11 +2,12 @@
 
 import { z } from 'zod';
 
+import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
 
 export const cancelEmailChange = withProtectedAction('cancel-email-change', {
   schema: z.object({}),
-  rateLimit: { limit: 3, windowSeconds: 3600 },
+  rateLimit: RATE_LIMITS.sensitive,
   action: async ({ supabase }) => {
     const { error } = await supabase.rpc('cancel_email_change');
 

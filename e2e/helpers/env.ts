@@ -12,7 +12,6 @@ if (SUPABASE_URL && !/^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?/.test(SUPABASE
   throw new Error(
     `[e2e] NEXT_PUBLIC_SUPABASE_URL points to "${SUPABASE_URL}" which is NOT a local instance.\n` +
       `E2E tests must run against local Supabase (127.0.0.1 or localhost).\n` +
-      // eslint-disable-next-line no-secrets/no-secrets
       `Ensure .env.local is present with NEXT_PUBLIC_SUPABASE_URL="http://127.0.0.1:54321".`
   );
 }

@@ -73,6 +73,7 @@ describe('Settings Actions – Delete Account', () => {
     mockSignOut.mockResolvedValue({ error: null });
   });
 
+  // Admin deleteUser succeeds; action returns success.
   it('should return success when account is deleted', async () => {
     const { deleteAccount } = await import('./delete-account');
     const result = await deleteAccount(validConfirmation);
@@ -82,6 +83,7 @@ describe('Settings Actions – Delete Account', () => {
     expect(mockSignOut).toHaveBeenCalled();
   });
 
+  // Avatar storage objects are removed before admin deleteUser.
   it('should clean up avatar files before deletion', async () => {
     mockStorageList.mockResolvedValue({
       data: [{ name: 'avatar.png' }, { name: 'old-avatar.jpg' }],
@@ -97,6 +99,7 @@ describe('Settings Actions – Delete Account', () => {
     ]);
   });
 
+  // When profile has no avatar path, storage remove is not called.
   it('should not clean up storage when no avatar files exist', async () => {
     mockStorageList.mockResolvedValue({ data: [] });
 
@@ -107,6 +110,7 @@ describe('Settings Actions – Delete Account', () => {
     expect(mockStorageRemove).not.toHaveBeenCalled();
   });
 
+  // When getUser returns null, action returns error and does not delete.
   it('should return error when user is not authenticated', async () => {
     mockGetUser.mockResolvedValue({ data: { user: null } });
 
@@ -118,6 +122,7 @@ describe('Settings Actions – Delete Account', () => {
     expect(mockAdminDeleteUser).not.toHaveBeenCalled();
   });
 
+  // When admin deleteUser returns error, action returns error result.
   it('should return error when admin delete fails', async () => {
     mockAdminDeleteUser.mockResolvedValue({
       error: { message: 'Admin delete failed' },
@@ -131,6 +136,7 @@ describe('Settings Actions – Delete Account', () => {
     expect(mockSignOut).not.toHaveBeenCalled();
   });
 
+  // Form email !== user email: returns confirmationMismatch error.
   it('should return error when confirmation email does not match', async () => {
     const { deleteAccount } = await import('./delete-account');
     const result = await deleteAccount({ confirmation: 'wrong@example.com' });
@@ -140,6 +146,7 @@ describe('Settings Actions – Delete Account', () => {
     expect(mockAdminDeleteUser).not.toHaveBeenCalled();
   });
 
+  // Invalid form data (e.g. wrong email): Supabase not called.
   it('should not call Supabase when form data is invalid', async () => {
     const { deleteAccount } = await import('./delete-account');
 
@@ -152,6 +159,7 @@ describe('Settings Actions – Delete Account', () => {
     expect(mockGetUser).not.toHaveBeenCalled();
   });
 
+  // When rate limited, action returns error and does not call Supabase.
   it('should return rate limit error when rate limited', async () => {
     const { rateLimit } = await import('@/lib/common/rate-limit');
 

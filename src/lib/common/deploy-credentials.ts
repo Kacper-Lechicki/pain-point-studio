@@ -1,3 +1,8 @@
+/**
+ * Basic Auth for deploy/preview protection. When NODE_ENV is production and
+ * BASIC_AUTH_* env vars are set, the app middleware challenges with 401 until
+ * valid credentials are provided. Uses timing-safe comparison to avoid leaks.
+ */
 import { NextRequest } from 'next/server';
 
 import { timingSafeEqual } from 'crypto';
@@ -11,36 +16,48 @@ export function isProtectionEnabled(): boolean {
   return isProduction && hasAuthEnv;
 }
 
+/** Constant-time string comparison to prevent timing side-channels. */
 function safeEqual(a: string, b: string): boolean {
   const bufA = Buffer.from(a);
   const bufB = Buffer.from(b);
 
-  if (bufA.length !== bufB.length) {
-    return false;
-  }
+  const maxLen = Math.max(bufA.length, bufB.length);
 
-  return timingSafeEqual(bufA, bufB);
+  const paddedA = Buffer.alloc(maxLen);
+  const paddedB = Buffer.alloc(maxLen);
+
+  bufA.copy(paddedA);
+  bufB.copy(paddedB);
+
+  return bufA.length === bufB.length && timingSafeEqual(paddedA, paddedB);
 }
 
 export function isAuthenticated(req: NextRequest): boolean {
-  const basicAuth = req.headers.get('authorization');
+  const authorization = req.headers.get('authorization');
 
-  if (!basicAuth) {
+  if (!authorization || !authorization.startsWith('Basic ')) {
     return false;
   }
 
-  const authValue = basicAuth.split(' ')[1];
+  const authValue = authorization.slice(6).trim();
 
   if (!authValue) {
     return false;
   }
 
   try {
-    const [user, pwd] = atob(authValue).split(':');
+    const decoded = atob(authValue);
+    const colonIndex = decoded.indexOf(':');
+
+    if (colonIndex === -1) {
+      return false;
+    }
+
+    const user = decoded.slice(0, colonIndex);
+    const pwd = decoded.slice(colonIndex + 1);
 
     return (
-      safeEqual(user ?? '', env.BASIC_AUTH_USER ?? '') &&
-      safeEqual(pwd ?? '', env.BASIC_AUTH_PASSWORD ?? '')
+      safeEqual(user, env.BASIC_AUTH_USER ?? '') && safeEqual(pwd, env.BASIC_AUTH_PASSWORD ?? '')
     );
   } catch {
     return false;

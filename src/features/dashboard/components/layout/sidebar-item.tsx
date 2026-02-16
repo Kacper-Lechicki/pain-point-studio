@@ -1,57 +1,87 @@
 'use client';
 
-import type { LucideIcon } from 'lucide-react';
+import { ChevronRight, type LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import type { AppRoute } from '@/config/routes';
 import { Link, usePathname } from '@/i18n/routing';
 import type { MessageKey } from '@/i18n/types';
+import { cn } from '@/lib/common/utils';
+
+const BASE_CLASSES =
+  'flex items-center rounded-lg border border-transparent text-sm font-medium whitespace-nowrap transition-all duration-200 ease-in-out ' +
+  'text-sidebar-foreground/70 ' +
+  'data-[state=active]:bg-sidebar-primary-active data-[state=active]:text-sidebar-primary-foreground ' +
+  'data-[state=inactive]:md:hover:text-sidebar-foreground data-[state=inactive]:md:hover:border-sidebar-foreground/25 data-[state=inactive]:md:hover:border-dashed';
 
 interface SidebarItemProps {
   labelKey: MessageKey;
   icon: LucideIcon;
   href: AppRoute;
   isExpanded: boolean;
+  hasSubNav?: boolean | undefined;
+  disabled?: boolean | undefined;
 }
 
-export function SidebarItem({ labelKey, icon: Icon, href, isExpanded }: SidebarItemProps) {
+export function SidebarItem({
+  labelKey,
+  icon: Icon,
+  href,
+  isExpanded,
+  hasSubNav,
+  disabled,
+}: SidebarItemProps) {
   const pathname = usePathname();
   const t = useTranslations();
-  const isActive = pathname === href;
+
+  const isActive = hasSubNav
+    ? pathname === href || pathname.startsWith(href + '/')
+    : pathname === href;
+
   const label = t(labelKey);
 
-  const color = isActive
-    ? 'bg-sidebar-accent text-sidebar-foreground border-sidebar-primary border-solid'
-    : 'border-transparent text-sidebar-foreground/70 md:hover:border-dashed md:hover:border-sidebar-foreground/25 md:hover:text-sidebar-foreground';
+  const classes = cn(
+    BASE_CLASSES,
+    'h-8 min-h-8',
+    isExpanded
+      ? 'w-full justify-start gap-2 px-2.5'
+      : 'w-8 min-w-8 shrink-0 justify-center gap-0 px-0',
+    disabled && 'opacity-50 pointer-events-none'
+  );
 
-  const link = (
-    <Link
-      href={href}
-      aria-label={label}
-      className={`flex min-h-10 w-full items-center ${isExpanded ? 'justify-start' : 'justify-center'} rounded-lg border text-sm font-medium transition-colors md:min-h-9 ${color}`}
-    >
-      <div className="flex w-9 shrink-0 items-center justify-center">
-        <Icon className="size-4 shrink-0" aria-hidden />
-      </div>
+  const content = (
+    <>
+      <Icon className="size-4 shrink-0" aria-hidden />
       <span
-        className={`truncate whitespace-nowrap transition-opacity duration-200 ${isExpanded ? 'opacity-100' : 'opacity-0'}`}
+        className={cn(
+          'min-w-0 truncate transition-opacity duration-200',
+          isExpanded ? 'flex-1 opacity-100' : 'w-0 flex-none opacity-0'
+        )}
       >
         {label}
       </span>
-    </Link>
+      {isExpanded && hasSubNav && (
+        <ChevronRight className="size-4 shrink-0 opacity-50" aria-hidden />
+      )}
+    </>
   );
 
-  if (isExpanded) {
-    return link;
+  if (disabled) {
+    return (
+      <span data-state="inactive" className={classes} aria-label={label}>
+        {content}
+      </span>
+    );
   }
 
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>{link}</TooltipTrigger>
-      <TooltipContent side="right" sideOffset={8}>
-        {label}
-      </TooltipContent>
-    </Tooltip>
+    <Link
+      href={href}
+      data-state={isActive ? 'active' : 'inactive'}
+      className={classes}
+      aria-label={label}
+    >
+      {content}
+    </Link>
   );
 }

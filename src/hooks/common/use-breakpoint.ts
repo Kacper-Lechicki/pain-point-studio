@@ -1,24 +1,31 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 
-import { BREAKPOINTS } from '@/config';
-import { type Breakpoint } from '@/config';
+import { BREAKPOINTS, type Breakpoint } from '@/config';
 
-export function useBreakpoint(breakpoint: Breakpoint) {
-  const [isAbove, setIsAbove] = useState<boolean>(false);
+function getSnapshot(breakpoint: Breakpoint): boolean {
+  if (typeof window === 'undefined') {
+    return false;
+  }
 
-  useEffect(() => {
-    const checkBreakpoint = () => {
-      setIsAbove(window.innerWidth >= BREAKPOINTS[breakpoint]);
-    };
+  return window.innerWidth >= BREAKPOINTS[breakpoint];
+}
 
-    checkBreakpoint();
+function getServerSnapshot(): boolean {
+  return false;
+}
 
-    window.addEventListener('resize', checkBreakpoint);
+function subscribe(breakpoint: Breakpoint, onStoreChange: () => void): () => void {
+  window.addEventListener('resize', onStoreChange);
 
-    return () => window.removeEventListener('resize', checkBreakpoint);
-  }, [breakpoint]);
+  return () => window.removeEventListener('resize', onStoreChange);
+}
 
-  return isAbove;
+export function useBreakpoint(breakpoint: Breakpoint): boolean {
+  return useSyncExternalStore(
+    (onStoreChange) => subscribe(breakpoint, onStoreChange),
+    () => getSnapshot(breakpoint),
+    getServerSnapshot
+  );
 }

@@ -6,7 +6,9 @@ import { ArrowLeft } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/config';
+import type { AppRoute } from '@/config/routes';
 import { useRouter } from '@/i18n/routing';
+import { cn } from '@/lib/common/utils';
 
 const NAV_DEPTH_KEY = '__nav_depth';
 
@@ -67,7 +69,12 @@ function canGoBack(): boolean {
   return getNavDepth() > 0;
 }
 
-const BackButton = () => {
+interface BackButtonProps {
+  fallbackHref?: AppRoute;
+  className?: string;
+}
+
+const BackButton = ({ fallbackHref, className }: BackButtonProps) => {
   const t = useTranslations();
   const router = useRouter();
   const [goBack, setGoBack] = useState(false);
@@ -82,7 +89,7 @@ const BackButton = () => {
     if (goBack) {
       router.back();
     } else {
-      router.push(ROUTES.common.dashboard);
+      router.push(fallbackHref ?? ROUTES.common.dashboard);
     }
   };
 
@@ -90,9 +97,12 @@ const BackButton = () => {
     <button
       type="button"
       onClick={handleClick}
-      className="text-muted-foreground md:hover:text-foreground inline-flex items-center gap-2 text-sm transition-colors"
+      className={cn(
+        'text-muted-foreground md:hover:text-foreground inline-flex min-h-10 min-w-10 touch-manipulation items-center gap-2 text-base transition-colors md:text-sm',
+        className
+      )}
     >
-      <ArrowLeft className="size-4" aria-hidden="true" />
+      <ArrowLeft className="size-5 shrink-0 md:size-4" aria-hidden="true" />
       {t('common.goBack')}
     </button>
   );

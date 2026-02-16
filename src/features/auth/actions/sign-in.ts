@@ -3,42 +3,32 @@
 import { redirect } from 'next/navigation';
 
 import { getLocale } from 'next-intl/server';
-import { z } from 'zod';
 
 import { AuthProvider, signInSchema } from '@/features/auth/types';
 import { env } from '@/lib/common/env';
-import { rateLimit } from '@/lib/common/rate-limit';
-import { ActionResult } from '@/lib/common/types';
+import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
+import { withPublicAction } from '@/lib/common/with-public-action';
 import { mapSupabaseError } from '@/lib/supabase/errors';
 import { createClient } from '@/lib/supabase/server';
 
-export const signInWithEmail = async (
-  formData: z.infer<typeof signInSchema>
-): Promise<ActionResult> => {
-  const { limited } = await rateLimit({ key: 'sign-in', limit: 5, windowSeconds: 300 });
+export const signInWithEmail = withPublicAction('sign-in', {
+  schema: signInSchema,
+  rateLimit: RATE_LIMITS.auth,
+  rateLimitError: 'auth.errors.rateLimitExceeded',
+  validationError: 'auth.errors.invalidData',
+  action: async ({ data, supabase }) => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email: data.email,
+      password: data.password,
+    });
 
-  if (limited) {
-    return { error: 'auth.errors.rateLimitExceeded' };
-  }
+    if (error) {
+      return { error: mapSupabaseError(error.message) };
+    }
 
-  const supabase = await createClient();
-  const validation = signInSchema.safeParse(formData);
-
-  if (!validation.success) {
-    return { error: 'auth.errors.invalidData' };
-  }
-
-  const { error } = await supabase.auth.signInWithPassword({
-    email: validation.data.email,
-    password: validation.data.password,
-  });
-
-  if (error) {
-    return { error: mapSupabaseError(error.message) };
-  }
-
-  return { success: true };
-};
+    return { success: true };
+  },
+});
 
 export const signInWithOAuth = async (provider: AuthProvider): Promise<{ error: string }> => {
   const supabase = await createClient();

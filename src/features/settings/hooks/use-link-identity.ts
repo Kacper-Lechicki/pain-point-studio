@@ -5,11 +5,12 @@ import { useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import { AuthProvider } from '@/features/auth/types';
+import type { AuthProvider } from '@/features/auth/types';
 import type { MessageKey } from '@/i18n/types';
 import { env } from '@/lib/common/env';
 import { createClient } from '@/lib/supabase/client';
 
+/** Initiate an OAuth identity link flow via Supabase, tracking the in-progress provider. */
 export function useLinkIdentity() {
   const t = useTranslations();
   const locale = useLocale();

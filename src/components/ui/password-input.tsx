@@ -15,7 +15,7 @@ type PasswordInputProps = Omit<React.ComponentProps<typeof Input>, 'type'> &
 
 const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
   ({ className, size, ...props }, ref) => {
-    const t = useTranslations('auth');
+    const t = useTranslations();
     const [showPassword, setShowPassword] = React.useState(false);
 
     const togglePassword = () => setShowPassword((prev) => !prev);
@@ -26,7 +26,7 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
           type={showPassword ? 'text' : 'password'}
           size={size}
           className={cn('pr-10', className)}
-          placeholder={props.placeholder ?? t('passwordPlaceholder')}
+          placeholder={props.placeholder ?? t('auth.passwordPlaceholder')}
           ref={ref}
           {...props}
         />
@@ -37,7 +37,7 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
           size="icon"
           className="text-muted-foreground absolute top-0 right-0 h-full px-3 md:hover:bg-transparent"
           onClick={togglePassword}
-          aria-label={showPassword ? t('hidePassword') : t('showPassword')}
+          aria-label={showPassword ? t('auth.hidePassword') : t('auth.showPassword')}
         >
           {showPassword ? (
             <EyeOff className="size-4" aria-hidden="true" />

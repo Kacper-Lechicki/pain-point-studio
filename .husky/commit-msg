@@ -1,1 +1,3 @@
+# Validate commit message against commitlint rules (e.g. conventional commits).
+# --no: use local commitlint; $1 is the path to the temporary file with the message.
 npx --no -- commitlint --edit "$1"

@@ -1,12 +1,13 @@
 'use server';
 
 import { completeProfileSchema } from '@/features/settings/types';
+import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
 import { mapSupabaseError } from '@/lib/supabase/errors';
 
 export const completeProfile = withProtectedAction('complete-profile', {
   schema: completeProfileSchema,
-  rateLimit: { limit: 5, windowSeconds: 300 },
+  rateLimit: RATE_LIMITS.auth,
   action: async ({ data, user, supabase }) => {
     const { error: profileError } = await supabase
       .from('profiles')

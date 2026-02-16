@@ -3,55 +3,64 @@
 import { Lock, Unlock } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { SidebarItem } from '@/features/dashboard/components/layout/sidebar-item';
+import { SidebarNavList } from '@/features/dashboard/components/layout/sidebar-nav-list';
+import { useSidebar } from '@/features/dashboard/components/layout/sidebar-provider';
+import { DASHBOARD_FOOTER_HEIGHT_CLASS } from '@/features/dashboard/config/layout';
 import { SIDEBAR_BOTTOM_ITEM } from '@/features/dashboard/config/navigation';
-
-import { SidebarItem } from './sidebar-item';
-import { SidebarNavList } from './sidebar-nav-list';
-import { useSidebar } from './sidebar-provider';
+import { cn } from '@/lib/common/utils';
 
 export function Sidebar() {
-  const { isExpanded, isPinned, togglePin, handleMouseEnter, handleMouseLeave } = useSidebar();
-  const t = useTranslations('sidebar');
+  const { isExpanded, isPinned, hasSubPanel, togglePin, handleMouseEnter, handleMouseLeave } =
+    useSidebar();
+  const t = useTranslations();
 
   return (
-    <TooltipProvider>
-      <aside
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        style={{
-          width: isExpanded ? 'var(--sidebar-width-expanded)' : 'var(--sidebar-width-collapsed)',
-          boxShadow: isExpanded && !isPinned ? '4px 0 12px rgba(0,0,0,0.08)' : 'none',
-        }}
-        className="bg-sidebar border-sidebar-border fixed top-14 left-0 z-40 hidden h-[calc(100vh-3.5rem)] flex-col border-r transition-[width] duration-200 ease-in-out lg:flex"
+    <aside
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        width: isExpanded ? 'var(--sidebar-width-expanded)' : 'var(--sidebar-width-collapsed)',
+      }}
+      className={cn(
+        'bg-sidebar border-sidebar-border dashboard:flex fixed top-14 left-0 z-40 hidden h-[calc(100vh-3.5rem)] flex-col overflow-hidden transition-[width] duration-200 ease-in-out',
+        (!hasSubPanel || (isExpanded && !isPinned)) && 'border-r',
+        isExpanded && !isPinned && 'shadow-lg'
+      )}
+    >
+      <nav
+        className={cn(
+          'flex flex-1 flex-col gap-1.5 overflow-x-hidden overflow-y-auto pb-4',
+          isExpanded ? 'px-2 pt-4' : 'px-1 pt-4',
+          !isExpanded && 'items-center'
+        )}
       >
-        <nav className="flex flex-1 flex-col gap-1 overflow-x-hidden overflow-y-auto p-2">
-          <SidebarNavList isExpanded={isExpanded} />
+        <SidebarNavList isExpanded={isExpanded} />
 
-          <div className="mt-auto pt-1">
-            <SidebarItem {...SIDEBAR_BOTTOM_ITEM} isExpanded={isExpanded} />
-          </div>
-        </nav>
-
-        <div
-          className={`border-sidebar-border flex border-t p-2 ${isExpanded ? 'justify-end' : 'justify-center'}`}
-        >
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button
-                onClick={togglePin}
-                className="text-sidebar-foreground/50 hover:text-sidebar-foreground flex size-8 items-center justify-center rounded-md transition-colors"
-                aria-label={isPinned ? t('unpinSidebar') : t('pinSidebar')}
-              >
-                {isPinned ? <Lock className="size-3.5" /> : <Unlock className="size-3.5" />}
-              </button>
-            </TooltipTrigger>
-            <TooltipContent side="right" sideOffset={8}>
-              {isPinned ? t('unpinSidebar') : t('pinSidebar')}
-            </TooltipContent>
-          </Tooltip>
+        <div className={cn('mt-auto pt-4', !isExpanded && 'flex flex-col items-center')}>
+          <SidebarItem
+            {...SIDEBAR_BOTTOM_ITEM}
+            isExpanded={isExpanded}
+            hasSubNav={!!SIDEBAR_BOTTOM_ITEM.subNav}
+          />
         </div>
-      </aside>
-    </TooltipProvider>
+      </nav>
+
+      <div
+        className={cn(
+          'border-sidebar-border flex shrink-0 items-center border-t',
+          DASHBOARD_FOOTER_HEIGHT_CLASS,
+          isExpanded ? 'justify-end px-2' : 'justify-center px-1'
+        )}
+      >
+        <button
+          onClick={togglePin}
+          className="text-sidebar-foreground/50 hover:text-sidebar-foreground flex size-7 items-center justify-center rounded-md transition-colors"
+          aria-label={isPinned ? t('sidebar.unpinSidebar') : t('sidebar.pinSidebar')}
+        >
+          {isPinned ? <Lock className="size-3.5" /> : <Unlock className="size-3.5" />}
+        </button>
+      </div>
+    </aside>
   );
 }

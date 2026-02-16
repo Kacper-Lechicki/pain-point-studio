@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 
+import { Combobox } from '@/components/ui/combobox';
 import {
   Dialog,
   DialogContent,
@@ -20,13 +21,6 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { SubmitButton } from '@/components/ui/submit-button';
 import { LookupValue, completeProfile } from '@/features/settings/actions';
 import { CompleteProfileSchema, completeProfileSchema } from '@/features/settings/types';
@@ -106,25 +100,18 @@ const CompleteProfileModal = ({
                 <FormItem>
                   <FormLabel>{t('settings.completeProfile.role')}</FormLabel>
 
-                  <Select name="role" onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger
-                        className="w-full"
-                        data-testid="complete-profile-role"
-                        aria-label={t('settings.completeProfile.role')}
-                      >
-                        <SelectValue placeholder={t('settings.completeProfile.rolePlaceholder')} />
-                      </SelectTrigger>
-                    </FormControl>
-
-                    <SelectContent>
-                      {roleOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <Combobox
+                      options={roleOptions}
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      placeholder={t('settings.completeProfile.rolePlaceholder')}
+                      searchPlaceholder={t('common.search')}
+                      emptyMessage={t('common.noResults')}
+                      data-testid="complete-profile-role"
+                      aria-label={t('settings.completeProfile.role')}
+                    />
+                  </FormControl>
 
                   <FormMessage />
                 </FormItem>

@@ -1,12 +1,13 @@
 'use server';
 
 import { updateProfileSchema } from '@/features/settings/types';
+import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
 import { mapSupabaseError } from '@/lib/supabase/errors';
 
 export const updateProfile = withProtectedAction('update-profile', {
   schema: updateProfileSchema,
-  rateLimit: { limit: 10, windowSeconds: 300 },
+  rateLimit: RATE_LIMITS.profileUpdate,
   action: async ({ data, user, supabase }) => {
     const { error: profileError } = await supabase
       .from('profiles')

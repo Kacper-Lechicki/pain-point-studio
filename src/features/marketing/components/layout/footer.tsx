@@ -25,7 +25,7 @@ const Footer = () => {
               {brandName}
             </Link>
 
-            <p className="text-muted-foreground text-sm leading-relaxed">{brandTagline}</p>
+            <p className="text-muted-foreground text-xs leading-relaxed">{brandTagline}</p>
           </div>
 
           {FOOTER_SECTIONS.map((section: FooterSection, sectionIndex: number) => (
@@ -58,7 +58,7 @@ const Footer = () => {
         </div>
 
         <div className="mt-12 flex items-center justify-between border-t pt-8">
-          <p className="text-muted-foreground text-sm">{copyrightText}</p>
+          <p className="text-muted-foreground text-xs">{copyrightText}</p>
 
           <Button
             variant="ghost"

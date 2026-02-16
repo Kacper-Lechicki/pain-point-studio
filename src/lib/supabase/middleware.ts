@@ -1,3 +1,9 @@
+/**
+ * Supabase session handling in Next.js middleware. Builds a server client with
+ * request cookies, refreshes the auth session (tokens), and returns the response
+ * (with any Set-Cookie headers) plus the current user. Import and call from the
+ * app middleware (e.g. src/proxy.ts) so every request has an up-to-date session.
+ */
 import { NextRequest, NextResponse } from 'next/server';
 
 import { createServerClient } from '@supabase/ssr';

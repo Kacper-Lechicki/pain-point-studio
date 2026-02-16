@@ -3,9 +3,11 @@
 import { useRouter } from 'next/navigation';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Info } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useForm, useWatch } from 'react-hook-form';
 
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
   Form,
   FormControl,
@@ -26,6 +28,7 @@ import {
   setPasswordSchema,
 } from '@/features/settings/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
+import { useUnsavedChangesWarning } from '@/hooks/unsaved-changes-context';
 import type { MessageKey } from '@/i18n/types';
 
 interface PasswordFormProps {
@@ -54,6 +57,8 @@ const PasswordForm = ({ hasPassword }: PasswordFormProps) => {
     },
   });
 
+  useUnsavedChangesWarning('password-form', form.formState.isDirty);
+
   const password = useWatch({
     control: form.control,
     name: 'password',
@@ -81,8 +86,6 @@ const PasswordForm = ({ hasPassword }: PasswordFormProps) => {
             ? t('settings.password.description')
             : t('settings.password.setFirstDescription')
         }
-        hintContent={hintContent}
-        hintDialogTitle={t('settings.password.title')}
       />
 
       <Form {...form}>
@@ -144,6 +147,11 @@ const PasswordForm = ({ hasPassword }: PasswordFormProps) => {
           </div>
         </form>
       </Form>
+
+      <Alert variant="info" className="text-xs">
+        <Info className="size-3.5" />
+        <AlertDescription>{hintContent}</AlertDescription>
+      </Alert>
     </section>
   );
 };

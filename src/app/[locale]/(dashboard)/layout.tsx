@@ -1,35 +1,27 @@
 import { ReactNode, Suspense } from 'react';
 
 import { AuthToast } from '@/features/auth/components/common/auth-toast';
-import { Navbar } from '@/features/dashboard/components/layout/navbar';
+import { BreadcrumbProvider } from '@/features/dashboard/components/layout/breadcrumb-context';
+import { DashboardLayoutChrome } from '@/features/dashboard/components/layout/dashboard-layout-chrome';
 import { SidebarProvider } from '@/features/dashboard/components/layout/sidebar-provider';
 import { getProfile } from '@/features/settings/actions';
-import { CompleteProfileModal } from '@/features/settings/components/complete-profile-modal';
+import { UnsavedChangesProvider } from '@/hooks/unsaved-changes-context';
 
 const DashboardLayout = async ({ children }: { children: ReactNode }) => {
   const profile = await getProfile();
-  const needsCompletion = profile && (!profile.fullName || !profile.role);
 
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen flex-col pt-14">
-        <Navbar />
+    <UnsavedChangesProvider>
+      <SidebarProvider>
+        <BreadcrumbProvider>
+          <DashboardLayoutChrome profile={profile}>{children}</DashboardLayoutChrome>
 
-        {children}
-
-        {needsCompletion && (
-          <CompleteProfileModal
-            roleOptions={profile.roleOptions}
-            currentFullName={profile.fullName}
-            currentRole={profile.role}
-          />
-        )}
-
-        <Suspense>
-          <AuthToast />
-        </Suspense>
-      </div>
-    </SidebarProvider>
+          <Suspense>
+            <AuthToast />
+          </Suspense>
+        </BreadcrumbProvider>
+      </SidebarProvider>
+    </UnsavedChangesProvider>
   );
 };
 
