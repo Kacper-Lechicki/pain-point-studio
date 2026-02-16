@@ -273,28 +273,43 @@ ALTER TABLE ONLY "public"."social_link_types" ALTER COLUMN "id" SET DEFAULT "nex
 
 
 
-ALTER TABLE ONLY "public"."profiles"
-    ADD CONSTRAINT "profiles_pkey" PRIMARY KEY ("id");
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'profiles_pkey') THEN
+    ALTER TABLE ONLY "public"."profiles" ADD CONSTRAINT "profiles_pkey" PRIMARY KEY ("id");
+  END IF;
+END $$;
 
 
 
-ALTER TABLE ONLY "public"."roles"
-    ADD CONSTRAINT "roles_pkey" PRIMARY KEY ("id");
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'roles_pkey') THEN
+    ALTER TABLE ONLY "public"."roles" ADD CONSTRAINT "roles_pkey" PRIMARY KEY ("id");
+  END IF;
+END $$;
 
 
 
-ALTER TABLE ONLY "public"."roles"
-    ADD CONSTRAINT "roles_value_key" UNIQUE ("value");
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'roles_value_key') THEN
+    ALTER TABLE ONLY "public"."roles" ADD CONSTRAINT "roles_value_key" UNIQUE ("value");
+  END IF;
+END $$;
 
 
 
-ALTER TABLE ONLY "public"."social_link_types"
-    ADD CONSTRAINT "social_link_types_pkey" PRIMARY KEY ("id");
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'social_link_types_pkey') THEN
+    ALTER TABLE ONLY "public"."social_link_types" ADD CONSTRAINT "social_link_types_pkey" PRIMARY KEY ("id");
+  END IF;
+END $$;
 
 
 
-ALTER TABLE ONLY "public"."social_link_types"
-    ADD CONSTRAINT "social_link_types_value_key" UNIQUE ("value");
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'social_link_types_value_key') THEN
+    ALTER TABLE ONLY "public"."social_link_types" ADD CONSTRAINT "social_link_types_value_key" UNIQUE ("value");
+  END IF;
+END $$;
 
 
 
@@ -306,32 +321,35 @@ CREATE OR REPLACE TRIGGER "profiles_set_updated_at" BEFORE UPDATE ON "public"."p
 
 
 
-ALTER TABLE ONLY "public"."profiles"
-    ADD CONSTRAINT "profiles_id_fkey" FOREIGN KEY ("id") REFERENCES "auth"."users"("id") ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'profiles_id_fkey') THEN
+    ALTER TABLE ONLY "public"."profiles" ADD CONSTRAINT "profiles_id_fkey" FOREIGN KEY ("id") REFERENCES "auth"."users"("id") ON DELETE CASCADE;
+  END IF;
+END $$;
 
 
 
-ALTER TABLE ONLY "public"."profiles"
-    ADD CONSTRAINT "profiles_role_fk" FOREIGN KEY ("role") REFERENCES "public"."roles"("value") ON UPDATE CASCADE ON DELETE RESTRICT;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'profiles_role_fk') THEN
+    ALTER TABLE ONLY "public"."profiles" ADD CONSTRAINT "profiles_role_fk" FOREIGN KEY ("role") REFERENCES "public"."roles"("value") ON UPDATE CASCADE ON DELETE RESTRICT;
+  END IF;
+END $$;
 
 
 
+DROP POLICY IF EXISTS "Roles are publicly readable" ON "public"."roles";
 CREATE POLICY "Roles are publicly readable" ON "public"."roles" FOR SELECT USING (true);
 
-
-
+DROP POLICY IF EXISTS "Social link types are publicly readable" ON "public"."social_link_types";
 CREATE POLICY "Social link types are publicly readable" ON "public"."social_link_types" FOR SELECT USING (true);
 
-
-
+DROP POLICY IF EXISTS "Users can insert own profile" ON "public"."profiles";
 CREATE POLICY "Users can insert own profile" ON "public"."profiles" FOR INSERT WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "id"));
 
-
-
+DROP POLICY IF EXISTS "Users can read own profile" ON "public"."profiles";
 CREATE POLICY "Users can read own profile" ON "public"."profiles" FOR SELECT USING ((( SELECT "auth"."uid"() AS "uid") = "id"));
 
-
-
+DROP POLICY IF EXISTS "Users can update own profile" ON "public"."profiles";
 CREATE POLICY "Users can update own profile" ON "public"."profiles" FOR UPDATE USING ((( SELECT "auth"."uid"() AS "uid") = "id")) WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "id"));
 
 
@@ -667,18 +685,16 @@ INSERT INTO "storage"."buckets" ("id", "name", "public", "file_size_limit", "all
 VALUES ('avatars', 'avatars', true, 5242880, ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
 ON CONFLICT ("id") DO NOTHING;
 
+DROP POLICY IF EXISTS "Avatars are publicly readable" ON "storage"."objects";
 CREATE POLICY "Avatars are publicly readable" ON "storage"."objects" FOR SELECT USING (("bucket_id" = 'avatars'::"text"));
 
-
-
+DROP POLICY IF EXISTS "Users can delete own avatar" ON "storage"."objects";
 CREATE POLICY "Users can delete own avatar" ON "storage"."objects" FOR DELETE USING ((("bucket_id" = 'avatars'::"text") AND ((( SELECT "auth"."uid"() AS "uid"))::"text" = ("storage"."foldername"("name"))[1])));
 
-
-
+DROP POLICY IF EXISTS "Users can update own avatar" ON "storage"."objects";
 CREATE POLICY "Users can update own avatar" ON "storage"."objects" FOR UPDATE USING ((("bucket_id" = 'avatars'::"text") AND ((( SELECT "auth"."uid"() AS "uid"))::"text" = ("storage"."foldername"("name"))[1])));
 
-
-
+DROP POLICY IF EXISTS "Users can upload own avatar" ON "storage"."objects";
 CREATE POLICY "Users can upload own avatar" ON "storage"."objects" FOR INSERT WITH CHECK ((("bucket_id" = 'avatars'::"text") AND ((( SELECT "auth"."uid"() AS "uid"))::"text" = ("storage"."foldername"("name"))[1])));
 
 
