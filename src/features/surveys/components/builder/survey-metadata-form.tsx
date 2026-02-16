@@ -9,25 +9,11 @@ import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
-import { Combobox } from '@/components/ui/combobox';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import { Form } from '@/components/ui/form';
 import { Spinner } from '@/components/ui/spinner';
-import { Switch } from '@/components/ui/switch';
-import { Textarea } from '@/components/ui/textarea';
 import { ROUTES } from '@/config/routes';
 import { createSurveyDraft } from '@/features/surveys/actions';
 import type { SurveyCategoryOption } from '@/features/surveys/actions';
-import { SURVEY_DESCRIPTION_MAX_LENGTH, SURVEY_TITLE_MAX_LENGTH } from '@/features/surveys/config';
-import { sortCategoriesOtherLast } from '@/features/surveys/config/survey-categories';
 import { getSurveyEditUrl } from '@/features/surveys/lib/survey-urls';
 import {
   type DraftAction,
@@ -39,6 +25,8 @@ import { useFormAction } from '@/hooks/common/use-form-action';
 import { useUnsavedChangesWarning } from '@/hooks/unsaved-changes-context';
 import type { MessageKey } from '@/i18n/types';
 import { cn } from '@/lib/common/utils';
+
+import { SurveyMetadataFields } from './survey-metadata-fields';
 
 interface SurveyMetadataFormProps {
   categoryOptions: SurveyCategoryOption[];
@@ -121,121 +109,7 @@ const SurveyMetadataForm = ({
     }
   }
 
-  const formFields = (
-    <>
-      <FormField
-        control={form.control}
-        name="title"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>{t('surveys.create.surveyTitle')}</FormLabel>
-
-            <FormControl>
-              <Input
-                placeholder={t('surveys.create.surveyTitlePlaceholder')}
-                maxLength={SURVEY_TITLE_MAX_LENGTH}
-                {...field}
-              />
-            </FormControl>
-
-            <div className="flex items-baseline justify-between gap-2">
-              <FormMessage />
-
-              <span className="text-muted-foreground ml-auto shrink-0 text-xs">
-                {t('surveys.create.titleCounter', {
-                  count: (field.value ?? '').length,
-                  max: SURVEY_TITLE_MAX_LENGTH,
-                })}
-              </span>
-            </div>
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="description"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>{t('surveys.create.surveyDescription')}</FormLabel>
-            <FormDescription>{t('surveys.create.surveyDescriptionHelper')}</FormDescription>
-
-            <FormControl>
-              <Textarea
-                placeholder={t('surveys.create.surveyDescriptionPlaceholder')}
-                className="min-h-[120px] resize-none"
-                rows={5}
-                maxLength={SURVEY_DESCRIPTION_MAX_LENGTH}
-                {...field}
-              />
-            </FormControl>
-
-            <div className="flex items-baseline justify-between gap-2">
-              <FormMessage />
-
-              <span className="text-muted-foreground ml-auto shrink-0 text-xs">
-                {t('surveys.create.descriptionCounter', {
-                  count: (field.value ?? '').length,
-                  max: SURVEY_DESCRIPTION_MAX_LENGTH,
-                })}
-              </span>
-            </div>
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="category"
-        render={({ field, fieldState }) => (
-          <FormItem>
-            <FormLabel>{t('surveys.create.category')}</FormLabel>
-            <FormDescription>{t('surveys.create.categoryHelper')}</FormDescription>
-
-            <FormControl>
-              <Combobox
-                options={sortCategoriesOtherLast(categoryOptions)}
-                value={field.value}
-                onValueChange={field.onChange}
-                placeholder={t('surveys.create.categoryPlaceholder')}
-                searchPlaceholder={t('common.search')}
-                emptyMessage={t('common.noResults')}
-                aria-label={t('surveys.create.category')}
-                aria-invalid={!!fieldState.error}
-              />
-            </FormControl>
-
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="visibility"
-        render={({ field }) => (
-          <FormItem className="flex items-start justify-between gap-4 rounded-lg border p-3 sm:p-4">
-            <div className="min-w-0 space-y-0.5">
-              <FormLabel>{t('surveys.create.visibility')}</FormLabel>
-
-              <FormDescription>
-                {field.value === 'public'
-                  ? t('surveys.create.visibilityPublicDescription')
-                  : t('surveys.create.visibilityPrivateDescription')}
-              </FormDescription>
-            </div>
-
-            <FormControl>
-              <Switch
-                checked={field.value === 'public'}
-                onCheckedChange={(checked) => field.onChange(checked ? 'public' : 'private')}
-              />
-            </FormControl>
-          </FormItem>
-        )}
-      />
-    </>
-  );
+  const formFields = <SurveyMetadataFields form={form} categoryOptions={categoryOptions} />;
 
   if (renderFooter) {
     return (

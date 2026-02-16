@@ -7,7 +7,6 @@ import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
-import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import { deriveSurveyFlags } from '@/features/surveys/config/survey-status';
 import { useRealtimeSurveyList } from '@/features/surveys/hooks/use-realtime-survey-list';
@@ -16,10 +15,10 @@ import { useSurveySelection } from '@/features/surveys/hooks/use-survey-selectio
 import { applyOptimisticStatusChange } from '@/features/surveys/lib/status-change-handler';
 import { useRefresh } from '@/hooks/common/use-refresh';
 
-import { SortableTableHeader } from './sortable-table-header';
 import { SurveyDetailSheet } from './survey-detail-sheet';
 import { SurveyListKpi } from './survey-list-kpi';
 import { SurveyListRow } from './survey-list-row';
+import { SurveyListTable } from './survey-list-table';
 import {
   SurveyListToolbar,
   type SurveySortBy,
@@ -196,78 +195,16 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
           }
         />
       ) : isMd ? (
-        <div className="border-border/50 overflow-hidden rounded-lg border">
-          <Table className="table-fixed">
-            <TableHeader>
-              <TableRow className="bg-muted/30 hover:bg-muted/30">
-                <SortableTableHeader
-                  sortKey="title"
-                  currentSortKey={sortBy}
-                  sortDir={sortDir}
-                  onSort={handleSortByColumn}
-                  label={t('surveys.dashboard.table.title')}
-                  className="w-[30%]"
-                />
-                <SortableTableHeader
-                  sortKey="status"
-                  currentSortKey={sortBy}
-                  sortDir={sortDir}
-                  onSort={handleSortByColumn}
-                  label={t('surveys.dashboard.table.status')}
-                  className="border-border/30 border-l"
-                  centered
-                />
-                <SortableTableHeader
-                  sortKey="responses"
-                  currentSortKey={sortBy}
-                  sortDir={sortDir}
-                  onSort={handleSortByColumn}
-                  label={t('surveys.dashboard.table.responses')}
-                  className="border-border/30 border-l"
-                />
-                <SortableTableHeader
-                  sortKey="questions"
-                  currentSortKey={sortBy}
-                  sortDir={sortDir}
-                  onSort={handleSortByColumn}
-                  label={t('surveys.dashboard.table.questions')}
-                  className="border-border/30 hidden border-l lg:table-cell"
-                />
-                <SortableTableHeader
-                  sortKey="lastResponse"
-                  currentSortKey={sortBy}
-                  sortDir={sortDir}
-                  onSort={handleSortByColumn}
-                  label={t('surveys.dashboard.table.lastResponse')}
-                  className="border-border/30 hidden border-l xl:table-cell"
-                />
-                <SortableTableHeader
-                  sortKey="activity"
-                  currentSortKey={sortBy}
-                  sortDir={sortDir}
-                  onSort={handleSortByColumn}
-                  label={t('surveys.dashboard.table.activity')}
-                  className="border-border/30 hidden border-l 2xl:table-cell"
-                  centered
-                />
-                <TableHead className="w-10" aria-hidden />
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredSurveys.map((survey: UserSurvey) => (
-                <SurveyListRow
-                  key={survey.id}
-                  survey={survey}
-                  now={now}
-                  isSelected={selectedId === survey.id}
-                  onSelect={setSelected}
-                  onStatusChange={handleStatusChange}
-                  variant="table"
-                />
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+        <SurveyListTable
+          surveys={filteredSurveys}
+          selectedId={selectedId}
+          sortBy={sortBy}
+          sortDir={sortDir}
+          now={now}
+          onSortByColumn={handleSortByColumn}
+          onSelect={setSelected}
+          onStatusChange={handleStatusChange}
+        />
       ) : (
         <div className="flex min-w-0 flex-col gap-2" role="list">
           {filteredSurveys.map((survey: UserSurvey) => (

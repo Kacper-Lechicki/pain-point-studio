@@ -1,29 +1,15 @@
 'use client';
 
-import {
-  Archive,
-  Calendar,
-  CalendarClock,
-  CalendarX2,
-  Clock,
-  Expand,
-  Tag,
-  Users,
-} from 'lucide-react';
+import { Expand } from 'lucide-react';
 import { useFormatter, useNow, useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Separator } from '@/components/ui/separator';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
-import { MetricRow, SectionLabel } from '@/features/surveys/components/shared/metric-display';
+import { SectionLabel } from '@/features/surveys/components/shared/metric-display';
 import { DATE_FORMAT_SHORT, NOW_UPDATE_INTERVAL_MS } from '@/features/surveys/config';
-import { SURVEY_CATEGORIES } from '@/features/surveys/config/survey-categories';
-import {
-  SURVEY_STATUS_CONFIG,
-  deriveSurveyFlags,
-  getAvailableActions,
-} from '@/features/surveys/config/survey-status';
+import { deriveSurveyFlags, getAvailableActions } from '@/features/surveys/config/survey-status';
 import { useSurveyAction } from '@/features/surveys/hooks/use-survey-action';
 import { useSurveyCardActions } from '@/features/surveys/hooks/use-survey-card-actions';
 import {
@@ -38,10 +24,9 @@ import { cn } from '@/lib/common/utils';
 import { DetailPanelActions } from './detail-panel-actions';
 import { DetailPanelMetrics } from './detail-panel-metrics';
 import { DetailQuestionsList } from './detail-questions-list';
-import { ExpiryMetricRow } from './expiry-metric-row';
 import { Sparkline, getSparklineColor } from './sparkline';
+import { SurveyDetailInfo } from './survey-detail-info';
 import { SurveyShareDialog } from './survey-share-dialog';
-import { SurveyStatusBadge } from './survey-status-badge';
 
 type DetailPanelVariant = 'sheet' | 'page' | 'sidebar';
 
@@ -147,85 +132,12 @@ export function SurveyDetailPanel({
 
       <Separator className="my-4" />
 
-      <SectionLabel>{t('surveys.dashboard.detailPanel.detailsLabel')}</SectionLabel>
-      <div className="space-y-2">
-        <MetricRow
-          icon={SURVEY_STATUS_CONFIG[survey.status].icon}
-          label={t('surveys.dashboard.detailPanel.status')}
-          value={<SurveyStatusBadge status={survey.status} />}
-        />
-        {survey.category &&
-          (() => {
-            const cat = SURVEY_CATEGORIES.find((c) => c.value === survey.category);
-
-            return cat ? (
-              <MetricRow
-                icon={Tag}
-                label={t('surveys.dashboard.detailPanel.category')}
-                value={t(cat.labelKey as Parameters<typeof t>[0])}
-              />
-            ) : null;
-          })()}
-
-        {showActiveDetails && survey.startsAt && (
-          <MetricRow
-            icon={CalendarClock}
-            label={t('surveys.dashboard.detailPanel.startsAt')}
-            value={formatDate(survey.startsAt)}
-          />
-        )}
-        {showActiveDetails && survey.endsAt && (
-          <MetricRow
-            icon={CalendarX2}
-            label={t('surveys.dashboard.detailPanel.endsAt')}
-            value={formatDate(survey.endsAt)}
-          />
-        )}
-        {showActiveDetails && survey.maxRespondents != null && (
-          <MetricRow
-            icon={Users}
-            label={t('surveys.dashboard.detailPanel.respondentCap')}
-            value={survey.maxRespondents}
-          />
-        )}
-
-        {isCompleted && (
-          <ExpiryMetricRow
-            timestampAt={survey.completedAt}
-            labelKey="surveys.dashboard.detailPanel.linkExpires"
-          />
-        )}
-        {isCancelled && (
-          <ExpiryMetricRow
-            timestampAt={survey.cancelledAt}
-            labelKey="surveys.dashboard.detailPanel.linkExpires"
-          />
-        )}
-        {isArchived && survey.archivedAt && (
-          <MetricRow
-            icon={Archive}
-            label={t('surveys.dashboard.detailPanel.archivedAt')}
-            value={formatDate(survey.archivedAt)}
-          />
-        )}
-        {isArchived && (
-          <ExpiryMetricRow
-            timestampAt={survey.archivedAt}
-            labelKey="surveys.dashboard.detailPanel.autoDeletes"
-          />
-        )}
-
-        <MetricRow
-          icon={Calendar}
-          label={t('surveys.dashboard.detailPanel.created')}
-          value={formatDate(survey.createdAt)}
-        />
-        <MetricRow
-          icon={Clock}
-          label={t('surveys.dashboard.detailPanel.updated')}
-          value={formatDate(survey.updatedAt)}
-        />
-      </div>
+      <SurveyDetailInfo
+        survey={survey}
+        flags={flags}
+        showActiveDetails={showActiveDetails}
+        formatDate={formatDate}
+      />
 
       <Separator className="my-4" />
 

@@ -2,27 +2,18 @@
 
 import { useMemo, useState, useTransition } from 'react';
 
-import { Ban, CheckCircle2, Inbox, Link2, MoreHorizontal, Share2 } from 'lucide-react';
+import { Inbox, Link2 } from 'lucide-react';
 import { useFormatter, useNow, useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { EmptyState } from '@/components/ui/empty-state';
-import { RefreshRealtimeButton } from '@/components/ui/refresh-realtime-button';
 import { Separator } from '@/components/ui/separator';
 import { useBreadcrumbSegment } from '@/features/dashboard/components/layout/breadcrumb-context';
 import { cancelSurvey, completeSurvey } from '@/features/surveys/actions';
 import type { QuestionStats, SurveyStats } from '@/features/surveys/actions/get-survey-stats';
 import { SurveyShareDialog } from '@/features/surveys/components/dashboard/survey-share-dialog';
-import { SurveyStatusBadge } from '@/features/surveys/components/dashboard/survey-status-badge';
 import { SectionLabel } from '@/features/surveys/components/shared/metric-display';
 import { NOW_UPDATE_INTERVAL_MS } from '@/features/surveys/config';
 import { deriveSurveyFlags } from '@/features/surveys/config/survey-status';
@@ -37,10 +28,9 @@ import type { SurveyStatus } from '@/features/surveys/types';
 import { useRefresh } from '@/hooks/common/use-refresh';
 
 import { DetailMetricsGrid } from './detail-metrics-grid';
-import { DeviceBreakdownChart } from './device-breakdown-chart';
-import { ExportMenuItems } from './export-buttons';
 import { QuestionStatsCard } from './question-stats-card';
-import { ResponseTimelineChart } from './response-timeline-chart';
+import { SurveyStatsCharts } from './survey-stats-charts';
+import { SurveyStatsHeader } from './survey-stats-header';
 
 interface SurveyStatsPanelProps {
   stats: SurveyStats;
@@ -114,65 +104,20 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
   return (
     <main className="flex min-w-0 flex-col" aria-label={stats.survey.title}>
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex min-w-0 flex-wrap items-start justify-between gap-4">
-          <div className="min-w-0 flex-1">
-            <h1 className="text-foreground min-w-0 truncate text-3xl leading-tight font-bold">
-              {stats.survey.title}
-            </h1>
-            <div className="mt-2 flex flex-wrap items-center gap-1.5">
-              <SurveyStatusBadge status={currentStatus} />
-            </div>
-          </div>
-
-          <div className="flex shrink-0 items-center gap-1">
-            <RefreshRealtimeButton
-              isRefreshing={isRefreshing}
-              isRealtimeConnected={isRealtimeConnected}
-              onRefresh={refresh}
-              ariaLabel={t('surveys.stats.refresh')}
-            />
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon-xs"
-                  className="text-muted-foreground"
-                  aria-label={t('surveys.stats.moreActions')}
-                >
-                  <MoreHorizontal className="size-4" aria-hidden />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {hasShareableLink && (
-                  <DropdownMenuItem onClick={handleShare}>
-                    <Share2 className="size-4" aria-hidden />
-                    {t('surveys.dashboard.actions.share')}
-                  </DropdownMenuItem>
-                )}
-
-                <ExportMenuItems surveyId={stats.survey.id} />
-
-                {(canComplete || canCancel) && <DropdownMenuSeparator />}
-
-                {canComplete && (
-                  <DropdownMenuItem variant="accent" onClick={() => setShowCompleteDialog(true)}>
-                    <CheckCircle2 className="size-4" aria-hidden />
-                    {t('surveys.stats.completeSurvey')}
-                  </DropdownMenuItem>
-                )}
-
-                {canCancel && (
-                  <DropdownMenuItem variant="destructive" onClick={() => setShowCancelDialog(true)}>
-                    <Ban className="size-4" aria-hidden />
-                    {t('surveys.stats.cancelSurvey')}
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
+        <SurveyStatsHeader
+          title={stats.survey.title}
+          status={currentStatus}
+          surveyId={stats.survey.id}
+          isRefreshing={isRefreshing}
+          isRealtimeConnected={isRealtimeConnected}
+          onRefresh={refresh}
+          hasShareableLink={hasShareableLink}
+          onShare={handleShare}
+          canComplete={canComplete}
+          canCancel={canCancel}
+          onComplete={() => setShowCompleteDialog(true)}
+          onCancel={() => setShowCancelDialog(true)}
+        />
 
         {/* Key metrics */}
         <DetailMetricsGrid
@@ -188,38 +133,11 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
           wide
         />
 
-        {/* Charts */}
         {stats.completedResponses > 0 && (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <div>
-              <SectionLabel>{t('surveys.stats.responseTimeline')}</SectionLabel>
-              <ResponseTimelineChart data={stats.responseTimeline} className="h-48 w-full" />
-            </div>
-            <div>
-              <div className="mb-2 flex items-center justify-between">
-                <p className="text-muted-foreground text-[11px] font-medium tracking-wider uppercase">
-                  {t('surveys.stats.deviceBreakdown')}
-                </p>
-                <div className="flex items-center gap-2.5">
-                  <span className="text-muted-foreground flex items-center gap-1 text-[10px]">
-                    <span
-                      className="inline-block size-2 rounded-full"
-                      style={{ backgroundColor: 'var(--chart-violet)' }}
-                    />
-                    {t('surveys.stats.deviceDesktop')}
-                  </span>
-                  <span className="text-muted-foreground flex items-center gap-1 text-[10px]">
-                    <span
-                      className="inline-block size-2 rounded-full"
-                      style={{ backgroundColor: 'var(--chart-cyan)' }}
-                    />
-                    {t('surveys.stats.deviceMobile')}
-                  </span>
-                </div>
-              </div>
-              <DeviceBreakdownChart data={stats.deviceTimeline} className="h-48 w-full" />
-            </div>
-          </div>
+          <SurveyStatsCharts
+            responseTimeline={stats.responseTimeline}
+            deviceTimeline={stats.deviceTimeline}
+          />
         )}
 
         {stats.completedResponses === 0 ? (
