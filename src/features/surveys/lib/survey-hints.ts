@@ -1,9 +1,28 @@
 import type { useTranslations } from 'next-intl';
 
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
+import {
+  RESPONDENT_LIMIT_WARNING_THRESHOLD,
+  SURVEY_ENDING_SOON_DAYS,
+} from '@/features/surveys/config';
+import { deriveSurveyFlags } from '@/features/surveys/config/survey-status';
 import { calculateSubmissionRate } from '@/features/surveys/lib/calculations';
 
-type HintSeverity = 'warning' | 'info' | 'success';
+export type HintSeverity = 'warning' | 'info' | 'success';
+
+export interface HintSeverityStyle {
+  className: string;
+  dot?: string;
+}
+
+export const HINT_SEVERITY_STYLES: Record<HintSeverity, HintSeverityStyle> = {
+  warning: { className: 'text-amber-600 dark:text-amber-400' },
+  success: {
+    className: 'text-emerald-600 dark:text-emerald-400',
+    dot: 'inline-flex size-1.5 shrink-0 rounded-full bg-emerald-500',
+  },
+  info: { className: 'text-muted-foreground' },
+};
 
 export interface CardHint {
   severity: HintSeverity;
@@ -15,8 +34,9 @@ export function computeHint(
   t: ReturnType<typeof useTranslations>
 ): CardHint | null {
   const now = new Date();
+  const { isDraft, isActive, isCompleted, isCancelled } = deriveSurveyFlags(survey.status);
 
-  if (survey.status === 'draft') {
+  if (isDraft) {
     if (survey.questionCount === 0) {
       return { severity: 'info', text: t('surveys.dashboard.hints.noQuestions') };
     }
@@ -30,7 +50,7 @@ export function computeHint(
     };
   }
 
-  if (survey.status === 'active') {
+  if (isActive) {
     if (survey.maxRespondents) {
       const pct = survey.responseCount / survey.maxRespondents;
 
@@ -38,7 +58,7 @@ export function computeHint(
         return { severity: 'warning', text: t('surveys.dashboard.hints.limitReached') };
       }
 
-      if (pct >= 0.8) {
+      if (pct >= RESPONDENT_LIMIT_WARNING_THRESHOLD) {
         return {
           severity: 'warning',
           text: t(
@@ -61,7 +81,7 @@ export function computeHint(
         return { severity: 'warning', text: t('surveys.dashboard.hints.expired') };
       }
 
-      if (daysLeft <= 3) {
+      if (daysLeft <= SURVEY_ENDING_SOON_DAYS) {
         return {
           severity: 'warning',
           text: t(
@@ -77,7 +97,7 @@ export function computeHint(
     }
   }
 
-  if (survey.status === 'completed') {
+  if (isCompleted) {
     if (survey.responseCount > 0) {
       const rate = calculateSubmissionRate(survey.completedCount, survey.responseCount)!;
 
@@ -93,7 +113,7 @@ export function computeHint(
     return { severity: 'info', text: t('surveys.dashboard.hints.noResponsesCollected') };
   }
 
-  if (survey.status === 'cancelled') {
+  if (isCancelled) {
     return { severity: 'warning', text: t('surveys.dashboard.hints.withdrawn') };
   }
 

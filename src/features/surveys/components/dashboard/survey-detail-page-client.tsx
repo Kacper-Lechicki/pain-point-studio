@@ -30,8 +30,7 @@ export function SurveyDetailPageClient({ survey, questions }: SurveyDetailPageCl
       survey={survey}
       questions={questions}
       onStatusChange={handleStatusChange}
-      embeddedInSheet={false}
-      embeddedInPage
+      variant="page"
     />
   );
 }

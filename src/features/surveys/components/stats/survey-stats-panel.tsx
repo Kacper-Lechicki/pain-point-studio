@@ -25,6 +25,8 @@ import { SurveyStatusBadge } from '@/features/surveys/components/dashboard/surve
 import { DetailMetricsGrid } from '@/features/surveys/components/shared/detail-metrics-grid';
 import { SectionLabel } from '@/features/surveys/components/shared/metric-display';
 import { ResponseTimelineChart } from '@/features/surveys/components/shared/response-timeline-chart';
+import { NOW_UPDATE_INTERVAL_MS } from '@/features/surveys/config';
+import { deriveSurveyFlags } from '@/features/surveys/config/survey-status';
 import { useRealtimeResponses } from '@/features/surveys/hooks/use-realtime-responses';
 import { useSurveyCardActions } from '@/features/surveys/hooks/use-survey-card-actions';
 import {
@@ -47,7 +49,7 @@ interface SurveyStatsPanelProps {
 export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
   const t = useTranslations();
   const format = useFormatter();
-  const now = useNow({ updateInterval: 60_000 });
+  const now = useNow({ updateInterval: NOW_UPDATE_INTERVAL_MS });
   const { isRefreshing, refresh } = useRefresh();
 
   useBreadcrumbSegment(stats.survey.id, stats.survey.title);
@@ -62,9 +64,9 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
   const [, startTransition] = useTransition();
 
   const currentStatus = optimisticStatus ?? stats.survey.status;
-  const canComplete = currentStatus === 'active';
-  const canCancel = currentStatus === 'active';
-  const isActive = currentStatus === 'active';
+  const { isActive } = deriveSurveyFlags(currentStatus);
+  const canComplete = isActive;
+  const canCancel = isActive;
   const hasShareableLink = !!shareUrl;
 
   const submissionRate = calculateSubmissionRate(stats.completedResponses, stats.totalResponses);

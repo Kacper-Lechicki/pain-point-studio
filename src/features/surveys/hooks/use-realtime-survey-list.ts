@@ -4,9 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
+import { REALTIME_DEBOUNCE_MS } from '@/features/surveys/config';
 import { createClient } from '@/lib/supabase/client';
-
-const DEBOUNCE_MS = 1500;
 
 /**
  * Subscribes to Supabase Realtime changes on both `survey_responses` and
@@ -38,7 +37,7 @@ export function useRealtimeSurveyList() {
 
       timerRef.current = setTimeout(() => {
         routerRef.current.refresh();
-      }, DEBOUNCE_MS);
+      }, REALTIME_DEBOUNCE_MS);
     };
 
     const channel = supabase

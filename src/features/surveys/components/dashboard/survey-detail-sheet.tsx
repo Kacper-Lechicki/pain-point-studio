@@ -52,7 +52,7 @@ export function SurveyDetailSheet({
               questions={questions}
               now={now}
               onStatusChange={onStatusChange}
-              embeddedInSheet
+              variant="sheet"
             />
           </div>
         )}

@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 
 import { Archive, ArrowDown, ArrowUp, MousePointerClick, Search, X } from 'lucide-react';
-import { useNow, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -19,9 +19,9 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
+import { useSurveyListState } from '@/features/surveys/hooks/use-survey-list-state';
 import { useSurveySelection } from '@/features/surveys/hooks/use-survey-selection';
-import { getDefaultSortDir, getSurveyComparator } from '@/features/surveys/lib/sort-helpers';
-import { useBreakpoint } from '@/hooks/common/use-breakpoint';
+import { applyOptimisticStatusChange } from '@/features/surveys/lib/status-change-handler';
 import { cn } from '@/lib/common/utils';
 
 import { SortableTableHeader } from './sortable-table-header';
@@ -29,7 +29,6 @@ import { SurveyDetailSheet } from './survey-detail-sheet';
 import { SurveyListRow } from './survey-list-row';
 
 type ArchiveSortBy = 'updated' | 'created' | 'title' | 'questions' | 'autoDeletes' | 'archivedAt';
-type ArchiveSortDir = 'asc' | 'desc';
 
 interface ArchiveSurveyListProps {
   initialSurveys: UserSurvey[];
@@ -44,34 +43,44 @@ const SORT_OPTIONS: ArchiveSortBy[] = [
   'created',
 ];
 
+const CUSTOM_COMPARATOR = (sortBy: ArchiveSortBy, sortDir: 'asc' | 'desc') => {
+  if (sortBy !== 'archivedAt' && sortBy !== 'autoDeletes') {return undefined;}
+
+  const mul = sortDir === 'asc' ? 1 : -1;
+
+  return (a: UserSurvey, b: UserSurvey) => {
+    const ta = a.archivedAt ? new Date(a.archivedAt).getTime() : 0;
+    const tb = b.archivedAt ? new Date(b.archivedAt).getTime() : 0;
+
+    return mul * (ta - tb) || a.title.localeCompare(b.title);
+  };
+};
+
 export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
   const t = useTranslations();
-  const now = useNow({ updateInterval: 60_000 });
-  const isMd = useBreakpoint('md');
-
   const [surveys, setSurveys] = useState(initialSurveys);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState<ArchiveSortBy>('updated');
-  const [sortDir, setSortDir] = useState<ArchiveSortDir>('desc');
+
+  const {
+    now,
+    isMd,
+    searchQuery,
+    setSearchQuery,
+    sortBy,
+    sortDir,
+    setSortDir,
+    handleSortByChange,
+    handleSortByColumn,
+    filteredSurveys,
+  } = useSurveyListState<ArchiveSortBy>({
+    surveys,
+    defaultSortBy: 'updated',
+    customComparator: CUSTOM_COMPARATOR,
+  });
 
   const { selectedId, selectedSurvey, questions, showSheet, setSelected } =
     useSurveySelection(surveys);
 
   const hasSearch = searchQuery.trim().length > 0;
-
-  const handleSortByColumn = (key: ArchiveSortBy) => {
-    if (sortBy === key) {
-      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
-    } else {
-      setSortBy(key);
-      setSortDir(getDefaultSortDir(key));
-    }
-  };
-
-  const handleSortByChange = (key: ArchiveSortBy) => {
-    setSortBy(key);
-    setSortDir(getDefaultSortDir(key));
-  };
 
   const sortedSortOptions = useMemo(
     () =>
@@ -81,49 +90,18 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
     [t]
   );
 
-  const filteredSurveys = useMemo(() => {
-    let result = surveys;
-
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      result = result.filter(
-        (s) => s.title.toLowerCase().includes(q) || s.description.toLowerCase().includes(q)
-      );
-    }
-
-    const common = getSurveyComparator(sortBy, sortDir);
-
-    if (common) {
-      return [...result].sort(common);
-    }
-
-    const mul = sortDir === 'asc' ? 1 : -1;
-
-    return [...result].sort((a, b) => {
-      switch (sortBy) {
-        case 'archivedAt':
-        case 'autoDeletes': {
-          // Both sort by archivedAt timestamp (autoDeletes is derived from it)
-          const ta = a.archivedAt ? new Date(a.archivedAt).getTime() : 0;
-          const tb = b.archivedAt ? new Date(b.archivedAt).getTime() : 0;
-
-          return mul * (ta - tb) || a.title.localeCompare(b.title);
-        }
-
-        default:
-          return 0;
-      }
-    });
-  }, [surveys, searchQuery, sortBy, sortDir]);
-
   const handleStatusChange = (surveyId: string, action: string) => {
-    if (action === 'restore' || action === 'delete') {
-      if (selectedId === surveyId) {
-        setSelected(null);
-      }
+    const { shouldDeselect, updatedSurveys } = applyOptimisticStatusChange(
+      surveys,
+      surveyId,
+      action
+    );
 
-      setSurveys((prev) => prev.filter((s) => s.id !== surveyId));
+    if (shouldDeselect && selectedId === surveyId) {
+      setSelected(null);
     }
+
+    setSurveys(updatedSurveys);
   };
 
   if (filteredSurveys.length === 0 && !hasSearch && surveys.length === 0) {

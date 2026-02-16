@@ -15,7 +15,11 @@ interface StatusConfig {
   labelKey: string;
   icon: LucideIcon;
   badge: StatusBadgeConfig;
+  kpiColor: string;
 }
+
+/** KPI text color for the "all" total (not tied to a specific status). */
+export const KPI_COLOR_ALL = 'text-foreground';
 
 /** Maps each survey status to its icon, i18n label key, and badge styling. */
 export const SURVEY_STATUS_CONFIG: Record<SurveyStatus, StatusConfig> = {
@@ -23,6 +27,7 @@ export const SURVEY_STATUS_CONFIG: Record<SurveyStatus, StatusConfig> = {
     labelKey: 'surveys.dashboard.status.draft',
     icon: FilePen,
     badge: { variant: 'secondary', className: '', showPulseDot: false },
+    kpiColor: 'text-foreground',
   },
   active: {
     labelKey: 'surveys.dashboard.status.active',
@@ -32,6 +37,7 @@ export const SURVEY_STATUS_CONFIG: Record<SurveyStatus, StatusConfig> = {
       className: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/25',
       showPulseDot: false,
     },
+    kpiColor: 'text-emerald-600 dark:text-emerald-400',
   },
   completed: {
     labelKey: 'surveys.dashboard.status.completed',
@@ -41,6 +47,7 @@ export const SURVEY_STATUS_CONFIG: Record<SurveyStatus, StatusConfig> = {
       className: 'bg-violet-500/15 text-violet-700 dark:text-violet-400 border-violet-500/25',
       showPulseDot: false,
     },
+    kpiColor: 'text-violet-600 dark:text-violet-400',
   },
   cancelled: {
     labelKey: 'surveys.dashboard.status.cancelled',
@@ -50,6 +57,7 @@ export const SURVEY_STATUS_CONFIG: Record<SurveyStatus, StatusConfig> = {
       className: 'bg-red-500/15 text-red-700 dark:text-red-400 border-red-500/25',
       showPulseDot: false,
     },
+    kpiColor: 'text-red-600 dark:text-red-400',
   },
   archived: {
     labelKey: 'surveys.dashboard.status.archived',
@@ -59,6 +67,7 @@ export const SURVEY_STATUS_CONFIG: Record<SurveyStatus, StatusConfig> = {
       className: 'bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/25',
       showPulseDot: false,
     },
+    kpiColor: 'text-foreground',
   },
 };
 
@@ -130,8 +139,10 @@ export function deriveSurveyFlags(status: SurveyStatus): SurveyStatusFlags {
 export interface ActionUIConfig {
   icon: LucideIcon;
   toastKey: string;
-  /** Button color in the detail panel: 'destructive' (red), 'warning' (amber), 'accent' (violet), or undefined (neutral). */
-  buttonColor?: 'destructive' | 'warning' | 'accent';
+  /** Pre-mapped Tailwind classes for the action button in the detail panel. */
+  buttonClassName?: string;
+  /** Variant for `DropdownMenuItem` in action menus. */
+  menuItemVariant?: 'destructive' | 'warning' | 'accent';
   confirm?: {
     titleKey: string;
     descriptionKey: string;
@@ -144,7 +155,9 @@ export const SURVEY_ACTION_UI: Record<SurveyAction, ActionUIConfig> = {
   complete: {
     icon: CheckCircle2,
     toastKey: 'toast.completed',
-    buttonColor: 'accent',
+    buttonClassName:
+      'border-violet-500/30 text-violet-600 hover:border-violet-500/40 hover:text-violet-600 md:hover:text-violet-600 dark:text-violet-400 dark:hover:text-violet-400 dark:md:hover:text-violet-400',
+    menuItemVariant: 'accent',
     confirm: {
       titleKey: 'confirm.completeTitle',
       descriptionKey: 'confirm.completeDescription',
@@ -154,7 +167,9 @@ export const SURVEY_ACTION_UI: Record<SurveyAction, ActionUIConfig> = {
   cancel: {
     icon: Ban,
     toastKey: 'toast.cancelled',
-    buttonColor: 'destructive',
+    buttonClassName:
+      'text-destructive hover:text-destructive md:hover:text-destructive border-destructive/30 hover:border-destructive/40',
+    menuItemVariant: 'destructive',
     confirm: {
       titleKey: 'confirm.cancelTitle',
       descriptionKey: 'confirm.cancelDescription',
@@ -164,7 +179,9 @@ export const SURVEY_ACTION_UI: Record<SurveyAction, ActionUIConfig> = {
   archive: {
     icon: Archive,
     toastKey: 'toast.archived',
-    buttonColor: 'warning',
+    buttonClassName:
+      'border-amber-500/30 text-amber-600 hover:border-amber-500/40 hover:text-amber-600 md:hover:text-amber-600 dark:text-amber-500 dark:hover:text-amber-500 dark:md:hover:text-amber-500',
+    menuItemVariant: 'warning',
     confirm: {
       titleKey: 'confirm.archiveTitle',
       descriptionKey: 'confirm.archiveDescription',
@@ -183,7 +200,9 @@ export const SURVEY_ACTION_UI: Record<SurveyAction, ActionUIConfig> = {
   delete: {
     icon: Trash2,
     toastKey: 'toast.deleted',
-    buttonColor: 'destructive',
+    buttonClassName:
+      'text-destructive hover:text-destructive md:hover:text-destructive border-destructive/30 hover:border-destructive/40',
+    menuItemVariant: 'destructive',
     confirm: {
       titleKey: 'confirm.deleteTitle',
       descriptionKey: 'confirm.deleteDescription',
@@ -191,3 +210,10 @@ export const SURVEY_ACTION_UI: Record<SurveyAction, ActionUIConfig> = {
     },
   },
 };
+
+/** Returns the target status for a given action, or `null` for deletion. */
+export function getActionTargetStatus(action: SurveyAction): SurveyStatus | null {
+  const transition = SURVEY_TRANSITIONS[action];
+
+  return 'toStatus' in transition ? (transition.toStatus as SurveyStatus) : null;
+}

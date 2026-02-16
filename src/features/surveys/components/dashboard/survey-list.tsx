@@ -1,19 +1,19 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { ClipboardList, MousePointerClick, RefreshCw } from 'lucide-react';
-import { useNow, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
+import { KPI_COLOR_ALL, SURVEY_STATUS_CONFIG } from '@/features/surveys/config/survey-status';
 import { useRealtimeSurveyList } from '@/features/surveys/hooks/use-realtime-survey-list';
+import { useSurveyListState } from '@/features/surveys/hooks/use-survey-list-state';
 import { useSurveySelection } from '@/features/surveys/hooks/use-survey-selection';
-import { getDefaultSortDir, getSurveyComparator } from '@/features/surveys/lib/sort-helpers';
-import type { SurveyStatus } from '@/features/surveys/types';
-import { useBreakpoint } from '@/hooks/common/use-breakpoint';
+import { applyOptimisticStatusChange } from '@/features/surveys/lib/status-change-handler';
 import { useRefresh } from '@/hooks/common/use-refresh';
 import { cn } from '@/lib/common/utils';
 
@@ -23,25 +23,37 @@ import { SurveyListRow } from './survey-list-row';
 import {
   SurveyListToolbar,
   type SurveySortBy,
-  type SurveySortDir,
   type SurveyStatusFilter,
 } from './survey-list-toolbar';
 
-/** Text color classes for each status in the KPI summary. */
-const STATUS_KPI_COLOR: Record<string, string> = {
-  all: 'text-foreground',
-  active: 'text-emerald-600 dark:text-emerald-400',
-  draft: 'text-foreground',
-  completed: 'text-violet-600 dark:text-violet-400',
-  cancelled: 'text-red-600 dark:text-red-400',
-};
+const PRE_FILTER = (s: UserSurvey) => s.status !== 'archived';
 
-const STATUS_TRANSITIONS: Record<string, SurveyStatus | null> = {
-  complete: 'completed',
-  cancel: 'cancelled',
-  archive: 'archived',
-  delete: null,
-} as const;
+const CUSTOM_COMPARATOR = (sortBy: SurveySortBy, sortDir: 'asc' | 'desc') => {
+  const mul = sortDir === 'asc' ? 1 : -1;
+
+  switch (sortBy) {
+    case 'responses':
+      return (a: UserSurvey, b: UserSurvey) => mul * (a.responseCount - b.responseCount);
+    case 'lastResponse':
+      return (a: UserSurvey, b: UserSurvey) => {
+        const ta = a.lastResponseAt ? new Date(a.lastResponseAt).getTime() : 0;
+        const tb = b.lastResponseAt ? new Date(b.lastResponseAt).getTime() : 0;
+
+        return mul * (ta - tb) || a.title.localeCompare(b.title);
+      };
+
+    case 'activity':
+      return (a: UserSurvey, b: UserSurvey) => {
+        const sumA = a.recentActivity.reduce((s, n) => s + n, 0);
+        const sumB = b.recentActivity.reduce((s, n) => s + n, 0);
+
+        return mul * (sumA - sumB) || a.title.localeCompare(b.title);
+      };
+
+    default:
+      return undefined;
+  }
+};
 
 interface SurveyListProps {
   initialSurveys: UserSurvey[];
@@ -49,24 +61,38 @@ interface SurveyListProps {
 
 export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
   const t = useTranslations();
-  const now = useNow({ updateInterval: 60_000 });
-  const isMd = useBreakpoint('md');
   const { isRefreshing, refresh } = useRefresh();
   const [surveys, setSurveys] = useState(initialSurveys);
+  const [statusFilter, setStatusFilter] = useState<SurveyStatusFilter>('all');
 
-  // Sync local state when the server re-renders with fresh data (e.g. from
-  // router.refresh() triggered by the realtime subscription).
   useEffect(() => {
     setSurveys(initialSurveys);
   }, [initialSurveys]);
 
-  // Subscribe to Realtime so response counts, activity, and status changes
-  // (including auto-complete) are reflected without a manual page reload.
   const { isConnected: isRealtimeConnected } = useRealtimeSurveyList();
-  const [statusFilter, setStatusFilter] = useState<SurveyStatusFilter>('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState<SurveySortBy>('updated');
-  const [sortDir, setSortDir] = useState<SurveySortDir>('desc');
+
+  const preFilter = useCallback(
+    (s: UserSurvey) => PRE_FILTER(s) && (statusFilter === 'all' || s.status === statusFilter),
+    [statusFilter]
+  );
+
+  const {
+    now,
+    isMd,
+    searchQuery,
+    setSearchQuery,
+    sortBy,
+    sortDir,
+    setSortDir,
+    handleSortByChange,
+    handleSortByColumn,
+    filteredSurveys,
+  } = useSurveyListState<SurveySortBy>({
+    surveys,
+    defaultSortBy: 'updated',
+    preFilter,
+    customComparator: CUSTOM_COMPARATOR,
+  });
 
   const { selectedId, selectedSurvey, questions, showSheet, setSelected } =
     useSurveySelection(surveys);
@@ -102,100 +128,30 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
     return order.filter((s) => statusCounts[s] > 0);
   }, [statusCounts]);
 
-  const filteredSurveys = useMemo(() => {
-    let result =
-      statusFilter === 'all'
-        ? surveys.filter((s) => s.status !== 'archived')
-        : surveys.filter((s) => s.status === statusFilter);
-
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      result = result.filter(
-        (s) => s.title.toLowerCase().includes(q) || s.description.toLowerCase().includes(q)
-      );
-    }
-
-    const common = getSurveyComparator(sortBy, sortDir);
-
-    if (common) {
-      result = [...result].sort(common);
-    } else {
-      const mul = sortDir === 'asc' ? 1 : -1;
-
-      result = [...result].sort((a, b) => {
-        switch (sortBy) {
-          case 'responses':
-            return mul * (a.responseCount - b.responseCount);
-          case 'lastResponse': {
-            const ta = a.lastResponseAt ? new Date(a.lastResponseAt).getTime() : 0;
-            const tb = b.lastResponseAt ? new Date(b.lastResponseAt).getTime() : 0;
-
-            return mul * (ta - tb) || a.title.localeCompare(b.title);
-          }
-
-          case 'activity': {
-            const sumA = a.recentActivity.reduce((s, n) => s + n, 0);
-            const sumB = b.recentActivity.reduce((s, n) => s + n, 0);
-
-            return mul * (sumA - sumB) || a.title.localeCompare(b.title);
-          }
-
-          default:
-            return 0;
-        }
-      });
-    }
-
-    return result;
-  }, [surveys, statusFilter, searchQuery, sortBy, sortDir]);
-
   const isFiltered = statusFilter !== 'all';
 
-  const handleSortByChange = (key: SurveySortBy) => {
-    setSortBy(key);
-    setSortDir(getDefaultSortDir(key));
-  };
-
-  const handleSortByColumn = (key: SurveySortBy) => {
-    if (sortBy === key) {
-      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
-    } else {
-      handleSortByChange(key);
-    }
-  };
-
   const handleStatusChange = (surveyId: string, action: string) => {
-    const newStatus = STATUS_TRANSITIONS[action] as SurveyStatus | null | undefined;
+    const { shouldDeselect, updatedSurveys } = applyOptimisticStatusChange(
+      surveys,
+      surveyId,
+      action,
+      ['archived']
+    );
 
-    if (newStatus === undefined) {
-      return;
-    }
-
-    // Close sidebar when the survey is removed from the current view (delete or archive)
-    if ((newStatus === null || newStatus === 'archived') && selectedId === surveyId) {
+    if (shouldDeselect && selectedId === surveyId) {
       setSelected(null);
     }
 
-    setSurveys((prev) => {
-      if (newStatus === null) {
-        return prev.filter((s) => s.id !== surveyId);
-      }
-
-      return prev.map((s) =>
-        s.id === surveyId ? { ...s, status: newStatus, updatedAt: new Date().toISOString() } : s
-      );
-    });
+    setSurveys(updatedSurveys);
   };
 
   return (
     <div className="space-y-4">
-      {/* KPI summary */}
       {kpiStatuses.length > 0 && (
         <div className="flex min-w-0 flex-wrap items-center justify-between gap-x-4 gap-y-1">
           <div className="text-muted-foreground flex min-w-0 flex-wrap items-center gap-x-3 text-xs">
-            {/* All total */}
             <span>
-              <span className={cn('text-base font-semibold tabular-nums', STATUS_KPI_COLOR.all)}>
+              <span className={cn('text-base font-semibold tabular-nums', KPI_COLOR_ALL)}>
                 {statusCounts.all}
               </span>
               <span className="ml-1">{t('surveys.dashboard.summary.totalLabel')}</span>
@@ -205,7 +161,6 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
               /
             </span>
 
-            {/* Per-status breakdown */}
             {kpiStatuses.map((status, i) => (
               <span key={status} className="flex shrink-0 items-center gap-x-3">
                 {i > 0 && (
@@ -215,7 +170,10 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
                 )}
                 <span>
                   <span
-                    className={cn('text-base font-semibold tabular-nums', STATUS_KPI_COLOR[status])}
+                    className={cn(
+                      'text-base font-semibold tabular-nums',
+                      SURVEY_STATUS_CONFIG[status].kpiColor
+                    )}
                   >
                     {statusCounts[status]}
                   </span>
@@ -254,7 +212,6 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
         </div>
       )}
 
-      {/* Toolbar */}
       <SurveyListToolbar
         statusFilter={statusFilter}
         onStatusFilterChange={setStatusFilter}
@@ -267,7 +224,6 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
         statusCounts={statusCounts}
       />
 
-      {/* List content */}
       {filteredSurveys.length === 0 ? (
         <EmptyState
           icon={ClipboardList}
@@ -385,7 +341,6 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
         </div>
       )}
 
-      {/* Detail sheet */}
       <SurveyDetailSheet
         open={showSheet}
         onClose={() => setSelected(null)}

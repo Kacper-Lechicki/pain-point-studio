@@ -7,11 +7,15 @@ import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { DropdownMenu, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
+import {
+  NOW_UPDATE_INTERVAL_MS,
+  RESPONDENT_LIMIT_WARNING_THRESHOLD,
+} from '@/features/surveys/config';
 import { deriveSurveyFlags, getAvailableActions } from '@/features/surveys/config/survey-status';
 import { useSurveyAction } from '@/features/surveys/hooks/use-survey-action';
 import { useSurveyCardActions } from '@/features/surveys/hooks/use-survey-card-actions';
 import { calculateSubmissionRate } from '@/features/surveys/lib/calculations';
-import { computeHint } from '@/features/surveys/lib/survey-hints';
+import { HINT_SEVERITY_STYLES, computeHint } from '@/features/surveys/lib/survey-hints';
 import { getSurveyEditUrl, getSurveyStatsUrl } from '@/features/surveys/lib/survey-urls';
 import Link from '@/i18n/link';
 import { cn } from '@/lib/common/utils';
@@ -32,7 +36,7 @@ interface SurveyCardProps {
 export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCardProps) => {
   const t = useTranslations();
   const format = useFormatter();
-  const now = useNow({ updateInterval: 60_000 });
+  const now = useNow({ updateInterval: NOW_UPDATE_INTERVAL_MS });
 
   const { handleActionClick, confirmDialogProps } = useSurveyAction(survey.id, onStatusChange, t);
   const { shareUrl, shareDialogOpen, setShareDialogOpen, handleShare } = useSurveyCardActions(
@@ -189,22 +193,18 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
           </div>
 
           {/* Row 4: Contextual hint */}
-          {hint && (
-            <div
-              className={cn(
-                'mt-2 flex items-center gap-1.5 text-xs',
-                hint.severity === 'warning' && 'text-amber-600 dark:text-amber-400',
-                hint.severity === 'success' && 'text-emerald-600 dark:text-emerald-400',
-                hint.severity === 'info' && 'text-muted-foreground'
-              )}
-            >
-              {hint.severity === 'warning' && <AlertTriangle className="size-3 shrink-0" />}
-              {hint.severity === 'success' && (
-                <span className="inline-flex size-1.5 shrink-0 rounded-full bg-emerald-500" />
-              )}
-              <span>{hint.text}</span>
-            </div>
-          )}
+          {hint &&
+            (() => {
+              const style = HINT_SEVERITY_STYLES[hint.severity];
+
+              return (
+                <div className={cn('mt-2 flex items-center gap-1.5 text-xs', style.className)}>
+                  {hint.severity === 'warning' && <AlertTriangle className="size-3 shrink-0" />}
+                  {style.dot && <span className={style.dot} />}
+                  <span>{hint.text}</span>
+                </div>
+              );
+            })()}
 
           {/* Row 5: Progress bar (active surveys with respondent limit) */}
           {isActive && survey.maxRespondents && survey.maxRespondents > 0 && (
@@ -213,7 +213,8 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
                 <div
                   className={cn(
                     'h-full rounded-full transition-all duration-500',
-                    survey.responseCount / survey.maxRespondents >= 0.8
+                    survey.responseCount / survey.maxRespondents >=
+                      RESPONDENT_LIMIT_WARNING_THRESHOLD
                       ? 'bg-amber-500'
                       : 'bg-emerald-500'
                   )}

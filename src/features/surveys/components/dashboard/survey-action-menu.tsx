@@ -101,7 +101,7 @@ export function SurveyActionMenuContent({
             return (
               <DropdownMenuItem
                 key={action}
-                variant={ui.buttonColor ?? 'default'}
+                variant={ui.menuItemVariant ?? 'default'}
                 onClick={() => handleActionClick(action)}
               >
                 <Icon className="size-4" aria-hidden />

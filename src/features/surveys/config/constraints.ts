@@ -38,6 +38,31 @@ export const RATING_LABEL_MAX_LENGTH = 100;
 /** Tolerance when validating that the start date is not in the past (ms). */
 export const START_DATE_TOLERANCE_MS = 60_000;
 
+// ── UI timing ──────────────────────────────────────────────────────
+
+/** Interval (ms) for `useNow()` calls that update relative timestamps. */
+export const NOW_UPDATE_INTERVAL_MS = 60_000;
+
+/** Debounce (ms) for realtime subscription refreshes on the survey list. */
+export const REALTIME_DEBOUNCE_MS = 1_500;
+
+// ── Threshold constants ────────────────────────────────────────────
+
+/** % of respondent cap at which a warning is shown (0–1). */
+export const RESPONDENT_LIMIT_WARNING_THRESHOLD = 0.8;
+
+/** Days before end-date at which a "ending soon" hint is shown. */
+export const SURVEY_ENDING_SOON_DAYS = 3;
+
+// ── Text search / keyword extraction ──────────────────────────────
+
+export const TEXT_SEARCH_MAX_KEYWORDS = 10;
+export const TEXT_SEARCH_MIN_WORD_LENGTH = 3;
+export const TEXT_SEARCH_INITIAL_VISIBLE = 5;
+export const TEXT_SEARCH_MAX_VISIBLE = 10;
+
+// ── Misc helpers ──────────────────────────────────────────────────
+
 /** Build the localStorage key for tracking completed survey responses. */
 export const surveyCompletedKey = (slug: string) => `pps_completed_${slug}`;
 
