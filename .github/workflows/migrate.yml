@@ -38,6 +38,15 @@ jobs:
         env:
           SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
 
+      # Ensure migration files are idempotent (safe to re-apply after squash)
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Make Migrations Idempotent
+        run: node scripts/make-migration-idempotent.mjs
+
       # Mark remote-only (drifted) migrations as reverted so db push can proceed
       - name: Repair Drifted Migrations
         run: |
