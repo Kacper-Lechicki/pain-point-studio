@@ -2,28 +2,19 @@
 
 import { useMemo, useState } from 'react';
 
-import { Archive, ArrowDown, ArrowUp, MousePointerClick, Search, X } from 'lucide-react';
+import { Archive, MousePointerClick } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { EmptyState } from '@/components/ui/empty-state';
-import { Input } from '@/components/ui/input';
+import { SearchInput } from '@/components/ui/search-input';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import { useSurveyListState } from '@/features/surveys/hooks/use-survey-list-state';
 import { useSurveySelection } from '@/features/surveys/hooks/use-survey-selection';
 import { applyOptimisticStatusChange } from '@/features/surveys/lib/status-change-handler';
-import { cn } from '@/lib/common/utils';
 
+import { SortDropdown } from '../shared/sort-dropdown';
 import { SortableTableHeader } from './sortable-table-header';
 import { SurveyDetailSheet } from './survey-detail-sheet';
 import { SurveyListRow } from './survey-list-row';
@@ -44,7 +35,9 @@ const SORT_OPTIONS: ArchiveSortBy[] = [
 ];
 
 const CUSTOM_COMPARATOR = (sortBy: ArchiveSortBy, sortDir: 'asc' | 'desc') => {
-  if (sortBy !== 'archivedAt' && sortBy !== 'autoDeletes') {return undefined;}
+  if (sortBy !== 'archivedAt' && sortBy !== 'autoDeletes') {
+    return undefined;
+  }
 
   const mul = sortDir === 'asc' ? 1 : -1;
 
@@ -82,11 +75,11 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
 
   const hasSearch = searchQuery.trim().length > 0;
 
-  const sortedSortOptions = useMemo(
+  const sortOptions = useMemo(
     () =>
-      [...SORT_OPTIONS].sort((a, b) =>
-        t(`surveys.archive.sort.${a}`).localeCompare(t(`surveys.archive.sort.${b}`))
-      ),
+      [...SORT_OPTIONS]
+        .map((v) => ({ value: v, label: t(`surveys.archive.sort.${v}`) }))
+        .sort((a, b) => a.label.localeCompare(b.label)),
     [t]
   );
 
@@ -134,66 +127,26 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
       )}
 
       <div className="flex flex-wrap items-center gap-2">
-        <div className="relative min-w-0 basis-full sm:max-w-sm sm:flex-1 sm:basis-auto">
-          <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
-          <Input
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={t('surveys.dashboard.search.placeholder')}
-            className={cn('pl-9', hasSearch && 'pr-9')}
-          />
-          {hasSearch && (
-            <button
-              type="button"
-              onClick={() => setSearchQuery('')}
-              className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2 transition-colors"
-              aria-label="Clear search"
-            >
-              <X className="size-4" />
-            </button>
-          )}
-        </div>
+        <SearchInput
+          value={searchQuery}
+          onChange={setSearchQuery}
+          placeholder={t('surveys.dashboard.search.placeholder')}
+          className="basis-full sm:max-w-sm sm:flex-1 sm:basis-auto"
+        />
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto shrink-0 gap-1.5">
-              {sortDir === 'asc' ? (
-                <ArrowUp className="size-4" aria-hidden />
-              ) : (
-                <ArrowDown className="size-4" aria-hidden />
-              )}
-              <span className="hidden sm:inline">{t(`surveys.archive.sort.${sortBy}`)}</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="min-w-40">
-            <DropdownMenuRadioGroup
-              value={sortBy}
-              onValueChange={(v) => handleSortByChange(v as ArchiveSortBy)}
-            >
-              {sortedSortOptions.map((option) => (
-                <DropdownMenuRadioItem key={option} value={option}>
-                  {t(`surveys.archive.sort.${option}`)}
-                </DropdownMenuRadioItem>
-              ))}
-            </DropdownMenuRadioGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onSelect={(e) => {
-                e.preventDefault();
-                setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
-              }}
-            >
-              {sortDir === 'asc' ? (
-                <ArrowUp className="size-4" aria-hidden />
-              ) : (
-                <ArrowDown className="size-4" aria-hidden />
-              )}
-              {sortDir === 'asc'
-                ? t('surveys.dashboard.sort.asc')
-                : t('surveys.dashboard.sort.desc')}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <SortDropdown
+          sortBy={sortBy}
+          onSortByChange={handleSortByChange}
+          options={sortOptions}
+          sortDir={sortDir}
+          onSortDirChange={setSortDir}
+          dirLabels={{
+            asc: t('surveys.dashboard.sort.asc'),
+            desc: t('surveys.dashboard.sort.desc'),
+          }}
+          sortLabel={t(`surveys.archive.sort.${sortBy}`)}
+          className="ml-auto"
+        />
       </div>
 
       {filteredSurveys.length === 0 ? (

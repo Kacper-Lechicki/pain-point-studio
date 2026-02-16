@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from 'react';
 
-import { ArrowDown, ArrowUp, Filter, Search, X } from 'lucide-react';
+import { Filter, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
@@ -15,12 +15,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
+import { SearchInput } from '@/components/ui/search-input';
 import { TEXT_SEARCH_INITIAL_VISIBLE, TEXT_SEARCH_MAX_VISIBLE } from '@/features/surveys/config';
 import { useKeywordExtraction } from '@/features/surveys/hooks/use-keyword-extraction';
 import { buildHighlightRegex, highlightText } from '@/lib/common/text-highlight';
 import { cn } from '@/lib/common/utils';
 
+import { SortDropdown } from '../../shared/sort-dropdown';
 import { SingleResponseDialog } from './single-response-dialog';
 import { TextResponseList } from './text-response-list';
 
@@ -108,6 +109,15 @@ export function InlineTextSearch({ responses, questionText }: InlineTextSearchPr
   const isFiltering = searchQuery.trim().length > 0 || activeKeyword != null;
   const isExpanded = visibleCount > TEXT_SEARCH_INITIAL_VISIBLE;
 
+  const sortOptions = useMemo(
+    () =>
+      SORT_MODES.map((v) => ({
+        value: v,
+        label: t(`surveys.stats.sort.${v}` as Parameters<typeof t>[0]),
+      })),
+    [t]
+  );
+
   const clearFilters = useCallback(() => {
     setSearchQuery('');
     setActiveKeyword(null);
@@ -118,31 +128,16 @@ export function InlineTextSearch({ responses, questionText }: InlineTextSearchPr
     <>
       <div className="space-y-2">
         <div className="flex flex-wrap items-center gap-1.5">
-          <div className="relative min-w-0 basis-full sm:max-w-64 sm:flex-1 sm:basis-auto">
-            <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2" />
-            <Input
-              size="sm"
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setVisibleCount(TEXT_SEARCH_INITIAL_VISIBLE);
-              }}
-              placeholder={t('surveys.stats.dialog.searchPlaceholder' as Parameters<typeof t>[0])}
-              className="pr-7 pl-8 text-xs"
-            />
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => {
-                  setSearchQuery('');
-                  setVisibleCount(TEXT_SEARCH_INITIAL_VISIBLE);
-                }}
-                className="text-muted-foreground hover:text-foreground absolute top-1/2 right-2 -translate-y-1/2"
-              >
-                <X className="size-3.5" />
-              </button>
-            )}
-          </div>
+          <SearchInput
+            size="sm"
+            value={searchQuery}
+            onChange={(v) => {
+              setSearchQuery(v);
+              setVisibleCount(TEXT_SEARCH_INITIAL_VISIBLE);
+            }}
+            placeholder={t('surveys.stats.dialog.searchPlaceholder' as Parameters<typeof t>[0])}
+            className="basis-full sm:max-w-64 sm:flex-1 sm:basis-auto"
+          />
 
           {keywords.length > 0 && (
             <DropdownMenu>
@@ -193,36 +188,15 @@ export function InlineTextSearch({ responses, questionText }: InlineTextSearchPr
             </DropdownMenu>
           )}
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className={cn('min-w-24 shrink-0 gap-1.5 text-xs', !keywords.length && 'ml-auto')}
-              >
-                {sortMode === 'shortest' ? (
-                  <ArrowUp className="size-3.5" aria-hidden />
-                ) : (
-                  <ArrowDown className="size-3.5" aria-hidden />
-                )}
-                <span className="hidden sm:inline">
-                  {t(`surveys.stats.sort.${sortMode}` as Parameters<typeof t>[0])}
-                </span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="min-w-32">
-              <DropdownMenuRadioGroup
-                value={sortMode}
-                onValueChange={(v) => setSortMode(v as SortMode)}
-              >
-                {SORT_MODES.map((mode) => (
-                  <DropdownMenuRadioItem key={mode} value={mode}>
-                    {t(`surveys.stats.sort.${mode}` as Parameters<typeof t>[0])}
-                  </DropdownMenuRadioItem>
-                ))}
-              </DropdownMenuRadioGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <SortDropdown
+            size="sm"
+            sortBy={sortMode}
+            onSortByChange={setSortMode}
+            options={sortOptions}
+            sortDir={sortMode === 'shortest' ? 'asc' : 'desc'}
+            sortLabel={t(`surveys.stats.sort.${sortMode}` as Parameters<typeof t>[0])}
+            className={cn('min-w-24', !keywords.length && 'ml-auto')}
+          />
         </div>
 
         {isFiltering && (

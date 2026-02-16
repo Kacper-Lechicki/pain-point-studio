@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowDown, ArrowUp, Filter, Search, X } from 'lucide-react';
+import { Filter } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Badge } from '@/components/ui/badge';
@@ -8,14 +8,14 @@ import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
+import { SearchInput } from '@/components/ui/search-input';
 import { cn } from '@/lib/common/utils';
+
+import { SortDropdown } from '../shared/sort-dropdown';
 
 export type SurveyStatusFilter = 'all' | 'active' | 'draft' | 'completed' | 'cancelled';
 export type SurveySortBy =
@@ -69,39 +69,25 @@ export const SurveyListToolbar = ({
   const t = useTranslations();
 
   const isFiltered = statusFilter !== 'all';
-  const hasSearch = searchQuery.trim().length > 0;
   const sortedStatusFilters = [
     'all' as SurveyStatusFilter,
     ...STATUS_FILTERS.filter((s) => s !== 'all').sort((a, b) =>
       t(`surveys.dashboard.filters.${a}`).localeCompare(t(`surveys.dashboard.filters.${b}`))
     ),
   ];
-  const sortedSortOptions = [...SORT_OPTIONS].sort((a, b) =>
-    t(`surveys.dashboard.sort.${a}`).localeCompare(t(`surveys.dashboard.sort.${b}`))
-  );
+  const sortOptions = [...SORT_OPTIONS]
+    .map((v) => ({ value: v, label: t(`surveys.dashboard.sort.${v}`) }))
+    .sort((a, b) => a.label.localeCompare(b.label));
 
   return (
     <div className="flex flex-wrap items-center gap-2">
       {/* Search */}
-      <div className="relative min-w-0 basis-full sm:max-w-sm sm:flex-1 sm:basis-auto">
-        <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
-        <Input
-          value={searchQuery}
-          onChange={(e) => onSearchQueryChange(e.target.value)}
-          placeholder={t('surveys.dashboard.search.placeholder')}
-          className={cn('pl-9', hasSearch && 'pr-9')}
-        />
-        {hasSearch && (
-          <button
-            type="button"
-            onClick={() => onSearchQueryChange('')}
-            className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2 transition-colors"
-            aria-label="Clear search"
-          >
-            <X className="size-4" />
-          </button>
-        )}
-      </div>
+      <SearchInput
+        value={searchQuery}
+        onChange={onSearchQueryChange}
+        placeholder={t('surveys.dashboard.search.placeholder')}
+        className="basis-full sm:max-w-sm sm:flex-1 sm:basis-auto"
+      />
 
       {/* Status filter */}
       <DropdownMenu>
@@ -140,45 +126,18 @@ export const SurveyListToolbar = ({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Sort */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="shrink-0 gap-1.5">
-            {sortDir === 'asc' ? (
-              <ArrowUp className="size-4" aria-hidden />
-            ) : (
-              <ArrowDown className="size-4" aria-hidden />
-            )}
-            <span className="hidden sm:inline">{t(`surveys.dashboard.sort.${sortBy}`)}</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="min-w-40">
-          <DropdownMenuRadioGroup
-            value={sortBy}
-            onValueChange={(v) => onSortByChange(v as SurveySortBy)}
-          >
-            {sortedSortOptions.map((option) => (
-              <DropdownMenuRadioItem key={option} value={option}>
-                {t(`surveys.dashboard.sort.${option}`)}
-              </DropdownMenuRadioItem>
-            ))}
-          </DropdownMenuRadioGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            onSelect={(e) => {
-              e.preventDefault();
-              onSortDirChange(sortDir === 'asc' ? 'desc' : 'asc');
-            }}
-          >
-            {sortDir === 'asc' ? (
-              <ArrowUp className="size-4" aria-hidden />
-            ) : (
-              <ArrowDown className="size-4" aria-hidden />
-            )}
-            {sortDir === 'asc' ? t('surveys.dashboard.sort.asc') : t('surveys.dashboard.sort.desc')}
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <SortDropdown
+        sortBy={sortBy}
+        onSortByChange={onSortByChange}
+        options={sortOptions}
+        sortDir={sortDir}
+        onSortDirChange={onSortDirChange}
+        dirLabels={{
+          asc: t('surveys.dashboard.sort.asc'),
+          desc: t('surveys.dashboard.sort.desc'),
+        }}
+        sortLabel={t(`surveys.dashboard.sort.${sortBy}`)}
+      />
     </div>
   );
 };

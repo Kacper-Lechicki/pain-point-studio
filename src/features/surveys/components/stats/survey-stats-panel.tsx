@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useTransition } from 'react';
 
-import { Ban, CheckCircle2, Inbox, Link2, MoreHorizontal, RefreshCw, Share2 } from 'lucide-react';
+import { Ban, CheckCircle2, Inbox, Link2, MoreHorizontal, Share2 } from 'lucide-react';
 import { useFormatter, useNow, useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
@@ -36,8 +36,8 @@ import {
 } from '@/features/surveys/lib/calculations';
 import type { SurveyStatus } from '@/features/surveys/types';
 import { useRefresh } from '@/hooks/common/use-refresh';
-import { cn } from '@/lib/common/utils';
 
+import { RefreshRealtimeButton } from '../shared/refresh-realtime-button';
 import { DeviceBreakdownChart } from './device-breakdown-chart';
 import { ExportMenuItems } from './export-buttons';
 import { QuestionStatsCard } from './question-stats-card';
@@ -126,25 +126,12 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
           </div>
 
           <div className="flex shrink-0 items-center gap-1">
-            <div className="relative">
-              <Button
-                variant="ghost"
-                size="icon-xs"
-                onClick={refresh}
-                disabled={isRefreshing}
-                aria-label={t('surveys.stats.refresh')}
-                title={t('surveys.stats.refresh')}
-              >
-                <RefreshCw className={cn('size-3', isRefreshing && 'animate-spin')} aria-hidden />
-              </Button>
-              <span
-                className={cn(
-                  'absolute -top-px -right-px size-1.5 rounded-full',
-                  isRealtimeConnected ? 'bg-emerald-500' : 'bg-amber-500'
-                )}
-                aria-hidden
-              />
-            </div>
+            <RefreshRealtimeButton
+              isRefreshing={isRefreshing}
+              isRealtimeConnected={isRealtimeConnected}
+              onRefresh={refresh}
+              ariaLabel={t('surveys.stats.refresh')}
+            />
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

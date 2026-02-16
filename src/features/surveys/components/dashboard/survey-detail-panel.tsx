@@ -72,6 +72,7 @@ export function SurveyDetailPanel({
 
   const flags = deriveSurveyFlags(survey.status);
   const { isDraft, isActive, isCompleted, isCancelled, isArchived } = flags;
+  const showActiveDetails = !isDraft && !isArchived;
   const hasShareableLink = (isActive || isCompleted || isCancelled) && !!shareUrl;
   const sparklineColor = getSparklineColor(survey.recentActivity);
   const lastResponseLabel =
@@ -129,7 +130,7 @@ export function SurveyDetailPanel({
         </>
       )}
 
-      {!isDraft && !isArchived && (
+      {showActiveDetails && (
         <>
           <Separator className="my-4" />
           <DetailPanelMetrics
@@ -166,21 +167,21 @@ export function SurveyDetailPanel({
             ) : null;
           })()}
 
-        {!isDraft && !isArchived && survey.startsAt && (
+        {showActiveDetails && survey.startsAt && (
           <MetricRow
             icon={CalendarClock}
             label={t('surveys.dashboard.detailPanel.startsAt')}
             value={formatDate(survey.startsAt)}
           />
         )}
-        {!isDraft && !isArchived && survey.endsAt && (
+        {showActiveDetails && survey.endsAt && (
           <MetricRow
             icon={CalendarX2}
             label={t('surveys.dashboard.detailPanel.endsAt')}
             value={formatDate(survey.endsAt)}
           />
         )}
-        {!isDraft && !isArchived && survey.maxRespondents != null && (
+        {showActiveDetails && survey.maxRespondents != null && (
           <MetricRow
             icon={Users}
             label={t('surveys.dashboard.detailPanel.respondentCap')}
