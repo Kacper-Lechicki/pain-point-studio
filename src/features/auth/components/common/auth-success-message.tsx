@@ -16,7 +16,7 @@ const AuthSuccessMessage = ({ messageKey }: AuthSuccessMessageProps) => {
     <div className="flex flex-col space-y-2 text-center">
       <h1 className="text-2xl font-semibold tracking-tight">{t('auth.checkEmail')}</h1>
 
-      <p className="text-muted-foreground text-sm">{t(messageKey)}</p>
+      <p className="text-muted-foreground text-xs">{t(messageKey)}</p>
 
       <div className="pt-2">
         <Link href={ROUTES.auth.signIn}>

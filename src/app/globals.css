@@ -6,6 +6,7 @@
 @theme {
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
+  --breakpoint-dashboard: 1400px;
 }
 
 :root {
@@ -35,8 +36,9 @@
   --chart-5: rgb(30, 58, 138);
   --sidebar: rgb(233, 235, 240);
   --sidebar-foreground: rgb(45, 47, 53);
-  --sidebar-primary: rgb(59, 130, 246);
-  --sidebar-primary-foreground: rgb(255, 255, 255);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-active: color-mix(in srgb, var(--sidebar-primary) 50%, transparent);
+  --sidebar-primary-foreground: var(--primary-foreground);
   --sidebar-accent: rgb(224, 242, 254);
   --sidebar-accent-foreground: rgb(30, 58, 138);
   --sidebar-border: rgb(211, 214, 222);
@@ -44,8 +46,9 @@
   --font-sans: Inter, sans-serif;
   --font-serif: Source Serif 4, serif;
   --font-mono: JetBrains Mono, monospace;
-  --sidebar-width-collapsed: 53px;
-  --sidebar-width-expanded: 240px;
+  --sidebar-width-collapsed: 40px;
+  --sidebar-width-expanded: 208px;
+  --sidebar-sub-panel-width: 208px;
   --radius: 0.375rem;
   --shadow-x: 0;
   --shadow-y: 1px;
@@ -67,6 +70,7 @@
   --disabled-foreground: rgb(145, 150, 162);
   --success: rgb(34, 197, 94);
   --warning: rgb(245, 158, 11);
+  --warning-foreground: rgb(0, 0, 0);
   --error: rgb(239, 68, 68);
   --info: rgb(59, 130, 246);
   --chart-violet: rgb(139, 92, 246);
@@ -75,6 +79,9 @@
   --chart-rose: rgb(225, 29, 72);
   --chart-pink: rgb(236, 72, 153);
   --chart-purple: rgb(168, 85, 247);
+  --chart-rating: rgb(245, 158, 11);
+  --chart-choice: rgb(6, 182, 212);
+  --chart-text-accent: rgb(139, 92, 246);
   --section-alt: rgb(233, 235, 240);
   --grid-line: rgba(110, 115, 130, 0.07);
   --dot-default: rgb(195, 200, 210);
@@ -107,13 +114,14 @@
   --chart-3: rgb(37, 99, 235);
   --chart-4: rgb(29, 78, 216);
   --chart-5: rgb(30, 64, 175);
-  --sidebar: rgb(16, 18, 22);
+  --sidebar: rgb(20, 22, 27);
   --sidebar-foreground: rgb(220, 222, 228);
-  --sidebar-primary: rgb(59, 130, 246);
-  --sidebar-primary-foreground: rgb(255, 255, 255);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-active: color-mix(in srgb, var(--sidebar-primary) 50%, transparent);
+  --sidebar-primary-foreground: var(--primary-foreground);
   --sidebar-accent: rgb(30, 58, 138);
   --sidebar-accent-foreground: rgb(191, 219, 254);
-  --sidebar-border: rgb(48, 52, 62);
+  --sidebar-border: rgb(52, 56, 66);
   --sidebar-ring: rgb(59, 130, 246);
   --font-sans: Inter, sans-serif;
   --font-serif: Source Serif 4, serif;
@@ -137,6 +145,7 @@
   --disabled-foreground: rgb(128, 132, 145);
   --success: rgb(34, 197, 94);
   --warning: rgb(245, 158, 11);
+  --warning-foreground: rgb(0, 0, 0);
   --error: rgb(239, 68, 68);
   --info: rgb(96, 165, 250);
   --chart-violet: rgb(139, 92, 246);
@@ -145,51 +154,14 @@
   --chart-rose: rgb(225, 29, 72);
   --chart-pink: rgb(236, 72, 153);
   --chart-purple: rgb(168, 85, 247);
+  --chart-rating: rgb(251, 191, 36);
+  --chart-choice: rgb(34, 211, 238);
+  --chart-text-accent: rgb(167, 139, 250);
   --section-alt: rgb(20, 22, 27);
   --grid-line: rgba(110, 115, 130, 0.07);
   --dot-default: rgb(48, 52, 62);
   --dot-hover: rgb(96, 165, 250);
   --section-glow: rgb(120, 119, 198);
-}
-
-/* === Accent: Teal === */
-[data-accent='teal'].dark {
-  --primary: rgb(45, 212, 191);
-  --primary-foreground: rgb(17, 54, 51);
-  --ring: rgb(45, 212, 191);
-  --accent: rgb(19, 78, 74);
-  --accent-foreground: rgb(153, 246, 228);
-  --sidebar-primary: rgb(45, 212, 191);
-  --sidebar-primary-foreground: rgb(17, 54, 51);
-  --sidebar-accent: rgb(19, 78, 74);
-  --sidebar-accent-foreground: rgb(153, 246, 228);
-  --sidebar-ring: rgb(45, 212, 191);
-  --dot-hover: rgb(45, 212, 191);
-  --chart-1: rgb(94, 234, 212);
-  --chart-2: rgb(45, 212, 191);
-  --chart-3: rgb(20, 184, 166);
-  --chart-4: rgb(13, 148, 136);
-  --chart-5: rgb(15, 118, 110);
-}
-
-/* === Accent: Indigo === */
-[data-accent='indigo'].dark {
-  --primary: rgb(129, 140, 248);
-  --primary-foreground: rgb(30, 27, 75);
-  --ring: rgb(129, 140, 248);
-  --accent: rgb(54, 47, 120);
-  --accent-foreground: rgb(199, 210, 254);
-  --sidebar-primary: rgb(129, 140, 248);
-  --sidebar-primary-foreground: rgb(30, 27, 75);
-  --sidebar-accent: rgb(54, 47, 120);
-  --sidebar-accent-foreground: rgb(199, 210, 254);
-  --sidebar-ring: rgb(129, 140, 248);
-  --dot-hover: rgb(129, 140, 248);
-  --chart-1: rgb(165, 180, 252);
-  --chart-2: rgb(129, 140, 248);
-  --chart-3: rgb(99, 102, 241);
-  --chart-4: rgb(79, 70, 229);
-  --chart-5: rgb(67, 56, 202);
 }
 
 @theme inline {
@@ -220,6 +192,7 @@
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-active: var(--sidebar-primary-active);
   --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
   --color-sidebar-accent: var(--sidebar-accent);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -229,6 +202,7 @@
   --color-disabled-foreground: var(--disabled-foreground);
   --color-success: var(--success);
   --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
   --color-error: var(--error);
   --color-info: var(--info);
   --color-chart-violet: var(--chart-violet);
@@ -274,6 +248,26 @@
 
   body {
     @apply bg-background text-foreground;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  body::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  body::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  body::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+  }
+
+  body::-webkit-scrollbar-thumb:hover {
+    background: var(--muted-foreground);
   }
 
   button {
@@ -348,5 +342,35 @@
 
   .reactEasyCrop_CropArea {
     border-color: var(--primary) !important;
+  }
+
+  .hide-scrollbar {
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: var(--muted-foreground);
   }
 }

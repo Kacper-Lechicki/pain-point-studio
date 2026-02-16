@@ -5,12 +5,13 @@ import { getLocale } from 'next-intl/server';
 import { ROUTES } from '@/config';
 import { updateEmailSchema } from '@/features/settings/types';
 import { env } from '@/lib/common/env';
+import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
 import { mapSupabaseError } from '@/lib/supabase/errors';
 
 export const updateEmail = withProtectedAction('update-email', {
   schema: updateEmailSchema,
-  rateLimit: { limit: 3, windowSeconds: 3600 },
+  rateLimit: RATE_LIMITS.sensitive,
   action: async ({ data, supabase }) => {
     const locale = await getLocale();
 

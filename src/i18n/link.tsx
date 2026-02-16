@@ -8,17 +8,21 @@ import { BaseLink, usePathname } from '@/i18n/navigation';
 type BaseLinkProps = ComponentProps<typeof BaseLink>;
 type Href = BaseLinkProps['href'];
 
-type LinkProps = Omit<BaseLinkProps, 'href'> & {
+interface LinkProps extends Omit<BaseLinkProps, 'href'> {
   href: Href | (string & {});
-};
+}
+
+function pathnameOnly(path: string): string {
+  return path.split('?')[0]!.split('#')[0]!;
+}
 
 function resolveHrefPathname(href: LinkProps['href']): string {
   if (typeof href === 'string') {
-    return href;
+    return pathnameOnly(href);
   }
 
   if (typeof href === 'object' && 'pathname' in href) {
-    return href.pathname as string;
+    return pathnameOnly(String(href.pathname));
   }
 
   return '';
@@ -33,7 +37,8 @@ function areSiblings(current: string, target: string): boolean {
 const Link = forwardRef<HTMLAnchorElement, LinkProps>(({ replace, ...props }, ref) => {
   const pathname = usePathname();
   const target = resolveHrefPathname(props.href);
-  const autoReplace = replace ?? areSiblings(pathname, target);
+  const current = pathnameOnly(pathname ?? '');
+  const autoReplace = replace ?? areSiblings(current, target);
 
   return <BaseLink ref={ref} replace={autoReplace} {...(props as BaseLinkProps)} />;
 });

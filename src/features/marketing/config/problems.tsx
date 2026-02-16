@@ -1,6 +1,6 @@
 import { Code2, HelpCircle, Users } from 'lucide-react';
 
-import { BaseFeature } from '@/features/marketing/types';
+import type { BaseFeature } from '@/features/marketing/types';
 
 export type Problem = BaseFeature;
 

@@ -40,6 +40,7 @@ describe('Auth Actions – Password', () => {
   });
 
   describe('resetPassword', () => {
+    // Valid email calls resetPasswordForEmail with redirect; returns success.
     it('should return success on valid email', async () => {
       mockResetPasswordForEmail.mockResolvedValue({ error: null });
 
@@ -53,6 +54,7 @@ describe('Auth Actions – Password', () => {
       });
     });
 
+    // When Supabase returns error, action returns error result.
     it('should return an error when Supabase fails', async () => {
       mockResetPasswordForEmail.mockResolvedValue({
         error: { message: 'User not found' },
@@ -65,6 +67,7 @@ describe('Auth Actions – Password', () => {
       expect(result).not.toHaveProperty('success');
     });
 
+    // Invalid email fails validation; Supabase is not called.
     it('should not call Supabase when email is invalid', async () => {
       const { resetPassword } = await import('./password');
       const result = await resetPassword({ email: 'bad-email' });
@@ -73,6 +76,7 @@ describe('Auth Actions – Password', () => {
       expect(mockResetPasswordForEmail).not.toHaveBeenCalled();
     });
 
+    // When rate limited, resetPassword returns error and does not call Supabase.
     it('should return rate limit error when rate limited', async () => {
       const { rateLimit } = await import('@/lib/common/rate-limit');
 
@@ -87,6 +91,7 @@ describe('Auth Actions – Password', () => {
   });
 
   describe('updatePassword', () => {
+    // Matching valid passwords call updateUser; returns success.
     it('should return success on valid matching passwords', async () => {
       mockUpdateUser.mockResolvedValue({ error: null });
 
@@ -104,6 +109,7 @@ describe('Auth Actions – Password', () => {
       });
     });
 
+    // When Supabase updateUser returns error, action returns error result.
     it('should return an error when Supabase rejects the update', async () => {
       mockUpdateUser.mockResolvedValue({
         error: { message: 'Same password' },
@@ -120,6 +126,7 @@ describe('Auth Actions – Password', () => {
       expect(result).not.toHaveProperty('success');
     });
 
+    // Mismatched password and confirmPassword fail validation; Supabase not called.
     it('should not call Supabase when passwords do not match', async () => {
       const { updatePassword } = await import('./password');
 
@@ -132,6 +139,7 @@ describe('Auth Actions – Password', () => {
       expect(mockUpdateUser).not.toHaveBeenCalled();
     });
 
+    // Too short password fails validation; Supabase is not called.
     it('should not call Supabase when password is too short', async () => {
       const { updatePassword } = await import('./password');
 
@@ -144,6 +152,7 @@ describe('Auth Actions – Password', () => {
       expect(mockUpdateUser).not.toHaveBeenCalled();
     });
 
+    // When rate limited, updatePassword returns error and does not call Supabase.
     it('should return rate limit error when rate limited', async () => {
       const { rateLimit } = await import('@/lib/common/rate-limit');
 

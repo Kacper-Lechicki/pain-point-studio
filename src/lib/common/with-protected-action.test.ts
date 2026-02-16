@@ -35,6 +35,7 @@ describe('withProtectedAction', () => {
     mockGetUser.mockResolvedValue({ data: { user: mockUser } });
   });
 
+  // Action receives parsed form data, user, and supabase client; returns action result.
   it('should call the action with validated data, user, and supabase client', async () => {
     const actionFn = vi.fn().mockResolvedValue({ success: true });
 
@@ -57,6 +58,7 @@ describe('withProtectedAction', () => {
     );
   });
 
+  // When rate limit returns limited: true, action and getUser are not called.
   it('should return rate limit error when rate limited', async () => {
     const { rateLimit } = await import('@/lib/common/rate-limit');
     vi.mocked(rateLimit).mockResolvedValueOnce({ limited: true });
@@ -76,6 +78,7 @@ describe('withProtectedAction', () => {
     expect(mockGetUser).not.toHaveBeenCalled();
   });
 
+  // rateLimitError option overrides default i18n key when rate limited.
   it('should use custom rate limit error message', async () => {
     const { rateLimit } = await import('@/lib/common/rate-limit');
     vi.mocked(rateLimit).mockResolvedValueOnce({ limited: true });
@@ -93,6 +96,7 @@ describe('withProtectedAction', () => {
     expect(result.error).toBe('custom.rateLimitMessage');
   });
 
+  // Invalid form data fails schema; action and getUser are not called.
   it('should return validation error for invalid data', async () => {
     const actionFn = vi.fn();
 
@@ -110,6 +114,7 @@ describe('withProtectedAction', () => {
     expect(mockGetUser).not.toHaveBeenCalled();
   });
 
+  // validationError option overrides default i18n key when validation fails.
   it('should use custom validation error message', async () => {
     const { withProtectedAction } = await import('./with-protected-action');
     const protectedAction = withProtectedAction('test-action', {
@@ -124,6 +129,7 @@ describe('withProtectedAction', () => {
     expect(result.error).toBe('custom.validationMessage');
   });
 
+  // When getUser returns null, settings.errors.unexpected is returned and action is not called.
   it('should return error when user is not authenticated', async () => {
     mockGetUser.mockResolvedValue({ data: { user: null } });
 
@@ -141,6 +147,7 @@ describe('withProtectedAction', () => {
     expect(actionFn).not.toHaveBeenCalled();
   });
 
+  // rateLimit is invoked with the given key, limit, and windowSeconds.
   it('should pass the rate limit key correctly', async () => {
     const { rateLimit } = await import('@/lib/common/rate-limit');
     const { withProtectedAction } = await import('./with-protected-action');

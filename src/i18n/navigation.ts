@@ -1,3 +1,8 @@
+/**
+ * next-intl routing and navigation: defines locales/pathnames and creates
+ * BaseLink, redirect, usePathname, useRouter, getPathname. For app code,
+ * prefer @/i18n/routing (re-exports Link with sibling replace behaviour).
+ */
 import { createNavigation } from 'next-intl/navigation';
 import { defineRouting } from 'next-intl/routing';
 

@@ -1,3 +1,8 @@
+/**
+ * Typed, validated environment config. All app code must use `env` from here,
+ * never process.env. Validation runs at build; missing/invalid required vars fail the build.
+ * Server vars are server-only; client vars (NEXT_PUBLIC_*) are available in the browser.
+ */
 import { createEnv } from '@t3-oss/env-nextjs';
 import { z } from 'zod';
 
@@ -48,5 +53,6 @@ export const env = createEnv({
     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
   },
 
+  /** Treat empty strings in .env as undefined so optional vars work as intended. */
   emptyStringAsUndefined: true,
 });

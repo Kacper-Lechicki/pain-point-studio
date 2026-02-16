@@ -35,6 +35,7 @@ const ClipboardInput = React.forwardRef<HTMLInputElement, ClipboardInputProps>(
           value={value}
           readOnly
           size={size}
+          tabIndex={-1}
           className={cn('bg-muted text-muted-foreground pr-10', className)}
           {...props}
         />

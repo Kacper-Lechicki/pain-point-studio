@@ -1,43 +1,33 @@
 'use server';
 
 import { getLocale } from 'next-intl/server';
-import { z } from 'zod';
 
 import { signUpSchema } from '@/features/auth/types';
 import { env } from '@/lib/common/env';
-import { rateLimit } from '@/lib/common/rate-limit';
-import { ActionResult } from '@/lib/common/types';
+import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
+import { withPublicAction } from '@/lib/common/with-public-action';
 import { mapSupabaseError } from '@/lib/supabase/errors';
-import { createClient } from '@/lib/supabase/server';
 
-export const signUpWithEmail = async (
-  formData: z.infer<typeof signUpSchema>
-): Promise<ActionResult> => {
-  const { limited } = await rateLimit({ key: 'sign-up', limit: 3, windowSeconds: 300 });
+export const signUpWithEmail = withPublicAction('sign-up', {
+  schema: signUpSchema,
+  rateLimit: RATE_LIMITS.authStrict,
+  rateLimitError: 'auth.errors.rateLimitExceeded',
+  validationError: 'auth.errors.invalidData',
+  action: async ({ data, supabase }) => {
+    const locale = await getLocale();
 
-  if (limited) {
-    return { error: 'auth.errors.rateLimitExceeded' };
-  }
+    const { error } = await supabase.auth.signUp({
+      email: data.email,
+      password: data.password,
+      options: {
+        emailRedirectTo: `${env.NEXT_PUBLIC_APP_URL}/${locale}/auth/callback`,
+      },
+    });
 
-  const supabase = await createClient();
-  const locale = await getLocale();
-  const validation = signUpSchema.safeParse(formData);
+    if (error) {
+      return { error: mapSupabaseError(error.message) };
+    }
 
-  if (!validation.success) {
-    return { error: 'auth.errors.invalidData' };
-  }
-
-  const { error } = await supabase.auth.signUp({
-    email: validation.data.email,
-    password: validation.data.password,
-    options: {
-      emailRedirectTo: `${env.NEXT_PUBLIC_APP_URL}/${locale}/auth/callback`,
-    },
-  });
-
-  if (error) {
-    return { error: mapSupabaseError(error.message) };
-  }
-
-  return { success: true };
-};
+    return { success: true };
+  },
+});

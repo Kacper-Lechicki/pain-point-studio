@@ -1,3 +1,8 @@
+/**
+ * Maps Supabase Auth (GoTrue) and API error messages to i18n keys so the UI
+ * can show localized, user-friendly messages. Unrecognized messages fall back
+ * to auth.errors.unexpected.
+ */
 const SUPABASE_ERROR_MAP: Record<string, string> = {
   'Invalid login credentials': 'auth.errors.invalidCredentials',
   'Email not confirmed': 'auth.errors.emailNotConfirmed',

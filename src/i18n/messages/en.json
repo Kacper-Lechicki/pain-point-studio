@@ -50,12 +50,26 @@
     "profile": "Profile",
     "goBack": "Go Back",
     "loading": "Loading...",
+    "dataRefreshed": "Data refreshed",
+    "search": "Search...",
+    "noResults": "No results found.",
     "error": {
       "title": "Something went wrong",
       "description": "An unexpected error occurred. Please try again.",
       "retry": "Try again",
       "backToDashboard": "Back to Dashboard",
       "backToSignIn": "Back to Sign In"
+    },
+    "errors": {
+      "unexpected": "Something went wrong. Please try again.",
+      "rateLimitExceeded": "Too many requests. Please wait a moment and try again.",
+      "invalidData": "The submitted data is invalid. Please check your input."
+    },
+    "unsavedChanges": {
+      "title": "Unsaved changes",
+      "description": "If you leave this page, your unsaved data will be lost. Are you sure you want to leave?",
+      "cancel": "Stay",
+      "leave": "Leave"
     }
   },
   "auth": {
@@ -140,15 +154,587 @@
     "welcome": "Welcome to Pain Point Studio",
     "description": "Start your first research to discover real user pain points. Your research missions will appear here.",
     "empty": "No research missions yet",
-    "startResearch": "Start Research"
+    "startResearch": "Start Research",
+    "surveysEmpty": {
+      "title": "No surveys yet",
+      "description": "Create a survey to start collecting user feedback and discover real pain points.",
+      "cta": "Create survey"
+    }
+  },
+  "surveys": {
+    "title": "Surveys",
+    "description": "Create and manage surveys to collect user feedback.",
+    "createSurvey": "New survey",
+    "empty": {
+      "title": "No surveys yet",
+      "description": "Create a short survey, share the link, and get real feedback from your audience — all in under 15 minutes.",
+      "cta": "Create survey"
+    },
+    "categories": {
+      "problemValidation": "Problem Validation",
+      "solutionValidation": "Solution Validation",
+      "marketDemand": "Market Demand",
+      "willingnessToPay": "Willingness to Pay",
+      "targetAudience": "Target Audience",
+      "competitiveLandscape": "Competitive Landscape",
+      "userHabits": "User Habits",
+      "satisfaction": "Satisfaction",
+      "other": "Other"
+    },
+    "create": {
+      "title": "Survey Details",
+      "description": "Fill in the basic information about your survey.",
+      "surveyTitle": "Title",
+      "surveyTitlePlaceholder": "e.g., Is manual invoicing a real pain for freelancers?",
+      "titleCounter": "{count}/{max}",
+      "surveyDescription": "Description",
+      "surveyDescriptionPlaceholder": "What problem are you investigating and what do you want to learn from respondents?",
+      "surveyDescriptionHelper": "Shown to respondents before they start the survey.",
+      "descriptionCounter": "{count}/{max}",
+      "category": "Category",
+      "categoryPlaceholder": "Select a category",
+      "categoryHelper": "Helps organize your surveys and compare results across projects.",
+      "visibility": "Visibility",
+      "visibilityPrivateDescription": "Only accessible via direct link. Not visible on the platform.",
+      "visibilityPublicDescription": "Accessible via link and visible in the Community module.",
+      "saveDraft": "Save Draft",
+      "next": "Next",
+      "draftSaved": "Survey draft saved."
+    },
+    "errors": {
+      "fieldRequired": "This field is required.",
+      "titleTooLong": "Title must be 100 characters or fewer.",
+      "descriptionTooLong": "Description must be 2000 characters or fewer.",
+      "unexpected": "Something went wrong. Please try again."
+    },
+    "builder": {
+      "backToSurveys": "Back to surveys",
+      "questionsCount": "Questions ({count}/{max})",
+      "addQuestion": "Add question",
+      "noQuestionSelected": "Select a question to edit",
+      "noAdditionalSettings": "No additional settings.",
+      "questions": "Questions",
+      "questionSettings": "Settings",
+      "untitledQuestion": "Untitled question",
+      "questionTextPlaceholder": "Type your question here...",
+      "descriptionPlaceholder": "Add an optional description...",
+      "addDescription": "Add description",
+      "removeDescription": "Remove description",
+      "removeDescriptionConfirmTitle": "Remove description",
+      "removeDescriptionConfirm": "Are you sure you want to remove the description? This action cannot be undone.",
+      "questionDeleted": "Question deleted.",
+      "undo": "Undo",
+      "saveDraft": "Save Draft",
+      "saving": "Saving...",
+      "saved": "Saved",
+      "saveError": "Error saving",
+      "editMetadata": "Edit survey details",
+      "metadataUpdated": "Survey details updated.",
+      "publish": "Publish",
+      "published": "Survey published!",
+      "preview": "Preview",
+      "required": "Required",
+      "questionType": "Question type",
+      "settings": "Settings",
+      "questionActions": "Question actions",
+      "dragToReorder": "Drag to reorder",
+      "deleteQuestion": "Delete question",
+      "deleteQuestionConfirmTitle": "Delete question",
+      "deleteQuestionConfirm": "Are you sure you want to delete this question? This action cannot be undone.",
+      "defaultTextPlaceholder": "Type your answer here...",
+      "yesLabel": "Yes",
+      "noLabel": "No",
+      "emptyState": {
+        "title": "Start building your research",
+        "description": "Add your first question to get started.",
+        "addQuestion": "Add question"
+      },
+      "types": {
+        "openText": "Open Text",
+        "shortText": "Short Text",
+        "multipleChoice": "Multiple Choice",
+        "ratingScale": "Rating Scale",
+        "yesNo": "Yes / No"
+      },
+      "typeSettings": {
+        "placeholder": "Placeholder text",
+        "maxLength": "Max character length",
+        "options": "Options",
+        "addOption": "Add option",
+        "removeOption": "Remove option",
+        "optionPlaceholder": "Option {number}",
+        "allowOther": "Allow \"Other\" option",
+        "minSelections": "Min selections",
+        "maxSelections": "Max selections",
+        "scaleMin": "Minimum value",
+        "scaleMax": "Maximum value",
+        "minLabel": "Min label",
+        "minLabelPlaceholder": "e.g., Not at all",
+        "maxLabel": "Max label",
+        "maxLabelPlaceholder": "e.g., Extremely",
+        "noLimit": "No limit"
+      },
+      "errors": {
+        "questionTextRequired": "Question text is required.",
+        "questionTextTooLong": "Question text must be 500 characters or fewer.",
+        "descriptionTooLong": "Description must be 500 characters or fewer.",
+        "minOptions": "At least 2 options are required.",
+        "maxOptions": "Maximum 10 options allowed.",
+        "optionTooLong": "Each option must be 200 characters or fewer.",
+        "ratingMinValue": "Minimum value must be at least 1.",
+        "ratingMaxValue": "Maximum value must be at most 10.",
+        "ratingMinGreaterMax": "Minimum must be less than maximum.",
+        "minQuestions": "At least 1 question is required.",
+        "maxQuestions": "Maximum 15 questions allowed.",
+        "minQuestionsToPublish": "Add at least 1 question with text before publishing.",
+        "saveFailed": "Failed to save questions. Please try again."
+      }
+    },
+    "publish": {
+      "settingsTitle": "Publish Settings",
+      "settingsDescription": "Configure optional settings before publishing your survey.",
+      "settingsHint": "Both settings are optional. Leave them empty to run without limits.",
+      "endDate": "End date",
+      "endDateHelper": "Survey auto-completes after this date.",
+      "noEndDate": "No end date",
+      "maxRespondents": "Max respondents",
+      "maxRespondentsHelper": "Survey auto-completes after reaching this limit.",
+      "unlimited": "Unlimited",
+      "publishButton": "Publish Survey",
+      "successTitle": "Your research \"{name}\" is live!",
+      "successDescription": "Share the link below to start collecting responses.",
+      "shareLink": "Survey Link",
+      "shareVia": "Share via",
+      "downloadQR": "Download QR Code",
+      "shareBody": "I'd love your feedback on my survey: {title}\n\n{url}",
+      "shareEmailSubject": "{title} - Quick Survey",
+      "twitter": "Twitter / X",
+      "linkedin": "LinkedIn",
+      "email": "Email",
+      "reddit": "Reddit",
+      "viewDashboard": "View Dashboard",
+      "createAnother": "Create Another Research",
+      "backToSurveys": "Back to All Surveys",
+      "panelTitle": "Published"
+    },
+    "stats": {
+      "title": "Survey Results",
+      "overview": "Overview",
+      "metricsLabel": "Key metrics",
+      "totalResponses": "Total responses",
+      "completedResponses": "Completed",
+      "inProgress": "In progress",
+      "submissionRate": "Submission rate",
+      "avgQuestionCompletion": "Avg. question completion",
+      "progressToLimit": "{count} of {max} responses",
+      "completeSurvey": "Complete Survey",
+      "completeSurveyConfirm": "The survey will stop accepting new responses. The survey link will remain accessible for 14 days, then expire.",
+      "surveyCompleted": "Survey completed successfully.",
+      "cancelSurvey": "Cancel Survey",
+      "cancelSurveyConfirm": "This will withdraw the survey. The survey link will remain accessible for 14 days with a withdrawal notice.",
+      "surveyCancelled": "Survey cancelled successfully.",
+      "shareLink": "Share Link",
+      "surveyLink": "Survey link",
+      "copyLink": "Copy link",
+      "linkCopied": "Link copied!",
+      "export": "Export",
+      "exportCSV": "Export CSV",
+      "exportJSON": "Export JSON",
+      "exporting": "Exporting...",
+      "exportFailed": "Export failed. Please try again.",
+      "noResponses": "No responses yet",
+      "noResponsesDescription": "Share the survey link to start collecting feedback.",
+      "questionBreakdown": "Results by question",
+      "responses": "responses",
+      "responsesCount": "{count, plural, =0 {No responses} one {1 response} other {# responses}}",
+      "chartResponses": "Responses",
+      "noChartData": "No responses yet.",
+      "noTextResponses": "No text responses yet.",
+      "showMore": "Show more",
+      "showLess": "Show less",
+      "charactersCount": "{count} characters",
+      "yesLabel": "Yes",
+      "noLabel": "No",
+      "otherLabel": "Other",
+      "statusActive": "Active",
+      "statusCompleted": "Completed",
+      "average": "Average: {value}",
+      "median": "Median: {value}",
+      "minMax": "Range: {min}–{max}",
+      "mode": "Most common: {value}",
+      "majorityYes": "Majority: Yes ({pct}%)",
+      "majorityNo": "Majority: No ({pct}%)",
+      "skippedBy": "Skipped by {count}",
+      "totalSelectionsFromRespondents": "{selections} selections from {respondents} respondents",
+      "averageLength": "Avg. {chars} characters",
+      "detailsLabel": "Details",
+      "startsAt": "Starts",
+      "endsAt": "Ends",
+      "copySurveyLink": "Copy survey link",
+      "inProgressHint": "Not yet completed",
+      "recentResponses": "Recent Responses",
+      "viewResults": "View Results",
+      "avgCompletionTime": "Avg. time",
+      "responseTimeline": "Response timeline",
+      "liveIndicator": "Live",
+      "insightTopChoice": "Most selected: {option} ({pct}%)",
+      "insightTiedChoices": "Tied: {options} ({pct}% each)",
+      "insightAvgRating": "Average: {value}/{max}",
+      "insightMajority": "Majority: {label} ({pct}%)",
+      "insightEqualSplit": "Equal split (50/50)",
+      "insightText": "{count, plural, one {1 response} other {# responses}}, avg. {chars} chars",
+      "topKeywords": "Top keywords",
+      "refresh": "Refresh data",
+      "moreActions": "More actions",
+      "deviceBreakdown": "Device breakdown",
+      "deviceDesktop": "Desktop",
+      "deviceMobile": "Mobile",
+      "deviceTablet": "Tablet",
+      "deviceUnknown": "Unknown",
+      "noDeviceData": "No device data yet",
+      "winnerLabel": "Most popular: {option} ({pct}%)",
+      "verdictLabel": "{pct}% said {label}",
+      "sentiment": {
+        "excellent": "Excellent",
+        "good": "Good",
+        "fair": "Fair",
+        "poor": "Poor"
+      },
+      "medianShort": "Median: {value}",
+      "modeShort": "Mode: {value}",
+      "filter": {
+        "all": "All responses",
+        "keyword": "Filter"
+      },
+      "sort": {
+        "newest": "Newest",
+        "longest": "Longest",
+        "shortest": "Shortest",
+        "az": "A–Z"
+      },
+      "dialog": {
+        "searchPlaceholder": "Search responses…",
+        "clearAll": "Clear filters",
+        "noResults": "No responses match your filters"
+      }
+    },
+    "dashboard": {
+      "status": {
+        "active": "Active",
+        "draft": "Draft",
+        "completed": "Completed",
+        "cancelled": "Cancelled",
+        "archived": "Archived"
+      },
+      "statusInfo": {
+        "ariaLabel": "Learn about {status} status",
+        "draft": "This survey is still being designed. Add questions and configure settings before publishing.",
+        "active": "This survey is live and collecting responses from participants.",
+        "completed": "Data collection is finished. Results are available for review.",
+        "cancelled": "This survey was withdrawn before completion. Existing responses are preserved.",
+        "archived": "This survey has been archived and will be automatically deleted after the retention period."
+      },
+      "filters": {
+        "label": "Filter",
+        "all": "All",
+        "active": "Active",
+        "draft": "Drafts",
+        "completed": "Completed",
+        "cancelled": "Cancelled",
+        "archived": "Archived"
+      },
+      "summary": {
+        "surveys": "{count, plural, one {# survey} other {# surveys}}",
+        "active": "{count} active",
+        "responses": "{count, plural, one {# response} other {# responses}}",
+        "totalLabel": "total",
+        "draftsLabel": "drafts",
+        "activeLabel": "active",
+        "responsesLabel": "responses"
+      },
+      "search": {
+        "placeholder": "Search surveys..."
+      },
+      "sort": {
+        "label": "Sort by",
+        "asc": "Ascending",
+        "desc": "Descending",
+        "updated": "Last edited",
+        "created": "Date created",
+        "responses": "Responses",
+        "title": "Alphabetical",
+        "status": "Status",
+        "questions": "Questions",
+        "lastResponse": "Last response",
+        "activity": "Activity"
+      },
+      "card": {
+        "responses": "{count, plural, =0 {No responses} one {1 response} other {# responses}}",
+        "questions": "{count, plural, =0 {No questions} one {1 question} other {# questions}}",
+        "completedCount": "{count, plural, =0 {0 completed} one {1 completed} other {# completed}}",
+        "responsesOfMax": "{completed}/{max} completed",
+        "inProgressCount": "{count} in progress",
+        "submissionRate": "{rate}% submitted",
+        "lastResponse": "Last response {time}",
+        "created": "Created {date}",
+        "edited": "Edited {date}",
+        "noDescription": "No description"
+      },
+      "hints": {
+        "noQuestions": "Add questions to publish",
+        "readyToPublish": "{count, plural, one {1 question — ready to publish} other {# questions — ready to publish}}",
+        "noResponsesYet": "No responses yet — share your link",
+        "lastResponse": "Last response {time}",
+        "nearingLimit": "{current} of {max} responses collected",
+        "limitReached": "Response limit reached",
+        "endingSoon": "{days, plural, one {Ends tomorrow} other {Ends in # days}}",
+        "expired": "End date has passed",
+        "submissionRate": "{rate}% submission rate",
+        "noResponsesCollected": "No responses were collected",
+        "withdrawn": "Survey was withdrawn"
+      },
+      "actions": {
+        "share": "Share",
+        "viewResults": "View results",
+        "edit": "Edit",
+        "publish": "Publish",
+        "quickPreview": "Quick preview",
+        "complete": "Complete survey",
+        "cancel": "Cancel survey",
+        "archive": "Archive",
+        "restore": "Restore",
+        "delete": "Delete",
+        "duplicate": "Duplicate",
+        "moreActions": "More actions",
+        "details": "Details",
+        "openInFullPage": "Open details in full page"
+      },
+      "detailPanel": {
+        "preview": "Preview",
+        "viewResults": "View results",
+        "complete": "Complete",
+        "last14Days": "Last 14 days",
+        "lastResponse": "Last response",
+        "responses": "Responses",
+        "visitors": "Visitors",
+        "inProgress": "In progress",
+        "submissionRate": "Submission rate",
+        "avgQuestionCompletion": "Avg. question completion",
+        "avgCompletionTime": "Avg. time",
+        "questions": "Questions",
+        "category": "Category",
+        "created": "Created",
+        "updated": "Last edited",
+        "schedule": "Schedule",
+        "respondentCap": "Respondent cap",
+        "archivedAt": "Archived",
+        "autoDeletes": "Auto-deletes",
+        "linkExpires": "Link expires",
+        "inDays": "{days, plural, one {in 1 day} other {in # days}}",
+        "startsAt": "Starts",
+        "endsAt": "Ends",
+        "noLimit": "No limit",
+        "immediate": "Immediate",
+        "noEndDate": "No end date",
+        "status": "Status",
+        "surveyLink": "Survey link",
+        "copyLink": "Copy link",
+        "linkCopied": "Link copied!",
+        "metricsLabel": "Metrics",
+        "viewAllMetrics": "View all metrics",
+        "detailsLabel": "Details",
+        "actionsLabel": "Actions",
+        "questionsLabel": "Questions",
+        "required": "Required",
+        "optional": "Optional",
+        "optionsCount": "{count, plural, one {# option} other {# options}}",
+        "allowOther": "\"Other\" option enabled",
+        "scale": "{min}–{max}",
+        "scaleLabel": "Scale",
+        "optionsLabel": "Options",
+        "minLabelLabel": "Min label",
+        "maxLabelLabel": "Max label",
+        "placeholderLabel": "Placeholder",
+        "maxLengthLabel": "Max length",
+        "descriptionLabel": "Description",
+        "minSelectionsLabel": "Min selections",
+        "maxSelectionsLabel": "Max selections",
+        "loadingQuestions": "Loading questions...",
+        "questionsEmptyTitle": "No questions yet",
+        "questionsEmptyDescription": "This survey has no questions. Add questions in the survey builder to start collecting responses."
+      },
+      "confirm": {
+        "completeTitle": "Complete survey",
+        "completeDescription": "The survey will stop accepting new responses. The survey link will remain accessible for 14 days, then expire. You can archive the survey later.",
+        "cancelTitle": "Cancel survey",
+        "cancelDescription": "The survey will be withdrawn. The survey link will remain accessible for 14 days showing a withdrawal notice, then expire. You can archive the survey later.",
+        "archiveTitle": "Archive survey",
+        "archiveDescription": "The survey will be moved to the archive. You can restore it back to draft at any time within 14 days. After 14 days, archived surveys are permanently deleted.",
+        "restoreTitle": "Restore survey",
+        "restoreDescription": "The survey will be restored as a draft. You can edit it and publish again to start collecting new responses.",
+        "deleteTitle": "Delete survey",
+        "deleteDescription": "This will permanently delete the survey and all its questions. This action cannot be undone."
+      },
+      "toast": {
+        "completed": "Survey completed.",
+        "cancelled": "Survey cancelled.",
+        "archived": "Survey archived.",
+        "deleted": "Survey deleted.",
+        "restored": "Survey restored.",
+        "duplicated": "Survey duplicated as draft.",
+        "linkCopied": "Survey link copied!",
+        "actionFailed": "Something went wrong. Please try again."
+      },
+      "shareDialog": {
+        "title": "Share survey"
+      },
+      "table": {
+        "title": "Title",
+        "status": "Status",
+        "questions": "Questions",
+        "responses": "Responses",
+        "lastResponse": "Last response",
+        "lastEdited": "Last edited",
+        "activity": "Activity",
+        "archivedAt": "Archived",
+        "autoDeletes": "Auto-deletes",
+        "actions": "Actions"
+      },
+      "timeGroup": {
+        "today": "Today",
+        "thisWeek": "This week",
+        "thisMonth": "This month",
+        "older": "Older"
+      },
+      "clearFilters": "Clear filters",
+      "clickHint": "Click row for details",
+      "refresh": "Refresh",
+      "emptyFilter": {
+        "title": "No surveys match your filters",
+        "description": "Try changing or clearing the active filter."
+      },
+      "emptySearch": {
+        "title": "No surveys found for \"{query}\"",
+        "description": "Try a different search term or clear the search."
+      }
+    },
+    "archive": {
+      "title": "Archive",
+      "description": "Archived surveys are kept for 14 days before permanent deletion.",
+      "retentionNotice": "Archived surveys will be automatically deleted after 14 days. Restore a survey to move it back to your main list.",
+      "search": {
+        "placeholder": "Search archived surveys..."
+      },
+      "sort": {
+        "label": "Sort by",
+        "updated": "Last edited",
+        "created": "Date created",
+        "title": "Alphabetical",
+        "status": "Status",
+        "questions": "Questions",
+        "archivedAt": "Archived at",
+        "autoDeletes": "Auto-deletes"
+      },
+      "actions": {
+        "restore": "Restore",
+        "moreActions": "More actions",
+        "viewResults": "View results"
+      },
+      "toast": {
+        "restored": "Survey restored.",
+        "actionFailed": "Something went wrong. Please try again."
+      },
+      "empty": {
+        "title": "No archived surveys",
+        "description": "Surveys you archive will appear here. They are kept for 14 days before permanent deletion."
+      },
+      "emptySearch": {
+        "title": "No archived surveys found for \"{query}\"",
+        "description": "Try a different search term or clear the search."
+      }
+    }
+  },
+  "respondent": {
+    "landing": {
+      "questionsCount": "{count, plural, one {# question} other {# questions}}",
+      "estimatedTime": "About {minutes} min to complete",
+      "responsesCount": "{count, plural, one {# person already responded} other {# people already responded}}",
+      "anonymousInfo": "Your responses are anonymous. No login required.",
+      "start": "Start Survey",
+      "alreadyCompleted": {
+        "title": "You've already completed this survey",
+        "description": "Your response was submitted on {date}.",
+        "respondAgain": "Submit another response anyway"
+      }
+    },
+    "flow": {
+      "questionOf": "Question {current} of {total}",
+      "next": "Next",
+      "previous": "Previous",
+      "skip": "Skip",
+      "finish": "Finish",
+      "required": "Required"
+    },
+    "questions": {
+      "yesLabel": "Yes",
+      "noLabel": "No",
+      "otherPlaceholder": "Other...",
+      "ratingScale": "Rating scale",
+      "ratingLabel": "Rate {value} out of {max}",
+      "yesNoGroup": "Yes or No",
+      "choiceGroup": "Select an option"
+    },
+    "completion": {
+      "title": "Review & Submit",
+      "back": "Go back",
+      "summary": "You answered {answered} of {total} questions.",
+      "contactTitle": "Optional: Leave your contact info",
+      "contactDescription": "If you'd like to be contacted about your responses, you can leave your details below.",
+      "name": "Name",
+      "namePlaceholder": "Your name",
+      "email": "Email",
+      "emailPlaceholder": "your@email.com",
+      "feedbackTitle": "Any additional feedback?",
+      "feedbackPlaceholder": "Share anything else you'd like us to know...",
+      "submit": "Submit Responses",
+      "submitting": "Submitting..."
+    },
+    "thankYou": {
+      "title": "Thank you!",
+      "description": "Your responses have been recorded. Thank you for taking the time to share your thoughts."
+    },
+    "closed": {
+      "title": "Survey Unavailable",
+      "completed": "This survey has ended. Thank you for your interest.",
+      "expired": "This survey has ended.",
+      "maxReached": "This survey has reached its maximum number of responses.",
+      "cancelled": "This survey has been withdrawn by its creator."
+    },
+    "errors": {
+      "startFailed": "Failed to start the survey. Please try again.",
+      "saveFailed": "Failed to save your answer. Please try again.",
+      "submitFailed": "Failed to submit your responses. Please try again.",
+      "emptyResponse": "Please answer at least one question before submitting."
+    }
   },
   "sidebar": {
     "home": "Home",
     "surveys": "Surveys",
     "analytics": "Analytics",
+    "allSurveys": "All surveys",
+    "newSurvey": "New survey",
+    "templates": "Templates",
+    "organizeHeading": "Organize",
+    "folders": "Folders",
+    "archive": "Archive",
+    "configureHeading": "Configure",
+    "surveySettings": "Settings",
+    "integrations": "Integrations",
+    "projectSettings": "Project Settings",
     "settings": "Settings",
     "pinSidebar": "Pin sidebar",
-    "unpinSidebar": "Unpin sidebar"
+    "unpinSidebar": "Unpin sidebar",
+    "back": "Back"
   },
   "breadcrumbs": {
     "dashboard": "Dashboard",
@@ -156,7 +742,10 @@
     "analytics": "Analytics",
     "settings": "Settings",
     "profile": "Profile",
-    "preview": "Preview"
+    "preview": "Preview",
+    "new": "New",
+    "create": "Create",
+    "archive": "Archive"
   },
   "navbar": {
     "openMenu": "Open menu",
@@ -166,16 +755,16 @@
   "marketing": {
     "hero": {
       "badge": "Stop Building Things Nobody Needs",
-      "title": "Discover Real Problems Before Writing Code",
-      "description": "Pain Point Studio helps solo developers validate ideas through structured customer research. Find out what people actually need in 15 minutes, not 3 months."
+      "title": "Discover Real Problems Before You Build",
+      "description": "Pain Point Studio helps makers and teams validate ideas through structured customer research. Find out what people actually need in 15 minutes, not 3 months."
     },
     "problems": {
-      "title": "The Problem Most Developers Face",
-      "description": "70% of side projects are abandoned within 3 months. Not because of bad code, but because they solve problems that don't exist.",
+      "title": "The Problem Most Makers Face",
+      "description": "70% of new products are abandoned within 3 months. Not because of bad execution, but because they solve problems that don't exist.",
       "items": {
         "vacuum": {
           "title": "Building in a Vacuum",
-          "description": "You spend 3 months building a \"better bookmark manager\" only to discover nobody wants it. Your problem isn't everyone's problem."
+          "description": "You spend 3 months building a product only to discover nobody wants it. Your problem isn't everyone's problem."
         },
         "skills": {
           "title": "No Research Skills",
@@ -193,10 +782,10 @@
       "steps": {
         "research": {
           "title": "Choose Your Research Area",
-          "description": "Pick any topic you're curious about. \"Productivity for ADHD\" or \"Developer Tools\" or \"Remote Team Management\". No perfect idea needed.",
+          "description": "Pick any topic you're curious about. \"Productivity for ADHD\" or \"Freelancer Onboarding\" or \"Remote Team Management\". No perfect idea needed.",
           "visualLabel": "Research Area Selection Interface",
-          "exampleTitle": "Example: Developer Productivity",
-          "exampleDescription": "Exploring pain points around focus, task management, and workflow optimization for software engineers."
+          "exampleTitle": "Example: Team Productivity",
+          "exampleDescription": "Exploring pain points around focus, task management, and workflow optimization for busy professionals."
         },
         "questions": {
           "title": "Use Proven Questions",
@@ -228,8 +817,8 @@
           "description": "See \"Start New Research\". Click it. Fill form. Get link. Send to people. Collect answers. That's it. 15 minutes from signup to first feedback."
         },
         "bloat": {
-          "title": "No Dashboard Bloat",
-          "description": "Your dashboard shows your research missions. Click one to see responses. No widgets. No graphs. No features that look impressive but distract from the goal."
+          "title": "A Dashboard That Works for You",
+          "description": "Your dashboard shows your research missions with real-time response tracking, completion metrics, and a timeline chart. Every element earns its place — no vanity widgets, no clutter."
         },
         "solo": {
           "title": "Solo First, Social Optional",
@@ -242,7 +831,7 @@
       }
     },
     "personas": {
-      "title": "Built for Different Types of Developers",
+      "title": "Built for Different Types of Makers",
       "description": "Whether you prefer working alone or finding collaborators, Pain Point Studio adapts to your style.",
       "items": {
         "solo": {
@@ -292,7 +881,7 @@
         },
         "community": {
           "title": "Community Access",
-          "description": "Find other developers researching similar problems. Form teams. Share insights."
+          "description": "Find other makers researching similar problems. Form teams. Share insights."
         },
         "setup": {
           "title": "Fast Setup",
@@ -302,7 +891,7 @@
     },
     "cta": {
       "title": "Stop Guessing. Start Knowing.",
-      "description": "Join developers who validate ideas before writing code. Your first 5 research missions are free."
+      "description": "Join makers who validate ideas before they build. Your first 5 research missions are free."
     },
     "charts": {
       "ideaTrends": {
@@ -338,7 +927,7 @@
           "view": "View",
           "click": "Click",
           "scroll": "Scroll",
-          "formFill": "Form Fill"
+          "formFill": "Fill"
         }
       },
       "responsesGrowth": {
@@ -373,20 +962,9 @@
       "profile": "Profile",
       "email": "Email",
       "password": "Password",
-      "appearance": "Appearance",
       "connectedAccounts": "Accounts",
       "dangerZone": "Danger Zone",
       "label": "Settings section"
-    },
-    "appearance": {
-      "title": "Appearance",
-      "description": "Customize the look and feel of your interface.",
-      "accentColor": "Accent Color",
-      "accents": {
-        "blue": "Blue",
-        "teal": "Teal",
-        "indigo": "Indigo"
-      }
     },
     "profile": {
       "title": "Profile Information",
@@ -395,7 +973,7 @@
       "uploadAvatar": "Upload Photo",
       "changeAvatar": "Change Photo",
       "removeAvatar": "Remove Photo",
-      "avatarHint": "JPG, PNG, WebP or GIF. Max 5MB.",
+      "avatarHint": "JPG/JPEG, PNG or WebP. Max 5MB.",
       "fullName": "Full Name",
       "fullNamePlaceholder": "Enter your full name",
       "role": "Role / Occupation",
@@ -495,10 +1073,9 @@
       "accountDeleted": "Your account has been deleted."
     },
     "roles": {
-      "soloDeveloper": "Solo Developer",
-      "productManager": "Product Manager",
+      "developer": "Developer",
       "designer": "Designer",
-      "founder": "Founder",
+      "productManager": "Product Manager",
       "student": "Student",
       "other": "Other"
     },
@@ -513,7 +1090,7 @@
       "passwordsMismatch": "Passwords do not match.",
       "confirmationMismatch": "Please type the exact confirmation text.",
       "avatarTooLarge": "Image must be smaller than 5MB.",
-      "avatarInvalidType": "Only JPG, PNG, WebP, and GIF images are allowed.",
+      "avatarInvalidType": "Only JPG/JPEG, PNG, and WebP images are allowed.",
       "uploadFailed": "Failed to upload image. Please try again.",
       "deleteFailed": "Failed to delete account. Please try again.",
       "rateLimitExceeded": "Too many attempts. Please wait a moment and try again.",
@@ -540,7 +1117,11 @@
       },
       "statistics": {
         "title": "Statistics",
-        "emptyDescription": "Statistics will be available once you start collecting responses."
+        "emptyDescription": "Statistics will be available once you start collecting responses.",
+        "totalSurveys": "Published surveys",
+        "totalResponses": "Responses received",
+        "avgSubmissionRate": "Submission rate",
+        "memberSince": "Member since"
       }
     }
   }

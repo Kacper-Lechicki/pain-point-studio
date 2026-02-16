@@ -3,11 +3,12 @@
 import { useEffect, useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Eye, Plus, Trash2 } from 'lucide-react';
+import { Eye } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useFieldArray, useForm } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
+import { Combobox } from '@/components/ui/combobox';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import {
   Form,
@@ -19,22 +20,17 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { SubmitButton } from '@/components/ui/submit-button';
 import { Textarea } from '@/components/ui/textarea';
 import { ROUTES } from '@/config';
 import { ProfileData, updateProfile } from '@/features/settings/actions';
 import { AvatarUpload } from '@/features/settings/components/avatar-upload';
 import { SettingsSectionHeader } from '@/features/settings/components/settings-section-header';
-import { BIO_MAX_LENGTH, MAX_SOCIAL_LINKS } from '@/features/settings/config';
+import { SocialLinksSection } from '@/features/settings/components/social-links-section';
+import { BIO_MAX_LENGTH } from '@/features/settings/config';
 import { UpdateProfileSchema, updateProfileSchema } from '@/features/settings/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
+import { useUnsavedChangesWarning } from '@/hooks/unsaved-changes-context';
 import { Link } from '@/i18n/routing';
 import type { MessageKey } from '@/i18n/types';
 import { getInitials } from '@/lib/common/utils';
@@ -76,6 +72,8 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
     control: form.control,
     name: 'socialLinks',
   });
+
+  useUnsavedChangesWarning('profile-form', form.formState.isDirty);
 
   const fallbackInitials = getInitials(profile.fullName, profile.email);
 
@@ -132,20 +130,17 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('settings.profile.role')}</FormLabel>
-                  <Select name="role" onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="w-full" aria-label={t('settings.profile.role')}>
-                        <SelectValue placeholder={t('settings.profile.rolePlaceholder')} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {profile.roleOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <Combobox
+                      options={profile.roleOptions}
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      placeholder={t('settings.profile.rolePlaceholder')}
+                      searchPlaceholder={t('common.search')}
+                      emptyMessage={t('common.noResults')}
+                      aria-label={t('settings.profile.role')}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -177,114 +172,21 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
               )}
             />
 
-            <div className="space-y-4 pt-2">
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div className="space-y-1">
-                  <p className="text-sm font-medium">{t('settings.profile.socialLinks.title')}</p>
-                  <p className="text-muted-foreground text-sm">
-                    {t('settings.profile.socialLinks.description')}
-                  </p>
-                </div>
+            <SocialLinksSection
+              control={form.control}
+              fields={fields}
+              append={append}
+              onRemoveRequest={(index) => {
+                const url = form.getValues(`socialLinks.${index}.url`);
 
-                {fields.length < MAX_SOCIAL_LINKS && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="shrink-0"
-                    onClick={() =>
-                      append({
-                        label: profile.socialLinkOptions[0]?.value ?? 'website',
-                        url: '',
-                      })
-                    }
-                  >
-                    <Plus className="size-4" />
-                    {t('settings.profile.socialLinks.addLink')}
-                  </Button>
-                )}
-              </div>
-
-              {fields.length >= MAX_SOCIAL_LINKS && (
-                <p className="text-muted-foreground text-xs">
-                  {t('settings.profile.socialLinks.maxReached', { max: MAX_SOCIAL_LINKS })}
-                </p>
-              )}
-
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                {fields.map((field, index) => (
-                  <div
-                    key={field.id}
-                    className="bg-muted/20 space-y-2 rounded-lg border border-dashed p-4"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground text-sm font-medium">
-                        {t('settings.profile.socialLinks.linkLabel', { number: index + 1 })}
-                      </span>
-                      <Button
-                        type="button"
-                        variant="ghostDestructive"
-                        size="icon-sm"
-                        onClick={() => setRemoveLinkIndex(index)}
-                        aria-label={t('settings.profile.socialLinks.removeLink')}
-                      >
-                        <Trash2 className="size-4" aria-hidden="true" />
-                      </Button>
-                    </div>
-
-                    <FormField
-                      control={form.control}
-                      name={`socialLinks.${index}.label`}
-                      render={({ field: labelField }) => (
-                        <FormItem className="w-full">
-                          <Select
-                            name={`socialLinks.${index}.label`}
-                            onValueChange={labelField.onChange}
-                            value={labelField.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger
-                                className="w-full"
-                                aria-label={t('settings.profile.socialLinks.labelPlaceholder')}
-                              >
-                                <SelectValue
-                                  placeholder={t('settings.profile.socialLinks.labelPlaceholder')}
-                                />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {profile.socialLinkOptions.map((option) => (
-                                <SelectItem key={option.value} value={option.value}>
-                                  {option.label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name={`socialLinks.${index}.url`}
-                      render={({ field: urlField }) => (
-                        <FormItem className="w-full">
-                          <FormControl>
-                            <Input
-                              placeholder={t('settings.profile.socialLinks.urlPlaceholder')}
-                              autoComplete="url"
-                              className="w-full"
-                              {...urlField}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
+                if (url.trim()) {
+                  setRemoveLinkIndex(index);
+                } else {
+                  remove(index);
+                }
+              }}
+              socialLinkOptions={profile.socialLinkOptions}
+            />
 
             <div className="flex justify-end">
               <SubmitButton isLoading={isLoading} form="profile-form">

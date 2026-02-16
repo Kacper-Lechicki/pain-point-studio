@@ -15,7 +15,7 @@ interface ProfileHeaderProps {
 }
 
 const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
-  const t = useTranslations('profile');
+  const t = useTranslations();
   const format = useFormatter();
 
   const fallbackInitials = getInitials(profile.fullName, '?');
@@ -35,6 +35,7 @@ const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
               alt={profile.fullName || ''}
               width={96}
               height={96}
+              sizes="96px"
               className="aspect-square size-full object-cover"
             />
           ) : (
@@ -47,7 +48,7 @@ const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
         <div className="space-y-1.5">
           <h2 className="text-2xl font-bold tracking-tight">
             {profile.fullName || (
-              <span className="text-muted-foreground italic">{t('empty.fullName')}</span>
+              <span className="text-muted-foreground italic">{t('profile.empty.fullName')}</span>
             )}
           </h2>
 
@@ -56,18 +57,18 @@ const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
               {profile.role}
             </Badge>
           ) : (
-            <span className="text-muted-foreground text-sm italic">{t('empty.role')}</span>
+            <span className="text-muted-foreground text-xs italic">{t('profile.empty.role')}</span>
           )}
         </div>
 
-        <p className="text-muted-foreground max-w-lg text-sm leading-relaxed break-words whitespace-pre-wrap">
-          {profile.bio || <span className="italic">{t('empty.bio')}</span>}
+        <p className="text-muted-foreground max-w-lg text-sm leading-relaxed wrap-break-word whitespace-pre-wrap">
+          {profile.bio || <span className="italic">{t('profile.empty.bio')}</span>}
         </p>
 
         {memberSinceFormatted && (
           <div className="text-muted-foreground flex items-center gap-1.5 text-xs">
             <CalendarDays className="size-3.5" />
-            <span>{t('memberSince', { date: memberSinceFormatted })}</span>
+            <span>{t('profile.memberSince', { date: memberSinceFormatted })}</span>
           </div>
         )}
       </div>

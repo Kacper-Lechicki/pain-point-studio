@@ -1,6 +1,6 @@
 'use client';
 
-import { Check, LucideIcon } from 'lucide-react';
+import { Check, type LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { CardBody, CardContainer, CardItem } from '@/components/ui/3d-card';

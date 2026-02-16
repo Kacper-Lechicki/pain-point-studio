@@ -4,7 +4,9 @@ import { cache } from 'react';
 
 import { getTranslations } from 'next-intl/server';
 
-import { SocialLink } from '@/features/settings/types';
+import { ROLES } from '@/features/settings/config/roles';
+import { SOCIAL_LINK_TYPES } from '@/features/settings/config/social-link-types';
+import type { SocialLink } from '@/features/settings/types';
 import { createClient } from '@/lib/supabase/server';
 
 export interface LookupValue {
@@ -12,6 +14,7 @@ export interface LookupValue {
   label: string;
 }
 
+/** Aggregated profile data for the settings page (auth, profile row, identities, lookups). */
 export interface ProfileData {
   id: string;
   email: string;
@@ -29,6 +32,10 @@ export interface ProfileData {
   socialLinkOptions: LookupValue[];
 }
 
+/**
+ * Fetch the authenticated user's full profile data for the settings page.
+ * Returns null when unauthenticated. Wrapped with React `cache()` for per-request deduplication.
+ */
 export const getProfile = cache(async (): Promise<ProfileData | null> => {
   const supabase = await createClient();
 
@@ -40,23 +47,12 @@ export const getProfile = cache(async (): Promise<ProfileData | null> => {
     return null;
   }
 
-  const [
-    { data: profile },
-    { data: roles },
-    { data: socialLinkTypes },
-    { data: hasPasswordResult },
-    { data: emailChangeStatus },
-  ] = await Promise.all([
-    supabase.from('profiles').select('*').eq('id', user.id).single(),
-    supabase.from('roles').select('value, label_key').eq('is_active', true).order('sort_order'),
-    supabase
-      .from('social_link_types')
-      .select('value, label_key')
-      .eq('is_active', true)
-      .order('sort_order'),
-    supabase.rpc('has_password'),
-    supabase.rpc('get_email_change_status'),
-  ]);
+  const [{ data: profile }, { data: hasPasswordResult }, { data: emailChangeStatus }] =
+    await Promise.all([
+      supabase.from('profiles').select('*').eq('id', user.id).single(),
+      supabase.rpc('has_password'),
+      supabase.rpc('get_email_change_status'),
+    ]);
 
   const hasPassword = hasPasswordResult === true;
   const pendingRow = Array.isArray(emailChangeStatus) ? emailChangeStatus[0] : null;
@@ -79,13 +75,13 @@ export const getProfile = cache(async (): Promise<ProfileData | null> => {
       email: identity.identity_data?.email as string | undefined,
       identityId: identity.identity_id,
     })),
-    roleOptions: (roles ?? []).map((r) => ({
+    roleOptions: ROLES.map((r) => ({
       value: r.value,
-      label: t(r.label_key as Parameters<typeof t>[0]),
+      label: t(r.labelKey as Parameters<typeof t>[0]),
     })),
-    socialLinkOptions: (socialLinkTypes ?? []).map((s) => ({
+    socialLinkOptions: SOCIAL_LINK_TYPES.map((s) => ({
       value: s.value,
-      label: t(s.label_key as Parameters<typeof t>[0]),
+      label: t(s.labelKey as Parameters<typeof t>[0]),
     })),
   };
 });

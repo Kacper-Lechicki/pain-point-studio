@@ -1,2 +1,4 @@
+# Run linters/formatters only on staged files (see package.json "lint-staged").
 npx lint-staged
+# Type-check the project without emitting output; fails if types are invalid.
 npx tsc --noEmit

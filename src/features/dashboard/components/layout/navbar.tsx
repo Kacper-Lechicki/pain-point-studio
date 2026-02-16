@@ -4,44 +4,46 @@ import { Menu } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
 import { UserMenu } from '@/features/auth/components/common/user-menu';
+import { Breadcrumbs } from '@/features/dashboard/components/layout/breadcrumbs';
+import { ProjectSelector } from '@/features/dashboard/components/layout/project-selector';
+import { useSidebar } from '@/features/dashboard/components/layout/sidebar-provider';
 import { usePathname } from '@/i18n/routing';
-
-import { Breadcrumbs } from './breadcrumbs';
-import { ProjectSelector } from './project-selector';
-import { useSidebar } from './sidebar-provider';
+import { cn } from '@/lib/common/utils';
 
 const Navbar = () => {
-  const { setMobileOpen } = useSidebar();
-  const t = useTranslations('navbar');
+  const { setMobileOpen, isDesktop } = useSidebar();
+  const t = useTranslations();
   const pathname = usePathname();
-  const hasSidebar = pathname.startsWith('/dashboard');
+  const isDashboard = pathname.startsWith('/dashboard');
+  const isSettings = pathname.startsWith('/settings');
+  const hasSidebar = isDashboard || isSettings;
 
   return (
-    <nav className="bg-background/80 border-border fixed inset-x-0 top-0 z-50 backdrop-blur-md lg:border-b">
-      <div
-        className={`flex h-14 items-center gap-3 px-4 ${!hasSidebar ? 'container mx-auto sm:px-4 lg:px-8' : ''}`}
-      >
+    <nav className="bg-background/80 border-border/80 dashboard:border-b fixed inset-x-0 top-0 z-50 backdrop-blur-md transition-colors duration-300">
+      <div className="dashboard:px-4 flex h-14 items-center gap-3 px-4">
         {hasSidebar && (
           <Button
             variant="ghost"
             size="icon-md"
-            className="-ml-2 lg:hidden"
+            className={cn('-ml-2', 'dashboard:hidden')}
             onClick={() => setMobileOpen(true)}
-            aria-label={t('openMenu')}
+            aria-label={t('navbar.openMenu')}
           >
             <Menu className="size-5" />
           </Button>
         )}
 
-        <div className="hidden sm:flex">
-          <ProjectSelector />
-        </div>
+        {isDesktop && (
+          <div
+            className="dashboard:flex hidden shrink-0"
+            style={{ width: 'calc(var(--sidebar-width-expanded) - 1rem)' }}
+          >
+            <ProjectSelector className="w-full" />
+          </div>
+        )}
 
-        <Separator orientation="vertical" className="hidden h-5! sm:block" />
-
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 pl-1">
           <Breadcrumbs />
         </div>
 

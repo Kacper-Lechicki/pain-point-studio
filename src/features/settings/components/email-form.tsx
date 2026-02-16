@@ -5,11 +5,12 @@ import { useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Mail } from 'lucide-react';
+import { Info, Mail } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -26,6 +27,7 @@ import { cancelEmailChange, updateEmail } from '@/features/settings/actions';
 import { SettingsSectionHeader } from '@/features/settings/components/settings-section-header';
 import { UpdateEmailSchema, updateEmailSchema } from '@/features/settings/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
+import { useUnsavedChangesWarning } from '@/hooks/unsaved-changes-context';
 import type { MessageKey } from '@/i18n/types';
 
 interface EmailFormProps {
@@ -51,6 +53,8 @@ const EmailForm = ({ currentEmail, pendingEmail, emailChangeConfirmStatus }: Ema
     },
   });
 
+  useUnsavedChangesWarning('email-form', form.formState.isDirty);
+
   async function onSubmit(data: UpdateEmailSchema) {
     await execute(updateEmail, data);
   }
@@ -75,8 +79,6 @@ const EmailForm = ({ currentEmail, pendingEmail, emailChangeConfirmStatus }: Ema
       <SettingsSectionHeader
         title={t('settings.email.title')}
         description={t('settings.email.description')}
-        hintContent={t('settings.email.doubleConfirmHint')}
-        hintDialogTitle={t('settings.email.title')}
       />
 
       {pendingEmail && (
@@ -89,7 +91,7 @@ const EmailForm = ({ currentEmail, pendingEmail, emailChangeConfirmStatus }: Ema
                   {t('settings.email.pendingChange', { newEmail: pendingEmail })}
                 </p>
               </div>
-              <p className="text-muted-foreground text-sm">
+              <p className="text-muted-foreground text-xs">
                 {t('settings.email.confirmationsStatus', {
                   count: emailChangeConfirmStatus,
                 })}
@@ -142,6 +144,11 @@ const EmailForm = ({ currentEmail, pendingEmail, emailChangeConfirmStatus }: Ema
           </form>
         </Form>
       )}
+
+      <Alert variant="info" className="text-xs">
+        <Info className="size-3.5" />
+        <AlertDescription>{t('settings.email.doubleConfirmHint')}</AlertDescription>
+      </Alert>
     </section>
   );
 };

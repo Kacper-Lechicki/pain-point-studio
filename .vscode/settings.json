@@ -5,11 +5,11 @@
     "source.fixAll.eslint": "explicit",
     "source.removeUnusedImports": "explicit"
   },
-  "files.associations": {
-    "*.css": "tailwindcss"
-  },
+  "files.associations": { "*.css": "tailwindcss" },
   "tailwindCSS.experimental.classRegex": [
     ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
     ["cn\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
-  ]
+  ],
+  "javascript.suggest.completeJSDocs": false,
+  "typescript.suggest.completeJSDocs": false
 }

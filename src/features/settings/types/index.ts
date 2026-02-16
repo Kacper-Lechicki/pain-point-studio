@@ -3,12 +3,17 @@ import { z } from 'zod';
 import { basePasswordSchema } from '@/features/auth/config/password';
 import { BIO_MAX_LENGTH, FULL_NAME_MAX_LENGTH, MAX_SOCIAL_LINKS } from '@/features/settings/config';
 
+// ── Domain restrictions for provider-specific social links ──────────
+
 const SOCIAL_LINK_DOMAINS: Record<string, string[]> = {
   github: ['github.com'],
   twitter: ['twitter.com', 'x.com'],
   linkedin: ['linkedin.com'],
 };
 
+// ── Validation schemas ──────────────────────────────────────────────
+
+/** Social link with label and URL; enforces provider-specific domain matching. */
 export const socialLinkSchema = z
   .object({
     label: z.string().min(1, 'settings.errors.fieldRequired'),
@@ -37,6 +42,7 @@ export const socialLinkSchema = z
 
 export type SocialLink = z.infer<typeof socialLinkSchema>;
 
+/** Minimal profile data required during first-time onboarding. */
 export const completeProfileSchema = z.object({
   fullName: z
     .string()
@@ -47,6 +53,7 @@ export const completeProfileSchema = z.object({
 
 export type CompleteProfileSchema = z.infer<typeof completeProfileSchema>;
 
+/** Full profile form: name, role, bio, and social links. */
 export const updateProfileSchema = z.object({
   fullName: z
     .string()
@@ -59,12 +66,14 @@ export const updateProfileSchema = z.object({
 
 export type UpdateProfileSchema = z.infer<typeof updateProfileSchema>;
 
+/** Email change form: single email field. */
 export const updateEmailSchema = z.object({
   email: z.email('settings.errors.invalidEmail'),
 });
 
 export type UpdateEmailSchema = z.infer<typeof updateEmailSchema>;
 
+/** Password change form: current password + new password with confirmation. */
 export const changePasswordSchema = z
   .object({
     currentPassword: z.string().min(1, 'settings.errors.fieldRequired'),
@@ -78,6 +87,7 @@ export const changePasswordSchema = z
 
 export type ChangePasswordSchema = z.infer<typeof changePasswordSchema>;
 
+/** First-time password form for OAuth-only users (no current password needed). */
 export const setPasswordSchema = z
   .object({
     password: basePasswordSchema,
@@ -90,6 +100,7 @@ export const setPasswordSchema = z
 
 export type SetPasswordSchema = z.infer<typeof setPasswordSchema>;
 
+/** Payload for disconnecting an OAuth identity. */
 export const unlinkIdentitySchema = z.object({
   identityId: z.string().min(1),
   provider: z.string().min(1),
@@ -97,6 +108,7 @@ export const unlinkIdentitySchema = z.object({
 
 export type UnlinkIdentitySchema = z.infer<typeof unlinkIdentitySchema>;
 
+/** Account deletion form: user must type their email to confirm. */
 export const deleteAccountSchema = z.object({
   confirmation: z.string().email('settings.errors.confirmationMismatch'),
 });

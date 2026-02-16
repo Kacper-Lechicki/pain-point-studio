@@ -1,4 +1,4 @@
-import { AppRoute, ROUTES } from '@/config';
+import { type AppRoute, ROUTES } from '@/config';
 import type { MessageKey } from '@/i18n/types';
 
 export interface FooterItem {

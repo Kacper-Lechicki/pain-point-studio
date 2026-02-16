@@ -18,21 +18,18 @@ const Navbar = () => {
   const t = useTranslations();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const isDesktop = useBreakpoint('lg');
+  const showMobileMenu = !isDesktop && isMobileMenuOpen;
 
   const brandName = t(BRAND.name);
   const copyrightText = getCopyrightText(t);
   const exploreLabel = t('common.explore');
-
-  if (isDesktop && isMobileMenuOpen) {
-    setIsMobileMenuOpen(false);
-  }
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen((prev) => !prev);
   };
 
   useEffect(() => {
-    if (isMobileMenuOpen) {
+    if (showMobileMenu) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
@@ -41,13 +38,13 @@ const Navbar = () => {
     return () => {
       document.body.style.overflow = 'unset';
     };
-  }, [isMobileMenuOpen]);
+  }, [showMobileMenu]);
 
   return (
     <nav
       className={cn(
         'sticky top-0 z-50 backdrop-blur-md transition-colors duration-300',
-        isMobileMenuOpen ? 'bg-background' : 'bg-background/80'
+        showMobileMenu ? 'bg-background' : 'bg-background/80'
       )}
     >
       <div className="container mx-auto flex h-16 items-center px-6 sm:px-4 lg:px-8">
@@ -109,7 +106,7 @@ const Navbar = () => {
 
           <div className="flex lg:hidden">
             <Button variant="ghost" size="icon" onClick={toggleMobileMenu} aria-label="Toggle menu">
-              {isMobileMenuOpen ? (
+              {showMobileMenu ? (
                 <X className="size-6" aria-hidden="true" />
               ) : (
                 <Menu className="size-6" aria-hidden="true" />
@@ -122,7 +119,7 @@ const Navbar = () => {
       <div
         className={cn(
           'bg-background fixed top-16 right-0 left-0 z-50 flex h-[calc(100dvh-4rem)] flex-col transition-all duration-300 ease-in-out lg:hidden',
-          isMobileMenuOpen
+          showMobileMenu
             ? 'pointer-events-auto translate-y-0 opacity-100'
             : 'pointer-events-none -translate-y-4 opacity-0'
         )}
