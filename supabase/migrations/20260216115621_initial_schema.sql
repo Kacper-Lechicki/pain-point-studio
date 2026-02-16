@@ -1084,65 +1084,89 @@ CREATE TABLE IF NOT EXISTS "public"."surveys" (
 ALTER TABLE "public"."surveys" OWNER TO "postgres";
 
 
-ALTER TABLE ONLY "public"."profiles"
-    ADD CONSTRAINT "profiles_pkey" PRIMARY KEY ("id");
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'profiles_pkey') THEN
+    ALTER TABLE ONLY "public"."profiles"
+        ADD CONSTRAINT "profiles_pkey" PRIMARY KEY ("id");
+  END IF;
+END $$;
 
 
 
-ALTER TABLE ONLY "public"."survey_answers"
-    ADD CONSTRAINT "survey_answers_pkey" PRIMARY KEY ("id");
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'survey_answers_pkey') THEN
+    ALTER TABLE ONLY "public"."survey_answers"
+        ADD CONSTRAINT "survey_answers_pkey" PRIMARY KEY ("id");
+  END IF;
+END $$;
 
 
 
-ALTER TABLE ONLY "public"."survey_answers"
-    ADD CONSTRAINT "survey_answers_response_question_unique" UNIQUE ("response_id", "question_id");
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'survey_answers_response_question_unique') THEN
+    ALTER TABLE ONLY "public"."survey_answers"
+        ADD CONSTRAINT "survey_answers_response_question_unique" UNIQUE ("response_id", "question_id");
+  END IF;
+END $$;
 
 
 
-ALTER TABLE ONLY "public"."survey_questions"
-    ADD CONSTRAINT "survey_questions_pkey" PRIMARY KEY ("id");
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'survey_questions_pkey') THEN
+    ALTER TABLE ONLY "public"."survey_questions"
+        ADD CONSTRAINT "survey_questions_pkey" PRIMARY KEY ("id");
+  END IF;
+END $$;
 
 
 
-ALTER TABLE ONLY "public"."survey_responses"
-    ADD CONSTRAINT "survey_responses_pkey" PRIMARY KEY ("id");
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'survey_responses_pkey') THEN
+    ALTER TABLE ONLY "public"."survey_responses"
+        ADD CONSTRAINT "survey_responses_pkey" PRIMARY KEY ("id");
+  END IF;
+END $$;
 
 
 
-ALTER TABLE ONLY "public"."surveys"
-    ADD CONSTRAINT "surveys_pkey" PRIMARY KEY ("id");
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'surveys_pkey') THEN
+    ALTER TABLE ONLY "public"."surveys"
+        ADD CONSTRAINT "surveys_pkey" PRIMARY KEY ("id");
+  END IF;
+END $$;
 
 
 
-CREATE INDEX "survey_answers_question_id_idx" ON "public"."survey_answers" USING "btree" ("question_id");
+CREATE INDEX IF NOT EXISTS "survey_answers_question_id_idx" ON "public"."survey_answers" USING "btree" ("question_id");
 
 
 
-CREATE INDEX "survey_questions_survey_id_idx" ON "public"."survey_questions" USING "btree" ("survey_id");
+CREATE INDEX IF NOT EXISTS "survey_questions_survey_id_idx" ON "public"."survey_questions" USING "btree" ("survey_id");
 
 
 
-CREATE UNIQUE INDEX "survey_questions_survey_id_sort_order_idx" ON "public"."survey_questions" USING "btree" ("survey_id", "sort_order");
+CREATE UNIQUE INDEX IF NOT EXISTS "survey_questions_survey_id_sort_order_idx" ON "public"."survey_questions" USING "btree" ("survey_id", "sort_order");
 
 
 
-CREATE INDEX "survey_responses_survey_id_idx" ON "public"."survey_responses" USING "btree" ("survey_id");
+CREATE INDEX IF NOT EXISTS "survey_responses_survey_id_idx" ON "public"."survey_responses" USING "btree" ("survey_id");
 
 
 
-CREATE INDEX "survey_responses_survey_id_status_idx" ON "public"."survey_responses" USING "btree" ("survey_id", "status");
+CREATE INDEX IF NOT EXISTS "survey_responses_survey_id_status_idx" ON "public"."survey_responses" USING "btree" ("survey_id", "status");
 
 
 
-CREATE UNIQUE INDEX "surveys_slug_unique_idx" ON "public"."surveys" USING "btree" ("slug") WHERE ("slug" IS NOT NULL);
+CREATE UNIQUE INDEX IF NOT EXISTS "surveys_slug_unique_idx" ON "public"."surveys" USING "btree" ("slug") WHERE ("slug" IS NOT NULL);
 
 
 
-CREATE INDEX "surveys_user_id_idx" ON "public"."surveys" USING "btree" ("user_id");
+CREATE INDEX IF NOT EXISTS "surveys_user_id_idx" ON "public"."surveys" USING "btree" ("user_id");
 
 
 
-CREATE INDEX "surveys_user_id_status_idx" ON "public"."surveys" USING "btree" ("user_id", "status");
+CREATE INDEX IF NOT EXISTS "surveys_user_id_status_idx" ON "public"."surveys" USING "btree" ("user_id", "status");
 
 
 
@@ -1170,88 +1194,123 @@ CREATE OR REPLACE TRIGGER "surveys_set_updated_at" BEFORE UPDATE ON "public"."su
 
 
 
-ALTER TABLE ONLY "public"."profiles"
-    ADD CONSTRAINT "profiles_id_fkey" FOREIGN KEY ("id") REFERENCES "auth"."users"("id") ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'profiles_id_fkey') THEN
+    ALTER TABLE ONLY "public"."profiles"
+        ADD CONSTRAINT "profiles_id_fkey" FOREIGN KEY ("id") REFERENCES "auth"."users"("id") ON DELETE CASCADE;
+  END IF;
+END $$;
 
 
 
-ALTER TABLE ONLY "public"."survey_answers"
-    ADD CONSTRAINT "survey_answers_question_id_fkey" FOREIGN KEY ("question_id") REFERENCES "public"."survey_questions"("id") ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'survey_answers_question_id_fkey') THEN
+    ALTER TABLE ONLY "public"."survey_answers"
+        ADD CONSTRAINT "survey_answers_question_id_fkey" FOREIGN KEY ("question_id") REFERENCES "public"."survey_questions"("id") ON DELETE CASCADE;
+  END IF;
+END $$;
 
 
 
-ALTER TABLE ONLY "public"."survey_answers"
-    ADD CONSTRAINT "survey_answers_response_id_fkey" FOREIGN KEY ("response_id") REFERENCES "public"."survey_responses"("id") ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'survey_answers_response_id_fkey') THEN
+    ALTER TABLE ONLY "public"."survey_answers"
+        ADD CONSTRAINT "survey_answers_response_id_fkey" FOREIGN KEY ("response_id") REFERENCES "public"."survey_responses"("id") ON DELETE CASCADE;
+  END IF;
+END $$;
 
 
 
-ALTER TABLE ONLY "public"."survey_questions"
-    ADD CONSTRAINT "survey_questions_survey_id_fkey" FOREIGN KEY ("survey_id") REFERENCES "public"."surveys"("id") ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'survey_questions_survey_id_fkey') THEN
+    ALTER TABLE ONLY "public"."survey_questions"
+        ADD CONSTRAINT "survey_questions_survey_id_fkey" FOREIGN KEY ("survey_id") REFERENCES "public"."surveys"("id") ON DELETE CASCADE;
+  END IF;
+END $$;
 
 
 
-ALTER TABLE ONLY "public"."survey_responses"
-    ADD CONSTRAINT "survey_responses_survey_id_fkey" FOREIGN KEY ("survey_id") REFERENCES "public"."surveys"("id") ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'survey_responses_survey_id_fkey') THEN
+    ALTER TABLE ONLY "public"."survey_responses"
+        ADD CONSTRAINT "survey_responses_survey_id_fkey" FOREIGN KEY ("survey_id") REFERENCES "public"."surveys"("id") ON DELETE CASCADE;
+  END IF;
+END $$;
 
 
 
-ALTER TABLE ONLY "public"."surveys"
-    ADD CONSTRAINT "surveys_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "auth"."users"("id") ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'surveys_user_id_fkey') THEN
+    ALTER TABLE ONLY "public"."surveys"
+        ADD CONSTRAINT "surveys_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "auth"."users"("id") ON DELETE CASCADE;
+  END IF;
+END $$;
 
 
 
+DROP POLICY IF EXISTS "Anyone can create response for active survey" ON "public"."survey_responses";
 CREATE POLICY "Anyone can create response for active survey" ON "public"."survey_responses" FOR INSERT WITH CHECK ((EXISTS ( SELECT 1
    FROM "public"."surveys"
   WHERE (("surveys"."id" = "survey_responses"."survey_id") AND ("surveys"."status" = 'active'::"public"."survey_status") AND ("surveys"."slug" IS NOT NULL)))));
 
 
 
+DROP POLICY IF EXISTS "Anyone can insert answer for in-progress response" ON "public"."survey_answers";
 CREATE POLICY "Anyone can insert answer for in-progress response" ON "public"."survey_answers" FOR INSERT WITH CHECK ((EXISTS ( SELECT 1
    FROM "public"."survey_responses"
   WHERE (("survey_responses"."id" = "survey_answers"."response_id") AND ("survey_responses"."status" = 'in_progress'::"text")))));
 
 
 
+DROP POLICY IF EXISTS "Anyone can read active or pending surveys by slug" ON "public"."surveys";
 CREATE POLICY "Anyone can read active or pending surveys by slug" ON "public"."surveys" FOR SELECT USING ((("status" = ANY (ARRAY['active'::"public"."survey_status", 'pending'::"public"."survey_status"])) AND ("slug" IS NOT NULL)));
 
 
 
+DROP POLICY IF EXISTS "Anyone can read questions for published surveys" ON "public"."survey_questions";
 CREATE POLICY "Anyone can read questions for published surveys" ON "public"."survey_questions" FOR SELECT USING ((EXISTS ( SELECT 1
    FROM "public"."surveys"
   WHERE (("surveys"."id" = "survey_questions"."survey_id") AND ("surveys"."status" = ANY (ARRAY['active'::"public"."survey_status", 'pending'::"public"."survey_status", 'completed'::"public"."survey_status"])) AND ("surveys"."slug" IS NOT NULL)))));
 
 
 
+DROP POLICY IF EXISTS "Anyone can read questions of published surveys" ON "public"."survey_questions";
 CREATE POLICY "Anyone can read questions of published surveys" ON "public"."survey_questions" FOR SELECT USING ((EXISTS ( SELECT 1
    FROM "public"."surveys"
   WHERE (("surveys"."id" = "survey_questions"."survey_id") AND ("surveys"."slug" IS NOT NULL) AND (("surveys"."status" = ANY (ARRAY['active'::"public"."survey_status", 'pending'::"public"."survey_status"])) OR (("surveys"."status" = 'completed'::"public"."survey_status") AND ("surveys"."completed_at" IS NOT NULL) AND ("surveys"."completed_at" > ("now"() - '14 days'::interval))) OR (("surveys"."status" = 'cancelled'::"public"."survey_status") AND ("surveys"."cancelled_at" IS NOT NULL) AND ("surveys"."cancelled_at" > ("now"() - '14 days'::interval))))))));
 
 
 
+DROP POLICY IF EXISTS "Anyone can read recently cancelled surveys by slug" ON "public"."surveys";
 CREATE POLICY "Anyone can read recently cancelled surveys by slug" ON "public"."surveys" FOR SELECT USING ((("status" = 'cancelled'::"public"."survey_status") AND ("slug" IS NOT NULL) AND ("cancelled_at" IS NOT NULL) AND ("cancelled_at" > ("now"() - '14 days'::interval))));
 
 
 
+DROP POLICY IF EXISTS "Anyone can read recently completed surveys by slug" ON "public"."surveys";
 CREATE POLICY "Anyone can read recently completed surveys by slug" ON "public"."surveys" FOR SELECT USING ((("status" = 'completed'::"public"."survey_status") AND ("slug" IS NOT NULL) AND ("completed_at" IS NOT NULL) AND ("completed_at" > ("now"() - '14 days'::interval))));
 
 
 
+DROP POLICY IF EXISTS "Anyone can update answer for in-progress response" ON "public"."survey_answers";
 CREATE POLICY "Anyone can update answer for in-progress response" ON "public"."survey_answers" FOR UPDATE USING ((EXISTS ( SELECT 1
    FROM "public"."survey_responses"
   WHERE (("survey_responses"."id" = "survey_answers"."response_id") AND ("survey_responses"."status" = 'in_progress'::"text")))));
 
 
 
+DROP POLICY IF EXISTS "Anyone can update in-progress response" ON "public"."survey_responses";
 CREATE POLICY "Anyone can update in-progress response" ON "public"."survey_responses" FOR UPDATE USING (("status" = 'in_progress'::"text")) WITH CHECK (("status" = ANY (ARRAY['in_progress'::"text", 'completed'::"text"])));
 
 
 
+DROP POLICY IF EXISTS "Owners can delete responses for own surveys" ON "public"."survey_responses";
 CREATE POLICY "Owners can delete responses for own surveys" ON "public"."survey_responses" FOR DELETE USING ((EXISTS ( SELECT 1
    FROM "public"."surveys"
   WHERE (("surveys"."id" = "survey_responses"."survey_id") AND ("surveys"."user_id" = ( SELECT "auth"."uid"() AS "uid"))))));
 
 
 
+DROP POLICY IF EXISTS "Owners can read answers for own surveys" ON "public"."survey_answers";
 CREATE POLICY "Owners can read answers for own surveys" ON "public"."survey_answers" FOR SELECT USING ((EXISTS ( SELECT 1
    FROM ("public"."survey_responses" "sr"
      JOIN "public"."surveys" "s" ON (("s"."id" = "sr"."survey_id")))
@@ -1259,58 +1318,70 @@ CREATE POLICY "Owners can read answers for own surveys" ON "public"."survey_answ
 
 
 
+DROP POLICY IF EXISTS "Owners can read responses for own surveys" ON "public"."survey_responses";
 CREATE POLICY "Owners can read responses for own surveys" ON "public"."survey_responses" FOR SELECT USING ((EXISTS ( SELECT 1
    FROM "public"."surveys"
   WHERE (("surveys"."id" = "survey_responses"."survey_id") AND ("surveys"."user_id" = ( SELECT "auth"."uid"() AS "uid"))))));
 
 
 
+DROP POLICY IF EXISTS "Users can create own surveys" ON "public"."surveys";
 CREATE POLICY "Users can create own surveys" ON "public"."surveys" FOR INSERT WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "user_id"));
 
 
 
+DROP POLICY IF EXISTS "Users can create questions for own surveys" ON "public"."survey_questions";
 CREATE POLICY "Users can create questions for own surveys" ON "public"."survey_questions" FOR INSERT WITH CHECK ((EXISTS ( SELECT 1
    FROM "public"."surveys"
   WHERE (("surveys"."id" = "survey_questions"."survey_id") AND ("surveys"."user_id" = ( SELECT "auth"."uid"() AS "uid"))))));
 
 
 
+DROP POLICY IF EXISTS "Users can delete own surveys" ON "public"."surveys";
 CREATE POLICY "Users can delete own surveys" ON "public"."surveys" FOR DELETE USING ((( SELECT "auth"."uid"() AS "uid") = "user_id"));
 
 
 
+DROP POLICY IF EXISTS "Users can delete questions for own surveys" ON "public"."survey_questions";
 CREATE POLICY "Users can delete questions for own surveys" ON "public"."survey_questions" FOR DELETE USING ((EXISTS ( SELECT 1
    FROM "public"."surveys"
   WHERE (("surveys"."id" = "survey_questions"."survey_id") AND ("surveys"."user_id" = ( SELECT "auth"."uid"() AS "uid"))))));
 
 
 
+DROP POLICY IF EXISTS "Users can insert own profile" ON "public"."profiles";
 CREATE POLICY "Users can insert own profile" ON "public"."profiles" FOR INSERT WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "id"));
 
 
 
+DROP POLICY IF EXISTS "Users can read own profile" ON "public"."profiles";
 CREATE POLICY "Users can read own profile" ON "public"."profiles" FOR SELECT USING ((( SELECT "auth"."uid"() AS "uid") = "id"));
 
 
 
+DROP POLICY IF EXISTS "Users can read own surveys" ON "public"."surveys";
 CREATE POLICY "Users can read own surveys" ON "public"."surveys" FOR SELECT USING ((( SELECT "auth"."uid"() AS "uid") = "user_id"));
 
 
 
+DROP POLICY IF EXISTS "Users can read questions for own surveys" ON "public"."survey_questions";
 CREATE POLICY "Users can read questions for own surveys" ON "public"."survey_questions" FOR SELECT USING ((EXISTS ( SELECT 1
    FROM "public"."surveys"
   WHERE (("surveys"."id" = "survey_questions"."survey_id") AND ("surveys"."user_id" = ( SELECT "auth"."uid"() AS "uid"))))));
 
 
 
+DROP POLICY IF EXISTS "Users can update own profile" ON "public"."profiles";
 CREATE POLICY "Users can update own profile" ON "public"."profiles" FOR UPDATE USING ((( SELECT "auth"."uid"() AS "uid") = "id")) WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "id"));
 
 
 
+DROP POLICY IF EXISTS "Users can update own surveys" ON "public"."surveys";
 CREATE POLICY "Users can update own surveys" ON "public"."surveys" FOR UPDATE USING ((( SELECT "auth"."uid"() AS "uid") = "user_id")) WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "user_id"));
 
 
 
+DROP POLICY IF EXISTS "Users can update questions for own surveys" ON "public"."survey_questions";
 CREATE POLICY "Users can update questions for own surveys" ON "public"."survey_questions" FOR UPDATE USING ((EXISTS ( SELECT 1
    FROM "public"."surveys"
   WHERE (("surveys"."id" = "survey_questions"."survey_id") AND ("surveys"."user_id" = ( SELECT "auth"."uid"() AS "uid")))))) WITH CHECK ((EXISTS ( SELECT 1
@@ -1778,18 +1849,22 @@ CREATE OR REPLACE TRIGGER "on_auth_user_created" AFTER INSERT ON "auth"."users" 
 
 
 
+DROP POLICY IF EXISTS "Avatars are publicly readable" ON "storage"."objects";
 CREATE POLICY "Avatars are publicly readable" ON "storage"."objects" FOR SELECT USING (("bucket_id" = 'avatars'::"text"));
 
 
 
+DROP POLICY IF EXISTS "Users can delete own avatar" ON "storage"."objects";
 CREATE POLICY "Users can delete own avatar" ON "storage"."objects" FOR DELETE USING ((("bucket_id" = 'avatars'::"text") AND ((( SELECT "auth"."uid"() AS "uid"))::"text" = ("storage"."foldername"("name"))[1])));
 
 
 
+DROP POLICY IF EXISTS "Users can update own avatar" ON "storage"."objects";
 CREATE POLICY "Users can update own avatar" ON "storage"."objects" FOR UPDATE USING ((("bucket_id" = 'avatars'::"text") AND ((( SELECT "auth"."uid"() AS "uid"))::"text" = ("storage"."foldername"("name"))[1])));
 
 
 
+DROP POLICY IF EXISTS "Users can upload own avatar" ON "storage"."objects";
 CREATE POLICY "Users can upload own avatar" ON "storage"."objects" FOR INSERT WITH CHECK ((("bucket_id" = 'avatars'::"text") AND ((( SELECT "auth"."uid"() AS "uid"))::"text" = ("storage"."foldername"("name"))[1])));
 
 
