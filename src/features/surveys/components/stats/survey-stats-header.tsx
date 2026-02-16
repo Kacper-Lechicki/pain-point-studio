@@ -1,3 +1,5 @@
+'use client';
+
 import { Ban, CheckCircle2, MoreHorizontal, Share2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 

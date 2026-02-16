@@ -1,3 +1,5 @@
+'use client';
+
 import { useTranslations } from 'next-intl';
 
 import type { DeviceTimelinePoint } from '@/features/surveys/actions/get-survey-stats';
