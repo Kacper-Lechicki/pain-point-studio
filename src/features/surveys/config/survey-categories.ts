@@ -20,9 +20,13 @@ export function sortCategoriesOtherLast<T extends { value: string; label: string
   options: T[]
 ): T[] {
   return [...options].sort((a, b) => {
-    if (a.value === 'other') {return 1;}
+    if (a.value === 'other') {
+      return 1;
+    }
 
-    if (b.value === 'other') {return -1;}
+    if (b.value === 'other') {
+      return -1;
+    }
 
     return a.label.localeCompare(b.label);
   });
