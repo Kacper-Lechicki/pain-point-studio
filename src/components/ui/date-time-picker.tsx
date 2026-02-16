@@ -25,9 +25,7 @@ interface DateTimePickerProps {
   name?: string;
   placeholder?: string;
   disabled?: boolean;
-  /** Disable all dates before this date. */
   disabledBefore?: Date | undefined;
-  /** Disable all dates after this date. */
   disabledAfter?: Date | undefined;
   className?: string;
 }
@@ -40,18 +38,15 @@ function parseDateTime(value: string | null): Date | undefined {
     return undefined;
   }
 
-  // Accept both ISO strings (from DB / toISOString) and the legacy "yyyy-MM-ddTHH:mm" format.
   const date = new Date(value);
 
   return isValid(date) ? date : undefined;
 }
 
-/** Emit an ISO 8601 string so the server always receives an unambiguous UTC instant. */
 function formatDateTime(date: Date): string {
   return date.toISOString();
 }
 
-/** Clamp a candidate datetime to the [min, max] range. */
 function clampDateTime(candidate: Date, min: Date | undefined, max: Date | undefined): Date {
   let result = candidate;
 
@@ -80,7 +75,6 @@ function DateTimePicker({
   const [open, setOpen] = React.useState(false);
   const selectedDate = parseDateTime(value);
 
-  /** Emit a clamped value. */
   function emitClamped(candidate: Date) {
     const clamped = clampDateTime(candidate, disabledBefore, disabledAfter);
 
@@ -123,8 +117,6 @@ function DateTimePicker({
     ? String(selectedDate.getMinutes()).padStart(2, '0')
     : undefined;
 
-  // ── Compute allowed hours & minutes based on boundary constraints ──
-
   const { allowedHours, allowedMinutes } = React.useMemo(() => {
     let minHour = 0;
     let maxHour = 23;
@@ -133,7 +125,6 @@ function DateTimePicker({
 
     const selHour = selectedDate ? selectedDate.getHours() : 0;
 
-    // Lower bound: when selected day === disabledBefore day
     if (disabledBefore && selectedDate && isSameDay(selectedDate, disabledBefore)) {
       minHour = disabledBefore.getHours();
 
@@ -142,7 +133,6 @@ function DateTimePicker({
       }
     }
 
-    // Upper bound: when selected day === disabledAfter day
     if (disabledAfter && selectedDate && isSameDay(selectedDate, disabledAfter)) {
       maxHour = disabledAfter.getHours();
 

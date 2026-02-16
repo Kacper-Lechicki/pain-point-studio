@@ -49,7 +49,6 @@ export function PublishSuccessPanel({
         </SheetHeader>
 
         <div className="min-h-0 flex-1 overflow-y-auto px-4 pt-4 pb-8">
-          {/* Success header */}
           <div className="mb-5 flex flex-col items-center text-center">
             <div className="bg-success/10 mb-2 flex size-10 items-center justify-center rounded-full">
               <CheckCircle2 className="text-success size-5" />
@@ -66,7 +65,6 @@ export function PublishSuccessPanel({
 
           <Separator className="my-5" />
 
-          {/* Actions */}
           <div className="flex flex-col gap-2">
             <Button size="sm" asChild>
               <Link href={getSurveyStatsUrl(surveyId)}>{t('surveys.publish.viewDashboard')}</Link>

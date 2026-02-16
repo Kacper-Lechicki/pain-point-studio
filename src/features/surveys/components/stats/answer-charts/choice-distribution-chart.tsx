@@ -49,7 +49,6 @@ export const ChoiceDistributionChart = ({ answers }: ChoiceDistributionChartProp
 
   return (
     <div className="space-y-3">
-      {/* Multi-select note */}
       {isMultiSelect && (
         <p className="text-muted-foreground text-[11px]">
           {t('surveys.stats.totalSelectionsFromRespondents', {
@@ -59,7 +58,6 @@ export const ChoiceDistributionChart = ({ answers }: ChoiceDistributionChartProp
         </p>
       )}
 
-      {/* Horizontal progress bars */}
       <div className="space-y-2">
         {rows.map((row, i) => {
           const pct = Math.round((row.count / total) * 100);

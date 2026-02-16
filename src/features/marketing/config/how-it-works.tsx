@@ -5,7 +5,6 @@ import { PainPointsChart } from '@/features/marketing/components/charts/pain-poi
 import { QuestionEngagementChart } from '@/features/marketing/components/charts/question-engagement-chart';
 import { ResponsesGrowthChart } from '@/features/marketing/components/charts/responses-growth-chart';
 
-/** Single step in the "How It Works" landing section. */
 export interface HowItWorksStep {
   id: number;
   stepKey: string;
@@ -14,7 +13,6 @@ export interface HowItWorksStep {
   extraType?: 'example' | 'questions' | 'share' | 'stats';
 }
 
-/** Four-step product walkthrough: research → questions → share → patterns. */
 export const HOW_IT_WORKS_STEPS: HowItWorksStep[] = [
   {
     id: 1,

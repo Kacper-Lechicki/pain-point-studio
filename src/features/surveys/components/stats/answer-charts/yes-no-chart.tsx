@@ -27,7 +27,6 @@ export const YesNoChart = ({ answers }: YesNoChartProps) => {
   const isEqual = yesCount === noCount;
   const majorityPct = isEqual ? 50 : majorityYes ? yesPercentage : noPercentage;
 
-  // SVG ring params — same as rating-distribution-chart
   const ringSize = 72;
   const strokeWidth = 5;
   const radius = (ringSize - strokeWidth) / 2;
@@ -36,7 +35,6 @@ export const YesNoChart = ({ answers }: YesNoChartProps) => {
 
   return (
     <div className="flex items-center gap-4">
-      {/* SVG progress ring — rose fills full ring, emerald overlays its portion */}
       <div className="relative shrink-0" style={{ width: ringSize, height: ringSize }}>
         <svg
           width={ringSize}
@@ -44,7 +42,6 @@ export const YesNoChart = ({ answers }: YesNoChartProps) => {
           viewBox={`0 0 ${ringSize} ${ringSize}`}
           className="-rotate-90"
         >
-          {/* Background track */}
           <circle
             cx={ringSize / 2}
             cy={ringSize / 2}
@@ -53,7 +50,6 @@ export const YesNoChart = ({ answers }: YesNoChartProps) => {
             className="stroke-muted"
             strokeWidth={strokeWidth}
           />
-          {/* No layer (rose) — covers the full circumference */}
           {noCount > 0 && (
             <circle
               cx={ringSize / 2}
@@ -66,7 +62,6 @@ export const YesNoChart = ({ answers }: YesNoChartProps) => {
               strokeDashoffset={0}
             />
           )}
-          {/* Yes layer (emerald) — overlays on top, covering its portion */}
           {yesCount > 0 && (
             <circle
               cx={ringSize / 2}
@@ -88,9 +83,7 @@ export const YesNoChart = ({ answers }: YesNoChartProps) => {
         </div>
       </div>
 
-      {/* Rounded bar legend */}
       <div className="flex flex-1 flex-col gap-2">
-        {/* Yes bar */}
         <div className="space-y-1">
           <div className="flex items-center justify-between gap-2">
             <span
@@ -123,7 +116,6 @@ export const YesNoChart = ({ answers }: YesNoChartProps) => {
           </div>
         </div>
 
-        {/* No bar */}
         <div className="space-y-1">
           <div className="flex items-center justify-between gap-2">
             <span

@@ -26,13 +26,11 @@ export function RatingScaleSettings({ config, onUpdate }: SettingsProps) {
   const minLabel = (config.minLabel as string) ?? '';
   const maxLabel = (config.maxLabel as string) ?? '';
 
-  // Min options: RATING_SCALE_MIN … max-1
   const minOptions = useMemo(
     () => Array.from({ length: max - RATING_SCALE_MIN }, (_, i) => RATING_SCALE_MIN + i),
     [max]
   );
 
-  // Max options: min+1 … RATING_SCALE_MAX
   const maxOptions = useMemo(
     () => Array.from({ length: RATING_SCALE_MAX - min }, (_, i) => min + 1 + i),
     [min]

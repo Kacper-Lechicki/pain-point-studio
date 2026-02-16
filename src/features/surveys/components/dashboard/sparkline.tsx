@@ -16,10 +16,6 @@ const TREND_COLOR: Record<SparklineTrend, string> = {
   flat: 'text-muted-foreground',
 };
 
-/**
- * Analyze the trend of a data series by comparing the average of
- * the second half to the first half. Returns a semantic trend label.
- */
 export function getSparklineTrend(data: number[]): SparklineTrend {
   const total = data.reduce((s, v) => s + v, 0);
 
@@ -51,9 +47,6 @@ export function getSparklineTrend(data: number[]): SparklineTrend {
   return 'sharply-declining';
 }
 
-/**
- * Returns the Tailwind color class for a given data series based on trend.
- */
 export function getSparklineColor(data: number[]): string {
   return TREND_COLOR[getSparklineTrend(data)];
 }
@@ -63,12 +56,6 @@ interface SparklineProps {
   className?: string;
 }
 
-/**
- * Pure-SVG micro sparkline chart. Renders a 14-point polyline
- * from an array of numbers (daily response counts) with a subtle
- * gradient fill beneath the line for visual weight.
- * When all values are zero, renders a flat horizontal line.
- */
 export function Sparkline({ data, className }: SparklineProps) {
   const gradientId = useId();
   const max = Math.max(...data, 0);
@@ -81,7 +68,6 @@ export function Sparkline({ data, className }: SparklineProps) {
   const w = SPARKLINE_VIEWBOX_WIDTH;
   const step = w / (data.length - 1);
 
-  // Flat line when all zeros
   if (max === 0) {
     const y = h - 1;
 
@@ -108,7 +94,6 @@ export function Sparkline({ data, className }: SparklineProps) {
 
   const linePoints = data.map((v, i) => `${i * step},${h - (v / max) * (h - 2) - 1}`).join(' ');
 
-  // Area path: same points, then close to bottom-right → bottom-left
   const areaPath = data
     .map((v, i) => {
       const x = i * step;

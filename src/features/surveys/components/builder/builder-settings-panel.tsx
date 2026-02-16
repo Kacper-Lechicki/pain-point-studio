@@ -40,7 +40,6 @@ function BuilderSettingsPanelContent() {
 
   return (
     <div className="flex-1 overflow-y-auto p-4">
-      {/* Section: Question type */}
       <div className="mb-4">
         <Label className="text-muted-foreground mb-2 block text-xs font-medium tracking-wide uppercase">
           {t('surveys.builder.questionType')}
@@ -80,7 +79,6 @@ function BuilderSettingsPanelContent() {
 
       <Separator />
 
-      {/* Section: Type-specific settings */}
       <div className="py-4">
         <Label className="text-muted-foreground mb-3 block text-xs font-medium tracking-wide uppercase">
           {t('surveys.builder.settings')}

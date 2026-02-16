@@ -21,8 +21,6 @@ import { Link } from '@/i18n/routing';
 import type { MessageKey } from '@/i18n/types';
 import { cn } from '@/lib/common/utils';
 
-// ── SubNavItems ─────────────────────────────────────────────────────
-
 interface SubNavItemsProps {
   groups: SubNavGroup[];
   pathname: string;
@@ -111,8 +109,6 @@ export function SubNavItems({ groups, pathname, clientState, t, onNavigate }: Su
     </nav>
   );
 }
-
-// ── MobileNavMainLevel ──────────────────────────────────────────────
 
 interface MobileNavMainLevelProps {
   pathname: string;
@@ -223,8 +219,6 @@ export function MobileNavMainLevel({ pathname, t, onItemClick, onClose }: Mobile
     </>
   );
 }
-
-// ── MobileNavSubLevel ───────────────────────────────────────────────
 
 interface MobileNavSubLevelProps {
   selectedItem: NavItem;

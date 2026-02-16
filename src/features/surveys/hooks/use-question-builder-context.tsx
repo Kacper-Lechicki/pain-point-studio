@@ -10,8 +10,6 @@ import {
   useQuestionBuilder,
 } from './use-question-builder';
 
-// ── Context value ───────────────────────────────────────────────────
-
 interface QuestionBuilderContextValue {
   state: QuestionBuilderState;
   dispatch: React.Dispatch<QuestionBuilderAction>;
@@ -22,7 +20,6 @@ interface QuestionBuilderContextValue {
   updateQuestion: (id: string, updates: Partial<QuestionSchema>) => void;
   changeQuestionType: (id: string, newType: QuestionType) => void;
   reorderQuestions: (questionIds: string[]) => void;
-  /** Build the payload for saving questions to the server. */
   buildQuestionsPayload: () => Array<{
     id: string;
     text: string;
@@ -35,8 +32,6 @@ interface QuestionBuilderContextValue {
 }
 
 const QuestionBuilderContext = createContext<QuestionBuilderContextValue | null>(null);
-
-// ── Provider ────────────────────────────────────────────────────────
 
 interface QuestionBuilderProviderProps {
   initialQuestions: QuestionSchema[];
@@ -96,8 +91,6 @@ export function QuestionBuilderProvider({
     </QuestionBuilderContext.Provider>
   );
 }
-
-// ── Hook ────────────────────────────────────────────────────────────
 
 export function useQuestionBuilderContext() {
   const ctx = useContext(QuestionBuilderContext);

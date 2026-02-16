@@ -10,7 +10,6 @@ interface SortableTableHeaderProps<T extends string> {
   onSort: (key: T) => void;
   label: string;
   className?: string;
-  /** Use centered layout (inline-flex justify-center) for status/activity columns */
   centered?: boolean;
 }
 

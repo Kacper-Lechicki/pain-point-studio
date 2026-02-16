@@ -18,20 +18,16 @@ import Link from '@/i18n/link';
 
 interface SurveyActionMenuContentProps {
   surveyId: string;
-  /** Flags derived from survey status. */
   flags: {
     isDraft: boolean;
     isArchived: boolean;
     hasShareableLink: boolean;
     questionCount: number;
   };
-  /** Status-transition actions available for this survey. */
   availableActions: SurveyAction[];
   onShare: () => void;
   handleActionClick: (action: SurveyAction) => void;
-  /** Show a "Quick Preview" / "Details" item. */
   onDetails?: () => void;
-  /** Label key for the details item — defaults to 'details'. */
   detailsLabelKey?: 'quickPreview' | 'details';
 }
 

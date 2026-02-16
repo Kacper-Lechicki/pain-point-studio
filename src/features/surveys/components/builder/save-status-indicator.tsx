@@ -5,9 +5,7 @@ import { cn } from '@/lib/common/utils';
 
 interface SaveStatusIndicatorProps {
   status: 'idle' | 'saving' | 'saved' | 'error';
-  /** When false and status is idle, show "Saved" indicator. */
   isDirty: boolean;
-  /** Add truncate to text labels (used in mobile layout) */
   truncate?: boolean;
   className?: string;
 }

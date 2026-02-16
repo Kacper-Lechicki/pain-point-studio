@@ -18,7 +18,6 @@ import { useSortableList } from '@/hooks/use-sortable-list';
 import { cn } from '@/lib/common/utils';
 
 interface BuilderSidebarProps {
-  /** When true, sidebar renders inline (desktop). When false, renders inside a Sheet (mobile). */
   isDesktop: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;

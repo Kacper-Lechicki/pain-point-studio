@@ -71,7 +71,6 @@ export function BuilderTopBar({
   return (
     <>
       {isDesktop ? (
-        /* ── Desktop: single row ─────────────────────────────────────── */
         <div className="border-border flex h-12 shrink-0 items-center gap-4 border-b pr-0 pl-4">
           <div className="flex min-w-0 items-center gap-1.5">
             <Link
@@ -120,9 +119,7 @@ export function BuilderTopBar({
           </div>
         </div>
       ) : (
-        /* ── Mobile: two rows for clarity ─────────────────────────────── */
         <div className="border-border shrink-0 border-b">
-          {/* Row 1: navigation breadcrumb + user menu */}
           <div className="flex min-h-11 items-center gap-1.5 px-3 py-2">
             <Link
               href={ROUTES.dashboard.surveys}
@@ -148,7 +145,6 @@ export function BuilderTopBar({
             </div>
           </div>
 
-          {/* Row 2: panel toggles + save status + actions */}
           <div className="border-border flex min-h-10 items-center justify-between gap-2 border-t px-3 py-2">
             <div className="flex shrink-0 items-center gap-1">
               <Button

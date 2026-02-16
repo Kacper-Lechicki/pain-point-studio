@@ -22,7 +22,6 @@ export function BuilderCenter() {
   const { state, activeQuestion, updateQuestion, selectQuestion } = useQuestionBuilderContext();
   const textInputRef = useRef<HTMLInputElement>(null);
 
-  // Auto-focus when a new question is added (empty text = freshly created)
   useEffect(() => {
     if (activeQuestion && !activeQuestion.text) {
       textInputRef.current?.focus();
@@ -50,7 +49,6 @@ export function BuilderCenter() {
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
       <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8">
-        {/* Step indicator */}
         <div className="mb-4 flex flex-wrap items-center gap-1.5">
           {state.questions.map((q, i) => {
             const isStepActive = q.id === activeQuestion.id;
@@ -74,7 +72,6 @@ export function BuilderCenter() {
           })}
         </div>
 
-        {/* Question text */}
         <Input
           ref={textInputRef}
           value={activeQuestion.text}
@@ -83,7 +80,6 @@ export function BuilderCenter() {
           maxLength={QUESTION_TEXT_MAX_LENGTH}
         />
 
-        {/* Description */}
         {showDescription ? (
           <div className="mt-2">
             <Textarea
@@ -116,7 +112,6 @@ export function BuilderCenter() {
           </Button>
         )}
 
-        {/* WYSIWYG answer preview */}
         <div className="mt-8">
           <QuestionEditor question={activeQuestion} />
         </div>

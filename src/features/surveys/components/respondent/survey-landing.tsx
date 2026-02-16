@@ -39,9 +39,7 @@ export const SurveyLanding = ({ survey, slug }: SurveyLandingProps) => {
           setShowDuplicateWarning(true);
         });
       }
-    } catch {
-      // localStorage may not be available
-    }
+    } catch {}
   }, [slug]);
 
   const handleStart = () => {
@@ -56,7 +54,6 @@ export const SurveyLanding = ({ survey, slug }: SurveyLandingProps) => {
     });
   };
 
-  // If survey flow is active, render it
   if (responseId) {
     return <SurveyFlow survey={survey} responseId={responseId} slug={slug} />;
   }

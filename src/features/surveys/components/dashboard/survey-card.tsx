@@ -24,8 +24,6 @@ import { getSurveyEditUrl, getSurveyStatsUrl } from '@/features/surveys/lib/surv
 import Link from '@/i18n/link';
 import { cn } from '@/lib/common/utils';
 
-// ── Component ────────────────────────────────────────────────────────
-
 interface SurveyCardProps {
   survey: UserSurvey;
   onStatusChange: (surveyId: string, action: string) => void;
@@ -96,7 +94,6 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
         )}
       >
         <Link href={href} className="block min-w-0">
-          {/* Row 1: Title + Badge + Menu */}
           <div className="flex items-start gap-3">
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -106,7 +103,6 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
                 <SurveyStatusBadge status={survey.status} />
               </div>
 
-              {/* Row 2: Description */}
               <p className="text-muted-foreground mt-1 line-clamp-1 text-xs leading-relaxed">
                 {survey.description || (
                   <span className="italic">{t('surveys.dashboard.card.noDescription')}</span>
@@ -114,7 +110,6 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
               </p>
             </div>
 
-            {/* Menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -144,7 +139,6 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
             </DropdownMenu>
           </div>
 
-          {/* Row 3: Metadata and sparkline */}
           <div className="border-border/50 bg-muted/30 mt-3 flex min-w-0 flex-col gap-2 rounded-lg px-2.5 py-2 sm:flex-row sm:items-end sm:justify-between sm:gap-3 sm:px-3 sm:py-2.5">
             <div className="text-muted-foreground min-w-0 shrink-0 text-xs leading-relaxed">
               <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
@@ -191,7 +185,6 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
             )}
           </div>
 
-          {/* Row 4: Contextual hint */}
           {hint &&
             (() => {
               const style = HINT_SEVERITY_STYLES[hint.severity];
@@ -205,7 +198,6 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
               );
             })()}
 
-          {/* Row 5: Progress bar (active surveys with respondent limit) */}
           {isActive && survey.maxRespondents && survey.maxRespondents > 0 && (
             <div className="mt-2.5">
               <div className="bg-muted h-1 overflow-hidden rounded-full">

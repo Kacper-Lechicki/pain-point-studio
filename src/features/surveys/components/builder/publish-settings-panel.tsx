@@ -69,7 +69,6 @@ export function PublishSettingsPanel({
   const isLoading = saveAction.isLoading || publishAction.isLoading;
 
   async function handlePublish() {
-    // Save questions first
     dispatch({ type: 'SET_SAVE_STATUS', payload: { status: 'saving' } });
     const saveResult = await saveAction.execute(saveSurveyQuestions, {
       surveyId,
@@ -82,7 +81,6 @@ export function PublishSettingsPanel({
       return;
     }
 
-    // Publish with optional settings
     await publishAction.execute(publishSurvey, {
       surveyId,
       endsAt,
@@ -114,7 +112,6 @@ export function PublishSettingsPanel({
             <AlertDescription>{t('surveys.publish.settingsHint')}</AlertDescription>
           </Alert>
 
-          {/* End date */}
           <div className="space-y-2">
             <Label>{t('surveys.publish.endDate')}</Label>
             <p className="text-muted-foreground text-xs">{t('surveys.publish.endDateHelper')}</p>
@@ -126,7 +123,6 @@ export function PublishSettingsPanel({
             />
           </div>
 
-          {/* Max respondents */}
           <div className="space-y-2">
             <Label>{t('surveys.publish.maxRespondents')}</Label>
             <p className="text-muted-foreground text-xs">
@@ -141,7 +137,6 @@ export function PublishSettingsPanel({
           </div>
         </div>
 
-        {/* Footer */}
         <div className="border-border shrink-0 border-t px-3 py-4 sm:px-4">
           <Button className="w-full" disabled={isLoading || !hasQuestions} onClick={handlePublish}>
             {isLoading && <Spinner />}

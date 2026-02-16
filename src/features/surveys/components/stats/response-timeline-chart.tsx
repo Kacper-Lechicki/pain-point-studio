@@ -13,7 +13,6 @@ import {
 } from '@/components/ui/chart';
 
 interface ResponseTimelineChartProps {
-  /** 30-element array of daily response counts (oldest → newest). */
   data: number[];
   className?: string;
 }

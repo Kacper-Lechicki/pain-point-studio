@@ -16,7 +16,6 @@ interface SurveyDetailSheetProps {
   onClose: () => void;
   survey: UserSurvey | null;
   questions: MappedQuestion[] | null;
-  /** Shared clock from the parent list — keeps relative times consistent. */
   now: Date;
   onStatusChange: (surveyId: string, action: string) => void;
   detailsLabel: string;

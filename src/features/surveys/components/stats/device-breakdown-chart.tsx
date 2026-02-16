@@ -14,7 +14,6 @@ import {
 import type { DeviceTimelinePoint } from '@/features/surveys/actions/get-survey-stats';
 
 interface DeviceBreakdownChartProps {
-  /** 30-element array of daily device counts (oldest -> newest). */
   data: DeviceTimelinePoint[];
   className?: string;
 }

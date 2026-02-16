@@ -14,7 +14,6 @@ import { TEXT_PLACEHOLDER_MAX_LENGTH } from '@/features/surveys/config';
 
 const MAX_LENGTH_OPTIONS = [100, 200, 500, 1000, 2000, 5000, 10_000] as const;
 
-/** Sentinel string used in the Select to represent "no limit". */
 const NO_LIMIT = 'none';
 
 export function TextSettings({ config, onUpdate }: SettingsProps) {

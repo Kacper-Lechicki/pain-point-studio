@@ -22,7 +22,6 @@ const SOCIAL_COLORS: Record<string, string> = {
   other: 'md:hover:border-primary/30 md:hover:bg-primary/5',
 };
 
-/** Strip protocol and trailing slash from a URL for compact display (e.g. "github.com/user"). */
 export function getDisplayUrl(url: string): string {
   try {
     const parsed = new URL(url);

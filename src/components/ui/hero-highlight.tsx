@@ -27,7 +27,6 @@ type HeroHighlightProps = {
   children: React.ReactNode;
   className?: string;
   containerClassName?: string;
-  /** Rendered above children so backdrop-blur nav can blur the dot pattern. */
   navbar?: React.ReactNode;
   showDotsOnMobile?: boolean;
 };

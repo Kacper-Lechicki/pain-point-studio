@@ -21,7 +21,6 @@ function RedditIcon({ className }: { className?: string }) {
 interface SurveyShareContentProps {
   shareUrl: string;
   surveyTitle: string;
-  /** Render in a narrow sidebar layout (smaller QR, stacked buttons). */
   compact?: boolean;
 }
 
@@ -77,7 +76,6 @@ export function SurveyShareContent({
 
   return (
     <div className={compact ? 'space-y-4' : 'space-y-5'}>
-      {/* Copy link */}
       <div className="space-y-1.5">
         <label className={compact ? 'text-xs font-medium' : 'text-sm font-medium'}>
           {t('surveys.publish.shareLink')}
@@ -85,7 +83,6 @@ export function SurveyShareContent({
         <ClipboardInput value={shareUrl} />
       </div>
 
-      {/* QR code */}
       <div className="flex flex-col items-center gap-2">
         <div className="border-border rounded-lg border p-2">
           <QRCodeCanvas ref={qrRef} value={shareUrl} size={qrSize} level="M" />
@@ -98,7 +95,6 @@ export function SurveyShareContent({
 
       <Separator />
 
-      {/* Social sharing */}
       <div className="space-y-1.5">
         <label className={compact ? 'text-xs font-medium' : 'text-sm font-medium'}>
           {t('surveys.publish.shareVia')}

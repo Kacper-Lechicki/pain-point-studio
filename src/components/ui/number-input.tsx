@@ -77,14 +77,12 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
       onChange(num);
     }
 
-    /** Block non-digit characters that type="number" still allows. */
     function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
       if (['e', 'E', '.', ',', '+', '-'].includes(e.key)) {
         e.preventDefault();
       }
     }
 
-    /** Strip non-digits on paste. */
     function handlePaste(e: React.ClipboardEvent<HTMLInputElement>) {
       const pasted = e.clipboardData.getData('text');
 
@@ -99,7 +97,6 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
       }
     }
 
-    /** Clamp to [min, max] when the field loses focus. */
     function handleBlur() {
       if (value !== null) {
         let clamped = value;

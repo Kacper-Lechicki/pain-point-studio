@@ -48,15 +48,12 @@ export const SurveyCompletion = ({
       });
 
       if (result.success) {
-        // Store in localStorage for duplicate detection
         try {
           localStorage.setItem(
             surveyCompletedKey(slug),
             JSON.stringify({ timestamp: Date.now(), responseId } satisfies CompletedData)
           );
-        } catch {
-          // localStorage may not be available
-        }
+        } catch {}
 
         onSubmitted();
       } else {

@@ -15,7 +15,6 @@ interface DetailMetricsGridProps {
   lastResponseLabel: string | null;
   respondentProgress: number | null;
   isActive: boolean;
-  /** Use wider breakpoints when rendered in full-page layout. */
   wide?: boolean;
 }
 

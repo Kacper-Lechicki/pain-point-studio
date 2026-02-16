@@ -118,7 +118,6 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
           onCancel={() => setShowCancelDialog(true)}
         />
 
-        {/* Key metrics */}
         <DetailMetricsGrid
           completedCount={stats.completedResponses}
           responseCount={stats.totalResponses}

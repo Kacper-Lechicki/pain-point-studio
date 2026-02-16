@@ -59,7 +59,6 @@ export function useBreadcrumbSegment(segment: string, label: string) {
     ctx.setSegment(segment, label);
 
     return () => ctx.removeSegment(segment);
-    // setSegment / removeSegment are stable (useCallback with [])
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [segment, label]);
 }

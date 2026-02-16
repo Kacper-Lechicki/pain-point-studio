@@ -80,7 +80,6 @@ export const SurveyListToolbar = ({
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      {/* Search */}
       <SearchInput
         value={searchQuery}
         onChange={onSearchQueryChange}
@@ -88,7 +87,6 @@ export const SurveyListToolbar = ({
         className="basis-full sm:max-w-sm sm:flex-1 sm:basis-auto"
       />
 
-      {/* Status filter */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button

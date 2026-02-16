@@ -82,15 +82,12 @@ export function BuilderSidebarItem({
           <GripVertical className="size-4" aria-hidden />
         </span>
       ) : null}
-      {/* Number */}
       <span className="text-muted-foreground shrink-0 text-xs font-medium tabular-nums">
         {index + 1}.
       </span>
 
-      {/* Type icon */}
       <TypeIcon className="text-muted-foreground size-4 shrink-0" />
 
-      {/* Text */}
       <span
         className={cn(
           'min-w-0 flex-1 truncate text-xs',
@@ -100,13 +97,11 @@ export function BuilderSidebarItem({
         {displayText}
       </span>
 
-      {/* Action menu */}
       <DropdownMenu
         onOpenChange={(open) => {
           if (open) {
             menuOpenRef.current = true;
           } else {
-            // Delay reset so the parent onClick doesn't fire on close
             setTimeout(() => {
               menuOpenRef.current = false;
             }, 100);

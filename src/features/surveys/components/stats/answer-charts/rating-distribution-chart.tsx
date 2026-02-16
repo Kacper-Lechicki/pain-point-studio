@@ -17,7 +17,6 @@ import { cn } from '@/lib/common/utils';
 
 interface RatingDistributionChartProps {
   answers: QuestionAnswerData[];
-  /** Question config — expected to contain `min` and `max` for rating scale. */
   config: Record<string, unknown>;
 }
 
@@ -82,7 +81,6 @@ export const RatingDistributionChart = ({ answers, config }: RatingDistributionC
   const sentimentColor = getSentimentColor(ratio);
   const ringColor = getRingColor(ratio);
 
-  // SVG ring params
   const ringSize = 72;
   const strokeWidth = 5;
   const radius = (ringSize - strokeWidth) / 2;
@@ -91,9 +89,7 @@ export const RatingDistributionChart = ({ answers, config }: RatingDistributionC
 
   return (
     <div className="space-y-4">
-      {/* Score card */}
       <div className="flex items-center gap-4">
-        {/* Progress ring */}
         <div className="relative shrink-0" style={{ width: ringSize, height: ringSize }}>
           <svg
             width={ringSize}
@@ -159,7 +155,6 @@ export const RatingDistributionChart = ({ answers, config }: RatingDistributionC
         </div>
       </div>
 
-      {/* Distribution bars */}
       <div className="flex items-end gap-1">
         {bars.map((bar) => {
           const barHeight = maxBarCount > 0 ? (bar.count / maxBarCount) * 100 : 0;
