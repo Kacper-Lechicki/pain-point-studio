@@ -18,7 +18,6 @@ const SUPABASE_ERROR_MAP: Record<string, string> = {
   'User must have at least one identity': 'settings.connectedAccounts.errors.cannotUnlinkLast',
 };
 
-/** Returns the i18n key for a given Supabase error message; exact match first, then prefix match. */
 export function mapSupabaseError(supabaseMessage: string): string {
   const exactMatch = SUPABASE_ERROR_MAP[supabaseMessage];
 

@@ -1,4 +1,3 @@
-/** Tailwind-aligned viewport widths (px) for responsive layout and hooks. */
 export const BREAKPOINTS = {
   sm: 640,
   md: 768,

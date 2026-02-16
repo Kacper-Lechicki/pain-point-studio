@@ -1,6 +1,5 @@
 import type { SubNavGroup, SubNavItem } from '@/features/dashboard/config/navigation';
 
-/** Build the full href for a sub-nav item (path + search params + hash). */
 export function getSubItemHref(item: SubNavItem): string {
   if (item.searchParams) {
     const params = new URLSearchParams(item.searchParams);
@@ -31,7 +30,6 @@ export function collectSearchParamKeys(groups: SubNavGroup[]): string[] {
   ];
 }
 
-/** Check whether a sub-nav item matches the current URL (pathname + hash + search params). */
 export function isSubItemActive(
   item: SubNavItem,
   pathname: string,

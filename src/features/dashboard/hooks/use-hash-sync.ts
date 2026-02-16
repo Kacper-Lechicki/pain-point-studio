@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 
-/** Return the current URL hash without the leading '#', or '' on the server. */
 export function getHash(): string {
   if (typeof window === 'undefined') {
     return '';
@@ -11,7 +10,6 @@ export function getHash(): string {
   return window.location.hash.replace('#', '');
 }
 
-/** Reactive hook that tracks the URL hash fragment. Listens to hashchange and popstate events. */
 export function useHashSync(): string {
   const [hash, setHash] = useState('');
 

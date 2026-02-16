@@ -26,7 +26,7 @@ export function BuilderCenter() {
     if (activeQuestion && !activeQuestion.text) {
       textInputRef.current?.focus();
     }
-  }, [activeQuestion?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [activeQuestion]);
 
   if (state.questions.length === 0) {
     return (

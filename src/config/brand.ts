@@ -1,6 +1,5 @@
 import type { MessageKey } from '@/i18n/types';
 
-/** Central brand config: i18n keys for name, tagline, author. */
 export const BRAND = {
   name: 'brand.name',
   tagline: 'brand.tagline',

@@ -10,7 +10,6 @@ export const duplicateSurvey = withProtectedAction<typeof surveyIdSchema, { surv
     schema: surveyIdSchema,
     rateLimit: RATE_LIMITS.bulkCreate,
     action: async ({ data, user, supabase }) => {
-      // Fetch original survey (must belong to user)
       const { data: original, error: fetchError } = await supabase
         .from('surveys')
         .select('title, description, category, visibility, max_respondents')
@@ -22,7 +21,6 @@ export const duplicateSurvey = withProtectedAction<typeof surveyIdSchema, { surv
         return { error: 'surveys.errors.unexpected' };
       }
 
-      // Create new draft survey (copy metadata, reset scheduling)
       const { data: newSurvey, error: insertError } = await supabase
         .from('surveys')
         .insert({
@@ -41,7 +39,6 @@ export const duplicateSurvey = withProtectedAction<typeof surveyIdSchema, { surv
         return { error: 'surveys.errors.unexpected' };
       }
 
-      // Copy questions
       const { data: questions } = await supabase
         .from('survey_questions')
         .select('text, type, required, description, config, sort_order')

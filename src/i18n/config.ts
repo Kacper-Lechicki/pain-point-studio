@@ -13,7 +13,6 @@ export default createMiddleware({
   pathnames: PATHNAMES,
 });
 
-/** Paths this middleware runs on: root and any path under a locale segment (e.g. /en/...). */
 export const config = {
   matcher: ['/', `/(${locales.join('|')})/:path*`],
 };

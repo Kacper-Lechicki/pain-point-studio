@@ -42,7 +42,6 @@ async function fetchExportData(
   surveyId: string,
   userId: string
 ) {
-  // Fetch survey (ownership verified) and questions in parallel
   const [{ data: survey }, { data: questions }, { data: responses }] = await Promise.all([
     supabase.from('surveys').select('id, title').eq('id', surveyId).eq('user_id', userId).single(),
     supabase
@@ -70,7 +69,6 @@ async function fetchExportData(
     answers = data ?? [];
   }
 
-  // Group answers by response_id then question_id
   const answerMap = new Map<string, Map<string, Record<string, unknown>>>();
 
   for (const a of answers) {
@@ -102,7 +100,6 @@ export const exportSurveyCSV = withProtectedAction<
 
     const { survey, questions, responses, answerMap } = result;
 
-    // Build CSV header
     const headers = [
       'Response ID',
       'Completed At',

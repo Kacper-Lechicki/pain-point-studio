@@ -1,4 +1,3 @@
-/** Common English stopwords filtered out during keyword extraction. */
 export const STOPWORDS = new Set([
   'the',
   'a',

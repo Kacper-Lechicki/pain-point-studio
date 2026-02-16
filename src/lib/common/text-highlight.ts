@@ -3,7 +3,6 @@ export interface TextSegment {
   highlight: boolean;
 }
 
-/** Build a regex that matches any of the given keywords (case-insensitive, word boundary). */
 export function buildHighlightRegex(words: string[]): RegExp | null {
   if (words.length === 0) {
     return null;
@@ -14,7 +13,6 @@ export function buildHighlightRegex(words: string[]): RegExp | null {
   return new RegExp(`\\b(${escaped.join('|')})\\b`, 'gi');
 }
 
-/** Split text into segments for highlighting. */
 export function highlightText(text: string, regex: RegExp | null): TextSegment[] {
   if (!regex) {
     return [{ text, highlight: false }];

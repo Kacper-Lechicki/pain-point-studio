@@ -40,7 +40,6 @@ export function getRingColor(ratio: number): string {
   return 'stroke-rose-500';
 }
 
-/** Return a bar color class based on where the rating sits on the scale. */
 export function getBarColor(rating: number, scaleMin: number, scaleMax: number): string {
   const range = scaleMax - scaleMin;
 

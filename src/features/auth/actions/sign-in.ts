@@ -11,7 +11,6 @@ import { withPublicAction } from '@/lib/common/with-public-action';
 import { mapSupabaseError } from '@/lib/supabase/errors';
 import { createClient } from '@/lib/supabase/server';
 
-/** Email/password sign-in with rate limiting and Zod validation. */
 export const signInWithEmail = withPublicAction('sign-in', {
   schema: signInSchema,
   rateLimit: RATE_LIMITS.auth,
@@ -31,7 +30,6 @@ export const signInWithEmail = withPublicAction('sign-in', {
   },
 });
 
-/** Initiates OAuth flow — redirects to the provider's consent screen. */
 export const signInWithOAuth = async (provider: AuthProvider): Promise<{ error: string }> => {
   const supabase = await createClient();
   const locale = await getLocale();

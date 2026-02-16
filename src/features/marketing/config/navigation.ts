@@ -1,14 +1,12 @@
 import { ROUTES } from '@/config';
 import type { MessageKey } from '@/i18n/types';
 
-/** Marketing site top-bar navigation link. */
 export interface NavLink {
   href: string;
   label: MessageKey;
   disabled?: boolean;
 }
 
-/** Links shown in the marketing navbar (all disabled until pages are built). */
 export const NAV_LINKS: NavLink[] = [
   { href: ROUTES.common.home, label: 'common.solutions', disabled: true },
   { href: ROUTES.common.home, label: 'common.features', disabled: true },

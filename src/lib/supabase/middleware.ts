@@ -11,7 +11,6 @@ import { User } from '@supabase/supabase-js';
 
 import { env } from '@/lib/common/env';
 
-/** Refreshes Supabase session from cookies and returns the response and user (or null). */
 export const updateSession = async (
   req: NextRequest
 ): Promise<{ response: NextResponse; user: User | null }> => {

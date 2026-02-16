@@ -2,7 +2,6 @@ import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 
 const ASC_KEYS: readonly string[] = ['title', 'status'];
 
-/** Returns 'asc' for title/status, 'desc' for everything else. */
 export function getDefaultSortDir(key: string): 'asc' | 'desc' {
   return ASC_KEYS.includes(key) ? 'asc' : 'desc';
 }

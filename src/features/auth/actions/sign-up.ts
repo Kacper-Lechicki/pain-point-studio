@@ -8,7 +8,6 @@ import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withPublicAction } from '@/lib/common/with-public-action';
 import { mapSupabaseError } from '@/lib/supabase/errors';
 
-/** Email/password registration with stricter rate limiting. Sends a confirmation email. */
 export const signUpWithEmail = withPublicAction('sign-up', {
   schema: signUpSchema,
   rateLimit: RATE_LIMITS.authStrict,

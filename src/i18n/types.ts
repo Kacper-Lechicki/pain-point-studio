@@ -15,7 +15,6 @@ declare module 'next-intl' {
 
 export type MessageKey = NestedKeyOf<Messages>;
 
-/** Recursively builds dot-notation keys from a nested message object. */
 type NestedKeyOf<T, Prefix extends string = ''> =
   T extends Record<string, unknown>
     ? {

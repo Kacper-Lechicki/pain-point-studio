@@ -15,7 +15,6 @@ const profileStatisticsSchema = z.object({
   memberSince: z.string(),
 });
 
-/** Profile statistics: survey/response counts and membership date. */
 export type ProfileStatistics = z.infer<typeof profileStatisticsSchema>;
 
 /**

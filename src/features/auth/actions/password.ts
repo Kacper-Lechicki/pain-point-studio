@@ -8,7 +8,6 @@ import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withPublicAction } from '@/lib/common/with-public-action';
 import { mapSupabaseError } from '@/lib/supabase/errors';
 
-/** Sends a password-reset email with a locale-aware callback URL. */
 export const resetPassword = withPublicAction('reset-password', {
   schema: forgotPasswordSchema,
   rateLimit: RATE_LIMITS.sensitive,
@@ -29,7 +28,6 @@ export const resetPassword = withPublicAction('reset-password', {
   },
 });
 
-/** Sets a new password for the authenticated user (called after reset-link redirect). */
 export const updatePassword = withPublicAction('update-password', {
   schema: updatePasswordSchema,
   rateLimit: RATE_LIMITS.sensitiveRelaxed,

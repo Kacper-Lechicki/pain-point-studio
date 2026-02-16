@@ -9,7 +9,6 @@ import { timingSafeEqual } from 'crypto';
 
 import { env } from '@/lib/common/env';
 
-/** True only in production with both BASIC_AUTH_USER and BASIC_AUTH_PASSWORD set. */
 export function isProtectionEnabled(): boolean {
   const isProduction = env.NODE_ENV === 'production';
   const hasAuthEnv = !!(env.BASIC_AUTH_USER && env.BASIC_AUTH_PASSWORD);
@@ -33,7 +32,6 @@ function safeEqual(a: string, b: string): boolean {
   return bufA.length === bufB.length && timingSafeEqual(paddedA, paddedB);
 }
 
-/** Validates Authorization: Basic <base64(user:password)> against env credentials. */
 export function isAuthenticated(req: NextRequest): boolean {
   const authorization = req.headers.get('authorization');
 

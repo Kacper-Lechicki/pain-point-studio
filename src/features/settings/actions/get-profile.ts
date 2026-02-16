@@ -9,7 +9,6 @@ import { SOCIAL_LINK_TYPES } from '@/features/settings/config/social-link-types'
 import type { SocialLink } from '@/features/settings/types';
 import { createClient } from '@/lib/supabase/server';
 
-/** A translated lookup option (value + localized display label). */
 export interface LookupValue {
   value: string;
   label: string;

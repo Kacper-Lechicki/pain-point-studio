@@ -5,5 +5,4 @@
 export const locales = ['en'] as const;
 export const defaultLocale = 'en' as const;
 
-/** Union of supported locale codes (e.g. 'en'). */
 export type Locale = (typeof locales)[number];

@@ -1,17 +1,14 @@
 // @vitest-environment node
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-// Mock redirect
 vi.mock('next/navigation', () => ({
   redirect: vi.fn(),
 }));
 
-// Mock next-intl/server
 vi.mock('next-intl/server', () => ({
   getLocale: vi.fn().mockResolvedValue('en'),
 }));
 
-// Mock env
 vi.mock('@/lib/common/env', () => ({
   env: {
     NODE_ENV: 'production',
@@ -21,12 +18,10 @@ vi.mock('@/lib/common/env', () => ({
   },
 }));
 
-// Mock rate limiter — allow all by default
 vi.mock('@/lib/common/rate-limit', () => ({
   rateLimit: vi.fn().mockResolvedValue({ limited: false }),
 }));
 
-// Mock Supabase server client
 const mockSignInWithPassword = vi.fn();
 const mockSignInWithOAuth = vi.fn();
 
@@ -45,7 +40,6 @@ describe('Auth Actions – Sign In', () => {
   });
 
   describe('signInWithEmail', () => {
-    // Valid email/password call signInWithPassword and return success.
     it('should return success on valid credentials', async () => {
       mockSignInWithPassword.mockResolvedValue({ error: null });
 
@@ -64,7 +58,6 @@ describe('Auth Actions – Sign In', () => {
       });
     });
 
-    // When Supabase returns error (e.g. invalid credentials), action returns error.
     it('should return an error when Supabase rejects credentials', async () => {
       mockSignInWithPassword.mockResolvedValue({
         error: { message: 'Invalid login credentials' },
@@ -81,7 +74,6 @@ describe('Auth Actions – Sign In', () => {
       expect(result).not.toHaveProperty('success');
     });
 
-    // Invalid email/password fail validation; Supabase is not called.
     it('should not call Supabase when form data is invalid', async () => {
       const { signInWithEmail } = await import('./sign-in');
 
@@ -94,7 +86,6 @@ describe('Auth Actions – Sign In', () => {
       expect(mockSignInWithPassword).not.toHaveBeenCalled();
     });
 
-    // When rate limited, action returns error and does not call Supabase.
     it('should return rate limit error when rate limited', async () => {
       const { rateLimit } = await import('@/lib/common/rate-limit');
 
@@ -113,7 +104,6 @@ describe('Auth Actions – Sign In', () => {
   });
 
   describe('signInWithOAuth', () => {
-    // OAuth returns URL; action calls redirect with that URL.
     it('should redirect on successful OAuth', async () => {
       const { redirect } = await import('next/navigation');
 
@@ -128,7 +118,6 @@ describe('Auth Actions – Sign In', () => {
       expect(redirect).toHaveBeenCalledWith('https://accounts.google.com/oauth');
     });
 
-    // When signInWithOAuth returns error, action returns error result.
     it('should return an error on OAuth failure', async () => {
       mockSignInWithOAuth.mockResolvedValue({
         data: {},

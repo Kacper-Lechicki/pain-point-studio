@@ -1,7 +1,5 @@
-/** Question type union — mirrors `QuestionType` from `../types` without creating a circular import. */
 type QuestionType = 'open_text' | 'short_text' | 'multiple_choice' | 'rating_scale' | 'yes_no';
 
-/** Raw row shape returned by Supabase from `survey_questions` table. */
 interface QuestionRow {
   id: string;
   text: string;
@@ -12,7 +10,6 @@ interface QuestionRow {
   sort_order: number;
 }
 
-/** Typed question with camelCase keys, used throughout the app. */
 export interface MappedQuestion {
   id: string;
   text: string;

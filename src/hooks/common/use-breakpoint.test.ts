@@ -16,7 +16,6 @@ describe('useBreakpoint', () => {
     vi.stubGlobal('innerWidth', originalInnerWidth);
   });
 
-  // innerWidth >= breakpoint threshold returns true.
   it('should return true when window width is above breakpoint', () => {
     vi.stubGlobal('innerWidth', BREAKPOINTS.lg + 100);
     const { result } = renderHook(() => useBreakpoint('lg'));
@@ -24,7 +23,6 @@ describe('useBreakpoint', () => {
     expect(result.current).toBe(true);
   });
 
-  // innerWidth equal to breakpoint threshold returns true.
   it('should return true when window width equals breakpoint', () => {
     vi.stubGlobal('innerWidth', BREAKPOINTS.md);
     const { result } = renderHook(() => useBreakpoint('md'));
@@ -32,7 +30,6 @@ describe('useBreakpoint', () => {
     expect(result.current).toBe(true);
   });
 
-  // innerWidth below breakpoint threshold returns false.
   it('should return false when window width is below breakpoint', () => {
     vi.stubGlobal('innerWidth', BREAKPOINTS.lg - 1);
     const { result } = renderHook(() => useBreakpoint('lg'));
@@ -40,7 +37,6 @@ describe('useBreakpoint', () => {
     expect(result.current).toBe(false);
   });
 
-  // Resize event triggers re-check and updated return value.
   it('should update when window is resized', () => {
     vi.stubGlobal('innerWidth', 500);
     const { result } = renderHook(() => useBreakpoint('md'));
@@ -55,7 +51,6 @@ describe('useBreakpoint', () => {
     expect(result.current).toBe(true);
   });
 
-  // resize listener is removed from window on unmount.
   it('should cleanup event listener on unmount', () => {
     const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
     const { unmount } = renderHook(() => useBreakpoint('sm'));
