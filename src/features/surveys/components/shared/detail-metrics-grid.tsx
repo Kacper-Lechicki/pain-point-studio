@@ -2,6 +2,7 @@ import { Clock, ListChecks, MousePointerClick, Percent, Timer, Users } from 'luc
 import { useTranslations } from 'next-intl';
 
 import { formatCompletionTime } from '@/features/surveys/lib/calculations';
+import { cn } from '@/lib/common/utils';
 
 import { SectionLabel } from './metric-display';
 
@@ -15,6 +16,8 @@ interface DetailMetricsGridProps {
   lastResponseLabel: string | null;
   respondentProgress: number | null;
   isActive: boolean;
+  /** Use wider breakpoints when rendered in full-page layout. */
+  wide?: boolean;
 }
 
 export function DetailMetricsGrid({
@@ -27,6 +30,7 @@ export function DetailMetricsGrid({
   lastResponseLabel,
   respondentProgress,
   isActive,
+  wide = false,
 }: DetailMetricsGridProps) {
   const inProgressCount = responseCount - completedCount;
   const completionTimeLabel = formatCompletionTime(avgCompletionSeconds);
@@ -35,7 +39,7 @@ export function DetailMetricsGrid({
   return (
     <>
       <SectionLabel>{t('surveys.dashboard.detailPanel.metricsLabel')}</SectionLabel>
-      <div className="grid grid-cols-2 gap-2">
+      <div className={cn('grid grid-cols-2 gap-2', wide && 'sm:grid-cols-3 lg:grid-cols-4')}>
         <div className="border-border/50 rounded-md border px-3 py-2.5">
           <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
             {responseCount}
@@ -65,7 +69,7 @@ export function DetailMetricsGrid({
             </div>
           )}
         </div>
-        {isActive && inProgressCount > 0 && (
+        {isActive && (
           <div className="border-border/50 rounded-md border px-3 py-2.5">
             <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
               {inProgressCount}
@@ -76,49 +80,41 @@ export function DetailMetricsGrid({
             </div>
           </div>
         )}
-        {submissionRate != null && (
-          <div className="border-border/50 rounded-md border px-3 py-2.5">
-            <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
-              {submissionRate}%
-            </div>
-            <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
-              <Percent className="mt-0.5 size-3 shrink-0" aria-hidden />
-              {t('surveys.dashboard.detailPanel.submissionRate')}
-            </div>
+        <div className="border-border/50 rounded-md border px-3 py-2.5">
+          <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
+            {submissionRate != null ? `${submissionRate}%` : '—'}
           </div>
-        )}
-        {avgQuestionCompletion != null && (
-          <div className="border-border/50 rounded-md border px-3 py-2.5">
-            <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
-              {avgQuestionCompletion}%
-            </div>
-            <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
-              <ListChecks className="mt-0.5 size-3 shrink-0" aria-hidden />
-              {t('surveys.dashboard.detailPanel.avgQuestionCompletion')}
-            </div>
+          <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
+            <Percent className="mt-0.5 size-3 shrink-0" aria-hidden />
+            {t('surveys.dashboard.detailPanel.submissionRate')}
           </div>
-        )}
-        {completionTimeLabel != null && (
-          <div className="border-border/50 rounded-md border px-3 py-2.5">
-            <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
-              {completionTimeLabel}
-            </div>
-            <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
-              <Timer className="mt-0.5 size-3 shrink-0" aria-hidden />
-              {t('surveys.dashboard.detailPanel.avgCompletionTime')}
-            </div>
+        </div>
+        <div className="border-border/50 rounded-md border px-3 py-2.5">
+          <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
+            {avgQuestionCompletion != null ? `${avgQuestionCompletion}%` : '—'}
           </div>
-        )}
-        {lastResponseLabel != null && (
-          <div className="border-border/50 rounded-md border px-3 py-2.5">
-            <div className="text-foreground text-sm leading-none font-semibold">
-              {lastResponseLabel}
-            </div>
-            <div className="text-muted-foreground mt-1.5 text-[11px]">
-              {t('surveys.dashboard.detailPanel.lastResponse')}
-            </div>
+          <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
+            <ListChecks className="mt-0.5 size-3 shrink-0" aria-hidden />
+            {t('surveys.dashboard.detailPanel.avgQuestionCompletion')}
           </div>
-        )}
+        </div>
+        <div className="border-border/50 rounded-md border px-3 py-2.5">
+          <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
+            {completionTimeLabel ?? '—'}
+          </div>
+          <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
+            <Timer className="mt-0.5 size-3 shrink-0" aria-hidden />
+            {t('surveys.dashboard.detailPanel.avgCompletionTime')}
+          </div>
+        </div>
+        <div className="border-border/50 rounded-md border px-3 py-2.5">
+          <div className="text-foreground text-sm leading-none font-semibold">
+            {lastResponseLabel ?? '—'}
+          </div>
+          <div className="text-muted-foreground mt-1.5 text-[11px]">
+            {t('surveys.dashboard.detailPanel.lastResponse')}
+          </div>
+        </div>
       </div>
     </>
   );

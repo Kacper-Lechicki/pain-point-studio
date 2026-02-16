@@ -159,24 +159,6 @@
       "title": "No surveys yet",
       "description": "Create a survey to start collecting user feedback and discover real pain points.",
       "cta": "Create survey"
-    },
-    "overview": {
-      "welcomeBack": "Welcome back",
-      "totalSurveys": "Published surveys",
-      "activeSurveys": "Active surveys",
-      "totalResponses": "Total responses",
-      "avgSubmissionRate": "Submission rate",
-      "responseActivity": "Response activity",
-      "topSurveys": "Top surveys",
-      "recentResponses": "Recent responses",
-      "noRecentResponses": "No responses yet.",
-      "completedCount": "{count} completed",
-      "viewStats": "View stats",
-      "viewAll": "View all surveys",
-      "createSurvey": "Create survey",
-      "noFeedback": "No feedback",
-      "refresh": "Refresh",
-      "excludedNote": "Statistics include active and completed surveys only. Drafts, cancelled, and archived surveys are excluded."
     }
   },
   "surveys": {
@@ -382,7 +364,6 @@
       "mode": "Most common: {value}",
       "majorityYes": "Majority: Yes ({pct}%)",
       "majorityNo": "Majority: No ({pct}%)",
-      "ofRespondentsAnswered": "{answered} of {total} respondents answered",
       "skippedBy": "Skipped by {count}",
       "totalSelectionsFromRespondents": "{selections} selections from {respondents} respondents",
       "averageLength": "Avg. {chars} characters",
@@ -397,11 +378,45 @@
       "responseTimeline": "Response timeline",
       "liveIndicator": "Live",
       "insightTopChoice": "Most selected: {option} ({pct}%)",
+      "insightTiedChoices": "Tied: {options} ({pct}% each)",
       "insightAvgRating": "Average: {value}/{max}",
       "insightMajority": "Majority: {label} ({pct}%)",
+      "insightEqualSplit": "Equal split (50/50)",
       "insightText": "{count, plural, one {1 response} other {# responses}}, avg. {chars} chars",
       "topKeywords": "Top keywords",
-      "refresh": "Refresh data"
+      "refresh": "Refresh data",
+      "moreActions": "More actions",
+      "deviceBreakdown": "Device breakdown",
+      "deviceDesktop": "Desktop",
+      "deviceMobile": "Mobile",
+      "deviceTablet": "Tablet",
+      "deviceUnknown": "Unknown",
+      "noDeviceData": "No device data yet",
+      "winnerLabel": "Most popular: {option} ({pct}%)",
+      "verdictLabel": "{pct}% said {label}",
+      "sentiment": {
+        "excellent": "Excellent",
+        "good": "Good",
+        "fair": "Fair",
+        "poor": "Poor"
+      },
+      "medianShort": "Median: {value}",
+      "modeShort": "Mode: {value}",
+      "filter": {
+        "all": "All responses",
+        "keyword": "Filter"
+      },
+      "sort": {
+        "newest": "Newest",
+        "longest": "Longest",
+        "shortest": "Shortest",
+        "az": "A–Z"
+      },
+      "dialog": {
+        "searchPlaceholder": "Search responses…",
+        "clearAll": "Clear filters",
+        "noResults": "No responses match your filters"
+      }
     },
     "dashboard": {
       "status": {
@@ -526,6 +541,7 @@
         "copyLink": "Copy link",
         "linkCopied": "Link copied!",
         "metricsLabel": "Metrics",
+        "viewAllMetrics": "View all metrics",
         "detailsLabel": "Details",
         "actionsLabel": "Actions",
         "questionsLabel": "Questions",
@@ -636,30 +652,6 @@
         "title": "No archived surveys found for \"{query}\"",
         "description": "Try a different search term or clear the search."
       }
-    }
-  },
-  "analytics": {
-    "title": "Analytics",
-    "description": "Cross-survey insights and performance metrics.",
-    "totalResponses": "Total responses",
-    "completedResponses": "Completed",
-    "avgSubmissionRate": "Avg. submission rate",
-    "responseTrends": "Response trends",
-    "categoryBreakdown": "Responses by category",
-    "surveyComparison": "Survey comparison",
-    "columnTitle": "Title",
-    "columnStatus": "Status",
-    "columnCategory": "Category",
-    "columnResponses": "Responses",
-    "columnSubmissionRate": "Submission %",
-    "columnQuestions": "Questions",
-    "columnCreated": "Created",
-    "responses": "Responses",
-    "refresh": "Refresh",
-    "excludedNote": "Statistics include active and completed surveys only. Drafts, cancelled, and archived surveys are excluded.",
-    "empty": {
-      "title": "No analytics yet",
-      "description": "Analytics will appear once you have surveys with responses."
     }
   },
   "respondent": {

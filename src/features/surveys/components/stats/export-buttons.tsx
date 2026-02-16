@@ -6,10 +6,10 @@ import { Download } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import { Button } from '@/components/ui/button';
+import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { exportSurveyCSV, exportSurveyJSON } from '@/features/surveys/actions';
 
-interface ExportButtonsProps {
+interface ExportMenuItemsProps {
   surveyId: string;
 }
 
@@ -37,7 +37,7 @@ function downloadBlob(content: string, filename: string, mimeType: string) {
   URL.revokeObjectURL(url);
 }
 
-export const ExportButtons = ({ surveyId }: ExportButtonsProps) => {
+export const ExportMenuItems = ({ surveyId }: ExportMenuItemsProps) => {
   const t = useTranslations();
   const [exporting, setExporting] = useState<ExportFormat | null>(null);
 
@@ -62,22 +62,19 @@ export const ExportButtons = ({ surveyId }: ExportButtonsProps) => {
   };
 
   return (
-    <div className="flex gap-2">
+    <>
       {(['csv', 'json'] as const).map((format) => (
-        <Button
+        <DropdownMenuItem
           key={format}
-          variant="outline"
-          size="sm"
           onClick={() => handleExport(format)}
           disabled={exporting !== null}
-          className="gap-1.5"
         >
-          <Download className="size-3.5" />
+          <Download className="size-4" aria-hidden />
           {exporting === format
             ? t('surveys.stats.exporting')
             : t(`surveys.stats.${EXPORT_CONFIG[format].labelKey}`)}
-        </Button>
+        </DropdownMenuItem>
       ))}
-    </div>
+    </>
   );
 };

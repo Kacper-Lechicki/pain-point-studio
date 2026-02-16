@@ -2,9 +2,7 @@
 
 import { Check, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Cell, Pie, PieChart } from 'recharts';
 
-import { type ChartConfig, ChartContainer } from '@/components/ui/chart';
 import type { QuestionAnswerData } from '@/features/surveys/actions/get-survey-stats';
 import { cn } from '@/lib/common/utils';
 
@@ -25,107 +23,135 @@ export const YesNoChart = ({ answers }: YesNoChartProps) => {
 
   const yesPercentage = Math.round((yesCount / total) * 100);
   const noPercentage = 100 - yesPercentage;
-  const majorityYes = yesCount >= noCount;
+  const majorityYes = yesCount > noCount;
+  const isEqual = yesCount === noCount;
+  const majorityPct = isEqual ? 50 : majorityYes ? yesPercentage : noPercentage;
 
-  const chartConfig = {
-    yes: { label: t('surveys.stats.yesLabel'), color: 'var(--chart-emerald)' },
-    no: { label: t('surveys.stats.noLabel'), color: 'var(--chart-rose)' },
-  } satisfies ChartConfig;
-
-  const pieData = [
-    { name: 'yes', value: yesCount },
-    { name: 'no', value: noCount },
-  ];
-
-  const COLORS = ['var(--chart-emerald)', 'var(--chart-rose)'];
+  // SVG ring params — same as rating-distribution-chart
+  const ringSize = 72;
+  const strokeWidth = 5;
+  const radius = (ringSize - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const yesArc = circumference * (yesCount / total);
 
   return (
-    <div className="space-y-4">
-      <p className="text-muted-foreground text-xs font-medium">
-        {majorityYes
-          ? t('surveys.stats.majorityYes', { pct: yesPercentage })
-          : t('surveys.stats.majorityNo', { pct: noPercentage })}
-      </p>
+    <div className="flex items-center gap-4">
+      {/* SVG progress ring — rose fills full ring, emerald overlays its portion */}
+      <div className="relative shrink-0" style={{ width: ringSize, height: ringSize }}>
+        <svg
+          width={ringSize}
+          height={ringSize}
+          viewBox={`0 0 ${ringSize} ${ringSize}`}
+          className="-rotate-90"
+        >
+          {/* Background track */}
+          <circle
+            cx={ringSize / 2}
+            cy={ringSize / 2}
+            r={radius}
+            fill="none"
+            className="stroke-muted"
+            strokeWidth={strokeWidth}
+          />
+          {/* No layer (rose) — covers the full circumference */}
+          {noCount > 0 && (
+            <circle
+              cx={ringSize / 2}
+              cy={ringSize / 2}
+              r={radius}
+              fill="none"
+              className="stroke-rose-500"
+              strokeWidth={strokeWidth}
+              strokeDasharray={circumference}
+              strokeDashoffset={0}
+            />
+          )}
+          {/* Yes layer (emerald) — overlays on top, covering its portion */}
+          {yesCount > 0 && (
+            <circle
+              cx={ringSize / 2}
+              cy={ringSize / 2}
+              r={radius}
+              fill="none"
+              className="stroke-emerald-500"
+              strokeWidth={strokeWidth}
+              strokeLinecap="round"
+              strokeDasharray={`${yesArc} ${circumference - yesArc}`}
+              strokeDashoffset={0}
+            />
+          )}
+        </svg>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="text-foreground text-sm leading-none font-bold tabular-nums">
+            {majorityPct}%
+          </span>
+        </div>
+      </div>
 
-      <div className="flex items-center gap-6">
-        <ChartContainer config={chartConfig} className="size-28 shrink-0">
-          <PieChart>
-            <Pie
-              data={pieData}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              innerRadius="60%"
-              outerRadius="85%"
-              strokeWidth={0}
-            >
-              {pieData.map((entry, index) => (
-                <Cell key={entry.name} fill={COLORS[index]} />
-              ))}
-            </Pie>
-            <text
-              x="50%"
-              y="50%"
-              textAnchor="middle"
-              dominantBaseline="central"
-              className="fill-foreground text-lg font-bold"
-            >
-              {majorityYes ? `${yesPercentage}%` : `${noPercentage}%`}
-            </text>
-          </PieChart>
-        </ChartContainer>
-
-        <div className="flex-1 space-y-3">
-          <div className="bg-muted/60 flex h-9 overflow-hidden rounded-full">
-            {yesPercentage > 0 && (
-              <div
-                className="flex items-center justify-center gap-1 text-xs font-semibold text-white transition-all"
-                style={{ width: `${yesPercentage}%`, backgroundColor: 'var(--chart-emerald)' }}
-              >
-                {yesPercentage > 12 && (
-                  <>
-                    <Check className="size-3.5 shrink-0" aria-hidden />
-                    {yesPercentage > 20 && `${yesPercentage}%`}
-                  </>
-                )}
-              </div>
-            )}
-            {noPercentage > 0 && (
-              <div
-                className="flex items-center justify-center gap-1 text-xs font-semibold text-white transition-all"
-                style={{ width: `${noPercentage}%`, backgroundColor: 'var(--chart-rose)' }}
-              >
-                {noPercentage > 12 && (
-                  <>
-                    <X className="size-3.5 shrink-0" aria-hidden />
-                    {noPercentage > 20 && `${noPercentage}%`}
-                  </>
-                )}
-              </div>
-            )}
-          </div>
-          <div className="flex justify-between gap-4">
+      {/* Rounded bar legend */}
+      <div className="flex flex-1 flex-col gap-2">
+        {/* Yes bar */}
+        <div className="space-y-1">
+          <div className="flex items-center justify-between gap-2">
             <span
               className={cn(
-                'flex items-center gap-2 text-sm font-medium',
-                majorityYes ? 'text-[var(--chart-emerald)]' : 'text-muted-foreground'
+                'flex items-center gap-1.5 text-xs font-medium',
+                majorityYes || isEqual ? 'text-foreground' : 'text-muted-foreground'
               )}
             >
-              <Check className="size-4 shrink-0" aria-hidden />
-              {t('surveys.stats.yesLabel')}: {yesCount}
+              <Check
+                className={cn(
+                  'size-3.5 shrink-0',
+                  majorityYes || isEqual
+                    ? 'text-emerald-600 dark:text-emerald-400'
+                    : 'text-muted-foreground'
+                )}
+                aria-hidden
+              />
+              {t('surveys.stats.yesLabel')}
+            </span>
+            <span className="text-foreground text-xs font-medium tabular-nums">
+              {yesCount}{' '}
               <span className="text-muted-foreground font-normal">({yesPercentage}%)</span>
             </span>
+          </div>
+          <div className="bg-muted h-2 w-full overflow-hidden rounded-full">
+            <div
+              className="h-full rounded-full bg-emerald-500 transition-all"
+              style={{ width: `${yesPercentage}%` }}
+            />
+          </div>
+        </div>
+
+        {/* No bar */}
+        <div className="space-y-1">
+          <div className="flex items-center justify-between gap-2">
             <span
               className={cn(
-                'flex items-center gap-2 text-sm font-medium',
-                !majorityYes ? 'text-[var(--chart-rose)]' : 'text-muted-foreground'
+                'flex items-center gap-1.5 text-xs font-medium',
+                !majorityYes || isEqual ? 'text-foreground' : 'text-muted-foreground'
               )}
             >
-              <X className="size-4 shrink-0" aria-hidden />
-              {t('surveys.stats.noLabel')}: {noCount}
-              <span className="text-muted-foreground font-normal">({noPercentage}%)</span>
+              <X
+                className={cn(
+                  'size-3.5 shrink-0',
+                  !majorityYes || isEqual
+                    ? 'text-rose-600 dark:text-rose-400'
+                    : 'text-muted-foreground'
+                )}
+                aria-hidden
+              />
+              {t('surveys.stats.noLabel')}
             </span>
+            <span className="text-foreground text-xs font-medium tabular-nums">
+              {noCount} <span className="text-muted-foreground font-normal">({noPercentage}%)</span>
+            </span>
+          </div>
+          <div className="bg-muted h-2 w-full overflow-hidden rounded-full">
+            <div
+              className="h-full rounded-full bg-rose-500 transition-all"
+              style={{ width: `${noPercentage}%` }}
+            />
           </div>
         </div>
       </div>

@@ -8,6 +8,7 @@ import {
   CalendarX2,
   Clock,
   Expand,
+  MousePointerClick,
   Pencil,
   Send,
   Share2,
@@ -21,7 +22,6 @@ import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Separator } from '@/components/ui/separator';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
-import { DetailMetricsGrid } from '@/features/surveys/components/shared/detail-metrics-grid';
 import { DetailQuestionsList } from '@/features/surveys/components/shared/detail-questions-list';
 import { MetricRow, SectionLabel } from '@/features/surveys/components/shared/metric-display';
 import { DATE_FORMAT_SHORT, QUESTIONS_MIN, SURVEY_RETENTION_DAYS } from '@/features/surveys/config';
@@ -36,8 +36,8 @@ import { useSurveyAction } from '@/features/surveys/hooks/use-survey-action';
 import { useSurveyCardActions } from '@/features/surveys/hooks/use-survey-card-actions';
 import {
   calculateRespondentProgress,
-  calculateSubmissionRate,
   daysUntilExpiry,
+  formatCompletionTime,
 } from '@/features/surveys/lib/calculations';
 import type { MappedQuestion } from '@/features/surveys/lib/map-question-row';
 import {
@@ -90,7 +90,6 @@ export function SurveyDetailPanel({
   );
   const hasShareableLink = (isActive || isCompleted || isCancelled) && !!shareUrl;
   const sparklineColor = getSparklineColor(survey.recentActivity);
-  const submissionRate = calculateSubmissionRate(survey.completedCount, survey.responseCount);
   const lastResponseLabel =
     survey.lastResponseAt != null
       ? format.relativeTime(new Date(survey.lastResponseAt), now)
@@ -99,6 +98,7 @@ export function SurveyDetailPanel({
     survey.completedCount,
     survey.maxRespondents
   );
+  const completionTimeLabel = formatCompletionTime(survey.avgCompletionSeconds);
   const availableActions = getAvailableActions(survey.status);
   const canPublish = isDraft && survey.questionCount >= QUESTIONS_MIN;
 
@@ -138,30 +138,82 @@ export function SurveyDetailPanel({
         </p>
       )}
 
-      {!isDraft && !isArchived && (
-        <>
-          <Separator className="my-4" />
-
-          {/* Key Metrics */}
-          <DetailMetricsGrid
-            completedCount={survey.completedCount}
-            responseCount={survey.responseCount}
-            maxRespondents={survey.maxRespondents}
-            submissionRate={submissionRate}
-            avgQuestionCompletion={survey.avgQuestionCompletion}
-            avgCompletionSeconds={survey.avgCompletionSeconds}
-            lastResponseLabel={lastResponseLabel}
-            respondentProgress={respondentProgress}
-            isActive={isActive}
-          />
-        </>
-      )}
-
       {isActive && (
         <>
           <Separator className="my-4" />
           <SectionLabel>{t('surveys.dashboard.detailPanel.last14Days')}</SectionLabel>
           <Sparkline data={survey.recentActivity} className={cn('h-10 w-full', sparklineColor)} />
+        </>
+      )}
+
+      {!isDraft && !isArchived && (
+        <>
+          <Separator className="my-4" />
+
+          {/* Key Metrics (compact — 4 metrics + link to full stats) */}
+          <SectionLabel>{t('surveys.dashboard.detailPanel.metricsLabel')}</SectionLabel>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="border-border/50 rounded-md border px-3 py-2.5">
+              <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
+                {survey.responseCount}
+              </div>
+              <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
+                <MousePointerClick className="mt-0.5 size-3 shrink-0" aria-hidden />
+                {t('surveys.dashboard.detailPanel.visitors')}
+              </div>
+            </div>
+            <div className="border-border/50 rounded-md border px-3 py-2.5">
+              <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
+                {survey.completedCount}
+                {survey.maxRespondents != null && (
+                  <span className="text-muted-foreground text-xs font-normal">
+                    {' '}
+                    / {survey.maxRespondents}
+                  </span>
+                )}
+              </div>
+              <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
+                <Users className="mt-0.5 size-3 shrink-0" aria-hidden />
+                {t('surveys.dashboard.detailPanel.responses')}
+              </div>
+              {respondentProgress != null && (
+                <div className="bg-muted mt-2 h-1 w-full overflow-hidden rounded-full">
+                  <div
+                    className="h-full rounded-full bg-emerald-500 transition-all"
+                    style={{ width: `${respondentProgress}%` }}
+                  />
+                </div>
+              )}
+            </div>
+            <div className="border-border/50 rounded-md border px-3 py-2.5">
+              <div className="text-foreground text-sm leading-none font-semibold">
+                {lastResponseLabel ?? '—'}
+              </div>
+              <div className="text-muted-foreground mt-1.5 text-[11px]">
+                {t('surveys.dashboard.detailPanel.lastResponse')}
+              </div>
+            </div>
+            <div className="border-border/50 rounded-md border px-3 py-2.5">
+              <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
+                {completionTimeLabel ?? '—'}
+              </div>
+              <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
+                <Timer className="mt-0.5 size-3 shrink-0" aria-hidden />
+                {t('surveys.dashboard.detailPanel.avgCompletionTime')}
+              </div>
+            </div>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground mt-2.5 h-7 w-full text-xs"
+            asChild
+          >
+            <Link href={getSurveyStatsUrl(survey.id)}>
+              <BarChart3 className="size-3.5" aria-hidden />
+              {t('surveys.dashboard.detailPanel.viewAllMetrics')}
+            </Link>
+          </Button>
         </>
       )}
 

@@ -153,6 +153,7 @@ export type Database = {
           contact_email_encrypted: string | null;
           contact_name_encrypted: string | null;
           created_at: string;
+          device_type: string | null;
           feedback: string | null;
           id: string;
           started_at: string;
@@ -165,6 +166,7 @@ export type Database = {
           contact_email_encrypted?: string | null;
           contact_name_encrypted?: string | null;
           created_at?: string;
+          device_type?: string | null;
           feedback?: string | null;
           id?: string;
           started_at?: string;
@@ -177,6 +179,7 @@ export type Database = {
           contact_email_encrypted?: string | null;
           contact_name_encrypted?: string | null;
           created_at?: string;
+          device_type?: string | null;
           feedback?: string | null;
           id?: string;
           started_at?: string;
@@ -260,6 +263,7 @@ export type Database = {
     };
     Functions: {
       cancel_email_change: { Args: never; Returns: undefined };
+      complete_expired_surveys: { Args: never; Returns: undefined };
       decrypt_pii: { Args: { encrypted: string }; Returns: string };
       encrypt_pii: { Args: { plain_text: string }; Returns: string };
       get_analytics_data: { Args: { p_user_id: string }; Returns: Json };
@@ -300,7 +304,12 @@ export type Database = {
         Args: { p_questions: Json; p_survey_id: string; p_user_id: string };
         Returns: undefined;
       };
-      start_survey_response: { Args: { p_survey_id: string }; Returns: string };
+      start_survey_response:
+        | { Args: { p_survey_id: string }; Returns: string }
+        | {
+            Args: { p_device_type?: string; p_survey_id: string };
+            Returns: string;
+          };
       submit_survey_response: {
         Args: {
           p_contact_email?: string;

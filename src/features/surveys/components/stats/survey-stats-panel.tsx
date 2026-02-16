@@ -1,27 +1,43 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useMemo, useState, useTransition } from 'react';
 
-import { Ban, CheckCircle2, Inbox, Link2, RefreshCw } from 'lucide-react';
-import { useLocale, useTranslations } from 'next-intl';
+import { Ban, CheckCircle2, Inbox, Link2, MoreHorizontal, RefreshCw, Share2 } from 'lucide-react';
+import { useFormatter, useNow, useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Separator } from '@/components/ui/separator';
 import { useBreadcrumbSegment } from '@/features/dashboard/components/layout/breadcrumb-context';
 import { cancelSurvey, completeSurvey } from '@/features/surveys/actions';
 import type { QuestionStats, SurveyStats } from '@/features/surveys/actions/get-survey-stats';
+import { SurveyShareDialog } from '@/features/surveys/components/dashboard/survey-share-dialog';
 import { SurveyStatusBadge } from '@/features/surveys/components/dashboard/survey-status-badge';
+import { DetailMetricsGrid } from '@/features/surveys/components/shared/detail-metrics-grid';
 import { SectionLabel } from '@/features/surveys/components/shared/metric-display';
+import { ResponseTimelineChart } from '@/features/surveys/components/shared/response-timeline-chart';
 import { useRealtimeResponses } from '@/features/surveys/hooks/use-realtime-responses';
-import { getSurveyShareUrl } from '@/features/surveys/lib/share-url';
+import { useSurveyCardActions } from '@/features/surveys/hooks/use-survey-card-actions';
+import {
+  calculateAvgQuestionCompletion,
+  calculateRespondentProgress,
+  calculateSubmissionRate,
+} from '@/features/surveys/lib/calculations';
 import type { SurveyStatus } from '@/features/surveys/types';
 import { useRefresh } from '@/hooks/common/use-refresh';
 import { cn } from '@/lib/common/utils';
 
-import { ExportButtons } from './export-buttons';
+import { DeviceBreakdownChart } from './device-breakdown-chart';
+import { ExportMenuItems } from './export-buttons';
 import { QuestionStatsCard } from './question-stats-card';
 
 interface SurveyStatsPanelProps {
@@ -30,11 +46,15 @@ interface SurveyStatsPanelProps {
 
 export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
   const t = useTranslations();
-  const locale = useLocale();
+  const format = useFormatter();
+  const now = useNow({ updateInterval: 60_000 });
   const { isRefreshing, refresh } = useRefresh();
 
   useBreadcrumbSegment(stats.survey.id, stats.survey.title);
   const { isConnected: isRealtimeConnected } = useRealtimeResponses(stats.survey.id);
+  const { shareUrl, shareDialogOpen, setShareDialogOpen, handleShare } = useSurveyCardActions(
+    stats.survey.slug
+  );
 
   const [showCompleteDialog, setShowCompleteDialog] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
@@ -44,8 +64,24 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
   const currentStatus = optimisticStatus ?? stats.survey.status;
   const canComplete = currentStatus === 'active';
   const canCancel = currentStatus === 'active';
+  const isActive = currentStatus === 'active';
+  const hasShareableLink = !!shareUrl;
 
-  const shareUrl = stats.survey.slug ? getSurveyShareUrl(locale, stats.survey.slug) : null;
+  const submissionRate = calculateSubmissionRate(stats.completedResponses, stats.totalResponses);
+  const respondentProgress = calculateRespondentProgress(
+    stats.completedResponses,
+    stats.survey.maxRespondents
+  );
+  const avgQuestionCompletion = useMemo(
+    () =>
+      calculateAvgQuestionCompletion(
+        stats.questions.map((q) => q.answers.length),
+        stats.completedResponses
+      ),
+    [stats.questions, stats.completedResponses]
+  );
+  const lastResponseLabel =
+    stats.lastResponseAt != null ? format.relativeTime(new Date(stats.lastResponseAt), now) : null;
 
   const handleCompleteSurvey = () => {
     startTransition(async () => {
@@ -73,16 +109,10 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
     });
   };
 
-  const handleCopyEmpty = async () => {
-    if (shareUrl) {
-      await navigator.clipboard.writeText(shareUrl);
-      toast.success(t('surveys.stats.linkCopied'));
-    }
-  };
-
   return (
     <main className="flex min-w-0 flex-col" aria-label={stats.survey.title}>
       <div className="space-y-6">
+        {/* Header */}
         <div className="flex min-w-0 flex-wrap items-start justify-between gap-4">
           <div className="min-w-0 flex-1">
             <h1 className="text-foreground min-w-0 truncate text-3xl leading-tight font-bold">
@@ -92,17 +122,18 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
               <SurveyStatusBadge status={currentStatus} />
             </div>
           </div>
-          <div className="flex shrink-0 gap-2">
+
+          <div className="flex shrink-0 items-center gap-1">
             <div className="relative">
               <Button
-                variant="outline"
-                size="sm"
+                variant="ghost"
+                size="icon-xs"
                 onClick={refresh}
                 disabled={isRefreshing}
-                className="gap-1.5"
+                aria-label={t('surveys.stats.refresh')}
+                title={t('surveys.stats.refresh')}
               >
-                <RefreshCw className={cn('size-3.5', isRefreshing && 'animate-spin')} aria-hidden />
-                {t('surveys.stats.refresh')}
+                <RefreshCw className={cn('size-3', isRefreshing && 'animate-spin')} aria-hidden />
               </Button>
               <span
                 className={cn(
@@ -112,31 +143,95 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
                 aria-hidden
               />
             </div>
-            {canComplete && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowCompleteDialog(true)}
-                className="gap-1.5"
-              >
-                <CheckCircle2 className="size-3.5" aria-hidden />
-                {t('surveys.stats.completeSurvey')}
-              </Button>
-            )}
-            {canCancel && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowCancelDialog(true)}
-                className="gap-1.5"
-              >
-                <Ban className="size-3.5" aria-hidden />
-                {t('surveys.stats.cancelSurvey')}
-              </Button>
-            )}
-            <ExportButtons surveyId={stats.survey.id} />
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
+                  className="text-muted-foreground"
+                  aria-label={t('surveys.stats.moreActions')}
+                >
+                  <MoreHorizontal className="size-4" aria-hidden />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {hasShareableLink && (
+                  <DropdownMenuItem onClick={handleShare}>
+                    <Share2 className="size-4" aria-hidden />
+                    {t('surveys.dashboard.actions.share')}
+                  </DropdownMenuItem>
+                )}
+
+                <ExportMenuItems surveyId={stats.survey.id} />
+
+                {(canComplete || canCancel) && <DropdownMenuSeparator />}
+
+                {canComplete && (
+                  <DropdownMenuItem variant="accent" onClick={() => setShowCompleteDialog(true)}>
+                    <CheckCircle2 className="size-4" aria-hidden />
+                    {t('surveys.stats.completeSurvey')}
+                  </DropdownMenuItem>
+                )}
+
+                {canCancel && (
+                  <DropdownMenuItem variant="destructive" onClick={() => setShowCancelDialog(true)}>
+                    <Ban className="size-4" aria-hidden />
+                    {t('surveys.stats.cancelSurvey')}
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
+
+        {/* Key metrics */}
+        <DetailMetricsGrid
+          completedCount={stats.completedResponses}
+          responseCount={stats.totalResponses}
+          maxRespondents={stats.survey.maxRespondents}
+          submissionRate={submissionRate}
+          avgQuestionCompletion={avgQuestionCompletion}
+          avgCompletionSeconds={stats.avgCompletionSeconds}
+          lastResponseLabel={lastResponseLabel}
+          respondentProgress={respondentProgress}
+          isActive={isActive}
+          wide
+        />
+
+        {/* Charts */}
+        {stats.completedResponses > 0 && (
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div>
+              <SectionLabel>{t('surveys.stats.responseTimeline')}</SectionLabel>
+              <ResponseTimelineChart data={stats.responseTimeline} className="h-48 w-full" />
+            </div>
+            <div>
+              <div className="mb-2 flex items-center justify-between">
+                <p className="text-muted-foreground text-[11px] font-medium tracking-wider uppercase">
+                  {t('surveys.stats.deviceBreakdown')}
+                </p>
+                <div className="flex items-center gap-2.5">
+                  <span className="text-muted-foreground flex items-center gap-1 text-[10px]">
+                    <span
+                      className="inline-block size-2 rounded-full"
+                      style={{ backgroundColor: 'var(--chart-violet)' }}
+                    />
+                    {t('surveys.stats.deviceDesktop')}
+                  </span>
+                  <span className="text-muted-foreground flex items-center gap-1 text-[10px]">
+                    <span
+                      className="inline-block size-2 rounded-full"
+                      style={{ backgroundColor: 'var(--chart-cyan)' }}
+                    />
+                    {t('surveys.stats.deviceMobile')}
+                  </span>
+                </div>
+              </div>
+              <DeviceBreakdownChart data={stats.deviceTimeline} className="h-48 w-full" />
+            </div>
+          </div>
+        )}
 
         {stats.completedResponses === 0 ? (
           <EmptyState
@@ -145,7 +240,7 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
             description={t('surveys.stats.noResponsesDescription')}
             action={
               shareUrl ? (
-                <Button size="sm" onClick={handleCopyEmpty} className="gap-1.5">
+                <Button size="sm" onClick={handleShare} className="gap-1.5">
                   <Link2 className="size-4" aria-hidden />
                   {t('surveys.stats.copySurveyLink')}
                 </Button>
@@ -158,17 +253,21 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
             <SectionLabel>{t('surveys.stats.questionBreakdown')}</SectionLabel>
             <div className="space-y-3">
               {stats.questions.map((q: QuestionStats, i: number) => (
-                <QuestionStatsCard
-                  key={q.id}
-                  question={q}
-                  index={i}
-                  completedResponses={stats.completedResponses}
-                />
+                <QuestionStatsCard key={q.id} question={q} index={i} />
               ))}
             </div>
           </>
         )}
       </div>
+
+      {hasShareableLink && shareUrl && (
+        <SurveyShareDialog
+          open={shareDialogOpen}
+          onOpenChange={setShareDialogOpen}
+          shareUrl={shareUrl}
+          surveyTitle={stats.survey.title}
+        />
+      )}
 
       <ConfirmDialog
         open={showCompleteDialog}

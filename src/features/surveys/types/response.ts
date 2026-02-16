@@ -3,8 +3,12 @@ import { z } from 'zod';
 // ── Server action input schemas ─────────────────────────────────────
 
 /** Identical to `surveyIdSchema` — inlined to avoid circular index ↔ response import. */
+export const DEVICE_TYPES = ['desktop', 'mobile', 'tablet'] as const;
+export type DeviceType = (typeof DEVICE_TYPES)[number];
+
 export const startResponseSchema = z.object({
   surveyId: z.string().uuid(),
+  deviceType: z.enum(DEVICE_TYPES).optional(),
 });
 
 export type StartResponseSchema = z.infer<typeof startResponseSchema>;

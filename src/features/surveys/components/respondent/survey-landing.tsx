@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { PageTransition } from '@/components/ui/page-transition';
 import { startResponse } from '@/features/surveys/actions/respondent';
 import { ESTIMATED_SECONDS_PER_QUESTION, surveyCompletedKey } from '@/features/surveys/config';
+import { detectDeviceType } from '@/features/surveys/lib/detect-device';
 import type { CompletedData, PublicSurveyData } from '@/features/surveys/types';
 import type { MessageKey } from '@/i18n/types';
 
@@ -46,7 +47,7 @@ export const SurveyLanding = ({ survey, slug }: SurveyLandingProps) => {
 
   const handleStart = () => {
     startTransition(async () => {
-      const result = await startResponse({ surveyId: survey.id });
+      const result = await startResponse({ surveyId: survey.id, deviceType: detectDeviceType() });
 
       if (result.success && result.data) {
         setResponseId(result.data.responseId);

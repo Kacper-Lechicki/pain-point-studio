@@ -137,7 +137,11 @@ export const SIDEBAR_NAV: NavGroup[] = [
           ],
         },
       },
-      { labelKey: 'sidebar.analytics', icon: BarChart3, href: ROUTES.dashboard.analytics },
+      {
+        labelKey: 'sidebar.analytics',
+        icon: BarChart3,
+        href: ROUTES.dashboard.analytics,
+      },
     ],
   },
 ];

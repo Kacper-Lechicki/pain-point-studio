@@ -17,7 +17,13 @@ export interface QuestionStats {
   text: string;
   type: QuestionType;
   sortOrder: number;
+  config: Record<string, unknown>;
   answers: QuestionAnswerData[];
+}
+
+export interface DeviceTimelinePoint {
+  desktop: number;
+  mobile: number;
 }
 
 export interface SurveyStats {
@@ -37,6 +43,7 @@ export interface SurveyStats {
   avgCompletionSeconds: number | null;
   firstResponseAt: string | null;
   lastResponseAt: string | null;
+  deviceTimeline: DeviceTimelinePoint[];
   questions: QuestionStats[];
 }
 
@@ -57,6 +64,7 @@ const surveyStatsRpcSchema = z.object({
   avgCompletionSeconds: z.number().nullable().default(null),
   firstResponseAt: z.unknown().transform((v) => (typeof v === 'string' ? v : null)),
   lastResponseAt: z.unknown().transform((v) => (typeof v === 'string' ? v : null)),
+  deviceTimeline: z.array(z.object({ desktop: z.number(), mobile: z.number() })).default([]),
   questions: z
     .array(
       z.object({
@@ -64,6 +72,7 @@ const surveyStatsRpcSchema = z.object({
         text: z.string(),
         type: z.enum(QUESTION_TYPES),
         sortOrder: z.number(),
+        config: z.record(z.string(), z.unknown()).default({}),
         answers: z.array(
           z.object({
             value: z.record(z.string(), z.unknown()),

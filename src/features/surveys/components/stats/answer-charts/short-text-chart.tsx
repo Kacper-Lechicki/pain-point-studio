@@ -9,12 +9,12 @@ import type { QuestionAnswerData } from '@/features/surveys/actions/get-survey-s
 import { InlineTextSearch } from './inline-text-search';
 import type { ResponseItem } from './inline-text-search';
 
-interface TextAnswersListProps {
+interface ShortTextChartProps {
   answers: QuestionAnswerData[];
   questionText: string;
 }
 
-export const TextAnswersList = ({ answers, questionText }: TextAnswersListProps) => {
+export const ShortTextChart = ({ answers, questionText }: ShortTextChartProps) => {
   const t = useTranslations();
 
   const textAnswers = useMemo<ResponseItem[]>(

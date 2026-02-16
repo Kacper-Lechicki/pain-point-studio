@@ -3,15 +3,9 @@
 import { useMemo } from 'react';
 
 import { useTranslations } from 'next-intl';
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 
-import {
-  type ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from '@/components/ui/chart';
 import type { QuestionAnswerData } from '@/features/surveys/actions/get-survey-stats';
+import { cn } from '@/lib/common/utils';
 
 interface ChoiceDistributionChartProps {
   answers: QuestionAnswerData[];
@@ -20,14 +14,7 @@ interface ChoiceDistributionChartProps {
 export const ChoiceDistributionChart = ({ answers }: ChoiceDistributionChartProps) => {
   const t = useTranslations();
 
-  const chartConfig = {
-    count: {
-      label: t('surveys.stats.chartResponses'),
-      color: 'var(--chart-choice)',
-    },
-  } satisfies ChartConfig;
-
-  const { data, total, respondentCount } = useMemo(() => {
+  const { rows, total, respondentCount } = useMemo(() => {
     const counts = new Map<string, number>();
 
     for (const a of answers) {
@@ -50,46 +37,64 @@ export const ChoiceDistributionChart = ({ answers }: ChoiceDistributionChartProp
       .sort((a, b) => b.count - a.count);
     const sum = arr.reduce((s, d) => s + d.count, 0);
 
-    return { data: arr, total: sum, respondentCount: answers.length };
+    return { rows: arr, total: sum, respondentCount: answers.length };
   }, [answers, t]);
 
-  if (data.length === 0) {
+  if (rows.length === 0) {
     return <p className="text-muted-foreground text-xs">{t('surveys.stats.noChartData')}</p>;
   }
 
-  const showSelectionsFromRespondents = total > respondentCount;
-
-  const formatCountWithPercent = (value: unknown) => {
-    const n = typeof value === 'number' ? value : 0;
-
-    return total > 0 ? `${n} (${Math.round((n / total) * 100)}%)` : String(n);
-  };
+  const maxCount = rows[0]!.count;
+  const isMultiSelect = total > respondentCount;
 
   return (
-    <div>
-      {showSelectionsFromRespondents && (
-        <p className="text-muted-foreground mb-2 text-[11px]">
+    <div className="space-y-3">
+      {/* Multi-select note */}
+      {isMultiSelect && (
+        <p className="text-muted-foreground text-[11px]">
           {t('surveys.stats.totalSelectionsFromRespondents', {
             selections: total,
             respondents: respondentCount,
           })}
         </p>
       )}
-      <ChartContainer config={chartConfig} className="h-48 w-full">
-        <BarChart data={data} layout="vertical" margin={{ left: 0, right: 12 }}>
-          <CartesianGrid horizontal={false} />
-          <XAxis type="number" allowDecimals={false} />
-          <YAxis type="category" dataKey="name" width={120} tick={{ fontSize: 12 }} />
-          <ChartTooltip
-            content={
-              <ChartTooltipContent
-                formatter={(value) => formatCountWithPercent(value) as React.ReactNode}
-              />
-            }
-          />
-          <Bar dataKey="count" fill="var(--color-count)" radius={4} />
-        </BarChart>
-      </ChartContainer>
+
+      {/* Horizontal progress bars */}
+      <div className="space-y-2">
+        {rows.map((row, i) => {
+          const pct = Math.round((row.count / total) * 100);
+          const barWidth = maxCount > 0 ? (row.count / maxCount) * 100 : 0;
+          const isTop = i === 0;
+
+          return (
+            <div key={row.name} className="space-y-1">
+              <div className="flex items-baseline justify-between gap-2">
+                <span
+                  className={cn(
+                    'min-w-0 truncate text-xs',
+                    isTop ? 'text-foreground font-medium' : 'text-muted-foreground'
+                  )}
+                  title={row.name}
+                >
+                  {row.name}
+                </span>
+                <span className="text-foreground shrink-0 text-xs font-medium tabular-nums">
+                  {row.count} <span className="text-muted-foreground font-normal">({pct}%)</span>
+                </span>
+              </div>
+              <div className="bg-muted h-2 w-full overflow-hidden rounded-full">
+                <div
+                  className={cn(
+                    'h-full rounded-full transition-all',
+                    isTop ? 'bg-cyan-500' : 'bg-cyan-500/30'
+                  )}
+                  style={{ width: `${barWidth}%` }}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };

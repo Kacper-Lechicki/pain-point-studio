@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react';
 
+import { Lightbulb, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Badge } from '@/components/ui/badge';
@@ -13,18 +14,19 @@ import { QUESTION_TYPE_ICONS, QUESTION_TYPE_LABEL_KEYS } from '@/features/survey
 
 import { ChoiceDistributionChart } from './answer-charts/choice-distribution-chart';
 import { RatingDistributionChart } from './answer-charts/rating-distribution-chart';
+import { ShortTextChart } from './answer-charts/short-text-chart';
 import { TextAnswersList } from './answer-charts/text-answers-list';
 import { YesNoChart } from './answer-charts/yes-no-chart';
 
 interface QuestionStatsCardProps {
   question: QuestionStats;
   index: number;
-  completedResponses: number;
 }
 
 function computeInsight(
   type: QuestionStats['type'],
   answers: QuestionAnswerData[],
+  config: Record<string, unknown>,
   t: ReturnType<typeof useTranslations>
 ): string | null {
   if (answers.length === 0) {
@@ -41,35 +43,50 @@ function computeInsight(
         for (const option of selected) {
           counts.set(option, (counts.get(option) ?? 0) + 1);
         }
+
+        const other = a.value.other as string | undefined;
+
+        if (other) {
+          const otherKey = `${t('surveys.stats.otherLabel' as Parameters<typeof t>[0])}: ${other}`;
+          counts.set(otherKey, (counts.get(otherKey) ?? 0) + 1);
+        }
       }
 
       if (counts.size === 0) {
         return null;
       }
 
-      let topOption = '';
       let topCount = 0;
 
-      for (const [option, count] of counts) {
+      for (const [, count] of counts) {
         if (count > topCount) {
           topCount = count;
-          topOption = option;
         }
       }
 
-      const total = Array.from(counts.values()).reduce((s, c) => s + c, 0);
-      const pct = Math.round((topCount / total) * 100);
+      const topOptions = Array.from(counts.entries())
+        .filter(([, count]) => count === topCount)
+        .map(([option]) => option);
+
+      const totalSelections = Array.from(counts.values()).reduce((s, c) => s + c, 0);
+      const pct = Math.round((topCount / totalSelections) * 100);
+
+      if (topOptions.length > 1) {
+        return t(
+          'surveys.stats.insightTiedChoices' as Parameters<typeof t>[0],
+          { options: topOptions.join(', '), pct } as never
+        );
+      }
 
       return t(
         'surveys.stats.insightTopChoice' as Parameters<typeof t>[0],
-        { option: topOption, pct } as never
+        { option: topOptions[0], pct } as never
       );
     }
 
     case 'rating_scale': {
       let sum = 0;
       let count = 0;
-      let maxRating = 0;
 
       for (const a of answers) {
         const rating = a.value.rating as number;
@@ -77,10 +94,6 @@ function computeInsight(
         if (typeof rating === 'number') {
           sum += rating;
           count++;
-
-          if (rating > maxRating) {
-            maxRating = rating;
-          }
         }
       }
 
@@ -89,10 +102,11 @@ function computeInsight(
       }
 
       const avg = (sum / count).toFixed(1);
+      const scaleMax = (config.max as number) ?? 5;
 
       return t(
         'surveys.stats.insightAvgRating' as Parameters<typeof t>[0],
-        { value: avg, max: maxRating } as never
+        { value: avg, max: scaleMax } as never
       );
     }
 
@@ -105,7 +119,11 @@ function computeInsight(
         return null;
       }
 
-      const majorityYes = yesCount >= noCount;
+      if (yesCount === noCount) {
+        return t('surveys.stats.insightEqualSplit' as Parameters<typeof t>[0]);
+      }
+
+      const majorityYes = yesCount > noCount;
       const pct = Math.round(((majorityYes ? yesCount : noCount) / total) * 100);
 
       return t(
@@ -118,56 +136,38 @@ function computeInsight(
     }
 
     case 'open_text':
-    case 'short_text': {
-      const texts = answers
-        .map((a) => (a.value.text as string) ?? '')
-        .filter((txt) => txt.trim().length > 0);
-
-      if (texts.length === 0) {
-        return null;
-      }
-
-      const totalChars = texts.reduce((s, txt) => s + txt.length, 0);
-      const avgChars = Math.round(totalChars / texts.length);
-
-      return t(
-        'surveys.stats.insightText' as Parameters<typeof t>[0],
-        { count: texts.length, chars: avgChars } as never
-      );
-    }
+    case 'short_text':
+      // Text types have their own built-in analytics (keyword cloud, length histogram)
+      return null;
 
     default:
       return null;
   }
 }
 
-export const QuestionStatsCard = ({
-  question,
-  index,
-  completedResponses,
-}: QuestionStatsCardProps) => {
+export const QuestionStatsCard = ({ question, index }: QuestionStatsCardProps) => {
   const t = useTranslations();
 
   const TypeIcon = QUESTION_TYPE_ICONS[question.type];
   const typeLabelKey = QUESTION_TYPE_LABEL_KEYS[question.type];
   const typeLabel = t(typeLabelKey as Parameters<typeof t>[0]);
   const responseCount = question.answers.length;
-  const showAnsweredOfTotal = completedResponses > 0 && responseCount < completedResponses;
 
   const insight = useMemo(
-    () => computeInsight(question.type, question.answers, t),
-    [question.type, question.answers, t]
+    () => computeInsight(question.type, question.answers, question.config, t),
+    [question.type, question.answers, question.config, t]
   );
 
   const renderChart = () => {
     switch (question.type) {
       case 'open_text':
+        return <TextAnswersList answers={question.answers} questionText={question.text} />;
       case 'short_text':
-        return <TextAnswersList answers={question.answers} />;
+        return <ShortTextChart answers={question.answers} questionText={question.text} />;
       case 'multiple_choice':
         return <ChoiceDistributionChart answers={question.answers} />;
       case 'rating_scale':
-        return <RatingDistributionChart answers={question.answers} />;
+        return <RatingDistributionChart answers={question.answers} config={question.config} />;
       case 'yes_no':
         return <YesNoChart answers={question.answers} />;
       default:
@@ -176,7 +176,7 @@ export const QuestionStatsCard = ({
   };
 
   return (
-    <div className="bg-muted/30 rounded-lg px-4 py-3 sm:px-5 sm:py-4">
+    <div className="border-border rounded-lg border border-dashed px-4 py-3 sm:px-5 sm:py-4">
       <p className="text-foreground text-xs leading-snug font-medium sm:text-sm">
         <span className="text-muted-foreground tabular-nums">{index + 1}. </span>
         {question.text || '—'}
@@ -186,21 +186,18 @@ export const QuestionStatsCard = ({
           <TypeIcon className="size-3" aria-hidden />
           {typeLabel}
         </Badge>
-        <span className="text-muted-foreground text-[11px]">
+        <Badge variant="outline" className="gap-1 px-1.5 py-0 text-[10px] font-normal">
+          <Users className="size-3" aria-hidden />
           {t('surveys.stats.responsesCount', { count: responseCount })}
-        </span>
-        {showAnsweredOfTotal && (
-          <span className="text-muted-foreground text-[11px]">
-            ·{' '}
-            {t('surveys.stats.ofRespondentsAnswered', {
-              answered: responseCount,
-              total: completedResponses,
-            })}
-          </span>
-        )}
+        </Badge>
       </div>
       <div className="mt-3">{renderChart()}</div>
-      {insight && <p className="text-muted-foreground mt-2 text-xs">{insight}</p>}
+      {insight && (
+        <div className="mt-3 flex items-start gap-2 rounded-md border border-dashed border-amber-500/40 px-3 py-2">
+          <Lightbulb className="mt-0.5 size-3.5 shrink-0 text-amber-500" aria-hidden />
+          <p className="text-muted-foreground text-xs leading-relaxed font-semibold">{insight}</p>
+        </div>
+      )}
     </div>
   );
 };

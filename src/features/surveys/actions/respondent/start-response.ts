@@ -13,6 +13,7 @@ export const startResponse = withPublicAction<typeof startResponseSchema, { resp
     action: async ({ data, supabase }) => {
       const { data: responseId, error } = await supabase.rpc('start_survey_response', {
         p_survey_id: data.surveyId,
+        ...(data.deviceType ? { p_device_type: data.deviceType } : {}),
       });
 
       if (error) {
