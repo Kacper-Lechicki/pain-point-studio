@@ -8,15 +8,14 @@ import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { BuilderEmptyState } from '@/features/surveys/components/builder/builder-empty-state';
+import { QuestionEditor } from '@/features/surveys/components/builder/editors/question-editor';
 import {
   QUESTION_DESCRIPTION_MAX_LENGTH,
   QUESTION_TEXT_MAX_LENGTH,
 } from '@/features/surveys/config';
 import { useQuestionBuilderContext } from '@/features/surveys/hooks/use-question-builder-context';
 import { cn } from '@/lib/common/utils';
-
-import { BuilderEmptyState } from './builder-empty-state';
-import { QuestionEditor } from './editors/question-editor';
 
 export function BuilderCenter() {
   const t = useTranslations();

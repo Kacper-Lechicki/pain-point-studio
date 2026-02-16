@@ -343,6 +343,7 @@ function UnsavedChangesProvider({ children }: UnsavedChangesProviderProps) {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{t('common.unsavedChanges.title')}</AlertDialogTitle>
+
             <AlertDialogDescription>
               {t('common.unsavedChanges.description')}
             </AlertDialogDescription>

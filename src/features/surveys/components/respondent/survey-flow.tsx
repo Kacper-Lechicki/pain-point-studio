@@ -8,13 +8,12 @@ import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { PageTransition } from '@/components/ui/page-transition';
+import { QuestionRenderer } from '@/features/surveys/components/respondent/question-renderers';
+import { SurveyCompletion } from '@/features/surveys/components/respondent/survey-completion';
+import { SurveyProgress } from '@/features/surveys/components/respondent/survey-progress';
+import { SurveyThankYou } from '@/features/surveys/components/respondent/survey-thank-you';
 import { useSurveyFlow } from '@/features/surveys/hooks/use-survey-flow';
 import type { PublicSurveyData } from '@/features/surveys/types';
-
-import { QuestionRenderer } from './question-renderers';
-import { SurveyCompletion } from './survey-completion';
-import { SurveyProgress } from './survey-progress';
-import { SurveyThankYou } from './survey-thank-you';
 
 type FlowScreen = 'questions' | 'completion' | 'thank-you';
 

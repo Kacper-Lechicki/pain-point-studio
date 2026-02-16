@@ -9,12 +9,11 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { PageTransition } from '@/components/ui/page-transition';
 import { startResponse } from '@/features/surveys/actions/respondent';
+import { SurveyFlow } from '@/features/surveys/components/respondent/survey-flow';
 import { ESTIMATED_SECONDS_PER_QUESTION, surveyCompletedKey } from '@/features/surveys/config';
 import { detectDeviceType } from '@/features/surveys/lib/detect-device';
 import type { CompletedData, PublicSurveyData } from '@/features/surveys/types';
 import type { MessageKey } from '@/i18n/types';
-
-import { SurveyFlow } from './survey-flow';
 
 interface SurveyLandingProps {
   survey: PublicSurveyData;

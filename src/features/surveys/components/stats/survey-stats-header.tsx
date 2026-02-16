@@ -13,9 +13,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { RefreshRealtimeButton } from '@/components/ui/refresh-realtime-button';
 import { SurveyStatusBadge } from '@/features/surveys/components/dashboard/survey-status-badge';
+import { ExportMenuItems } from '@/features/surveys/components/stats/export-buttons';
 import type { SurveyStatus } from '@/features/surveys/types';
-
-import { ExportMenuItems } from './export-buttons';
 
 interface SurveyStatsHeaderProps {
   title: string;

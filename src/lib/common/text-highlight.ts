@@ -21,6 +21,7 @@ export function highlightText(text: string, regex: RegExp | null): TextSegment[]
   }
 
   const segments: TextSegment[] = [];
+
   let lastIndex = 0;
   let match: RegExpExecArray | null;
 

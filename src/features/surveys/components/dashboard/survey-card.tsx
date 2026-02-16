@@ -7,6 +7,10 @@ import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { DropdownMenu, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
+import { Sparkline, getSparklineColor } from '@/features/surveys/components/dashboard/sparkline';
+import { SurveyActionMenuContent } from '@/features/surveys/components/dashboard/survey-action-menu';
+import { SurveyShareDialog } from '@/features/surveys/components/dashboard/survey-share-dialog';
+import { SurveyStatusBadge } from '@/features/surveys/components/dashboard/survey-status-badge';
 import {
   NOW_UPDATE_INTERVAL_MS,
   RESPONDENT_LIMIT_WARNING_THRESHOLD,
@@ -19,11 +23,6 @@ import { HINT_SEVERITY_STYLES, computeHint } from '@/features/surveys/lib/survey
 import { getSurveyEditUrl, getSurveyStatsUrl } from '@/features/surveys/lib/survey-urls';
 import Link from '@/i18n/link';
 import { cn } from '@/lib/common/utils';
-
-import { Sparkline, getSparklineColor } from './sparkline';
-import { SurveyActionMenuContent } from './survey-action-menu';
-import { SurveyShareDialog } from './survey-share-dialog';
-import { SurveyStatusBadge } from './survey-status-badge';
 
 // ── Component ────────────────────────────────────────────────────────
 

@@ -2,12 +2,11 @@
 
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { CharacterCounter } from '@/features/surveys/components/respondent/question-renderers/character-counter';
 import {
   OPEN_TEXT_DEFAULT_MAX_LENGTH,
   SHORT_TEXT_DEFAULT_MAX_LENGTH,
 } from '@/features/surveys/config';
-
-import { CharacterCounter } from './character-counter';
 
 interface TextQuestionProps {
   value: string;

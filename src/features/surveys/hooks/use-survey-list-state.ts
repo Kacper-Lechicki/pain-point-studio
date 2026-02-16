@@ -2,11 +2,10 @@ import { useMemo, useState } from 'react';
 
 import { useNow } from 'next-intl';
 
+import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import { NOW_UPDATE_INTERVAL_MS } from '@/features/surveys/config';
 import { getDefaultSortDir, getSurveyComparator } from '@/features/surveys/lib/sort-helpers';
 import { useBreakpoint } from '@/hooks/common/use-breakpoint';
-
-import type { UserSurvey } from '../actions/get-user-surveys';
 
 type SortDir = 'asc' | 'desc';
 

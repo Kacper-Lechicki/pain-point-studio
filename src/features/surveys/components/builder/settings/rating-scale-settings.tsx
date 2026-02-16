@@ -11,13 +11,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import type { SettingsProps } from '@/features/surveys/components/builder/settings/types';
 import {
   RATING_LABEL_MAX_LENGTH,
   RATING_SCALE_MAX,
   RATING_SCALE_MIN,
 } from '@/features/surveys/config';
-
-import type { SettingsProps } from './types';
 
 export function RatingScaleSettings({ config, onUpdate }: SettingsProps) {
   const t = useTranslations();

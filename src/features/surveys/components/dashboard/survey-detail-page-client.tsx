@@ -4,10 +4,9 @@ import { useCallback } from 'react';
 
 import { ROUTES } from '@/config/routes';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
+import { SurveyDetailPanel } from '@/features/surveys/components/dashboard/survey-detail-panel';
 import type { MappedQuestion } from '@/features/surveys/lib/map-question-row';
 import { useRouter } from '@/i18n/routing';
-
-import { SurveyDetailPanel } from './survey-detail-panel';
 
 interface SurveyDetailPageClientProps {
   survey: UserSurvey;

@@ -1,7 +1,6 @@
 import { Separator } from '@/components/ui/separator';
+import { SidebarItem } from '@/features/dashboard/components/layout/sidebar-item';
 import { SIDEBAR_NAV } from '@/features/dashboard/config/navigation';
-
-import { SidebarItem } from './sidebar-item';
 
 interface SidebarNavListProps {
   isExpanded: boolean;

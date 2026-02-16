@@ -13,10 +13,9 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { ROUTES } from '@/config/routes';
+import { SurveyShareContent } from '@/features/surveys/components/builder/survey-share-content';
 import { getSurveyStatsUrl } from '@/features/surveys/lib/survey-urls';
 import Link from '@/i18n/link';
-
-import { SurveyShareContent } from './survey-share-content';
 
 interface PublishSuccessPanelProps {
   open: boolean;

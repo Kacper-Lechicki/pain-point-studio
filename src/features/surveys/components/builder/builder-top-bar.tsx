@@ -8,6 +8,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { ROUTES } from '@/config/routes';
 import { UserMenu } from '@/features/auth/components/common/user-menu';
 import { saveSurveyQuestions } from '@/features/surveys/actions';
+import { SaveStatusIndicator } from '@/features/surveys/components/builder/save-status-indicator';
 import { deriveSurveyFlags } from '@/features/surveys/config/survey-status';
 import { useQuestionBuilderContext } from '@/features/surveys/hooks/use-question-builder-context';
 import type { SurveyStatus } from '@/features/surveys/types';
@@ -15,8 +16,6 @@ import { useFormAction } from '@/hooks/common/use-form-action';
 import { useUnsavedChangesWarning } from '@/hooks/unsaved-changes-context';
 import Link from '@/i18n/link';
 import type { MessageKey } from '@/i18n/types';
-
-import { SaveStatusIndicator } from './save-status-indicator';
 
 interface BuilderTopBarProps {
   surveyId: string;

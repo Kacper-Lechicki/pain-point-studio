@@ -5,15 +5,14 @@ import { useTranslations } from 'next-intl';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { BUILDER_SETTINGS_PANEL_WIDTH_CLASS } from '@/features/dashboard/config/layout';
+import { ResponsivePanel } from '@/features/surveys/components/builder/responsive-panel';
+import { MultipleChoiceSettings } from '@/features/surveys/components/builder/settings/multiple-choice-settings';
+import { RatingScaleSettings } from '@/features/surveys/components/builder/settings/rating-scale-settings';
+import { TextSettings } from '@/features/surveys/components/builder/settings/text-settings';
 import { QUESTION_TYPE_ICONS, QUESTION_TYPE_LABEL_KEYS } from '@/features/surveys/config';
 import { useQuestionBuilderContext } from '@/features/surveys/hooks/use-question-builder-context';
 import { QUESTION_TYPES, type QuestionType } from '@/features/surveys/types';
 import { cn } from '@/lib/common/utils';
-
-import { ResponsivePanel } from './responsive-panel';
-import { MultipleChoiceSettings } from './settings/multiple-choice-settings';
-import { RatingScaleSettings } from './settings/rating-scale-settings';
-import { TextSettings } from './settings/text-settings';
 
 interface BuilderSettingsPanelProps {
   isDesktop: boolean;

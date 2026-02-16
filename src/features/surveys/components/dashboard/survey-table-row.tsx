@@ -7,13 +7,12 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { DropdownMenu, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { TableCell, TableRow } from '@/components/ui/table';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
+import { Sparkline } from '@/features/surveys/components/dashboard/sparkline';
+import { SurveyActionMenuContent } from '@/features/surveys/components/dashboard/survey-action-menu';
+import { SurveyShareDialog } from '@/features/surveys/components/dashboard/survey-share-dialog';
+import { SurveyStatusBadge } from '@/features/surveys/components/dashboard/survey-status-badge';
 import type { useSurveyRow } from '@/features/surveys/hooks/use-survey-row';
 import { cn } from '@/lib/common/utils';
-
-import { Sparkline } from './sparkline';
-import { SurveyActionMenuContent } from './survey-action-menu';
-import { SurveyShareDialog } from './survey-share-dialog';
-import { SurveyStatusBadge } from './survey-status-badge';
 
 interface SurveyTableRowProps {
   survey: UserSurvey;

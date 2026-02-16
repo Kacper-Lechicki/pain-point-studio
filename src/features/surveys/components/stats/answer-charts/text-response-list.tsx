@@ -2,10 +2,9 @@
 
 import { useFormatter } from 'next-intl';
 
+import type { ResponseItem } from '@/features/surveys/components/stats/answer-charts/inline-text-search';
 import type { TextSegment } from '@/lib/common/text-highlight';
 import { cn } from '@/lib/common/utils';
-
-import type { ResponseItem } from './inline-text-search';
 
 interface TextResponseListProps {
   items: ResponseItem[];
@@ -23,7 +22,7 @@ export function TextResponseList({
   const format = useFormatter();
 
   return (
-    <div className={cn(isExpanded && 'max-h-[26rem] overflow-y-auto')}>
+    <div className={cn(isExpanded && 'max-h-104 overflow-y-auto')}>
       <ul className="space-y-1.5" role="list">
         {items.map((item, i) => {
           const segments = highlightFn(item.text);
@@ -35,7 +34,7 @@ export function TextResponseList({
                 onClick={() => onItemClick(item.text)}
                 className="border-border/60 bg-muted hover:bg-muted/80 flex h-24 w-full cursor-pointer flex-col rounded-lg border px-3 py-2 text-left transition-colors sm:px-4"
               >
-                <p className="text-foreground line-clamp-3 min-w-0 text-xs leading-relaxed break-words whitespace-pre-wrap">
+                <p className="text-foreground line-clamp-3 min-w-0 text-xs leading-relaxed wrap-break-word whitespace-pre-wrap">
                   {segments.map((seg, j) =>
                     seg.highlight ? (
                       <mark

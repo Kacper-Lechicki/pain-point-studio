@@ -8,18 +8,17 @@ import { useLocale } from 'next-intl';
 
 import { ROUTES } from '@/config/routes';
 import type { SurveyCategoryOption } from '@/features/surveys/actions';
+import { BuilderCenter } from '@/features/surveys/components/builder/builder-center';
+import { BuilderMetadataPanel } from '@/features/surveys/components/builder/builder-metadata-panel';
+import { BuilderSettingsPanel } from '@/features/surveys/components/builder/builder-settings-panel';
+import { BuilderSidebar } from '@/features/surveys/components/builder/builder-sidebar';
+import { BuilderTopBar } from '@/features/surveys/components/builder/builder-top-bar';
+import { PublishSettingsPanel } from '@/features/surveys/components/builder/publish-settings-panel';
+import { PublishSuccessPanel } from '@/features/surveys/components/builder/publish-success-panel';
 import { QuestionBuilderProvider } from '@/features/surveys/hooks/use-question-builder-context';
 import { getSurveyShareUrl } from '@/features/surveys/lib/share-url';
 import type { QuestionSchema, SurveyMetadataSchema, SurveyStatus } from '@/features/surveys/types';
 import { useBreakpoint } from '@/hooks/common/use-breakpoint';
-
-import { BuilderCenter } from './builder-center';
-import { BuilderMetadataPanel } from './builder-metadata-panel';
-import { BuilderSettingsPanel } from './builder-settings-panel';
-import { BuilderSidebar } from './builder-sidebar';
-import { BuilderTopBar } from './builder-top-bar';
-import { PublishSettingsPanel } from './publish-settings-panel';
-import { PublishSuccessPanel } from './publish-success-panel';
 
 interface QuestionBuilderPageProps {
   surveyId: string;

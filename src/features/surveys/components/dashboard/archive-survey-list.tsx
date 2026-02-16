@@ -11,13 +11,12 @@ import { SearchInput } from '@/components/ui/search-input';
 import { SortDropdown } from '@/components/ui/sort-dropdown';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
+import { SortableTableHeader } from '@/features/surveys/components/dashboard/sortable-table-header';
+import { SurveyDetailSheet } from '@/features/surveys/components/dashboard/survey-detail-sheet';
+import { SurveyListRow } from '@/features/surveys/components/dashboard/survey-list-row';
 import { useSurveyListState } from '@/features/surveys/hooks/use-survey-list-state';
 import { useSurveySelection } from '@/features/surveys/hooks/use-survey-selection';
 import { applyOptimisticStatusChange } from '@/features/surveys/lib/status-change-handler';
-
-import { SortableTableHeader } from './sortable-table-header';
-import { SurveyDetailSheet } from './survey-detail-sheet';
-import { SurveyListRow } from './survey-list-row';
 
 type ArchiveSortBy = 'updated' | 'created' | 'title' | 'questions' | 'autoDeletes' | 'archivedAt';
 

@@ -7,6 +7,12 @@ import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Separator } from '@/components/ui/separator';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
+import { DetailPanelActions } from '@/features/surveys/components/dashboard/detail-panel-actions';
+import { DetailPanelMetrics } from '@/features/surveys/components/dashboard/detail-panel-metrics';
+import { DetailQuestionsList } from '@/features/surveys/components/dashboard/detail-questions-list';
+import { Sparkline, getSparklineColor } from '@/features/surveys/components/dashboard/sparkline';
+import { SurveyDetailInfo } from '@/features/surveys/components/dashboard/survey-detail-info';
+import { SurveyShareDialog } from '@/features/surveys/components/dashboard/survey-share-dialog';
 import { SectionLabel } from '@/features/surveys/components/shared/metric-display';
 import { DATE_FORMAT_SHORT, NOW_UPDATE_INTERVAL_MS } from '@/features/surveys/config';
 import { deriveSurveyFlags, getAvailableActions } from '@/features/surveys/config/survey-status';
@@ -20,13 +26,6 @@ import type { MappedQuestion } from '@/features/surveys/lib/map-question-row';
 import { getSurveyDetailUrl } from '@/features/surveys/lib/survey-urls';
 import Link from '@/i18n/link';
 import { cn } from '@/lib/common/utils';
-
-import { DetailPanelActions } from './detail-panel-actions';
-import { DetailPanelMetrics } from './detail-panel-metrics';
-import { DetailQuestionsList } from './detail-questions-list';
-import { Sparkline, getSparklineColor } from './sparkline';
-import { SurveyDetailInfo } from './survey-detail-info';
-import { SurveyShareDialog } from './survey-share-dialog';
 
 type DetailPanelVariant = 'sheet' | 'page' | 'sidebar';
 

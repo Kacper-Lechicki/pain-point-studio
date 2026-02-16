@@ -3,7 +3,7 @@
  * accept only valid message keys. MessageKey is derived from en.json structure
  * (dot-notation, e.g. 'auth.signInSuccess'). Other locales must match that structure.
  */
-import type en from './messages/en.json';
+import type en from '@/i18n/messages/en.json';
 
 type Messages = typeof en;
 

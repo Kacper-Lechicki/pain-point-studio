@@ -15,6 +15,10 @@ import { cancelSurvey, completeSurvey } from '@/features/surveys/actions';
 import type { QuestionStats, SurveyStats } from '@/features/surveys/actions/get-survey-stats';
 import { SurveyShareDialog } from '@/features/surveys/components/dashboard/survey-share-dialog';
 import { SectionLabel } from '@/features/surveys/components/shared/metric-display';
+import { DetailMetricsGrid } from '@/features/surveys/components/stats/detail-metrics-grid';
+import { QuestionStatsCard } from '@/features/surveys/components/stats/question-stats-card';
+import { SurveyStatsCharts } from '@/features/surveys/components/stats/survey-stats-charts';
+import { SurveyStatsHeader } from '@/features/surveys/components/stats/survey-stats-header';
 import { NOW_UPDATE_INTERVAL_MS } from '@/features/surveys/config';
 import { deriveSurveyFlags } from '@/features/surveys/config/survey-status';
 import { useRealtimeResponses } from '@/features/surveys/hooks/use-realtime-responses';
@@ -26,11 +30,6 @@ import {
 } from '@/features/surveys/lib/calculations';
 import type { SurveyStatus } from '@/features/surveys/types';
 import { useRefresh } from '@/hooks/common/use-refresh';
-
-import { DetailMetricsGrid } from './detail-metrics-grid';
-import { QuestionStatsCard } from './question-stats-card';
-import { SurveyStatsCharts } from './survey-stats-charts';
-import { SurveyStatsHeader } from './survey-stats-header';
 
 interface SurveyStatsPanelProps {
   stats: SurveyStats;

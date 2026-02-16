@@ -4,9 +4,8 @@ import { useTranslations } from 'next-intl';
 
 import type { DeviceTimelinePoint } from '@/features/surveys/actions/get-survey-stats';
 import { SectionLabel } from '@/features/surveys/components/shared/metric-display';
-
-import { DeviceBreakdownChart } from './device-breakdown-chart';
-import { ResponseTimelineChart } from './response-timeline-chart';
+import { DeviceBreakdownChart } from '@/features/surveys/components/stats/device-breakdown-chart';
+import { ResponseTimelineChart } from '@/features/surveys/components/stats/response-timeline-chart';
 
 interface SurveyStatsChartsProps {
   responseTimeline: number[];

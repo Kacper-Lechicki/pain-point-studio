@@ -8,6 +8,10 @@ import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
+import { SurveyDetailSheet } from '@/features/surveys/components/dashboard/survey-detail-sheet';
+import { SurveyListKpi } from '@/features/surveys/components/dashboard/survey-list-kpi';
+import { SurveyListRow } from '@/features/surveys/components/dashboard/survey-list-row';
+import { SurveyListTable } from '@/features/surveys/components/dashboard/survey-list-table';
 import { deriveSurveyFlags } from '@/features/surveys/config/survey-status';
 import { useRealtimeSurveyList } from '@/features/surveys/hooks/use-realtime-survey-list';
 import { useSurveyListState } from '@/features/surveys/hooks/use-survey-list-state';
@@ -15,10 +19,6 @@ import { useSurveySelection } from '@/features/surveys/hooks/use-survey-selectio
 import { applyOptimisticStatusChange } from '@/features/surveys/lib/status-change-handler';
 import { useRefresh } from '@/hooks/common/use-refresh';
 
-import { SurveyDetailSheet } from './survey-detail-sheet';
-import { SurveyListKpi } from './survey-list-kpi';
-import { SurveyListRow } from './survey-list-row';
-import { SurveyListTable } from './survey-list-table';
 import {
   SurveyListToolbar,
   type SurveySortBy,

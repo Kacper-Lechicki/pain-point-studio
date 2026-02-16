@@ -9,9 +9,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import type { SettingsProps } from '@/features/surveys/components/builder/settings/types';
 import { TEXT_PLACEHOLDER_MAX_LENGTH } from '@/features/surveys/config';
-
-import type { SettingsProps } from './types';
 
 const MAX_LENGTH_OPTIONS = [100, 200, 500, 1000, 2000, 5000, 10_000] as const;
 

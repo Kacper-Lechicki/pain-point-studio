@@ -5,9 +5,8 @@ import { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 
 import type { QuestionAnswerData } from '@/features/surveys/actions/get-survey-stats';
-
-import { InlineTextSearch } from './inline-text-search';
-import type { ResponseItem } from './inline-text-search';
+import { InlineTextSearch } from '@/features/surveys/components/stats/answer-charts/inline-text-search';
+import type { ResponseItem } from '@/features/surveys/components/stats/answer-charts/inline-text-search';
 
 interface TextAnswersListProps {
   answers: QuestionAnswerData[];

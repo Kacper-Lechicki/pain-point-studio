@@ -1,11 +1,10 @@
 'use client';
 
+import { MultipleChoiceEditor } from '@/features/surveys/components/builder/editors/multiple-choice-editor';
+import { RatingScaleEditor } from '@/features/surveys/components/builder/editors/rating-scale-editor';
+import { TextPreviewEditor } from '@/features/surveys/components/builder/editors/text-preview-editor';
+import { YesNoEditor } from '@/features/surveys/components/builder/editors/yes-no-editor';
 import type { QuestionSchema } from '@/features/surveys/types';
-
-import { MultipleChoiceEditor } from './multiple-choice-editor';
-import { RatingScaleEditor } from './rating-scale-editor';
-import { TextPreviewEditor } from './text-preview-editor';
-import { YesNoEditor } from './yes-no-editor';
 
 interface QuestionEditorProps {
   question: QuestionSchema;

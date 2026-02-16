@@ -21,7 +21,9 @@ export function isProtectionEnabled(): boolean {
 function safeEqual(a: string, b: string): boolean {
   const bufA = Buffer.from(a);
   const bufB = Buffer.from(b);
+
   const maxLen = Math.max(bufA.length, bufB.length);
+
   const paddedA = Buffer.alloc(maxLen);
   const paddedB = Buffer.alloc(maxLen);
 

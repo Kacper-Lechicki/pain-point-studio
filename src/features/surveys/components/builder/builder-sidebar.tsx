@@ -9,14 +9,13 @@ import { createPortal } from 'react-dom';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { BUILDER_PANEL_WIDTH_CLASS } from '@/features/dashboard/config/layout';
+import { BuilderSidebarItem } from '@/features/surveys/components/builder/builder-sidebar-item';
+import { ResponsivePanel } from '@/features/surveys/components/builder/responsive-panel';
 import { QUESTIONS_MAX } from '@/features/surveys/config';
 import { QUESTION_TYPE_ICONS } from '@/features/surveys/config';
 import { useQuestionBuilderContext } from '@/features/surveys/hooks/use-question-builder-context';
 import { useSortableList } from '@/hooks/use-sortable-list';
 import { cn } from '@/lib/common/utils';
-
-import { BuilderSidebarItem } from './builder-sidebar-item';
-import { ResponsivePanel } from './responsive-panel';
 
 interface BuilderSidebarProps {
   /** When true, sidebar renders inline (desktop). When false, renders inside a Sheet (mobile). */

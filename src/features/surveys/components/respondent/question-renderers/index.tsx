@@ -1,11 +1,10 @@
 'use client';
 
+import { MultipleChoiceQuestion } from '@/features/surveys/components/respondent/question-renderers/multiple-choice-question';
+import { RatingScaleQuestion } from '@/features/surveys/components/respondent/question-renderers/rating-scale-question';
+import { TextQuestion } from '@/features/surveys/components/respondent/question-renderers/text-question';
+import { YesNoQuestion } from '@/features/surveys/components/respondent/question-renderers/yes-no-question';
 import type { PublicSurveyQuestion } from '@/features/surveys/types';
-
-import { MultipleChoiceQuestion } from './multiple-choice-question';
-import { RatingScaleQuestion } from './rating-scale-question';
-import { TextQuestion } from './text-question';
-import { YesNoQuestion } from './yes-no-question';
 
 interface QuestionRendererProps {
   question: PublicSurveyQuestion;

@@ -7,14 +7,13 @@ import { useTranslations } from 'next-intl';
 
 import { Badge } from '@/components/ui/badge';
 import type { QuestionStats } from '@/features/surveys/actions/get-survey-stats';
+import { ChoiceDistributionChart } from '@/features/surveys/components/stats/answer-charts/choice-distribution-chart';
+import { RatingDistributionChart } from '@/features/surveys/components/stats/answer-charts/rating-distribution-chart';
+import { ShortTextChart } from '@/features/surveys/components/stats/answer-charts/short-text-chart';
+import { TextAnswersList } from '@/features/surveys/components/stats/answer-charts/text-answers-list';
+import { YesNoChart } from '@/features/surveys/components/stats/answer-charts/yes-no-chart';
 import { QUESTION_TYPE_ICONS, QUESTION_TYPE_LABEL_KEYS } from '@/features/surveys/config';
 import { computeInsight } from '@/features/surveys/lib/compute-insight';
-
-import { ChoiceDistributionChart } from './answer-charts/choice-distribution-chart';
-import { RatingDistributionChart } from './answer-charts/rating-distribution-chart';
-import { ShortTextChart } from './answer-charts/short-text-chart';
-import { TextAnswersList } from './answer-charts/text-answers-list';
-import { YesNoChart } from './answer-charts/yes-no-chart';
 
 interface QuestionStatsCardProps {
   question: QuestionStats;

@@ -17,13 +17,12 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { SearchInput } from '@/components/ui/search-input';
 import { SortDropdown } from '@/components/ui/sort-dropdown';
+import { SingleResponseDialog } from '@/features/surveys/components/stats/answer-charts/single-response-dialog';
+import { TextResponseList } from '@/features/surveys/components/stats/answer-charts/text-response-list';
 import { TEXT_SEARCH_INITIAL_VISIBLE, TEXT_SEARCH_MAX_VISIBLE } from '@/features/surveys/config';
 import { useKeywordExtraction } from '@/features/surveys/hooks/use-keyword-extraction';
 import { buildHighlightRegex, highlightText } from '@/lib/common/text-highlight';
 import { cn } from '@/lib/common/utils';
-
-import { SingleResponseDialog } from './single-response-dialog';
-import { TextResponseList } from './text-response-list';
 
 type SortMode = 'newest' | 'longest' | 'shortest' | 'az';
 

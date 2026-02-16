@@ -9,9 +9,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
+import type { SettingsProps } from '@/features/surveys/components/builder/settings/types';
 import { QUESTION_OPTIONS_MAX, SELECTION_MIN } from '@/features/surveys/config';
-
-import type { SettingsProps } from './types';
 
 const MAX_SELECTIONS_OPTIONS = Array.from(
   { length: QUESTION_OPTIONS_MAX - SELECTION_MIN + 1 },
