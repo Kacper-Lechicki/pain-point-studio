@@ -3,6 +3,8 @@
 import { Input } from '@/components/ui/input';
 import { SHORT_TEXT_DEFAULT_MAX_LENGTH } from '@/features/surveys/config';
 
+import { CharacterCounter } from './character-counter';
+
 interface ShortTextQuestionProps {
   value: string;
   config: Record<string, unknown>;
@@ -21,11 +23,7 @@ export const ShortTextQuestion = ({ value, config, onChange }: ShortTextQuestion
         placeholder={placeholder}
         maxLength={maxLength}
       />
-      {maxLength && (
-        <p className="text-muted-foreground mt-1.5 text-right text-xs">
-          {value.length} / {maxLength}
-        </p>
-      )}
+      <CharacterCounter current={value.length} max={maxLength} />
     </div>
   );
 };

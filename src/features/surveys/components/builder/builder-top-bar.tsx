@@ -8,7 +8,9 @@ import { Spinner } from '@/components/ui/spinner';
 import { ROUTES } from '@/config/routes';
 import { UserMenu } from '@/features/auth/components/common/user-menu';
 import { saveSurveyQuestions } from '@/features/surveys/actions';
+import { deriveSurveyFlags } from '@/features/surveys/config/survey-status';
 import { useQuestionBuilderContext } from '@/features/surveys/hooks/use-question-builder-context';
+import type { SurveyStatus } from '@/features/surveys/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import { useUnsavedChangesWarning } from '@/hooks/unsaved-changes-context';
 import Link from '@/i18n/link';
@@ -19,7 +21,7 @@ import { SaveStatusIndicator } from './save-status-indicator';
 interface BuilderTopBarProps {
   surveyId: string;
   surveyTitle: string;
-  surveyStatus: string;
+  surveyStatus: SurveyStatus;
   isDesktop: boolean;
   onToggleSidebar?: () => void;
   onToggleSettings?: () => void;
@@ -54,7 +56,8 @@ export function BuilderTopBar({
   });
 
   const hasQuestions = state.questions.some((q) => q.text.trim().length > 0);
-  const canPublish = hasQuestions && surveyStatus === 'draft';
+  const { isDraft } = deriveSurveyFlags(surveyStatus);
+  const canPublish = hasQuestions && isDraft;
 
   async function handleSave() {
     dispatch({ type: 'SET_SAVE_STATUS', payload: { status: 'saving' } });

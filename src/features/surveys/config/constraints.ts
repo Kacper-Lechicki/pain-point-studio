@@ -61,6 +61,17 @@ export const TEXT_SEARCH_MIN_WORD_LENGTH = 3;
 export const TEXT_SEARCH_INITIAL_VISIBLE = 5;
 export const TEXT_SEARCH_MAX_VISIBLE = 10;
 
+// ── Rating chart thresholds ──────────────────────────────────────
+
+export const RATING_THRESHOLDS = {
+  sentiment: { excellent: 0.8, good: 0.6, fair: 0.4 },
+  color: { good: 0.7, fair: 0.4 },
+  bar: { low: 0.33, mid: 0.66 },
+} as const;
+
+/** Change ratio below which a sparkline trend is considered "sharply declining". */
+export const SPARKLINE_SHARPLY_DECLINING_THRESHOLD = -0.4;
+
 // ── Misc helpers ──────────────────────────────────────────────────
 
 /** Build the localStorage key for tracking completed survey responses. */

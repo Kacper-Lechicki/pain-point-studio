@@ -3,6 +3,8 @@
 import { Textarea } from '@/components/ui/textarea';
 import { OPEN_TEXT_DEFAULT_MAX_LENGTH } from '@/features/surveys/config';
 
+import { CharacterCounter } from './character-counter';
+
 interface OpenTextQuestionProps {
   value: string;
   config: Record<string, unknown>;
@@ -23,11 +25,7 @@ export const OpenTextQuestion = ({ value, config, onChange }: OpenTextQuestionPr
         rows={6}
         className="resize-none"
       />
-      {maxLength && (
-        <p className="text-muted-foreground mt-1.5 text-right text-xs">
-          {value.length} / {maxLength}
-        </p>
-      )}
+      <CharacterCounter current={value.length} max={maxLength} />
     </div>
   );
 };

@@ -2,23 +2,23 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { ClipboardList, MousePointerClick, RefreshCw } from 'lucide-react';
+import { ClipboardList } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
-import { KPI_COLOR_ALL, SURVEY_STATUS_CONFIG } from '@/features/surveys/config/survey-status';
+import { deriveSurveyFlags } from '@/features/surveys/config/survey-status';
 import { useRealtimeSurveyList } from '@/features/surveys/hooks/use-realtime-survey-list';
 import { useSurveyListState } from '@/features/surveys/hooks/use-survey-list-state';
 import { useSurveySelection } from '@/features/surveys/hooks/use-survey-selection';
 import { applyOptimisticStatusChange } from '@/features/surveys/lib/status-change-handler';
 import { useRefresh } from '@/hooks/common/use-refresh';
-import { cn } from '@/lib/common/utils';
 
 import { SortableTableHeader } from './sortable-table-header';
 import { SurveyDetailSheet } from './survey-detail-sheet';
+import { SurveyListKpi } from './survey-list-kpi';
 import { SurveyListRow } from './survey-list-row';
 import {
   SurveyListToolbar,
@@ -26,7 +26,7 @@ import {
   type SurveyStatusFilter,
 } from './survey-list-toolbar';
 
-const PRE_FILTER = (s: UserSurvey) => s.status !== 'archived';
+const PRE_FILTER = (s: UserSurvey) => !deriveSurveyFlags(s.status).isArchived;
 
 const CUSTOM_COMPARATOR = (sortBy: SurveySortBy, sortDir: 'asc' | 'desc') => {
   const mul = sortDir === 'asc' ? 1 : -1;
@@ -107,7 +107,7 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
     };
 
     for (const s of surveys) {
-      if (s.status !== 'archived' && s.status in counts) {
+      if (!deriveSurveyFlags(s.status).isArchived && s.status in counts) {
         counts[s.status as SurveyStatusFilter]++;
       }
     }
@@ -147,70 +147,13 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
 
   return (
     <div className="space-y-4">
-      {kpiStatuses.length > 0 && (
-        <div className="flex min-w-0 flex-wrap items-center justify-between gap-x-4 gap-y-1">
-          <div className="text-muted-foreground flex min-w-0 flex-wrap items-center gap-x-3 text-xs">
-            <span>
-              <span className={cn('text-base font-semibold tabular-nums', KPI_COLOR_ALL)}>
-                {statusCounts.all}
-              </span>
-              <span className="ml-1">{t('surveys.dashboard.summary.totalLabel')}</span>
-            </span>
-
-            <span className="text-border" aria-hidden>
-              /
-            </span>
-
-            {kpiStatuses.map((status, i) => (
-              <span key={status} className="flex shrink-0 items-center gap-x-3">
-                {i > 0 && (
-                  <span className="text-border" aria-hidden>
-                    /
-                  </span>
-                )}
-                <span>
-                  <span
-                    className={cn(
-                      'text-base font-semibold tabular-nums',
-                      SURVEY_STATUS_CONFIG[status].kpiColor
-                    )}
-                  >
-                    {statusCounts[status]}
-                  </span>
-                  <span className="ml-1">
-                    {t(`surveys.dashboard.status.${status}` as Parameters<typeof t>[0])}
-                  </span>
-                </span>
-              </span>
-            ))}
-          </div>
-          <div className="flex shrink-0 items-center gap-2">
-            <span className="text-muted-foreground hidden items-center gap-1 text-[11px] md:flex">
-              <MousePointerClick className="size-3" aria-hidden />
-              {t('surveys.dashboard.clickHint')}
-            </span>
-            <div className="relative">
-              <Button
-                variant="ghost"
-                size="icon-xs"
-                onClick={refresh}
-                disabled={isRefreshing}
-                aria-label={t('surveys.dashboard.refresh')}
-                title={t('surveys.dashboard.refresh')}
-              >
-                <RefreshCw className={cn('size-3', isRefreshing && 'animate-spin')} aria-hidden />
-              </Button>
-              <span
-                className={cn(
-                  'absolute -top-px -right-px size-1.5 rounded-full',
-                  isRealtimeConnected ? 'bg-emerald-500' : 'bg-amber-500'
-                )}
-                aria-hidden
-              />
-            </div>
-          </div>
-        </div>
-      )}
+      <SurveyListKpi
+        statusCounts={statusCounts}
+        kpiStatuses={kpiStatuses}
+        isRefreshing={isRefreshing}
+        isRealtimeConnected={isRealtimeConnected}
+        onRefresh={refresh}
+      />
 
       <SurveyListToolbar
         statusFilter={statusFilter}

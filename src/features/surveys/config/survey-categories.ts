@@ -14,3 +14,16 @@ export const SURVEY_CATEGORIES: readonly LookupItem[] = [
 ] as const;
 
 export const SURVEY_CATEGORY_VALUES = SURVEY_CATEGORIES.map((c) => c.value);
+
+/** Sort category options alphabetically, keeping "other" last. */
+export function sortCategoriesOtherLast<T extends { value: string; label: string }>(
+  options: T[]
+): T[] {
+  return [...options].sort((a, b) => {
+    if (a.value === 'other') {return 1;}
+
+    if (b.value === 'other') {return -1;}
+
+    return a.label.localeCompare(b.label);
+  });
+}

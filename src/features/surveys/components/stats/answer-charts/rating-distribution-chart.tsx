@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 
 import { Badge } from '@/components/ui/badge';
 import type { QuestionAnswerData } from '@/features/surveys/actions/get-survey-stats';
+import { RATING_THRESHOLDS } from '@/features/surveys/config';
 import { cn } from '@/lib/common/utils';
 
 interface RatingDistributionChartProps {
@@ -15,15 +16,15 @@ interface RatingDistributionChartProps {
 }
 
 function getSentimentKey(ratio: number): string {
-  if (ratio >= 0.8) {
+  if (ratio >= RATING_THRESHOLDS.sentiment.excellent) {
     return 'excellent';
   }
 
-  if (ratio >= 0.6) {
+  if (ratio >= RATING_THRESHOLDS.sentiment.good) {
     return 'good';
   }
 
-  if (ratio >= 0.4) {
+  if (ratio >= RATING_THRESHOLDS.sentiment.fair) {
     return 'fair';
   }
 
@@ -31,11 +32,11 @@ function getSentimentKey(ratio: number): string {
 }
 
 function getSentimentColor(ratio: number): string {
-  if (ratio >= 0.7) {
+  if (ratio >= RATING_THRESHOLDS.color.good) {
     return 'text-emerald-600 dark:text-emerald-400';
   }
 
-  if (ratio >= 0.4) {
+  if (ratio >= RATING_THRESHOLDS.color.fair) {
     return 'text-amber-600 dark:text-amber-400';
   }
 
@@ -43,11 +44,11 @@ function getSentimentColor(ratio: number): string {
 }
 
 function getRingColor(ratio: number): string {
-  if (ratio >= 0.7) {
+  if (ratio >= RATING_THRESHOLDS.color.good) {
     return 'stroke-emerald-500';
   }
 
-  if (ratio >= 0.4) {
+  if (ratio >= RATING_THRESHOLDS.color.fair) {
     return 'stroke-amber-500';
   }
 
@@ -64,11 +65,11 @@ function getBarColor(rating: number, scaleMin: number, scaleMax: number): string
 
   const position = (rating - scaleMin) / range;
 
-  if (position <= 0.33) {
+  if (position <= RATING_THRESHOLDS.bar.low) {
     return 'bg-rose-500';
   }
 
-  if (position <= 0.66) {
+  if (position <= RATING_THRESHOLDS.bar.mid) {
     return 'bg-amber-500';
   }
 
@@ -84,11 +85,11 @@ function getBarMutedColor(rating: number, scaleMin: number, scaleMax: number): s
 
   const position = (rating - scaleMin) / range;
 
-  if (position <= 0.33) {
+  if (position <= RATING_THRESHOLDS.bar.low) {
     return 'bg-rose-500/20';
   }
 
-  if (position <= 0.66) {
+  if (position <= RATING_THRESHOLDS.bar.mid) {
     return 'bg-amber-500/20';
   }
 

@@ -27,6 +27,7 @@ import { ROUTES } from '@/config/routes';
 import { createSurveyDraft } from '@/features/surveys/actions';
 import type { SurveyCategoryOption } from '@/features/surveys/actions';
 import { SURVEY_DESCRIPTION_MAX_LENGTH, SURVEY_TITLE_MAX_LENGTH } from '@/features/surveys/config';
+import { sortCategoriesOtherLast } from '@/features/surveys/config/survey-categories';
 import { getSurveyEditUrl } from '@/features/surveys/lib/survey-urls';
 import {
   type DraftAction,
@@ -193,17 +194,7 @@ const SurveyMetadataForm = ({
 
             <FormControl>
               <Combobox
-                options={[...categoryOptions].sort((a, b) => {
-                  if (a.value === 'other') {
-                    return 1;
-                  }
-
-                  if (b.value === 'other') {
-                    return -1;
-                  }
-
-                  return a.label.localeCompare(b.label);
-                })}
+                options={sortCategoriesOtherLast(categoryOptions)}
                 value={field.value}
                 onValueChange={field.onChange}
                 placeholder={t('surveys.create.categoryPlaceholder')}

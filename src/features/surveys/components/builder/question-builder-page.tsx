@@ -10,7 +10,7 @@ import { ROUTES } from '@/config/routes';
 import type { SurveyCategoryOption } from '@/features/surveys/actions';
 import { QuestionBuilderProvider } from '@/features/surveys/hooks/use-question-builder-context';
 import { getSurveyShareUrl } from '@/features/surveys/lib/share-url';
-import type { QuestionSchema, SurveyMetadataSchema } from '@/features/surveys/types';
+import type { QuestionSchema, SurveyMetadataSchema, SurveyStatus } from '@/features/surveys/types';
 import { useBreakpoint } from '@/hooks/common/use-breakpoint';
 
 import { BuilderCenter } from './builder-center';
@@ -24,7 +24,7 @@ import { PublishSuccessPanel } from './publish-success-panel';
 interface QuestionBuilderPageProps {
   surveyId: string;
   surveyTitle: string;
-  surveyStatus: string;
+  surveyStatus: SurveyStatus;
   surveyMetadata: Omit<SurveyMetadataSchema, 'title'>;
   categoryOptions: SurveyCategoryOption[];
   initialQuestions: QuestionSchema[];

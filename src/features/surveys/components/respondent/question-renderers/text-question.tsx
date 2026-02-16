@@ -7,6 +7,8 @@ import {
   SHORT_TEXT_DEFAULT_MAX_LENGTH,
 } from '@/features/surveys/config';
 
+import { CharacterCounter } from './character-counter';
+
 interface TextQuestionProps {
   value: string;
   config: Record<string, unknown>;
@@ -45,11 +47,7 @@ export const TextQuestion = ({ value, config, variant, onChange }: TextQuestionP
           maxLength={maxLength}
         />
       )}
-      {maxLength && (
-        <p className="text-muted-foreground mt-1.5 text-right text-xs">
-          {value.length} / {maxLength}
-        </p>
-      )}
+      <CharacterCounter current={value.length} max={maxLength} />
     </div>
   );
 };

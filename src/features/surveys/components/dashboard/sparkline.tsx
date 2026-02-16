@@ -1,5 +1,6 @@
 import { useId } from 'react';
 
+import { SPARKLINE_SHARPLY_DECLINING_THRESHOLD } from '@/features/surveys/config';
 import { cn } from '@/lib/common/utils';
 
 type SparklineTrend = 'rising' | 'declining' | 'sharply-declining' | 'flat';
@@ -39,7 +40,7 @@ export function getSparklineTrend(data: number[]): SparklineTrend {
     return 'rising';
   }
 
-  if (change > -0.4) {
+  if (change > SPARKLINE_SHARPLY_DECLINING_THRESHOLD) {
     return 'declining';
   }
 
