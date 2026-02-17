@@ -8,10 +8,12 @@ import path from 'path';
  * so it can be safely re-applied on a database that already has some or all objects.
  *
  * Transformations:
- *   1. ADD CONSTRAINT   → wrapped in DO $$ IF NOT EXISTS (pg_constraint) ... END $$
- *   2. CREATE POLICY     → prepended with DROP POLICY IF EXISTS
- *   3. CREATE INDEX      → CREATE INDEX IF NOT EXISTS
- *   4. CREATE UNIQUE INDEX → CREATE UNIQUE INDEX IF NOT EXISTS
+ *   1. ADD CONSTRAINT        → wrapped in DO $$ IF NOT EXISTS (pg_constraint) ... END $$
+ *   2. CREATE POLICY          → prepended with DROP POLICY IF EXISTS
+ *   3. CREATE INDEX           → CREATE INDEX IF NOT EXISTS
+ *   4. CREATE UNIQUE INDEX    → CREATE UNIQUE INDEX IF NOT EXISTS
+ *   5. CREATE TYPE ... AS ENUM → wrapped in DO $$ IF NOT EXISTS (pg_type) ... END $$
+ *   6. ALTER PUBLICATION ADD TABLE → wrapped in DO $$ IF NOT EXISTS check
  *
  * Usage:
  *   node scripts/make-migration-idempotent.mjs [path]
@@ -135,6 +137,67 @@ function addIndexIfNotExists(content) {
   return { content, count };
 }
 
+/**
+ * Wrap `CREATE TYPE "schema"."name" AS ENUM (...);` in a DO $$ IF NOT EXISTS block.
+ * Also wraps the immediately following `ALTER TYPE ... OWNER TO ...;` if present.
+ *
+ * PostgreSQL has no `CREATE TYPE IF NOT EXISTS`, so we check pg_type directly.
+ */
+function wrapCreateTypes(content) {
+  let count = 0;
+
+  // Match CREATE TYPE "schema"."name" AS ENUM (\n...\n);
+  // followed optionally by blank lines + ALTER TYPE "schema"."name" OWNER TO ...;
+  const re =
+    /^(CREATE TYPE "([^"]+)"\."([^"]+)" AS ENUM \(\n(?:[\s\S]*?\n)\);)\n(\n*(?:ALTER TYPE "([^"]+)"\."([^"]+)" OWNER TO "[^"]+";\n)?)/gm;
+
+  content = content.replace(re, (_match, createStmt, _schema, typeName, trailing) => {
+    count++;
+    const indented = createStmt.replace(/\n/g, '\n    ');
+    const lines = [
+      `DO $$ BEGIN`,
+      `  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = '${typeName}') THEN`,
+      `    ${indented}`,
+      `  END IF;`,
+      `END $$;`,
+      '',
+      trailing.trim() ? trailing.trim() : '',
+    ];
+    return lines.filter((l) => l !== '').join('\n') + '\n';
+  });
+
+  return { content, count };
+}
+
+/**
+ * Wrap `ALTER PUBLICATION ... ADD TABLE ONLY ...;` to avoid "relation already
+ * exists in publication" errors.
+ */
+function wrapPublicationAddTable(content) {
+  let count = 0;
+
+  const re =
+    /^ALTER PUBLICATION "([^"]+)" ADD TABLE ONLY "([^"]+)"\."([^"]+)";/gm;
+
+  content = content.replace(re, (_match, pubName, schema, table) => {
+    count++;
+    return [
+      `DO $$ BEGIN`,
+      `  IF NOT EXISTS (`,
+      `    SELECT 1 FROM pg_publication_tables`,
+      `    WHERE pubname = '${pubName}'`,
+      `      AND schemaname = '${schema}'`,
+      `      AND tablename = '${table}'`,
+      `  ) THEN`,
+      `    ALTER PUBLICATION "${pubName}" ADD TABLE ONLY "${schema}"."${table}";`,
+      `  END IF;`,
+      `END $$;`,
+    ].join('\n');
+  });
+
+  return { content, count };
+}
+
 // ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
@@ -144,18 +207,26 @@ console.log(`Transforming: ${filePath}\n`);
 
 let content = fs.readFileSync(filePath, 'utf-8');
 
-const r1 = wrapConstraints(content);
+const r1 = wrapCreateTypes(content);
 content = r1.content;
 
-const r2 = addDropPolicies(content);
+const r2 = wrapConstraints(content);
 content = r2.content;
 
-const r3 = addIndexIfNotExists(content);
+const r3 = addDropPolicies(content);
 content = r3.content;
+
+const r4 = addIndexIfNotExists(content);
+content = r4.content;
+
+const r5 = wrapPublicationAddTable(content);
+content = r5.content;
 
 fs.writeFileSync(filePath, content, 'utf-8');
 
-console.log(`  ADD CONSTRAINT  → IF NOT EXISTS wrappers:  ${r1.count}`);
-console.log(`  CREATE POLICY   → DROP IF EXISTS prepended: ${r2.count}`);
-console.log(`  CREATE INDEX    → IF NOT EXISTS added:      ${r3.count}`);
+console.log(`  CREATE TYPE     → IF NOT EXISTS wrappers:   ${r1.count}`);
+console.log(`  ADD CONSTRAINT  → IF NOT EXISTS wrappers:   ${r2.count}`);
+console.log(`  CREATE POLICY   → DROP IF EXISTS prepended: ${r3.count}`);
+console.log(`  CREATE INDEX    → IF NOT EXISTS added:       ${r4.count}`);
+console.log(`  ADD TABLE (pub) → IF NOT EXISTS wrappers:   ${r5.count}`);
 console.log(`\nDone. File updated in-place.`);
