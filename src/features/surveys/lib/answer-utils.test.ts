@@ -21,7 +21,7 @@ describe('isAnswerEmpty – text', () => {
 // ── selected answers (multiple choice) ──────────────────────────────
 
 describe('isAnswerEmpty – selected', () => {
-  it('returns true for empty selected array', () => {
+  it('returns true for empty selected array without other', () => {
     expect(isAnswerEmpty({ selected: [] })).toBe(true);
   });
 
@@ -31,6 +31,22 @@ describe('isAnswerEmpty – selected', () => {
 
   it('returns true for null selected (fallback)', () => {
     expect(isAnswerEmpty({ selected: null as unknown as string[] })).toBe(true);
+  });
+
+  it('returns false when selected is empty but other has a value', () => {
+    expect(isAnswerEmpty({ selected: [], other: 'Custom answer' })).toBe(false);
+  });
+
+  it('returns true when selected is empty and other is empty string', () => {
+    expect(isAnswerEmpty({ selected: [], other: '' })).toBe(true);
+  });
+
+  it('returns true when selected is empty and other is whitespace', () => {
+    expect(isAnswerEmpty({ selected: [], other: '   ' })).toBe(true);
+  });
+
+  it('returns false when both selected and other have values', () => {
+    expect(isAnswerEmpty({ selected: ['option-1'], other: 'Custom' })).toBe(false);
   });
 });
 

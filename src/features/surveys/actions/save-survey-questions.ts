@@ -12,6 +12,18 @@ export const saveSurveyQuestions = withProtectedAction<typeof surveyQuestionsSch
     schema: surveyQuestionsSchema,
     rateLimit: RATE_LIMITS.frequentSave,
     action: async ({ data, user, supabase }) => {
+      const { data: survey } = await supabase
+        .from('surveys')
+        .select('id')
+        .eq('id', data.surveyId)
+        .eq('user_id', user.id)
+        .eq('status', 'draft')
+        .maybeSingle();
+
+      if (!survey) {
+        return { error: 'surveys.errors.unexpected' };
+      }
+
       const questionsPayload = data.questions.map((q) => ({
         id: q.id,
         text: q.text,

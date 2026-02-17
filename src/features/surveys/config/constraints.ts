@@ -58,8 +58,6 @@ export const SURVEY_ENDING_SOON_DAYS = 3;
 
 export const TEXT_SEARCH_MAX_KEYWORDS = 10;
 export const TEXT_SEARCH_MIN_WORD_LENGTH = 3;
-export const TEXT_SEARCH_INITIAL_VISIBLE = 5;
-export const TEXT_SEARCH_MAX_VISIBLE = 10;
 
 // ── Rating chart thresholds ──────────────────────────────────────
 

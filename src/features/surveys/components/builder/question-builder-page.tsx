@@ -115,7 +115,7 @@ export function QuestionBuilderPage({
           {isPublished && (
             <PublishSuccessPanel
               open
-              onClose={() => router.push(ROUTES.dashboard.surveys)}
+              onClose={() => router.replace(ROUTES.dashboard.surveys)}
               shareUrl={getSurveyShareUrl(locale, publishedSlug)}
               surveyId={surveyId}
               surveyTitle={surveyTitle}

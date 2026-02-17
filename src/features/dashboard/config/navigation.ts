@@ -180,6 +180,17 @@ export const SIDEBAR_BOTTOM_ITEM: NavItem = {
   disabled: true,
 };
 
+// ── Dynamic route tabs ───────────────────────────────────────────────
+
+export interface DynamicRouteTab {
+  prefix: string;
+  icon: LucideIcon;
+}
+
+export const DYNAMIC_ROUTE_TABS: Record<string, DynamicRouteTab[]> = {
+  [ROUTES.dashboard.surveys]: [{ prefix: ROUTES.dashboard.surveysStats, icon: BarChart3 }],
+};
+
 // ── Helpers ───────────────────────────────────────────────────────────
 
 /**

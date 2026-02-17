@@ -410,7 +410,9 @@
       "modeShort": "Mode: {value}",
       "filter": {
         "all": "All responses",
-        "keyword": "Filter"
+        "keyword": "Filter",
+        "dateRange": "Date range",
+        "clearDate": "Clear date range"
       },
       "sort": {
         "newest": "Newest",
@@ -743,7 +745,8 @@
     "settings": "Settings",
     "pinSidebar": "Pin sidebar",
     "unpinSidebar": "Unpin sidebar",
-    "back": "Back"
+    "back": "Back",
+    "dynamicHeading": "Dynamic"
   },
   "breadcrumbs": {
     "dashboard": "Dashboard",

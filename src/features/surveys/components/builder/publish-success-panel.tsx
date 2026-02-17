@@ -67,16 +67,18 @@ export function PublishSuccessPanel({
 
           <div className="flex flex-col gap-2">
             <Button size="sm" asChild>
-              <Link href={getSurveyStatsUrl(surveyId)}>{t('surveys.publish.viewDashboard')}</Link>
+              <Link href={getSurveyStatsUrl(surveyId)} replace>
+                {t('surveys.publish.viewDashboard')}
+              </Link>
             </Button>
             <Button variant="outline" size="sm" asChild>
-              <Link href={ROUTES.dashboard.surveysNew}>
+              <Link href={ROUTES.dashboard.surveysNew} replace>
                 <Plus className="size-3.5" />
                 {t('surveys.publish.createAnother')}
               </Link>
             </Button>
             <Button variant="ghost" size="sm" asChild>
-              <Link href={ROUTES.dashboard.surveys}>
+              <Link href={ROUTES.dashboard.surveys} replace>
                 <ClipboardList className="size-3.5" />
                 {t('surveys.publish.backToSurveys')}
               </Link>

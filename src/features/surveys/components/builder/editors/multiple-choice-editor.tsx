@@ -19,6 +19,8 @@ export function MultipleChoiceEditor({ question }: MultipleChoiceEditorProps) {
 
   const config = question.config as Record<string, unknown>;
   const options = (config.options as string[]) ?? ['', ''];
+  const maxSelections = config.maxSelections as number | undefined;
+  const allowOther = (config.allowOther as boolean) ?? false;
 
   function updateOptions(newOptions: string[]) {
     updateQuestion(question.id, { config: { ...config, options: newOptions } });
@@ -43,7 +45,15 @@ export function MultipleChoiceEditor({ question }: MultipleChoiceEditorProps) {
       return;
     }
 
-    updateOptions(options.filter((_, i) => i !== index));
+    const newOptions = options.filter((_, i) => i !== index);
+    const newAvailable = newOptions.length + (allowOther ? 1 : 0);
+    const updates: Record<string, unknown> = { ...config, options: newOptions };
+
+    if (maxSelections !== undefined && maxSelections > newAvailable) {
+      updates.maxSelections = newAvailable;
+    }
+
+    updateQuestion(question.id, { config: updates });
   }
 
   return (

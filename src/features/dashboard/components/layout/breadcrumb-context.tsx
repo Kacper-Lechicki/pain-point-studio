@@ -50,16 +50,18 @@ export function BreadcrumbProvider({ children }: { children: ReactNode }) {
 
 export function useBreadcrumbSegment(segment: string, label: string) {
   const ctx = useContext(BreadcrumbContext);
+  const setSegment = ctx?.setSegment;
+  const removeSegment = ctx?.removeSegment;
 
   useEffect(() => {
-    if (!ctx) {
+    if (!setSegment || !removeSegment) {
       return;
     }
 
-    ctx.setSegment(segment, label);
+    setSegment(segment, label);
 
-    return () => ctx.removeSegment(segment);
-  }, [segment, label, ctx]);
+    return () => removeSegment(segment);
+  }, [segment, label, setSegment, removeSegment]);
 }
 
 export function useBreadcrumbContext() {

@@ -32,6 +32,7 @@ export function SubPanel() {
               <SecondaryNav
                 titleKey={activeNavItem.subNav.titleKey}
                 groups={activeNavItem.subNav.groups}
+                parentHref={activeNavItem.href}
               />
             </Suspense>
           </div>

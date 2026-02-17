@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { useBreadcrumbContext } from '@/features/dashboard/components/layout/breadcrumb-context';
 import {
   MobileNavMainLevel,
   MobileNavSubLevel,
@@ -23,6 +24,7 @@ export function MobileNav() {
   const { isMobileOpen, setMobileOpen } = useSidebar();
   const pathname = usePathname();
   const t = useTranslations();
+  const breadcrumb = useBreadcrumbContext();
 
   const [activeLevel, setActiveLevel] = useState<'main' | 'sub'>('main');
   const [selectedItem, setSelectedItem] = useState<NavItem | null>(null);
@@ -151,6 +153,7 @@ export function MobileNav() {
                 t={t}
                 onBack={handleBack}
                 onNavigate={() => setMobileOpen(false)}
+                breadcrumbSegments={breadcrumb?.segments}
               />
             </motion.div>
           )}

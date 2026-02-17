@@ -22,7 +22,8 @@ export const createSurveyDraft = withProtectedAction<
           visibility: data.visibility,
         })
         .eq('id', data.surveyId)
-        .eq('user_id', user.id);
+        .eq('user_id', user.id)
+        .eq('status', 'draft');
 
       if (error) {
         return { error: mapSupabaseError(error.message) };

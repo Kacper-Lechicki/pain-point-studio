@@ -8,6 +8,7 @@ import {
 } from '@/features/dashboard/config/nav-styles';
 import type { SubNavGroup } from '@/features/dashboard/config/navigation';
 import {
+  DYNAMIC_ROUTE_TABS,
   type NavItem,
   SIDEBAR_BOTTOM_ITEM,
   SIDEBAR_NAV,
@@ -27,13 +28,46 @@ interface SubNavItemsProps {
   clientState: { search: string; hash: string } | null;
   t: (key: MessageKey) => string;
   onNavigate: () => void;
+  parentHref?: string | undefined;
+  breadcrumbSegments?: Record<string, string> | undefined;
 }
 
-export function SubNavItems({ groups, pathname, clientState, t, onNavigate }: SubNavItemsProps) {
+export function SubNavItems({
+  groups,
+  pathname,
+  clientState,
+  t,
+  onNavigate,
+  parentHref,
+  breadcrumbSegments,
+}: SubNavItemsProps) {
   const searchParamKeys = collectSearchParamKeys(groups);
 
   const currentSearchParams = clientState ? new URLSearchParams(clientState.search) : null;
   const hash = clientState?.hash ?? '';
+
+  const dynamicTab = (() => {
+    if (!parentHref) {return null;}
+
+    const tabs = DYNAMIC_ROUTE_TABS[parentHref];
+
+    if (!tabs) {return null;}
+
+    return tabs.find((tab) => pathname.startsWith(tab.prefix + '/')) ?? null;
+  })();
+
+  const dynamicLabel = (() => {
+    if (!dynamicTab || !breadcrumbSegments) {return null;}
+
+    const suffix = pathname.slice(dynamicTab.prefix.length + 1);
+    const segmentId = suffix.split('/')[0];
+
+    if (!segmentId) {return null;}
+
+    return breadcrumbSegments[segmentId] ?? null;
+  })();
+
+  const isDynamicActive = dynamicTab != null && dynamicLabel != null;
 
   return (
     <nav className="flex flex-1 flex-col gap-2 p-2 pb-8" onClick={onNavigate}>
@@ -71,8 +105,9 @@ export function SubNavItems({ groups, pathname, clientState, t, onNavigate }: Su
                 );
               }
 
-              const isActive =
-                clientState && currentSearchParams
+              const isActive = isDynamicActive
+                ? false
+                : clientState && currentSearchParams
                   ? searchParamKeys.length > 0
                     ? isSubItemActive(subItem, pathname, hash, currentSearchParams, searchParamKeys)
                     : subItem.hash
@@ -106,6 +141,20 @@ export function SubNavItems({ groups, pathname, clientState, t, onNavigate }: Su
           </div>
         </div>
       ))}
+
+      {isDynamicActive && dynamicTab && dynamicLabel && (
+        <div>
+          <div className="text-muted-foreground mt-6 mb-1 px-3 text-xs font-semibold tracking-wider uppercase">
+            {t('sidebar.dynamicHeading' as MessageKey)}
+          </div>
+          <div className="flex flex-col gap-2">
+            <Link href={pathname} className={cn(SIDEBAR_NAV_ITEM_BASE, SIDEBAR_NAV_ACTIVE)}>
+              <dynamicTab.icon className="size-4 shrink-0" aria-hidden />
+              <span className="truncate">{dynamicLabel}</span>
+            </Link>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }
@@ -227,6 +276,7 @@ interface MobileNavSubLevelProps {
   t: (key: MessageKey) => string;
   onBack: () => void;
   onNavigate: () => void;
+  breadcrumbSegments?: Record<string, string> | undefined;
 }
 
 export function MobileNavSubLevel({
@@ -236,6 +286,7 @@ export function MobileNavSubLevel({
   t,
   onBack,
   onNavigate,
+  breadcrumbSegments,
 }: MobileNavSubLevelProps) {
   return (
     <>
@@ -265,6 +316,8 @@ export function MobileNavSubLevel({
         clientState={clientState}
         t={t}
         onNavigate={onNavigate}
+        parentHref={selectedItem.href}
+        breadcrumbSegments={breadcrumbSegments}
       />
     </>
   );

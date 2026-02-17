@@ -8,7 +8,10 @@ export function isAnswerEmpty(value: Record<string, unknown>): boolean {
   }
 
   if ('selected' in value) {
-    return ((value.selected as string[]) ?? []).length === 0;
+    const hasSelected = ((value.selected as string[]) ?? []).length > 0;
+    const hasOther = !!(value.other as string)?.trim();
+
+    return !hasSelected && !hasOther;
   }
 
   if ('rating' in value) {
