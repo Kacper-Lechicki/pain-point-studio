@@ -34,9 +34,17 @@ interface DeleteAccountDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   userEmail: string;
+  activeSurveyCount: number;
+  responseCount: number;
 }
 
-const DeleteAccountDialog = ({ open, onOpenChange, userEmail }: DeleteAccountDialogProps) => {
+const DeleteAccountDialog = ({
+  open,
+  onOpenChange,
+  userEmail,
+  activeSurveyCount,
+  responseCount,
+}: DeleteAccountDialogProps) => {
   const t = useTranslations();
   const router = useRouter();
 
@@ -75,6 +83,15 @@ const DeleteAccountDialog = ({ open, onOpenChange, userEmail }: DeleteAccountDia
           <DialogTitle>{t('settings.dangerZone.deleteConfirmTitle')}</DialogTitle>
 
           <DialogDescription>{t('settings.dangerZone.deleteConfirmDescription')}</DialogDescription>
+
+          {activeSurveyCount > 0 && (
+            <p className="text-destructive text-sm font-medium">
+              {t('settings.dangerZone.deleteDataWarning', {
+                surveyCount: activeSurveyCount,
+                responseCount,
+              })}
+            </p>
+          )}
         </DialogHeader>
 
         <Form {...form}>

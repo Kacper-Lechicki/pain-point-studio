@@ -1,3 +1,4 @@
+/** Tests for NAV_LINKS configuration ensuring valid structure and properties. */
 import { describe, expect, it } from 'vitest';
 
 import { NAV_LINKS } from './navigation';
@@ -5,8 +6,7 @@ import { NAV_LINKS } from './navigation';
 // ── NAV_LINKS ───────────────────────────────────────────────────────
 
 describe('NAV_LINKS', () => {
-  // Each link has href and label.
-  it('each entry has href and label', () => {
+  it('should have href and label on each entry', () => {
     for (const link of NAV_LINKS) {
       expect(link).toHaveProperty('href');
       expect(link).toHaveProperty('label');
@@ -15,15 +15,13 @@ describe('NAV_LINKS', () => {
     }
   });
 
-  // All hrefs are non-empty.
-  it('href values are non-empty strings', () => {
+  it('should have non-empty href values', () => {
     for (const link of NAV_LINKS) {
       expect(link.href.length).toBeGreaterThan(0);
     }
   });
 
-  // disabled is optional on entries.
-  it('disabled is optional and may be true', () => {
+  it('should allow disabled to be optional and may be true', () => {
     const withDisabled = NAV_LINKS.filter((l) => 'disabled' in l && l.disabled);
     expect(withDisabled.length).toBeGreaterThanOrEqual(0);
   });

@@ -9,6 +9,8 @@ interface SurveyStatsPageProps {
   params: Promise<{ id: string }>;
 }
 
+export const dynamic = 'force-dynamic';
+
 export default async function SurveyStatsPage({ params }: SurveyStatsPageProps) {
   const { id } = await params;
   const stats = await getSurveyStats(id);

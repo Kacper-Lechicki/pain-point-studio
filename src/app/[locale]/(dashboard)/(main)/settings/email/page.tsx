@@ -5,6 +5,8 @@ import { ROUTES } from '@/config';
 import { getProfile } from '@/features/settings/actions';
 import { EmailForm } from '@/features/settings/components/email-form';
 
+export const dynamic = 'force-dynamic';
+
 export default async function SettingsEmailPage() {
   const profile = await getProfile();
 

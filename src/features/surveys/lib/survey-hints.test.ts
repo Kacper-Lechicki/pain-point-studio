@@ -1,3 +1,4 @@
+/** Tests for computeHint contextual survey hints across all statuses. */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
@@ -47,16 +48,14 @@ describe('computeHint', () => {
     vi.useRealTimers();
   });
 
-  // ── draft ─────────────────────────────────────────────────────────
-
-  it('returns info hint for draft with 0 questions', () => {
+  it('should return info hint for draft with 0 questions', () => {
     const hint = computeHint(makeSurvey({ status: 'draft', questionCount: 0 }), t as never);
 
     expect(hint!.severity).toBe('info');
     expect(JSON.parse(hint!.text).key).toBe('surveys.dashboard.hints.noQuestions');
   });
 
-  it('returns success hint for draft with questions', () => {
+  it('should return success hint for draft with questions', () => {
     const hint = computeHint(makeSurvey({ status: 'draft', questionCount: 5 }), t as never);
 
     expect(hint!.severity).toBe('success');
@@ -64,9 +63,7 @@ describe('computeHint', () => {
     expect(JSON.parse(hint!.text).count).toBe(5);
   });
 
-  // ── active ────────────────────────────────────────────────────────
-
-  it('returns warning when respondent limit is reached', () => {
+  it('should return warning when respondent limit is reached', () => {
     const hint = computeHint(
       makeSurvey({ status: 'active', maxRespondents: 10, responseCount: 10 }),
       t as never
@@ -76,7 +73,7 @@ describe('computeHint', () => {
     expect(JSON.parse(hint!.text).key).toBe('surveys.dashboard.hints.limitReached');
   });
 
-  it('returns warning when nearing respondent limit', () => {
+  it('should return warning when nearing respondent limit', () => {
     const hint = computeHint(
       makeSurvey({ status: 'active', maxRespondents: 10, responseCount: 8 }),
       t as never
@@ -86,7 +83,7 @@ describe('computeHint', () => {
     expect(JSON.parse(hint!.text).key).toBe('surveys.dashboard.hints.nearingLimit');
   });
 
-  it('returns warning when survey has expired', () => {
+  it('should return warning when survey has expired', () => {
     const hint = computeHint(
       makeSurvey({ status: 'active', endsAt: '2025-05-30T00:00:00Z' }),
       t as never
@@ -96,7 +93,7 @@ describe('computeHint', () => {
     expect(JSON.parse(hint!.text).key).toBe('surveys.dashboard.hints.expired');
   });
 
-  it('returns warning when survey is ending soon', () => {
+  it('should return warning when survey is ending soon', () => {
     const hint = computeHint(
       makeSurvey({ status: 'active', endsAt: '2025-06-03T00:00:00Z' }),
       t as never
@@ -106,22 +103,20 @@ describe('computeHint', () => {
     expect(JSON.parse(hint!.text).key).toBe('surveys.dashboard.hints.endingSoon');
   });
 
-  it('returns info when active with 0 responses', () => {
+  it('should return info when active with 0 responses', () => {
     const hint = computeHint(makeSurvey({ status: 'active', responseCount: 0 }), t as never);
 
     expect(hint!.severity).toBe('info');
     expect(JSON.parse(hint!.text).key).toBe('surveys.dashboard.hints.noResponsesYet');
   });
 
-  it('returns null for active survey with responses but no limit or end date', () => {
+  it('should return null for active survey with responses but no limit or end date', () => {
     const hint = computeHint(makeSurvey({ status: 'active', responseCount: 5 }), t as never);
 
     expect(hint).toBeNull();
   });
 
-  // ── completed ─────────────────────────────────────────────────────
-
-  it('returns info with submission rate for completed with responses', () => {
+  it('should return info with submission rate for completed with responses', () => {
     const hint = computeHint(
       makeSurvey({ status: 'completed', responseCount: 10, completedCount: 7 }),
       t as never
@@ -132,25 +127,21 @@ describe('computeHint', () => {
     expect(JSON.parse(hint!.text).rate).toBe(70);
   });
 
-  it('returns info for completed with 0 responses', () => {
+  it('should return info for completed with 0 responses', () => {
     const hint = computeHint(makeSurvey({ status: 'completed', responseCount: 0 }), t as never);
 
     expect(hint!.severity).toBe('info');
     expect(JSON.parse(hint!.text).key).toBe('surveys.dashboard.hints.noResponsesCollected');
   });
 
-  // ── cancelled ─────────────────────────────────────────────────────
-
-  it('returns warning for cancelled survey', () => {
+  it('should return warning for cancelled survey', () => {
     const hint = computeHint(makeSurvey({ status: 'cancelled' }), t as never);
 
     expect(hint!.severity).toBe('warning');
     expect(JSON.parse(hint!.text).key).toBe('surveys.dashboard.hints.withdrawn');
   });
 
-  // ── archived ──────────────────────────────────────────────────────
-
-  it('returns null for archived survey', () => {
+  it('should return null for archived survey', () => {
     const hint = computeHint(makeSurvey({ status: 'archived' }), t as never);
     expect(hint).toBeNull();
   });

@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+/** Tests for the useSurveyFlow hook managing question navigation, answers, and completion state. */
 import { act, renderHook } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -34,8 +35,7 @@ const QUESTIONS: PublicSurveyQuestion[] = [
 // ── useSurveyFlow ────────────────────────────────────────────────────
 
 describe('useSurveyFlow – initialization', () => {
-  // Initial state: index 0, first question, isComplete false.
-  it('starts with currentIndex 0 and first question as currentQuestion', () => {
+  it('should start with currentIndex 0 and first question as currentQuestion', () => {
     const { result } = renderHook(() => useSurveyFlow({ questions: QUESTIONS, responseId: 'r1' }));
 
     expect(result.current.currentIndex).toBe(0);
@@ -45,8 +45,7 @@ describe('useSurveyFlow – initialization', () => {
 });
 
 describe('useSurveyFlow – updateAnswer', () => {
-  // updateAnswer(value) sets currentAnswer for current question.
-  it('updates currentAnswer when updateAnswer is called', () => {
+  it('should update currentAnswer when updateAnswer is called', () => {
     const { result } = renderHook(() => useSurveyFlow({ questions: QUESTIONS, responseId: 'r1' }));
 
     act(() => {
@@ -58,8 +57,7 @@ describe('useSurveyFlow – updateAnswer', () => {
 });
 
 describe('useSurveyFlow – goToNext / goToPrevious', () => {
-  // goToNext increments index and currentQuestion.
-  it('increments currentIndex when goToNext is called', () => {
+  it('should increment currentIndex when goToNext is called', () => {
     const { result } = renderHook(() => useSurveyFlow({ questions: QUESTIONS, responseId: 'r1' }));
 
     act(() => {
@@ -70,8 +68,7 @@ describe('useSurveyFlow – goToNext / goToPrevious', () => {
     expect(result.current.currentQuestion?.id).toBe('q2');
   });
 
-  // goToNext on last question sets isComplete true.
-  it('sets isComplete when goToNext on last question', () => {
+  it('should set isComplete when goToNext on last question', () => {
     const { result } = renderHook(() => useSurveyFlow({ questions: QUESTIONS, responseId: 'r1' }));
 
     act(() => {
@@ -88,8 +85,7 @@ describe('useSurveyFlow – goToNext / goToPrevious', () => {
     expect(result.current.isComplete).toBe(true);
   });
 
-  // goToPrevious decrements index.
-  it('decrements currentIndex when goToPrevious is called', () => {
+  it('should decrement currentIndex when goToPrevious is called', () => {
     const { result } = renderHook(() => useSurveyFlow({ questions: QUESTIONS, responseId: 'r1' }));
 
     act(() => {
@@ -104,8 +100,7 @@ describe('useSurveyFlow – goToNext / goToPrevious', () => {
 });
 
 describe('useSurveyFlow – skip', () => {
-  // skip advances to next question (no persist).
-  it('moves to next question without persisting', () => {
+  it('should move to next question without persisting', () => {
     const { result } = renderHook(() => useSurveyFlow({ questions: QUESTIONS, responseId: 'r1' }));
 
     act(() => {

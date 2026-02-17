@@ -1,6 +1,7 @@
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 
 import { PageTransition } from '@/components/ui/page-transition';
+import { ROUTES } from '@/config/routes';
 import { getSurveyFormData, getSurveyWithQuestions } from '@/features/surveys/actions';
 import { QuestionBuilderPage } from '@/features/surveys/components/builder/question-builder-page';
 
@@ -15,6 +16,10 @@ export default async function SurveyBuilderRoute({ params }: Props) {
 
   if (!data) {
     notFound();
+  }
+
+  if (data.survey.status !== 'draft') {
+    redirect(`${ROUTES.dashboard.surveys}/${id}`);
   }
 
   return (

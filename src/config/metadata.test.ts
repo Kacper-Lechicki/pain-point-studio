@@ -1,3 +1,4 @@
+/** getAppMetadata: translatable SEO metadata generation. */
 import { describe, expect, it, vi } from 'vitest';
 
 import { BRAND } from '@/config/brand';
@@ -20,8 +21,7 @@ function makeT(): Translator & { raw: ReturnType<typeof vi.fn> } {
 // ── getAppMetadata ───────────────────────────────────────────────────
 
 describe('getAppMetadata', () => {
-  // Result has title, description, keywords, authors, creator, publisher.
-  it('returns object with title, description, keywords, authors, creator, publisher', () => {
+  it('should return object with title, description, keywords, authors, creator, publisher', () => {
     const t = makeT();
     t.raw.mockReturnValue(['keyword1', 'keyword2']);
 
@@ -35,8 +35,7 @@ describe('getAppMetadata', () => {
     expect(result).toHaveProperty('publisher');
   });
 
-  // Title comes from t(BRAND.name).
-  it('calls t with BRAND.name for title', () => {
+  it('should call t with BRAND.name for title', () => {
     const t = makeT();
 
     getAppMetadata(t as Translator);
@@ -44,8 +43,7 @@ describe('getAppMetadata', () => {
     expect(t).toHaveBeenCalledWith(BRAND.name);
   });
 
-  // Description comes from t(metadata.description).
-  it('calls t with metadata.description for description', () => {
+  it('should call t with metadata.description for description', () => {
     const t = makeT();
 
     getAppMetadata(t as Translator);
@@ -53,8 +51,7 @@ describe('getAppMetadata', () => {
     expect(t).toHaveBeenCalledWith('metadata.description');
   });
 
-  // Keywords come from t.raw(metadata.keywords).
-  it('calls t.raw with metadata.keywords for keywords', () => {
+  it('should call t.raw with metadata.keywords for keywords', () => {
     const t = makeT();
     t.raw.mockReturnValue(['a', 'b']);
 
@@ -63,8 +60,7 @@ describe('getAppMetadata', () => {
     expect(t.raw).toHaveBeenCalledWith('metadata.keywords');
   });
 
-  // Authors, creator, publisher use t(BRAND.author).
-  it('calls t with BRAND.author for authors, creator, publisher', () => {
+  it('should call t with BRAND.author for authors, creator, publisher', () => {
     const t = makeT();
 
     getAppMetadata(t as Translator);
@@ -72,8 +68,7 @@ describe('getAppMetadata', () => {
     expect(t).toHaveBeenCalledWith(BRAND.author);
   });
 
-  // authors is [{ name: t(BRAND.author) }]; creator and publisher match.
-  it('authors is array with single object containing name from t(BRAND.author)', () => {
+  it('should set authors as array with single object containing name from t(BRAND.author)', () => {
     const t = makeT();
     (
       t as unknown as { mockImplementation: (fn: (key: string) => string) => void }

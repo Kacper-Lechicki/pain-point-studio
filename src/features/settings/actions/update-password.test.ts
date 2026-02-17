@@ -1,4 +1,5 @@
 // @vitest-environment node
+/** Tests for the changePassword and setPassword server actions that manage password updates and initial password creation. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/lib/common/env', () => ({
@@ -56,7 +57,6 @@ describe('Settings Actions – changePassword', () => {
     mockUpdateUser.mockResolvedValue({ error: null });
   });
 
-  // Valid current + new + confirm: verify_password RPC and updateUser called; success.
   it('should return success when password is changed', async () => {
     const { changePassword } = await import('./update-password');
     const result = await changePassword(changeData);
@@ -70,7 +70,6 @@ describe('Settings Actions – changePassword', () => {
     });
   });
 
-  // Weak password fails validation; Supabase is not called.
   it('should not call Supabase when passwords are too weak', async () => {
     const { changePassword } = await import('./update-password');
 
@@ -84,7 +83,6 @@ describe('Settings Actions – changePassword', () => {
     expect(mockUpdateUser).not.toHaveBeenCalled();
   });
 
-  // Mismatched password and confirmPassword fail validation; Supabase not called.
   it('should not call Supabase when passwords do not match', async () => {
     const { changePassword } = await import('./update-password');
 
@@ -98,7 +96,6 @@ describe('Settings Actions – changePassword', () => {
     expect(mockUpdateUser).not.toHaveBeenCalled();
   });
 
-  // When updateUser returns error, changePassword returns error result.
   it('should return error when Supabase rejects the update', async () => {
     mockUpdateUser.mockResolvedValue({
       error: { message: 'Password update failed' },
@@ -111,7 +108,6 @@ describe('Settings Actions – changePassword', () => {
     expect(result).not.toHaveProperty('success');
   });
 
-  // When rate limited, changePassword returns error and does not call Supabase.
   it('should return rate limit error when rate limited', async () => {
     const { rateLimit } = await import('@/lib/common/rate-limit');
 
@@ -124,7 +120,6 @@ describe('Settings Actions – changePassword', () => {
     expect(mockUpdateUser).not.toHaveBeenCalled();
   });
 
-  // verify_password returns false: action returns currentPasswordIncorrect, no updateUser.
   it('should reject when current password is incorrect', async () => {
     mockRpc.mockResolvedValue({ data: false });
 
@@ -139,7 +134,6 @@ describe('Settings Actions – changePassword', () => {
     expect(mockUpdateUser).not.toHaveBeenCalled();
   });
 
-  // When getUser returns null, action returns settings.errors.unexpected.
   it('should return unexpected error when getUser returns no user', async () => {
     mockGetUser.mockResolvedValue({ data: { user: null } });
 
@@ -168,7 +162,6 @@ describe('Settings Actions – setPassword', () => {
     mockAdminUpdateUserById.mockResolvedValue({ error: null });
   });
 
-  // OAuth-only user: has_password false, setPassword updates user and creates email identity.
   it('should return success and create email identity for OAuth-only user', async () => {
     const { setPassword } = await import('./update-password');
     const result = await setPassword(setData);
@@ -182,7 +175,6 @@ describe('Settings Actions – setPassword', () => {
     expect(mockRpc).not.toHaveBeenCalledWith('verify_password', expect.anything());
   });
 
-  // User already has email identity: adminUpdateUserById not called.
   it('should not create email identity if one already exists', async () => {
     mockGetUser.mockResolvedValue({
       data: {
@@ -204,7 +196,6 @@ describe('Settings Actions – setPassword', () => {
     expect(mockAdminUpdateUserById).not.toHaveBeenCalled();
   });
 
-  // has_password returns true: action returns unexpected, updateUser not called.
   it('should reject when user already has a password', async () => {
     mockRpc.mockResolvedValue({ data: true });
 
@@ -215,7 +206,6 @@ describe('Settings Actions – setPassword', () => {
     expect(mockUpdateUser).not.toHaveBeenCalled();
   });
 
-  // Weak password fails validation; setPassword does not call Supabase.
   it('should not call Supabase when passwords are too weak', async () => {
     const { setPassword } = await import('./update-password');
 
@@ -228,7 +218,6 @@ describe('Settings Actions – setPassword', () => {
     expect(mockUpdateUser).not.toHaveBeenCalled();
   });
 
-  // Mismatched password/confirmPassword fail validation; Supabase not called.
   it('should not call Supabase when passwords do not match', async () => {
     const { setPassword } = await import('./update-password');
 
@@ -241,7 +230,6 @@ describe('Settings Actions – setPassword', () => {
     expect(mockUpdateUser).not.toHaveBeenCalled();
   });
 
-  // When updateUser returns error, setPassword returns error result.
   it('should return error when Supabase rejects the update', async () => {
     mockUpdateUser.mockResolvedValue({
       error: { message: 'Password update failed' },
@@ -254,7 +242,6 @@ describe('Settings Actions – setPassword', () => {
     expect(result).not.toHaveProperty('success');
   });
 
-  // When rate limited, setPassword returns error and does not call Supabase.
   it('should return rate limit error when rate limited', async () => {
     const { rateLimit } = await import('@/lib/common/rate-limit');
 

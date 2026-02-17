@@ -1,4 +1,5 @@
 // @vitest-environment node
+/** withPublicAction: public server action wrapper with rate limiting and validation. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 
@@ -30,7 +31,6 @@ describe('withPublicAction', () => {
     vi.clearAllMocks();
   });
 
-  // Action receives parsed form data and supabase client; returns action result.
   it('should call the action with validated data and supabase client', async () => {
     const actionFn = vi.fn().mockResolvedValue({ success: true });
 
@@ -52,7 +52,6 @@ describe('withPublicAction', () => {
     );
   });
 
-  // When rate limit returns limited: true, action is not called and error is returned.
   it('should return rate limit error when rate limited', async () => {
     const { rateLimit } = await import('@/lib/common/rate-limit');
     vi.mocked(rateLimit).mockResolvedValueOnce({ limited: true });
@@ -71,7 +70,6 @@ describe('withPublicAction', () => {
     expect(actionFn).not.toHaveBeenCalled();
   });
 
-  // rateLimitError option overrides default i18n key when rate limited.
   it('should use custom rate limit error message', async () => {
     const { rateLimit } = await import('@/lib/common/rate-limit');
     vi.mocked(rateLimit).mockResolvedValueOnce({ limited: true });
@@ -89,7 +87,6 @@ describe('withPublicAction', () => {
     expect(result.error).toBe('custom.rateLimitMessage');
   });
 
-  // Invalid form data fails schema; action is not called, error returned.
   it('should return validation error for invalid data', async () => {
     const actionFn = vi.fn();
 
@@ -106,7 +103,6 @@ describe('withPublicAction', () => {
     expect(actionFn).not.toHaveBeenCalled();
   });
 
-  // validationError option overrides default i18n key when validation fails.
   it('should use custom validation error message', async () => {
     const { withPublicAction } = await import('./with-public-action');
     const publicAction = withPublicAction('test-action', {
@@ -121,7 +117,6 @@ describe('withPublicAction', () => {
     expect(result.error).toBe('custom.validationMessage');
   });
 
-  // Default rate limit error key is common.errors.rateLimitExceeded.
   it('should use default rate limit error when not customized', async () => {
     const { rateLimit } = await import('@/lib/common/rate-limit');
     vi.mocked(rateLimit).mockResolvedValueOnce({ limited: true });
@@ -138,7 +133,6 @@ describe('withPublicAction', () => {
     expect(result.error).toBe('common.errors.rateLimitExceeded');
   });
 
-  // Default validation error key is common.errors.invalidData.
   it('should use default validation error when not customized', async () => {
     const { withPublicAction } = await import('./with-public-action');
     const publicAction = withPublicAction('test-action', {
@@ -152,7 +146,6 @@ describe('withPublicAction', () => {
     expect(result.error).toBe('common.errors.invalidData');
   });
 
-  // rateLimit is invoked with the given key, limit, and windowSeconds.
   it('should pass the rate limit key correctly', async () => {
     const { rateLimit } = await import('@/lib/common/rate-limit');
     const { withPublicAction } = await import('./with-public-action');

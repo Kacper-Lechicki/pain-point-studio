@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+/** Tests for URL hash reading and the useHashSync reactive hook. */
 import { act, renderHook } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
@@ -7,8 +8,7 @@ import { getHash, useHashSync } from './use-hash-sync';
 // ── getHash ───────────────────────────────────────────────────────────
 
 describe('getHash', () => {
-  // Returns hash string without leading #.
-  it('returns value without leading # when window.location.hash is set', () => {
+  it('should return value without leading # when window.location.hash is set', () => {
     const originalHash = window.location.hash;
     window.location.hash = '#section-one';
 
@@ -17,8 +17,7 @@ describe('getHash', () => {
     window.location.hash = originalHash;
   });
 
-  // Empty hash → ''.
-  it('returns empty string when hash is empty', () => {
+  it('should return empty string when hash is empty', () => {
     const originalHash = window.location.hash;
     window.location.hash = '';
 
@@ -31,8 +30,7 @@ describe('getHash', () => {
 // ── useHashSync ───────────────────────────────────────────────────────
 
 describe('useHashSync', () => {
-  // Dispatching hashchange updates returned hash state.
-  it('updates returned hash when hashchange is dispatched', () => {
+  it('should update returned hash when hashchange is dispatched', () => {
     const originalHash = window.location.hash;
     window.location.hash = '#profile';
 

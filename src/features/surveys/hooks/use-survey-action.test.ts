@@ -1,3 +1,4 @@
+/** Tests for the isConfirmable helper that determines which survey actions require confirmation. */
 import { describe, expect, it, vi } from 'vitest';
 
 import type { SurveyAction } from '@/features/surveys/config/survey-status';
@@ -12,26 +13,24 @@ vi.mock('@/features/surveys/actions', () => ({
   restoreSurvey: vi.fn(),
 }));
 
-// ── isConfirmable ──────────────────────────────────────────────────
-
 describe('isConfirmable', () => {
-  it('complete is confirmable', () => {
+  it('should return true for complete', () => {
     expect(isConfirmable('complete' as SurveyAction)).toBe(true);
   });
 
-  it('cancel is confirmable', () => {
+  it('should return true for cancel', () => {
     expect(isConfirmable('cancel' as SurveyAction)).toBe(true);
   });
 
-  it('archive is confirmable', () => {
+  it('should return true for archive', () => {
     expect(isConfirmable('archive' as SurveyAction)).toBe(true);
   });
 
-  it('restore is confirmable', () => {
+  it('should return true for restore', () => {
     expect(isConfirmable('restore' as SurveyAction)).toBe(true);
   });
 
-  it('delete is confirmable', () => {
+  it('should return true for delete', () => {
     expect(isConfirmable('delete' as SurveyAction)).toBe(true);
   });
 });

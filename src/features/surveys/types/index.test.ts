@@ -1,3 +1,4 @@
+/** Tests for survey type Zod schemas (metadata, question configs, question, survey questions). */
 import { describe, expect, it } from 'vitest';
 
 import {
@@ -13,13 +14,13 @@ import {
 // ── surveyIdSchema ──────────────────────────────────────────────────
 
 describe('surveyIdSchema', () => {
-  it('accepts valid UUID', () => {
+  it('should accept valid UUID', () => {
     const result = surveyIdSchema.safeParse({ surveyId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11' });
 
     expect(result.success).toBe(true);
   });
 
-  it('rejects non-UUID string', () => {
+  it('should reject non-UUID string', () => {
     const result = surveyIdSchema.safeParse({ surveyId: 'not-a-uuid' });
 
     expect(result.success).toBe(false);
@@ -32,41 +33,41 @@ describe('surveyMetadataSchema', () => {
   const validData = {
     title: 'My Survey',
     description: 'A test survey',
-    category: 'productivity',
+    category: 'problem-validation',
     visibility: 'public' as const,
   };
 
-  it('accepts valid minimal data', () => {
+  it('should accept valid minimal data', () => {
     const result = surveyMetadataSchema.safeParse(validData);
 
     expect(result.success).toBe(true);
   });
 
-  it('rejects empty title', () => {
+  it('should reject empty title', () => {
     const result = surveyMetadataSchema.safeParse({ ...validData, title: '' });
 
     expect(result.success).toBe(false);
   });
 
-  it('rejects title exceeding max length', () => {
+  it('should reject title exceeding max length', () => {
     const result = surveyMetadataSchema.safeParse({ ...validData, title: 'a'.repeat(101) });
 
     expect(result.success).toBe(false);
   });
 
-  it('rejects empty description', () => {
+  it('should reject empty description', () => {
     const result = surveyMetadataSchema.safeParse({ ...validData, description: '' });
 
     expect(result.success).toBe(false);
   });
 
-  it('rejects empty category', () => {
+  it('should reject empty category', () => {
     const result = surveyMetadataSchema.safeParse({ ...validData, category: '' });
 
     expect(result.success).toBe(false);
   });
 
-  it('accepts both private and public visibility', () => {
+  it('should accept both private and public visibility', () => {
     expect(surveyMetadataSchema.safeParse({ ...validData, visibility: 'private' }).success).toBe(
       true
     );
@@ -79,7 +80,7 @@ describe('surveyMetadataSchema', () => {
 // ── multipleChoiceConfigSchema ──────────────────────────────────────
 
 describe('multipleChoiceConfigSchema', () => {
-  it('accepts valid options', () => {
+  it('should accept valid options', () => {
     const result = multipleChoiceConfigSchema.safeParse({
       options: ['Option A', 'Option B'],
     });
@@ -87,7 +88,7 @@ describe('multipleChoiceConfigSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('rejects fewer than 2 options', () => {
+  it('should reject fewer than 2 options', () => {
     const result = multipleChoiceConfigSchema.safeParse({
       options: ['Only one'],
     });
@@ -95,7 +96,7 @@ describe('multipleChoiceConfigSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('rejects more than 10 options', () => {
+  it('should reject more than 10 options', () => {
     const result = multipleChoiceConfigSchema.safeParse({
       options: Array.from({ length: 11 }, (_, i) => `Option ${i}`),
     });
@@ -103,7 +104,7 @@ describe('multipleChoiceConfigSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('accepts optional allowOther', () => {
+  it('should accept optional allowOther', () => {
     const result = multipleChoiceConfigSchema.safeParse({
       options: ['A', 'B'],
       allowOther: true,
@@ -116,25 +117,25 @@ describe('multipleChoiceConfigSchema', () => {
 // ── ratingScaleConfigSchema ─────────────────────────────────────────
 
 describe('ratingScaleConfigSchema', () => {
-  it('accepts valid scale', () => {
+  it('should accept valid scale', () => {
     const result = ratingScaleConfigSchema.safeParse({ min: 1, max: 5 });
 
     expect(result.success).toBe(true);
   });
 
-  it('rejects min >= max', () => {
+  it('should reject min >= max', () => {
     const result = ratingScaleConfigSchema.safeParse({ min: 5, max: 5 });
 
     expect(result.success).toBe(false);
   });
 
-  it('rejects max exceeding RATING_SCALE_MAX', () => {
+  it('should reject max exceeding RATING_SCALE_MAX', () => {
     const result = ratingScaleConfigSchema.safeParse({ min: 1, max: 11 });
 
     expect(result.success).toBe(false);
   });
 
-  it('accepts optional labels', () => {
+  it('should accept optional labels', () => {
     const result = ratingScaleConfigSchema.safeParse({
       min: 1,
       max: 10,
@@ -149,13 +150,13 @@ describe('ratingScaleConfigSchema', () => {
 // ── textConfigSchema ────────────────────────────────────────────────
 
 describe('textConfigSchema', () => {
-  it('accepts empty config', () => {
+  it('should accept empty config', () => {
     const result = textConfigSchema.safeParse({});
 
     expect(result.success).toBe(true);
   });
 
-  it('accepts placeholder and maxLength', () => {
+  it('should accept placeholder and maxLength', () => {
     const result = textConfigSchema.safeParse({
       placeholder: 'Enter text',
       maxLength: 500,
@@ -164,7 +165,7 @@ describe('textConfigSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('rejects maxLength below 1', () => {
+  it('should reject maxLength below 1', () => {
     const result = textConfigSchema.safeParse({ maxLength: 0 });
 
     expect(result.success).toBe(false);
@@ -181,31 +182,31 @@ describe('questionSchema', () => {
     required: true,
   };
 
-  it('accepts valid question', () => {
+  it('should accept valid question', () => {
     const result = questionSchema.safeParse(validQuestion);
 
     expect(result.success).toBe(true);
   });
 
-  it('rejects empty text', () => {
+  it('should reject empty text', () => {
     const result = questionSchema.safeParse({ ...validQuestion, text: '' });
 
     expect(result.success).toBe(false);
   });
 
-  it('rejects text exceeding max length', () => {
+  it('should reject text exceeding max length', () => {
     const result = questionSchema.safeParse({ ...validQuestion, text: 'a'.repeat(501) });
 
     expect(result.success).toBe(false);
   });
 
-  it('rejects invalid question type', () => {
+  it('should reject invalid question type', () => {
     const result = questionSchema.safeParse({ ...validQuestion, type: 'invalid_type' });
 
     expect(result.success).toBe(false);
   });
 
-  it('accepts all valid question types', () => {
+  it('should accept all valid question types', () => {
     for (const type of ['open_text', 'short_text', 'multiple_choice', 'rating_scale', 'yes_no']) {
       const result = questionSchema.safeParse({ ...validQuestion, type });
 
@@ -213,7 +214,7 @@ describe('questionSchema', () => {
     }
   });
 
-  it('defaults config to empty object', () => {
+  it('should default config to empty object', () => {
     const result = questionSchema.safeParse(validQuestion);
 
     if (result.success) {
@@ -234,7 +235,7 @@ describe('surveyQuestionsSchema', () => {
     sortOrder: i,
   });
 
-  it('accepts valid questions array', () => {
+  it('should accept valid questions array', () => {
     const result = surveyQuestionsSchema.safeParse({
       surveyId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
       questions: [makeQuestion(0)],
@@ -243,7 +244,7 @@ describe('surveyQuestionsSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('accepts empty questions array (draft save)', () => {
+  it('should accept empty questions array (draft save)', () => {
     const result = surveyQuestionsSchema.safeParse({
       surveyId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
       questions: [],
@@ -252,7 +253,7 @@ describe('surveyQuestionsSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('accepts question with empty text (draft save)', () => {
+  it('should accept question with empty text (draft save)', () => {
     const result = surveyQuestionsSchema.safeParse({
       surveyId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
       questions: [{ ...makeQuestion(0), text: '' }],
@@ -261,7 +262,7 @@ describe('surveyQuestionsSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('rejects more than 15 questions', () => {
+  it('should reject more than 15 questions', () => {
     const result = surveyQuestionsSchema.safeParse({
       surveyId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
       questions: Array.from({ length: 16 }, (_, i) => makeQuestion(i)),

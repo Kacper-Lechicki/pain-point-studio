@@ -1,4 +1,5 @@
 // @vitest-environment node
+/** getAuthUser action: authenticated user retrieval from Supabase. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock env (required by server client module if it interacts with env)
@@ -26,7 +27,6 @@ describe('Auth Actions – Get User', () => {
     vi.clearAllMocks();
   });
 
-  // Verify that it returns the user object when authenticated
   it('should return user when authenticated', async () => {
     const mockUser = { id: 'user-123', email: 'test@example.com' };
     mockGetUser.mockResolvedValue({ data: { user: mockUser } });
@@ -38,7 +38,6 @@ describe('Auth Actions – Get User', () => {
     expect(mockGetUser).toHaveBeenCalled();
   });
 
-  // Verify that it returns null when the user is not authenticated
   it('should return null when not authenticated', async () => {
     mockGetUser.mockResolvedValue({ data: { user: null } });
 

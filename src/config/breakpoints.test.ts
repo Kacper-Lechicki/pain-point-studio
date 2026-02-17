@@ -1,3 +1,4 @@
+/** BREAKPOINTS config: ordering and value constraints. */
 import { describe, expect, it } from 'vitest';
 
 import { BREAKPOINTS } from './breakpoints';
@@ -5,34 +6,28 @@ import { BREAKPOINTS } from './breakpoints';
 // ── BREAKPOINTS ──────────────────────────────────────────────────────
 
 describe('BREAKPOINTS', () => {
-  // Breakpoints increase in order: sm < md.
-  it('sm is less than md', () => {
+  it('should have sm less than md', () => {
     expect(BREAKPOINTS.sm).toBeLessThan(BREAKPOINTS.md);
   });
 
-  // md < lg.
-  it('md is less than lg', () => {
+  it('should have md less than lg', () => {
     expect(BREAKPOINTS.md).toBeLessThan(BREAKPOINTS.lg);
   });
 
-  // lg < xl.
-  it('lg is less than xl', () => {
+  it('should have lg less than xl', () => {
     expect(BREAKPOINTS.lg).toBeLessThan(BREAKPOINTS.xl);
   });
 
-  // xl < 2xl.
-  it('xl is less than 2xl', () => {
+  it('should have xl less than 2xl', () => {
     expect(BREAKPOINTS.xl).toBeLessThan(BREAKPOINTS['2xl']);
   });
 
-  // Dashboard breakpoint lies between lg and 2xl.
-  it('dashboard breakpoint is between lg and 2xl', () => {
+  it('should have dashboard breakpoint between lg and 2xl', () => {
     expect(BREAKPOINTS.dashboard).toBeGreaterThanOrEqual(BREAKPOINTS.lg);
     expect(BREAKPOINTS.dashboard).toBeLessThanOrEqual(BREAKPOINTS['2xl']);
   });
 
-  // All breakpoint values are positive integers.
-  it('all values are positive numbers', () => {
+  it('should have all values as positive numbers', () => {
     for (const value of Object.values(BREAKPOINTS)) {
       expect(value).toBeGreaterThan(0);
       expect(Number.isInteger(value)).toBe(true);

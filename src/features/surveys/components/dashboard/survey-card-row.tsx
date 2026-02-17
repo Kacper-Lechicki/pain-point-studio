@@ -74,14 +74,14 @@ export function SurveyCardRow({
           </div>
         </div>
 
-        {survey.description && (
-          <p className="text-muted-foreground -mt-1 line-clamp-1 text-xs">{survey.description}</p>
-        )}
+        <p className="text-muted-foreground -mt-1 line-clamp-1 min-h-4 text-xs">
+          {survey.description || '\u00A0'}
+        </p>
 
         <div
           className={cn(
-            'text-muted-foreground grid gap-x-4 gap-y-2 text-xs',
-            !row.isDraft && (row.isArchived || archivedLayout) ? 'grid-cols-3' : 'grid-cols-2'
+            'text-muted-foreground grid grid-cols-2 gap-x-4 gap-y-2 text-xs',
+            (row.isArchived || archivedLayout) && !row.isDraft && 'grid-cols-3'
           )}
         >
           <div className="flex flex-col gap-0.5">
@@ -89,10 +89,17 @@ export function SurveyCardRow({
             <span className="text-foreground font-medium tabular-nums">{survey.questionCount}</span>
           </div>
           {row.isDraft ? (
-            <div className="flex flex-col gap-0.5">
-              <span>{row.t('surveys.dashboard.table.lastEdited')}</span>
-              <span className="text-foreground font-medium">{row.updatedAtLabel}</span>
-            </div>
+            <>
+              <div className="flex flex-col gap-0.5">
+                <span>{row.t('surveys.dashboard.table.responses')}</span>
+                <span className="text-foreground font-medium tabular-nums">—</span>
+              </div>
+              <div className="flex flex-col gap-0.5">
+                <span>{row.t('surveys.dashboard.table.lastEdited')}</span>
+                <span className="text-foreground font-medium">{row.updatedAtLabel}</span>
+              </div>
+              <div />
+            </>
           ) : row.isArchived || archivedLayout ? (
             <>
               <div className="flex flex-col gap-0.5">

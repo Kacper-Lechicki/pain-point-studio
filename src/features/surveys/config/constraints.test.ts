@@ -1,3 +1,4 @@
+/** Tests for survey constraint constants and the surveyCompletedKey helper. */
 import { describe, expect, it } from 'vitest';
 
 import {
@@ -24,15 +25,15 @@ import {
 // ── Survey metadata constraints ─────────────────────────────────────
 
 describe('survey metadata constraints', () => {
-  it('SURVEY_TITLE_MAX_LENGTH is a positive number', () => {
+  it('should have a positive SURVEY_TITLE_MAX_LENGTH', () => {
     expect(SURVEY_TITLE_MAX_LENGTH).toBeGreaterThan(0);
   });
 
-  it('SURVEY_DESCRIPTION_MAX_LENGTH is greater than title', () => {
+  it('should have SURVEY_DESCRIPTION_MAX_LENGTH greater than title', () => {
     expect(SURVEY_DESCRIPTION_MAX_LENGTH).toBeGreaterThan(SURVEY_TITLE_MAX_LENGTH);
   });
 
-  it('SURVEY_MAX_RESPONDENTS_MIN is at least 1', () => {
+  it('should have SURVEY_MAX_RESPONDENTS_MIN at least 1', () => {
     expect(SURVEY_MAX_RESPONDENTS_MIN).toBeGreaterThanOrEqual(1);
   });
 });
@@ -40,19 +41,19 @@ describe('survey metadata constraints', () => {
 // ── Question builder constraints ────────────────────────────────────
 
 describe('question builder constraints', () => {
-  it('QUESTIONS_MIN is less than QUESTIONS_MAX', () => {
+  it('should have QUESTIONS_MIN less than QUESTIONS_MAX', () => {
     expect(QUESTIONS_MIN).toBeLessThan(QUESTIONS_MAX);
   });
 
-  it('QUESTION_OPTIONS_MIN is less than QUESTION_OPTIONS_MAX', () => {
+  it('should have QUESTION_OPTIONS_MIN less than QUESTION_OPTIONS_MAX', () => {
     expect(QUESTION_OPTIONS_MIN).toBeLessThan(QUESTION_OPTIONS_MAX);
   });
 
-  it('RATING_SCALE_MIN is less than RATING_SCALE_MAX', () => {
+  it('should have RATING_SCALE_MIN less than RATING_SCALE_MAX', () => {
     expect(RATING_SCALE_MIN).toBeLessThan(RATING_SCALE_MAX);
   });
 
-  it('text constraints are positive', () => {
+  it('should have positive text constraints', () => {
     expect(QUESTION_TEXT_MAX_LENGTH).toBeGreaterThan(0);
     expect(QUESTION_DESCRIPTION_MAX_LENGTH).toBeGreaterThan(0);
     expect(QUESTION_OPTION_MAX_LENGTH).toBeGreaterThan(0);
@@ -62,20 +63,20 @@ describe('question builder constraints', () => {
 // ── Other constants ─────────────────────────────────────────────────
 
 describe('miscellaneous constants', () => {
-  it('ESTIMATED_SECONDS_PER_QUESTION is positive', () => {
+  it('should have a positive ESTIMATED_SECONDS_PER_QUESTION', () => {
     expect(ESTIMATED_SECONDS_PER_QUESTION).toBeGreaterThan(0);
   });
 
-  it('text defaults are positive', () => {
+  it('should have positive text defaults', () => {
     expect(OPEN_TEXT_DEFAULT_MAX_LENGTH).toBeGreaterThan(0);
     expect(SHORT_TEXT_DEFAULT_MAX_LENGTH).toBeGreaterThan(0);
   });
 
-  it('START_DATE_TOLERANCE_MS is positive', () => {
+  it('should have a positive START_DATE_TOLERANCE_MS', () => {
     expect(START_DATE_TOLERANCE_MS).toBeGreaterThan(0);
   });
 
-  it('DATE_FORMAT_SHORT has required Intl keys', () => {
+  it('should have required Intl keys in DATE_FORMAT_SHORT', () => {
     expect(DATE_FORMAT_SHORT).toHaveProperty('month');
     expect(DATE_FORMAT_SHORT).toHaveProperty('day');
     expect(DATE_FORMAT_SHORT).toHaveProperty('year');
@@ -85,11 +86,11 @@ describe('miscellaneous constants', () => {
 // ── surveyCompletedKey ──────────────────────────────────────────────
 
 describe('surveyCompletedKey', () => {
-  it('prefixes slug with pps_completed_', () => {
+  it('should prefix slug with pps_completed_', () => {
     expect(surveyCompletedKey('abc123')).toBe('pps_completed_abc123');
   });
 
-  it('works with empty slug', () => {
+  it('should work with empty slug', () => {
     expect(surveyCompletedKey('')).toBe('pps_completed_');
   });
 });

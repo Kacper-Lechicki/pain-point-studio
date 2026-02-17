@@ -18,6 +18,7 @@ import { SettingsSectionHeader } from '@/features/settings/components/settings-s
 import { useLinkIdentity } from '@/features/settings/hooks/use-link-identity';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import type { MessageKey } from '@/i18n/types';
+import { cn } from '@/lib/common/utils';
 
 interface IdentityData {
   provider: string;
@@ -90,7 +91,13 @@ const ConnectedAccounts = ({ identities, hasPassword }: ConnectedAccountsProps) 
             </div>
           </div>
 
-          <Badge variant="secondary" className="hidden sm:inline-flex">
+          <Badge
+            variant="secondary"
+            className={cn(
+              'hidden sm:inline-flex',
+              hasPassword && 'border-emerald-500/20 bg-emerald-500/10 text-emerald-500'
+            )}
+          >
             {hasPassword
               ? t('settings.connectedAccounts.connected')
               : t('settings.connectedAccounts.notConnected')}
@@ -140,7 +147,7 @@ const ConnectedAccounts = ({ identities, hasPassword }: ConnectedAccountsProps) 
                   <Button
                     type="button"
                     variant="outline"
-                    size="sm"
+                    size="xs"
                     disabled={isBusy}
                     onClick={() => linkProvider(providerConfig.id)}
                   >
@@ -153,7 +160,13 @@ const ConnectedAccounts = ({ identities, hasPassword }: ConnectedAccountsProps) 
                   </Button>
                 )}
 
-                <Badge variant="secondary" className="hidden sm:inline-flex">
+                <Badge
+                  variant="secondary"
+                  className={cn(
+                    'hidden sm:inline-flex',
+                    isConnected && 'border-emerald-500/20 bg-emerald-500/10 text-emerald-500'
+                  )}
+                >
                   {isConnected
                     ? t('settings.connectedAccounts.connected')
                     : t('settings.connectedAccounts.notConnected')}

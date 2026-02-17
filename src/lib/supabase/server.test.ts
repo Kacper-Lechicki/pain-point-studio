@@ -1,4 +1,5 @@
 // @vitest-environment node
+/** Supabase server client creation with cookie management. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock next/headers
@@ -31,7 +32,6 @@ describe('Supabase Server Client', () => {
     vi.clearAllMocks();
   });
 
-  // Verify client initialization with correct environment variables
   it('should call createServerClient with correct env values', async () => {
     const { createClient } = await import('./server');
     await createClient();
@@ -48,7 +48,6 @@ describe('Supabase Server Client', () => {
     );
   });
 
-  // Verify cookie retrieval for session management
   it('should provide a working getAll cookie handler', async () => {
     const { createClient } = await import('./server');
     await createClient();

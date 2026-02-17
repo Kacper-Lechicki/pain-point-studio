@@ -4,25 +4,18 @@ import { useFormatter } from 'next-intl';
 
 import type { ResponseItem } from '@/features/surveys/components/stats/answer-charts/inline-text-search';
 import type { TextSegment } from '@/lib/common/text-highlight';
-import { cn } from '@/lib/common/utils';
 
 interface TextResponseListProps {
   items: ResponseItem[];
   highlightFn: (text: string) => TextSegment[];
-  isExpanded: boolean;
   onItemClick: (text: string) => void;
 }
 
-export function TextResponseList({
-  items,
-  highlightFn,
-  isExpanded,
-  onItemClick,
-}: TextResponseListProps) {
+export function TextResponseList({ items, highlightFn, onItemClick }: TextResponseListProps) {
   const format = useFormatter();
 
   return (
-    <div className={cn(isExpanded && 'max-h-104 overflow-y-auto')}>
+    <div>
       <ul className="space-y-1.5" role="list">
         {items.map((item, i) => {
           const segments = highlightFn(item.text);

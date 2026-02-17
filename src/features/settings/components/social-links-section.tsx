@@ -45,6 +45,7 @@ export function SocialLinksSection({
           <Button
             type="button"
             variant="outline"
+            size="sm"
             className="shrink-0"
             onClick={() =>
               append({

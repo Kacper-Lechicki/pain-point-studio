@@ -10,6 +10,8 @@ import { getUserSurveys } from '@/features/surveys/actions';
 import { SurveyList } from '@/features/surveys/components/dashboard/survey-list';
 import Link from '@/i18n/link';
 
+export const dynamic = 'force-dynamic';
+
 export default async function SurveysPage() {
   const [surveys, t] = await Promise.all([getUserSurveys(), getTranslations()]);
 

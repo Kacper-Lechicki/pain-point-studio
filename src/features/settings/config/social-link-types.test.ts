@@ -1,3 +1,4 @@
+/** Tests for the SOCIAL_LINK_TYPES config array and the derived SOCIAL_LINK_TYPE_VALUES tuple. */
 import { describe, expect, it } from 'vitest';
 
 import { SOCIAL_LINK_TYPES, SOCIAL_LINK_TYPE_VALUES } from './social-link-types';
@@ -5,8 +6,7 @@ import { SOCIAL_LINK_TYPES, SOCIAL_LINK_TYPE_VALUES } from './social-link-types'
 // ── SOCIAL_LINK_TYPES ───────────────────────────────────────────────
 
 describe('SOCIAL_LINK_TYPES', () => {
-  // Each link type has value and labelKey.
-  it('each entry has value and labelKey', () => {
+  it('should have value and labelKey for each entry', () => {
     for (const link of SOCIAL_LINK_TYPES) {
       expect(link).toHaveProperty('value');
       expect(link).toHaveProperty('labelKey');
@@ -15,14 +15,12 @@ describe('SOCIAL_LINK_TYPES', () => {
     }
   });
 
-  // "other" is the last link type.
-  it('other is last', () => {
+  it('should place other last', () => {
     const last = SOCIAL_LINK_TYPES[SOCIAL_LINK_TYPES.length - 1];
     expect(last?.value).toBe('other');
   });
 
-  // labelKey matches settings.profile.socialLinks.labels.*.
-  it('labelKey follows settings.profile.socialLinks.labels.* format', () => {
+  it('should follow settings.profile.socialLinks.labels.* format for labelKey', () => {
     for (const link of SOCIAL_LINK_TYPES) {
       expect(link.labelKey).toMatch(/^settings\.profile\.socialLinks\.labels\./);
     }
@@ -32,8 +30,7 @@ describe('SOCIAL_LINK_TYPES', () => {
 // ── SOCIAL_LINK_TYPE_VALUES ───────────────────────────────────────────
 
 describe('SOCIAL_LINK_TYPE_VALUES', () => {
-  // Values match SOCIAL_LINK_TYPES.map(s => s.value).
-  it('is mapping of SOCIAL_LINK_TYPES to value', () => {
+  it('should be a mapping of SOCIAL_LINK_TYPES to value', () => {
     expect(SOCIAL_LINK_TYPE_VALUES).toHaveLength(SOCIAL_LINK_TYPES.length);
     expect(SOCIAL_LINK_TYPE_VALUES).toEqual(SOCIAL_LINK_TYPES.map((s) => s.value));
   });

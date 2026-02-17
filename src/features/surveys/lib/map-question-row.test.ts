@@ -1,9 +1,10 @@
+/** Tests for mapQuestionRow snake_case-to-camelCase row mapping. */
 import { describe, expect, it } from 'vitest';
 
 import { mapQuestionRow } from './map-question-row';
 
 describe('mapQuestionRow', () => {
-  it('maps snake_case row to camelCase question', () => {
+  it('should map snake_case row to camelCase question', () => {
     const row = {
       id: '123',
       text: 'What do you think?',
@@ -27,7 +28,7 @@ describe('mapQuestionRow', () => {
     });
   });
 
-  it('defaults config to empty object when null', () => {
+  it('should default config to empty object when null', () => {
     const row = {
       id: '456',
       text: 'Rate us',
@@ -43,7 +44,7 @@ describe('mapQuestionRow', () => {
     expect(result.config).toEqual({});
   });
 
-  it('preserves null description', () => {
+  it('should preserve null description', () => {
     const row = {
       id: '789',
       text: 'Yes or no?',
@@ -59,7 +60,7 @@ describe('mapQuestionRow', () => {
     expect(result.description).toBeNull();
   });
 
-  it('casts string type to QuestionType union', () => {
+  it('should cast string type to QuestionType union', () => {
     const row = {
       id: 'abc',
       text: 'Choose one',

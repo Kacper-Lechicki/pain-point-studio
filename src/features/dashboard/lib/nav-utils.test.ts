@@ -1,3 +1,4 @@
+/** Tests for sub-navigation href building, search-param collection, and active-state matching. */
 import { describe, expect, it } from 'vitest';
 
 import type { SubNavGroup, SubNavItem } from '@/features/dashboard/config/navigation';
@@ -13,27 +14,27 @@ describe('getSubItemHref', () => {
     href: '/dashboard/surveys' as SubNavItem['href'],
   };
 
-  it('returns plain href when no searchParams or hash', () => {
+  it('should return plain href when no searchParams or hash', () => {
     expect(getSubItemHref(base)).toBe('/dashboard/surveys');
   });
 
-  it('appends hash when defined', () => {
+  it('should append hash when defined', () => {
     expect(getSubItemHref({ ...base, hash: 'section' })).toBe('/dashboard/surveys#section');
   });
 
-  it('appends searchParams as query string', () => {
+  it('should append searchParams as query string', () => {
     expect(getSubItemHref({ ...base, searchParams: { status: 'active' } })).toBe(
       '/dashboard/surveys?status=active'
     );
   });
 
-  it('appends both searchParams and hash', () => {
+  it('should append both searchParams and hash', () => {
     expect(getSubItemHref({ ...base, searchParams: { tab: 'all' }, hash: 'top' })).toBe(
       '/dashboard/surveys?tab=all#top'
     );
   });
 
-  it('encodes special characters in searchParams', () => {
+  it('should encode special characters in searchParams', () => {
     const href = getSubItemHref({ ...base, searchParams: { q: 'hello world' } });
 
     expect(href).toBe('/dashboard/surveys?q=hello+world');
@@ -50,13 +51,13 @@ describe('collectSearchParamKeys', () => {
     searchParams: sp,
   });
 
-  it('returns empty array when no items have searchParams', () => {
+  it('should return empty array when no items have searchParams', () => {
     const groups: SubNavGroup[] = [{ items: [item(), item()] }];
 
     expect(collectSearchParamKeys(groups)).toEqual([]);
   });
 
-  it('collects unique keys from a single group', () => {
+  it('should collect unique keys from a single group', () => {
     const groups: SubNavGroup[] = [
       { items: [item({ status: 'active' }), item({ status: 'draft', tab: 'all' })] },
     ];
@@ -64,7 +65,7 @@ describe('collectSearchParamKeys', () => {
     expect(collectSearchParamKeys(groups)).toEqual(['status', 'tab']);
   });
 
-  it('collects keys across multiple groups', () => {
+  it('should collect keys across multiple groups', () => {
     const groups: SubNavGroup[] = [
       { items: [item({ status: 'active' })] },
       { items: [item({ view: 'grid' })] },
@@ -73,7 +74,7 @@ describe('collectSearchParamKeys', () => {
     expect(collectSearchParamKeys(groups)).toEqual(['status', 'view']);
   });
 
-  it('deduplicates keys', () => {
+  it('should deduplicate keys', () => {
     const groups: SubNavGroup[] = [
       { items: [item({ status: 'active' }), item({ status: 'draft' })] },
     ];
@@ -81,7 +82,7 @@ describe('collectSearchParamKeys', () => {
     expect(collectSearchParamKeys(groups)).toEqual(['status']);
   });
 
-  it('skips items without searchParams', () => {
+  it('should skip items without searchParams', () => {
     const groups: SubNavGroup[] = [{ items: [item(), item({ status: 'active' })] }];
 
     expect(collectSearchParamKeys(groups)).toEqual(['status']);
@@ -98,7 +99,7 @@ describe('isSubItemActive', () => {
     ...overrides,
   });
 
-  it('matches hash item when pathname and hash match', () => {
+  it('should match hash item when pathname and hash match', () => {
     const result = isSubItemActive(
       item({ hash: 'section' }),
       '/dashboard/surveys',
@@ -110,7 +111,7 @@ describe('isSubItemActive', () => {
     expect(result).toBe(true);
   });
 
-  it('rejects hash item when hash differs', () => {
+  it('should reject hash item when hash differs', () => {
     const result = isSubItemActive(
       item({ hash: 'section' }),
       '/dashboard/surveys',
@@ -122,7 +123,7 @@ describe('isSubItemActive', () => {
     expect(result).toBe(false);
   });
 
-  it('rejects hash item when pathname differs', () => {
+  it('should reject hash item when pathname differs', () => {
     const result = isSubItemActive(
       item({ hash: 'section' }),
       '/settings',
@@ -134,7 +135,7 @@ describe('isSubItemActive', () => {
     expect(result).toBe(false);
   });
 
-  it('matches searchParams item when all params match', () => {
+  it('should match searchParams item when all params match', () => {
     const result = isSubItemActive(
       item({ searchParams: { status: 'active' } }),
       '/dashboard/surveys',
@@ -146,7 +147,7 @@ describe('isSubItemActive', () => {
     expect(result).toBe(true);
   });
 
-  it('rejects searchParams item when param value differs', () => {
+  it('should reject searchParams item when param value differs', () => {
     const result = isSubItemActive(
       item({ searchParams: { status: 'active' } }),
       '/dashboard/surveys',
@@ -158,7 +159,7 @@ describe('isSubItemActive', () => {
     expect(result).toBe(false);
   });
 
-  it('rejects searchParams item when pathname differs', () => {
+  it('should reject searchParams item when pathname differs', () => {
     const result = isSubItemActive(
       item({ searchParams: { status: 'active' } }),
       '/other',
@@ -170,7 +171,7 @@ describe('isSubItemActive', () => {
     expect(result).toBe(false);
   });
 
-  it('matches plain item when pathname matches and no search params present', () => {
+  it('should match plain item when pathname matches and no search params present', () => {
     const result = isSubItemActive(item(), '/dashboard/surveys', '', new URLSearchParams(), [
       'status',
     ]);
@@ -178,7 +179,7 @@ describe('isSubItemActive', () => {
     expect(result).toBe(true);
   });
 
-  it('rejects plain item when a tracked search param is present in URL', () => {
+  it('should reject plain item when a tracked search param is present in URL', () => {
     const result = isSubItemActive(
       item(),
       '/dashboard/surveys',
@@ -190,7 +191,7 @@ describe('isSubItemActive', () => {
     expect(result).toBe(false);
   });
 
-  it('matches alsoActiveFor paths', () => {
+  it('should match alsoActiveFor paths', () => {
     const result = isSubItemActive(
       item({ alsoActiveFor: ['/alt-path'] }),
       '/alt-path',
@@ -202,7 +203,7 @@ describe('isSubItemActive', () => {
     expect(result).toBe(true);
   });
 
-  it('returns false when nothing matches', () => {
+  it('should return false when nothing matches', () => {
     const result = isSubItemActive(item(), '/other', '', new URLSearchParams(), []);
 
     expect(result).toBe(false);

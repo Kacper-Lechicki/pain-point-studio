@@ -58,12 +58,19 @@
       "description": "An unexpected error occurred. Please try again.",
       "retry": "Try again",
       "backToDashboard": "Back to Dashboard",
-      "backToSignIn": "Back to Sign In"
+      "backToSignIn": "Back to Sign In",
+      "backToHome": "Back to Home"
     },
     "errors": {
       "unexpected": "Something went wrong. Please try again.",
       "rateLimitExceeded": "Too many requests. Please wait a moment and try again.",
       "invalidData": "The submitted data is invalid. Please check your input."
+    },
+    "pagination": {
+      "showing": "Showing {start}–{end} of {total}",
+      "perPage": "{count} per page",
+      "previous": "Previous",
+      "next": "Next"
     },
     "unsavedChanges": {
       "title": "Unsaved changes",
@@ -124,8 +131,8 @@
     "enterEmailToReset": "Enter your email to receive a password reset link",
     "setNewPassword": "Set New Password",
     "enterNewPassword": "Please enter your new password below",
-    "signInSuccess": "Signed in",
-    "signOutSuccess": "Signed out",
+    "signInSuccess": "Signed in.",
+    "signOutSuccess": "Signed out.",
     "emailConfirmed": "Email confirmed. You are now signed in",
     "emailChangeConfirmed": "Email address updated",
     "passwordUpdated": "Password updated",
@@ -189,7 +196,7 @@
       "titleCounter": "{count}/{max}",
       "surveyDescription": "Description",
       "surveyDescriptionPlaceholder": "What problem are you investigating and what do you want to learn from respondents?",
-      "surveyDescriptionHelper": "Shown to respondents before they start the survey.",
+      "surveyDescriptionHelper": "For your own reference only. A branded landing page for respondents is coming soon.",
       "descriptionCounter": "{count}/{max}",
       "category": "Category",
       "categoryPlaceholder": "Select a category",
@@ -205,7 +212,8 @@
       "fieldRequired": "This field is required.",
       "titleTooLong": "Title must be 100 characters or fewer.",
       "descriptionTooLong": "Description must be 2000 characters or fewer.",
-      "unexpected": "Something went wrong. Please try again."
+      "unexpected": "Something went wrong. Please try again.",
+      "exportTooManyResponses": "This survey has too many responses to export at once. Please contact support."
     },
     "builder": {
       "backToSurveys": "Back to surveys",
@@ -287,7 +295,8 @@
         "minQuestions": "At least 1 question is required.",
         "maxQuestions": "Maximum 15 questions allowed.",
         "minQuestionsToPublish": "Add at least 1 question with text before publishing.",
-        "saveFailed": "Failed to save questions. Please try again."
+        "saveFailed": "Failed to save questions. Please try again.",
+        "configTooLarge": "Question configuration is too large."
       }
     },
     "publish": {
@@ -404,7 +413,9 @@
       "modeShort": "Mode: {value}",
       "filter": {
         "all": "All responses",
-        "keyword": "Filter"
+        "keyword": "Filter",
+        "dateRange": "Date range",
+        "clearDate": "Clear date range"
       },
       "sort": {
         "newest": "Newest",
@@ -431,8 +442,8 @@
         "draft": "This survey is still being designed. Add questions and configure settings before publishing.",
         "active": "This survey is live and collecting responses from participants.",
         "completed": "Data collection is finished. Results are available for review.",
-        "cancelled": "This survey was withdrawn before completion. Existing responses are preserved.",
-        "archived": "This survey has been archived and will be automatically deleted after the retention period."
+        "cancelled": "This survey was withdrawn before completion. Existing responses are preserved but will not be included in project evaluation.",
+        "archived": "This survey has been archived and will be automatically deleted after the retention period. Responses from archived surveys are not included in project evaluation."
       },
       "filters": {
         "label": "Filter",
@@ -441,7 +452,10 @@
         "draft": "Drafts",
         "completed": "Completed",
         "cancelled": "Cancelled",
-        "archived": "Archived"
+        "archived": "Archived",
+        "statusSection": "Status",
+        "categorySection": "Category",
+        "clearFilters": "Clear filters"
       },
       "summary": {
         "surveys": "{count, plural, one {# survey} other {# surveys}}",
@@ -567,9 +581,9 @@
         "completeTitle": "Complete survey",
         "completeDescription": "The survey will stop accepting new responses. The survey link will remain accessible for 14 days, then expire. You can archive the survey later.",
         "cancelTitle": "Cancel survey",
-        "cancelDescription": "The survey will be withdrawn. The survey link will remain accessible for 14 days showing a withdrawal notice, then expire. You can archive the survey later.",
+        "cancelDescription": "The survey will be withdrawn. The survey link will remain accessible for 14 days showing a withdrawal notice, then expire. Responses from cancelled surveys will not be included in project evaluation. You can archive the survey later.",
         "archiveTitle": "Archive survey",
-        "archiveDescription": "The survey will be moved to the archive. You can restore it back to draft at any time within 14 days. After 14 days, archived surveys are permanently deleted.",
+        "archiveDescription": "The survey will be moved to the archive. Responses from archived surveys will not be included in project evaluation. You can restore it back to draft at any time within 14 days. After 14 days, archived surveys are permanently deleted.",
         "restoreTitle": "Restore survey",
         "restoreDescription": "The survey will be restored as a draft. You can edit it and publish again to start collecting new responses.",
         "deleteTitle": "Delete survey",
@@ -734,7 +748,8 @@
     "settings": "Settings",
     "pinSidebar": "Pin sidebar",
     "unpinSidebar": "Unpin sidebar",
-    "back": "Back"
+    "back": "Back",
+    "dynamicHeading": "Dynamic"
   },
   "breadcrumbs": {
     "dashboard": "Dashboard",
@@ -983,9 +998,9 @@
       "bioCounter": "{count}/{max}",
       "previewProfile": "Preview Profile",
       "saveProfile": "Save Profile",
-      "profileUpdated": "Profile updated",
-      "avatarUpdated": "Profile photo updated",
-      "avatarRemoved": "Profile photo removed",
+      "profileUpdated": "Profile updated.",
+      "avatarUpdated": "Profile photo updated.",
+      "avatarRemoved": "Profile photo removed.",
       "removeAvatarConfirmTitle": "Remove profile photo?",
       "removeAvatarConfirmDescription": "Your profile photo will be permanently removed.",
       "cropAvatar": "Crop Photo",
@@ -1036,7 +1051,7 @@
       "newPassword": "New Password",
       "confirmPassword": "Confirm New Password",
       "savePassword": "Update Password",
-      "passwordUpdated": "Password updated"
+      "passwordUpdated": "Password updated."
     },
     "connectedAccounts": {
       "title": "Connected Accounts",
@@ -1067,6 +1082,7 @@
       "deleteDescription": "Permanently delete your account and all associated data. This action cannot be undone.",
       "deleteConfirmTitle": "Are you sure?",
       "deleteConfirmDescription": "This will permanently delete your account, profile, and all your data. This action cannot be undone.",
+      "deleteDataWarning": "You have {surveyCount, plural, one {# active survey} other {# active surveys}} with {responseCount, plural, one {# response} other {# responses}} that will be permanently deleted.",
       "deleteConfirmLabel": "Type \"{text}\" to confirm",
       "deleteConfirmPlaceholder": "your@email.com",
       "deleteButton": "Delete My Account",

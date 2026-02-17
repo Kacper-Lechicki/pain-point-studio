@@ -1,3 +1,4 @@
+/** Route config: ROUTES groups, SIBLING_GROUPS, and settings section round-trip. */
 import { describe, expect, it } from 'vitest';
 
 import {
@@ -11,8 +12,7 @@ import {
 // ── ROUTES ───────────────────────────────────────────────────────────
 
 describe('ROUTES', () => {
-  // Auth group exposes signIn, signUp, forgotPassword, callback.
-  it('has auth group with expected keys', () => {
+  it('should have auth group with expected keys', () => {
     expect(ROUTES.auth).toBeDefined();
     expect(ROUTES.auth).toHaveProperty('signIn');
     expect(ROUTES.auth).toHaveProperty('signUp');
@@ -20,27 +20,23 @@ describe('ROUTES', () => {
     expect(ROUTES.auth).toHaveProperty('callback');
   });
 
-  // Common group has home, dashboard, settings.
-  it('has common group with home, dashboard, settings', () => {
+  it('should have common group with home, dashboard, settings', () => {
     expect(ROUTES.common).toHaveProperty('home');
     expect(ROUTES.common).toHaveProperty('dashboard');
     expect(ROUTES.common).toHaveProperty('settings');
   });
 
-  // Settings group has profile and dangerZone.
-  it('has settings group with profile and dangerZone', () => {
+  it('should have settings group with profile and dangerZone', () => {
     expect(ROUTES.settings).toHaveProperty('profile');
     expect(ROUTES.settings).toHaveProperty('dangerZone');
   });
 
-  // Dashboard group has surveys and analytics.
-  it('has dashboard group with surveys and analytics', () => {
+  it('should have dashboard group with surveys and analytics', () => {
     expect(ROUTES.dashboard).toHaveProperty('surveys');
     expect(ROUTES.dashboard).toHaveProperty('analytics');
   });
 
-  // All exposed route values are strings.
-  it('all route values are strings', () => {
+  it('should have all route values as strings', () => {
     expect(typeof ROUTES.common.home).toBe('string');
     expect(typeof ROUTES.auth.signIn).toBe('string');
   });
@@ -49,14 +45,12 @@ describe('ROUTES', () => {
 // ── SIBLING_GROUPS ───────────────────────────────────────────────────
 
 describe('SIBLING_GROUPS', () => {
-  // SIBLING_GROUPS is a non-empty array.
-  it('is a non-empty array', () => {
+  it('should be a non-empty array', () => {
     expect(Array.isArray(SIBLING_GROUPS)).toBe(true);
     expect(SIBLING_GROUPS.length).toBeGreaterThan(0);
   });
 
-  // Each element is an array of route strings.
-  it('each group is an array of routes', () => {
+  it('should have each group as an array of routes', () => {
     for (const group of SIBLING_GROUPS) {
       expect(Array.isArray(group)).toBe(true);
       expect(group.length).toBeGreaterThan(0);
@@ -67,30 +61,26 @@ describe('SIBLING_GROUPS', () => {
 // ── SETTINGS_SECTION_VALUES and SECTION_TO_HASH / HASH_TO_SECTION ───
 
 describe('settings section round-trip', () => {
-  // SETTINGS_SECTION_VALUES includes profile and dangerZone.
-  it('SETTINGS_SECTION_VALUES has expected entries', () => {
+  it('should have expected SETTINGS_SECTION_VALUES entries', () => {
     expect(SETTINGS_SECTION_VALUES).toContain('profile');
     expect(SETTINGS_SECTION_VALUES).toContain('dangerZone');
   });
 
-  // Each section maps to a defined hash string.
-  it('SECTION_TO_HASH maps each section to a hash string', () => {
+  it('should map each section to a hash string in SECTION_TO_HASH', () => {
     for (const section of SETTINGS_SECTION_VALUES) {
       expect(SECTION_TO_HASH[section]).toBeDefined();
       expect(typeof SECTION_TO_HASH[section]).toBe('string');
     }
   });
 
-  // Round-trip section → hash → section yields original section.
-  it('round-trip section → hash → section returns original section', () => {
+  it('should round-trip section → hash → section to original value', () => {
     for (const section of SETTINGS_SECTION_VALUES) {
       const hash = SECTION_TO_HASH[section];
       expect(HASH_TO_SECTION[hash]).toBe(section);
     }
   });
 
-  // Every SECTION_TO_HASH value has a HASH_TO_SECTION entry.
-  it('HASH_TO_SECTION has entry for each SECTION_TO_HASH value', () => {
+  it('should have HASH_TO_SECTION entry for each SECTION_TO_HASH value', () => {
     for (const hash of Object.values(SECTION_TO_HASH)) {
       expect(HASH_TO_SECTION[hash]).toBeDefined();
     }

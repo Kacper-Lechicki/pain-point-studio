@@ -111,6 +111,23 @@ $$;
 ALTER FUNCTION "public"."cancel_email_change"() OWNER TO "postgres";
 
 
+CREATE OR REPLACE FUNCTION "public"."cleanup_abandoned_responses"() RETURNS "void"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO ''
+    AS $$
+BEGIN
+    UPDATE public.survey_responses
+    SET status = 'abandoned',
+        updated_at = now()
+    WHERE status = 'in_progress'
+      AND started_at < now() - interval '24 hours';
+END;
+$$;
+
+
+ALTER FUNCTION "public"."cleanup_abandoned_responses"() OWNER TO "postgres";
+
+
 CREATE OR REPLACE FUNCTION "public"."complete_expired_surveys"() RETURNS "void"
     LANGUAGE "plpgsql" SECURITY DEFINER
     SET "search_path" TO ''
@@ -236,6 +253,11 @@ DECLARE
     v_avg_submission_rate int;
     v_member_since timestamptz;
 BEGIN
+    -- Ownership check: caller must be the requested user
+    IF auth.uid() IS NULL OR auth.uid() != p_user_id THEN
+        RAISE EXCEPTION 'UNAUTHORIZED';
+    END IF;
+
     SELECT count(*)
     INTO v_total_surveys
     FROM public.surveys
@@ -296,6 +318,11 @@ DECLARE
     v_result jsonb;
     v_timeline_start date;
 BEGIN
+    -- Ownership check: caller must be the requested user
+    IF auth.uid() IS NULL OR auth.uid() != p_user_id THEN
+        RAISE EXCEPTION 'UNAUTHORIZED';
+    END IF;
+
     -- Determine timeline start: survey publish date or 30 days ago, whichever is later
     SELECT GREATEST(
         COALESCE(s.starts_at::date, (current_date - interval '29 days')::date),
@@ -425,6 +452,11 @@ CREATE OR REPLACE FUNCTION "public"."get_user_surveys_with_counts"("p_user_id" "
     SET "search_path" TO ''
     AS $$
 BEGIN
+    -- Ownership check: caller must be the requested user
+    IF auth.uid() IS NULL OR auth.uid() != p_user_id THEN
+        RAISE EXCEPTION 'UNAUTHORIZED';
+    END IF;
+
     RETURN COALESCE((
         SELECT jsonb_agg(
             jsonb_build_object(
@@ -525,7 +557,6 @@ BEGIN
         ) ac ON true
 
         -- Average question completion % across completed responses
-        -- (total answers given / (completed_responses × question_count) × 100)
         LEFT JOIN LATERAL (
             SELECT CASE
                        WHEN COALESCE(cc.cnt, 0) = 0 OR COALESCE(qc.cnt, 0) = 0 THEN NULL
@@ -727,11 +758,15 @@ BEGIN
   END IF;
 
   IF v_max IS NOT NULL THEN
+    -- Count completed + recent in_progress (ignore stale/abandoned)
     SELECT count(*)
       INTO v_current
       FROM survey_responses
      WHERE survey_id = p_survey_id
-       AND status IN ('in_progress', 'completed');
+       AND (
+         status = 'completed'
+         OR (status = 'in_progress' AND started_at > now() - interval '24 hours')
+       );
 
     IF v_current >= v_max THEN
       RAISE EXCEPTION 'MAX_RESPONDENTS_REACHED';
@@ -1045,7 +1080,7 @@ CREATE TABLE IF NOT EXISTS "public"."survey_responses" (
     "device_type" "text",
     CONSTRAINT "survey_responses_device_type_check" CHECK ((("device_type" IS NULL) OR ("device_type" = ANY (ARRAY['desktop'::"text", 'mobile'::"text", 'tablet'::"text"])))),
     CONSTRAINT "survey_responses_feedback_check" CHECK ((("feedback" IS NULL) OR ("char_length"("feedback") <= 2000))),
-    CONSTRAINT "survey_responses_status_check" CHECK (("status" = ANY (ARRAY['in_progress'::"text", 'completed'::"text"])))
+    CONSTRAINT "survey_responses_status_check" CHECK (("status" = ANY (ARRAY['in_progress'::"text", 'completed'::"text", 'abandoned'::"text"])))
 );
 
 ALTER TABLE ONLY "public"."survey_responses" REPLICA IDENTITY FULL;
@@ -1079,6 +1114,8 @@ CREATE TABLE IF NOT EXISTS "public"."surveys" (
     CONSTRAINT "surveys_title_check" CHECK (("char_length"("title") <= 100)),
     CONSTRAINT "surveys_visibility_check" CHECK (("visibility" = ANY (ARRAY['private'::"text", 'public'::"text"])))
 );
+
+ALTER TABLE ONLY "public"."surveys" REPLICA IDENTITY FULL;
 
 
 ALTER TABLE "public"."surveys" OWNER TO "postgres";
@@ -1142,15 +1179,7 @@ CREATE INDEX IF NOT EXISTS "survey_answers_question_id_idx" ON "public"."survey_
 
 
 
-CREATE INDEX IF NOT EXISTS "survey_questions_survey_id_idx" ON "public"."survey_questions" USING "btree" ("survey_id");
-
-
-
 CREATE UNIQUE INDEX IF NOT EXISTS "survey_questions_survey_id_sort_order_idx" ON "public"."survey_questions" USING "btree" ("survey_id", "sort_order");
-
-
-
-CREATE INDEX IF NOT EXISTS "survey_responses_survey_id_idx" ON "public"."survey_responses" USING "btree" ("survey_id");
 
 
 
@@ -1159,10 +1188,6 @@ CREATE INDEX IF NOT EXISTS "survey_responses_survey_id_status_idx" ON "public"."
 
 
 CREATE UNIQUE INDEX IF NOT EXISTS "surveys_slug_unique_idx" ON "public"."surveys" USING "btree" ("slug") WHERE ("slug" IS NOT NULL);
-
-
-
-CREATE INDEX IF NOT EXISTS "surveys_user_id_idx" ON "public"."surveys" USING "btree" ("user_id");
 
 
 
@@ -1262,35 +1287,6 @@ CREATE POLICY "Anyone can insert answer for in-progress response" ON "public"."s
 
 
 
-DROP POLICY IF EXISTS "Anyone can read active or pending surveys by slug" ON "public"."surveys";
-CREATE POLICY "Anyone can read active or pending surveys by slug" ON "public"."surveys" FOR SELECT USING ((("status" = ANY (ARRAY['active'::"public"."survey_status", 'pending'::"public"."survey_status"])) AND ("slug" IS NOT NULL)));
-
-
-
-DROP POLICY IF EXISTS "Anyone can read questions for published surveys" ON "public"."survey_questions";
-CREATE POLICY "Anyone can read questions for published surveys" ON "public"."survey_questions" FOR SELECT USING ((EXISTS ( SELECT 1
-   FROM "public"."surveys"
-  WHERE (("surveys"."id" = "survey_questions"."survey_id") AND ("surveys"."status" = ANY (ARRAY['active'::"public"."survey_status", 'pending'::"public"."survey_status", 'completed'::"public"."survey_status"])) AND ("surveys"."slug" IS NOT NULL)))));
-
-
-
-DROP POLICY IF EXISTS "Anyone can read questions of published surveys" ON "public"."survey_questions";
-CREATE POLICY "Anyone can read questions of published surveys" ON "public"."survey_questions" FOR SELECT USING ((EXISTS ( SELECT 1
-   FROM "public"."surveys"
-  WHERE (("surveys"."id" = "survey_questions"."survey_id") AND ("surveys"."slug" IS NOT NULL) AND (("surveys"."status" = ANY (ARRAY['active'::"public"."survey_status", 'pending'::"public"."survey_status"])) OR (("surveys"."status" = 'completed'::"public"."survey_status") AND ("surveys"."completed_at" IS NOT NULL) AND ("surveys"."completed_at" > ("now"() - '14 days'::interval))) OR (("surveys"."status" = 'cancelled'::"public"."survey_status") AND ("surveys"."cancelled_at" IS NOT NULL) AND ("surveys"."cancelled_at" > ("now"() - '14 days'::interval))))))));
-
-
-
-DROP POLICY IF EXISTS "Anyone can read recently cancelled surveys by slug" ON "public"."surveys";
-CREATE POLICY "Anyone can read recently cancelled surveys by slug" ON "public"."surveys" FOR SELECT USING ((("status" = 'cancelled'::"public"."survey_status") AND ("slug" IS NOT NULL) AND ("cancelled_at" IS NOT NULL) AND ("cancelled_at" > ("now"() - '14 days'::interval))));
-
-
-
-DROP POLICY IF EXISTS "Anyone can read recently completed surveys by slug" ON "public"."surveys";
-CREATE POLICY "Anyone can read recently completed surveys by slug" ON "public"."surveys" FOR SELECT USING ((("status" = 'completed'::"public"."survey_status") AND ("slug" IS NOT NULL) AND ("completed_at" IS NOT NULL) AND ("completed_at" > ("now"() - '14 days'::interval))));
-
-
-
 DROP POLICY IF EXISTS "Anyone can update answer for in-progress response" ON "public"."survey_answers";
 CREATE POLICY "Anyone can update answer for in-progress response" ON "public"."survey_answers" FOR UPDATE USING ((EXISTS ( SELECT 1
    FROM "public"."survey_responses"
@@ -1359,18 +1355,6 @@ CREATE POLICY "Users can read own profile" ON "public"."profiles" FOR SELECT USI
 
 
 
-DROP POLICY IF EXISTS "Users can read own surveys" ON "public"."surveys";
-CREATE POLICY "Users can read own surveys" ON "public"."surveys" FOR SELECT USING ((( SELECT "auth"."uid"() AS "uid") = "user_id"));
-
-
-
-DROP POLICY IF EXISTS "Users can read questions for own surveys" ON "public"."survey_questions";
-CREATE POLICY "Users can read questions for own surveys" ON "public"."survey_questions" FOR SELECT USING ((EXISTS ( SELECT 1
-   FROM "public"."surveys"
-  WHERE (("surveys"."id" = "survey_questions"."survey_id") AND ("surveys"."user_id" = ( SELECT "auth"."uid"() AS "uid"))))));
-
-
-
 DROP POLICY IF EXISTS "Users can update own profile" ON "public"."profiles";
 CREATE POLICY "Users can update own profile" ON "public"."profiles" FOR UPDATE USING ((( SELECT "auth"."uid"() AS "uid") = "id")) WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "id"));
 
@@ -1391,6 +1375,18 @@ CREATE POLICY "Users can update questions for own surveys" ON "public"."survey_q
 
 
 ALTER TABLE "public"."profiles" ENABLE ROW LEVEL SECURITY;
+
+
+DROP POLICY IF EXISTS "select_survey_questions" ON "public"."survey_questions";
+CREATE POLICY "select_survey_questions" ON "public"."survey_questions" FOR SELECT USING ((EXISTS ( SELECT 1
+   FROM "public"."surveys"
+  WHERE (("surveys"."id" = "survey_questions"."survey_id") AND (("surveys"."user_id" = ( SELECT "auth"."uid"() AS "uid")) OR (("surveys"."slug" IS NOT NULL) AND (("surveys"."status" = ANY (ARRAY['active'::"public"."survey_status", 'pending'::"public"."survey_status", 'completed'::"public"."survey_status"])) OR (("surveys"."status" = 'cancelled'::"public"."survey_status") AND ("surveys"."cancelled_at" IS NOT NULL) AND ("surveys"."cancelled_at" > ("now"() - '14 days'::interval))))))))));
+
+
+
+DROP POLICY IF EXISTS "select_surveys" ON "public"."surveys";
+CREATE POLICY "select_surveys" ON "public"."surveys" FOR SELECT USING (((( SELECT "auth"."uid"() AS "uid") = "user_id") OR (("slug" IS NOT NULL) AND (("status" = ANY (ARRAY['active'::"public"."survey_status", 'pending'::"public"."survey_status"])) OR (("status" = 'completed'::"public"."survey_status") AND ("completed_at" IS NOT NULL) AND ("completed_at" > ("now"() - '14 days'::interval))) OR (("status" = 'cancelled'::"public"."survey_status") AND ("cancelled_at" IS NOT NULL) AND ("cancelled_at" > ("now"() - '14 days'::interval)))))));
+
 
 
 ALTER TABLE "public"."survey_answers" ENABLE ROW LEVEL SECURITY;
@@ -1608,43 +1604,49 @@ GRANT USAGE ON SCHEMA "public" TO "service_role";
 
 
 
-GRANT ALL ON FUNCTION "public"."cancel_email_change"() TO "anon";
+REVOKE ALL ON FUNCTION "public"."cancel_email_change"() FROM PUBLIC;
 GRANT ALL ON FUNCTION "public"."cancel_email_change"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."cancel_email_change"() TO "service_role";
 
 
 
-GRANT ALL ON FUNCTION "public"."complete_expired_surveys"() TO "anon";
+REVOKE ALL ON FUNCTION "public"."cleanup_abandoned_responses"() FROM PUBLIC;
+GRANT ALL ON FUNCTION "public"."cleanup_abandoned_responses"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."cleanup_abandoned_responses"() TO "service_role";
+
+
+
+REVOKE ALL ON FUNCTION "public"."complete_expired_surveys"() FROM PUBLIC;
 GRANT ALL ON FUNCTION "public"."complete_expired_surveys"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."complete_expired_surveys"() TO "service_role";
 
 
 
-GRANT ALL ON FUNCTION "public"."decrypt_pii"("encrypted" "bytea") TO "anon";
+REVOKE ALL ON FUNCTION "public"."decrypt_pii"("encrypted" "bytea") FROM PUBLIC;
 GRANT ALL ON FUNCTION "public"."decrypt_pii"("encrypted" "bytea") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."decrypt_pii"("encrypted" "bytea") TO "service_role";
 
 
 
-GRANT ALL ON FUNCTION "public"."encrypt_pii"("plain_text" "text") TO "anon";
+REVOKE ALL ON FUNCTION "public"."encrypt_pii"("plain_text" "text") FROM PUBLIC;
 GRANT ALL ON FUNCTION "public"."encrypt_pii"("plain_text" "text") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."encrypt_pii"("plain_text" "text") TO "service_role";
 
 
 
-GRANT ALL ON FUNCTION "public"."get_email_change_status"() TO "anon";
+REVOKE ALL ON FUNCTION "public"."get_email_change_status"() FROM PUBLIC;
 GRANT ALL ON FUNCTION "public"."get_email_change_status"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."get_email_change_status"() TO "service_role";
 
 
 
-GRANT ALL ON FUNCTION "public"."get_export_responses"("p_survey_id" "uuid", "p_user_id" "uuid") TO "anon";
+REVOKE ALL ON FUNCTION "public"."get_export_responses"("p_survey_id" "uuid", "p_user_id" "uuid") FROM PUBLIC;
 GRANT ALL ON FUNCTION "public"."get_export_responses"("p_survey_id" "uuid", "p_user_id" "uuid") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."get_export_responses"("p_survey_id" "uuid", "p_user_id" "uuid") TO "service_role";
 
 
 
-GRANT ALL ON FUNCTION "public"."get_profile_statistics"("p_user_id" "uuid") TO "anon";
+REVOKE ALL ON FUNCTION "public"."get_profile_statistics"("p_user_id" "uuid") FROM PUBLIC;
 GRANT ALL ON FUNCTION "public"."get_profile_statistics"("p_user_id" "uuid") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."get_profile_statistics"("p_user_id" "uuid") TO "service_role";
 
@@ -1656,13 +1658,13 @@ GRANT ALL ON FUNCTION "public"."get_survey_response_count"("p_survey_id" "uuid")
 
 
 
-GRANT ALL ON FUNCTION "public"."get_survey_stats_data"("p_survey_id" "uuid", "p_user_id" "uuid") TO "anon";
+REVOKE ALL ON FUNCTION "public"."get_survey_stats_data"("p_survey_id" "uuid", "p_user_id" "uuid") FROM PUBLIC;
 GRANT ALL ON FUNCTION "public"."get_survey_stats_data"("p_survey_id" "uuid", "p_user_id" "uuid") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."get_survey_stats_data"("p_survey_id" "uuid", "p_user_id" "uuid") TO "service_role";
 
 
 
-GRANT ALL ON FUNCTION "public"."get_user_surveys_with_counts"("p_user_id" "uuid") TO "anon";
+REVOKE ALL ON FUNCTION "public"."get_user_surveys_with_counts"("p_user_id" "uuid") FROM PUBLIC;
 GRANT ALL ON FUNCTION "public"."get_user_surveys_with_counts"("p_user_id" "uuid") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."get_user_surveys_with_counts"("p_user_id" "uuid") TO "service_role";
 
@@ -1674,7 +1676,7 @@ GRANT ALL ON FUNCTION "public"."handle_new_user"() TO "service_role";
 
 
 
-GRANT ALL ON FUNCTION "public"."has_password"() TO "anon";
+REVOKE ALL ON FUNCTION "public"."has_password"() FROM PUBLIC;
 GRANT ALL ON FUNCTION "public"."has_password"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."has_password"() TO "service_role";
 
@@ -1686,7 +1688,7 @@ GRANT ALL ON FUNCTION "public"."prevent_clearing_required_fields"() TO "service_
 
 
 
-GRANT ALL ON FUNCTION "public"."save_survey_questions"("p_survey_id" "uuid", "p_user_id" "uuid", "p_questions" "jsonb") TO "anon";
+REVOKE ALL ON FUNCTION "public"."save_survey_questions"("p_survey_id" "uuid", "p_user_id" "uuid", "p_questions" "jsonb") FROM PUBLIC;
 GRANT ALL ON FUNCTION "public"."save_survey_questions"("p_survey_id" "uuid", "p_user_id" "uuid", "p_questions" "jsonb") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."save_survey_questions"("p_survey_id" "uuid", "p_user_id" "uuid", "p_questions" "jsonb") TO "service_role";
 
@@ -1722,7 +1724,7 @@ GRANT ALL ON FUNCTION "public"."validate_and_save_answer"("p_response_id" "uuid"
 
 
 
-GRANT ALL ON FUNCTION "public"."verify_password"("current_plain_password" "text") TO "anon";
+REVOKE ALL ON FUNCTION "public"."verify_password"("current_plain_password" "text") FROM PUBLIC;
 GRANT ALL ON FUNCTION "public"."verify_password"("current_plain_password" "text") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."verify_password"("current_plain_password" "text") TO "service_role";
 

@@ -1,4 +1,5 @@
 // @vitest-environment node
+/** Tests for fetching a survey with its questions for the authenticated owner. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // ── Mocks ────────────────────────────────────────────────────────────
@@ -105,8 +106,7 @@ describe('getSurveyWithQuestions', () => {
     });
   });
 
-  // No user → null; from() not called.
-  it('returns null when user is not authenticated', async () => {
+  it('should return null when user is not authenticated', async () => {
     mockGetUser.mockResolvedValue({ data: { user: null } });
 
     const { getSurveyWithQuestions } = await import('./get-survey-with-questions');
@@ -116,8 +116,7 @@ describe('getSurveyWithQuestions', () => {
     expect(mockFrom).not.toHaveBeenCalled();
   });
 
-  // Survey row null → null.
-  it('returns null when survey not found for user', async () => {
+  it('should return null when survey not found for user', async () => {
     mockFrom.mockImplementation((table: string) => {
       if (table === 'surveys') {
         return chain({ data: null });
@@ -132,8 +131,7 @@ describe('getSurveyWithQuestions', () => {
     expect(result).toBeNull();
   });
 
-  // Success: survey object has camelCase fields (startsAt, maxRespondents, etc.).
-  it('returns survey and questions with camelCase survey fields', async () => {
+  it('should return survey and questions with camelCase survey fields', async () => {
     const { getSurveyWithQuestions } = await import('./get-survey-with-questions');
     const result = await getSurveyWithQuestions(SURVEY_ID);
 
@@ -151,8 +149,7 @@ describe('getSurveyWithQuestions', () => {
     });
   });
 
-  // Questions array is mapped (sortOrder, etc.) from DB rows.
-  it('returns questions mapped via mapQuestionRow', async () => {
+  it('should return questions mapped via mapQuestionRow', async () => {
     const { getSurveyWithQuestions } = await import('./get-survey-with-questions');
     const result = await getSurveyWithQuestions(SURVEY_ID);
 
@@ -167,8 +164,7 @@ describe('getSurveyWithQuestions', () => {
     expect(result?.questions?.[1]?.sortOrder).toBe(1);
   });
 
-  // from('surveys') and from('survey_questions') called with expected select/eq.
-  it('calls from surveys with expected select and eq', async () => {
+  it('should call from surveys with expected select and eq', async () => {
     const surveyChain = chain({ data: SURVEY_ROW });
     mockFrom.mockImplementation((table: string) =>
       table === 'surveys' ? surveyChain : chain({ data: QUESTION_ROWS })

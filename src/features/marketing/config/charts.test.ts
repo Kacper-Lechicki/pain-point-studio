@@ -1,3 +1,4 @@
+/** Tests for localizeChartConfig which translates chart labels via i18n keys. */
 import { describe, expect, it, vi } from 'vitest';
 
 import type { ChartConfig } from '@/components/ui/chart';
@@ -7,7 +8,7 @@ import { localizeChartConfig } from './charts';
 describe('localizeChartConfig', () => {
   const t = vi.fn((key: string) => `translated:${key}`);
 
-  it('translates label via chart.{label} key', () => {
+  it('should translate label via chart.{label} key', () => {
     const config = {
       visitors: { label: 'visitors', color: 'var(--pink)' },
     };
@@ -18,7 +19,7 @@ describe('localizeChartConfig', () => {
     expect(result.visitors.label).toBe('translated:chart.visitors');
   });
 
-  it('preserves non-label properties', () => {
+  it('should preserve non-label properties', () => {
     const config = {
       visitors: { label: 'visitors', color: 'var(--pink)' },
     };
@@ -28,7 +29,7 @@ describe('localizeChartConfig', () => {
     expect(result.visitors.color).toBe('var(--pink)');
   });
 
-  it('skips entries without label', () => {
+  it('should skip entries without label', () => {
     const config: ChartConfig = {
       noLabel: { color: 'var(--blue)' },
     };
@@ -39,7 +40,7 @@ describe('localizeChartConfig', () => {
     expect(noLabelEntry?.label).toBeUndefined();
   });
 
-  it('handles multiple entries', () => {
+  it('should handle multiple entries', () => {
     const config = {
       desktop: { label: 'desktop', color: 'var(--violet)' },
       mobile: { label: 'mobile', color: 'var(--cyan)' },

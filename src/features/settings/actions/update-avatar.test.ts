@@ -1,4 +1,5 @@
 // @vitest-environment node
+/** Tests for the updateAvatarUrl server action that persists the avatar URL to profile and user metadata. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock env
@@ -51,7 +52,6 @@ describe('Settings Actions – Update Avatar URL', () => {
     mockUpdateUser.mockResolvedValue({ error: null });
   });
 
-  // Valid URL: profile and metadata updated; returns success.
   it('should return success when avatar URL is updated', async () => {
     const { updateAvatarUrl } = await import('./update-avatar');
     const result = await updateAvatarUrl({
@@ -64,7 +64,6 @@ describe('Settings Actions – Update Avatar URL', () => {
     });
   });
 
-  // Empty URL clears avatar; updateUser called with empty string; success.
   it('should return success when avatar is removed (empty URL)', async () => {
     const { updateAvatarUrl } = await import('./update-avatar');
     const result = await updateAvatarUrl({ avatarUrl: '' });
@@ -75,7 +74,6 @@ describe('Settings Actions – Update Avatar URL', () => {
     });
   });
 
-  // When getUser returns null, action returns error and does not update.
   it('should return error when user is not authenticated', async () => {
     mockGetUser.mockResolvedValue({ data: { user: null } });
 
@@ -89,7 +87,6 @@ describe('Settings Actions – Update Avatar URL', () => {
     expect(mockUpdate).not.toHaveBeenCalled();
   });
 
-  // Profile .update() failure returns error and does not call metadata update.
   it('should return error when profile DB update fails', async () => {
     mockEq.mockResolvedValue({ error: { message: 'Database error' } });
 
@@ -103,7 +100,6 @@ describe('Settings Actions – Update Avatar URL', () => {
     expect(mockUpdateUser).not.toHaveBeenCalled();
   });
 
-  // When updateUser (metadata) returns error, action returns error result.
   it('should return error when metadata update fails', async () => {
     mockUpdateUser.mockResolvedValue({ error: { message: 'Metadata error' } });
 
@@ -116,7 +112,6 @@ describe('Settings Actions – Update Avatar URL', () => {
     expect(result).not.toHaveProperty('success');
   });
 
-  // Invalid URL fails validation; Supabase is not called.
   it('should return error when avatar URL is not a valid URL', async () => {
     const { updateAvatarUrl } = await import('./update-avatar');
     const result = await updateAvatarUrl({ avatarUrl: 'not-a-url' });
@@ -126,7 +121,6 @@ describe('Settings Actions – Update Avatar URL', () => {
     expect(mockGetUser).not.toHaveBeenCalled();
   });
 
-  // When rate limited, action returns error and does not call Supabase.
   it('should return rate limit error when rate limited', async () => {
     const { rateLimit } = await import('@/lib/common/rate-limit');
 

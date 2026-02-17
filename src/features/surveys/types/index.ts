@@ -9,6 +9,7 @@ import {
   QUESTION_TEXT_MAX_LENGTH,
   RATING_SCALE_MAX,
   RATING_SCALE_MIN,
+  SURVEY_CATEGORY_VALUES,
   SURVEY_DESCRIPTION_MAX_LENGTH,
   SURVEY_TITLE_MAX_LENGTH,
 } from '@/features/surveys/config';
@@ -60,7 +61,10 @@ export const surveyMetadataSchema = z.object({
     .string()
     .min(1, 'surveys.errors.fieldRequired')
     .max(SURVEY_DESCRIPTION_MAX_LENGTH, 'surveys.errors.descriptionTooLong'),
-  category: z.string().min(1, 'surveys.errors.fieldRequired'),
+  category: z
+    .string()
+    .min(1, 'surveys.errors.fieldRequired')
+    .refine((val) => SURVEY_CATEGORY_VALUES.includes(val), 'surveys.errors.fieldRequired'),
   visibility: z.enum(SURVEY_VISIBILITY_VALUES),
 });
 
@@ -110,6 +114,17 @@ export const textConfigSchema = z.object({
 
 // ── Question schema ─────────────────────────────────────────────────
 
+/** Max serialized config size in characters (prevents oversized JSON payloads). */
+const CONFIG_MAX_JSON_LENGTH = 2_000;
+
+/** Validates that a config object doesn't exceed a safe serialized size. */
+const configSchema = z
+  .record(z.string(), z.unknown())
+  .default({})
+  .refine((val) => JSON.stringify(val).length <= CONFIG_MAX_JSON_LENGTH, {
+    message: 'surveys.builder.errors.configTooLarge',
+  });
+
 /** Schema for a single survey question (text, type, required flag, config). */
 export const questionSchema = z.object({
   id: z.string().uuid(),
@@ -124,7 +139,7 @@ export const questionSchema = z.object({
     .max(QUESTION_DESCRIPTION_MAX_LENGTH, 'surveys.builder.errors.descriptionTooLong')
     .nullable()
     .optional(),
-  config: z.record(z.string(), z.unknown()).default({}),
+  config: configSchema,
 });
 
 export type QuestionSchema = z.infer<typeof questionSchema>;
@@ -140,7 +155,7 @@ const draftQuestionSchema = z.object({
     .max(QUESTION_DESCRIPTION_MAX_LENGTH, 'surveys.builder.errors.descriptionTooLong')
     .nullable()
     .optional(),
-  config: z.record(z.string(), z.unknown()).default({}),
+  config: configSchema,
   sortOrder: z.number().int().min(0),
 });
 

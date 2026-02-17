@@ -1,3 +1,4 @@
+/** Tests for computeInsight across all question types (multiple choice, rating, yes/no, text). */
 import { describe, expect, it, vi } from 'vitest';
 
 import type { QuestionAnswerData } from '@/features/surveys/actions/get-survey-stats';
@@ -15,14 +16,12 @@ function answer(value: Record<string, unknown>): QuestionAnswerData {
 // ── computeInsight ────────────────────────────────────────────────────
 
 describe('computeInsight', () => {
-  it('returns null for empty answers', () => {
+  it('should return null for empty answers', () => {
     expect(computeInsight('multiple_choice', [], {}, t as never)).toBeNull();
   });
 
-  // ── multiple_choice ───────────────────────────────────────────────
-
   describe('multiple_choice', () => {
-    it('returns top choice when a single winner exists', () => {
+    it('should return top choice when a single winner exists', () => {
       const answers = [
         answer({ selected: ['A', 'B'] }),
         answer({ selected: ['A'] }),
@@ -37,7 +36,7 @@ describe('computeInsight', () => {
       expect(parsed.pct).toBe(75);
     });
 
-    it('returns tied choices when multiple options share the top count', () => {
+    it('should return tied choices when multiple options share the top count', () => {
       const answers = [answer({ selected: ['A'] }), answer({ selected: ['B'] })];
 
       const result = computeInsight('multiple_choice', answers, {}, t as never);
@@ -48,7 +47,7 @@ describe('computeInsight', () => {
       expect(parsed.pct).toBe(50);
     });
 
-    it('includes "other" answers in counts', () => {
+    it('should include "other" answers in counts', () => {
       const answers = [
         answer({ selected: [], other: 'Custom' }),
         answer({ selected: [], other: 'Custom' }),
@@ -62,17 +61,15 @@ describe('computeInsight', () => {
       expect(parsed.pct).toBe(67);
     });
 
-    it('returns null when all selections are empty arrays', () => {
+    it('should return null when all selections are empty arrays', () => {
       const answers = [answer({ selected: [] }), answer({ selected: [] })];
 
       expect(computeInsight('multiple_choice', answers, {}, t as never)).toBeNull();
     });
   });
 
-  // ── rating_scale ──────────────────────────────────────────────────
-
   describe('rating_scale', () => {
-    it('computes average rating with default max', () => {
+    it('should compute average rating with default max', () => {
       const answers = [answer({ rating: 3 }), answer({ rating: 5 }), answer({ rating: 4 })];
 
       const result = computeInsight('rating_scale', answers, {}, t as never);
@@ -83,7 +80,7 @@ describe('computeInsight', () => {
       expect(parsed.max).toBe(5);
     });
 
-    it('uses config.max when provided', () => {
+    it('should use config.max when provided', () => {
       const answers = [answer({ rating: 7 }), answer({ rating: 9 })];
 
       const result = computeInsight('rating_scale', answers, { max: 10 }, t as never);
@@ -93,17 +90,15 @@ describe('computeInsight', () => {
       expect(parsed.value).toBe('8.0');
     });
 
-    it('returns null when no valid ratings exist', () => {
+    it('should return null when no valid ratings exist', () => {
       const answers = [answer({ rating: undefined }), answer({ rating: 'bad' })];
 
       expect(computeInsight('rating_scale', answers, {}, t as never)).toBeNull();
     });
   });
 
-  // ── yes_no ────────────────────────────────────────────────────────
-
   describe('yes_no', () => {
-    it('reports majority yes', () => {
+    it('should report majority yes', () => {
       const answers = [
         answer({ answer: true }),
         answer({ answer: true }),
@@ -117,7 +112,7 @@ describe('computeInsight', () => {
       expect(parsed.pct).toBe(67);
     });
 
-    it('reports majority no', () => {
+    it('should report majority no', () => {
       const answers = [
         answer({ answer: false }),
         answer({ answer: false }),
@@ -131,7 +126,7 @@ describe('computeInsight', () => {
       expect(parsed.pct).toBe(67);
     });
 
-    it('reports equal split', () => {
+    it('should report equal split', () => {
       const answers = [answer({ answer: true }), answer({ answer: false })];
 
       const result = computeInsight('yes_no', answers, {}, t as never);
@@ -140,21 +135,19 @@ describe('computeInsight', () => {
       expect(parsed.key).toBe('surveys.stats.insightEqualSplit');
     });
 
-    it('returns null when no boolean answers exist', () => {
+    it('should return null when no boolean answers exist', () => {
       const answers = [answer({ answer: 'maybe' }), answer({ answer: null })];
 
       expect(computeInsight('yes_no', answers, {}, t as never)).toBeNull();
     });
   });
 
-  // ── text types ────────────────────────────────────────────────────
-
-  it('returns null for open_text', () => {
+  it('should return null for open_text', () => {
     const answers = [answer({ text: 'hello' })];
     expect(computeInsight('open_text', answers, {}, t as never)).toBeNull();
   });
 
-  it('returns null for short_text', () => {
+  it('should return null for short_text', () => {
     const answers = [answer({ text: 'hello' })];
     expect(computeInsight('short_text', answers, {}, t as never)).toBeNull();
   });

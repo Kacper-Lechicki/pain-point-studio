@@ -11,9 +11,11 @@ import { SettingsSectionHeader } from '@/features/settings/components/settings-s
 
 interface DangerZoneProps {
   userEmail: string;
+  activeSurveyCount: number;
+  responseCount: number;
 }
 
-const DangerZone = ({ userEmail }: DangerZoneProps) => {
+const DangerZone = ({ userEmail, activeSurveyCount, responseCount }: DangerZoneProps) => {
   const t = useTranslations();
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -43,7 +45,13 @@ const DangerZone = ({ userEmail }: DangerZoneProps) => {
         </div>
       </section>
 
-      <DeleteAccountDialog open={dialogOpen} onOpenChange={setDialogOpen} userEmail={userEmail} />
+      <DeleteAccountDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        userEmail={userEmail}
+        activeSurveyCount={activeSurveyCount}
+        responseCount={responseCount}
+      />
     </>
   );
 };

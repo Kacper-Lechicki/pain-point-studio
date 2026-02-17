@@ -1,4 +1,5 @@
 // @vitest-environment node
+/** Tests for the updateProfile server action that saves name, role, bio, and social links to the profile. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock env
@@ -96,7 +97,6 @@ describe('Settings Actions – Update Profile', () => {
     mockLinkTypesChain = makeLookupChain(socialLinkTypeRows);
   });
 
-  // Valid form data: profile and metadata updated; returns success.
   it('should return success when profile is updated', async () => {
     const { updateProfile } = await import('./update-profile');
     const result = await updateProfile(validData);
@@ -108,7 +108,6 @@ describe('Settings Actions – Update Profile', () => {
     });
   });
 
-  // Invalid form data fails validation; Supabase is not called.
   it('should not call Supabase when form data is invalid', async () => {
     const { updateProfile } = await import('./update-profile');
 
@@ -123,7 +122,6 @@ describe('Settings Actions – Update Profile', () => {
     expect(mockGetUser).not.toHaveBeenCalled();
   });
 
-  // When getUser returns null, action returns error.
   it('should return error when user is not authenticated', async () => {
     mockGetUser.mockResolvedValue({ data: { user: null } });
 
@@ -135,7 +133,6 @@ describe('Settings Actions – Update Profile', () => {
     expect(mockUpdate).not.toHaveBeenCalled();
   });
 
-  // Profile .update() failure returns error and does not call metadata update.
   it('should return error when profile DB update fails', async () => {
     mockEq.mockResolvedValue({ error: { message: 'Database error' } });
 
@@ -148,7 +145,6 @@ describe('Settings Actions – Update Profile', () => {
     expect(mockUpdateUser).not.toHaveBeenCalled();
   });
 
-  // When updateUser (metadata) returns error, action returns error result.
   it('should return error when metadata update fails', async () => {
     mockUpdateUser.mockResolvedValue({ error: { message: 'Metadata error' } });
 
@@ -159,7 +155,6 @@ describe('Settings Actions – Update Profile', () => {
     expect(result).not.toHaveProperty('success');
   });
 
-  // When rate limited, action returns error and does not call Supabase.
   it('should return rate limit error when rate limited', async () => {
     const { rateLimit } = await import('@/lib/common/rate-limit');
 
@@ -172,7 +167,6 @@ describe('Settings Actions – Update Profile', () => {
     expect(mockGetUser).not.toHaveBeenCalled();
   });
 
-  // Empty role fails validation; action returns error.
   it('should reject empty role', async () => {
     const { updateProfile } = await import('./update-profile');
     const result = await updateProfile({
@@ -184,7 +178,6 @@ describe('Settings Actions – Update Profile', () => {
     expect(mockGetUser).not.toHaveBeenCalled();
   });
 
-  // Empty fullName fails validation; action returns error.
   it('should reject empty fullName', async () => {
     const { updateProfile } = await import('./update-profile');
     const result = await updateProfile({
@@ -196,7 +189,6 @@ describe('Settings Actions – Update Profile', () => {
     expect(mockGetUser).not.toHaveBeenCalled();
   });
 
-  // Social link URL domain must match provider; mismatch returns error.
   it('should reject social link with mismatched domain', async () => {
     const { updateProfile } = await import('./update-profile');
     const result = await updateProfile({

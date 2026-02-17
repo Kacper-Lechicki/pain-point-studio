@@ -47,6 +47,7 @@ export const ROUTES = {
  */
 export const SIBLING_GROUPS: readonly (readonly AppRoute[])[] = [
   [ROUTES.auth.signIn, ROUTES.auth.signUp, ROUTES.auth.forgotPassword],
+  [ROUTES.dashboard.surveys, ROUTES.dashboard.surveysArchive, ROUTES.dashboard.surveysNew],
 ];
 
 export const SETTINGS_SECTION_VALUES = [

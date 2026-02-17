@@ -1,4 +1,5 @@
 // @vitest-environment node
+/** Tests for fetching and parsing survey statistics via the getSurveyStats RPC. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // ── Mocks ────────────────────────────────────────────────────────────
@@ -66,8 +67,7 @@ describe('getSurveyStats', () => {
     mockGetUser.mockResolvedValue({ data: { user: USER } });
   });
 
-  // No user → null; rpc not called.
-  it('returns null when user is not authenticated', async () => {
+  it('should return null when user is not authenticated', async () => {
     mockGetUser.mockResolvedValue({ data: { user: null } });
 
     const { getSurveyStats } = await import('./get-survey-stats');
@@ -77,8 +77,7 @@ describe('getSurveyStats', () => {
     expect(mockRpc).not.toHaveBeenCalled();
   });
 
-  // RPC error → null.
-  it('returns null when rpc returns error', async () => {
+  it('should return null when rpc returns error', async () => {
     mockRpc.mockResolvedValue({ data: null, error: { message: 'RPC failed' } });
 
     const { getSurveyStats } = await import('./get-survey-stats');
@@ -87,8 +86,7 @@ describe('getSurveyStats', () => {
     expect(result).toBeNull();
   });
 
-  // RPC data null → null.
-  it('returns null when rpc returns null data', async () => {
+  it('should return null when rpc returns null data', async () => {
     mockRpc.mockResolvedValue({ data: null, error: null });
 
     const { getSurveyStats } = await import('./get-survey-stats');
@@ -97,8 +95,7 @@ describe('getSurveyStats', () => {
     expect(result).toBeNull();
   });
 
-  // Valid rpc data → parsed survey, totalResponses, questions; rpc with p_survey_id, p_user_id.
-  it('returns parsed stats on rpc success with valid shape', async () => {
+  it('should return parsed stats on rpc success with valid shape', async () => {
     mockRpc.mockResolvedValue({ data: VALID_RPC_DATA, error: null });
 
     const { getSurveyStats } = await import('./get-survey-stats');
@@ -119,8 +116,7 @@ describe('getSurveyStats', () => {
     });
   });
 
-  // Invalid shape → null.
-  it('returns null when rpc data fails schema validation', async () => {
+  it('should return null when rpc data fails schema validation', async () => {
     mockRpc.mockResolvedValue({
       data: { survey: {}, totalResponses: 'not-a-number' },
       error: null,

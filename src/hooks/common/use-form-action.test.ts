@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+/** useFormAction hook: loading state, toast notifications, and error handling. */
 import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
