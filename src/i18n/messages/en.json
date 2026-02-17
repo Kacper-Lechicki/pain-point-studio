@@ -58,7 +58,8 @@
       "description": "An unexpected error occurred. Please try again.",
       "retry": "Try again",
       "backToDashboard": "Back to Dashboard",
-      "backToSignIn": "Back to Sign In"
+      "backToSignIn": "Back to Sign In",
+      "backToHome": "Back to Home"
     },
     "errors": {
       "unexpected": "Something went wrong. Please try again.",
@@ -211,7 +212,8 @@
       "fieldRequired": "This field is required.",
       "titleTooLong": "Title must be 100 characters or fewer.",
       "descriptionTooLong": "Description must be 2000 characters or fewer.",
-      "unexpected": "Something went wrong. Please try again."
+      "unexpected": "Something went wrong. Please try again.",
+      "exportTooManyResponses": "This survey has too many responses to export at once. Please contact support."
     },
     "builder": {
       "backToSurveys": "Back to surveys",
@@ -293,7 +295,8 @@
         "minQuestions": "At least 1 question is required.",
         "maxQuestions": "Maximum 15 questions allowed.",
         "minQuestionsToPublish": "Add at least 1 question with text before publishing.",
-        "saveFailed": "Failed to save questions. Please try again."
+        "saveFailed": "Failed to save questions. Please try again.",
+        "configTooLarge": "Question configuration is too large."
       }
     },
     "publish": {
@@ -1079,6 +1082,7 @@
       "deleteDescription": "Permanently delete your account and all associated data. This action cannot be undone.",
       "deleteConfirmTitle": "Are you sure?",
       "deleteConfirmDescription": "This will permanently delete your account, profile, and all your data. This action cannot be undone.",
+      "deleteDataWarning": "You have {surveyCount, plural, one {# active survey} other {# active surveys}} with {responseCount, plural, one {# response} other {# responses}} that will be permanently deleted.",
       "deleteConfirmLabel": "Type \"{text}\" to confirm",
       "deleteConfirmPlaceholder": "your@email.com",
       "deleteButton": "Delete My Account",

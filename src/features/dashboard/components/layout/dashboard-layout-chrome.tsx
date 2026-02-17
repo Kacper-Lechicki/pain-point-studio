@@ -25,10 +25,20 @@ export function DashboardLayoutChrome({ children, profile }: DashboardLayoutChro
 
   if (isBuilder) {
     return (
-      <div className="flex h-screen max-h-screen min-h-screen flex-col overflow-hidden">
-        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">{children}</div>
-        <DashboardFooter />
-      </div>
+      <>
+        <div className="flex h-screen max-h-screen min-h-screen flex-col overflow-hidden">
+          <div className="flex min-h-0 flex-1 flex-col overflow-hidden">{children}</div>
+          <DashboardFooter />
+        </div>
+
+        {needsCompletion && profile && (
+          <CompleteProfileModal
+            roleOptions={profile.roleOptions}
+            currentFullName={profile.fullName}
+            currentRole={profile.role}
+          />
+        )}
+      </>
     );
   }
 

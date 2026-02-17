@@ -64,7 +64,7 @@ function chain(result: { data?: unknown; error?: unknown } = {}) {
 const VALID_INPUT = {
   title: 'My Survey',
   description: 'A test survey',
-  category: 'product',
+  category: 'problem-validation',
   visibility: 'public' as const,
   action: 'saveDraft' as const,
 };

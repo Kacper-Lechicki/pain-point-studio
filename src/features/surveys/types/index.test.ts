@@ -32,7 +32,7 @@ describe('surveyMetadataSchema', () => {
   const validData = {
     title: 'My Survey',
     description: 'A test survey',
-    category: 'productivity',
+    category: 'problem-validation',
     visibility: 'public' as const,
   };
 

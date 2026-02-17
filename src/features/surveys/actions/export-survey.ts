@@ -1,5 +1,6 @@
 'use server';
 
+import { MAX_EXPORT_RESPONSES } from '@/features/surveys/config';
 import { slugifyTitle } from '@/features/surveys/lib/generate-slug';
 import { type QuestionType, surveyIdSchema } from '@/features/surveys/types';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
@@ -42,6 +43,17 @@ async function fetchExportData(
   surveyId: string,
   userId: string
 ) {
+  // Guard: check response count before loading everything into memory
+  const { count } = await supabase
+    .from('survey_responses')
+    .select('*', { count: 'exact', head: true })
+    .eq('survey_id', surveyId)
+    .eq('status', 'completed');
+
+  if (count != null && count > MAX_EXPORT_RESPONSES) {
+    return 'TOO_MANY_RESPONSES' as const;
+  }
+
   const [{ data: survey }, { data: questions }, { data: responses }] = await Promise.all([
     supabase.from('surveys').select('id, title').eq('id', surveyId).eq('user_id', userId).single(),
     supabase
@@ -93,6 +105,10 @@ export const exportSurveyCSV = withProtectedAction<
   rateLimit: RATE_LIMITS.export,
   action: async ({ data, user, supabase }) => {
     const result = await fetchExportData(supabase, data.surveyId, user.id);
+
+    if (result === 'TOO_MANY_RESPONSES') {
+      return { error: 'surveys.errors.exportTooManyResponses' };
+    }
 
     if (!result) {
       return { error: 'surveys.errors.unexpected' };
@@ -146,6 +162,10 @@ export const exportSurveyJSON = withProtectedAction<
   rateLimit: RATE_LIMITS.export,
   action: async ({ data, user, supabase }) => {
     const result = await fetchExportData(supabase, data.surveyId, user.id);
+
+    if (result === 'TOO_MANY_RESPONSES') {
+      return { error: 'surveys.errors.exportTooManyResponses' };
+    }
 
     if (!result) {
       return { error: 'surveys.errors.unexpected' };

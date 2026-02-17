@@ -6,6 +6,7 @@ import { getLocale } from 'next-intl/server';
 
 import { AuthProvider, signInSchema } from '@/features/auth/types';
 import { env } from '@/lib/common/env';
+import { rateLimit } from '@/lib/common/rate-limit';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withPublicAction } from '@/lib/common/with-public-action';
 import { mapSupabaseError } from '@/lib/supabase/errors';
@@ -31,6 +32,12 @@ export const signInWithEmail = withPublicAction('sign-in', {
 });
 
 export const signInWithOAuth = async (provider: AuthProvider): Promise<{ error: string }> => {
+  const { limited } = await rateLimit({ key: 'sign-in-oauth', ...RATE_LIMITS.auth });
+
+  if (limited) {
+    return { error: 'auth.errors.rateLimitExceeded' };
+  }
+
   const supabase = await createClient();
   const locale = await getLocale();
 

@@ -40,4 +40,6 @@ export const RATE_LIMITS = {
   respondentSave: { limit: 120, windowSeconds: 60 },
   /** Respondent: submit response */
   respondentSubmit: { limit: 10, windowSeconds: 300 },
+  /** Sign-out */
+  signOut: { limit: 10, windowSeconds: 60 },
 } as const satisfies Record<string, RateLimitPreset>;
