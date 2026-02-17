@@ -47,22 +47,30 @@ export function SubNavItems({
   const hash = clientState?.hash ?? '';
 
   const dynamicTab = (() => {
-    if (!parentHref) {return null;}
+    if (!parentHref) {
+      return null;
+    }
 
     const tabs = DYNAMIC_ROUTE_TABS[parentHref];
 
-    if (!tabs) {return null;}
+    if (!tabs) {
+      return null;
+    }
 
     return tabs.find((tab) => pathname.startsWith(tab.prefix + '/')) ?? null;
   })();
 
   const dynamicLabel = (() => {
-    if (!dynamicTab || !breadcrumbSegments) {return null;}
+    if (!dynamicTab || !breadcrumbSegments) {
+      return null;
+    }
 
     const suffix = pathname.slice(dynamicTab.prefix.length + 1);
     const segmentId = suffix.split('/')[0];
 
-    if (!segmentId) {return null;}
+    if (!segmentId) {
+      return null;
+    }
 
     return breadcrumbSegments[segmentId] ?? null;
   })();

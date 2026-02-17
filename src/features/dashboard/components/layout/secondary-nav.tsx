@@ -39,22 +39,30 @@ export function SecondaryNav({ titleKey, groups, parentHref }: SecondaryNavProps
   const searchParamKeys = collectSearchParamKeys(groups);
 
   const dynamicTab = useMemo(() => {
-    if (!parentHref) {return null;}
+    if (!parentHref) {
+      return null;
+    }
 
     const tabs = DYNAMIC_ROUTE_TABS[parentHref];
 
-    if (!tabs) {return null;}
+    if (!tabs) {
+      return null;
+    }
 
     return tabs.find((tab) => pathname.startsWith(tab.prefix + '/')) ?? null;
   }, [parentHref, pathname]);
 
   const dynamicLabel = useMemo(() => {
-    if (!dynamicTab || !breadcrumb) {return null;}
+    if (!dynamicTab || !breadcrumb) {
+      return null;
+    }
 
     const suffix = pathname.slice(dynamicTab.prefix.length + 1);
     const segmentId = suffix.split('/')[0];
 
-    if (!segmentId) {return null;}
+    if (!segmentId) {
+      return null;
+    }
 
     return breadcrumb.segments[segmentId] ?? null;
   }, [dynamicTab, breadcrumb, pathname]);
