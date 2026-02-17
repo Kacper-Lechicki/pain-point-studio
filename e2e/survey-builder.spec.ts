@@ -325,9 +325,13 @@ test.describe('Survey Builder – Publish Flow', () => {
     const publishBtn = page.getByRole('button', { name: 'Publish' });
     await expect(publishBtn).toBeEnabled({ timeout: 5_000 });
 
-    // Click Publish — opens the publish settings sheet
-    await publishBtn.click();
-    await expect(page.getByText('Publish Settings')).toBeVisible({ timeout: 10_000 });
+    // Click Publish — opens the publish settings sheet.
+    // Wrap in toPass() because webkit can swallow clicks during hydration.
+    // Re-clicking is safe: setPublishSettingsOpen(true) is idempotent.
+    await expect(async () => {
+      await publishBtn.click();
+      await expect(page.getByText('Publish Settings')).toBeVisible();
+    }).toPass({ timeout: 15_000 });
 
     // Leave end date and max respondents empty (both optional).
     // Click "Publish Survey" to execute.

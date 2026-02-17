@@ -131,12 +131,11 @@ test.describe('Surveys – Empty State & Creation', () => {
     // because webkit intermittently blocks clicks on <tr role="button"> when the
     // row's onClick guard detects a stale dialog overlay during hydration.
     //
-    // Retry pattern: each attempt starts with Escape (to dismiss whatever the
-    // previous attempt may have opened — Radix toggles on click) then clicks
-    // the button exactly once.  This avoids the toggle-retry bug where a bare
-    // click inside toPass() would close the menu on the second iteration.
+    // Retry pattern: each attempt dismisses any prior menu by clicking the page
+    // body (outside-click).  Unlike Escape, this moves focus AWAY from the trigger
+    // so the next .click() is always a fresh "open" (not a toggle-close).
     await expect(async () => {
-      await page.keyboard.press('Escape');
+      await page.locator('body').click({ position: { x: 0, y: 0 } });
       await row.getByRole('button', { name: 'More actions' }).click();
       await expect(page.getByRole('menuitem', { name: /preview|details/i })).toBeVisible();
     }).toPass({ timeout: 10_000 });
@@ -188,12 +187,11 @@ test.describe('Surveys – Status Lifecycle', () => {
     const row = surveyItem(page, surveyTitle);
     await expect(row).toBeVisible({ timeout: 15_000 });
 
-    // Open action menu — each retry starts with Escape to dismiss whatever
-    // the previous attempt may have opened (Radix toggles on click), then
-    // clicks the button exactly once.  This avoids the toggle-retry bug
-    // where a bare click inside toPass() would close the menu on retry.
+    // Dismiss any open menu by clicking body (moves focus away from trigger).
+    // Unlike Escape, clicking body does NOT return focus to the trigger, so
+    // the next .click() is always a fresh "open" (not a toggle-close).
     await expect(async () => {
-      await page.keyboard.press('Escape');
+      await page.locator('body').click({ position: { x: 0, y: 0 } });
       await row.getByRole('button', { name: 'More actions' }).click();
       await expect(page.getByRole('menuitem', { name: menuItemName })).toBeVisible();
     }).toPass({ timeout: 10_000 });
