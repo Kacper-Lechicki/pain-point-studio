@@ -7,17 +7,20 @@ import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
+import { ListPagination } from '@/components/ui/list-pagination';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import { SurveyDetailSheet } from '@/features/surveys/components/dashboard/survey-detail-sheet';
 import { SurveyListKpi } from '@/features/surveys/components/dashboard/survey-list-kpi';
 import { SurveyListRow } from '@/features/surveys/components/dashboard/survey-list-row';
 import { SurveyListTable } from '@/features/surveys/components/dashboard/survey-list-table';
+import { SURVEY_CATEGORIES } from '@/features/surveys/config/survey-categories';
 import { deriveSurveyFlags } from '@/features/surveys/config/survey-status';
 import { useRealtimeSurveyList } from '@/features/surveys/hooks/use-realtime-survey-list';
 import { useSurveyListState } from '@/features/surveys/hooks/use-survey-list-state';
 import { useSurveySelection } from '@/features/surveys/hooks/use-survey-selection';
 import { applyOptimisticStatusChange } from '@/features/surveys/lib/status-change-handler';
 import { useRefresh } from '@/hooks/common/use-refresh';
+import { useSessionState } from '@/hooks/common/use-session-state';
 
 import {
   SurveyListToolbar,
@@ -62,7 +65,11 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
   const t = useTranslations();
   const { isRefreshing, refresh } = useRefresh();
   const [surveys, setSurveys] = useState(initialSurveys);
-  const [statusFilter, setStatusFilter] = useState<SurveyStatusFilter>('all');
+
+  const [statusFilter, setStatusFilter] = useSessionState<SurveyStatusFilter[]>(
+    'surveyList:status',
+    []
+  );
 
   useEffect(() => {
     setSurveys(initialSurveys);
@@ -71,7 +78,9 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
   const { isConnected: isRealtimeConnected } = useRealtimeSurveyList();
 
   const preFilter = useCallback(
-    (s: UserSurvey) => PRE_FILTER(s) && (statusFilter === 'all' || s.status === statusFilter),
+    (s: UserSurvey) =>
+      PRE_FILTER(s) &&
+      (statusFilter.length === 0 || statusFilter.includes(s.status as SurveyStatusFilter)),
     [statusFilter]
   );
 
@@ -80,14 +89,19 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
     isMd,
     searchQuery,
     setSearchQuery,
+    categoryFilter,
+    setCategoryFilter,
     sortBy,
     sortDir,
     setSortDir,
     handleSortByChange,
     handleSortByColumn,
     filteredSurveys,
+    paginatedSurveys,
+    pagination,
   } = useSurveyListState<SurveySortBy>({
     surveys,
+    storageKey: 'surveyList',
     defaultSortBy: 'updated',
     preFilter,
     customComparator: CUSTOM_COMPARATOR,
@@ -97,8 +111,7 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
     useSurveySelection(surveys);
 
   const statusCounts = useMemo(() => {
-    const counts: Record<SurveyStatusFilter, number> = {
-      all: 0,
+    const counts: Record<string, number> = {
       active: 0,
       draft: 0,
       completed: 0,
@@ -107,27 +120,47 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
 
     for (const s of surveys) {
       if (!deriveSurveyFlags(s.status).isArchived && s.status in counts) {
-        counts[s.status as SurveyStatusFilter]++;
+        const current = counts[s.status];
+
+        if (current !== undefined) {
+          counts[s.status] = current + 1;
+        }
       }
     }
-
-    counts.all = counts.active + counts.draft + counts.completed + counts.cancelled;
 
     return counts;
   }, [surveys]);
 
-  const kpiStatuses = useMemo(() => {
-    const order: Exclude<SurveyStatusFilter, 'all'>[] = [
-      'active',
-      'draft',
-      'completed',
-      'cancelled',
-    ];
+  // Faceted category counts — respect current status filter but NOT category filter
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
 
-    return order.filter((s) => statusCounts[s] > 0);
+    for (const cat of SURVEY_CATEGORIES) {
+      counts[cat.value] = 0;
+    }
+
+    for (const s of surveys) {
+      if (!deriveSurveyFlags(s.status).isArchived) {
+        if (statusFilter.length === 0 || statusFilter.includes(s.status as SurveyStatusFilter)) {
+          const current = counts[s.category];
+
+          if (current !== undefined) {
+            counts[s.category] = current + 1;
+          }
+        }
+      }
+    }
+
+    return counts;
+  }, [surveys, statusFilter]);
+
+  const kpiStatuses = useMemo(() => {
+    const order: SurveyStatusFilter[] = ['active', 'draft', 'completed', 'cancelled'];
+
+    return order.filter((s) => (statusCounts[s] ?? 0) > 0);
   }, [statusCounts]);
 
-  const isFiltered = statusFilter !== 'all';
+  const isFiltered = statusFilter.length > 0 || categoryFilter.length > 0;
 
   const handleStatusChange = (surveyId: string, action: string) => {
     const { shouldDeselect, updatedSurveys } = applyOptimisticStatusChange(
@@ -157,6 +190,8 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
       <SurveyListToolbar
         statusFilter={statusFilter}
         onStatusFilterChange={setStatusFilter}
+        categoryFilter={categoryFilter}
+        onCategoryFilterChange={setCategoryFilter}
         searchQuery={searchQuery}
         onSearchQueryChange={setSearchQuery}
         sortBy={sortBy}
@@ -164,6 +199,7 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
         onSortByChange={handleSortByChange}
         onSortDirChange={setSortDir}
         statusCounts={statusCounts}
+        categoryCounts={categoryCounts}
       />
 
       {filteredSurveys.length === 0 ? (
@@ -186,7 +222,8 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
                 size="sm"
                 onClick={() => {
                   setSearchQuery('');
-                  setStatusFilter('all');
+                  setStatusFilter([]);
+                  setCategoryFilter([]);
                 }}
               >
                 {t('surveys.dashboard.clearFilters')}
@@ -196,7 +233,7 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
         />
       ) : isMd ? (
         <SurveyListTable
-          surveys={filteredSurveys}
+          surveys={paginatedSurveys}
           selectedId={selectedId}
           sortBy={sortBy}
           sortDir={sortDir}
@@ -207,7 +244,7 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
         />
       ) : (
         <div className="flex min-w-0 flex-col gap-2" role="list">
-          {filteredSurveys.map((survey: UserSurvey) => (
+          {paginatedSurveys.map((survey: UserSurvey) => (
             <SurveyListRow
               key={survey.id}
               survey={survey}
@@ -219,6 +256,23 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
             />
           ))}
         </div>
+      )}
+
+      {filteredSurveys.length > 0 && (
+        <ListPagination
+          page={pagination.page}
+          totalPages={pagination.totalPages}
+          perPage={pagination.perPage}
+          totalItems={pagination.totalItems}
+          startIndex={pagination.startIndex}
+          endIndex={pagination.endIndex}
+          canGoNext={pagination.canGoNext}
+          canGoPrev={pagination.canGoPrev}
+          onPageChange={pagination.goToPage}
+          onPerPageChange={pagination.setPerPage}
+          onNextPage={pagination.nextPage}
+          onPrevPage={pagination.prevPage}
+        />
       )}
 
       <SurveyDetailSheet

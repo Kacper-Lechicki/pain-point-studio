@@ -7,8 +7,8 @@ import { KPI_COLOR_ALL, SURVEY_STATUS_CONFIG } from '@/features/surveys/config/s
 import { cn } from '@/lib/common/utils';
 
 interface SurveyListKpiProps {
-  statusCounts: Record<SurveyStatusFilter, number>;
-  kpiStatuses: Exclude<SurveyStatusFilter, 'all'>[];
+  statusCounts: Record<string, number>;
+  kpiStatuses: SurveyStatusFilter[];
   isRefreshing: boolean;
   isRealtimeConnected: boolean;
   onRefresh: () => void;
@@ -32,7 +32,7 @@ export function SurveyListKpi({
       <div className="text-muted-foreground flex min-w-0 flex-wrap items-center gap-x-3 text-xs">
         <span>
           <span className={cn('text-base font-semibold tabular-nums', KPI_COLOR_ALL)}>
-            {statusCounts.all}
+            {Object.values(statusCounts).reduce((sum, n) => sum + n, 0)}
           </span>
           <span className="ml-1">{t('surveys.dashboard.summary.totalLabel')}</span>
         </span>
@@ -55,7 +55,7 @@ export function SurveyListKpi({
                   SURVEY_STATUS_CONFIG[status].kpiColor
                 )}
               >
-                {statusCounts[status]}
+                {statusCounts[status] ?? 0}
               </span>
               <span className="ml-1">
                 {t(`surveys.dashboard.status.${status}` as Parameters<typeof t>[0])}

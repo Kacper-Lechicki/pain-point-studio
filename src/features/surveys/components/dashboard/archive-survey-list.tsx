@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
+import { ListPagination } from '@/components/ui/list-pagination';
 import { SearchInput } from '@/components/ui/search-input';
 import { SortDropdown } from '@/components/ui/sort-dropdown';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -63,8 +64,11 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
     handleSortByChange,
     handleSortByColumn,
     filteredSurveys,
+    paginatedSurveys,
+    pagination,
   } = useSurveyListState<ArchiveSortBy>({
     surveys,
+    storageKey: 'archiveList',
     defaultSortBy: 'updated',
     customComparator: CUSTOM_COMPARATOR,
   });
@@ -210,7 +214,7 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredSurveys.map((survey) => (
+              {paginatedSurveys.map((survey) => (
                 <SurveyListRow
                   key={survey.id}
                   survey={survey}
@@ -227,7 +231,7 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
         </div>
       ) : (
         <div className="flex min-w-0 flex-col gap-2" role="list">
-          {filteredSurveys.map((survey) => (
+          {paginatedSurveys.map((survey) => (
             <SurveyListRow
               key={survey.id}
               survey={survey}
@@ -240,6 +244,23 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
             />
           ))}
         </div>
+      )}
+
+      {filteredSurveys.length > 0 && (
+        <ListPagination
+          page={pagination.page}
+          totalPages={pagination.totalPages}
+          perPage={pagination.perPage}
+          totalItems={pagination.totalItems}
+          startIndex={pagination.startIndex}
+          endIndex={pagination.endIndex}
+          canGoNext={pagination.canGoNext}
+          canGoPrev={pagination.canGoPrev}
+          onPageChange={pagination.goToPage}
+          onPerPageChange={pagination.setPerPage}
+          onNextPage={pagination.nextPage}
+          onPrevPage={pagination.prevPage}
+        />
       )}
 
       <SurveyDetailSheet

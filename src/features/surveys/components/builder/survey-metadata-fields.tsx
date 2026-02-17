@@ -134,6 +134,7 @@ export function SurveyMetadataFields({ form, categoryOptions }: SurveyMetadataFi
               <Switch
                 checked={field.value === 'public'}
                 onCheckedChange={(checked) => field.onChange(checked ? 'public' : 'private')}
+                disabled
               />
             </FormControl>
           </FormItem>
