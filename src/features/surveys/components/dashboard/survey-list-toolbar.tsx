@@ -83,9 +83,13 @@ export const SurveyListToolbar = ({
   const sortedCategories = [...SURVEY_CATEGORIES]
     .filter((cat) => (categoryCounts[cat.value] ?? 0) > 0)
     .sort((a, b) => {
-      if (a.value === 'other') {return 1;}
+      if (a.value === 'other') {
+        return 1;
+      }
 
-      if (b.value === 'other') {return -1;}
+      if (b.value === 'other') {
+        return -1;
+      }
 
       return t(a.labelKey as Parameters<typeof t>[0]).localeCompare(
         t(b.labelKey as Parameters<typeof t>[0])
@@ -149,25 +153,16 @@ export const SurveyListToolbar = ({
             </p>
             <div className="flex flex-col">
               {sortedStatusOptions.map((status) => (
-                <button
-                  key={status}
-                  type="button"
-                  onClick={() => handleStatusToggle(status)}
-                  className={FILTER_ITEM_CLASS}
-                >
+                <label key={status} className={FILTER_ITEM_CLASS}>
                   <Checkbox
                     checked={statusFilter.includes(status)}
                     onCheckedChange={() => handleStatusToggle(status)}
-                    className="pointer-events-none"
-                    tabIndex={-1}
                   />
-                  <span className="flex-1 text-left">
-                    {t(`surveys.dashboard.filters.${status}`)}
-                  </span>
+                  <span className="flex-1">{t(`surveys.dashboard.filters.${status}`)}</span>
                   <span className="text-muted-foreground text-xs tabular-nums">
                     {statusCounts[status] ?? 0}
                   </span>
-                </button>
+                </label>
               ))}
             </div>
           </div>
@@ -182,25 +177,16 @@ export const SurveyListToolbar = ({
                 </p>
                 <div className="flex flex-col">
                   {sortedCategories.map((cat) => (
-                    <button
-                      key={cat.value}
-                      type="button"
-                      onClick={() => handleCategoryToggle(cat.value)}
-                      className={FILTER_ITEM_CLASS}
-                    >
+                    <label key={cat.value} className={FILTER_ITEM_CLASS}>
                       <Checkbox
                         checked={categoryFilter.includes(cat.value)}
                         onCheckedChange={() => handleCategoryToggle(cat.value)}
-                        className="pointer-events-none"
-                        tabIndex={-1}
                       />
-                      <span className="flex-1 text-left">
-                        {t(cat.labelKey as Parameters<typeof t>[0])}
-                      </span>
+                      <span className="flex-1">{t(cat.labelKey as Parameters<typeof t>[0])}</span>
                       <span className="text-muted-foreground text-xs tabular-nums">
                         {categoryCounts[cat.value]}
                       </span>
-                    </button>
+                    </label>
                   ))}
                 </div>
               </div>
