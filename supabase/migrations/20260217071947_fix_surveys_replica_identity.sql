@@ -1,1 +1,0 @@
-ALTER TABLE public.surveys REPLICA IDENTITY FULL;
