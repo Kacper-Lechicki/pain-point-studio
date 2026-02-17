@@ -130,11 +130,16 @@ test.describe('Surveys – Empty State & Creation', () => {
     // Using the action menu is more reliable than clicking the table row directly
     // because webkit intermittently blocks clicks on <tr role="button"> when the
     // row's onClick guard detects a stale dialog overlay during hydration.
+    //
+    // Retry pattern: each attempt starts with Escape (to dismiss whatever the
+    // previous attempt may have opened — Radix toggles on click) then clicks
+    // the button exactly once.  This avoids the toggle-retry bug where a bare
+    // click inside toPass() would close the menu on the second iteration.
     await expect(async () => {
+      await page.keyboard.press('Escape');
       await row.getByRole('button', { name: 'More actions' }).click();
       await expect(page.getByRole('menuitem', { name: /preview|details/i })).toBeVisible();
     }).toPass({ timeout: 10_000 });
-
     await page.getByRole('menuitem', { name: /preview|details/i }).click();
 
     // Detail panel renders the survey title in a heading
@@ -183,12 +188,15 @@ test.describe('Surveys – Status Lifecycle', () => {
     const row = surveyItem(page, surveyTitle);
     await expect(row).toBeVisible({ timeout: 15_000 });
 
-    // Open action menu and click item — toPass() handles dropdown timing
+    // Open action menu — each retry starts with Escape to dismiss whatever
+    // the previous attempt may have opened (Radix toggles on click), then
+    // clicks the button exactly once.  This avoids the toggle-retry bug
+    // where a bare click inside toPass() would close the menu on retry.
     await expect(async () => {
+      await page.keyboard.press('Escape');
       await row.getByRole('button', { name: 'More actions' }).click();
       await expect(page.getByRole('menuitem', { name: menuItemName })).toBeVisible();
     }).toPass({ timeout: 10_000 });
-
     await page.getByRole('menuitem', { name: menuItemName }).click();
 
     // If the action requires confirmation, click the confirm button in the dialog
