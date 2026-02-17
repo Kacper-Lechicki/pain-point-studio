@@ -27,7 +27,6 @@ import { TextResponseList } from '@/features/surveys/components/stats/answer-cha
 import { useKeywordExtraction } from '@/features/surveys/hooks/use-keyword-extraction';
 import { usePagination, useResetPaginationOnChange } from '@/hooks/common/use-pagination';
 import { buildHighlightRegex, highlightText } from '@/lib/common/text-highlight';
-import { cn } from '@/lib/common/utils';
 
 type SortMode = 'newest' | 'longest' | 'shortest' | 'az';
 
@@ -59,13 +58,19 @@ export function InlineTextSearch({ responses, questionText }: InlineTextSearchPr
     let max: Date | null = null;
 
     for (const r of responses) {
-      if (!r.completedAt) {continue;}
+      if (!r.completedAt) {
+        continue;
+      }
 
       const d = new Date(r.completedAt);
 
-      if (!min || d < min) {min = d;}
+      if (!min || d < min) {
+        min = d;
+      }
 
-      if (!max || d > max) {max = d;}
+      if (!max || d > max) {
+        max = d;
+      }
     }
 
     return {
@@ -90,7 +95,9 @@ export function InlineTextSearch({ responses, questionText }: InlineTextSearchPr
     if (dateRange?.from) {
       const from = startOfDay(dateRange.from);
       result = result.filter((item) => {
-        if (!item.completedAt) {return false;}
+        if (!item.completedAt) {
+          return false;
+        }
 
         return !isBefore(new Date(item.completedAt), from);
       });
@@ -99,7 +106,9 @@ export function InlineTextSearch({ responses, questionText }: InlineTextSearchPr
     if (dateRange?.to) {
       const to = endOfDay(dateRange.to);
       result = result.filter((item) => {
-        if (!item.completedAt) {return false;}
+        if (!item.completedAt) {
+          return false;
+        }
 
         return !isAfter(new Date(item.completedAt), to);
       });
@@ -175,7 +184,9 @@ export function InlineTextSearch({ responses, questionText }: InlineTextSearchPr
   }, []);
 
   const dateLabel = useMemo(() => {
-    if (!dateRange?.from) {return null;}
+    if (!dateRange?.from) {
+      return null;
+    }
 
     if (dateRange.to) {
       return `${format(dateRange.from, 'MMM d')} – ${format(dateRange.to, 'MMM d')}`;
@@ -196,55 +207,13 @@ export function InlineTextSearch({ responses, questionText }: InlineTextSearchPr
             className="basis-full sm:max-w-64 sm:flex-1 sm:basis-auto"
           />
 
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant={hasDateFilter ? 'secondary' : 'outline'}
-                size="sm"
-                className="shrink-0 gap-1.5 text-xs"
-              >
-                <CalendarIcon className="size-3.5" />
-                <span className="hidden sm:inline">
-                  {dateLabel ?? t('surveys.stats.filter.dateRange' as Parameters<typeof t>[0])}
-                </span>
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="end">
-              <Calendar
-                mode="range"
-                selected={dateRange}
-                onSelect={setDateRange}
-                defaultMonth={dateRange?.from ?? dateBounds.max ?? new Date()}
-                disabled={[
-                  ...(dateBounds.min ? [{ before: dateBounds.min }] : []),
-                  ...(dateBounds.max ? [{ after: dateBounds.max }] : []),
-                ]}
-                className="p-2 [--cell-size:--spacing(7)] [&_.rdp-month]:gap-2 [&_.rdp-nav]:h-(--cell-size) [&_.rdp-week]:mt-0.5"
-                fixedWeeks
-              />
-              {hasDateFilter && (
-                <div className="border-t px-2 py-1.5">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="w-full text-xs"
-                    onClick={() => setDateRange(undefined)}
-                  >
-                    <X className="size-3" />
-                    {t('surveys.stats.filter.clearDate' as Parameters<typeof t>[0])}
-                  </Button>
-                </div>
-              )}
-            </PopoverContent>
-          </Popover>
-
           {keywords.length > 0 && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant={activeKeyword ? 'secondary' : 'outline'}
                   size="sm"
-                  className="min-w-24 shrink-0 gap-1.5 text-xs"
+                  className="shrink-0 gap-1.5 text-xs"
                 >
                   <Filter className="size-3.5" />
                   <span className="hidden sm:inline">
@@ -284,15 +253,59 @@ export function InlineTextSearch({ responses, questionText }: InlineTextSearchPr
             </DropdownMenu>
           )}
 
-          <SortDropdown
-            size="sm"
-            sortBy={sortMode}
-            onSortByChange={setSortMode}
-            options={sortOptions}
-            sortDir={sortMode === 'shortest' ? 'asc' : 'desc'}
-            sortLabel={t(`surveys.stats.sort.${sortMode}` as Parameters<typeof t>[0])}
-            className={cn('min-w-24', !keywords.length && 'ml-auto')}
-          />
+          <div className="ml-auto flex shrink-0 items-center gap-1.5">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={hasDateFilter ? 'secondary' : 'outline'}
+                  size="sm"
+                  className="shrink-0 gap-1.5 text-xs"
+                >
+                  <CalendarIcon className="size-3.5" />
+                  <span className="hidden sm:inline">
+                    {dateLabel ?? t('surveys.stats.filter.dateRange' as Parameters<typeof t>[0])}
+                  </span>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="end">
+                <Calendar
+                  mode="range"
+                  selected={dateRange}
+                  onSelect={setDateRange}
+                  defaultMonth={dateRange?.from ?? dateBounds.max ?? new Date()}
+                  disabled={[
+                    ...(dateBounds.min ? [{ before: dateBounds.min }] : []),
+                    ...(dateBounds.max ? [{ after: dateBounds.max }] : []),
+                  ]}
+                  className="p-2 [--cell-size:--spacing(7)] [&_.rdp-month]:gap-2 [&_.rdp-nav]:h-(--cell-size) [&_.rdp-week]:mt-0.5"
+                  fixedWeeks
+                />
+                {hasDateFilter && (
+                  <div className="border-t px-2 py-1.5">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="w-full text-xs"
+                      onClick={() => setDateRange(undefined)}
+                    >
+                      <X className="size-3" />
+                      {t('surveys.stats.filter.clearDate' as Parameters<typeof t>[0])}
+                    </Button>
+                  </div>
+                )}
+              </PopoverContent>
+            </Popover>
+
+            <SortDropdown
+              size="sm"
+              sortBy={sortMode}
+              onSortByChange={setSortMode}
+              options={sortOptions}
+              sortDir={sortMode === 'shortest' ? 'asc' : 'desc'}
+              sortLabel={t(`surveys.stats.sort.${sortMode}` as Parameters<typeof t>[0])}
+              className="shrink-0"
+            />
+          </div>
         </div>
 
         {isFiltering && (
