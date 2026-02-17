@@ -173,6 +173,7 @@ const AvatarUpload = ({
           <Button
             type="button"
             variant="outline"
+            size="sm"
             onClick={() => fileInputRef.current?.click()}
             disabled={isUploading}
           >
@@ -189,6 +190,7 @@ const AvatarUpload = ({
             <Button
               type="button"
               variant="destructive"
+              size="sm"
               onClick={() => setShowRemoveConfirm(true)}
               disabled={isUploading}
             >
