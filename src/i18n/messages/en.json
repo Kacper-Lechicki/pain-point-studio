@@ -131,8 +131,8 @@
     "enterEmailToReset": "Enter your email to receive a password reset link",
     "setNewPassword": "Set New Password",
     "enterNewPassword": "Please enter your new password below",
-    "signInSuccess": "Signed in",
-    "signOutSuccess": "Signed out",
+    "signInSuccess": "Signed in.",
+    "signOutSuccess": "Signed out.",
     "emailConfirmed": "Email confirmed. You are now signed in",
     "emailChangeConfirmed": "Email address updated",
     "passwordUpdated": "Password updated",
@@ -442,8 +442,8 @@
         "draft": "This survey is still being designed. Add questions and configure settings before publishing.",
         "active": "This survey is live and collecting responses from participants.",
         "completed": "Data collection is finished. Results are available for review.",
-        "cancelled": "This survey was withdrawn before completion. Existing responses are preserved.",
-        "archived": "This survey has been archived and will be automatically deleted after the retention period."
+        "cancelled": "This survey was withdrawn before completion. Existing responses are preserved but will not be included in project evaluation.",
+        "archived": "This survey has been archived and will be automatically deleted after the retention period. Responses from archived surveys are not included in project evaluation."
       },
       "filters": {
         "label": "Filter",
@@ -581,9 +581,9 @@
         "completeTitle": "Complete survey",
         "completeDescription": "The survey will stop accepting new responses. The survey link will remain accessible for 14 days, then expire. You can archive the survey later.",
         "cancelTitle": "Cancel survey",
-        "cancelDescription": "The survey will be withdrawn. The survey link will remain accessible for 14 days showing a withdrawal notice, then expire. You can archive the survey later.",
+        "cancelDescription": "The survey will be withdrawn. The survey link will remain accessible for 14 days showing a withdrawal notice, then expire. Responses from cancelled surveys will not be included in project evaluation. You can archive the survey later.",
         "archiveTitle": "Archive survey",
-        "archiveDescription": "The survey will be moved to the archive. You can restore it back to draft at any time within 14 days. After 14 days, archived surveys are permanently deleted.",
+        "archiveDescription": "The survey will be moved to the archive. Responses from archived surveys will not be included in project evaluation. You can restore it back to draft at any time within 14 days. After 14 days, archived surveys are permanently deleted.",
         "restoreTitle": "Restore survey",
         "restoreDescription": "The survey will be restored as a draft. You can edit it and publish again to start collecting new responses.",
         "deleteTitle": "Delete survey",
@@ -998,9 +998,9 @@
       "bioCounter": "{count}/{max}",
       "previewProfile": "Preview Profile",
       "saveProfile": "Save Profile",
-      "profileUpdated": "Profile updated",
-      "avatarUpdated": "Profile photo updated",
-      "avatarRemoved": "Profile photo removed",
+      "profileUpdated": "Profile updated.",
+      "avatarUpdated": "Profile photo updated.",
+      "avatarRemoved": "Profile photo removed.",
       "removeAvatarConfirmTitle": "Remove profile photo?",
       "removeAvatarConfirmDescription": "Your profile photo will be permanently removed.",
       "cropAvatar": "Crop Photo",
@@ -1051,7 +1051,7 @@
       "newPassword": "New Password",
       "confirmPassword": "Confirm New Password",
       "savePassword": "Update Password",
-      "passwordUpdated": "Password updated"
+      "passwordUpdated": "Password updated."
     },
     "connectedAccounts": {
       "title": "Connected Accounts",
