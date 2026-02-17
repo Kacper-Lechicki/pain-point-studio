@@ -176,8 +176,7 @@ function wrapCreateTypes(content) {
 function wrapPublicationAddTable(content) {
   let count = 0;
 
-  const re =
-    /^ALTER PUBLICATION "([^"]+)" ADD TABLE ONLY "([^"]+)"\."([^"]+)";/gm;
+  const re = /^ALTER PUBLICATION "([^"]+)" ADD TABLE ONLY "([^"]+)"\."([^"]+)";/gm;
 
   content = content.replace(re, (_match, pubName, schema, table) => {
     count++;
