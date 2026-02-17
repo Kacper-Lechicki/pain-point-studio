@@ -269,11 +269,16 @@ test.describe('Survey Builder – Metadata Editing', () => {
     // The metadata sheet should open with the title input
     await expect(page.locator(sel.titleInput)).toBeVisible({ timeout: 10_000 });
 
-    // Change the title
-    const newTitle = `Updated Title ${Date.now()}`;
+    // Change the title — use clear() + pressSequentially() instead of fill()
+    // because webkit's fill() doesn't reliably fire React's onChange.
     await expect(async () => {
-      await page.locator(sel.titleInput).fill(newTitle);
-      await expect(page.locator(sel.titleInput)).toHaveValue(newTitle);
+      await page.locator(sel.titleInput).clear();
+      await page.locator(sel.titleInput).pressSequentially('Updated Title', { delay: 30 });
+      await expect(page.locator(sel.titleInput)).toHaveValue('Updated Title');
+
+      // Sheet footer save button should be enabled now (form dirty)
+      const saveBtns = page.getByRole('button', { name: 'Save Draft' });
+      await expect(saveBtns.last()).toBeEnabled();
     }).toPass({ timeout: 10_000 });
 
     // Save — the metadata panel uses a "Save Draft" button
