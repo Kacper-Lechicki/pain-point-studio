@@ -1,4 +1,5 @@
 // @vitest-environment node
+/** Tests for the completeProfile server action that sets initial fullName and role during onboarding. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock env
@@ -51,7 +52,6 @@ describe('Settings Actions – Complete Profile', () => {
     mockUpdateUser.mockResolvedValue({ error: null });
   });
 
-  // Valid fullName and role: profile and metadata updated; returns success.
   it('should return success when profile is completed', async () => {
     const { completeProfile } = await import('./complete-profile');
     const result = await completeProfile(validData);
@@ -67,7 +67,6 @@ describe('Settings Actions – Complete Profile', () => {
     });
   });
 
-  // Empty fullName fails validation; action returns error.
   it('should reject empty fullName', async () => {
     const { completeProfile } = await import('./complete-profile');
     const result = await completeProfile({ fullName: '', role: 'other' });
@@ -76,7 +75,6 @@ describe('Settings Actions – Complete Profile', () => {
     expect(mockGetUser).not.toHaveBeenCalled();
   });
 
-  // Empty role fails validation; action returns error.
   it('should reject empty role', async () => {
     const { completeProfile } = await import('./complete-profile');
     const result = await completeProfile({ fullName: 'John', role: '' });
@@ -85,7 +83,6 @@ describe('Settings Actions – Complete Profile', () => {
     expect(mockGetUser).not.toHaveBeenCalled();
   });
 
-  // fullName longer than max length fails validation.
   it('should reject fullName exceeding max length', async () => {
     const { completeProfile } = await import('./complete-profile');
     const result = await completeProfile({
@@ -97,7 +94,6 @@ describe('Settings Actions – Complete Profile', () => {
     expect(mockGetUser).not.toHaveBeenCalled();
   });
 
-  // When getUser returns null, action returns error.
   it('should return error when user is not authenticated', async () => {
     mockGetUser.mockResolvedValue({ data: { user: null } });
 
@@ -109,7 +105,6 @@ describe('Settings Actions – Complete Profile', () => {
     expect(mockUpdate).not.toHaveBeenCalled();
   });
 
-  // Profile .update() failure returns error and does not call metadata update.
   it('should return error when profile DB update fails', async () => {
     mockEq.mockResolvedValue({ error: { message: 'Database error' } });
 
@@ -121,7 +116,6 @@ describe('Settings Actions – Complete Profile', () => {
     expect(mockUpdateUser).not.toHaveBeenCalled();
   });
 
-  // When updateUser (metadata) returns error, action returns error result.
   it('should return error when metadata update fails', async () => {
     mockUpdateUser.mockResolvedValue({ error: { message: 'Metadata error' } });
 
@@ -132,7 +126,6 @@ describe('Settings Actions – Complete Profile', () => {
     expect(result).not.toHaveProperty('success');
   });
 
-  // When rate limited, action returns error and does not call Supabase.
   it('should return rate limit error when rate limited', async () => {
     const { rateLimit } = await import('@/lib/common/rate-limit');
 

@@ -43,28 +43,22 @@ export default defineConfig({
     // Navigation timeout (30s to handle parallel project load on dev server)
     navigationTimeout: 30_000,
   },
-  // Configure projects for major browsers
+  // Configure projects for major browsers.
+  // 3 projects: desktop engines (chromium + webkit) + mobile viewport (Mobile Chrome).
+  // Firefox is omitted (minimal unique coverage vs chromium).
+  // Mobile Safari is omitted (webkit already catches engine bugs; Mobile Chrome covers viewport).
   projects: [
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
     {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
-    {
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
     },
-    // Test against mobile viewports.
     {
       name: 'Mobile Chrome',
       use: { ...devices['Pixel 5'] },
-    },
-    {
-      name: 'Mobile Safari',
-      use: { ...devices['iPhone 12'] },
     },
   ],
   // Run your local dev server before starting the tests

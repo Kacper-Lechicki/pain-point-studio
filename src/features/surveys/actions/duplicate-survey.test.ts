@@ -1,4 +1,5 @@
 // @vitest-environment node
+/** Tests for duplicating a survey along with its questions. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // ── Mocks ────────────────────────────────────────────────────────────
@@ -97,7 +98,6 @@ describe('Survey Actions – Duplicate Survey', () => {
     mockGetUser.mockResolvedValue({ data: { user: USER } });
   });
 
-  // Fetch original + insert survey + copy questions succeed → success and new surveyId; title has " (copy)".
   it('should duplicate survey and questions successfully', async () => {
     const fetchChain = chain({ data: ORIGINAL_SURVEY });
     const insertChain = chain({ data: { id: NEW_SURVEY_ID } });
@@ -136,7 +136,6 @@ describe('Survey Actions – Duplicate Survey', () => {
     );
   });
 
-  // Original survey fetch returns null/error → surveys.errors.unexpected.
   it('should return error when original survey not found', async () => {
     const fetchChain = chain({ data: null, error: { message: 'Not found' } });
     mockFrom.mockReturnValue(fetchChain);
@@ -147,7 +146,6 @@ describe('Survey Actions – Duplicate Survey', () => {
     expect(result).toEqual({ error: 'surveys.errors.unexpected' });
   });
 
-  // Survey insert returns error → surveys.errors.unexpected.
   it('should return error when insert fails', async () => {
     const fetchChain = chain({ data: ORIGINAL_SURVEY });
     const insertChain = chain({ data: null, error: { message: 'Insert failed' } });
@@ -169,7 +167,6 @@ describe('Survey Actions – Duplicate Survey', () => {
     expect(result).toEqual({ error: 'surveys.errors.unexpected' });
   });
 
-  // Question copy fails → surveys.errors.unexpected and new survey is deleted.
   it('should clean up new survey when question copy fails', async () => {
     const fetchChain = chain({ data: ORIGINAL_SURVEY });
     const insertChain = chain({ data: { id: NEW_SURVEY_ID } });
@@ -214,7 +211,6 @@ describe('Survey Actions – Duplicate Survey', () => {
     expect(deleteChain.eq).toHaveBeenCalledWith('id', NEW_SURVEY_ID);
   });
 
-  // Original has no questions → success; no question insert.
   it('should duplicate survey with no questions', async () => {
     const fetchChain = chain({ data: ORIGINAL_SURVEY });
     const insertChain = chain({ data: { id: NEW_SURVEY_ID } });

@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+/** Tests for the useQuestionBuilder reducer hook covering all dispatch actions. */
 import { act, renderHook } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
@@ -24,7 +25,7 @@ function makeQuestion(overrides: Partial<QuestionSchema> = {}): QuestionSchema {
 // ── Initialization ─────────────────────────────────────────────────
 
 describe('useQuestionBuilder – initialization', () => {
-  it('initializes with empty questions', () => {
+  it('should initialize with empty questions', () => {
     const { result } = renderHook(() => useQuestionBuilder());
     const [state] = result.current;
 
@@ -34,7 +35,7 @@ describe('useQuestionBuilder – initialization', () => {
     expect(state.saveStatus).toBe('idle');
   });
 
-  it('initializes with provided questions and sets first as active', () => {
+  it('should initialize with provided questions and set first as active', () => {
     const q1 = makeQuestion();
     const q2 = makeQuestion();
     const { result } = renderHook(() => useQuestionBuilder([q1, q2]));
@@ -48,7 +49,7 @@ describe('useQuestionBuilder – initialization', () => {
 // ── ADD_QUESTION ───────────────────────────────────────────────────
 
 describe('useQuestionBuilder – ADD_QUESTION', () => {
-  it('adds default open_text question', () => {
+  it('should add default open_text question', () => {
     const { result } = renderHook(() => useQuestionBuilder());
 
     act(() => {
@@ -67,7 +68,7 @@ describe('useQuestionBuilder – ADD_QUESTION', () => {
     expect(state.isDirty).toBe(true);
   });
 
-  it('adds question with specific type (multiple_choice)', () => {
+  it('should add question with specific type (multiple_choice)', () => {
     const { result } = renderHook(() => useQuestionBuilder());
 
     act(() => {
@@ -81,7 +82,7 @@ describe('useQuestionBuilder – ADD_QUESTION', () => {
     expect(state.questions[0]?.config).toEqual({ options: ['', ''], allowOther: false });
   });
 
-  it('does nothing at max capacity', () => {
+  it('should do nothing at max capacity', () => {
     const questions = Array.from({ length: QUESTIONS_MAX }, () => makeQuestion());
     const { result } = renderHook(() => useQuestionBuilder(questions));
 
@@ -99,7 +100,7 @@ describe('useQuestionBuilder – ADD_QUESTION', () => {
 // ── DELETE_QUESTION ────────────────────────────────────────────────
 
 describe('useQuestionBuilder – DELETE_QUESTION', () => {
-  it('removes question', () => {
+  it('should remove question', () => {
     const q1 = makeQuestion();
     const { result } = renderHook(() => useQuestionBuilder([q1]));
 
@@ -115,7 +116,7 @@ describe('useQuestionBuilder – DELETE_QUESTION', () => {
     expect(state.isDirty).toBe(true);
   });
 
-  it('does nothing for non-existent ID', () => {
+  it('should do nothing for non-existent ID', () => {
     const q1 = makeQuestion();
     const { result } = renderHook(() => useQuestionBuilder([q1]));
 
@@ -130,7 +131,7 @@ describe('useQuestionBuilder – DELETE_QUESTION', () => {
     expect(state.isDirty).toBe(false);
   });
 
-  it('selects next question when active deleted', () => {
+  it('should select next question when active deleted', () => {
     const q1 = makeQuestion();
     const q2 = makeQuestion();
     const q3 = makeQuestion();
@@ -151,7 +152,7 @@ describe('useQuestionBuilder – DELETE_QUESTION', () => {
     expect(state.activeQuestionId).toBe(q3.id);
   });
 
-  it('selects previous when last deleted', () => {
+  it('should select previous when last deleted', () => {
     const q1 = makeQuestion();
     const q2 = makeQuestion();
     const { result } = renderHook(() => useQuestionBuilder([q1, q2]));
@@ -175,7 +176,7 @@ describe('useQuestionBuilder – DELETE_QUESTION', () => {
 // ── SELECT_QUESTION ────────────────────────────────────────────────
 
 describe('useQuestionBuilder – SELECT_QUESTION', () => {
-  it('changes active question', () => {
+  it('should change active question', () => {
     const q1 = makeQuestion();
     const q2 = makeQuestion();
     const { result } = renderHook(() => useQuestionBuilder([q1, q2]));
@@ -194,7 +195,7 @@ describe('useQuestionBuilder – SELECT_QUESTION', () => {
 // ── UPDATE_QUESTION ────────────────────────────────────────────────
 
 describe('useQuestionBuilder – UPDATE_QUESTION', () => {
-  it('updates fields and marks dirty', () => {
+  it('should update fields and mark dirty', () => {
     const q1 = makeQuestion();
     const { result } = renderHook(() => useQuestionBuilder([q1]));
 
@@ -217,7 +218,7 @@ describe('useQuestionBuilder – UPDATE_QUESTION', () => {
 // ── CHANGE_QUESTION_TYPE ───────────────────────────────────────────
 
 describe('useQuestionBuilder – CHANGE_QUESTION_TYPE', () => {
-  it('changes type and resets config', () => {
+  it('should change type and reset config', () => {
     const q1 = makeQuestion({ type: 'open_text', config: {} });
     const { result } = renderHook(() => useQuestionBuilder([q1]));
 
@@ -240,7 +241,7 @@ describe('useQuestionBuilder – CHANGE_QUESTION_TYPE', () => {
 // ── REORDER_QUESTIONS ──────────────────────────────────────────────
 
 describe('useQuestionBuilder – REORDER_QUESTIONS', () => {
-  it('reorders correctly', () => {
+  it('should reorder correctly', () => {
     const q1 = makeQuestion();
     const q2 = makeQuestion();
     const q3 = makeQuestion();
@@ -260,7 +261,7 @@ describe('useQuestionBuilder – REORDER_QUESTIONS', () => {
     expect(state.isDirty).toBe(true);
   });
 
-  it('does nothing with mismatched IDs', () => {
+  it('should do nothing with mismatched IDs', () => {
     const q1 = makeQuestion();
     const q2 = makeQuestion();
     const { result } = renderHook(() => useQuestionBuilder([q1, q2]));
@@ -283,7 +284,7 @@ describe('useQuestionBuilder – REORDER_QUESTIONS', () => {
 // ── SET_SAVE_STATUS ────────────────────────────────────────────────
 
 describe('useQuestionBuilder – SET_SAVE_STATUS', () => {
-  it('updates saveStatus', () => {
+  it('should update saveStatus', () => {
     const { result } = renderHook(() => useQuestionBuilder());
 
     act(() => {
@@ -305,7 +306,7 @@ describe('useQuestionBuilder – SET_SAVE_STATUS', () => {
 // ── MARK_CLEAN ─────────────────────────────────────────────────────
 
 describe('useQuestionBuilder – MARK_CLEAN', () => {
-  it('sets isDirty to false', () => {
+  it('should set isDirty to false', () => {
     const { result } = renderHook(() => useQuestionBuilder());
 
     act(() => {

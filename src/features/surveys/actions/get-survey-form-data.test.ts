@@ -1,4 +1,5 @@
 // @vitest-environment node
+/** Tests for retrieving translated survey form data (category options). */
 import { describe, expect, it, vi } from 'vitest';
 
 import { SURVEY_CATEGORIES } from '@/features/surveys/config/survey-categories';
@@ -12,8 +13,7 @@ vi.mock('next-intl/server', () => ({
 // ── Tests ────────────────────────────────────────────────────────────
 
 describe('getSurveyFormData', () => {
-  // categoryOptions length matches SURVEY_CATEGORIES; each has value and label.
-  it('returns categoryOptions with value and label for each category', async () => {
+  it('should return categoryOptions with value and label for each category', async () => {
     const { getSurveyFormData } = await import('./get-survey-form-data');
     const result = await getSurveyFormData();
 
@@ -34,8 +34,7 @@ describe('getSurveyFormData', () => {
     }
   });
 
-  // Label comes from t(labelKey); mock returns key as label.
-  it('uses translation for label (mock returns key as label)', async () => {
+  it('should use translation for label (mock returns key as label)', async () => {
     const { getSurveyFormData } = await import('./get-survey-form-data');
     const result = await getSurveyFormData();
 

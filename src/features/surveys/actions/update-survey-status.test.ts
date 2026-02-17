@@ -1,4 +1,5 @@
 // @vitest-environment node
+/** Tests for survey lifecycle status transitions (complete, cancel, archive, restore, delete). */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // ── Mocks ────────────────────────────────────────────────────────────
@@ -68,8 +69,7 @@ describe('Survey status actions', () => {
   });
 
   describe('completeSurvey', () => {
-    // Update returns row → success.
-    it('returns success when update returns a row', async () => {
+    it('should return success when update returns a row', async () => {
       const updateChain = chain({ data: { id: SURVEY_ID } });
       mockFrom.mockReturnValue(updateChain);
 
@@ -80,8 +80,7 @@ describe('Survey status actions', () => {
       expect(mockFrom).toHaveBeenCalledWith('surveys');
     });
 
-    // Update returns no row → surveys.errors.unexpected.
-    it('returns error when update returns no row', async () => {
+    it('should return error when update returns no row', async () => {
       mockFrom.mockReturnValue(chain({ data: null, error: null }));
 
       const { completeSurvey } = await import('./update-survey-status');
@@ -92,8 +91,7 @@ describe('Survey status actions', () => {
   });
 
   describe('cancelSurvey', () => {
-    // Update returns row → success.
-    it('returns success when update returns a row', async () => {
+    it('should return success when update returns a row', async () => {
       mockFrom.mockReturnValue(chain({ data: { id: SURVEY_ID } }));
 
       const { cancelSurvey } = await import('./update-survey-status');
@@ -104,8 +102,7 @@ describe('Survey status actions', () => {
   });
 
   describe('archiveSurvey', () => {
-    // Select then update both return data → success.
-    it('returns success when select and update succeed', async () => {
+    it('should return success when select and update succeed', async () => {
       const selectChain = chain({ data: { status: 'draft' } });
       const updateChain = chain({ data: { id: SURVEY_ID } });
       let callCount = 0;
@@ -123,8 +120,7 @@ describe('Survey status actions', () => {
   });
 
   describe('restoreSurvey', () => {
-    // Update and delete survey_responses succeed → success.
-    it('returns success when update and delete succeed', async () => {
+    it('should return success when update and delete succeed', async () => {
       const updateChain = chain({ data: { id: SURVEY_ID } });
       const deleteChain = chain({ data: null, error: null });
       mockFrom.mockImplementation((table: string) => {
@@ -143,8 +139,7 @@ describe('Survey status actions', () => {
   });
 
   describe('deleteSurveyDraft', () => {
-    // Delete returns row → success.
-    it('returns success when delete returns a row', async () => {
+    it('should return success when delete returns a row', async () => {
       mockFrom.mockReturnValue(chain({ data: { id: SURVEY_ID } }));
 
       const { deleteSurveyDraft } = await import('./update-survey-status');
@@ -153,8 +148,7 @@ describe('Survey status actions', () => {
       expect(result).toEqual({ success: true });
     });
 
-    // Delete returns no row → surveys.errors.unexpected.
-    it('returns error when delete returns no row', async () => {
+    it('should return error when delete returns no row', async () => {
       mockFrom.mockReturnValue(chain({ data: null }));
 
       const { deleteSurveyDraft } = await import('./update-survey-status');
@@ -164,8 +158,7 @@ describe('Survey status actions', () => {
     });
   });
 
-  // Invalid surveyId → validation error; from() not called.
-  it('returns validation error for invalid surveyId', async () => {
+  it('should return validation error for invalid surveyId', async () => {
     const { completeSurvey } = await import('./update-survey-status');
     const result = await completeSurvey({ surveyId: '' } as { surveyId: string });
 

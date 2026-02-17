@@ -1,4 +1,5 @@
 // @vitest-environment node
+/** Tests for getProfileStatistics server action covering auth, RPC calls, and schema validation. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/lib/common/env', () => ({
@@ -42,7 +43,7 @@ describe('getProfileStatistics', () => {
     return mod.getProfileStatistics;
   }
 
-  it('returns null when unauthenticated', async () => {
+  it('should return null when unauthenticated', async () => {
     mockGetUser.mockResolvedValue({ data: { user: null } });
 
     const getProfileStatistics = await importFresh();
@@ -52,7 +53,7 @@ describe('getProfileStatistics', () => {
     expect(mockRpc).not.toHaveBeenCalled();
   });
 
-  it('calls RPC with correct user id', async () => {
+  it('should call RPC with correct user id', async () => {
     mockGetUser.mockResolvedValue({ data: { user: { id: 'user-1' } } });
     mockRpc.mockResolvedValue({ data: validPayload, error: null });
 
@@ -62,7 +63,7 @@ describe('getProfileStatistics', () => {
     expect(mockRpc).toHaveBeenCalledWith('get_profile_statistics', { p_user_id: 'user-1' });
   });
 
-  it('returns parsed data on valid RPC response', async () => {
+  it('should return parsed data on valid RPC response', async () => {
     mockGetUser.mockResolvedValue({ data: { user: { id: 'user-1' } } });
     mockRpc.mockResolvedValue({ data: validPayload, error: null });
 
@@ -72,7 +73,7 @@ describe('getProfileStatistics', () => {
     expect(result).toEqual(validPayload);
   });
 
-  it('returns null on RPC error', async () => {
+  it('should return null on RPC error', async () => {
     mockGetUser.mockResolvedValue({ data: { user: { id: 'user-1' } } });
     mockRpc.mockResolvedValue({ data: null, error: { message: 'RPC failed' } });
 
@@ -82,7 +83,7 @@ describe('getProfileStatistics', () => {
     expect(result).toBeNull();
   });
 
-  it('returns null when RPC returns null data', async () => {
+  it('should return null when RPC returns null data', async () => {
     mockGetUser.mockResolvedValue({ data: { user: { id: 'user-1' } } });
     mockRpc.mockResolvedValue({ data: null, error: null });
 
@@ -92,7 +93,7 @@ describe('getProfileStatistics', () => {
     expect(result).toBeNull();
   });
 
-  it('returns null when response fails schema validation', async () => {
+  it('should return null when response fails schema validation', async () => {
     mockGetUser.mockResolvedValue({ data: { user: { id: 'user-1' } } });
     mockRpc.mockResolvedValue({
       data: { totalSurveys: 'not-a-number' },

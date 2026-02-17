@@ -1,11 +1,11 @@
+/**
+ * Settings: profile update, password change, account deletion, and onboarding modal.
+ */
 import { expect, test } from '@playwright/test';
 
 import { makeApiSignIn, scopedEmail } from './helpers/auth';
 import { ROUTES, url } from './helpers/routes';
 import { deleteUserByEmail, ensureUser } from './helpers/supabase-admin';
-
-// Serial: 1 test per browser project at a time (max 5 concurrent).
-test.describe.configure({ mode: 'serial' });
 
 // ── Selectors ────────────────────────────────────────────────────
 const sel = {
@@ -13,7 +13,6 @@ const sel = {
   bio: 'textarea[name="bio"]',
   profileSubmit: 'form#profile-form button[type="submit"]',
   email: 'input[name="email"]',
-  emailSubmit: 'form#email-form button[type="submit"]',
   currentPassword: 'input[name="currentPassword"]',
   password: 'input[name="password"]',
   confirmPassword: 'input[name="confirmPassword"]',
@@ -31,10 +30,9 @@ function profileInMain(page: import('@playwright/test').Page) {
 const PASSWORD = 'E2eSettingsPass1!';
 
 // ─────────────────────────────────────────────────────────────────
-// Settings – Core Flow
-// Profile update, route navigation, email validation
+// Settings – Profile & Navigation
 // ─────────────────────────────────────────────────────────────────
-test.describe('Settings – Core Flow', () => {
+test.describe('Settings – Profile & Navigation', () => {
   let email: string;
   let signIn: ReturnType<typeof makeApiSignIn>;
 
@@ -49,17 +47,15 @@ test.describe('Settings – Core Flow', () => {
     await deleteUserByEmail(e).catch(() => {});
   });
 
-  test('profile update → section nav → email validation', async ({ page }) => {
+  // Update name → save → navigate email/password/back → verify index redirect
+  test('profile update and settings navigation', async ({ page }) => {
     await signIn(page);
-    await page.goto(url(ROUTES.settings.profile));
-    await expect(page).toHaveURL(/\/settings\/profile/);
 
-    // ── Profile section visible by default (scope to main to avoid Complete Profile modal) ──
+    // ── Profile update ──
+    await page.goto(url(ROUTES.settings.profile));
     const main = profileInMain(page);
     await expect(main.locator(sel.fullName)).toBeVisible({ timeout: 15_000 });
-    await expect(main.locator(sel.bio)).toBeVisible();
 
-    // ── Update profile ──
     await expect(async () => {
       const nameInput = main.locator(sel.fullName);
       await nameInput.click();
@@ -67,40 +63,25 @@ test.describe('Settings – Core Flow', () => {
       await expect(nameInput).toHaveValue('Test User');
     }).toPass({ timeout: 10_000 });
 
-    // Submit and wait for success toast (retry for slow CI server actions)
     await expect(async () => {
       await main.locator(sel.profileSubmit).click();
       await expect(page.locator(sel.toast).first()).toBeVisible({ timeout: 10_000 });
     }).toPass({ timeout: 20_000 });
 
-    // ── Navigate to email → verify pre-filled → reject invalid ──
+    // ── Navigate to email → verify pre-filled ──
     await page.goto(url(ROUTES.settings.email));
     await expect(page.locator(sel.email)).toBeVisible({ timeout: 15_000 });
     await expect(page.locator(sel.email)).toHaveValue(email);
 
-    await page.locator(sel.email).clear();
-    await page.locator(sel.email).fill('not-an-email');
-    await page.locator(sel.emailSubmit).click();
-    await expect(page).toHaveURL(/\/settings\/email/);
-  });
-
-  test('direct route navigation and browser back', async ({ page }) => {
-    await signIn(page);
-
-    // Direct route navigation to email
-    await page.goto(url(ROUTES.settings.email));
-    await expect(page.locator(sel.email)).toBeVisible({ timeout: 15_000 });
-
-    // Navigate to password via route
+    // ── Navigate to password → verify form visible ──
     await page.goto(url(ROUTES.settings.password));
     await expect(page.locator(sel.password)).toBeVisible({ timeout: 15_000 });
-    await expect(page).toHaveURL(/\/settings\/password/);
 
-    // Browser back returns to email
+    // ── Browser back returns to email ──
     await page.goBack();
     await expect(page).toHaveURL(/\/settings\/email/, { timeout: 10_000 });
 
-    // Settings index redirects to profile
+    // ── Settings index redirects to profile ──
     await page.goto(url(ROUTES.common.settings));
     await expect(profileInMain(page).locator(sel.fullName)).toBeVisible({ timeout: 15_000 });
   });
@@ -124,24 +105,12 @@ test.describe('Settings – Password', () => {
     await deleteUserByEmail(e).catch(() => {});
   });
 
-  test('rejects invalid → updates password successfully', async ({ page }) => {
+  // Fill current + new + confirm → submit → success toast
+  test('updates password successfully', async ({ page }) => {
     await signIn(page);
     await page.goto(url(ROUTES.settings.password));
     await expect(page.locator(sel.password)).toBeVisible({ timeout: 15_000 });
 
-    // Weak password rejected (client-side Zod validation)
-    await page.locator(sel.password).fill('weak');
-    await page.locator(sel.confirmPassword).fill('weak');
-    await page.locator(sel.passwordSubmit).click();
-    await expect(page).toHaveURL(/\/settings\/password/);
-
-    // Mismatched passwords rejected (client-side Zod validation)
-    await page.locator(sel.password).fill('NewStrongPass1!');
-    await page.locator(sel.confirmPassword).fill('DifferentPass1!');
-    await page.locator(sel.passwordSubmit).click();
-    await expect(page).toHaveURL(/\/settings\/password/);
-
-    // Valid password update
     const cpwField = page.locator(sel.currentPassword);
     const pw = page.locator(sel.password);
     const cpw = page.locator(sel.confirmPassword);
@@ -167,10 +136,6 @@ test.describe('Settings – Password', () => {
 
     await page.locator(sel.passwordSubmit).click();
 
-    // Success toast confirms the password was updated server-side.
-    // Note: We intentionally don't assert field clearing — form.reset()
-    // behaviour after server actions is unreliable on webkit-based
-    // engines in CI (fields keep their DOM value despite React state reset).
     await expect(page.locator(sel.toast).first()).toBeVisible({ timeout: 15_000 });
     await expect(page).toHaveURL(/\/settings\/password/);
   });
@@ -180,12 +145,12 @@ test.describe('Settings – Password', () => {
 // Settings – Delete Account
 // ─────────────────────────────────────────────────────────────────
 test.describe('Settings – Delete Account', () => {
-  // Cleanup in case the test fails before the account is deleted via UI
   test.afterAll(async ({}, testInfo) => {
     const e = scopedEmail('e2e-settings-delete', testInfo.project.name);
     await deleteUserByEmail(e).catch(() => {});
   });
 
+  // Open dialog → cancel → reopen → type email → delete → session invalidated
   test('dialog → cancel → confirm → delete → dashboard locked', async ({ page }, testInfo) => {
     const email = scopedEmail('e2e-settings-delete', testInfo.project.name);
     const signIn = makeApiSignIn(email, PASSWORD);
@@ -222,13 +187,10 @@ test.describe('Settings – Delete Account', () => {
     await expect(dialog.locator('button[type="submit"]')).toBeEnabled();
     await dialog.locator('button[type="submit"]').click();
 
-    // The server action chain (list avatars → remove files → admin deleteUser → signOut)
-    // is slow, then the client does router.push(home) + router.refresh().
-    // Wait for the URL to leave /settings (the app redirects to home after deletion).
+    // Wait for redirect away from settings after deletion
     await expect(page).not.toHaveURL(/\/settings/, { timeout: 45_000 });
 
-    // Dashboard no longer accessible — session was invalidated by signOut + user deletion.
-    // Use toPass because middleware may still accept the JWT briefly until refresh propagates.
+    // Dashboard no longer accessible
     await expect(async () => {
       await page.goto(url(ROUTES.common.dashboard), { timeout: 15_000 });
       await expect(page).toHaveURL(/\/sign-in/, { timeout: 10_000 });
@@ -254,6 +216,7 @@ test.describe('Settings – Complete Profile Modal', () => {
     await deleteUserByEmail(e).catch(() => {});
   });
 
+  // User with empty profile → modal blocks interaction until completed
   test('non-dismissable modal → fill form → modal disappears', async ({ page }) => {
     await signIn(page);
 

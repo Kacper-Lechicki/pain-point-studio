@@ -1,4 +1,5 @@
 // @vitest-environment node
+/** Tests for the updateEmail server action that triggers an email change with a confirmation redirect. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock next-intl/server
@@ -47,7 +48,6 @@ describe('Settings Actions – Update Email', () => {
     mockUpdateUser.mockResolvedValue({ error: null });
   });
 
-  // Valid email triggers updateUser with correct redirect URL; returns success.
   it('should return success when email is updated', async () => {
     const { updateEmail } = await import('./update-email');
     const result = await updateEmail({ email: 'new@example.com' });
@@ -61,7 +61,6 @@ describe('Settings Actions – Update Email', () => {
     );
   });
 
-  // Invalid email fails validation; Supabase is not called.
   it('should not call Supabase when email is invalid', async () => {
     const { updateEmail } = await import('./update-email');
     const result = await updateEmail({ email: 'not-an-email' });
@@ -71,7 +70,6 @@ describe('Settings Actions – Update Email', () => {
     expect(mockUpdateUser).not.toHaveBeenCalled();
   });
 
-  // When updateUser returns error, action returns error result.
   it('should return error when Supabase rejects the update', async () => {
     mockUpdateUser.mockResolvedValue({
       error: { message: 'Email rate limit exceeded' },
@@ -84,7 +82,6 @@ describe('Settings Actions – Update Email', () => {
     expect(result).not.toHaveProperty('success');
   });
 
-  // When rate limited, action returns error and does not call Supabase.
   it('should return rate limit error when rate limited', async () => {
     const { rateLimit } = await import('@/lib/common/rate-limit');
 
@@ -98,7 +95,6 @@ describe('Settings Actions – Update Email', () => {
     expect(mockUpdateUser).not.toHaveBeenCalled();
   });
 
-  // When getUser returns null, action returns error.
   it('should return error when user is not authenticated', async () => {
     mockGetUser.mockResolvedValue({ data: { user: null } });
 

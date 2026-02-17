@@ -1,4 +1,5 @@
 // @vitest-environment node
+/** Tests for publishing a draft survey with slug generation and collision retry. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // ── Mocks ────────────────────────────────────────────────────────────
@@ -79,7 +80,6 @@ describe('Survey Actions – Publish Survey', () => {
     mockGetUser.mockResolvedValue({ data: { user: USER } });
   });
 
-  // Question count >= min, survey draft found, update succeeds → success and slug.
   it('should publish survey successfully', async () => {
     const countChain = chain({ count: 3 });
     const selectChain = chain({ data: { id: SURVEY_ID } });
@@ -106,7 +106,6 @@ describe('Survey Actions – Publish Survey', () => {
     expect(result).toEqual({ success: true, data: { slug: 'test-slug1' } });
   });
 
-  // Question count below minimum → surveys.builder.errors.minQuestionsToPublish.
   it('should return error when question count is below minimum', async () => {
     const countChain = chain({ count: 0 });
     mockFrom.mockReturnValue(countChain);
@@ -117,7 +116,6 @@ describe('Survey Actions – Publish Survey', () => {
     expect(result).toEqual({ error: 'surveys.builder.errors.minQuestionsToPublish' });
   });
 
-  // Survey not found or not draft → surveys.errors.unexpected.
   it('should return error when survey not found or not a draft', async () => {
     const countChain = chain({ count: 3 });
     const selectChain = chain({ data: null });
@@ -136,7 +134,6 @@ describe('Survey Actions – Publish Survey', () => {
     expect(result).toEqual({ error: 'surveys.errors.unexpected' });
   });
 
-  // endsAt in the past → surveys.errors.unexpected.
   it('should return error when endsAt is in the past', async () => {
     const countChain = chain({ count: 3 });
     const selectChain = chain({ data: { id: SURVEY_ID } });
@@ -157,7 +154,6 @@ describe('Survey Actions – Publish Survey', () => {
     expect(result).toEqual({ error: 'surveys.errors.unexpected' });
   });
 
-  // Slug unique violation on first update → new slug generated and retry; success on second.
   it('should retry on slug collision up to 3 times', async () => {
     const countChain = chain({ count: 3 });
     const selectChain = chain({ data: { id: SURVEY_ID } });
@@ -200,7 +196,6 @@ describe('Survey Actions – Publish Survey', () => {
     expect(generateSurveySlug).toHaveBeenCalledTimes(2);
   });
 
-  // All slug attempts hit unique violation → surveys.errors.unexpected.
   it('should return error after max retries on slug collision', async () => {
     const countChain = chain({ count: 3 });
     const selectChain = chain({ data: { id: SURVEY_ID } });
@@ -231,7 +226,6 @@ describe('Survey Actions – Publish Survey', () => {
     expect(result).toEqual({ error: 'surveys.errors.unexpected' });
   });
 
-  // endsAt and maxRespondents passed → update called with those values.
   it('should set endsAt and maxRespondents when provided', async () => {
     const countChain = chain({ count: 3 });
     const selectChain = chain({ data: { id: SURVEY_ID } });

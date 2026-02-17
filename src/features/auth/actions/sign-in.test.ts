@@ -1,4 +1,5 @@
 // @vitest-environment node
+/** Sign-in actions: email/password authentication and OAuth provider redirect. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('next/navigation', () => ({

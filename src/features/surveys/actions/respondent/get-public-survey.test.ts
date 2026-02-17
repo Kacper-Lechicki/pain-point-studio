@@ -1,4 +1,5 @@
 // @vitest-environment node
+/** Tests for fetching a public survey by slug with acceptance and closure logic. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // ── Mocks ────────────────────────────────────────────────────────────
@@ -120,8 +121,7 @@ describe('getPublicSurvey', () => {
     vi.resetModules();
   });
 
-  // Slug matches no row → null.
-  it('returns null when survey not found', async () => {
+  it('should return null when survey not found', async () => {
     setupMocks(null);
 
     const { getPublicSurvey } = await import('./get-public-survey');
@@ -130,8 +130,7 @@ describe('getPublicSurvey', () => {
     expect(result).toBeNull();
   });
 
-  // Active (published, not ended) survey → isAcceptingResponses true; no closedReason.
-  it('returns active survey with isAcceptingResponses=true', async () => {
+  it('should return active survey with isAcceptingResponses=true', async () => {
     setupMocks(ACTIVE_SURVEY);
 
     const { getPublicSurvey } = await import('./get-public-survey');
@@ -150,8 +149,7 @@ describe('getPublicSurvey', () => {
     expect(result?.closedReason).toBeUndefined();
   });
 
-  // Completed survey within retention window → closedReason "completed", isAcceptingResponses false.
-  it('returns completed survey with closedReason="completed" within retention window', async () => {
+  it('should return completed survey with closedReason="completed" within retention window', async () => {
     setupMocks({
       ...ACTIVE_SURVEY,
       status: 'completed',
@@ -169,8 +167,7 @@ describe('getPublicSurvey', () => {
     );
   });
 
-  // Completed survey outside retention window → null.
-  it('returns null for completed survey outside retention window', async () => {
+  it('should return null for completed survey outside retention window', async () => {
     setupMocks({
       ...ACTIVE_SURVEY,
       status: 'completed',
@@ -183,8 +180,7 @@ describe('getPublicSurvey', () => {
     expect(result).toBeNull();
   });
 
-  // Cancelled survey within retention window → closedReason "cancelled".
-  it('returns cancelled survey with closedReason="cancelled" within retention window', async () => {
+  it('should return cancelled survey with closedReason="cancelled" within retention window', async () => {
     setupMocks({
       ...ACTIVE_SURVEY,
       status: 'cancelled',
@@ -202,8 +198,7 @@ describe('getPublicSurvey', () => {
     );
   });
 
-  // Cancelled survey outside retention window → null.
-  it('returns null for cancelled survey outside retention window', async () => {
+  it('should return null for cancelled survey outside retention window', async () => {
     setupMocks({
       ...ACTIVE_SURVEY,
       status: 'cancelled',
@@ -216,8 +211,7 @@ describe('getPublicSurvey', () => {
     expect(result).toBeNull();
   });
 
-  // ends_at in the past → closedReason "expired", isAcceptingResponses false.
-  it('returns expired survey with closedReason="expired" when ends_at is in the past', async () => {
+  it('should return expired survey with closedReason="expired" when ends_at is in the past', async () => {
     setupMocks({
       ...ACTIVE_SURVEY,
       ends_at: daysAgo(1),
@@ -234,8 +228,7 @@ describe('getPublicSurvey', () => {
     );
   });
 
-  // response_count >= max_respondents → closedReason "max_reached".
-  it('returns max_reached when response count >= max_respondents', async () => {
+  it('should return max_reached when response count >= max_respondents', async () => {
     setupMocks({ ...ACTIVE_SURVEY, max_respondents: 50 }, QUESTION_ROWS, 50);
 
     const { getPublicSurvey } = await import('./get-public-survey');
@@ -250,8 +243,7 @@ describe('getPublicSurvey', () => {
     );
   });
 
-  // Questions array mapped via mapQuestionRow (id, text, type, sortOrder, config, etc.).
-  it('returns correct question list mapped via mapQuestionRow', async () => {
+  it('should return correct question list mapped via mapQuestionRow', async () => {
     setupMocks(ACTIVE_SURVEY);
 
     const { getPublicSurvey } = await import('./get-public-survey');
@@ -278,8 +270,7 @@ describe('getPublicSurvey', () => {
     });
   });
 
-  // status completed but completed_at null (invalid state) → null.
-  it('returns null when completed_at is null for completed survey', async () => {
+  it('should return null when completed_at is null for completed survey', async () => {
     setupMocks({
       ...ACTIVE_SURVEY,
       status: 'completed',

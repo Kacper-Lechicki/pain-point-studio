@@ -1,3 +1,4 @@
+/** UnsavedChangesProvider and useUnsavedChangesWarning: navigation guard behavior. */
 import { type ReactNode } from 'react';
 
 import { act, renderHook } from '@testing-library/react';

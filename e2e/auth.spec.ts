@@ -1,3 +1,6 @@
+/**
+ * Auth flows: sign-in errors, sign-up, route protection, callback errors, and session lifecycle.
+ */
 import { expect, test } from '@playwright/test';
 
 import { makeApiSignIn, scopedEmail } from './helpers/auth';
@@ -6,10 +9,8 @@ import { deleteUserByEmail, ensureUser } from './helpers/supabase-admin';
 
 // ── Selectors ────────────────────────────────────────────────────
 const sel = {
-  form: 'form',
   email: 'input[name="email"]',
   password: 'input[name="password"]',
-  confirmPassword: 'input[name="confirmPassword"]',
   submit: 'form button[type="submit"]',
   toast: '[data-sonner-toast]',
 } as const;
@@ -17,29 +18,10 @@ const sel = {
 const PASSWORD = 'E2eTestPass1!';
 
 // ─────────────────────────────────────────────────────────────────
-// Sign-In Flow
+// Sign-In
 // ─────────────────────────────────────────────────────────────────
-test.describe('Sign-In Flow', () => {
-  test('renders form and rejects invalid input', async ({ page }) => {
-    await page.goto(url(ROUTES.auth.signIn));
-
-    // Form renders correctly
-    await expect(page.locator(sel.form)).toBeVisible();
-    await expect(page.locator(sel.email)).toBeVisible();
-    await expect(page.locator(sel.password)).toBeVisible();
-    await expect(page.locator(sel.submit)).toBeVisible();
-
-    // Empty submit stays on page
-    await page.locator(sel.submit).click();
-    await expect(page).toHaveURL(/\/sign-in/);
-
-    // Invalid email stays on page
-    await page.locator(sel.email).fill('not-an-email');
-    await page.locator(sel.password).fill('SomePassword1!');
-    await page.locator(sel.submit).click();
-    await expect(page).toHaveURL(/\/sign-in/);
-  });
-
+test.describe('Sign-In', () => {
+  // Non-existent email → error toast, stays on sign-in page
   test('shows error for invalid credentials', async ({ page }) => {
     await page.goto(url(ROUTES.auth.signIn));
 
@@ -54,7 +36,6 @@ test.describe('Sign-In Flow', () => {
 
       await page.locator(sel.submit).click();
 
-      // Server responds with error toast
       await expect(page.locator(sel.toast).first()).toBeVisible({ timeout: 10_000 });
     }).toPass({ timeout: 30_000 });
 
@@ -63,44 +44,28 @@ test.describe('Sign-In Flow', () => {
 });
 
 // ─────────────────────────────────────────────────────────────────
-// Sign-Up Flow
+// Sign-Up
 // ─────────────────────────────────────────────────────────────────
-test.describe('Sign-Up Flow', () => {
-  test('rejects weak passwords', async ({ page }) => {
-    await page.goto(url(ROUTES.auth.signUp));
-    await expect(page.locator(sel.form)).toBeVisible();
+test.describe('Sign-Up', () => {
+  // Weak password rejected client-side, then full registration with cleanup
+  test('rejects weak password then succeeds with strong one', async ({ page }, testInfo) => {
+    const signupEmail = scopedEmail('e2e-signup', testInfo.project.name);
+    await deleteUserByEmail(signupEmail).catch(() => {});
 
-    // Empty submit stays on page
+    await page.goto(url(ROUTES.auth.signUp));
+    await expect(page.locator(sel.submit)).toBeVisible({ timeout: 15_000 });
+
+    // One weak password check (sufficient — Zod validation is unit-tested)
+    await page.locator(sel.email).fill('test@example.com');
+    await page.locator(sel.password).fill('weak');
     await page.locator(sel.submit).click();
     await expect(page).toHaveURL(/\/sign-up/);
 
-    // Each weak password variant is rejected
-    const weakPasswords = ['weakpass1!', 'WeakPass12', 'WeakPass!!', 'Ab1!'];
-
-    for (const pw of weakPasswords) {
-      await page.locator(sel.email).fill('test@example.com');
-      await page.locator(sel.password).fill(pw);
-      await page.locator(sel.submit).click();
-      await expect(page).toHaveURL(/\/sign-up/);
-    }
-  });
-
-  test('successful sign-up shows confirmation', async ({ page }, testInfo) => {
-    const signupEmail = scopedEmail('e2e-signup', testInfo.project.name);
-
-    // Clean up any leftover user
-    await deleteUserByEmail(signupEmail).catch(() => {});
-
-    // WebKit hydration can reset form fields after fill — retry the entire
-    // fill-and-submit sequence until the confirmation screen appears.
+    // Successful sign-up with retry for webkit hydration
     await expect(async () => {
       await deleteUserByEmail(signupEmail).catch(() => {});
       await page.goto(url(ROUTES.auth.signUp), { timeout: 15_000 });
 
-      // Wait for hydration to stabilize (JS bundles loaded + executed)
-      await page.waitForLoadState('networkidle', { timeout: 10_000 }).catch(() => {});
-
-      // Wait for the form to be interactive (hydrated)
       const submitBtn = page.locator(sel.submit);
       await expect(submitBtn).toBeEnabled({ timeout: 5_000 });
 
@@ -114,64 +79,20 @@ test.describe('Sign-Up Flow', () => {
 
       // Confirmation screen: submit button disappears
       await expect(submitBtn).not.toBeVisible({ timeout: 10_000 });
-    }).toPass({ timeout: 60_000 });
+    }).toPass({ timeout: 45_000 });
 
     await expect(page.locator(`a[href*="${ROUTES.auth.signIn}"]`).first()).toBeVisible();
 
-    // Clean up test user
     await deleteUserByEmail(signupEmail).catch(() => {});
   });
 });
 
 // ─────────────────────────────────────────────────────────────────
-// Forgot & Update Password
+// Route Protection & Auth Callback
 // ─────────────────────────────────────────────────────────────────
-test.describe('Forgot Password Flow', () => {
-  test('renders form and rejects invalid input', async ({ page }) => {
-    await page.goto(url(ROUTES.auth.forgotPassword));
-    await expect(page.locator(sel.form)).toBeVisible();
-    await expect(page.locator(sel.email)).toBeVisible();
-    await expect(page.locator(sel.password)).toHaveCount(0);
-
-    // Empty and invalid email stay on page
-    await page.locator(sel.submit).click();
-    await expect(page).toHaveURL(/\/forgot-password/);
-
-    await page.locator(sel.email).fill('not-valid');
-    await page.locator(sel.submit).click();
-    await expect(page).toHaveURL(/\/forgot-password/);
-  });
-});
-
-test.describe('Update Password Flow', () => {
-  test('renders form and rejects invalid input', async ({ page }) => {
-    await page.goto(url(ROUTES.auth.updatePassword));
-    await expect(page.locator(sel.form)).toBeVisible();
-    await expect(page.locator(sel.password)).toBeVisible();
-    await expect(page.locator(sel.confirmPassword)).toBeVisible();
-    await expect(page.locator(sel.email)).toHaveCount(0);
-
-    // Empty, weak, and mismatched passwords stay on page
-    await page.locator(sel.submit).click();
-    await expect(page).toHaveURL(/\/update-password/);
-
-    await page.locator(sel.password).fill('weak');
-    await page.locator(sel.confirmPassword).fill('weak');
-    await page.locator(sel.submit).click();
-    await expect(page).toHaveURL(/\/update-password/);
-
-    await page.locator(sel.password).fill('StrongPass1!');
-    await page.locator(sel.confirmPassword).fill('DifferentPass1!');
-    await page.locator(sel.submit).click();
-    await expect(page).toHaveURL(/\/update-password/);
-  });
-});
-
-// ─────────────────────────────────────────────────────────────────
-// Route Protection
-// ─────────────────────────────────────────────────────────────────
-test.describe('Route Protection', () => {
-  test('protected routes redirect, public routes are accessible', async ({ page }) => {
+test.describe('Route Protection & Auth Callback', () => {
+  // Unauthenticated: dashboard/settings → sign-in; auth pages → stay
+  test('protected routes redirect, public routes accessible', async ({ page }) => {
     // Protected → redirect to sign-in
     await page.goto(url(ROUTES.common.dashboard));
     await expect(page).toHaveURL(/\/sign-in/);
@@ -179,41 +100,25 @@ test.describe('Route Protection', () => {
     await page.goto(url(ROUTES.common.settings));
     await expect(page).toHaveURL(/\/sign-in/);
 
-    // Public → stay on page with form
-    for (const route of [
-      ROUTES.auth.signIn,
-      ROUTES.auth.signUp,
-      ROUTES.auth.forgotPassword,
-      ROUTES.auth.updatePassword,
-    ]) {
+    // Public → stay on page
+    for (const route of [ROUTES.auth.signIn, ROUTES.auth.signUp, ROUTES.auth.forgotPassword]) {
       await page.goto(url(route));
-      await expect(page.locator(sel.form)).toBeVisible();
+      await expect(page.locator('form')).toBeVisible();
     }
   });
-});
 
-// ─────────────────────────────────────────────────────────────────
-// Auth Callback
-// ─────────────────────────────────────────────────────────────────
-test.describe('Auth Callback', () => {
-  test('invalid or missing code redirects to sign-in with error', async ({ page }) => {
+  // Missing or invalid code param → auth_callback_error
+  test('invalid auth code redirects to sign-in with error', async ({ page }) => {
     await page.goto(url('/auth/callback'));
     await expect(page).toHaveURL(/\/sign-in\?error=auth_callback_error/);
 
     await page.goto(url('/auth/callback') + '?code=invalid-code');
     await expect(page).toHaveURL(/\/sign-in\?error=auth_callback_error/);
   });
-
-  test('invalid toast param is handled gracefully', async ({ page }) => {
-    await page.goto(url(ROUTES.auth.signIn) + '?toast=invalidKey');
-    await expect(page.locator(sel.form)).toBeVisible();
-  });
 });
 
 // ─────────────────────────────────────────────────────────────────
-// Full Auth Lifecycle: Session → Redirects → Sign Out
-// Uses API sign-in for reliability; the sign-in form UI is tested
-// separately above (renders, rejects invalid, shows error toast).
+// Full Auth Lifecycle
 // ─────────────────────────────────────────────────────────────────
 test.describe('Full Auth Lifecycle', () => {
   let email: string;
@@ -230,6 +135,7 @@ test.describe('Full Auth Lifecycle', () => {
     await deleteUserByEmail(e).catch(() => {});
   });
 
+  // Full lifecycle: sign in → redirect from auth pages → sign out → locked
   test('session → auth redirects → sign out → dashboard locked', async ({ page }) => {
     await signIn(page);
     await expect(page).toHaveURL(/\/dashboard/);

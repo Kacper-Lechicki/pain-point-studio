@@ -1,4 +1,5 @@
 // @vitest-environment node
+/** Tests for the unlinkIdentity server action that disconnects an OAuth provider from the user account. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/lib/common/env', () => ({
@@ -55,7 +56,6 @@ describe('Settings Actions – Unlink Identity', () => {
     mockRpc.mockResolvedValue({ data: false });
   });
 
-  // User has multiple identities: unlinkIdentity called; returns success.
   it('should successfully unlink when user has 2+ OAuth providers', async () => {
     const { unlinkIdentity } = await import('./unlink-identity');
 
@@ -68,7 +68,6 @@ describe('Settings Actions – Unlink Identity', () => {
     expect(mockUnlinkIdentity).toHaveBeenCalledWith(googleIdentity);
   });
 
-  // User has one OAuth but has_password true: unlink allowed after RPC check.
   it('should successfully unlink when user has 1 OAuth + password', async () => {
     mockGetUser.mockResolvedValue({
       data: {
@@ -92,7 +91,6 @@ describe('Settings Actions – Unlink Identity', () => {
     expect(mockUnlinkIdentity).toHaveBeenCalledWith(googleIdentity);
   });
 
-  // Only one identity and no password: returns cannotUnlinkLast, unlink not called.
   it('should reject when user has only 1 OAuth and no password', async () => {
     mockGetUser.mockResolvedValue({
       data: {
@@ -115,7 +113,6 @@ describe('Settings Actions – Unlink Identity', () => {
     expect(mockUnlinkIdentity).not.toHaveBeenCalled();
   });
 
-  // Identity id not in user's identities: returns identityNotFound.
   it('should reject when identity is not found', async () => {
     const { unlinkIdentity } = await import('./unlink-identity');
 
@@ -128,7 +125,6 @@ describe('Settings Actions – Unlink Identity', () => {
     expect(mockUnlinkIdentity).not.toHaveBeenCalled();
   });
 
-  // When unlinkIdentity returns error, action returns unlinkFailed key.
   it('should return error when Supabase rejects the unlink', async () => {
     mockUnlinkIdentity.mockResolvedValue({
       error: { message: 'Unlink failed' },
@@ -144,7 +140,6 @@ describe('Settings Actions – Unlink Identity', () => {
     expect(result.error).toBe('settings.connectedAccounts.errors.unlinkFailed');
   });
 
-  // When rate limited, action returns error and does not call Supabase.
   it('should return rate limit error when rate limited', async () => {
     const { rateLimit } = await import('@/lib/common/rate-limit');
 

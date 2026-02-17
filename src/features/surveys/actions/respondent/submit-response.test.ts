@@ -1,4 +1,5 @@
 // @vitest-environment node
+/** Tests for submitting a completed survey response with optional contact info and feedback. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // ── Mocks ────────────────────────────────────────────────────────────
@@ -35,8 +36,7 @@ describe('submitResponse', () => {
     mockRpc.mockResolvedValue({ data: null, error: null });
   });
 
-  // Minimal payload (responseId only) → success; rpc called with p_response_id.
-  it('returns success when rpc succeeds with minimal payload', async () => {
+  it('should return success when rpc succeeds with minimal payload', async () => {
     const { submitResponse } = await import('./submit-response');
     const result = await submitResponse({ responseId: RESPONSE_ID });
 
@@ -47,8 +47,7 @@ describe('submitResponse', () => {
     );
   });
 
-  // contactName and contactEmail passed as p_contact_name, p_contact_email.
-  it('passes contactName and contactEmail when provided', async () => {
+  it('should pass contactName and contactEmail when provided', async () => {
     const { submitResponse } = await import('./submit-response');
     await submitResponse({
       responseId: RESPONSE_ID,
@@ -66,8 +65,7 @@ describe('submitResponse', () => {
     );
   });
 
-  // feedback passed as p_feedback.
-  it('passes feedback when provided', async () => {
+  it('should pass feedback when provided', async () => {
     const { submitResponse } = await import('./submit-response');
     await submitResponse({
       responseId: RESPONSE_ID,
@@ -80,8 +78,7 @@ describe('submitResponse', () => {
     );
   });
 
-  // RPC error → error string starting with respondent.
-  it('returns error with respondent. prefix when rpc fails', async () => {
+  it('should return error with respondent. prefix when rpc fails', async () => {
     mockRpc.mockResolvedValue({ data: null, error: { message: 'some RPC error' } });
 
     const { submitResponse } = await import('./submit-response');

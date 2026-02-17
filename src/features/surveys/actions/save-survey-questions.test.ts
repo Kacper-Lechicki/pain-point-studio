@@ -1,4 +1,5 @@
 // @vitest-environment node
+/** Tests for saving survey questions via the saveSurveyQuestions RPC action. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // ── Mocks ────────────────────────────────────────────────────────────
@@ -91,8 +92,7 @@ describe('saveSurveyQuestions', () => {
     mockFrom.mockReturnValue(chain({ data: { id: SURVEY_ID } }));
   });
 
-  // RPC success → success; rpc called with p_survey_id, p_user_id, p_questions.
-  it('returns success when rpc succeeds', async () => {
+  it('should return success when rpc succeeds', async () => {
     const { saveSurveyQuestions } = await import('./save-survey-questions');
     const result = await saveSurveyQuestions(VALID_INPUT);
 
@@ -114,8 +114,7 @@ describe('saveSurveyQuestions', () => {
     );
   });
 
-  // RPC error → error; no success.
-  it('returns error when rpc returns error', async () => {
+  it('should return error when rpc returns error', async () => {
     mockRpc.mockResolvedValue({ data: null, error: { message: 'Duplicate key' } });
 
     const { saveSurveyQuestions } = await import('./save-survey-questions');
@@ -125,8 +124,7 @@ describe('saveSurveyQuestions', () => {
     expect(result).not.toHaveProperty('success');
   });
 
-  // Invalid input (e.g. bad surveyId) → error; rpc not called.
-  it('returns validation error for invalid input', async () => {
+  it('should return validation error for invalid input', async () => {
     const { saveSurveyQuestions } = await import('./save-survey-questions');
     const result = await saveSurveyQuestions({
       surveyId: 'not-a-uuid',

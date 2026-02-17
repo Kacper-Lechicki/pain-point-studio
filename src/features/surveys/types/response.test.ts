@@ -1,3 +1,4 @@
+/** Tests for survey response Zod schemas (start, save answer, submit). */
 import { describe, expect, it } from 'vitest';
 
 import { saveAnswerSchema, startResponseSchema, submitResponseSchema } from './response';
@@ -5,7 +6,7 @@ import { saveAnswerSchema, startResponseSchema, submitResponseSchema } from './r
 // ── startResponseSchema ─────────────────────────────────────────────
 
 describe('startResponseSchema', () => {
-  it('accepts valid UUID', () => {
+  it('should accept valid UUID', () => {
     const result = startResponseSchema.safeParse({
       surveyId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
     });
@@ -13,7 +14,7 @@ describe('startResponseSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('rejects non-UUID', () => {
+  it('should reject non-UUID', () => {
     const result = startResponseSchema.safeParse({ surveyId: 'not-a-uuid' });
 
     expect(result.success).toBe(false);
@@ -23,7 +24,7 @@ describe('startResponseSchema', () => {
 // ── saveAnswerSchema ────────────────────────────────────────────────
 
 describe('saveAnswerSchema', () => {
-  it('accepts valid answer data', () => {
+  it('should accept valid answer data', () => {
     const result = saveAnswerSchema.safeParse({
       responseId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
       questionId: 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22',
@@ -33,7 +34,7 @@ describe('saveAnswerSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('rejects invalid responseId', () => {
+  it('should reject invalid responseId', () => {
     const result = saveAnswerSchema.safeParse({
       responseId: 'bad',
       questionId: 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22',
@@ -43,7 +44,7 @@ describe('saveAnswerSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('rejects invalid questionId', () => {
+  it('should reject invalid questionId', () => {
     const result = saveAnswerSchema.safeParse({
       responseId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
       questionId: 'bad',
@@ -57,7 +58,7 @@ describe('saveAnswerSchema', () => {
 // ── submitResponseSchema ────────────────────────────────────────────
 
 describe('submitResponseSchema', () => {
-  it('accepts minimal valid submission', () => {
+  it('should accept minimal valid submission', () => {
     const result = submitResponseSchema.safeParse({
       responseId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
     });
@@ -65,7 +66,7 @@ describe('submitResponseSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('accepts submission with contact info', () => {
+  it('should accept submission with contact info', () => {
     const result = submitResponseSchema.safeParse({
       responseId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
       contactName: 'John Doe',
@@ -76,7 +77,7 @@ describe('submitResponseSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('accepts empty contactEmail string', () => {
+  it('should accept empty contactEmail string', () => {
     const result = submitResponseSchema.safeParse({
       responseId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
       contactEmail: '',
@@ -85,7 +86,7 @@ describe('submitResponseSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('rejects invalid contactEmail', () => {
+  it('should reject invalid contactEmail', () => {
     const result = submitResponseSchema.safeParse({
       responseId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
       contactEmail: 'not-an-email',
@@ -94,7 +95,7 @@ describe('submitResponseSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('rejects contactName exceeding 100 chars', () => {
+  it('should reject contactName exceeding 100 chars', () => {
     const result = submitResponseSchema.safeParse({
       responseId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
       contactName: 'a'.repeat(101),
@@ -103,7 +104,7 @@ describe('submitResponseSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('rejects feedback exceeding 2000 chars', () => {
+  it('should reject feedback exceeding 2000 chars', () => {
     const result = submitResponseSchema.safeParse({
       responseId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
       feedback: 'a'.repeat(2001),

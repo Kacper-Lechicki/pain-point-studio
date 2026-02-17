@@ -1,4 +1,5 @@
 // @vitest-environment node
+/** Rate limiter: token bucket algorithm and request throttling. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock env — production by default (rate limiting is active only in production)
@@ -33,7 +34,6 @@ describe('rate-limit', () => {
     vi.resetModules();
   });
 
-  // Requests up to limit return limited: false.
   it('should allow requests within the limit', async () => {
     const { rateLimit } = await import('./rate-limit');
 
@@ -46,7 +46,6 @@ describe('rate-limit', () => {
     expect(result3.limited).toBe(false);
   });
 
-  // Request after limit is exceeded returns limited: true.
   it('should block requests exceeding the limit', async () => {
     const { rateLimit } = await import('./rate-limit');
     const config = { key: 'test-block', limit: 2, windowSeconds: 60 };
@@ -58,7 +57,6 @@ describe('rate-limit', () => {
     expect(result.limited).toBe(true);
   });
 
-  // Each rate limit key has its own counter (e.g. action-a vs action-b).
   it('should track different keys independently', async () => {
     const { rateLimit } = await import('./rate-limit');
 
@@ -72,7 +70,6 @@ describe('rate-limit', () => {
     expect(resultB.limited).toBe(false);
   });
 
-  // Different x-forwarded-for IPs are rate limited separately.
   it('should track different IPs independently', async () => {
     const { rateLimit } = await import('./rate-limit');
     const config = { key: 'test-ip', limit: 1, windowSeconds: 60 };
@@ -89,7 +86,6 @@ describe('rate-limit', () => {
     expect(allowed.limited).toBe(false);
   });
 
-  // When NODE_ENV is not production, all requests get limited: false.
   it('should skip rate limiting outside production', async () => {
     mockEnv.NODE_ENV = 'development';
 
@@ -103,7 +99,6 @@ describe('rate-limit', () => {
     expect(result.limited).toBe(false);
   });
 
-  // Missing header still allows rate limiting (same “IP” gets blocked after limit).
   it('should handle missing x-forwarded-for header', async () => {
     mockHeaders.delete('x-forwarded-for');
 
@@ -117,7 +112,6 @@ describe('rate-limit', () => {
     expect(result.limited).toBe(true);
   });
 
-  // After windowSeconds pass, counter resets and request is allowed again.
   it('should reset after the time window expires', async () => {
     const { rateLimit } = await import('./rate-limit');
     const config = { key: 'test-expire', limit: 1, windowSeconds: 1 };

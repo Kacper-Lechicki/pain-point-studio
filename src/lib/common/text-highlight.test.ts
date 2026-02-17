@@ -1,50 +1,47 @@
+/** Text highlight utility: search term matching and segmentation. */
 import { describe, expect, it } from 'vitest';
 
 import { buildHighlightRegex, highlightText } from './text-highlight';
 
-// ── buildHighlightRegex ─────────────────────────────────────────────
-
 describe('buildHighlightRegex', () => {
-  it('returns null for empty array', () => {
+  it('should return null for empty array', () => {
     expect(buildHighlightRegex([])).toBeNull();
   });
 
-  it('creates a word-boundary regex for a single word', () => {
+  it('should create a word-boundary regex for a single word', () => {
     const regex = buildHighlightRegex(['hello']);
 
     expect(regex).toBeInstanceOf(RegExp);
     expect(regex!.source).toBe('\\b(hello)\\b');
   });
 
-  it('creates alternation regex for multiple words', () => {
+  it('should create alternation regex for multiple words', () => {
     const regex = buildHighlightRegex(['foo', 'bar']);
 
     expect(regex!.source).toBe('\\b(foo|bar)\\b');
   });
 
-  it('escapes special regex characters', () => {
+  it('should escape special regex characters', () => {
     const regex = buildHighlightRegex(['file.txt', 'price$']);
 
     expect(regex!.source).toBe('\\b(file\\.txt|price\\$)\\b');
   });
 
-  it('is case insensitive', () => {
+  it('should be case insensitive', () => {
     const regex = buildHighlightRegex(['test']);
 
     expect(regex!.flags).toContain('i');
   });
 });
 
-// ── highlightText ───────────────────────────────────────────────────
-
 describe('highlightText', () => {
-  it('returns single non-highlighted segment for null regex', () => {
+  it('should return single non-highlighted segment for null regex', () => {
     const result = highlightText('hello world', null);
 
     expect(result).toEqual([{ text: 'hello world', highlight: false }]);
   });
 
-  it('highlights a single match in the middle', () => {
+  it('should highlight a single match in the middle', () => {
     const regex = buildHighlightRegex(['world']);
     const result = highlightText('hello world today', regex);
 
@@ -55,7 +52,7 @@ describe('highlightText', () => {
     ]);
   });
 
-  it('highlights multiple matches', () => {
+  it('should highlight multiple matches', () => {
     const regex = buildHighlightRegex(['the']);
     const result = highlightText('the cat and the dog', regex);
 
@@ -67,7 +64,7 @@ describe('highlightText', () => {
     ]);
   });
 
-  it('highlights match at start and end', () => {
+  it('should highlight match at start and end', () => {
     const regex = buildHighlightRegex(['hi', 'bye']);
     const result = highlightText('hi there bye', regex);
 
@@ -78,14 +75,14 @@ describe('highlightText', () => {
     ]);
   });
 
-  it('returns single non-highlighted segment when nothing matches', () => {
+  it('should return single non-highlighted segment when nothing matches', () => {
     const regex = buildHighlightRegex(['xyz']);
     const result = highlightText('hello world', regex);
 
     expect(result).toEqual([{ text: 'hello world', highlight: false }]);
   });
 
-  it('handles adjacent matches', () => {
+  it('should handle adjacent matches', () => {
     const regex = buildHighlightRegex(['one', 'two']);
     const result = highlightText('one two', regex);
 
@@ -96,7 +93,7 @@ describe('highlightText', () => {
     ]);
   });
 
-  it('matches case insensitively', () => {
+  it('should match case insensitively', () => {
     const regex = buildHighlightRegex(['hello']);
     const result = highlightText('say HELLO now', regex);
 

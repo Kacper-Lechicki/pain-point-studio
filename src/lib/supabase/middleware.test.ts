@@ -1,4 +1,5 @@
 // @vitest-environment node
+/** Supabase auth middleware: session refresh via updateSession. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock @supabase/ssr
@@ -37,7 +38,6 @@ describe('Supabase Middleware – updateSession', () => {
     vi.clearAllMocks();
   });
 
-  // Verify client initialization with request cookies
   it('should create a server client with the request cookies', async () => {
     const { updateSession } = await import('./middleware');
     const req = createMockRequest();
@@ -57,7 +57,6 @@ describe('Supabase Middleware – updateSession', () => {
     );
   });
 
-  // Verify session is refreshed to keep it active
   it('should call supabase.auth.getUser() to refresh the session', async () => {
     const { updateSession } = await import('./middleware');
     const req = createMockRequest();

@@ -1,4 +1,5 @@
 // @vitest-environment node
+/** Tests for saving a single survey answer via the saveAnswer RPC action. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { z } from 'zod';
 
@@ -42,8 +43,7 @@ describe('saveAnswer', () => {
     vi.resetModules();
   });
 
-  // RPC success → success; rpc called with p_response_id, p_question_id, p_value.
-  it('saves answer successfully', async () => {
+  it('should save answer successfully', async () => {
     mockRpc.mockResolvedValue({ data: null, error: null });
 
     const { saveAnswer } = await import('./save-answer');
@@ -57,8 +57,7 @@ describe('saveAnswer', () => {
     });
   });
 
-  // RPC returns error (e.g. QUESTION_NOT_FOUND) → error with respondent. prefix; no success.
-  it('returns error with mapped RPC error code', async () => {
+  it('should return error with mapped RPC error code', async () => {
     mockRpc.mockResolvedValue({
       data: null,
       error: { message: 'QUESTION_NOT_FOUND' },
@@ -72,8 +71,7 @@ describe('saveAnswer', () => {
     expect(result).not.toHaveProperty('success');
   });
 
-  // Invalid input (e.g. missing responseId) → validation error; rpc not called.
-  it('returns validation error for invalid data', async () => {
+  it('should return validation error for invalid data', async () => {
     const { saveAnswer } = await import('./save-answer');
     const invalidPayload = {
       questionId: crypto.randomUUID(),

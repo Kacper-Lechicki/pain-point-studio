@@ -1,4 +1,5 @@
 // @vitest-environment node
+/** Tests for the getProfile server action that assembles ProfileData from auth, profile, and RPC sources. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock env
@@ -86,7 +87,6 @@ describe('Settings Actions – Get Profile', () => {
     });
   });
 
-  // When getUser returns null, getProfile returns null.
   it('should return null when user is not authenticated', async () => {
     mockGetUser.mockResolvedValue({ data: { user: null } });
 
@@ -96,7 +96,6 @@ describe('Settings Actions – Get Profile', () => {
     expect(result).toBeNull();
   });
 
-  // Profile, roles, social links, identities merged into ProfileData with expected shape.
   it('should return correct ProfileData with all fields', async () => {
     const { getProfile } = await import('./get-profile');
     const result = await getProfile();
@@ -118,7 +117,6 @@ describe('Settings Actions – Get Profile', () => {
     ]);
   });
 
-  // roleOptions and socialLinkOptions use t() for labels from static config.
   it('should map roleOptions and socialLinkOptions with translated labels', async () => {
     const { getProfile } = await import('./get-profile');
     const result = await getProfile();
@@ -139,7 +137,7 @@ describe('Settings Actions – Get Profile', () => {
     ]);
   });
 
-  // Null profile row yields empty strings and empty arrays for optional fields.
+  // Null profile row -> empty strings and empty arrays
   it('should handle null profile with empty defaults', async () => {
     mockProfileSingle.mockResolvedValue({ data: null });
 
@@ -154,7 +152,7 @@ describe('Settings Actions – Get Profile', () => {
     expect(result!.socialLinks).toEqual([]);
   });
 
-  // Non-array social_links (e.g. malformed) yields empty socialLinks array.
+  // Malformed social_links column
   it('should fallback to empty array when social_links is not an array', async () => {
     mockProfileSingle.mockResolvedValue({
       data: { ...mockProfile, social_links: 'not-an-array' },
@@ -166,7 +164,6 @@ describe('Settings Actions – Get Profile', () => {
     expect(result!.socialLinks).toEqual([]);
   });
 
-  // has_password RPC false sets hasPassword to false on result.
   it('should set hasPassword to false when RPC returns false', async () => {
     mockRpc.mockImplementation((fn: string) => {
       if (fn === 'has_password') {
@@ -182,7 +179,6 @@ describe('Settings Actions – Get Profile', () => {
     expect(result!.hasPassword).toBe(false);
   });
 
-  // get_email_change_status RPC populates pendingEmail and emailChangeConfirmStatus.
   it('should return pending email change status when change is in progress', async () => {
     mockRpc.mockImplementation((fn: string) => {
       if (fn === 'has_password') {
@@ -205,7 +201,7 @@ describe('Settings Actions – Get Profile', () => {
     expect(result!.emailChangeConfirmStatus).toBe(1);
   });
 
-  // When profile avatar_url is null, user_metadata.avatar_url is used.
+  // Profile avatar_url is null -> falls back to user_metadata
   it('should use avatar_url from user_metadata as fallback', async () => {
     mockProfileSingle.mockResolvedValue({
       data: { ...mockProfile, avatar_url: null },

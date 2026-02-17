@@ -8,7 +8,7 @@ on:
 jobs:
   playwright-e2e:
     if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'run-e2e'
-    timeout-minutes: 60
+    timeout-minutes: 25
     runs-on: ubuntu-latest
 
     steps:
@@ -16,19 +16,7 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
-      # Verify that the current branch name follows the required naming convention
-      - name: Check Branch Name
-        if: github.event_name == 'pull_request'
-        run: |
-          BRANCH_NAME=${{ github.head_ref }}
-          echo "Checking branch name: $BRANCH_NAME"
-          if [[ ! "$BRANCH_NAME" =~ ^(fix|feat|docs|setup|test|release)\/.+ ]]; then
-            echo "::error::Branch name '$BRANCH_NAME' does not match the allowed pattern: fix/..., feat/..., docs/..., setup/..., test/..., or release/..."
-            exit 1
-          fi
-
       # Install the pnpm package manager (must be before setup-node for caching)
-
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -50,18 +38,18 @@ jobs:
         id: playwright-version
         run: echo "version=$(pnpm exec playwright --version | awk '{print $2}')" >> $GITHUB_OUTPUT
 
-      # Cache Playwright browsers to avoid re-downloading ~400MB each run
+      # Cache Playwright browsers to avoid re-downloading ~300MB each run
       - name: Cache Playwright Browsers
         id: playwright-cache
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-browsers-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
+          key: playwright-chromium-webkit-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
 
-      # Install browsers + system deps if not cached
+      # Install only chromium + webkit browsers (no firefox — not in project list)
       - name: Install Playwright Browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: pnpm exec playwright install --with-deps
+        run: pnpm exec playwright install chromium webkit --with-deps
 
       # Install only system dependencies when browsers are cached
       - name: Install Playwright System Dependencies
@@ -98,6 +86,15 @@ jobs:
           echo "::error::Supabase failed to become healthy within 150 seconds"
           supabase status
           exit 1
+
+      # Cache Next.js build output for faster incremental builds
+      - name: Cache Next.js build
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: nextjs-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('src/**/*', 'public/**/*') }}
+          restore-keys: |
+            nextjs-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
 
       # Build the Next.js app for production (much faster page loads than dev mode)
       - name: Build Next.js

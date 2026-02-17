@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+/** Tests for the useSurveySelection hook that syncs selected survey state with URL search params. */
 import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -71,8 +72,6 @@ const SURVEYS: UserSurvey[] = [
   },
 ];
 
-// ── useSurveySelection ───────────────────────────────────────────────
-
 describe('useSurveySelection', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -92,8 +91,7 @@ describe('useSurveySelection', () => {
     });
   });
 
-  // selectedId from searchParams; selectedSurvey from surveys list; showSheet true when both set.
-  it('returns selectedId and selectedSurvey from searchParams and surveys list', () => {
+  it('should return selectedId and selectedSurvey from searchParams and surveys list', () => {
     const { result } = renderHook(() => useSurveySelection(SURVEYS));
 
     expect(result.current.selectedId).toBe('survey-1');
@@ -102,8 +100,7 @@ describe('useSurveySelection', () => {
     expect(result.current.showSheet).toBe(true);
   });
 
-  // setSelected(id) calls router.replace with pathname?selected=id.
-  it('calls router.replace with selected param when setSelected is called', () => {
+  it('should call router.replace with selected param when setSelected is called', () => {
     const { result } = renderHook(() => useSurveySelection(SURVEYS));
 
     act(() => {
@@ -113,8 +110,7 @@ describe('useSurveySelection', () => {
     expect(mockReplace).toHaveBeenCalledWith('/en/dashboard/surveys?selected=survey-2');
   });
 
-  // setSelected(null) calls router.replace with pathname only.
-  it('calls router.replace without query when setSelected(null) is called', () => {
+  it('should call router.replace without query when setSelected(null) is called', () => {
     const { result } = renderHook(() => useSurveySelection(SURVEYS));
 
     act(() => {

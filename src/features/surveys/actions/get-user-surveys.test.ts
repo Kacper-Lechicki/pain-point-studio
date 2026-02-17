@@ -1,4 +1,5 @@
 // @vitest-environment node
+/** Tests for listing the authenticated user's surveys via the getUserSurveys RPC. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // ── Mocks ────────────────────────────────────────────────────────────
@@ -62,8 +63,7 @@ describe('getUserSurveys', () => {
     mockGetUser.mockResolvedValue({ data: { user: USER } });
   });
 
-  // No user → null; rpc not called.
-  it('returns null when user is not authenticated', async () => {
+  it('should return null when user is not authenticated', async () => {
     mockGetUser.mockResolvedValue({ data: { user: null } });
 
     const { getUserSurveys } = await import('./get-user-surveys');
@@ -73,8 +73,7 @@ describe('getUserSurveys', () => {
     expect(mockRpc).not.toHaveBeenCalled();
   });
 
-  // RPC error → null.
-  it('returns null when rpc returns error', async () => {
+  it('should return null when rpc returns error', async () => {
     mockRpc.mockResolvedValue({ data: null, error: { message: 'RPC failed' } });
 
     const { getUserSurveys } = await import('./get-user-surveys');
@@ -83,8 +82,7 @@ describe('getUserSurveys', () => {
     expect(result).toBeNull();
   });
 
-  // RPC data null → [].
-  it('returns empty array when rpc returns null data', async () => {
+  it('should return empty array when rpc returns null data', async () => {
     mockRpc.mockResolvedValue({ data: null, error: null });
 
     const { getUserSurveys } = await import('./get-user-surveys');
@@ -93,8 +91,7 @@ describe('getUserSurveys', () => {
     expect(result).toEqual([]);
   });
 
-  // Valid rpc data → parsed array; rpc called with p_user_id.
-  it('returns parsed survey list on rpc success', async () => {
+  it('should return parsed survey list on rpc success', async () => {
     const row = makeSurveyRow({ title: 'My Survey' });
     mockRpc.mockResolvedValue({ data: [row], error: null });
 
@@ -108,8 +105,7 @@ describe('getUserSurveys', () => {
     });
   });
 
-  // Invalid shape → null.
-  it('returns null when rpc data fails schema validation', async () => {
+  it('should return null when rpc data fails schema validation', async () => {
     mockRpc.mockResolvedValue({
       data: [{ id: 'only-id-no-other-fields' }],
       error: null,

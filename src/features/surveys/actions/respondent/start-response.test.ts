@@ -1,4 +1,5 @@
 // @vitest-environment node
+/** Tests for starting a new survey response via the startResponse RPC action. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // ── Mocks ────────────────────────────────────────────────────────────
@@ -36,7 +37,7 @@ describe('startResponse', () => {
     vi.resetModules();
   });
 
-  it('starts response successfully and returns responseId', async () => {
+  it('should start response successfully and return responseId', async () => {
     mockRpc.mockResolvedValue({ data: RESPONSE_ID, error: null });
 
     const { startResponse } = await import('./start-response');
@@ -48,7 +49,7 @@ describe('startResponse', () => {
     });
   });
 
-  it('passes deviceType to RPC when provided', async () => {
+  it('should pass deviceType to RPC when provided', async () => {
     mockRpc.mockResolvedValue({ data: RESPONSE_ID, error: null });
 
     const { startResponse } = await import('./start-response');
@@ -60,7 +61,7 @@ describe('startResponse', () => {
     });
   });
 
-  it('does not pass p_device_type when deviceType is omitted', async () => {
+  it('should not pass p_device_type when deviceType is omitted', async () => {
     mockRpc.mockResolvedValue({ data: RESPONSE_ID, error: null });
 
     const { startResponse } = await import('./start-response');
@@ -72,7 +73,7 @@ describe('startResponse', () => {
     expect(rpcArgs).not.toHaveProperty('p_device_type');
   });
 
-  it('returns mapped error on RPC failure', async () => {
+  it('should return mapped error on RPC failure', async () => {
     mockRpc.mockResolvedValue({
       data: null,
       error: { message: 'SURVEY_NOT_FOUND' },

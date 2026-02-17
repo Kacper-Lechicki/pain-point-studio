@@ -1,4 +1,5 @@
 // @vitest-environment node
+/** Environment variables: runtime validation and defaults. */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('Environment Configuration', () => {
@@ -43,25 +44,25 @@ describe('Environment Configuration', () => {
     expect(env.NEXT_PUBLIC_SUPABASE_ANON_KEY).toBe('test-anon-key');
   });
 
-  it('should throw error for invalid URL', async () => {
+  it('should throw an error for invalid URL', async () => {
     stubValidEnv({ NEXT_PUBLIC_APP_URL: 'not-a-url' });
 
     await expect(import('./env')).rejects.toThrow();
   });
 
-  it('should throw error when missing required variables', async () => {
+  it('should throw an error when missing required variables', async () => {
     stubValidEnv({ NEXT_PUBLIC_APP_URL: '' });
 
     await expect(import('./env')).rejects.toThrow();
   });
 
-  it('should throw error for invalid Supabase URL', async () => {
+  it('should throw an error for invalid Supabase URL', async () => {
     stubValidEnv({ NEXT_PUBLIC_SUPABASE_URL: 'not-a-url' });
 
     await expect(import('./env')).rejects.toThrow();
   });
 
-  it('should throw error when missing Supabase anon key', async () => {
+  it('should throw an error when missing Supabase anon key', async () => {
     stubValidEnv({ NEXT_PUBLIC_SUPABASE_ANON_KEY: '' });
 
     await expect(import('./env')).rejects.toThrow();

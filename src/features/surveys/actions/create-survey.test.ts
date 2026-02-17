@@ -1,4 +1,5 @@
 // @vitest-environment node
+/** Tests for creating and updating survey drafts via the createSurveyDraft action. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { z } from 'zod';
 
@@ -79,7 +80,6 @@ describe('Survey Actions – Create Survey Draft', () => {
     mockGetUser.mockResolvedValue({ data: { user: USER } });
   });
 
-  // No surveyId; insert returns id → success and surveyId; insert called with user_id, title, status draft.
   it('should create a new survey draft when no surveyId is provided', async () => {
     const insertChain = chain({ data: { id: 'new-survey-id' } });
     mockFrom.mockReturnValue(insertChain);
@@ -101,7 +101,6 @@ describe('Survey Actions – Create Survey Draft', () => {
     );
   });
 
-  // surveyId provided; update succeeds → success and same surveyId; update called with title, etc.
   it('should update an existing survey when surveyId is provided', async () => {
     const updateChain = chain({ data: null, error: null });
     mockFrom.mockReturnValue(updateChain);
@@ -122,7 +121,6 @@ describe('Survey Actions – Create Survey Draft', () => {
     );
   });
 
-  // Insert returns error → error; no success.
   it('should return error on insert failure', async () => {
     const insertChain = chain({ data: null, error: { message: 'Insert failed' } });
     mockFrom.mockReturnValue(insertChain);
@@ -134,7 +132,6 @@ describe('Survey Actions – Create Survey Draft', () => {
     expect(result).not.toHaveProperty('success');
   });
 
-  // Update returns error → error; no success.
   it('should return error on update failure', async () => {
     const updateChain = chain({ data: null, error: { message: 'Update failed' } });
     mockFrom.mockReturnValue(updateChain);
@@ -148,7 +145,6 @@ describe('Survey Actions – Create Survey Draft', () => {
     expect(result).not.toHaveProperty('success');
   });
 
-  // Invalid data (e.g. empty title) → validation error; from() not called.
   it('should return validation error for invalid data', async () => {
     const { createSurveyDraft } = await import('./create-survey');
     const invalidPayload = { title: '' } as z.infer<typeof createSurveyDraftSchema>;

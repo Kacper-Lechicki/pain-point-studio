@@ -1,3 +1,4 @@
+/** BRAND constants and getCopyrightText helper. */
 import { describe, expect, it, vi } from 'vitest';
 
 import { BRAND, getCopyrightText } from './brand';
@@ -5,7 +6,7 @@ import { BRAND, getCopyrightText } from './brand';
 // ── BRAND ──────────────────────────────────────────────────────────
 
 describe('BRAND', () => {
-  it('has expected translation keys', () => {
+  it('should have expected translation keys', () => {
     expect(BRAND.name).toBe('brand.name');
     expect(BRAND.tagline).toBe('brand.tagline');
     expect(BRAND.author).toBe('brand.author');
@@ -15,7 +16,7 @@ describe('BRAND', () => {
 // ── getCopyrightText ───────────────────────────────────────────────
 
 describe('getCopyrightText', () => {
-  it('returns copyright text with provided year', () => {
+  it('should return copyright text with provided year', () => {
     const t = vi.fn((key: string, values?: Record<string, unknown>) => {
       if (key === 'brand.author') {
         return 'Test Author';
@@ -33,7 +34,7 @@ describe('getCopyrightText', () => {
     expect(result).toBe('\u00A9 2025 Test Author');
   });
 
-  it('uses current year when no year provided', () => {
+  it('should use current year when no year provided', () => {
     const currentYear = new Date().getFullYear();
     const t = vi.fn((key: string, values?: Record<string, unknown>) => {
       if (key === 'brand.author') {
@@ -52,7 +53,7 @@ describe('getCopyrightText', () => {
     expect(result).toBe(`\u00A9 ${currentYear} Test Author`);
   });
 
-  it('calls t with correct keys', () => {
+  it('should call t with correct keys', () => {
     const t = vi.fn(() => 'mock');
 
     getCopyrightText(t as never, 2024);

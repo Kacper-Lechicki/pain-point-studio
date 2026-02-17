@@ -1,3 +1,4 @@
+/** Tests for settings Zod schemas covering social links, profile, email, password, identity, and account deletion. */
 import { describe, expect, it } from 'vitest';
 
 import {
@@ -14,7 +15,7 @@ import {
 // ── socialLinkSchema ────────────────────────────────────────────────
 
 describe('socialLinkSchema', () => {
-  it('accepts a valid website link', () => {
+  it('should accept a valid website link', () => {
     const result = socialLinkSchema.safeParse({
       label: 'website',
       url: 'https://example.com',
@@ -23,7 +24,7 @@ describe('socialLinkSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('accepts a valid github link', () => {
+  it('should accept a valid github link', () => {
     const result = socialLinkSchema.safeParse({
       label: 'github',
       url: 'https://github.com/user',
@@ -32,7 +33,7 @@ describe('socialLinkSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('accepts github link with www prefix', () => {
+  it('should accept github link with www prefix', () => {
     const result = socialLinkSchema.safeParse({
       label: 'github',
       url: 'https://www.github.com/user',
@@ -41,7 +42,7 @@ describe('socialLinkSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('rejects github label with non-github domain', () => {
+  it('should reject github label with non-github domain', () => {
     const result = socialLinkSchema.safeParse({
       label: 'github',
       url: 'https://twitter.com/user',
@@ -50,7 +51,7 @@ describe('socialLinkSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('accepts twitter label with x.com', () => {
+  it('should accept twitter label with x.com', () => {
     const result = socialLinkSchema.safeParse({
       label: 'twitter',
       url: 'https://x.com/user',
@@ -59,7 +60,7 @@ describe('socialLinkSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('accepts twitter label with twitter.com', () => {
+  it('should accept twitter label with twitter.com', () => {
     const result = socialLinkSchema.safeParse({
       label: 'twitter',
       url: 'https://twitter.com/user',
@@ -68,7 +69,7 @@ describe('socialLinkSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('rejects twitter label with non-twitter domain', () => {
+  it('should reject twitter label with non-twitter domain', () => {
     const result = socialLinkSchema.safeParse({
       label: 'twitter',
       url: 'https://linkedin.com/in/user',
@@ -77,7 +78,7 @@ describe('socialLinkSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('accepts linkedin label with linkedin.com', () => {
+  it('should accept linkedin label with linkedin.com', () => {
     const result = socialLinkSchema.safeParse({
       label: 'linkedin',
       url: 'https://linkedin.com/in/user',
@@ -86,7 +87,7 @@ describe('socialLinkSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('rejects linkedin label with non-linkedin domain', () => {
+  it('should reject linkedin label with non-linkedin domain', () => {
     const result = socialLinkSchema.safeParse({
       label: 'linkedin',
       url: 'https://github.com/user',
@@ -95,7 +96,7 @@ describe('socialLinkSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('allows any domain for "other" label', () => {
+  it('should allow any domain for "other" label', () => {
     const result = socialLinkSchema.safeParse({
       label: 'other',
       url: 'https://my-portfolio.dev',
@@ -104,7 +105,7 @@ describe('socialLinkSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('allows any domain for "website" label', () => {
+  it('should allow any domain for "website" label', () => {
     const result = socialLinkSchema.safeParse({
       label: 'website',
       url: 'https://any-domain.org/page',
@@ -113,7 +114,7 @@ describe('socialLinkSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('rejects empty label', () => {
+  it('should reject empty label', () => {
     const result = socialLinkSchema.safeParse({
       label: '',
       url: 'https://example.com',
@@ -122,7 +123,7 @@ describe('socialLinkSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('rejects invalid URL', () => {
+  it('should reject invalid URL', () => {
     const result = socialLinkSchema.safeParse({
       label: 'website',
       url: 'not-a-url',
@@ -131,7 +132,7 @@ describe('socialLinkSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('accepts github subdomain', () => {
+  it('should accept github subdomain', () => {
     const result = socialLinkSchema.safeParse({
       label: 'github',
       url: 'https://subdomain.github.com/org',
@@ -144,7 +145,7 @@ describe('socialLinkSchema', () => {
 // ── completeProfileSchema ───────────────────────────────────────────
 
 describe('completeProfileSchema', () => {
-  it('accepts valid data', () => {
+  it('should accept valid data', () => {
     const result = completeProfileSchema.safeParse({
       fullName: 'John Doe',
       role: 'designer',
@@ -153,7 +154,7 @@ describe('completeProfileSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('rejects empty fullName', () => {
+  it('should reject empty fullName', () => {
     const result = completeProfileSchema.safeParse({
       fullName: '',
       role: 'designer',
@@ -162,7 +163,7 @@ describe('completeProfileSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('rejects fullName exceeding 100 characters', () => {
+  it('should reject fullName exceeding 100 characters', () => {
     const result = completeProfileSchema.safeParse({
       fullName: 'a'.repeat(101),
       role: 'designer',
@@ -171,7 +172,7 @@ describe('completeProfileSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('rejects empty role', () => {
+  it('should reject empty role', () => {
     const result = completeProfileSchema.safeParse({
       fullName: 'John',
       role: '',
@@ -184,7 +185,7 @@ describe('completeProfileSchema', () => {
 // ── updateProfileSchema ─────────────────────────────────────────────
 
 describe('updateProfileSchema', () => {
-  it('accepts valid data with social links', () => {
+  it('should accept valid data with social links', () => {
     const result = updateProfileSchema.safeParse({
       fullName: 'Jane',
       role: 'founder',
@@ -195,7 +196,7 @@ describe('updateProfileSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('rejects bio exceeding 200 characters', () => {
+  it('should reject bio exceeding 200 characters', () => {
     const result = updateProfileSchema.safeParse({
       fullName: 'Jane',
       role: 'founder',
@@ -206,7 +207,7 @@ describe('updateProfileSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('rejects more than 5 social links', () => {
+  it('should reject more than 5 social links', () => {
     const links = Array.from({ length: 6 }, (_, i) => ({
       label: 'website',
       url: `https://example${i}.com`,
@@ -226,13 +227,13 @@ describe('updateProfileSchema', () => {
 // ── updateEmailSchema ───────────────────────────────────────────────
 
 describe('updateEmailSchema', () => {
-  it('accepts valid email', () => {
+  it('should accept valid email', () => {
     const result = updateEmailSchema.safeParse({ email: 'test@example.com' });
 
     expect(result.success).toBe(true);
   });
 
-  it('rejects invalid email', () => {
+  it('should reject invalid email', () => {
     const result = updateEmailSchema.safeParse({ email: 'not-an-email' });
 
     expect(result.success).toBe(false);
@@ -242,7 +243,7 @@ describe('updateEmailSchema', () => {
 // ── changePasswordSchema ────────────────────────────────────────────
 
 describe('changePasswordSchema', () => {
-  it('rejects mismatched passwords', () => {
+  it('should reject mismatched passwords', () => {
     const result = changePasswordSchema.safeParse({
       currentPassword: 'OldPass1!',
       password: 'NewPass1!',
@@ -252,7 +253,7 @@ describe('changePasswordSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('rejects empty current password', () => {
+  it('should reject empty current password', () => {
     const result = changePasswordSchema.safeParse({
       currentPassword: '',
       password: 'NewPass1!',
@@ -266,7 +267,7 @@ describe('changePasswordSchema', () => {
 // ── setPasswordSchema ───────────────────────────────────────────────
 
 describe('setPasswordSchema', () => {
-  it('rejects mismatched passwords', () => {
+  it('should reject mismatched passwords', () => {
     const result = setPasswordSchema.safeParse({
       password: 'NewPass1!',
       confirmPassword: 'DifferentPass1!',
@@ -279,7 +280,7 @@ describe('setPasswordSchema', () => {
 // ── unlinkIdentitySchema ────────────────────────────────────────────
 
 describe('unlinkIdentitySchema', () => {
-  it('accepts valid data', () => {
+  it('should accept valid data', () => {
     const result = unlinkIdentitySchema.safeParse({
       identityId: 'id-123',
       provider: 'google',
@@ -288,7 +289,7 @@ describe('unlinkIdentitySchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('rejects empty identityId', () => {
+  it('should reject empty identityId', () => {
     const result = unlinkIdentitySchema.safeParse({
       identityId: '',
       provider: 'google',
@@ -301,7 +302,7 @@ describe('unlinkIdentitySchema', () => {
 // ── deleteAccountSchema ─────────────────────────────────────────────
 
 describe('deleteAccountSchema', () => {
-  it('accepts valid email confirmation', () => {
+  it('should accept valid email confirmation', () => {
     const result = deleteAccountSchema.safeParse({
       confirmation: 'user@example.com',
     });
@@ -309,7 +310,7 @@ describe('deleteAccountSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('rejects non-email confirmation', () => {
+  it('should reject non-email confirmation', () => {
     const result = deleteAccountSchema.safeParse({
       confirmation: 'not-an-email',
     });
