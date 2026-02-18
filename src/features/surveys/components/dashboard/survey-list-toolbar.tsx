@@ -158,7 +158,9 @@ export const SurveyListToolbar = ({
                     checked={statusFilter.includes(status)}
                     onCheckedChange={() => handleStatusToggle(status)}
                   />
-                  <span className="flex-1">{t(`surveys.dashboard.filters.${status}`)}</span>
+                  <span className="min-w-0 flex-1 truncate">
+                    {t(`surveys.dashboard.filters.${status}`)}
+                  </span>
                   <span className="text-muted-foreground text-xs tabular-nums">
                     {statusCounts[status] ?? 0}
                   </span>
@@ -182,7 +184,9 @@ export const SurveyListToolbar = ({
                         checked={categoryFilter.includes(cat.value)}
                         onCheckedChange={() => handleCategoryToggle(cat.value)}
                       />
-                      <span className="flex-1">{t(cat.labelKey as Parameters<typeof t>[0])}</span>
+                      <span className="min-w-0 flex-1 truncate">
+                        {t(cat.labelKey as Parameters<typeof t>[0])}
+                      </span>
                       <span className="text-muted-foreground text-xs tabular-nums">
                         {categoryCounts[cat.value]}
                       </span>

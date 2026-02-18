@@ -58,7 +58,23 @@ export function SubNavItems({
       return null;
     }
 
-    return tabs.find((tab) => pathname.startsWith(tab.prefix + '/')) ?? null;
+    return (
+      tabs.find((tab) => {
+        if (!pathname.startsWith(tab.prefix + '/')) {
+          return false;
+        }
+
+        if (tab.excludeSegments) {
+          const nextSegment = pathname.slice(tab.prefix.length + 1).split('/')[0];
+
+          if (nextSegment && tab.excludeSegments.includes(nextSegment)) {
+            return false;
+          }
+        }
+
+        return true;
+      }) ?? null
+    );
   })();
 
   const dynamicLabel = (() => {
@@ -117,12 +133,7 @@ export function SubNavItems({
               const isActive = isDynamicActive
                 ? false
                 : clientState && currentSearchParams
-                  ? searchParamKeys.length > 0
-                    ? isSubItemActive(subItem, pathname, hash, currentSearchParams, searchParamKeys)
-                    : subItem.hash
-                      ? pathname === subItem.href && hash === subItem.hash
-                      : pathname === subItem.href ||
-                        (subItem.alsoActiveFor?.includes(pathname) ?? false)
+                  ? isSubItemActive(subItem, pathname, hash, currentSearchParams, searchParamKeys)
                   : false;
 
               const stateClasses = isActive ? SIDEBAR_NAV_ACTIVE : SIDEBAR_NAV_INACTIVE;
