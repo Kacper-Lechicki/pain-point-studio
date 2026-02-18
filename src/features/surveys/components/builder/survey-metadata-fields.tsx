@@ -100,7 +100,7 @@ export function SurveyMetadataFields({ form, categoryOptions }: SurveyMetadataFi
               {t.rich('surveys.create.categoryHelper', {
                 link: (chunks) => (
                   <Link
-                    href={ROUTES.dashboard.analytics}
+                    href={ROUTES.dashboard.analyticsProjectIdea}
                     className="text-foreground underline underline-offset-2"
                   >
                     {chunks}

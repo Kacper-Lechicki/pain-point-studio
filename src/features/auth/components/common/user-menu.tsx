@@ -122,7 +122,7 @@ const UserMenu = () => {
           </Link>
 
           <Link
-            href={ROUTES.common.settings}
+            href={ROUTES.settings.profile}
             onClick={() => setIsOpen(false)}
             className="md:hover:text-foreground md:hover:border-muted-foreground/30 flex min-h-10 w-full items-center gap-2.5 rounded-lg border border-transparent px-3 text-sm font-medium transition-colors md:min-h-9 md:hover:border-dashed"
           >
