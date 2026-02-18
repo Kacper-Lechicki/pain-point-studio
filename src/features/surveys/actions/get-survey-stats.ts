@@ -36,6 +36,7 @@ export interface SurveyStats {
     endsAt: string | null;
     maxRespondents: number | null;
   };
+  viewCount: number;
   totalResponses: number;
   completedResponses: number;
   inProgressResponses: number;
@@ -57,6 +58,7 @@ const surveyStatsRpcSchema = z.object({
     endsAt: z.unknown().transform((v) => (typeof v === 'string' ? v : null)),
     maxRespondents: z.number().nullable(),
   }),
+  viewCount: z.number().default(0),
   totalResponses: z.number(),
   completedResponses: z.number(),
   inProgressResponses: z.number(),

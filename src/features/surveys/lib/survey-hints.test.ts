@@ -17,6 +17,7 @@ function makeSurvey(overrides: Partial<UserSurvey> = {}): UserSurvey {
     category: '',
     status: 'draft',
     slug: null,
+    viewCount: 0,
     responseCount: 0,
     completedCount: 0,
     questionCount: 0,

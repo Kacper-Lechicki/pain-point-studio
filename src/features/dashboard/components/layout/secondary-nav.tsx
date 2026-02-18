@@ -49,7 +49,23 @@ export function SecondaryNav({ titleKey, groups, parentHref }: SecondaryNavProps
       return null;
     }
 
-    return tabs.find((tab) => pathname.startsWith(tab.prefix + '/')) ?? null;
+    return (
+      tabs.find((tab) => {
+        if (!pathname.startsWith(tab.prefix + '/')) {
+          return false;
+        }
+
+        if (tab.excludeSegments) {
+          const nextSegment = pathname.slice(tab.prefix.length + 1).split('/')[0];
+
+          if (nextSegment && tab.excludeSegments.includes(nextSegment)) {
+            return false;
+          }
+        }
+
+        return true;
+      }) ?? null
+    );
   }, [parentHref, pathname]);
 
   const dynamicLabel = useMemo(() => {
@@ -112,11 +128,7 @@ export function SecondaryNav({ titleKey, groups, parentHref }: SecondaryNavProps
 
                 const isActive = isDynamicActive
                   ? false
-                  : searchParamKeys.length > 0
-                    ? isSubItemActive(item, pathname, hash, currentSearchParams, searchParamKeys)
-                    : item.hash
-                      ? pathname === item.href && hash === item.hash
-                      : pathname === item.href || (item.alsoActiveFor?.includes(pathname) ?? false);
+                  : isSubItemActive(item, pathname, hash, currentSearchParams, searchParamKeys);
 
                 if (item.hash) {
                   return (

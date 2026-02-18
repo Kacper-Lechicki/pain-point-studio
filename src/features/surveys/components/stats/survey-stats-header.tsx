@@ -20,8 +20,10 @@ interface SurveyStatsHeaderProps {
   title: string;
   status: SurveyStatus;
   surveyId: string;
+  isActive: boolean;
   isRefreshing: boolean;
   isRealtimeConnected: boolean;
+  lastSyncedAt: number;
   onRefresh: () => void;
   hasShareableLink: boolean;
   onShare: () => void;
@@ -35,8 +37,10 @@ export function SurveyStatsHeader({
   title,
   status,
   surveyId,
+  isActive,
   isRefreshing,
   isRealtimeConnected,
+  lastSyncedAt,
   onRefresh,
   hasShareableLink,
   onShare,
@@ -59,12 +63,15 @@ export function SurveyStatsHeader({
       </div>
 
       <div className="flex shrink-0 items-center gap-1">
-        <RefreshRealtimeButton
-          isRefreshing={isRefreshing}
-          isRealtimeConnected={isRealtimeConnected}
-          onRefresh={onRefresh}
-          ariaLabel={t('surveys.stats.refresh')}
-        />
+        {isActive && (
+          <RefreshRealtimeButton
+            isRefreshing={isRefreshing}
+            isRealtimeConnected={isRealtimeConnected}
+            lastSyncedAt={lastSyncedAt}
+            onRefresh={onRefresh}
+            ariaLabel={t('surveys.stats.refresh')}
+          />
+        )}
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

@@ -4,9 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
+import { REALTIME_STATS_DEBOUNCE_MS } from '@/features/surveys/config';
 import { createClient } from '@/lib/supabase/client';
-
-const DEBOUNCE_MS = 1000;
 
 /**
  * Subscribes to Supabase Realtime changes on `survey_responses` and `surveys`
@@ -19,9 +18,10 @@ const DEBOUNCE_MS = 1000;
  *
  * Returns `isConnected` — true when the channel is in the SUBSCRIBED state.
  */
-export function useRealtimeResponses(surveyId: string) {
+export function useRealtimeResponses(surveyId: string, onSync?: () => void, enabled = true) {
   const router = useRouter();
   const routerRef = useRef(router);
+  const onSyncRef = useRef(onSync);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isConnected, setIsConnected] = useState(false);
 
@@ -30,6 +30,14 @@ export function useRealtimeResponses(surveyId: string) {
   }, [router]);
 
   useEffect(() => {
+    onSyncRef.current = onSync;
+  }, [onSync]);
+
+  useEffect(() => {
+    if (!enabled) {
+      return;
+    }
+
     const supabase = createClient();
 
     const debouncedRefresh = () => {
@@ -39,7 +47,8 @@ export function useRealtimeResponses(surveyId: string) {
 
       timerRef.current = setTimeout(() => {
         routerRef.current.refresh();
-      }, DEBOUNCE_MS);
+        onSyncRef.current?.();
+      }, REALTIME_STATS_DEBOUNCE_MS);
     };
 
     const channel = supabase
@@ -75,7 +84,7 @@ export function useRealtimeResponses(surveyId: string) {
 
       void supabase.removeChannel(channel);
     };
-  }, [surveyId]);
+  }, [surveyId, enabled]);
 
-  return { isConnected };
+  return { isConnected: enabled ? isConnected : false };
 }

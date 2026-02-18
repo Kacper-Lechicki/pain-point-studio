@@ -21,8 +21,7 @@ import { SurveyStatsCharts } from '@/features/surveys/components/stats/survey-st
 import { SurveyStatsHeader } from '@/features/surveys/components/stats/survey-stats-header';
 import { NOW_UPDATE_INTERVAL_MS } from '@/features/surveys/config';
 import { deriveSurveyFlags } from '@/features/surveys/config/survey-status';
-import { useRealtimeResponses } from '@/features/surveys/hooks/use-realtime-responses';
-import { useSurveyCardActions } from '@/features/surveys/hooks/use-survey-card-actions';
+import { useRealtimeResponses, useSurveyCardActions } from '@/features/surveys/hooks';
 import {
   calculateAvgQuestionCompletion,
   calculateRespondentProgress,
@@ -39,10 +38,16 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
   const t = useTranslations();
   const format = useFormatter();
   const now = useNow({ updateInterval: NOW_UPDATE_INTERVAL_MS });
-  const { isRefreshing, refresh } = useRefresh();
+  const { isRefreshing, refresh, lastSyncedAt, markSynced } = useRefresh();
 
   useBreadcrumbSegment(stats.survey.id, stats.survey.title);
-  const { isConnected: isRealtimeConnected } = useRealtimeResponses(stats.survey.id);
+
+  const initialIsActive = deriveSurveyFlags(stats.survey.status).isActive;
+  const { isConnected: isRealtimeConnected } = useRealtimeResponses(
+    stats.survey.id,
+    markSynced,
+    initialIsActive
+  );
   const { shareUrl, shareDialogOpen, setShareDialogOpen, handleShare } = useSurveyCardActions(
     stats.survey.slug
   );
@@ -54,8 +59,6 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
 
   const currentStatus = optimisticStatus ?? stats.survey.status;
   const { isActive } = deriveSurveyFlags(currentStatus);
-  const canComplete = isActive;
-  const canCancel = isActive;
   const hasShareableLink = !!shareUrl;
 
   const submissionRate = calculateSubmissionRate(stats.completedResponses, stats.totalResponses);
@@ -107,18 +110,21 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
           title={stats.survey.title}
           status={currentStatus}
           surveyId={stats.survey.id}
+          isActive={isActive}
           isRefreshing={isRefreshing}
           isRealtimeConnected={isRealtimeConnected}
+          lastSyncedAt={lastSyncedAt}
           onRefresh={refresh}
           hasShareableLink={hasShareableLink}
           onShare={handleShare}
-          canComplete={canComplete}
-          canCancel={canCancel}
+          canComplete={isActive}
+          canCancel={isActive}
           onComplete={() => setShowCompleteDialog(true)}
           onCancel={() => setShowCancelDialog(true)}
         />
 
         <DetailMetricsGrid
+          viewCount={stats.viewCount}
           completedCount={stats.completedResponses}
           responseCount={stats.totalResponses}
           maxRespondents={stats.survey.maxRespondents}

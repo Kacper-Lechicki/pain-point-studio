@@ -208,10 +208,23 @@ export const SIDEBAR_BOTTOM_ITEM: NavItem = {
 export interface DynamicRouteTab {
   prefix: string;
   icon: LucideIcon;
+  /**
+   * Segments immediately after `prefix` that should NOT activate this tab.
+   * Used when `prefix` is broad (e.g. `/dashboard/research`) to avoid
+   * matching known static child routes like `new`, `archive`, etc.
+   */
+  excludeSegments?: readonly string[] | undefined;
 }
 
 export const DYNAMIC_ROUTE_TABS: Record<string, DynamicRouteTab[]> = {
-  [ROUTES.dashboard.research]: [{ prefix: ROUTES.dashboard.researchStats, icon: BarChart3 }],
+  [ROUTES.dashboard.research]: [
+    { prefix: ROUTES.dashboard.researchStats, icon: BarChart3 },
+    {
+      prefix: ROUTES.dashboard.research,
+      icon: ClipboardList,
+      excludeSegments: ['new', 'archive', 'templates', 'folders', 'settings', 'integrations'],
+    },
+  ],
 };
 
 // ── Dynamic sidebar items (main sidebar) ────────────────────────────

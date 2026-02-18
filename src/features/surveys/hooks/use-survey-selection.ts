@@ -52,7 +52,13 @@ export function useSurveySelection(surveys: UserSurvey[]): UseSurveySelectionRet
     (id: string | null) => {
       if (id !== selectedId) {
         fetchedForRef.current = null;
-        setQuestions(null);
+
+        // Only reset questions when switching to another survey.
+        // When deselecting (id=null), keep stale data so the closing
+        // sheet animation doesn't flash a loading spinner.
+        if (id) {
+          setQuestions(null);
+        }
       }
 
       const next = new URLSearchParams(searchParams.toString());

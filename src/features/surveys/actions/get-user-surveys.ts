@@ -14,6 +14,8 @@ export interface UserSurvey {
   category: string;
   status: SurveyStatus;
   slug: string | null;
+  /** Total page views (incremented on each page load of the respondent page). */
+  viewCount: number;
   responseCount: number;
   completedCount: number;
   questionCount: number;
@@ -48,6 +50,7 @@ const userSurveySchema = z.object({
   category: z.string(),
   status: z.string(),
   slug: z.string().nullable(),
+  viewCount: z.number().default(0),
   responseCount: z.number(),
   completedCount: z.number(),
   questionCount: z.number(),

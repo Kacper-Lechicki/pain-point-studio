@@ -15,9 +15,11 @@ import { SurveyListRow } from '@/features/surveys/components/dashboard/survey-li
 import { SurveyListTable } from '@/features/surveys/components/dashboard/survey-list-table';
 import { SURVEY_CATEGORIES } from '@/features/surveys/config/survey-categories';
 import { deriveSurveyFlags } from '@/features/surveys/config/survey-status';
-import { useRealtimeSurveyList } from '@/features/surveys/hooks/use-realtime-survey-list';
-import { useSurveyListState } from '@/features/surveys/hooks/use-survey-list-state';
-import { useSurveySelection } from '@/features/surveys/hooks/use-survey-selection';
+import {
+  useRealtimeSurveyList,
+  useSurveyListState,
+  useSurveySelection,
+} from '@/features/surveys/hooks';
 import { applyOptimisticStatusChange } from '@/features/surveys/lib/status-change-handler';
 import { useRefresh } from '@/hooks/common/use-refresh';
 import { useSessionState } from '@/hooks/common/use-session-state';
@@ -63,7 +65,7 @@ interface SurveyListProps {
 
 export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
   const t = useTranslations();
-  const { isRefreshing, refresh } = useRefresh();
+  const { isRefreshing, refresh, lastSyncedAt, markSynced } = useRefresh();
   const [surveys, setSurveys] = useState(initialSurveys);
 
   const [statusFilter, setStatusFilter] = useSessionState<SurveyStatusFilter[]>(
@@ -75,7 +77,8 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
     setSurveys(initialSurveys);
   }, [initialSurveys]);
 
-  const { isConnected: isRealtimeConnected } = useRealtimeSurveyList();
+  const hasActiveSurveys = surveys.some((s) => s.status === 'active');
+  const { isConnected: isRealtimeConnected } = useRealtimeSurveyList(markSynced, hasActiveSurveys);
 
   const preFilter = useCallback(
     (s: UserSurvey) =>
@@ -182,8 +185,10 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
       <SurveyListKpi
         statusCounts={statusCounts}
         kpiStatuses={kpiStatuses}
+        hasActiveSurveys={hasActiveSurveys}
         isRefreshing={isRefreshing}
         isRealtimeConnected={isRealtimeConnected}
+        lastSyncedAt={lastSyncedAt}
         onRefresh={refresh}
       />
 

@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 
-import { getPublicSurvey } from '@/features/surveys/actions/respondent';
+import { getPublicSurvey, recordView } from '@/features/surveys/actions/respondent';
 import { SurveyClosed } from '@/features/surveys/components/respondent/survey-closed';
 import { SurveyLanding } from '@/features/surveys/components/respondent/survey-landing';
 
@@ -19,6 +19,8 @@ export default async function SurveyRespondPage({ params }: SurveyRespondPagePro
   if (!survey.isAcceptingResponses) {
     return <SurveyClosed reason={survey.closedReason ?? 'completed'} title={survey.title} />;
   }
+
+  void recordView(survey.id);
 
   return <SurveyLanding survey={survey} slug={slug} />;
 }

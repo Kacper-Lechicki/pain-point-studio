@@ -17,9 +17,10 @@ import { createClient } from '@/lib/supabase/client';
  *
  * Returns `isConnected` — true when the channel is in the SUBSCRIBED state.
  */
-export function useRealtimeSurveyList() {
+export function useRealtimeSurveyList(onSync?: () => void, enabled = true) {
   const router = useRouter();
   const routerRef = useRef(router);
+  const onSyncRef = useRef(onSync);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isConnected, setIsConnected] = useState(false);
 
@@ -28,6 +29,14 @@ export function useRealtimeSurveyList() {
   }, [router]);
 
   useEffect(() => {
+    onSyncRef.current = onSync;
+  }, [onSync]);
+
+  useEffect(() => {
+    if (!enabled) {
+      return;
+    }
+
     const supabase = createClient();
 
     const debouncedRefresh = () => {
@@ -37,6 +46,7 @@ export function useRealtimeSurveyList() {
 
       timerRef.current = setTimeout(() => {
         routerRef.current.refresh();
+        onSyncRef.current?.();
       }, REALTIME_DEBOUNCE_MS);
     };
 
@@ -71,7 +81,7 @@ export function useRealtimeSurveyList() {
 
       void supabase.removeChannel(channel);
     };
-  }, []);
+  }, [enabled]);
 
-  return { isConnected };
+  return { isConnected: enabled ? isConnected : false };
 }

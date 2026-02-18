@@ -215,6 +215,7 @@ export type Database = {
           title: string;
           updated_at: string;
           user_id: string;
+          view_count: number;
           visibility: string;
         };
         Insert: {
@@ -234,6 +235,7 @@ export type Database = {
           title: string;
           updated_at?: string;
           user_id: string;
+          view_count?: number;
           visibility?: string;
         };
         Update: {
@@ -253,6 +255,7 @@ export type Database = {
           title?: string;
           updated_at?: string;
           user_id?: string;
+          view_count?: number;
           visibility?: string;
         };
         Relationships: [];
@@ -263,11 +266,10 @@ export type Database = {
     };
     Functions: {
       cancel_email_change: { Args: never; Returns: undefined };
+      cleanup_abandoned_responses: { Args: never; Returns: undefined };
       complete_expired_surveys: { Args: never; Returns: undefined };
       decrypt_pii: { Args: { encrypted: string }; Returns: string };
       encrypt_pii: { Args: { plain_text: string }; Returns: string };
-      get_analytics_data: { Args: { p_user_id: string }; Returns: Json };
-      get_dashboard_overview: { Args: { p_user_id: string }; Returns: Json };
       get_email_change_status: {
         Args: never;
         Returns: {
@@ -300,6 +302,7 @@ export type Database = {
         Returns: Json;
       };
       has_password: { Args: never; Returns: boolean };
+      record_survey_view: { Args: { p_survey_id: string }; Returns: undefined };
       save_survey_questions: {
         Args: { p_questions: Json; p_survey_id: string; p_user_id: string };
         Returns: undefined;

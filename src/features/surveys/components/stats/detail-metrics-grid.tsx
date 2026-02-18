@@ -1,4 +1,4 @@
-import { Clock, ListChecks, MousePointerClick, Percent, Timer, Users } from 'lucide-react';
+import { Clock, Eye, ListChecks, MousePointerClick, Percent, Timer, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { SectionLabel } from '@/features/surveys/components/shared/metric-display';
@@ -6,6 +6,7 @@ import { formatCompletionTime } from '@/features/surveys/lib/calculations';
 import { cn } from '@/lib/common/utils';
 
 interface DetailMetricsGridProps {
+  viewCount: number;
   completedCount: number;
   responseCount: number;
   maxRespondents: number | null;
@@ -19,6 +20,7 @@ interface DetailMetricsGridProps {
 }
 
 export function DetailMetricsGrid({
+  viewCount,
   completedCount,
   responseCount,
   maxRespondents,
@@ -40,11 +42,20 @@ export function DetailMetricsGrid({
       <div className={cn('grid grid-cols-2 gap-2', wide && 'sm:grid-cols-3 lg:grid-cols-4')}>
         <div className="border-border/50 rounded-md border px-3 py-2.5">
           <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
+            {viewCount}
+          </div>
+          <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
+            <Eye className="mt-0.5 size-3 shrink-0" aria-hidden />
+            {t('surveys.dashboard.detailPanel.views')}
+          </div>
+        </div>
+        <div className="border-border/50 rounded-md border px-3 py-2.5">
+          <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
             {responseCount}
           </div>
           <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
             <MousePointerClick className="mt-0.5 size-3 shrink-0" aria-hidden />
-            {t('surveys.dashboard.detailPanel.visitors')}
+            {t('surveys.dashboard.detailPanel.participants')}
           </div>
         </div>
         <div className="border-border/50 rounded-md border px-3 py-2.5">
