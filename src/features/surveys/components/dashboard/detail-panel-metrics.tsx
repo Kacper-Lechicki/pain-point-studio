@@ -1,4 +1,4 @@
-import { BarChart3, MousePointerClick, Timer, Users } from 'lucide-react';
+import { BarChart3, Eye, MousePointerClick, Timer, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,7 @@ import Link from '@/i18n/link';
 
 interface DetailPanelMetricsProps {
   surveyId: string;
+  viewCount: number;
   responseCount: number;
   completedCount: number;
   maxRespondents: number | null;
@@ -18,6 +19,7 @@ interface DetailPanelMetricsProps {
 
 export function DetailPanelMetrics({
   surveyId,
+  viewCount,
   responseCount,
   completedCount,
   maxRespondents,
@@ -33,11 +35,20 @@ export function DetailPanelMetrics({
       <div className="grid grid-cols-2 gap-2">
         <div className="border-border/50 rounded-md border px-3 py-2.5">
           <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
+            {viewCount}
+          </div>
+          <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
+            <Eye className="mt-0.5 size-3 shrink-0" aria-hidden />
+            {t('surveys.dashboard.detailPanel.views')}
+          </div>
+        </div>
+        <div className="border-border/50 rounded-md border px-3 py-2.5">
+          <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
             {responseCount}
           </div>
           <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
             <MousePointerClick className="mt-0.5 size-3 shrink-0" aria-hidden />
-            {t('surveys.dashboard.detailPanel.visitors')}
+            {t('surveys.dashboard.detailPanel.participants')}
           </div>
         </div>
         <div className="border-border/50 rounded-md border px-3 py-2.5">

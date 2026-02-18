@@ -49,6 +49,12 @@ export const NOW_UPDATE_INTERVAL_MS = 60_000;
 /** Debounce (ms) for realtime subscription refreshes on the survey list. */
 export const REALTIME_DEBOUNCE_MS = 1_500;
 
+/** Debounce (ms) for realtime subscription refreshes on the single survey stats page. */
+export const REALTIME_STATS_DEBOUNCE_MS = 1_000;
+
+/** Tick interval (ms) for the elapsed-time label in the realtime refresh button. */
+export const SYNC_ELAPSED_TICK_MS = 30_000;
+
 // ── Threshold constants ────────────────────────────────────────────
 
 /** % of respondent cap at which a warning is shown (0–1). */

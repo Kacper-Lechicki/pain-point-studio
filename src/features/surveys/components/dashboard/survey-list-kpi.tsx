@@ -9,16 +9,20 @@ import { cn } from '@/lib/common/utils';
 interface SurveyListKpiProps {
   statusCounts: Record<string, number>;
   kpiStatuses: SurveyStatusFilter[];
+  hasActiveSurveys: boolean;
   isRefreshing: boolean;
   isRealtimeConnected: boolean;
+  lastSyncedAt: number;
   onRefresh: () => void;
 }
 
 export function SurveyListKpi({
   statusCounts,
   kpiStatuses,
+  hasActiveSurveys,
   isRefreshing,
   isRealtimeConnected,
+  lastSyncedAt,
   onRefresh,
 }: SurveyListKpiProps) {
   const t = useTranslations();
@@ -69,12 +73,15 @@ export function SurveyListKpi({
           <MousePointerClick className="size-3" aria-hidden />
           {t('surveys.dashboard.clickHint')}
         </span>
-        <RefreshRealtimeButton
-          isRefreshing={isRefreshing}
-          isRealtimeConnected={isRealtimeConnected}
-          onRefresh={onRefresh}
-          ariaLabel={t('surveys.dashboard.refresh')}
-        />
+        {hasActiveSurveys && (
+          <RefreshRealtimeButton
+            isRefreshing={isRefreshing}
+            isRealtimeConnected={isRealtimeConnected}
+            lastSyncedAt={lastSyncedAt}
+            onRefresh={onRefresh}
+            ariaLabel={t('surveys.dashboard.refresh')}
+          />
+        )}
       </div>
     </div>
   );

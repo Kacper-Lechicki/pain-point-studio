@@ -16,8 +16,7 @@ import { SurveyShareDialog } from '@/features/surveys/components/dashboard/surve
 import { SectionLabel } from '@/features/surveys/components/shared/metric-display';
 import { DATE_FORMAT_SHORT, NOW_UPDATE_INTERVAL_MS } from '@/features/surveys/config';
 import { deriveSurveyFlags, getAvailableActions } from '@/features/surveys/config/survey-status';
-import { useSurveyAction } from '@/features/surveys/hooks/use-survey-action';
-import { useSurveyCardActions } from '@/features/surveys/hooks/use-survey-card-actions';
+import { useSurveyAction, useSurveyCardActions } from '@/features/surveys/hooks';
 import {
   calculateRespondentProgress,
   formatCompletionTime,
@@ -119,6 +118,7 @@ export function SurveyDetailPanel({
           <Separator className="my-4" />
           <DetailPanelMetrics
             surveyId={survey.id}
+            viewCount={survey.viewCount}
             responseCount={survey.responseCount}
             completedCount={survey.completedCount}
             maxRespondents={survey.maxRespondents}

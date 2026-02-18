@@ -77,6 +77,12 @@
       "description": "If you leave this page, your unsaved data will be lost. Are you sure you want to leave?",
       "cancel": "Stay",
       "leave": "Leave"
+    },
+    "sync": {
+      "justNow": "Just now",
+      "secondsAgo": "{seconds}s ago",
+      "minutesAgo": "{minutes}m ago",
+      "hoursAgo": "{hours}h ago"
     }
   },
   "auth": {
@@ -522,7 +528,8 @@
         "last14Days": "Last 14 days",
         "lastResponse": "Last response",
         "responses": "Responses",
-        "visitors": "Visitors",
+        "views": "Views",
+        "participants": "Participants",
         "inProgress": "In progress",
         "submissionRate": "Submission rate",
         "avgQuestionCompletion": "Avg. question completion",

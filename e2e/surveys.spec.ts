@@ -216,7 +216,8 @@ test.describe('Surveys – Stats Page', () => {
 
     await expect(page.getByRole('heading', { name: surveyTitle })).toBeVisible({ timeout: 15_000 });
     await expect(page.getByText('Metrics')).toBeVisible();
-    await expect(page.getByText('Visitors')).toBeVisible();
+    await expect(page.getByText('Views')).toBeVisible();
+    await expect(page.getByText('Participants')).toBeVisible();
     await expect(page.getByText('Responses', { exact: true })).toBeVisible();
   });
 });
