@@ -743,7 +743,8 @@
     "pinSidebar": "Pin sidebar",
     "unpinSidebar": "Unpin sidebar",
     "back": "Back",
-    "dynamicHeading": "Dynamic"
+    "dynamicHeading": "Dynamic",
+    "profilePreview": "Profile"
   },
   "breadcrumbs": {
     "dashboard": "Dashboard",

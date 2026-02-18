@@ -9,6 +9,7 @@ import {
 import type { SubNavGroup } from '@/features/dashboard/config/navigation';
 import {
   DYNAMIC_ROUTE_TABS,
+  DYNAMIC_SIDEBAR_ITEMS,
   type NavItem,
   SIDEBAR_BOTTOM_ITEM,
   SIDEBAR_NAV,
@@ -155,6 +156,7 @@ export function SubNavItems({
           <div className="text-muted-foreground mt-6 mb-1 px-3 text-xs font-semibold tracking-wider uppercase">
             {t('sidebar.dynamicHeading' as MessageKey)}
           </div>
+
           <div className="flex flex-col gap-2">
             <Link href={pathname} className={cn(SIDEBAR_NAV_ITEM_BASE, SIDEBAR_NAV_ACTIVE)}>
               <dynamicTab.icon className="size-4 shrink-0" aria-hidden />
@@ -194,9 +196,10 @@ export function MobileNavMainLevel({ pathname, t, onItemClick, onClose }: Mobile
                 );
               }
 
+              const matchPath = item.activePrefix ?? item.href;
               const isActive = item.subNav
-                ? pathname === item.href || pathname.startsWith(item.href + '/')
-                : pathname === item.href;
+                ? pathname === matchPath || pathname.startsWith(matchPath + '/')
+                : pathname === matchPath;
 
               if (item.subNav) {
                 return (
@@ -229,6 +232,27 @@ export function MobileNavMainLevel({ pathname, t, onItemClick, onClose }: Mobile
             })}
           </div>
         ))}
+
+        {DYNAMIC_SIDEBAR_ITEMS.some((di) => pathname === di.path) && (
+          <div className="mt-2 flex flex-col gap-2">
+            <div className="text-muted-foreground mt-4 mb-1 px-3 text-xs font-semibold tracking-wider uppercase">
+              {t('sidebar.dynamicHeading' as Parameters<typeof t>[0])}
+            </div>
+
+            {DYNAMIC_SIDEBAR_ITEMS.filter((di) => pathname === di.path).map((di) => (
+              <Link
+                key={di.path}
+                href={di.path}
+                data-state="active"
+                onClick={() => onClose()}
+                className={SIDEBAR_NAV_ITEM_CLASSES}
+              >
+                <di.icon className="size-4 shrink-0" aria-hidden />
+                <span className="truncate">{t(di.labelKey)}</span>
+              </Link>
+            ))}
+          </div>
+        )}
       </nav>
 
       <div className="px-2 pb-4">
@@ -324,7 +348,7 @@ export function MobileNavSubLevel({
         clientState={clientState}
         t={t}
         onNavigate={onNavigate}
-        parentHref={selectedItem.href}
+        parentHref={selectedItem.activePrefix ?? selectedItem.href}
         breadcrumbSegments={breadcrumbSegments}
       />
     </>

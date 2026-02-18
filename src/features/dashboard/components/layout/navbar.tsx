@@ -8,6 +8,7 @@ import { UserMenu } from '@/features/auth/components/common/user-menu';
 import { Breadcrumbs } from '@/features/dashboard/components/layout/breadcrumbs';
 import { ProjectSelector } from '@/features/dashboard/components/layout/project-selector';
 import { useSidebar } from '@/features/dashboard/components/layout/sidebar-provider';
+import { DYNAMIC_SIDEBAR_ITEMS } from '@/features/dashboard/config/navigation';
 import { usePathname } from '@/i18n/routing';
 import { cn } from '@/lib/common/utils';
 
@@ -15,9 +16,10 @@ const Navbar = () => {
   const { setMobileOpen, isDesktop } = useSidebar();
   const t = useTranslations();
   const pathname = usePathname();
-  const isDashboard = pathname.startsWith('/dashboard');
-  const isSettings = pathname.startsWith('/settings');
-  const hasSidebar = isDashboard || isSettings;
+  const hasSidebar =
+    pathname.startsWith('/dashboard') ||
+    pathname.startsWith('/settings') ||
+    DYNAMIC_SIDEBAR_ITEMS.some((item) => pathname === item.path);
 
   return (
     <nav className="bg-background/80 border-border/80 dashboard:border-b fixed inset-x-0 top-0 z-50 backdrop-blur-md transition-colors duration-300">

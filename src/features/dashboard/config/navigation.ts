@@ -203,7 +203,7 @@ export const SIDEBAR_BOTTOM_ITEM: NavItem = {
   disabled: true,
 };
 
-// ── Dynamic route tabs ───────────────────────────────────────────────
+// ── Dynamic route tabs (sub-panel) ──────────────────────────────────
 
 export interface DynamicRouteTab {
   prefix: string;
@@ -213,6 +213,23 @@ export interface DynamicRouteTab {
 export const DYNAMIC_ROUTE_TABS: Record<string, DynamicRouteTab[]> = {
   [ROUTES.dashboard.research]: [{ prefix: ROUTES.dashboard.researchStats, icon: BarChart3 }],
 };
+
+// ── Dynamic sidebar items (main sidebar) ────────────────────────────
+
+export interface DynamicSidebarItem {
+  /** Path that, when matched exactly, shows this item in the sidebar. */
+  path: AppRoute;
+  labelKey: MessageKey;
+  icon: LucideIcon;
+}
+
+/**
+ * Routes that are not part of the static sidebar but should still
+ * show a highlighted item when the user is on them.
+ */
+export const DYNAMIC_SIDEBAR_ITEMS: DynamicSidebarItem[] = [
+  { path: ROUTES.profile.preview, labelKey: 'sidebar.profilePreview', icon: CircleUserRound },
+];
 
 // ── Helpers ───────────────────────────────────────────────────────────
 
