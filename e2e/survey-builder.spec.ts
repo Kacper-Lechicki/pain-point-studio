@@ -20,7 +20,7 @@ const PASSWORD = 'E2eBuilderPass1!';
 
 /** Builds the builder URL for a given survey ID. */
 function builderUrl(surveyId: string) {
-  return url(`${ROUTES.dashboard.surveysNew}/${surveyId}`);
+  return url(`${ROUTES.dashboard.researchNew}/${surveyId}`);
 }
 
 /**
@@ -62,6 +62,7 @@ async function ensureSidebarClosed(page: import('@playwright/test').Page) {
     const viewport = page.viewportSize();
     const x = viewport ? viewport.width - 20 : 350;
     const y = viewport ? Math.round(viewport.height / 2) : 400;
+
     await page.mouse.click(x, y);
     await expect(sidebarDialog).not.toBeVisible({ timeout: 5_000 });
   }
@@ -78,6 +79,7 @@ test.describe('Survey Builder – Question Editing', () => {
   test.beforeAll(async ({}, testInfo) => {
     email = scopedEmail('e2e-builder-editing', testInfo.project.name);
     signIn = makeApiSignIn(email, PASSWORD);
+
     const userId = await ensureUser(email, PASSWORD);
 
     const result = await createSurveyWithQuestions(userId, {}, 1);
@@ -128,6 +130,7 @@ test.describe('Survey Builder – Question Editing', () => {
     const firstValue = await page.locator(sel.questionInput).inputValue();
 
     await step2.click();
+
     const secondValue = await page.locator(sel.questionInput).inputValue();
     expect(firstValue).not.toBe(secondValue);
 
@@ -139,11 +142,13 @@ test.describe('Survey Builder – Question Editing', () => {
     const countBeforeDelete = await allStepButtons.count();
 
     const actionButtons = page.getByRole('button', { name: 'Question actions' });
+
     await actionButtons.last().click();
     await page.getByRole('menuitem', { name: 'Delete question' }).click();
 
     const dialog = page.locator(sel.alertDialog);
     await expect(dialog).toBeVisible({ timeout: 5_000 });
+
     await dialog.getByRole('button', { name: 'Delete question' }).click();
     await expect(allStepButtons).toHaveCount(countBeforeDelete - 1, { timeout: 5_000 });
 
@@ -191,13 +196,18 @@ test.describe('Survey Builder – Metadata Editing', () => {
     await page.goto(builderUrl(surveyId));
     await expect(page.locator(sel.questionInput)).toBeVisible({ timeout: 15_000 });
 
-    await page.getByRole('button', { name: 'Edit survey details' }).click();
-    await expect(page.locator(sel.titleInput)).toBeVisible({ timeout: 10_000 });
+    // Retry click — webkit can swallow clicks during panel animations
+    await expect(async () => {
+      await page.getByRole('button', { name: 'Edit survey details' }).click();
+      await expect(page.locator(sel.titleInput)).toBeVisible({ timeout: 5_000 });
+    }).toPass({ timeout: 15_000 });
 
     // Change the title — use clear() + pressSequentially() for webkit compatibility
     await expect(async () => {
       await page.locator(sel.titleInput).clear();
+
       await page.locator(sel.titleInput).pressSequentially('Updated Title', { delay: 30 });
+
       await expect(page.locator(sel.titleInput)).toHaveValue('Updated Title');
 
       const saveBtns = page.getByRole('button', { name: 'Save Draft' });
@@ -206,6 +216,7 @@ test.describe('Survey Builder – Metadata Editing', () => {
 
     await expect(async () => {
       const saveBtns = page.getByRole('button', { name: 'Save Draft' });
+
       await saveBtns.last().click();
       await expect(page.locator(sel.toast).first()).toBeVisible({ timeout: 10_000 });
     }).toPass({ timeout: 20_000 });

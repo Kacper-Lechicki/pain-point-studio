@@ -80,11 +80,11 @@ test.describe('Surveys – Creation Flow', () => {
     await signIn(page);
 
     // ── Empty state ──
-    await page.goto(url(ROUTES.dashboard.surveys));
+    await page.goto(url(ROUTES.dashboard.research));
     await expect(page.getByText('No surveys yet')).toBeVisible({ timeout: 15_000 });
 
     // ── Create survey metadata ──
-    await page.goto(url(ROUTES.dashboard.surveysNew));
+    await page.goto(url(ROUTES.dashboard.researchNew));
     await expect(page.locator(sel.titleInput)).toBeVisible({ timeout: 15_000 });
 
     await expect(async () => {
@@ -106,11 +106,11 @@ test.describe('Surveys – Creation Flow', () => {
 
       await page.keyboard.press('Escape');
       await page.getByRole('button', { name: 'Next', exact: true }).click();
-      await expect(page).toHaveURL(/\/dashboard\/surveys\/new\/[0-9a-f-]+/);
+      await expect(page).toHaveURL(/\/dashboard\/research\/new\/[0-9a-f-]+/);
     }).toPass({ timeout: 30_000 });
 
     // ── Verify survey appears in list ──
-    await page.goto(url(ROUTES.dashboard.surveys));
+    await page.goto(url(ROUTES.dashboard.research));
     const row = surveyItem(page, SURVEY_TITLE);
     await expect(row).toBeVisible({ timeout: 15_000 });
   });
@@ -143,7 +143,7 @@ test.describe('Surveys – Status Lifecycle', () => {
   // Pre-seeded active survey: walk through the full status state machine
   test('complete → archive → restore → delete', async ({ page }) => {
     await signIn(page);
-    await page.goto(url(ROUTES.dashboard.surveys));
+    await page.goto(url(ROUTES.dashboard.research));
 
     // ── Complete active survey ──
     await executeActionOnRow(page, surveyTitle, 'Complete survey', 'Complete survey');
@@ -163,7 +163,7 @@ test.describe('Surveys – Status Lifecycle', () => {
     await expect(surveyItem(page, surveyTitle)).not.toBeVisible({ timeout: 10_000 });
 
     // ── Verify on archive page ──
-    await page.goto(url(ROUTES.dashboard.surveysArchive));
+    await page.goto(url(ROUTES.dashboard.researchArchive));
     await expect(surveyItem(page, surveyTitle)).toBeVisible({ timeout: 15_000 });
 
     // ── Restore from archive ──
@@ -171,7 +171,7 @@ test.describe('Surveys – Status Lifecycle', () => {
     await expect(page.locator(sel.toast).first()).toBeVisible({ timeout: 10_000 });
 
     // Restored survey appears on main page
-    await page.goto(url(ROUTES.dashboard.surveys));
+    await page.goto(url(ROUTES.dashboard.research));
     await expect(surveyItem(page, surveyTitle)).toBeVisible({ timeout: 15_000 });
 
     // ── Delete restored draft ──
@@ -212,7 +212,7 @@ test.describe('Surveys – Stats Page', () => {
   // Pre-seeded active survey with 3 questions → verify stats page layout
   test('stats page loads with overview structure', async ({ page }) => {
     await signIn(page);
-    await page.goto(url(`${ROUTES.dashboard.surveysStats}/${surveyId}`));
+    await page.goto(url(`${ROUTES.dashboard.researchStats}/${surveyId}`));
 
     await expect(page.getByRole('heading', { name: surveyTitle })).toBeVisible({ timeout: 15_000 });
     await expect(page.getByText('Metrics')).toBeVisible();

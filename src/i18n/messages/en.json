@@ -733,6 +733,7 @@
   },
   "sidebar": {
     "home": "Home",
+    "research": "Research",
     "surveys": "Surveys",
     "analytics": "Analytics",
     "allSurveys": "All surveys",
@@ -753,6 +754,7 @@
   },
   "breadcrumbs": {
     "dashboard": "Dashboard",
+    "research": "Research",
     "surveys": "Surveys",
     "analytics": "Analytics",
     "settings": "Settings",

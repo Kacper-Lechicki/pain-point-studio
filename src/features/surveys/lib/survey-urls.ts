@@ -1,17 +1,17 @@
 import { ROUTES } from '@/config/routes';
 
 export function getSurveyEditUrl(id: string) {
-  return `${ROUTES.dashboard.surveysNew}/${id}`;
+  return `${ROUTES.dashboard.researchNew}/${id}`;
 }
 
 export function getSurveyPublishUrl(id: string) {
-  return `${ROUTES.dashboard.surveysNew}/${id}?publish=true`;
+  return `${ROUTES.dashboard.researchNew}/${id}?publish=true`;
 }
 
 export function getSurveyStatsUrl(id: string) {
-  return `${ROUTES.dashboard.surveysStats}/${id}`;
+  return `${ROUTES.dashboard.researchStats}/${id}`;
 }
 
 export function getSurveyDetailUrl(id: string) {
-  return `${ROUTES.dashboard.surveys}/${id}`;
+  return `${ROUTES.dashboard.research}/${id}`;
 }

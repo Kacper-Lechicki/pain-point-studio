@@ -74,7 +74,7 @@ export function BuilderTopBar({
         <div className="border-border flex h-12 shrink-0 items-center gap-4 border-b pr-0 pl-4">
           <div className="flex min-w-0 items-center gap-1.5">
             <Link
-              href={ROUTES.dashboard.surveys}
+              href={ROUTES.dashboard.research}
               className="text-muted-foreground hover:text-foreground flex shrink-0 items-center gap-1.5 text-sm transition-colors"
               aria-label={t('surveys.builder.backToSurveys')}
             >
@@ -122,7 +122,7 @@ export function BuilderTopBar({
         <div className="border-border shrink-0 border-b">
           <div className="flex min-h-11 items-center gap-1.5 px-3 py-2">
             <Link
-              href={ROUTES.dashboard.surveys}
+              href={ROUTES.dashboard.research}
               className="text-muted-foreground hover:text-foreground flex shrink-0 items-center gap-1.5 text-xs transition-colors"
               aria-label={t('surveys.builder.backToSurveys')}
             >

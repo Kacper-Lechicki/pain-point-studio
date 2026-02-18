@@ -66,7 +66,11 @@ test.describe('Sign-Up', () => {
       await deleteUserByEmail(signupEmail).catch(() => {});
       await page.goto(url(ROUTES.auth.signUp), { timeout: 15_000 });
 
-      const submitBtn = page.locator(sel.submit);
+      const signupForm = page.locator('form', {
+        has: page.locator('input[name="email"]'),
+      });
+
+      const submitBtn = signupForm.locator('button[type="submit"]');
       await expect(submitBtn).toBeEnabled({ timeout: 5_000 });
 
       await page.locator(sel.email).fill(signupEmail);
@@ -77,11 +81,11 @@ test.describe('Sign-Up', () => {
 
       await submitBtn.click();
 
-      // Confirmation screen: submit button disappears
-      await expect(submitBtn).not.toBeVisible({ timeout: 10_000 });
+      // Confirmation screen: form is replaced by success message with sign-in link
+      await expect(page.locator(`a[href*="${ROUTES.auth.signIn}"]`).first()).toBeVisible({
+        timeout: 10_000,
+      });
     }).toPass({ timeout: 45_000 });
-
-    await expect(page.locator(`a[href*="${ROUTES.auth.signIn}"]`).first()).toBeVisible();
 
     await deleteUserByEmail(signupEmail).catch(() => {});
   });

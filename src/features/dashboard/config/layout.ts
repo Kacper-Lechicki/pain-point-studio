@@ -3,7 +3,7 @@ import { ROUTES } from '@/config/routes';
 import { locales } from '@/i18n/constants';
 
 /** Path prefix for survey builder (edit questions). Builder uses a standalone full-screen layout. */
-export const BUILDER_PATH_PREFIX = ROUTES.dashboard.surveysNew + '/';
+export const BUILDER_PATH_PREFIX = ROUTES.dashboard.researchNew + '/';
 
 /** Check if the pathname points to the survey builder (creating/editing questions). */
 export function isBuilderPath(pathname: string | null): boolean {
@@ -26,12 +26,12 @@ export function getDashboardBackConfig(pathname: string | null): DashboardBackCo
     return null;
   }
 
-  if (pathname.startsWith(ROUTES.dashboard.surveysStats + '/')) {
-    return { fallbackHref: ROUTES.dashboard.surveys };
+  if (pathname.startsWith(ROUTES.dashboard.researchStats + '/')) {
+    return { fallbackHref: ROUTES.dashboard.research };
   }
 
-  if (/^\/dashboard\/surveys\/[^/]+$/.test(pathname)) {
-    return { fallbackHref: ROUTES.dashboard.surveys };
+  if (/^\/dashboard\/research\/[^/]+$/.test(pathname)) {
+    return { fallbackHref: ROUTES.dashboard.research };
   }
 
   if (pathname === ROUTES.profile.preview) {
@@ -97,9 +97,9 @@ function isFullWidthPath(pathname: string): boolean {
   const path = pathWithoutLocale(pathname);
 
   return (
-    path === ROUTES.dashboard.surveys ||
-    path === ROUTES.dashboard.surveysArchive ||
-    path.startsWith(ROUTES.dashboard.surveysArchive + '/')
+    path === ROUTES.dashboard.research ||
+    path === ROUTES.dashboard.researchArchive ||
+    path.startsWith(ROUTES.dashboard.researchArchive + '/')
   );
 }
 
@@ -107,11 +107,14 @@ function isFullWidthPath(pathname: string): boolean {
 function isNarrowPath(pathname: string): boolean {
   const path = pathWithoutLocale(pathname);
 
-  if (path === ROUTES.dashboard.surveysNew || path.startsWith(ROUTES.dashboard.surveysNew + '/')) {
+  if (
+    path === ROUTES.dashboard.researchNew ||
+    path.startsWith(ROUTES.dashboard.researchNew + '/')
+  ) {
     return true;
   }
 
-  if (/^\/dashboard\/surveys\/[^/]+$/.test(path) && path !== ROUTES.dashboard.surveysArchive) {
+  if (/^\/dashboard\/research\/[^/]+$/.test(path) && path !== ROUTES.dashboard.researchArchive) {
     return true;
   }
 

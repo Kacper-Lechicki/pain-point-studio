@@ -7,6 +7,7 @@ import {
   Home,
   KeyRound,
   LayoutTemplate,
+  Lightbulb,
   Link2,
   type LucideIcon,
   Mail,
@@ -71,29 +72,29 @@ export const SIDEBAR_NAV: NavGroup[] = [
     items: [
       { labelKey: 'sidebar.home', icon: Home, href: ROUTES.common.dashboard },
       {
-        labelKey: 'sidebar.surveys',
-        icon: ClipboardList,
-        href: ROUTES.dashboard.surveys,
+        labelKey: 'sidebar.research',
+        icon: Lightbulb,
+        href: ROUTES.dashboard.research,
         subNav: {
-          titleKey: 'surveys.title',
+          titleKey: 'sidebar.research',
           groups: [
             {
               items: [
                 {
                   labelKey: 'sidebar.allSurveys',
                   icon: ClipboardList,
-                  href: ROUTES.dashboard.surveys,
+                  href: ROUTES.dashboard.research,
                 },
                 {
                   labelKey: 'sidebar.newSurvey',
                   icon: Plus,
-                  href: ROUTES.dashboard.surveysNew,
+                  href: ROUTES.dashboard.researchNew,
                 },
                 {
                   // Not yet implemented — will move to ROUTES when route exists
                   labelKey: 'sidebar.templates',
                   icon: LayoutTemplate,
-                  href: '/dashboard/surveys/templates' as AppRoute,
+                  href: '/dashboard/research/templates' as AppRoute,
                   disabled: true,
                 },
               ],
@@ -105,13 +106,13 @@ export const SIDEBAR_NAV: NavGroup[] = [
                   // Not yet implemented — will move to ROUTES when route exists
                   labelKey: 'sidebar.folders',
                   icon: FolderOpen,
-                  href: '/dashboard/surveys/folders' as AppRoute,
+                  href: '/dashboard/research/folders' as AppRoute,
                   disabled: true,
                 },
                 {
                   labelKey: 'sidebar.archive',
                   icon: Archive,
-                  href: ROUTES.dashboard.surveysArchive,
+                  href: ROUTES.dashboard.researchArchive,
                 },
               ],
             },
@@ -122,14 +123,14 @@ export const SIDEBAR_NAV: NavGroup[] = [
                   // Not yet implemented — will move to ROUTES when route exists
                   labelKey: 'sidebar.surveySettings',
                   icon: Settings,
-                  href: '/dashboard/surveys/settings' as AppRoute,
+                  href: '/dashboard/research/settings' as AppRoute,
                   disabled: true,
                 },
                 {
                   // Not yet implemented — will move to ROUTES when route exists
                   labelKey: 'sidebar.integrations',
                   icon: Plug,
-                  href: '/dashboard/surveys/integrations' as AppRoute,
+                  href: '/dashboard/research/integrations' as AppRoute,
                   disabled: true,
                 },
               ],
@@ -188,7 +189,7 @@ export interface DynamicRouteTab {
 }
 
 export const DYNAMIC_ROUTE_TABS: Record<string, DynamicRouteTab[]> = {
-  [ROUTES.dashboard.surveys]: [{ prefix: ROUTES.dashboard.surveysStats, icon: BarChart3 }],
+  [ROUTES.dashboard.research]: [{ prefix: ROUTES.dashboard.researchStats, icon: BarChart3 }],
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────

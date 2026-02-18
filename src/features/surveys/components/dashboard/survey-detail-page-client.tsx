@@ -19,7 +19,7 @@ export function SurveyDetailPageClient({ survey, questions }: SurveyDetailPageCl
   const handleStatusChange = useCallback(
     (..._args: [string, string]) => {
       void _args;
-      router.push(ROUTES.dashboard.surveys);
+      router.push(ROUTES.dashboard.research);
     },
     [router]
   );

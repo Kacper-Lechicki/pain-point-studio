@@ -8,19 +8,19 @@ import { SIDEBAR_NAV, findActiveNavItem, hasSubNavForPath } from './navigation';
 // ── findActiveNavItem ───────────────────────────────────────────────
 
 describe('findActiveNavItem', () => {
-  it('should return surveys nav item for /dashboard/surveys', () => {
-    const result = findActiveNavItem('/dashboard/surveys');
+  it('should return surveys nav item for /dashboard/research', () => {
+    const result = findActiveNavItem('/dashboard/research');
 
     expect(result).toBeDefined();
-    expect(result!.href).toBe('/dashboard/surveys');
+    expect(result!.href).toBe('/dashboard/research');
     expect(result!.subNav).toBeDefined();
   });
 
   it('should return surveys nav item for survey sub-paths', () => {
-    const result = findActiveNavItem('/dashboard/surveys/new');
+    const result = findActiveNavItem('/dashboard/research/new');
 
     expect(result).toBeDefined();
-    expect(result!.href).toBe('/dashboard/surveys');
+    expect(result!.href).toBe('/dashboard/research');
   });
 
   it('should return settings nav item for /settings', () => {
@@ -59,7 +59,7 @@ describe('findActiveNavItem', () => {
 
 describe('hasSubNavForPath', () => {
   it('should return true for paths with sub-navigation', () => {
-    expect(hasSubNavForPath('/dashboard/surveys')).toBe(true);
+    expect(hasSubNavForPath('/dashboard/research')).toBe(true);
     expect(hasSubNavForPath('/settings')).toBe(true);
     expect(hasSubNavForPath('/settings/profile')).toBe(true);
   });

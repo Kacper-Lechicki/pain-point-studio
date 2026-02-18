@@ -61,7 +61,7 @@ const SurveyMetadataForm = ({
       if (mode === 'edit') {
         onSaved?.();
       } else {
-        router.push(ROUTES.dashboard.surveys);
+        router.push(ROUTES.dashboard.research);
       }
     },
   });

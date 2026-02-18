@@ -72,13 +72,13 @@ export function PublishSuccessPanel({
               </Link>
             </Button>
             <Button variant="outline" size="sm" asChild>
-              <Link href={ROUTES.dashboard.surveysNew} replace>
+              <Link href={ROUTES.dashboard.researchNew} replace>
                 <Plus className="size-3.5" />
                 {t('surveys.publish.createAnother')}
               </Link>
             </Button>
             <Button variant="ghost" size="sm" asChild>
-              <Link href={ROUTES.dashboard.surveys} replace>
+              <Link href={ROUTES.dashboard.research} replace>
                 <ClipboardList className="size-3.5" />
                 {t('surveys.publish.backToSurveys')}
               </Link>

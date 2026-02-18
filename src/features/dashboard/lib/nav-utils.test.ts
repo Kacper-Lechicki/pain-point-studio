@@ -11,33 +11,33 @@ describe('getSubItemHref', () => {
   const base: SubNavItem = {
     labelKey: 'sidebar.allSurveys' as SubNavItem['labelKey'],
     icon: (() => null) as unknown as SubNavItem['icon'],
-    href: '/dashboard/surveys' as SubNavItem['href'],
+    href: '/dashboard/research' as SubNavItem['href'],
   };
 
   it('should return plain href when no searchParams or hash', () => {
-    expect(getSubItemHref(base)).toBe('/dashboard/surveys');
+    expect(getSubItemHref(base)).toBe('/dashboard/research');
   });
 
   it('should append hash when defined', () => {
-    expect(getSubItemHref({ ...base, hash: 'section' })).toBe('/dashboard/surveys#section');
+    expect(getSubItemHref({ ...base, hash: 'section' })).toBe('/dashboard/research#section');
   });
 
   it('should append searchParams as query string', () => {
     expect(getSubItemHref({ ...base, searchParams: { status: 'active' } })).toBe(
-      '/dashboard/surveys?status=active'
+      '/dashboard/research?status=active'
     );
   });
 
   it('should append both searchParams and hash', () => {
     expect(getSubItemHref({ ...base, searchParams: { tab: 'all' }, hash: 'top' })).toBe(
-      '/dashboard/surveys?tab=all#top'
+      '/dashboard/research?tab=all#top'
     );
   });
 
   it('should encode special characters in searchParams', () => {
     const href = getSubItemHref({ ...base, searchParams: { q: 'hello world' } });
 
-    expect(href).toBe('/dashboard/surveys?q=hello+world');
+    expect(href).toBe('/dashboard/research?q=hello+world');
   });
 });
 
@@ -47,7 +47,7 @@ describe('collectSearchParamKeys', () => {
   const item = (sp?: Record<string, string>): SubNavItem => ({
     labelKey: 'sidebar.allSurveys' as SubNavItem['labelKey'],
     icon: (() => null) as unknown as SubNavItem['icon'],
-    href: '/dashboard/surveys' as SubNavItem['href'],
+    href: '/dashboard/research' as SubNavItem['href'],
     searchParams: sp,
   });
 
@@ -95,14 +95,14 @@ describe('isSubItemActive', () => {
   const item = (overrides?: Partial<SubNavItem>): SubNavItem => ({
     labelKey: 'sidebar.allSurveys' as SubNavItem['labelKey'],
     icon: (() => null) as unknown as SubNavItem['icon'],
-    href: '/dashboard/surveys' as SubNavItem['href'],
+    href: '/dashboard/research' as SubNavItem['href'],
     ...overrides,
   });
 
   it('should match hash item when pathname and hash match', () => {
     const result = isSubItemActive(
       item({ hash: 'section' }),
-      '/dashboard/surveys',
+      '/dashboard/research',
       'section',
       new URLSearchParams(),
       []
@@ -114,7 +114,7 @@ describe('isSubItemActive', () => {
   it('should reject hash item when hash differs', () => {
     const result = isSubItemActive(
       item({ hash: 'section' }),
-      '/dashboard/surveys',
+      '/dashboard/research',
       'other',
       new URLSearchParams(),
       []
@@ -138,7 +138,7 @@ describe('isSubItemActive', () => {
   it('should match searchParams item when all params match', () => {
     const result = isSubItemActive(
       item({ searchParams: { status: 'active' } }),
-      '/dashboard/surveys',
+      '/dashboard/research',
       '',
       new URLSearchParams('status=active'),
       ['status']
@@ -150,7 +150,7 @@ describe('isSubItemActive', () => {
   it('should reject searchParams item when param value differs', () => {
     const result = isSubItemActive(
       item({ searchParams: { status: 'active' } }),
-      '/dashboard/surveys',
+      '/dashboard/research',
       '',
       new URLSearchParams('status=draft'),
       ['status']
@@ -172,7 +172,7 @@ describe('isSubItemActive', () => {
   });
 
   it('should match plain item when pathname matches and no search params present', () => {
-    const result = isSubItemActive(item(), '/dashboard/surveys', '', new URLSearchParams(), [
+    const result = isSubItemActive(item(), '/dashboard/research', '', new URLSearchParams(), [
       'status',
     ]);
 
@@ -182,7 +182,7 @@ describe('isSubItemActive', () => {
   it('should reject plain item when a tracked search param is present in URL', () => {
     const result = isSubItemActive(
       item(),
-      '/dashboard/surveys',
+      '/dashboard/research',
       '',
       new URLSearchParams('status=active'),
       ['status']
