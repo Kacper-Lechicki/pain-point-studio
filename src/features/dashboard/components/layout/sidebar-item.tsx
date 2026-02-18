@@ -18,6 +18,7 @@ interface SidebarItemProps {
   labelKey: MessageKey;
   icon: LucideIcon;
   href: AppRoute;
+  activePrefix?: string | undefined;
   isExpanded: boolean;
   hasSubNav?: boolean | undefined;
   disabled?: boolean | undefined;
@@ -27,6 +28,7 @@ export function SidebarItem({
   labelKey,
   icon: Icon,
   href,
+  activePrefix,
   isExpanded,
   hasSubNav,
   disabled,
@@ -34,9 +36,10 @@ export function SidebarItem({
   const pathname = usePathname();
   const t = useTranslations();
 
+  const matchPath = activePrefix ?? href;
   const isActive = hasSubNav
-    ? pathname === href || pathname.startsWith(href + '/')
-    : pathname === href;
+    ? pathname === matchPath || pathname.startsWith(matchPath + '/')
+    : pathname === matchPath;
 
   const label = t(labelKey);
 

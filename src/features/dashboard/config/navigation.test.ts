@@ -3,7 +3,12 @@ import { describe, expect, it } from 'vitest';
 
 import { ROUTES } from '@/config/routes';
 
-import { SIDEBAR_NAV, findActiveNavItem, hasSubNavForPath } from './navigation';
+import {
+  DYNAMIC_SIDEBAR_ITEMS,
+  SIDEBAR_NAV,
+  findActiveNavItem,
+  hasSubNavForPath,
+} from './navigation';
 
 // ── findActiveNavItem ───────────────────────────────────────────────
 
@@ -27,14 +32,15 @@ describe('findActiveNavItem', () => {
     const result = findActiveNavItem('/settings');
 
     expect(result).toBeDefined();
-    expect(result!.href).toBe(ROUTES.common.settings);
+    expect(result!.href).toBe(ROUTES.settings.profile);
+    expect(result!.activePrefix).toBe(ROUTES.common.settings);
   });
 
   it('should return settings nav item for settings sub-paths', () => {
     const result = findActiveNavItem('/settings/profile');
 
     expect(result).toBeDefined();
-    expect(result!.href).toBe(ROUTES.common.settings);
+    expect(result!.href).toBe(ROUTES.settings.profile);
   });
 
   it('should return undefined for /dashboard (no subNav)', () => {
@@ -46,8 +52,19 @@ describe('findActiveNavItem', () => {
     expect(findActiveNavItem('/dashboard')).toBeUndefined();
   });
 
-  it('should return undefined for /dashboard/analytics (no subNav)', () => {
-    expect(findActiveNavItem('/dashboard/analytics')).toBeUndefined();
+  it('should return analytics nav item for /dashboard/analytics (via activePrefix)', () => {
+    const result = findActiveNavItem('/dashboard/analytics');
+
+    expect(result).toBeDefined();
+    expect(result!.href).toBe(ROUTES.dashboard.analyticsProjectIdea);
+    expect(result!.activePrefix).toBe(ROUTES.dashboard.analytics);
+  });
+
+  it('should return analytics nav item for analytics sub-paths', () => {
+    const result = findActiveNavItem('/dashboard/analytics/project-idea-evaluation');
+
+    expect(result).toBeDefined();
+    expect(result!.href).toBe(ROUTES.dashboard.analyticsProjectIdea);
   });
 
   it('should return undefined for unknown paths', () => {
@@ -62,11 +79,30 @@ describe('hasSubNavForPath', () => {
     expect(hasSubNavForPath('/dashboard/research')).toBe(true);
     expect(hasSubNavForPath('/settings')).toBe(true);
     expect(hasSubNavForPath('/settings/profile')).toBe(true);
+    expect(hasSubNavForPath('/dashboard/analytics')).toBe(true);
+    expect(hasSubNavForPath('/dashboard/analytics/project-idea-evaluation')).toBe(true);
   });
 
   it('should return false for paths without sub-navigation', () => {
     expect(hasSubNavForPath('/dashboard')).toBe(false);
-    expect(hasSubNavForPath('/dashboard/analytics')).toBe(false);
     expect(hasSubNavForPath('/unknown')).toBe(false);
+  });
+});
+
+// ── DYNAMIC_SIDEBAR_ITEMS ─────────────────────────────────────────
+
+describe('DYNAMIC_SIDEBAR_ITEMS', () => {
+  it('should include profile preview route', () => {
+    const match = DYNAMIC_SIDEBAR_ITEMS.find((item) => item.path === ROUTES.profile.preview);
+
+    expect(match).toBeDefined();
+    expect(match!.labelKey).toBe('sidebar.profilePreview');
+  });
+
+  it('should have valid AppRoute paths', () => {
+    for (const item of DYNAMIC_SIDEBAR_ITEMS) {
+      expect(typeof item.path).toBe('string');
+      expect(item.path.startsWith('/')).toBe(true);
+    }
   });
 });

@@ -178,15 +178,7 @@
       "cta": "Create survey"
     },
     "categories": {
-      "problemValidation": "Problem Validation",
-      "solutionValidation": "Solution Validation",
-      "marketDemand": "Market Demand",
-      "willingnessToPay": "Willingness to Pay",
-      "targetAudience": "Target Audience",
-      "competitiveLandscape": "Competitive Landscape",
-      "userHabits": "User Habits",
-      "satisfaction": "Satisfaction",
-      "other": "Other"
+      "projectIdeaEvaluation": "Project Idea Evaluation"
     },
     "create": {
       "title": "Survey Details",
@@ -200,7 +192,7 @@
       "descriptionCounter": "{count}/{max}",
       "category": "Category",
       "categoryPlaceholder": "Select a category",
-      "categoryHelper": "Helps organize your surveys and compare results across projects.",
+      "categoryHelper": "Survey results will be aggregated under the selected category in <link>Analytics</link>.",
       "visibility": "Visibility",
       "visibilityPrivateDescription": "Only accessible via direct link. Not visible on the platform.",
       "visibilityPublicDescription": "Accessible via link and visible in the Community module.",
@@ -736,6 +728,7 @@
     "research": "Research",
     "surveys": "Surveys",
     "analytics": "Analytics",
+    "projectIdeaEvaluation": "Project Idea Evaluation",
     "allSurveys": "All surveys",
     "newSurvey": "New survey",
     "templates": "Templates",
@@ -750,13 +743,15 @@
     "pinSidebar": "Pin sidebar",
     "unpinSidebar": "Unpin sidebar",
     "back": "Back",
-    "dynamicHeading": "Dynamic"
+    "dynamicHeading": "Dynamic",
+    "profilePreview": "Profile"
   },
   "breadcrumbs": {
     "dashboard": "Dashboard",
     "research": "Research",
     "surveys": "Surveys",
     "analytics": "Analytics",
+    "projectIdeaEvaluation": "Project Idea Evaluation",
     "settings": "Settings",
     "profile": "Profile",
     "preview": "Preview",

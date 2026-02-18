@@ -218,7 +218,10 @@ test.describe('Survey Builder – Metadata Editing', () => {
       const saveBtns = page.getByRole('button', { name: 'Save Draft' });
 
       await saveBtns.last().click();
-      await expect(page.locator(sel.toast).first()).toBeVisible({ timeout: 10_000 });
+
+      // After save, the panel closes (router.refresh() can dismiss the toast
+      // before we catch it), so assert the panel closed + title input is gone
+      await expect(page.locator(sel.titleInput)).toBeHidden({ timeout: 10_000 });
     }).toPass({ timeout: 20_000 });
   });
 });

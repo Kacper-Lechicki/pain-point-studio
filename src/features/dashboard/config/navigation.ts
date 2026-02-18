@@ -57,6 +57,12 @@ export interface NavItem {
   labelKey: MessageKey;
   icon: LucideIcon;
   href: AppRoute;
+  /**
+   * Path prefix used for active-state matching instead of `href`.
+   * Useful when `href` points to a specific sub-page but the whole
+   * section (e.g. `/dashboard/analytics/*`) should highlight as active.
+   */
+  activePrefix?: string | undefined;
   subNav?: SubNavConfig | undefined;
   disabled?: boolean | undefined;
 }
@@ -141,7 +147,22 @@ export const SIDEBAR_NAV: NavGroup[] = [
       {
         labelKey: 'sidebar.analytics',
         icon: BarChart3,
-        href: ROUTES.dashboard.analytics,
+        href: ROUTES.dashboard.analyticsProjectIdea,
+        activePrefix: ROUTES.dashboard.analytics,
+        subNav: {
+          titleKey: 'sidebar.analytics',
+          groups: [
+            {
+              items: [
+                {
+                  labelKey: 'sidebar.projectIdeaEvaluation',
+                  icon: ClipboardList,
+                  href: ROUTES.dashboard.analyticsProjectIdea,
+                },
+              ],
+            },
+          ],
+        },
       },
     ],
   },
@@ -167,7 +188,8 @@ const USER_SETTINGS_SUB_NAV_ITEMS: SubNavItem[] = [
 const USER_SETTINGS_NAV_ITEM: NavItem = {
   labelKey: 'sidebar.settings',
   icon: Settings,
-  href: ROUTES.common.settings,
+  href: ROUTES.settings.profile,
+  activePrefix: ROUTES.common.settings,
   subNav: {
     titleKey: 'settings.title',
     groups: [{ items: USER_SETTINGS_SUB_NAV_ITEMS }],
@@ -181,7 +203,7 @@ export const SIDEBAR_BOTTOM_ITEM: NavItem = {
   disabled: true,
 };
 
-// ── Dynamic route tabs ───────────────────────────────────────────────
+// ── Dynamic route tabs (sub-panel) ──────────────────────────────────
 
 export interface DynamicRouteTab {
   prefix: string;
@@ -192,6 +214,23 @@ export const DYNAMIC_ROUTE_TABS: Record<string, DynamicRouteTab[]> = {
   [ROUTES.dashboard.research]: [{ prefix: ROUTES.dashboard.researchStats, icon: BarChart3 }],
 };
 
+// ── Dynamic sidebar items (main sidebar) ────────────────────────────
+
+export interface DynamicSidebarItem {
+  /** Path that, when matched exactly, shows this item in the sidebar. */
+  path: AppRoute;
+  labelKey: MessageKey;
+  icon: LucideIcon;
+}
+
+/**
+ * Routes that are not part of the static sidebar but should still
+ * show a highlighted item when the user is on them.
+ */
+export const DYNAMIC_SIDEBAR_ITEMS: DynamicSidebarItem[] = [
+  { path: ROUTES.profile.preview, labelKey: 'sidebar.profilePreview', icon: CircleUserRound },
+];
+
 // ── Helpers ───────────────────────────────────────────────────────────
 
 /**
@@ -199,6 +238,12 @@ export const DYNAMIC_ROUTE_TABS: Record<string, DynamicRouteTab[]> = {
  * sub-nav contains a matching child. Returns the NavItem if it has
  * subNav, otherwise undefined.
  */
+function matchesNavItem(pathname: string, item: NavItem): boolean {
+  const prefix = item.activePrefix ?? item.href;
+
+  return pathname === prefix || pathname.startsWith(prefix + '/');
+}
+
 export function findActiveNavItem(pathname: string): NavItem | undefined {
   for (const group of SIDEBAR_NAV) {
     for (const item of group.items) {
@@ -206,17 +251,14 @@ export function findActiveNavItem(pathname: string): NavItem | undefined {
         continue;
       }
 
-      if (pathname === item.href || pathname.startsWith(item.href + '/')) {
+      if (matchesNavItem(pathname, item)) {
         return item;
       }
     }
   }
 
   // User account settings — accessible via user menu, sub-panel still needed
-  if (
-    pathname === USER_SETTINGS_NAV_ITEM.href ||
-    pathname.startsWith(USER_SETTINGS_NAV_ITEM.href + '/')
-  ) {
+  if (matchesNavItem(pathname, USER_SETTINGS_NAV_ITEM)) {
     return USER_SETTINGS_NAV_ITEM;
   }
 

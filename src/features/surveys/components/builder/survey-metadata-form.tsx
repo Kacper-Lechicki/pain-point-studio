@@ -25,7 +25,6 @@ import {
 import { useFormAction } from '@/hooks/common/use-form-action';
 import { useUnsavedChangesWarning } from '@/hooks/unsaved-changes-context';
 import type { MessageKey } from '@/i18n/types';
-import { cn } from '@/lib/common/utils';
 
 interface SurveyMetadataFormProps {
   categoryOptions: SurveyCategoryOption[];
@@ -128,12 +127,7 @@ const SurveyMetadataForm = ({
       <form className="space-y-6">
         {formFields}
 
-        <div
-          className={cn(
-            'flex items-center gap-3 pt-2',
-            mode === 'edit' ? 'justify-end' : 'justify-between'
-          )}
-        >
+        <div className="flex items-center justify-end gap-3 pt-2">
           <Button
             type="button"
             variant={mode === 'edit' ? 'default' : 'outline'}

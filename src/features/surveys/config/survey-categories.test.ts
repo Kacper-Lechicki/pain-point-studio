@@ -25,9 +25,7 @@ describe('SURVEY_CATEGORIES', () => {
   it('should include expected categories', () => {
     const values = SURVEY_CATEGORIES.map((c) => c.value);
 
-    expect(values).toContain('problem-validation');
-    expect(values).toContain('market-demand');
-    expect(values).toContain('other');
+    expect(values).toContain('project-idea-evaluation');
   });
 });
 

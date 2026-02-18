@@ -13,10 +13,11 @@ import {
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
+import { ROUTES } from '@/config/routes';
 import type { SurveyCategoryOption } from '@/features/surveys/actions';
 import { SURVEY_DESCRIPTION_MAX_LENGTH, SURVEY_TITLE_MAX_LENGTH } from '@/features/surveys/config';
-import { sortCategoriesOtherLast } from '@/features/surveys/config/survey-categories';
 import type { SurveyMetadataSchema } from '@/features/surveys/types';
+import { Link } from '@/i18n/routing';
 
 interface SurveyMetadataFieldsProps {
   form: UseFormReturn<SurveyMetadataSchema>;
@@ -95,11 +96,22 @@ export function SurveyMetadataFields({ form, categoryOptions }: SurveyMetadataFi
         render={({ field, fieldState }) => (
           <FormItem>
             <FormLabel>{t('surveys.create.category')}</FormLabel>
-            <FormDescription>{t('surveys.create.categoryHelper')}</FormDescription>
+            <FormDescription>
+              {t.rich('surveys.create.categoryHelper', {
+                link: (chunks) => (
+                  <Link
+                    href={ROUTES.dashboard.analyticsProjectIdea}
+                    className="text-foreground underline underline-offset-2"
+                  >
+                    {chunks}
+                  </Link>
+                ),
+              })}
+            </FormDescription>
 
             <FormControl>
               <Combobox
-                options={sortCategoriesOtherLast(categoryOptions)}
+                options={categoryOptions}
                 value={field.value}
                 onValueChange={field.onChange}
                 placeholder={t('surveys.create.categoryPlaceholder')}

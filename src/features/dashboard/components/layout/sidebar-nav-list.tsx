@@ -1,4 +1,5 @@
 import { Separator } from '@/components/ui/separator';
+import { SidebarDynamicItem } from '@/features/dashboard/components/layout/sidebar-dynamic-item';
 import { SidebarItem } from '@/features/dashboard/components/layout/sidebar-item';
 import { SIDEBAR_NAV } from '@/features/dashboard/config/navigation';
 
@@ -25,6 +26,8 @@ const SidebarNavList = ({ isExpanded }: SidebarNavListProps) => {
           </div>
         </div>
       ))}
+
+      <SidebarDynamicItem isExpanded={isExpanded} />
     </>
   );
 };
