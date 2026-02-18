@@ -142,6 +142,20 @@ export const SIDEBAR_NAV: NavGroup[] = [
         labelKey: 'sidebar.analytics',
         icon: BarChart3,
         href: ROUTES.dashboard.analytics,
+        subNav: {
+          titleKey: 'sidebar.analytics',
+          groups: [
+            {
+              items: [
+                {
+                  labelKey: 'sidebar.projectIdeaEvaluation',
+                  icon: ClipboardList,
+                  href: ROUTES.dashboard.analyticsProjectIdea,
+                },
+              ],
+            },
+          ],
+        },
       },
     ],
   },

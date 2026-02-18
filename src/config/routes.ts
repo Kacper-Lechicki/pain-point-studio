@@ -30,6 +30,7 @@ export const ROUTES = {
     researchBuilder: '/dashboard/research/new/[id]',
     researchStats: '/dashboard/research/stats',
     analytics: '/dashboard/analytics' as AppRoute,
+    analyticsProjectIdea: '/dashboard/analytics/project-idea-evaluation' as AppRoute,
   },
   profile: {
     preview: '/profile/preview' as AppRoute,

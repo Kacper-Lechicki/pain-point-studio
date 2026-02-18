@@ -1,16 +1,7 @@
-import { Construction } from 'lucide-react';
+import { redirect } from 'next/navigation';
 
-import { EmptyState } from '@/components/ui/empty-state';
-import { PageTransition } from '@/components/ui/page-transition';
+import { ROUTES } from '@/config';
 
-export default function AnalyticsPage() {
-  return (
-    <PageTransition>
-      <EmptyState
-        icon={Construction}
-        title="Coming soon"
-        description="Cross-survey analytics are being built. Check back later."
-      />
-    </PageTransition>
-  );
+export default function AnalyticsIndexRoute() {
+  redirect(ROUTES.dashboard.analyticsProjectIdea);
 }

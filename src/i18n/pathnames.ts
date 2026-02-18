@@ -42,6 +42,9 @@ export const PATHNAMES = {
   '/dashboard/analytics': {
     en: '/dashboard/analytics',
   },
+  '/dashboard/analytics/project-idea-evaluation': {
+    en: '/dashboard/analytics/project-idea-evaluation',
+  },
   '/sign-in': {
     en: '/sign-in',
   },
