@@ -12,7 +12,7 @@ import {
 
 describe('getSurveyEditUrl', () => {
   it('should return the edit URL for a given survey ID', () => {
-    expect(getSurveyEditUrl('abc-123')).toBe('/dashboard/surveys/new/abc-123');
+    expect(getSurveyEditUrl('abc-123')).toBe('/dashboard/research/new/abc-123');
   });
 });
 
@@ -20,7 +20,7 @@ describe('getSurveyEditUrl', () => {
 
 describe('getSurveyPublishUrl', () => {
   it('should return the edit URL with publish query param', () => {
-    expect(getSurveyPublishUrl('abc-123')).toBe('/dashboard/surveys/new/abc-123?publish=true');
+    expect(getSurveyPublishUrl('abc-123')).toBe('/dashboard/research/new/abc-123?publish=true');
   });
 });
 
@@ -28,7 +28,7 @@ describe('getSurveyPublishUrl', () => {
 
 describe('getSurveyStatsUrl', () => {
   it('should return the stats URL for a given survey ID', () => {
-    expect(getSurveyStatsUrl('abc-123')).toBe('/dashboard/surveys/stats/abc-123');
+    expect(getSurveyStatsUrl('abc-123')).toBe('/dashboard/research/stats/abc-123');
   });
 });
 
@@ -36,6 +36,6 @@ describe('getSurveyStatsUrl', () => {
 
 describe('getSurveyDetailUrl', () => {
   it('should return the detail URL for a given survey ID', () => {
-    expect(getSurveyDetailUrl('abc-123')).toBe('/dashboard/surveys/abc-123');
+    expect(getSurveyDetailUrl('abc-123')).toBe('/dashboard/research/abc-123');
   });
 });

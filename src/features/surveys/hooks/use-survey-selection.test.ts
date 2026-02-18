@@ -10,7 +10,7 @@ import { useSurveySelection } from './use-survey-selection';
 const mockReplace = vi.fn();
 
 vi.mock('next/navigation', () => ({
-  usePathname: () => '/en/dashboard/surveys',
+  usePathname: () => '/en/dashboard/research',
   useRouter: () => ({ replace: mockReplace }),
   useSearchParams: () => new URLSearchParams('selected=survey-1'),
 }));
@@ -107,7 +107,7 @@ describe('useSurveySelection', () => {
       result.current.setSelected('survey-2');
     });
 
-    expect(mockReplace).toHaveBeenCalledWith('/en/dashboard/surveys?selected=survey-2');
+    expect(mockReplace).toHaveBeenCalledWith('/en/dashboard/research?selected=survey-2');
   });
 
   it('should call router.replace without query when setSelected(null) is called', () => {
@@ -117,6 +117,6 @@ describe('useSurveySelection', () => {
       result.current.setSelected(null);
     });
 
-    expect(mockReplace).toHaveBeenCalledWith('/en/dashboard/surveys');
+    expect(mockReplace).toHaveBeenCalledWith('/en/dashboard/research');
   });
 });

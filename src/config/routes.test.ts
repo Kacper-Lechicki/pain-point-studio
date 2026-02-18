@@ -31,8 +31,8 @@ describe('ROUTES', () => {
     expect(ROUTES.settings).toHaveProperty('dangerZone');
   });
 
-  it('should have dashboard group with surveys and analytics', () => {
-    expect(ROUTES.dashboard).toHaveProperty('surveys');
+  it('should have dashboard group with research and analytics', () => {
+    expect(ROUTES.dashboard).toHaveProperty('research');
     expect(ROUTES.dashboard).toHaveProperty('analytics');
   });
 

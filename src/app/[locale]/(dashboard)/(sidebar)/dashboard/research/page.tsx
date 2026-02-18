@@ -31,7 +31,7 @@ export default async function SurveysPage() {
 
         {hasSurveys && (
           <Button asChild className="w-full sm:w-auto">
-            <Link href={ROUTES.dashboard.surveysNew}>
+            <Link href={ROUTES.dashboard.researchNew}>
               <Plus className="size-4" aria-hidden />
               {t('surveys.createSurvey')}
             </Link>
@@ -49,7 +49,7 @@ export default async function SurveysPage() {
             description={t('surveys.empty.description')}
             action={
               <Button asChild>
-                <Link href={ROUTES.dashboard.surveysNew}>
+                <Link href={ROUTES.dashboard.researchNew}>
                   <Plus className="size-4" aria-hidden />
                   {t('surveys.empty.cta')}
                 </Link>

@@ -25,7 +25,7 @@ describe('isBuilderPath', () => {
   });
 
   it('should return false for unrelated paths', () => {
-    expect(isBuilderPath('/dashboard/surveys')).toBe(false);
+    expect(isBuilderPath('/dashboard/research')).toBe(false);
     expect(isBuilderPath('/settings')).toBe(false);
   });
 });
@@ -38,15 +38,15 @@ describe('getDashboardBackConfig', () => {
   });
 
   it('should return survey list fallback for stats sub-path', () => {
-    const config = getDashboardBackConfig('/dashboard/surveys/stats/abc-123');
+    const config = getDashboardBackConfig('/dashboard/research/stats/abc-123');
 
-    expect(config).toEqual({ fallbackHref: '/dashboard/surveys' });
+    expect(config).toEqual({ fallbackHref: '/dashboard/research' });
   });
 
   it('should return survey list fallback for single survey detail', () => {
-    const config = getDashboardBackConfig('/dashboard/surveys/some-id');
+    const config = getDashboardBackConfig('/dashboard/research/some-id');
 
-    expect(config).toEqual({ fallbackHref: '/dashboard/surveys' });
+    expect(config).toEqual({ fallbackHref: '/dashboard/research' });
   });
 
   it('should return profile settings fallback for profile preview', () => {
@@ -98,27 +98,27 @@ describe('getDashboardContentMaxWidth', () => {
   });
 
   it('should return "full" for survey list', () => {
-    expect(getDashboardContentMaxWidth('/dashboard/surveys')).toBe('full');
+    expect(getDashboardContentMaxWidth('/dashboard/research')).toBe('full');
   });
 
   it('should return "full" for survey archive', () => {
-    expect(getDashboardContentMaxWidth('/dashboard/surveys/archive')).toBe('full');
+    expect(getDashboardContentMaxWidth('/dashboard/research/archive')).toBe('full');
   });
 
   it('should return "full" for locale-prefixed survey list', () => {
-    expect(getDashboardContentMaxWidth('/en/dashboard/surveys')).toBe('full');
+    expect(getDashboardContentMaxWidth('/en/dashboard/research')).toBe('full');
   });
 
   it('should return "narrow" for new survey', () => {
-    expect(getDashboardContentMaxWidth('/dashboard/surveys/new')).toBe('narrow');
+    expect(getDashboardContentMaxWidth('/dashboard/research/new')).toBe('narrow');
   });
 
   it('should return "narrow" for builder sub-path', () => {
-    expect(getDashboardContentMaxWidth('/dashboard/surveys/new/abc-123')).toBe('narrow');
+    expect(getDashboardContentMaxWidth('/dashboard/research/new/abc-123')).toBe('narrow');
   });
 
   it('should return "narrow" for single survey detail', () => {
-    expect(getDashboardContentMaxWidth('/dashboard/surveys/some-id')).toBe('narrow');
+    expect(getDashboardContentMaxWidth('/dashboard/research/some-id')).toBe('narrow');
   });
 
   it('should return "narrow" for settings root', () => {

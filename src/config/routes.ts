@@ -24,11 +24,11 @@ export const ROUTES = {
     dangerZone: '/settings/danger-zone' as AppRoute,
   },
   dashboard: {
-    surveys: '/dashboard/surveys' as AppRoute,
-    surveysNew: '/dashboard/surveys/new' as AppRoute,
-    surveysArchive: '/dashboard/surveys/archive' as AppRoute,
-    surveysBuilder: '/dashboard/surveys/new/[id]',
-    surveysStats: '/dashboard/surveys/stats',
+    research: '/dashboard/research' as AppRoute,
+    researchNew: '/dashboard/research/new' as AppRoute,
+    researchArchive: '/dashboard/research/archive' as AppRoute,
+    researchBuilder: '/dashboard/research/new/[id]',
+    researchStats: '/dashboard/research/stats',
     analytics: '/dashboard/analytics' as AppRoute,
   },
   profile: {
@@ -47,7 +47,7 @@ export const ROUTES = {
  */
 export const SIBLING_GROUPS: readonly (readonly AppRoute[])[] = [
   [ROUTES.auth.signIn, ROUTES.auth.signUp, ROUTES.auth.forgotPassword],
-  [ROUTES.dashboard.surveys, ROUTES.dashboard.surveysArchive, ROUTES.dashboard.surveysNew],
+  [ROUTES.dashboard.research, ROUTES.dashboard.researchArchive, ROUTES.dashboard.researchNew],
 ];
 
 export const SETTINGS_SECTION_VALUES = [

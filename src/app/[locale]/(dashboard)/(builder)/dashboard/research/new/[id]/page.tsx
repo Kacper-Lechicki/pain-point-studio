@@ -19,7 +19,7 @@ export default async function SurveyBuilderRoute({ params }: Props) {
   }
 
   if (data.survey.status !== 'draft') {
-    redirect(`${ROUTES.dashboard.surveys}/${id}`);
+    redirect(`${ROUTES.dashboard.research}/${id}`);
   }
 
   return (

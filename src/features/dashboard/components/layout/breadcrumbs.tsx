@@ -10,7 +10,7 @@ import { cn } from '@/lib/common/utils';
 
 const SEGMENT_KEYS: Record<string, string> = {
   dashboard: 'dashboard',
-  surveys: 'surveys',
+  research: 'research',
   analytics: 'analytics',
   settings: 'settings',
   profile: 'profile',
