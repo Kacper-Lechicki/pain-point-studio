@@ -5,6 +5,7 @@ import { cache } from 'react';
 import { getTranslations } from 'next-intl/server';
 
 import { SURVEY_CATEGORIES } from '@/features/surveys/config/survey-categories';
+import { sortOptionsAlphabetically } from '@/lib/common/sort-options';
 
 export interface SurveyCategoryOption {
   value: string;
@@ -19,9 +20,11 @@ export const getSurveyFormData = cache(async (): Promise<SurveyFormData> => {
   const t = await getTranslations();
 
   return {
-    categoryOptions: SURVEY_CATEGORIES.map((c) => ({
-      value: c.value,
-      label: t(c.labelKey as Parameters<typeof t>[0]),
-    })),
+    categoryOptions: sortOptionsAlphabetically(
+      SURVEY_CATEGORIES.map((c) => ({
+        value: c.value,
+        label: t(c.labelKey as Parameters<typeof t>[0]),
+      }))
+    ),
   };
 });

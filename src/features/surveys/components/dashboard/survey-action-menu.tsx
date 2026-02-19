@@ -1,4 +1,7 @@
-import { BarChart3, Eye, Pencil, Send, Share2 } from 'lucide-react';
+import { useMemo } from 'react';
+
+import { BarChart3, Download, Eye, Pencil, Send, Share2 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import {
@@ -26,16 +29,23 @@ interface SurveyActionMenuContentProps {
   };
   availableActions: SurveyAction[];
   onShare: () => void;
+  onExport?: (() => void) | undefined;
   handleActionClick: (action: SurveyAction) => void;
   onDetails?: () => void;
   detailsLabelKey?: 'quickPreview' | 'details';
 }
+
+// ── Primary menu item definition ──────────────────────────────────────
+type PrimaryMenuItem =
+  | { kind: 'button'; key: string; label: string; icon: LucideIcon; onClick: () => void }
+  | { kind: 'link'; key: string; label: string; icon: LucideIcon; href: string };
 
 export function SurveyActionMenuContent({
   surveyId,
   flags,
   availableActions,
   onShare,
+  onExport,
   handleActionClick,
   onDetails,
   detailsLabelKey = 'details',
@@ -44,53 +54,115 @@ export function SurveyActionMenuContent({
   const { isDraft, isArchived, hasShareableLink, questionCount } = flags;
   const canPublish = isDraft && questionCount >= QUESTIONS_MIN;
 
+  // Build visible primary items then sort alphabetically by label
+  const primaryItems = useMemo(() => {
+    const items: PrimaryMenuItem[] = [];
+
+    if (onDetails) {
+      items.push({
+        kind: 'button',
+        key: 'details',
+        label: t(`surveys.dashboard.actions.${detailsLabelKey}`),
+        icon: Eye,
+        onClick: onDetails,
+      });
+    }
+
+    if (hasShareableLink) {
+      items.push({
+        kind: 'button',
+        key: 'share',
+        label: t('surveys.dashboard.actions.share'),
+        icon: Share2,
+        onClick: onShare,
+      });
+    }
+
+    if (!isDraft && !isArchived) {
+      items.push({
+        kind: 'link',
+        key: 'viewResults',
+        label: t('surveys.dashboard.actions.viewResults'),
+        icon: BarChart3,
+        href: getSurveyStatsUrl(surveyId),
+      });
+    }
+
+    if (!isDraft && !isArchived && onExport) {
+      items.push({
+        kind: 'button',
+        key: 'export',
+        label: t('surveys.dashboard.actions.export'),
+        icon: Download,
+        onClick: onExport,
+      });
+    }
+
+    if (isDraft) {
+      items.push({
+        kind: 'link',
+        key: 'edit',
+        label: t('surveys.dashboard.actions.edit'),
+        icon: Pencil,
+        href: getSurveyEditUrl(surveyId),
+      });
+    }
+
+    if (canPublish) {
+      items.push({
+        kind: 'link',
+        key: 'publish',
+        label: t('surveys.dashboard.actions.publish'),
+        icon: Send,
+        href: getSurveyPublishUrl(surveyId),
+      });
+    }
+
+    return items.sort((a, b) => a.label.localeCompare(b.label));
+  }, [
+    t,
+    onDetails,
+    detailsLabelKey,
+    hasShareableLink,
+    onShare,
+    isDraft,
+    isArchived,
+    onExport,
+    canPublish,
+    surveyId,
+  ]);
+
+  // Sort status-change actions alphabetically by translated label
+  const sortedActions = useMemo(
+    () =>
+      [...availableActions].sort((a, b) =>
+        t(`surveys.dashboard.actions.${a}`).localeCompare(t(`surveys.dashboard.actions.${b}`))
+      ),
+    [availableActions, t]
+  );
+
   return (
     <DropdownMenuContent align="end">
-      {onDetails && (
-        <DropdownMenuItem onClick={onDetails}>
-          <Eye className="size-4" aria-hidden />
-          {t(`surveys.dashboard.actions.${detailsLabelKey}`)}
-        </DropdownMenuItem>
+      {primaryItems.map((item) =>
+        item.kind === 'link' ? (
+          <DropdownMenuItem key={item.key} asChild>
+            <Link href={item.href}>
+              <item.icon className="size-4" aria-hidden />
+              {item.label}
+            </Link>
+          </DropdownMenuItem>
+        ) : (
+          <DropdownMenuItem key={item.key} onClick={item.onClick}>
+            <item.icon className="size-4" aria-hidden />
+            {item.label}
+          </DropdownMenuItem>
+        )
       )}
 
-      {hasShareableLink && (
-        <DropdownMenuItem onClick={onShare}>
-          <Share2 className="size-4" aria-hidden />
-          {t('surveys.dashboard.actions.share')}
-        </DropdownMenuItem>
-      )}
-
-      {!isDraft && !isArchived && (
-        <DropdownMenuItem asChild>
-          <Link href={getSurveyStatsUrl(surveyId)}>
-            <BarChart3 className="size-4" aria-hidden />
-            {t('surveys.dashboard.actions.viewResults')}
-          </Link>
-        </DropdownMenuItem>
-      )}
-
-      {isDraft && (
-        <DropdownMenuItem asChild>
-          <Link href={getSurveyEditUrl(surveyId)}>
-            <Pencil className="size-4" aria-hidden />
-            {t('surveys.dashboard.actions.edit')}
-          </Link>
-        </DropdownMenuItem>
-      )}
-
-      {canPublish && (
-        <DropdownMenuItem asChild>
-          <Link href={getSurveyPublishUrl(surveyId)}>
-            <Send className="size-4" aria-hidden />
-            {t('surveys.dashboard.actions.publish')}
-          </Link>
-        </DropdownMenuItem>
-      )}
-
-      {availableActions.length > 0 && (
+      {sortedActions.length > 0 && (
         <>
           <DropdownMenuSeparator />
-          {availableActions.map((action) => {
+          {sortedActions.map((action) => {
             const ui = SURVEY_ACTION_UI[action];
             const Icon = ui.icon;
 

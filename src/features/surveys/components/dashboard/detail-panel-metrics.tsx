@@ -1,4 +1,4 @@
-import { BarChart3, Eye, MousePointerClick, Timer, Users } from 'lucide-react';
+import { BarChart3, Eye, Loader, MousePointerClick, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
@@ -13,8 +13,6 @@ interface DetailPanelMetricsProps {
   completedCount: number;
   maxRespondents: number | null;
   respondentProgress: number | null;
-  lastResponseLabel: string | null;
-  completionTimeLabel: string | null;
 }
 
 export function DetailPanelMetrics({
@@ -24,10 +22,9 @@ export function DetailPanelMetrics({
   completedCount,
   maxRespondents,
   respondentProgress,
-  lastResponseLabel,
-  completionTimeLabel,
 }: DetailPanelMetricsProps) {
   const t = useTranslations();
+  const inProgressCount = responseCount - completedCount;
 
   return (
     <>
@@ -72,20 +69,12 @@ export function DetailPanelMetrics({
           )}
         </div>
         <div className="border-border/50 rounded-md border px-3 py-2.5">
-          <div className="text-foreground text-sm leading-none font-semibold">
-            {lastResponseLabel ?? '—'}
-          </div>
-          <div className="text-muted-foreground mt-1.5 text-[11px]">
-            {t('surveys.dashboard.detailPanel.lastResponse')}
-          </div>
-        </div>
-        <div className="border-border/50 rounded-md border px-3 py-2.5">
           <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
-            {completionTimeLabel ?? '—'}
+            {inProgressCount}
           </div>
           <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
-            <Timer className="mt-0.5 size-3 shrink-0" aria-hidden />
-            {t('surveys.dashboard.detailPanel.avgCompletionTime')}
+            <Loader className="mt-0.5 size-3 shrink-0" aria-hidden />
+            {t('surveys.dashboard.detailPanel.inProgress')}
           </div>
         </div>
       </div>

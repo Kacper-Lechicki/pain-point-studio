@@ -18,6 +18,7 @@ import { SurveyListRow } from '@/features/surveys/components/dashboard/survey-li
 import { useSurveyListState } from '@/features/surveys/hooks/use-survey-list-state';
 import { useSurveySelection } from '@/features/surveys/hooks/use-survey-selection';
 import { applyOptimisticStatusChange } from '@/features/surveys/lib/status-change-handler';
+import { sortOptionsAlphabetically } from '@/lib/common/sort-options';
 
 type ArchiveSortBy = 'updated' | 'created' | 'title' | 'questions' | 'autoDeletes' | 'archivedAt';
 
@@ -80,9 +81,9 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
 
   const sortOptions = useMemo(
     () =>
-      [...SORT_OPTIONS]
-        .map((v) => ({ value: v, label: t(`surveys.archive.sort.${v}`) }))
-        .sort((a, b) => a.label.localeCompare(b.label)),
+      sortOptionsAlphabetically(
+        SORT_OPTIONS.map((v) => ({ value: v, label: t(`surveys.archive.sort.${v}`) }))
+      ),
     [t]
   );
 

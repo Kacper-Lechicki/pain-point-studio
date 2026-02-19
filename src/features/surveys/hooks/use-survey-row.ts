@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import { useFormatter, useTranslations } from 'next-intl';
 
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
@@ -24,6 +26,9 @@ export function useSurveyRow(
   const flags = deriveSurveyFlags(survey.status);
   const { isDraft, isActive, isCompleted, isCancelled, isArchived } = flags;
   const hasShareableLink = (isActive || isCompleted || isCancelled) && !!survey.slug;
+  const canExport = !isDraft && !isArchived;
+  const [exportDialogOpen, setExportDialogOpen] = useState(false);
+  const handleExport = () => setExportDialogOpen(true);
 
   const archivedAtLabel =
     isArchived && (survey.archivedAt ?? survey.updatedAt)
@@ -75,5 +80,9 @@ export function useSurveyRow(
     shareDialogOpen,
     setShareDialogOpen,
     handleShare,
+    canExport,
+    exportDialogOpen,
+    setExportDialogOpen,
+    handleExport,
   };
 }

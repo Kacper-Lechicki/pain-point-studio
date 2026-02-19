@@ -121,18 +121,19 @@ describe('Settings Actions – Get Profile', () => {
     const { getProfile } = await import('./get-profile');
     const result = await getProfile();
 
+    // Options are sorted alphabetically by translated label, with "other" pinned to the end
     expect(result!.roleOptions).toEqual([
-      { value: 'developer', label: 'translated:settings.roles.developer' },
       { value: 'designer', label: 'translated:settings.roles.designer' },
+      { value: 'developer', label: 'translated:settings.roles.developer' },
       { value: 'product-manager', label: 'translated:settings.roles.productManager' },
       { value: 'student', label: 'translated:settings.roles.student' },
       { value: 'other', label: 'translated:settings.roles.other' },
     ]);
     expect(result!.socialLinkOptions).toEqual([
-      { value: 'website', label: 'translated:settings.profile.socialLinks.labels.website' },
       { value: 'github', label: 'translated:settings.profile.socialLinks.labels.github' },
-      { value: 'twitter', label: 'translated:settings.profile.socialLinks.labels.twitter' },
       { value: 'linkedin', label: 'translated:settings.profile.socialLinks.labels.linkedin' },
+      { value: 'twitter', label: 'translated:settings.profile.socialLinks.labels.twitter' },
+      { value: 'website', label: 'translated:settings.profile.socialLinks.labels.website' },
       { value: 'other', label: 'translated:settings.profile.socialLinks.labels.other' },
     ]);
   });

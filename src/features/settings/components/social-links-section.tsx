@@ -91,17 +91,7 @@ export function SocialLinksSection({
                 <FormItem className="w-full">
                   <FormControl>
                     <Combobox
-                      options={[...socialLinkOptions].sort((a, b) => {
-                        if (a.value === 'other') {
-                          return 1;
-                        }
-
-                        if (b.value === 'other') {
-                          return -1;
-                        }
-
-                        return a.label.localeCompare(b.label);
-                      })}
+                      options={socialLinkOptions}
                       value={labelField.value}
                       onValueChange={labelField.onChange}
                       placeholder={t('settings.profile.socialLinks.labelPlaceholder')}

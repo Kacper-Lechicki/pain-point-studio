@@ -11,6 +11,7 @@ import { Sparkline } from '@/features/surveys/components/dashboard/sparkline';
 import { SurveyActionMenuContent } from '@/features/surveys/components/dashboard/survey-action-menu';
 import { SurveyShareDialog } from '@/features/surveys/components/dashboard/survey-share-dialog';
 import { SurveyStatusBadge } from '@/features/surveys/components/dashboard/survey-status-badge';
+import { ExportDialog } from '@/features/surveys/components/stats/export-dialog';
 import type { useSurveyRow } from '@/features/surveys/hooks/use-survey-row';
 import { cn } from '@/lib/common/utils';
 
@@ -40,6 +41,7 @@ export function SurveyTableRow({
       }}
       availableActions={row.availableActions}
       onShare={row.handleShare}
+      onExport={row.canExport ? row.handleExport : undefined}
       handleActionClick={row.handleActionClick}
       onDetails={() => onSelect(survey.id)}
     />
@@ -153,6 +155,14 @@ export function SurveyTableRow({
           open={row.shareDialogOpen}
           onOpenChange={row.setShareDialogOpen}
           shareUrl={row.shareUrl}
+          surveyTitle={survey.title}
+        />
+      )}
+      {row.canExport && (
+        <ExportDialog
+          open={row.exportDialogOpen}
+          onOpenChange={row.setExportDialogOpen}
+          surveyId={survey.id}
           surveyTitle={survey.title}
         />
       )}
