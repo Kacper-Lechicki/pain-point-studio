@@ -1,7 +1,7 @@
 'use client';
 
 import { Expand } from 'lucide-react';
-import { useFormatter, useNow, useTranslations } from 'next-intl';
+import { useFormatter, useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
@@ -14,13 +14,10 @@ import { Sparkline, getSparklineColor } from '@/features/surveys/components/dash
 import { SurveyDetailInfo } from '@/features/surveys/components/dashboard/survey-detail-info';
 import { SurveyShareDialog } from '@/features/surveys/components/dashboard/survey-share-dialog';
 import { SectionLabel } from '@/features/surveys/components/shared/metric-display';
-import { DATE_FORMAT_SHORT, NOW_UPDATE_INTERVAL_MS } from '@/features/surveys/config';
+import { DATE_FORMAT_SHORT } from '@/features/surveys/config';
 import { deriveSurveyFlags, getAvailableActions } from '@/features/surveys/config/survey-status';
 import { useSurveyAction, useSurveyCardActions } from '@/features/surveys/hooks';
-import {
-  calculateRespondentProgress,
-  formatCompletionTime,
-} from '@/features/surveys/lib/calculations';
+import { calculateRespondentProgress } from '@/features/surveys/lib/calculations';
 import type { MappedQuestion } from '@/features/surveys/lib/map-question-row';
 import { getSurveyDetailUrl } from '@/features/surveys/lib/survey-urls';
 import Link from '@/i18n/link';
@@ -39,14 +36,11 @@ interface SurveyDetailPanelProps {
 export function SurveyDetailPanel({
   survey,
   questions,
-  now: externalNow,
   onStatusChange,
   variant = 'sidebar',
 }: SurveyDetailPanelProps) {
   const t = useTranslations();
   const format = useFormatter();
-  const localNow = useNow({ updateInterval: NOW_UPDATE_INTERVAL_MS });
-  const now = externalNow ?? localNow;
 
   const { handleActionClick, confirmDialogProps } = useSurveyAction(survey.id, onStatusChange, t);
   const { shareUrl, shareDialogOpen, setShareDialogOpen, handleShare } = useSurveyCardActions(
@@ -58,15 +52,10 @@ export function SurveyDetailPanel({
   const showActiveDetails = !isDraft && !isArchived;
   const hasShareableLink = (isActive || isCompleted || isCancelled) && !!shareUrl;
   const sparklineColor = getSparklineColor(survey.recentActivity);
-  const lastResponseLabel =
-    survey.lastResponseAt != null
-      ? format.relativeTime(new Date(survey.lastResponseAt), now)
-      : null;
   const respondentProgress = calculateRespondentProgress(
     survey.completedCount,
     survey.maxRespondents
   );
-  const completionTimeLabel = formatCompletionTime(survey.avgCompletionSeconds);
   const availableActions = getAvailableActions(survey.status);
 
   const formatDate = (iso: string) => format.dateTime(new Date(iso), DATE_FORMAT_SHORT);
@@ -123,8 +112,6 @@ export function SurveyDetailPanel({
             completedCount={survey.completedCount}
             maxRespondents={survey.maxRespondents}
             respondentProgress={respondentProgress}
-            lastResponseLabel={lastResponseLabel}
-            completionTimeLabel={completionTimeLabel}
           />
         </>
       )}

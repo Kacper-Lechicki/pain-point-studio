@@ -58,29 +58,33 @@ function DialogContent({
           className
         )}
         {...props}
+        data-hide-header-close={!showCloseButton || undefined}
       >
         {children}
-        {showCloseButton && (
-          <DialogPrimitive.Close
-            data-slot="dialog-close"
-            className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 right-4 rounded-xs opacity-70 transition-opacity focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none md:hover:opacity-100 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
-          >
-            <XIcon />
-            <span className="sr-only">Close</span>
-          </DialogPrimitive.Close>
-        )}
       </DialogPrimitive.Content>
     </DialogPortal>
   );
 }
 
-function DialogHeader({ className, ...props }: React.ComponentProps<'div'>) {
+function DialogHeader({ className, children, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="dialog-header"
-      className={cn('flex flex-col gap-2 text-left', className)}
+      className={cn('flex items-start gap-4 text-left', className)}
       {...props}
-    />
+    >
+      <div className="min-w-0 flex-1 space-y-1">{children}</div>
+      <DialogPrimitive.Close asChild>
+        <Button
+          variant="ghost"
+          size="icon-xs"
+          className="text-muted-foreground hover:text-foreground -my-1 shrink-0 [[data-hide-header-close]_&]:hidden"
+        >
+          <XIcon className="size-4" />
+          <span className="sr-only">Close</span>
+        </Button>
+      </DialogPrimitive.Close>
+    </div>
   );
 }
 

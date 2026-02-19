@@ -59,10 +59,10 @@ export const ChoiceDistributionChart = ({ answers }: ChoiceDistributionChartProp
       )}
 
       <div className="space-y-2">
-        {rows.map((row, i) => {
+        {rows.map((row) => {
           const pct = Math.round((row.count / total) * 100);
           const barWidth = maxCount > 0 ? (row.count / maxCount) * 100 : 0;
-          const isTop = i === 0;
+          const isTop = row.count === maxCount;
 
           return (
             <div key={row.name} className="space-y-1">
