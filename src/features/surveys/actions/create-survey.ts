@@ -13,7 +13,7 @@ export const createSurveyDraft = withProtectedAction<
   rateLimit: RATE_LIMITS.bulkCreate,
   action: async ({ data, user, db }) => {
     if (data.surveyId) {
-      const { error } = await db.surveys.update(
+      const { data: row, error } = await db.surveys.update(
         data.surveyId,
         {
           title: data.title,
@@ -28,7 +28,11 @@ export const createSurveyDraft = withProtectedAction<
         return { error: mapAuthError(error.message) };
       }
 
-      return { success: true, data: { surveyId: data.surveyId } };
+      if (!row) {
+        return { error: 'surveys.errors.unexpected' };
+      }
+
+      return { success: true, data: { surveyId: row.id } };
     }
 
     const { data: survey, error } = await db.surveys.insert({
@@ -40,8 +44,12 @@ export const createSurveyDraft = withProtectedAction<
       status: 'draft',
     });
 
-    if (error || !survey) {
-      return { error: mapAuthError(error?.message ?? 'Unknown error') };
+    if (error) {
+      return { error: mapAuthError(error.message) };
+    }
+
+    if (!survey) {
+      return { error: 'surveys.errors.unexpected' };
     }
 
     return { success: true, data: { surveyId: survey.id } };
