@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { Ban, CheckCircle2, Download, MoreHorizontal, Share2 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
@@ -35,6 +36,14 @@ interface SurveyStatsHeaderProps {
   onCancel: () => void;
 }
 
+interface MenuItem {
+  key: string;
+  label: string;
+  icon: LucideIcon;
+  onClick: () => void;
+  variant?: 'destructive' | 'accent';
+}
+
 export function SurveyStatsHeader({
   title,
   status,
@@ -53,6 +62,56 @@ export function SurveyStatsHeader({
 }: SurveyStatsHeaderProps) {
   const t = useTranslations();
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
+
+  // Build and sort primary items alphabetically
+  const primaryItems = useMemo(() => {
+    const items: MenuItem[] = [];
+
+    if (hasShareableLink) {
+      items.push({
+        key: 'share',
+        label: t('surveys.dashboard.actions.share'),
+        icon: Share2,
+        onClick: onShare,
+      });
+    }
+
+    items.push({
+      key: 'export',
+      label: t('surveys.stats.export'),
+      icon: Download,
+      onClick: () => setExportDialogOpen(true),
+    });
+
+    return items.sort((a, b) => a.label.localeCompare(b.label));
+  }, [t, hasShareableLink, onShare]);
+
+  // Build and sort status-change actions alphabetically
+  const statusActions = useMemo(() => {
+    const items: MenuItem[] = [];
+
+    if (canComplete) {
+      items.push({
+        key: 'complete',
+        label: t('surveys.stats.completeSurvey'),
+        icon: CheckCircle2,
+        onClick: onComplete,
+        variant: 'accent',
+      });
+    }
+
+    if (canCancel) {
+      items.push({
+        key: 'cancel',
+        label: t('surveys.stats.cancelSurvey'),
+        icon: Ban,
+        onClick: onCancel,
+        variant: 'destructive',
+      });
+    }
+
+    return items.sort((a, b) => a.label.localeCompare(b.label));
+  }, [t, canComplete, canCancel, onComplete, onCancel]);
 
   return (
     <>
@@ -89,32 +148,27 @@ export function SurveyStatsHeader({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {hasShareableLink && (
-                <DropdownMenuItem onClick={onShare}>
-                  <Share2 className="size-4" aria-hidden />
-                  {t('surveys.dashboard.actions.share')}
+              {primaryItems.map((item) => (
+                <DropdownMenuItem key={item.key} onClick={item.onClick}>
+                  <item.icon className="size-4" aria-hidden />
+                  {item.label}
                 </DropdownMenuItem>
-              )}
+              ))}
 
-              <DropdownMenuItem onClick={() => setExportDialogOpen(true)}>
-                <Download className="size-4" aria-hidden />
-                {t('surveys.stats.export')}
-              </DropdownMenuItem>
-
-              {(canComplete || canCancel) && <DropdownMenuSeparator />}
-
-              {canComplete && (
-                <DropdownMenuItem variant="accent" onClick={onComplete}>
-                  <CheckCircle2 className="size-4" aria-hidden />
-                  {t('surveys.stats.completeSurvey')}
-                </DropdownMenuItem>
-              )}
-
-              {canCancel && (
-                <DropdownMenuItem variant="destructive" onClick={onCancel}>
-                  <Ban className="size-4" aria-hidden />
-                  {t('surveys.stats.cancelSurvey')}
-                </DropdownMenuItem>
+              {statusActions.length > 0 && (
+                <>
+                  <DropdownMenuSeparator />
+                  {statusActions.map((item) => (
+                    <DropdownMenuItem
+                      key={item.key}
+                      {...(item.variant ? { variant: item.variant } : {})}
+                      onClick={item.onClick}
+                    >
+                      <item.icon className="size-4" aria-hidden />
+                      {item.label}
+                    </DropdownMenuItem>
+                  ))}
+                </>
               )}
             </DropdownMenuContent>
           </DropdownMenu>

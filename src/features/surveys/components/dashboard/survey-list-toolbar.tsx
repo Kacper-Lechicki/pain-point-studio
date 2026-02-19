@@ -11,6 +11,7 @@ import { SearchInput } from '@/components/ui/search-input';
 import { Separator } from '@/components/ui/separator';
 import { SortDropdown } from '@/components/ui/sort-dropdown';
 import { SURVEY_CATEGORIES } from '@/features/surveys/config/survey-categories';
+import { sortOptionsAlphabetically } from '@/lib/common/sort-options';
 import { cn } from '@/lib/common/utils';
 
 export type SurveyStatusFilter = 'active' | 'draft' | 'completed' | 'cancelled';
@@ -76,29 +77,21 @@ export const SurveyListToolbar = ({
   const activeFilterCount = statusFilter.length + categoryFilter.length;
   const isFiltered = activeFilterCount > 0;
 
-  const sortedStatusOptions = [...STATUS_OPTIONS].sort((a, b) =>
-    t(`surveys.dashboard.filters.${a}`).localeCompare(t(`surveys.dashboard.filters.${b}`))
+  const sortedStatusOptions = sortOptionsAlphabetically(
+    STATUS_OPTIONS.map((s) => ({ value: s, label: t(`surveys.dashboard.filters.${s}`) }))
   );
 
-  const sortedCategories = [...SURVEY_CATEGORIES]
-    .filter((cat) => (categoryCounts[cat.value] ?? 0) > 0)
-    .sort((a, b) => {
-      if (a.value === 'other') {
-        return 1;
-      }
+  const sortedCategories = sortOptionsAlphabetically(
+    SURVEY_CATEGORIES.filter((cat) => (categoryCounts[cat.value] ?? 0) > 0).map((cat) => ({
+      value: cat.value,
+      label: t(cat.labelKey as Parameters<typeof t>[0]),
+      labelKey: cat.labelKey,
+    }))
+  );
 
-      if (b.value === 'other') {
-        return -1;
-      }
-
-      return t(a.labelKey as Parameters<typeof t>[0]).localeCompare(
-        t(b.labelKey as Parameters<typeof t>[0])
-      );
-    });
-
-  const sortOptions = [...SORT_OPTIONS]
-    .map((v) => ({ value: v, label: t(`surveys.dashboard.sort.${v}`) }))
-    .sort((a, b) => a.label.localeCompare(b.label));
+  const sortOptions = sortOptionsAlphabetically(
+    SORT_OPTIONS.map((v) => ({ value: v, label: t(`surveys.dashboard.sort.${v}`) }))
+  );
 
   const handleStatusToggle = (value: SurveyStatusFilter) => {
     if (statusFilter.includes(value)) {
@@ -152,17 +145,15 @@ export const SurveyListToolbar = ({
               {t('surveys.dashboard.filters.statusSection')}
             </p>
             <div className="flex flex-col">
-              {sortedStatusOptions.map((status) => (
-                <label key={status} className={FILTER_ITEM_CLASS}>
+              {sortedStatusOptions.map((opt) => (
+                <label key={opt.value} className={FILTER_ITEM_CLASS}>
                   <Checkbox
-                    checked={statusFilter.includes(status)}
-                    onCheckedChange={() => handleStatusToggle(status)}
+                    checked={statusFilter.includes(opt.value as SurveyStatusFilter)}
+                    onCheckedChange={() => handleStatusToggle(opt.value as SurveyStatusFilter)}
                   />
-                  <span className="min-w-0 flex-1 truncate">
-                    {t(`surveys.dashboard.filters.${status}`)}
-                  </span>
+                  <span className="min-w-0 flex-1 truncate">{opt.label}</span>
                   <span className="text-muted-foreground text-xs tabular-nums">
-                    {statusCounts[status] ?? 0}
+                    {statusCounts[opt.value] ?? 0}
                   </span>
                 </label>
               ))}
@@ -184,9 +175,7 @@ export const SurveyListToolbar = ({
                         checked={categoryFilter.includes(cat.value)}
                         onCheckedChange={() => handleCategoryToggle(cat.value)}
                       />
-                      <span className="min-w-0 flex-1 truncate">
-                        {t(cat.labelKey as Parameters<typeof t>[0])}
-                      </span>
+                      <span className="min-w-0 flex-1 truncate">{cat.label}</span>
                       <span className="text-muted-foreground text-xs tabular-nums">
                         {categoryCounts[cat.value]}
                       </span>

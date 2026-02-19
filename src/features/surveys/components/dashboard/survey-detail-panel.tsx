@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+
 import { Expand } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 
@@ -14,6 +16,7 @@ import { Sparkline, getSparklineColor } from '@/features/surveys/components/dash
 import { SurveyDetailInfo } from '@/features/surveys/components/dashboard/survey-detail-info';
 import { SurveyShareDialog } from '@/features/surveys/components/dashboard/survey-share-dialog';
 import { SectionLabel } from '@/features/surveys/components/shared/metric-display';
+import { ExportDialog } from '@/features/surveys/components/stats/export-dialog';
 import { DATE_FORMAT_SHORT } from '@/features/surveys/config';
 import { deriveSurveyFlags, getAvailableActions } from '@/features/surveys/config/survey-status';
 import { useSurveyAction, useSurveyCardActions } from '@/features/surveys/hooks';
@@ -51,6 +54,8 @@ export function SurveyDetailPanel({
   const { isDraft, isActive, isCompleted, isCancelled, isArchived } = flags;
   const showActiveDetails = !isDraft && !isArchived;
   const hasShareableLink = (isActive || isCompleted || isCancelled) && !!shareUrl;
+  const canExport = !isDraft && !isArchived;
+  const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const sparklineColor = getSparklineColor(survey.recentActivity);
   const respondentProgress = calculateRespondentProgress(
     survey.completedCount,
@@ -134,6 +139,7 @@ export function SurveyDetailPanel({
         hasShareableLink={hasShareableLink}
         availableActions={availableActions}
         onShare={handleShare}
+        onExport={canExport ? () => setExportDialogOpen(true) : undefined}
         onActionClick={handleActionClick}
       />
 
@@ -155,6 +161,14 @@ export function SurveyDetailPanel({
       surveyTitle={survey.title}
     />
   );
+  const exportDialogElement = canExport && (
+    <ExportDialog
+      open={exportDialogOpen}
+      onOpenChange={setExportDialogOpen}
+      surveyId={survey.id}
+      surveyTitle={survey.title}
+    />
+  );
 
   const wrapperProps = { 'aria-label': survey.title };
 
@@ -164,6 +178,7 @@ export function SurveyDetailPanel({
         {content}
         {confirmDialogElement}
         {shareDialogElement}
+        {exportDialogElement}
       </div>
     );
   }
@@ -174,6 +189,7 @@ export function SurveyDetailPanel({
         {content}
         {confirmDialogElement}
         {shareDialogElement}
+        {exportDialogElement}
       </main>
     );
   }
@@ -186,6 +202,7 @@ export function SurveyDetailPanel({
       {content}
       {confirmDialogElement}
       {shareDialogElement}
+      {exportDialogElement}
     </aside>
   );
 }

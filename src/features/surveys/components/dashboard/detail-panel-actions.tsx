@@ -1,4 +1,7 @@
-import { BarChart3, Pencil, Send, Share2 } from 'lucide-react';
+import { useMemo } from 'react';
+
+import { BarChart3, Download, Pencil, Send, Share2 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
@@ -21,8 +24,28 @@ interface DetailPanelActionsProps {
   hasShareableLink: boolean;
   availableActions: SurveyAction[];
   onShare: () => void;
+  onExport?: (() => void) | undefined;
   onActionClick: (action: SurveyAction) => void;
 }
+
+// ── Primary action item definition ────────────────────────────────────
+type PrimaryActionItem =
+  | {
+      kind: 'link';
+      key: string;
+      label: string;
+      icon: LucideIcon;
+      href: string;
+      variant?: 'default' | 'outline';
+    }
+  | {
+      kind: 'button';
+      key: string;
+      label: string;
+      icon: LucideIcon;
+      onClick: () => void;
+      variant?: 'default' | 'outline';
+    };
 
 export function DetailPanelActions({
   surveyId,
@@ -31,52 +54,119 @@ export function DetailPanelActions({
   hasShareableLink,
   availableActions,
   onShare,
+  onExport,
   onActionClick,
 }: DetailPanelActionsProps) {
   const t = useTranslations();
   const canPublish = flags.isDraft && questionCount >= QUESTIONS_MIN;
 
+  // Build visible primary items then sort alphabetically by label
+  const primaryItems = useMemo(() => {
+    const items: PrimaryActionItem[] = [];
+
+    if (flags.isDraft) {
+      if (canPublish) {
+        items.push({
+          kind: 'link',
+          key: 'publish',
+          label: t('surveys.builder.publish'),
+          icon: Send,
+          href: getSurveyPublishUrl(surveyId),
+          variant: 'default',
+        });
+      }
+
+      items.push({
+        kind: 'link',
+        key: 'edit',
+        label: t('surveys.dashboard.actions.edit'),
+        icon: Pencil,
+        href: getSurveyEditUrl(surveyId),
+        variant: 'outline',
+      });
+    }
+
+    if (!flags.isDraft && !flags.isArchived) {
+      items.push({
+        kind: 'link',
+        key: 'viewResults',
+        label: t('surveys.dashboard.detailPanel.viewResults'),
+        icon: BarChart3,
+        href: getSurveyStatsUrl(surveyId),
+        variant: 'default',
+      });
+    }
+
+    if (hasShareableLink) {
+      items.push({
+        kind: 'button',
+        key: 'share',
+        label: t('surveys.dashboard.actions.share'),
+        icon: Share2,
+        onClick: onShare,
+        variant: 'outline',
+      });
+    }
+
+    if (!flags.isDraft && !flags.isArchived && onExport) {
+      items.push({
+        kind: 'button',
+        key: 'export',
+        label: t('surveys.dashboard.actions.export'),
+        icon: Download,
+        onClick: onExport,
+        variant: 'outline',
+      });
+    }
+
+    return items.sort((a, b) => a.label.localeCompare(b.label));
+  }, [t, flags, canPublish, hasShareableLink, onShare, onExport, surveyId]);
+
+  // Sort status-change actions alphabetically by translated label
+  const sortedActions = useMemo(
+    () =>
+      [...availableActions].sort((a, b) =>
+        t(`surveys.dashboard.actions.${a}`).localeCompare(t(`surveys.dashboard.actions.${b}`))
+      ),
+    [availableActions, t]
+  );
+
   return (
     <>
       <SectionLabel>{t('surveys.dashboard.detailPanel.actionsLabel')}</SectionLabel>
       <div className="flex flex-col gap-2">
-        {flags.isDraft && (
-          <>
-            {canPublish && (
-              <Button size="sm" className="w-full" asChild>
-                <Link href={getSurveyPublishUrl(surveyId)}>
-                  <Send className="size-4" aria-hidden />
-                  {t('surveys.builder.publish')}
-                </Link>
-              </Button>
-            )}
-            <Button variant="outline" size="sm" className="w-full" asChild>
-              <Link href={getSurveyEditUrl(surveyId)}>
-                <Pencil className="size-4" aria-hidden />
-                {t('surveys.dashboard.actions.edit')}
+        {primaryItems.map((item) =>
+          item.kind === 'link' ? (
+            <Button
+              key={item.key}
+              variant={item.variant ?? 'outline'}
+              size="sm"
+              className="w-full"
+              asChild
+            >
+              <Link href={item.href}>
+                <item.icon className="size-4" aria-hidden />
+                {item.label}
               </Link>
             </Button>
-          </>
-        )}
-        {!flags.isDraft && !flags.isArchived && (
-          <Button asChild size="sm" className="w-full">
-            <Link href={getSurveyStatsUrl(surveyId)}>
-              <BarChart3 className="size-4" aria-hidden />
-              {t('surveys.dashboard.detailPanel.viewResults')}
-            </Link>
-          </Button>
-        )}
-        {hasShareableLink && (
-          <Button variant="outline" size="sm" className="w-full" onClick={onShare}>
-            <Share2 className="size-4" aria-hidden />
-            {t('surveys.dashboard.actions.share')}
-          </Button>
+          ) : (
+            <Button
+              key={item.key}
+              variant={item.variant ?? 'outline'}
+              size="sm"
+              className="w-full"
+              onClick={item.onClick}
+            >
+              <item.icon className="size-4" aria-hidden />
+              {item.label}
+            </Button>
+          )
         )}
       </div>
 
-      {availableActions.length > 0 && (
+      {sortedActions.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-1.5">
-          {availableActions.map((action) => {
+          {sortedActions.map((action) => {
             const ui = SURVEY_ACTION_UI[action];
             const Icon = ui.icon;
 

@@ -513,6 +513,7 @@
       },
       "actions": {
         "share": "Share",
+        "export": "Export",
         "viewResults": "View results",
         "edit": "Edit",
         "publish": "Publish",

@@ -26,6 +26,7 @@ import { SingleResponseDialog } from '@/features/surveys/components/stats/answer
 import { TextResponseList } from '@/features/surveys/components/stats/answer-charts/text-response-list';
 import { useKeywordExtraction } from '@/features/surveys/hooks/use-keyword-extraction';
 import { usePagination, useResetPaginationOnChange } from '@/hooks/common/use-pagination';
+import { sortOptionsAlphabetically } from '@/lib/common/sort-options';
 import { buildHighlightRegex, highlightText } from '@/lib/common/text-highlight';
 
 type SortMode = 'newest' | 'longest' | 'shortest' | 'az';
@@ -170,10 +171,12 @@ export function InlineTextSearch({ responses, questionText }: InlineTextSearchPr
 
   const sortOptions = useMemo(
     () =>
-      SORT_MODES.map((v) => ({
-        value: v,
-        label: t(`surveys.stats.sort.${v}` as Parameters<typeof t>[0]),
-      })),
+      sortOptionsAlphabetically(
+        SORT_MODES.map((v) => ({
+          value: v,
+          label: t(`surveys.stats.sort.${v}` as Parameters<typeof t>[0]),
+        }))
+      ),
     [t]
   );
 

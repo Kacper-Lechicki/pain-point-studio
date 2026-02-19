@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+
 import { AlertTriangle, MoreHorizontal } from 'lucide-react';
 import { useFormatter, useNow, useTranslations } from 'next-intl';
 
@@ -11,6 +13,7 @@ import { Sparkline, getSparklineColor } from '@/features/surveys/components/dash
 import { SurveyActionMenuContent } from '@/features/surveys/components/dashboard/survey-action-menu';
 import { SurveyShareDialog } from '@/features/surveys/components/dashboard/survey-share-dialog';
 import { SurveyStatusBadge } from '@/features/surveys/components/dashboard/survey-status-badge';
+import { ExportDialog } from '@/features/surveys/components/stats/export-dialog';
 import {
   NOW_UPDATE_INTERVAL_MS,
   RESPONDENT_LIMIT_WARNING_THRESHOLD,
@@ -44,6 +47,8 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
     survey.status
   );
   const hasShareableLink = (isActive || isCompleted || isCancelled) && !!survey.slug;
+  const canExport = !isDraft && !isArchived;
+  const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const href = isDraft ? getSurveyEditUrl(survey.id) : getSurveyStatsUrl(survey.id);
 
   const hint = computeHint(survey, t);
@@ -132,6 +137,7 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
                 }}
                 availableActions={availableActions}
                 onShare={handleShare}
+                onExport={canExport ? () => setExportDialogOpen(true) : undefined}
                 handleActionClick={handleActionClick}
                 {...(onQuickPreview && { onDetails: () => onQuickPreview(survey.id) })}
                 detailsLabelKey="quickPreview"
@@ -225,6 +231,14 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
           open={shareDialogOpen}
           onOpenChange={setShareDialogOpen}
           shareUrl={shareUrl}
+          surveyTitle={survey.title}
+        />
+      )}
+      {canExport && (
+        <ExportDialog
+          open={exportDialogOpen}
+          onOpenChange={setExportDialogOpen}
+          surveyId={survey.id}
           surveyTitle={survey.title}
         />
       )}
