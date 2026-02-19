@@ -1897,8 +1897,11 @@ ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TAB
 --
 -- Dumped schema changes for auth and storage
 --
-
-CREATE OR REPLACE TRIGGER "on_auth_user_created" AFTER INSERT ON "auth"."users" FOR EACH ROW EXECUTE FUNCTION "public"."handle_new_user"();
+-- NOTE: The trigger "on_auth_user_created" on auth.users is NOT managed here.
+-- Supabase Cloud does not allow creating triggers on the auth schema via
+-- `supabase db push`. The trigger must be created manually in the Supabase
+-- Dashboard → SQL Editor. See: supabase/seed.sql (auth_trigger section).
+--
 
 
 

@@ -37,6 +37,14 @@ function createProfileRepository(supabase: SupabaseClient<Database>): ProfileRep
 
       return { error: mapError(error) };
     },
+
+    async upsert(id, data) {
+      const { error } = await supabase
+        .from('profiles')
+        .upsert({ id, ...data } as never, { onConflict: 'id' });
+
+      return { error: mapError(error) };
+    },
   };
 }
 

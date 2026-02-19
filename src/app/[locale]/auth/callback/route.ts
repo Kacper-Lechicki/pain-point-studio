@@ -55,7 +55,17 @@ export async function GET(
       if (data?.user) {
         const { data: profile } = await db.profiles.findById(data.user.id);
 
-        if (profile?.avatar_url && profile.avatar_url !== data.user.userMetadata?.avatar_url) {
+        if (!profile) {
+          // Trigger on auth.users may not have fired (e.g. Supabase cloud
+          // restrictions on auth-schema triggers). Ensure a profile row exists.
+          await db.profiles.upsert(data.user.id, {
+            full_name: (data.user.userMetadata?.full_name as string) ?? '',
+            avatar_url: (data.user.userMetadata?.avatar_url as string) ?? '',
+          });
+        } else if (
+          profile.avatar_url &&
+          profile.avatar_url !== data.user.userMetadata?.avatar_url
+        ) {
           await auth.updateUser({
             data: { avatar_url: profile.avatar_url },
           });

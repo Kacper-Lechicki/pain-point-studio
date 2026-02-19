@@ -96,6 +96,10 @@ export interface ProfileRepository {
     id: string,
     data: Partial<Pick<ProfileRow, 'full_name' | 'role' | 'bio' | 'avatar_url' | 'social_links'>>
   ): Promise<{ error: DatabaseError | null }>;
+  upsert(
+    id: string,
+    data: Partial<Pick<ProfileRow, 'full_name' | 'role' | 'bio' | 'avatar_url' | 'social_links'>>
+  ): Promise<{ error: DatabaseError | null }>;
 }
 
 export interface SurveyRepository {

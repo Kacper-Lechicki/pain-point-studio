@@ -9,7 +9,7 @@ export const completeProfile = withProtectedAction('complete-profile', {
   schema: completeProfileSchema,
   rateLimit: RATE_LIMITS.auth,
   action: async ({ data, user, auth, db }) => {
-    const { error: profileError } = await db.profiles.update(user.id, {
+    const { error: profileError } = await db.profiles.upsert(user.id, {
       full_name: data.fullName,
       role: data.role,
     });
