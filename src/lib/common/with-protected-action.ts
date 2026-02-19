@@ -1,13 +1,19 @@
 /**
  * HOF for server actions that require an authenticated user. Applies rate limit,
- * Zod validation, then Supabase auth; only then runs the action with user + supabase.
+ * Zod validation, then auth; only then runs the action with user + providers.
  * Use for dashboard/settings flows. For unauthenticated flows use withPublicAction.
  */
-import { User } from '@supabase/supabase-js';
 import { ZodType, z } from 'zod';
 
 import { RateLimitConfig, rateLimit } from '@/lib/common/rate-limit';
 import { ActionResult } from '@/lib/common/types';
+import type { AuthProvider } from '@/lib/providers/auth';
+import type { DatabaseClient } from '@/lib/providers/database';
+import type { StorageProvider } from '@/lib/providers/storage';
+import type { AppUser } from '@/lib/providers/types';
+import { createServerAuthProvider } from '@/lib/supabase/providers/auth.server';
+import { createSupabaseDatabaseClient } from '@/lib/supabase/providers/database';
+import { createServerStorageProvider } from '@/lib/supabase/providers/storage.server';
 import { createClient } from '@/lib/supabase/server';
 
 interface ProtectedActionConfig<TSchema extends ZodType, TData = undefined> {
@@ -17,8 +23,10 @@ interface ProtectedActionConfig<TSchema extends ZodType, TData = undefined> {
   validationError?: string;
   action: (params: {
     data: z.infer<TSchema>;
-    user: User;
-    supabase: Awaited<ReturnType<typeof createClient>>;
+    user: AppUser;
+    auth: AuthProvider;
+    db: DatabaseClient;
+    storage: StorageProvider;
   }) => Promise<ActionResult<TData>>;
 }
 
@@ -40,15 +48,16 @@ export function withProtectedAction<TSchema extends ZodType, TData = undefined>(
     }
 
     const supabase = await createClient();
+    const auth = createServerAuthProvider(supabase);
+    const db = createSupabaseDatabaseClient(supabase);
+    const storage = createServerStorageProvider(supabase);
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const { data: userData, error: authError } = await auth.getUser();
 
-    if (!user) {
+    if (authError || !userData?.user) {
       return { error: 'settings.errors.unexpected' };
     }
 
-    return config.action({ data: validation.data, user, supabase });
+    return config.action({ data: validation.data, user: userData.user, auth, db, storage });
   };
 }

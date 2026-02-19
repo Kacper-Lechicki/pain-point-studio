@@ -22,17 +22,13 @@ function createStatusAction(action: SurveyAction) {
   return withProtectedAction<typeof surveyIdSchema, void>(`${action}-survey`, {
     schema: surveyIdSchema,
     rateLimit: RATE_LIMITS.crud,
-    action: async ({ data, user, supabase }) => {
+    action: async ({ data, user, db }) => {
       // Delete actions
       if (transition.method === 'delete') {
-        const { data: row, error } = await supabase
-          .from('surveys')
-          .delete()
-          .eq('id', data.surveyId)
-          .eq('user_id', user.id)
-          .in('status', [...transition.fromStatuses])
-          .select('id')
-          .maybeSingle();
+        const { data: row, error } = await db.surveys.delete(data.surveyId, {
+          userId: user.id,
+          status: [...transition.fromStatuses],
+        });
 
         if (error || !row) {
           return { error: 'surveys.errors.unexpected' };
@@ -45,9 +41,9 @@ function createStatusAction(action: SurveyAction) {
       // Clear all publication-related fields so the next publish cycle starts
       // fresh, and delete old responses so metrics don't carry over.
       if (action === 'restore') {
-        const { data: row, error } = await supabase
-          .from('surveys')
-          .update({
+        const { data: row, error } = await db.surveys.update(
+          data.surveyId,
+          {
             status: 'draft' as SurveyStatus,
             slug: null,
             starts_at: null,
@@ -57,19 +53,16 @@ function createStatusAction(action: SurveyAction) {
             cancelled_at: null,
             archived_at: null,
             previous_status: null,
-          })
-          .eq('id', data.surveyId)
-          .eq('user_id', user.id)
-          .eq('status', 'archived')
-          .select('id')
-          .maybeSingle();
+          },
+          { userId: user.id, status: 'archived' }
+        );
 
         if (error || !row) {
           return { error: 'surveys.errors.unexpected' };
         }
 
         // Delete old responses so metrics start from zero on re-publish.
-        await supabase.from('survey_responses').delete().eq('survey_id', data.surveyId);
+        await db.surveyResponses.deleteBySurveyId(data.surveyId);
 
         return { success: true };
       }
@@ -88,13 +81,11 @@ function createStatusAction(action: SurveyAction) {
       // Archive: save current status as previous_status for restore
       if (action === 'archive') {
         // We need to fetch current status first to save it
-        const { data: current } = await supabase
-          .from('surveys')
-          .select('status')
-          .eq('id', data.surveyId)
-          .eq('user_id', user.id)
-          .in('status', [...transition.fromStatuses])
-          .maybeSingle();
+        const { data: current } = await db.surveys.findByIdSelect<{ status: string }>(
+          data.surveyId,
+          'status',
+          { userId: user.id, status: [...transition.fromStatuses] }
+        );
 
         if (!current) {
           return { error: 'surveys.errors.unexpected' };
@@ -103,23 +94,13 @@ function createStatusAction(action: SurveyAction) {
         updatePayload.previous_status = current.status;
       }
 
-      const { data: row, error } = await (
-        transition.fromStatuses.length === 1
-          ? supabase
-              .from('surveys')
-              .update(updatePayload)
-              .eq('id', data.surveyId)
-              .eq('user_id', user.id)
-              .eq('status', transition.fromStatuses[0])
-          : supabase
-              .from('surveys')
-              .update(updatePayload)
-              .eq('id', data.surveyId)
-              .eq('user_id', user.id)
-              .in('status', [...transition.fromStatuses])
-      )
-        .select('id')
-        .maybeSingle();
+      const { data: row, error } = await db.surveys.update(data.surveyId, updatePayload, {
+        userId: user.id,
+        status:
+          transition.fromStatuses.length === 1
+            ? transition.fromStatuses[0]
+            : [...transition.fromStatuses],
+      });
 
       if (error || !row) {
         return { error: 'surveys.errors.unexpected' };

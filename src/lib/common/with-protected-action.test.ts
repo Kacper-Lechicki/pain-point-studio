@@ -16,27 +16,48 @@ vi.mock('@/lib/common/rate-limit', () => ({
   rateLimit: vi.fn().mockResolvedValue({ limited: false }),
 }));
 
-const mockGetUser = vi.fn();
+const mockSupabase = { auth: {}, from: vi.fn(), storage: {} };
 
 vi.mock('@/lib/supabase/server', () => ({
-  createClient: vi.fn().mockResolvedValue({
-    auth: { getUser: mockGetUser },
-  }),
+  createClient: vi.fn().mockResolvedValue(mockSupabase),
+}));
+
+const mockGetUser = vi.fn();
+const mockAuth = { getUser: mockGetUser } as Record<string, unknown>;
+const mockDb = { profiles: {}, surveys: {} } as Record<string, unknown>;
+const mockStorage = { upload: vi.fn() } as Record<string, unknown>;
+
+vi.mock('@/lib/supabase/providers/auth.server', () => ({
+  createServerAuthProvider: vi.fn().mockReturnValue(mockAuth),
+}));
+
+vi.mock('@/lib/supabase/providers/database', () => ({
+  createSupabaseDatabaseClient: vi.fn().mockReturnValue(mockDb),
+}));
+
+vi.mock('@/lib/supabase/providers/storage.server', () => ({
+  createServerStorageProvider: vi.fn().mockReturnValue(mockStorage),
 }));
 
 const testSchema = z.object({
   name: z.string().min(1),
 });
 
-const mockUser = { id: 'user-123', email: 'test@example.com' };
+const mockUser = {
+  id: 'user-123',
+  email: 'test@example.com',
+  identities: [],
+  userMetadata: {},
+  createdAt: '2024-01-01T00:00:00Z',
+};
 
 describe('withProtectedAction', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockGetUser.mockResolvedValue({ data: { user: mockUser } });
+    mockGetUser.mockResolvedValue({ data: { user: mockUser }, error: null });
   });
 
-  it('should call the action with validated data, user, and supabase client', async () => {
+  it('should call the action with validated data, user, and provider objects', async () => {
     const actionFn = vi.fn().mockResolvedValue({ success: true });
 
     const { withProtectedAction } = await import('./with-protected-action');
@@ -53,7 +74,9 @@ describe('withProtectedAction', () => {
       expect.objectContaining({
         data: { name: 'John' },
         user: mockUser,
-        supabase: expect.objectContaining({ auth: expect.any(Object) }),
+        auth: mockAuth,
+        db: mockDb,
+        storage: mockStorage,
       })
     );
   });
@@ -126,7 +149,27 @@ describe('withProtectedAction', () => {
   });
 
   it('should return error when user is not authenticated', async () => {
-    mockGetUser.mockResolvedValue({ data: { user: null } });
+    mockGetUser.mockResolvedValue({ data: { user: null }, error: null });
+
+    const actionFn = vi.fn();
+    const { withProtectedAction } = await import('./with-protected-action');
+    const protectedAction = withProtectedAction('test-action', {
+      schema: testSchema,
+      rateLimit: { limit: 5, windowSeconds: 60 },
+      action: actionFn,
+    });
+
+    const result = await protectedAction({ name: 'John' });
+
+    expect(result.error).toBe('settings.errors.unexpected');
+    expect(actionFn).not.toHaveBeenCalled();
+  });
+
+  it('should return error when auth returns an error', async () => {
+    mockGetUser.mockResolvedValue({
+      data: { user: null },
+      error: { message: 'Session expired' },
+    });
 
     const actionFn = vi.fn();
     const { withProtectedAction } = await import('./with-protected-action');

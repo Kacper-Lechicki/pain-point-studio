@@ -62,9 +62,7 @@ describe('Settings Actions – Complete Profile', () => {
       role: 'solo-developer',
     });
     expect(mockEq).toHaveBeenCalledWith('id', 'user-123');
-    expect(mockUpdateUser).toHaveBeenCalledWith({
-      data: { full_name: 'John Doe' },
-    });
+    expect(mockUpdateUser).toHaveBeenCalledWith({ data: { full_name: 'John Doe' } }, undefined);
   });
 
   it('should reject empty fullName', async () => {

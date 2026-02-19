@@ -16,8 +16,6 @@ vi.mock('@/lib/common/rate-limit', () => ({
   rateLimit: vi.fn().mockResolvedValue({ limited: false }),
 }));
 
-const mockGetUser = vi.fn();
-
 const SURVEY_ID = '00000000-0000-4000-8000-000000000001';
 const USER_ID = 'user-1';
 
@@ -47,82 +45,76 @@ const answers = [
   { response_id: 'r1', question_id: 'q4', value: { answer: true } },
 ];
 
-function createChain(resolvedValue: unknown) {
-  const chain: Record<string, ReturnType<typeof vi.fn>> = {};
-
-  for (const method of ['select', 'eq', 'in', 'order', 'single', 'maybeSingle']) {
-    chain[method] = vi.fn().mockReturnValue(chain);
-  }
-
-  chain.then = vi.fn().mockImplementation((resolve) => resolve(resolvedValue));
-
-  Object.defineProperty(chain, Symbol.toStringTag, { value: 'Promise' });
-
-  // Make the chain itself thenable so await resolves correctly
-  const thenable = Object.assign(Promise.resolve(resolvedValue), chain);
-
-  for (const method of ['select', 'eq', 'in', 'order']) {
-    thenable[method] = vi.fn().mockReturnValue(thenable);
-  }
-
-  thenable.single = vi.fn().mockReturnValue(Promise.resolve(resolvedValue));
-
-  return thenable;
-}
+// ── DatabaseClient mock ─────────────────────────────────────────────
 
 let mockSurveyData: unknown;
 let mockQuestionsData: unknown;
 let mockAnswersData: unknown;
+let mockResponsesData: unknown;
+let mockResponseCount: number | null;
 
-const mockRpc = vi.fn();
+function createMockDb() {
+  return {
+    surveys: {
+      findByIdSelect: vi
+        .fn()
+        .mockImplementation(() => Promise.resolve({ data: mockSurveyData, error: null })),
+    },
+    surveyQuestions: {
+      findBySurveyId: vi
+        .fn()
+        .mockImplementation(() => Promise.resolve({ data: mockQuestionsData, error: null })),
+    },
+    surveyResponses: {
+      countBySurveyId: vi
+        .fn()
+        .mockImplementation(() => Promise.resolve({ count: mockResponseCount, error: null })),
+    },
+    surveyAnswers: {
+      findByResponseIds: vi
+        .fn()
+        .mockImplementation(() => Promise.resolve({ data: mockAnswersData, error: null })),
+    },
+    rpc: vi
+      .fn()
+      .mockImplementation(() => Promise.resolve({ data: mockResponsesData, error: null })),
+  };
+}
 
-vi.mock('@/lib/supabase/server', () => ({
-  createClient: vi.fn().mockImplementation(async () => ({
-    auth: { getUser: mockGetUser },
-    from: vi.fn((table: string) => {
-      switch (table) {
-        case 'surveys':
-          return createSurveyChain();
-        case 'survey_questions':
-          return createQuestionsChain();
-        case 'survey_answers':
-          return createAnswersChain();
-        default:
-          return createChain({ data: null, error: null });
+let mockDb = createMockDb();
+
+interface MockProtectedActionConfig {
+  action: (params: {
+    data: unknown;
+    user: { id: string; email: string };
+    auth: unknown;
+    db: unknown;
+    storage: unknown;
+  }) => Promise<{ error?: string; success?: boolean; data?: unknown }>;
+  schema: {
+    safeParse: (data: unknown) => { success: boolean; data?: unknown; error?: unknown };
+  };
+}
+
+vi.mock('@/lib/common/with-protected-action', () => ({
+  withProtectedAction: (_key: string, config: MockProtectedActionConfig) => {
+    return async (formData: unknown) => {
+      const validation = config.schema.safeParse(formData);
+
+      if (!validation.success) {
+        return { error: 'settings.errors.invalidData' };
       }
-    }),
-    rpc: mockRpc,
-  })),
+
+      return config.action({
+        data: validation.data,
+        user: { id: USER_ID, email: 'test@example.com' },
+        auth: {},
+        db: mockDb,
+        storage: {},
+      });
+    };
+  },
 }));
-
-function createSurveyChain() {
-  const chain: Record<string, ReturnType<typeof vi.fn>> = {};
-
-  chain.select = vi.fn().mockReturnValue(chain);
-  chain.eq = vi.fn().mockReturnValue(chain);
-  chain.single = vi.fn().mockResolvedValue({ data: mockSurveyData, error: null });
-
-  return chain;
-}
-
-function createQuestionsChain() {
-  const chain: Record<string, ReturnType<typeof vi.fn>> = {};
-
-  chain.select = vi.fn().mockReturnValue(chain);
-  chain.eq = vi.fn().mockReturnValue(chain);
-  chain.order = vi.fn().mockResolvedValue({ data: mockQuestionsData, error: null });
-
-  return chain;
-}
-
-function createAnswersChain() {
-  const chain: Record<string, ReturnType<typeof vi.fn>> = {};
-
-  chain.select = vi.fn().mockReturnValue(chain);
-  chain.in = vi.fn().mockResolvedValue({ data: mockAnswersData, error: null });
-
-  return chain;
-}
 
 const validInput = { surveyId: SURVEY_ID };
 
@@ -132,11 +124,12 @@ describe('exportSurveyCSV', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    mockGetUser.mockResolvedValue({ data: { user: { id: USER_ID } } });
     mockSurveyData = survey;
     mockQuestionsData = questions;
     mockAnswersData = answers;
-    mockRpc.mockResolvedValue({ data: responses, error: null });
+    mockResponsesData = responses;
+    mockResponseCount = 1;
+    mockDb = createMockDb();
   });
 
   it('should return error when survey not found', async () => {
@@ -303,11 +296,12 @@ describe('exportSurveyJSON', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    mockGetUser.mockResolvedValue({ data: { user: { id: USER_ID } } });
     mockSurveyData = survey;
     mockQuestionsData = questions;
     mockAnswersData = answers;
-    mockRpc.mockResolvedValue({ data: responses, error: null });
+    mockResponsesData = responses;
+    mockResponseCount = 1;
+    mockDb = createMockDb();
   });
 
   it('should return error when survey not found', async () => {

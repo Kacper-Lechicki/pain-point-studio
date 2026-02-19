@@ -4,7 +4,7 @@ import { cache } from 'react';
 
 import { z } from 'zod';
 
-import { createClient } from '@/lib/supabase/server';
+import { createServerProviders } from '@/lib/providers/server';
 
 // ── Validation schema for the get_profile_statistics RPC response ───
 
@@ -23,18 +23,16 @@ export type ProfileStatistics = z.infer<typeof profileStatisticsSchema>;
  * Wrapped with React `cache()` for per-request deduplication.
  */
 export const getProfileStatistics = cache(async (): Promise<ProfileStatistics | null> => {
-  const supabase = await createClient();
+  const { auth, db } = await createServerProviders();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: userData } = await auth.getUser();
 
-  if (!user) {
+  if (!userData?.user) {
     return null;
   }
 
-  const { data, error } = await supabase.rpc('get_profile_statistics', {
-    p_user_id: user.id,
+  const { data, error } = await db.rpc('get_profile_statistics', {
+    p_user_id: userData.user.id,
   });
 
   if (error || !data) {

@@ -5,17 +5,16 @@ import { cache } from 'react';
 import { SURVEY_RETENTION_DAYS } from '@/features/surveys/config';
 import { mapQuestionRow } from '@/features/surveys/lib/map-question-row';
 import type { PublicSurveyData } from '@/features/surveys/types';
-import { createClient } from '@/lib/supabase/server';
+import { createServerDatabase } from '@/lib/providers/server';
 
 export const getPublicSurvey = cache(async (slug: string): Promise<PublicSurveyData | null> => {
-  const supabase = await createClient();
+  const db = await createServerDatabase();
 
-  const { data: survey } = await supabase
-    .from('surveys')
-    .select('id, title, description, status, ends_at, max_respondents, completed_at, cancelled_at')
-    .eq('slug', slug)
-    .in('status', ['active', 'completed', 'cancelled'])
-    .single();
+  const { data: survey } = await db.surveys.findBySlug(
+    slug,
+    ['active', 'completed', 'cancelled'],
+    'id, title, description, status, ends_at, max_respondents, completed_at, cancelled_at'
+  );
 
   if (!survey) {
     return null;
@@ -58,14 +57,13 @@ export const getPublicSurvey = cache(async (slug: string): Promise<PublicSurveyD
   }
 
   // Get questions
-  const { data: questions } = await supabase
-    .from('survey_questions')
-    .select('id, text, type, required, description, config, sort_order')
-    .eq('survey_id', survey.id)
-    .order('sort_order');
+  const { data: questions } = await db.surveyQuestions.findBySurveyId(
+    survey.id,
+    'id, text, type, required, description, config, sort_order'
+  );
 
   // Get response count
-  const { data: responseCount } = await supabase.rpc('get_survey_response_count', {
+  const { data: responseCount } = await db.rpc<number>('get_survey_response_count', {
     p_survey_id: survey.id,
   });
 

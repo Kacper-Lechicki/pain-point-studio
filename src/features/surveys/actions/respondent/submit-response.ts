@@ -10,8 +10,8 @@ export const submitResponse = withPublicAction<typeof submitResponseSchema, void
   {
     schema: submitResponseSchema,
     rateLimit: RATE_LIMITS.respondentSubmit,
-    action: async ({ data, supabase }) => {
-      const { error } = await supabase.rpc('submit_survey_response', {
+    action: async ({ data, db }) => {
+      const { error } = await db.rpc('submit_survey_response', {
         p_response_id: data.responseId,
         ...(data.contactName ? { p_contact_name: data.contactName } : {}),
         ...(data.contactEmail ? { p_contact_email: data.contactEmail } : {}),

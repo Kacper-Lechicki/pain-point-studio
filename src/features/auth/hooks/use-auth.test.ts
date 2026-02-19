@@ -1,28 +1,23 @@
 // @vitest-environment jsdom
 /** useAuth hook: auth state management, user fetching, and subscription cleanup. */
-import { Session } from '@supabase/supabase-js';
 import { renderHook, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import type { AppUser } from '@/lib/providers/types';
+
 import { useAuth } from './use-auth';
 
-// Mock Supabase methods
+// Mock provider methods
 const mockGetUser = vi.fn();
 const mockOnAuthStateChange = vi.fn();
 const mockUnsubscribe = vi.fn();
 
-const mockAuth = {
-  getUser: mockGetUser,
-  onAuthStateChange: mockOnAuthStateChange,
-};
-
-const mockSupabase = {
-  auth: mockAuth,
-};
-
-// Mock Supabase client module
-vi.mock('@/lib/supabase/client', () => ({
-  createClient: () => mockSupabase,
+// Mock the browser auth provider factory
+vi.mock('@/lib/providers/client', () => ({
+  createBrowserAuthProvider: () => ({
+    getUser: mockGetUser,
+    onAuthStateChange: mockOnAuthStateChange,
+  }),
 }));
 
 describe('useAuth Hook', () => {
@@ -45,7 +40,13 @@ describe('useAuth Hook', () => {
   });
 
   it('should fetch and set user on mount', async () => {
-    const mockUser = { id: '123', email: 'test@example.com' };
+    const mockUser: AppUser = {
+      id: '123',
+      email: 'test@example.com',
+      identities: [],
+      userMetadata: {},
+      createdAt: '2024-01-01T00:00:00Z',
+    };
 
     mockGetUser.mockResolvedValueOnce({ data: { user: mockUser } });
 
@@ -60,9 +61,15 @@ describe('useAuth Hook', () => {
   });
 
   it('should update state on auth state change (sign in)', async () => {
-    const mockUser = { id: '456', email: 'new@example.com' };
+    const mockUser: AppUser = {
+      id: '456',
+      email: 'new@example.com',
+      identities: [],
+      userMetadata: {},
+      createdAt: '2024-01-01T00:00:00Z',
+    };
 
-    let authStateCallback: ((event: string, session: Session | null) => void) | undefined;
+    let authStateCallback: ((event: string, user: AppUser | null) => void) | undefined;
 
     mockOnAuthStateChange.mockImplementation((callback) => {
       authStateCallback = callback;
@@ -77,7 +84,7 @@ describe('useAuth Hook', () => {
     });
 
     if (authStateCallback) {
-      authStateCallback('SIGNED_IN', { user: mockUser } as unknown as Session);
+      authStateCallback('SIGNED_IN', mockUser);
     }
 
     await waitFor(() => {

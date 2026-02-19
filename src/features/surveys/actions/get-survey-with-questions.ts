@@ -9,7 +9,7 @@ import {
   type SurveyStatus,
   type SurveyVisibility,
 } from '@/features/surveys/types';
-import { createClient } from '@/lib/supabase/server';
+import { createServerProviders } from '@/lib/providers/server';
 
 export interface SurveyBuilderData {
   survey: {
@@ -28,33 +28,38 @@ export interface SurveyBuilderData {
 
 export const getSurveyWithQuestions = cache(
   async (surveyId: string): Promise<SurveyBuilderData | null> => {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const { auth, db } = await createServerProviders();
 
-    if (!user) {
+    const { data: userData } = await auth.getUser();
+
+    if (!userData?.user) {
       return null;
     }
 
-    const { data: survey } = await supabase
-      .from('surveys')
-      .select(
-        'id, title, description, category, visibility, starts_at, ends_at, max_respondents, status'
-      )
-      .eq('id', surveyId)
-      .eq('user_id', user.id)
-      .single();
+    const { data: survey } = await db.surveys.findByIdSelect<{
+      id: string;
+      title: string;
+      description: string;
+      category: string;
+      visibility: string;
+      starts_at: string | null;
+      ends_at: string | null;
+      max_respondents: number | null;
+      status: string;
+    }>(
+      surveyId,
+      'id, title, description, category, visibility, starts_at, ends_at, max_respondents, status',
+      { userId: userData.user.id }
+    );
 
     if (!survey) {
       return null;
     }
 
-    const { data: questions } = await supabase
-      .from('survey_questions')
-      .select('id, text, type, required, description, config, sort_order')
-      .eq('survey_id', surveyId)
-      .order('sort_order');
+    const { data: questions } = await db.surveyQuestions.findBySurveyId(
+      surveyId,
+      'id, text, type, required, description, config, sort_order'
+    );
 
     return {
       survey: {

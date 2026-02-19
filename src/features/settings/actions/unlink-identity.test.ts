@@ -2,6 +2,8 @@
 /** Tests for the unlinkIdentity server action that disconnects an OAuth provider from the user account. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import type { AppIdentity, AppUser } from '@/lib/providers/types';
+
 vi.mock('@/lib/common/env', () => ({
   env: {
     NODE_ENV: 'production',
@@ -15,42 +17,62 @@ vi.mock('@/lib/common/rate-limit', () => ({
   rateLimit: vi.fn().mockResolvedValue({ limited: false }),
 }));
 
+// ── Provider mocks ──────────────────────────────────────────────────
 const mockUnlinkIdentity = vi.fn();
 const mockGetUser = vi.fn();
 const mockRpc = vi.fn();
 
 vi.mock('@/lib/supabase/server', () => ({
-  createClient: vi.fn().mockResolvedValue({
-    auth: {
-      getUser: mockGetUser,
-      unlinkIdentity: mockUnlinkIdentity,
-    },
-    rpc: mockRpc,
+  createClient: vi.fn().mockResolvedValue({}),
+}));
+
+vi.mock('@/lib/supabase/providers/auth.server', () => ({
+  createServerAuthProvider: vi.fn().mockReturnValue({
+    getUser: mockGetUser,
+    updateUser: vi.fn(),
+    unlinkIdentity: mockUnlinkIdentity,
   }),
 }));
 
-const googleIdentity = {
-  identity_id: 'google-identity-123',
+vi.mock('@/lib/supabase/providers/database', () => ({
+  createSupabaseDatabaseClient: vi.fn().mockReturnValue({
+    rpc: mockRpc,
+    profiles: { update: vi.fn(), findById: vi.fn() },
+  }),
+}));
+
+vi.mock('@/lib/supabase/providers/storage.server', () => ({
+  createServerStorageProvider: vi.fn().mockReturnValue({}),
+}));
+
+const googleIdentity: AppIdentity = {
+  identityId: 'google-identity-123',
   provider: 'google',
-  identity_data: { email: 'user@example.com' },
+  email: 'user@example.com',
+  identityData: { email: 'user@example.com' },
 };
 
-const githubIdentity = {
-  identity_id: 'github-identity-456',
+const githubIdentity: AppIdentity = {
+  identityId: 'github-identity-456',
   provider: 'github',
-  identity_data: { email: 'user@example.com' },
+  email: 'user@example.com',
+  identityData: { email: 'user@example.com' },
+};
+
+const defaultUser: AppUser = {
+  id: 'user-123',
+  email: 'user@example.com',
+  identities: [googleIdentity, githubIdentity],
+  userMetadata: {},
+  createdAt: new Date().toISOString(),
 };
 
 describe('Settings Actions – Unlink Identity', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockGetUser.mockResolvedValue({
-      data: {
-        user: {
-          email: 'user@example.com',
-          identities: [googleIdentity, githubIdentity],
-        },
-      },
+      data: { user: defaultUser },
+      error: null,
     });
     mockUnlinkIdentity.mockResolvedValue({ error: null });
     mockRpc.mockResolvedValue({ data: false });
@@ -69,13 +91,14 @@ describe('Settings Actions – Unlink Identity', () => {
   });
 
   it('should successfully unlink when user has 1 OAuth + password', async () => {
+    const singleOAuthUser: AppUser = {
+      ...defaultUser,
+      identities: [googleIdentity],
+    };
+
     mockGetUser.mockResolvedValue({
-      data: {
-        user: {
-          email: 'user@example.com',
-          identities: [googleIdentity],
-        },
-      },
+      data: { user: singleOAuthUser },
+      error: null,
     });
     mockRpc.mockResolvedValue({ data: true });
 
@@ -92,13 +115,14 @@ describe('Settings Actions – Unlink Identity', () => {
   });
 
   it('should reject when user has only 1 OAuth and no password', async () => {
+    const singleOAuthUser: AppUser = {
+      ...defaultUser,
+      identities: [googleIdentity],
+    };
+
     mockGetUser.mockResolvedValue({
-      data: {
-        user: {
-          email: 'user@example.com',
-          identities: [googleIdentity],
-        },
-      },
+      data: { user: singleOAuthUser },
+      error: null,
     });
     mockRpc.mockResolvedValue({ data: false });
 

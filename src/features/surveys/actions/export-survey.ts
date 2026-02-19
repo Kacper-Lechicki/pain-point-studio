@@ -5,6 +5,7 @@ import { slugifyTitle } from '@/features/surveys/lib/generate-slug';
 import { type QuestionType, surveyIdSchema } from '@/features/surveys/types';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
+import type { DatabaseClient } from '@/lib/providers/database';
 
 function formatAnswerValue(type: QuestionType, value: Record<string, unknown>): string {
   switch (type) {
@@ -38,31 +39,29 @@ function escapeCsvField(field: string): string {
   return sanitized;
 }
 
-async function fetchExportData(
-  supabase: Awaited<ReturnType<typeof import('@/lib/supabase/server').createClient>>,
-  surveyId: string,
-  userId: string
-) {
+async function fetchExportData(db: DatabaseClient, surveyId: string, userId: string) {
   // Guard: check response count before loading everything into memory
-  const { count } = await supabase
-    .from('survey_responses')
-    .select('*', { count: 'exact', head: true })
-    .eq('survey_id', surveyId)
-    .eq('status', 'completed');
+  const { count } = await db.surveyResponses.countBySurveyId(surveyId, { status: 'completed' });
 
   if (count != null && count > MAX_EXPORT_RESPONSES) {
     return 'TOO_MANY_RESPONSES' as const;
   }
 
   const [{ data: survey }, { data: questions }, { data: responses }] = await Promise.all([
-    supabase.from('surveys').select('id, title').eq('id', surveyId).eq('user_id', userId).single(),
-    supabase
-      .from('survey_questions')
-      .select('id, text, type, sort_order')
-      .eq('survey_id', surveyId)
-      .order('sort_order'),
+    db.surveys.findByIdSelect<{ id: string; title: string }>(surveyId, 'id, title', {
+      userId,
+    }),
+    db.surveyQuestions.findBySurveyId(surveyId, 'id, text, type, sort_order'),
     // RPC decrypts PII server-side and verifies ownership
-    supabase.rpc('get_export_responses', { p_survey_id: surveyId, p_user_id: userId }),
+    db.rpc<
+      Array<{
+        id: string;
+        completed_at: string | null;
+        contact_name: string | null;
+        contact_email: string | null;
+        feedback: string | null;
+      }>
+    >('get_export_responses', { p_survey_id: surveyId, p_user_id: userId }),
   ]);
 
   if (!survey) {
@@ -73,10 +72,7 @@ async function fetchExportData(
   let answers: Array<{ response_id: string; question_id: string; value: unknown }> = [];
 
   if (responseIds.length > 0) {
-    const { data } = await supabase
-      .from('survey_answers')
-      .select('response_id, question_id, value')
-      .in('response_id', responseIds);
+    const { data } = await db.surveyAnswers.findByResponseIds(responseIds);
 
     answers = data ?? [];
   }
@@ -103,8 +99,8 @@ export const exportSurveyCSV = withProtectedAction<
 >('export-survey-csv', {
   schema: surveyIdSchema,
   rateLimit: RATE_LIMITS.export,
-  action: async ({ data, user, supabase }) => {
-    const result = await fetchExportData(supabase, data.surveyId, user.id);
+  action: async ({ data, user, db }) => {
+    const result = await fetchExportData(db, data.surveyId, user.id);
 
     if (result === 'TOO_MANY_RESPONSES') {
       return { error: 'surveys.errors.exportTooManyResponses' };
@@ -160,8 +156,8 @@ export const exportSurveyJSON = withProtectedAction<
 >('export-survey-json', {
   schema: surveyIdSchema,
   rateLimit: RATE_LIMITS.export,
-  action: async ({ data, user, supabase }) => {
-    const result = await fetchExportData(supabase, data.surveyId, user.id);
+  action: async ({ data, user, db }) => {
+    const result = await fetchExportData(db, data.surveyId, user.id);
 
     if (result === 'TOO_MANY_RESPONSES') {
       return { error: 'surveys.errors.exportTooManyResponses' };

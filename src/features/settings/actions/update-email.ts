@@ -7,23 +7,21 @@ import { updateEmailSchema } from '@/features/settings/types';
 import { env } from '@/lib/common/env';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
-import { mapSupabaseError } from '@/lib/supabase/errors';
+import { mapAuthError } from '@/lib/providers/server';
 
 export const updateEmail = withProtectedAction('update-email', {
   schema: updateEmailSchema,
   rateLimit: RATE_LIMITS.sensitive,
-  action: async ({ data, supabase }) => {
+  action: async ({ data, auth }) => {
     const locale = await getLocale();
 
-    const { error } = await supabase.auth.updateUser(
+    const { error } = await auth.updateUser(
       { email: data.email },
-      {
-        emailRedirectTo: `${env.NEXT_PUBLIC_APP_URL}/${locale}/auth/callback?next=/${locale}${ROUTES.common.settings}&type=email_change`,
-      }
+      `${env.NEXT_PUBLIC_APP_URL}/${locale}/auth/callback?next=/${locale}${ROUTES.common.settings}&type=email_change`
     );
 
     if (error) {
-      return { error: mapSupabaseError(error.message) };
+      return { error: mapAuthError(error.message) };
     }
 
     return { success: true };

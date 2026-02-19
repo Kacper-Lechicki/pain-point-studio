@@ -103,9 +103,10 @@ describe('Settings Actions – Update Profile', () => {
 
     expect(result).toEqual({ success: true });
     expect(mockEq).toHaveBeenCalledWith('id', 'user-123');
-    expect(mockUpdateUser).toHaveBeenCalledWith({
-      data: { full_name: validData.fullName },
-    });
+    expect(mockUpdateUser).toHaveBeenCalledWith(
+      { data: { full_name: validData.fullName } },
+      undefined
+    );
   });
 
   it('should not call Supabase when form data is invalid', async () => {

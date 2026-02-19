@@ -5,10 +5,10 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { REALTIME_DEBOUNCE_MS } from '@/features/surveys/config';
-import { createClient } from '@/lib/supabase/client';
+import { createBrowserRealtimeProvider } from '@/lib/providers/client';
 
 /**
- * Subscribes to Supabase Realtime changes on both `survey_responses` and
+ * Subscribes to Realtime changes on both `survey_responses` and
  * `surveys` tables. On any change, triggers a debounced `router.refresh()`
  * which re-runs the server component and passes fresh `initialSurveys`.
  *
@@ -37,7 +37,7 @@ export function useRealtimeSurveyList(onSync?: () => void, enabled = true) {
       return;
     }
 
-    const supabase = createClient();
+    const realtime = createBrowserRealtimeProvider();
 
     const debouncedRefresh = () => {
       if (timerRef.current) {
@@ -50,36 +50,30 @@ export function useRealtimeSurveyList(onSync?: () => void, enabled = true) {
       }, REALTIME_DEBOUNCE_MS);
     };
 
-    const channel = supabase
-      .channel('dashboard-survey-list')
-      .on(
-        'postgres_changes',
+    const channel = realtime.subscribe(
+      'dashboard-survey-list',
+      [
         {
           event: '*',
-          schema: 'public',
           table: 'survey_responses',
         },
-        debouncedRefresh
-      )
-      .on(
-        'postgres_changes',
         {
           event: 'UPDATE',
-          schema: 'public',
           table: 'surveys',
         },
-        debouncedRefresh
-      )
-      .subscribe((status) => {
+      ],
+      debouncedRefresh,
+      (status) => {
         setIsConnected(status === 'SUBSCRIBED');
-      });
+      }
+    );
 
     return () => {
       if (timerRef.current) {
         clearTimeout(timerRef.current);
       }
 
-      void supabase.removeChannel(channel);
+      channel.unsubscribe();
     };
   }, [enabled]);
 
