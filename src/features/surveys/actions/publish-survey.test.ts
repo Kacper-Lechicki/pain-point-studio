@@ -83,7 +83,7 @@ describe('Survey Actions – Publish Survey', () => {
   it('should publish survey successfully', async () => {
     const countChain = chain({ count: 3 });
     const selectChain = chain({ data: { id: SURVEY_ID } });
-    const updateChain = chain({ error: null });
+    const updateChain = chain({ data: { id: SURVEY_ID }, error: null });
 
     let fromCallCount = 0;
     mockFrom.mockImplementation((table: string) => {
@@ -158,7 +158,7 @@ describe('Survey Actions – Publish Survey', () => {
     const countChain = chain({ count: 3 });
     const selectChain = chain({ data: { id: SURVEY_ID } });
     const collisionChain = chain({ error: { code: '23505', message: 'unique violation' } });
-    const successChain = chain({ error: null });
+    const successChain = chain({ data: { id: SURVEY_ID }, error: null });
 
     let surveysCallCount = 0;
     mockFrom.mockImplementation((table: string) => {
@@ -229,7 +229,7 @@ describe('Survey Actions – Publish Survey', () => {
   it('should set endsAt and maxRespondents when provided', async () => {
     const countChain = chain({ count: 3 });
     const selectChain = chain({ data: { id: SURVEY_ID } });
-    const updateChain = chain({ error: null });
+    const updateChain = chain({ data: { id: SURVEY_ID }, error: null });
 
     let surveysCallCount = 0;
     mockFrom.mockImplementation((table: string) => {

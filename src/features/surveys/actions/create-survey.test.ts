@@ -102,10 +102,9 @@ describe('Survey Actions – Create Survey Draft', () => {
   });
 
   it('should update an existing survey when surveyId is provided', async () => {
-    const updateChain = chain({ data: null, error: null });
-    mockFrom.mockReturnValue(updateChain);
-
     const surveyId = '00000000-0000-4000-8000-000000000001';
+    const updateChain = chain({ data: { id: surveyId }, error: null });
+    mockFrom.mockReturnValue(updateChain);
 
     const { createSurveyDraft } = await import('./create-survey');
     const result = await createSurveyDraft({ ...VALID_INPUT, surveyId });

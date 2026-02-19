@@ -54,7 +54,7 @@ export const publishSurvey = withProtectedAction<typeof publishSurveySchema, { s
       for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
         const slug = generateSurveySlug();
 
-        const { error } = await db.surveys.update(
+        const { data: row, error } = await db.surveys.update(
           data.surveyId,
           {
             status: 'active',
@@ -66,11 +66,15 @@ export const publishSurvey = withProtectedAction<typeof publishSurveySchema, { s
           { userId: user.id, status: 'draft' }
         );
 
-        if (!error) {
+        if (!error && row) {
           return { success: true, data: { slug } };
         }
 
-        if (error.code !== PG_ERROR.UNIQUE_VIOLATION || attempt >= MAX_RETRIES) {
+        if (!error && !row) {
+          return { error: 'surveys.errors.unexpected' };
+        }
+
+        if (error!.code !== PG_ERROR.UNIQUE_VIOLATION || attempt >= MAX_RETRIES) {
           return { error: 'surveys.errors.unexpected' };
         }
       }
