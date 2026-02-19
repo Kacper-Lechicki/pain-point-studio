@@ -6,6 +6,18 @@
 -- migration 20260214183223. Validation is now app-level via Zod + config files.
 
 -- ============================================================
+-- Auth trigger: create profile row when a new user signs up.
+-- In production this must be created manually via Dashboard → SQL Editor
+-- (Supabase Cloud blocks auth schema triggers via db push).
+-- Locally, seed.sql runs after migrations, so we create it here.
+-- See: supabase/auth_trigger.sql
+-- ============================================================
+CREATE OR REPLACE TRIGGER "on_auth_user_created"
+  AFTER INSERT ON "auth"."users"
+  FOR EACH ROW
+  EXECUTE FUNCTION "public"."handle_new_user"();
+
+-- ============================================================
 -- Helper: lookup user id by email (used by e2e test cleanup)
 -- Only exists in local dev — seed.sql is NOT applied in production.
 -- ============================================================

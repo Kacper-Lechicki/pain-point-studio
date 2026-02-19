@@ -20,8 +20,7 @@ vi.mock('@/lib/common/rate-limit', () => ({
 // Mock Supabase server client
 const mockGetUser = vi.fn();
 const mockUpdateUser = vi.fn();
-const mockUpdate = vi.fn();
-const mockEq = vi.fn();
+const mockUpsert = vi.fn();
 
 vi.mock('@/lib/supabase/server', () => ({
   createClient: vi.fn().mockResolvedValue({
@@ -29,7 +28,7 @@ vi.mock('@/lib/supabase/server', () => ({
       getUser: mockGetUser,
       updateUser: mockUpdateUser,
     },
-    from: vi.fn(() => ({ update: mockUpdate })),
+    from: vi.fn(() => ({ upsert: mockUpsert })),
   }),
 }));
 
@@ -46,8 +45,7 @@ describe('Settings Actions – Complete Profile', () => {
       data: { user: { id: 'user-123' } },
     });
 
-    mockUpdate.mockReturnValue({ eq: mockEq });
-    mockEq.mockResolvedValue({ error: null });
+    mockUpsert.mockResolvedValue({ error: null });
 
     mockUpdateUser.mockResolvedValue({ error: null });
   });
@@ -57,11 +55,10 @@ describe('Settings Actions – Complete Profile', () => {
     const result = await completeProfile(validData);
 
     expect(result).toEqual({ success: true });
-    expect(mockUpdate).toHaveBeenCalledWith({
-      full_name: 'John Doe',
-      role: 'solo-developer',
-    });
-    expect(mockEq).toHaveBeenCalledWith('id', 'user-123');
+    expect(mockUpsert).toHaveBeenCalledWith(
+      { id: 'user-123', full_name: 'John Doe', role: 'solo-developer' },
+      { onConflict: 'id' }
+    );
     expect(mockUpdateUser).toHaveBeenCalledWith({ data: { full_name: 'John Doe' } }, undefined);
   });
 
@@ -100,11 +97,11 @@ describe('Settings Actions – Complete Profile', () => {
 
     expect(result.error).toBeDefined();
     expect(result).not.toHaveProperty('success');
-    expect(mockUpdate).not.toHaveBeenCalled();
+    expect(mockUpsert).not.toHaveBeenCalled();
   });
 
   it('should return error when profile DB update fails', async () => {
-    mockEq.mockResolvedValue({ error: { message: 'Database error' } });
+    mockUpsert.mockResolvedValue({ error: { message: 'Database error' } });
 
     const { completeProfile } = await import('./complete-profile');
     const result = await completeProfile(validData);

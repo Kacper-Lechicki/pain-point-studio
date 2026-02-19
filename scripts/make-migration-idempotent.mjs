@@ -170,6 +170,31 @@ function wrapCreateTypes(content) {
 }
 
 /**
+ * Strip trigger definitions on the "auth" schema. Supabase Cloud does not
+ * allow `db push` to create triggers on `auth.users`. Leaving them in
+ * causes silent failures. The trigger must be created manually via the
+ * Dashboard (see supabase/auth_trigger.sql).
+ */
+function stripAuthTriggers(content) {
+  let count = 0;
+
+  const re = /^CREATE OR REPLACE TRIGGER [^\n]+ ON "auth"\."[^"]+".+;$/gm;
+
+  content = content.replace(re, (match) => {
+    count++;
+    const lines = [
+      `-- [REMOVED BY make-migration-idempotent] The following trigger targets the`,
+      `-- auth schema which cannot be managed by \`supabase db push\`.`,
+      `-- Apply it manually via Supabase Dashboard. See: supabase/auth_trigger.sql`,
+      `-- ${match}`,
+    ];
+    return lines.join('\n');
+  });
+
+  return { content, count };
+}
+
+/**
  * Wrap `ALTER PUBLICATION ... ADD TABLE ONLY ...;` to avoid "relation already
  * exists in publication" errors.
  */
@@ -221,6 +246,9 @@ content = r4.content;
 const r5 = wrapPublicationAddTable(content);
 content = r5.content;
 
+const r6 = stripAuthTriggers(content);
+content = r6.content;
+
 fs.writeFileSync(filePath, content, 'utf-8');
 
 console.log(`  CREATE TYPE     → IF NOT EXISTS wrappers:   ${r1.count}`);
@@ -228,4 +256,5 @@ console.log(`  ADD CONSTRAINT  → IF NOT EXISTS wrappers:   ${r2.count}`);
 console.log(`  CREATE POLICY   → DROP IF EXISTS prepended: ${r3.count}`);
 console.log(`  CREATE INDEX    → IF NOT EXISTS added:       ${r4.count}`);
 console.log(`  ADD TABLE (pub) → IF NOT EXISTS wrappers:   ${r5.count}`);
+console.log(`  AUTH triggers   → stripped (manual apply):   ${r6.count}`);
 console.log(`\nDone. File updated in-place.`);
