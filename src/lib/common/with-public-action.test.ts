@@ -22,6 +22,12 @@ vi.mock('@/lib/supabase/server', () => ({
   createClient: vi.fn().mockResolvedValue(mockSupabase),
 }));
 
+const mockDb = { profiles: {}, surveys: {} } as Record<string, unknown>;
+
+vi.mock('@/lib/supabase/providers/database', () => ({
+  createSupabaseDatabaseClient: vi.fn().mockReturnValue(mockDb),
+}));
+
 const testSchema = z.object({
   name: z.string().min(1),
 });
@@ -31,7 +37,7 @@ describe('withPublicAction', () => {
     vi.clearAllMocks();
   });
 
-  it('should call the action with validated data and supabase client', async () => {
+  it('should call the action with validated data and db client', async () => {
     const actionFn = vi.fn().mockResolvedValue({ success: true });
 
     const { withPublicAction } = await import('./with-public-action');
@@ -47,7 +53,7 @@ describe('withPublicAction', () => {
     expect(actionFn).toHaveBeenCalledWith(
       expect.objectContaining({
         data: { name: 'John' },
-        supabase: mockSupabase,
+        db: mockDb,
       })
     );
   });

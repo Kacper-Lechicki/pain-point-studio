@@ -3,7 +3,7 @@
 import { createSurveyDraftSchema } from '@/features/surveys/types';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
-import { mapSupabaseError } from '@/lib/supabase/errors';
+import { mapAuthError } from '@/lib/providers/server';
 
 export const createSurveyDraft = withProtectedAction<
   typeof createSurveyDraftSchema,
@@ -11,42 +11,37 @@ export const createSurveyDraft = withProtectedAction<
 >('create-survey-draft', {
   schema: createSurveyDraftSchema,
   rateLimit: RATE_LIMITS.bulkCreate,
-  action: async ({ data, user, supabase }) => {
+  action: async ({ data, user, db }) => {
     if (data.surveyId) {
-      const { error } = await supabase
-        .from('surveys')
-        .update({
+      const { error } = await db.surveys.update(
+        data.surveyId,
+        {
           title: data.title,
           description: data.description,
           category: data.category,
           visibility: data.visibility,
-        })
-        .eq('id', data.surveyId)
-        .eq('user_id', user.id)
-        .eq('status', 'draft');
+        },
+        { userId: user.id, status: 'draft' }
+      );
 
       if (error) {
-        return { error: mapSupabaseError(error.message) };
+        return { error: mapAuthError(error.message) };
       }
 
       return { success: true, data: { surveyId: data.surveyId } };
     }
 
-    const { data: survey, error } = await supabase
-      .from('surveys')
-      .insert({
-        user_id: user.id,
-        title: data.title,
-        description: data.description,
-        category: data.category,
-        visibility: data.visibility,
-        status: 'draft',
-      })
-      .select('id')
-      .single();
+    const { data: survey, error } = await db.surveys.insert({
+      user_id: user.id,
+      title: data.title,
+      description: data.description,
+      category: data.category,
+      visibility: data.visibility,
+      status: 'draft',
+    });
 
-    if (error) {
-      return { error: mapSupabaseError(error.message) };
+    if (error || !survey) {
+      return { error: mapAuthError(error?.message ?? 'Unknown error') };
     }
 
     return { success: true, data: { surveyId: survey.id } };

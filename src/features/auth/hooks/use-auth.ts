@@ -2,32 +2,31 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { User } from '@supabase/supabase-js';
-
-import { createClient } from '@/lib/supabase/client';
+import { createBrowserAuthProvider } from '@/lib/providers/client';
+import type { AppUser } from '@/lib/providers/types';
 
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AppUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const supabaseRef = useRef(createClient());
+  const authRef = useRef(createBrowserAuthProvider());
 
   useEffect(() => {
-    const supabase = supabaseRef.current;
+    const auth = authRef.current;
 
-    void supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user);
+    void auth.getUser().then(({ data }) => {
+      setUser(data?.user ?? null);
       setLoading(false);
     });
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+    } = auth.onAuthStateChange!((_event, user) => {
+      setUser(user);
       setLoading(false);
     });
 
     const handleRefresh = () => {
-      void supabase.auth.getUser().then(({ data }) => setUser(data.user));
+      void auth.getUser().then(({ data }) => setUser(data?.user ?? null));
     };
 
     window.addEventListener('auth:refresh', handleRefresh);

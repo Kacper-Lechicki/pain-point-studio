@@ -3,22 +3,20 @@
 import { surveyQuestionsSchema } from '@/features/surveys/types';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
-import { mapSupabaseError } from '@/lib/supabase/errors';
-import type { Json } from '@/lib/supabase/types';
+import { mapAuthError } from '@/lib/providers/server';
+import type { Json } from '@/lib/providers/types';
 
 export const saveSurveyQuestions = withProtectedAction<typeof surveyQuestionsSchema, void>(
   'save-survey-questions',
   {
     schema: surveyQuestionsSchema,
     rateLimit: RATE_LIMITS.frequentSave,
-    action: async ({ data, user, supabase }) => {
-      const { data: survey } = await supabase
-        .from('surveys')
-        .select('id')
-        .eq('id', data.surveyId)
-        .eq('user_id', user.id)
-        .eq('status', 'draft')
-        .maybeSingle();
+    action: async ({ data, user, db }) => {
+      const { data: survey } = await db.surveys.findByIdSelect<{ id: string }>(
+        data.surveyId,
+        'id',
+        { userId: user.id, status: 'draft' }
+      );
 
       if (!survey) {
         return { error: 'surveys.errors.unexpected' };
@@ -34,14 +32,14 @@ export const saveSurveyQuestions = withProtectedAction<typeof surveyQuestionsSch
         sortOrder: q.sortOrder,
       }));
 
-      const { error } = await supabase.rpc('save_survey_questions', {
+      const { error } = await db.rpc('save_survey_questions', {
         p_survey_id: data.surveyId,
         p_user_id: user.id,
         p_questions: questionsPayload as unknown as Json,
       });
 
       if (error) {
-        return { error: mapSupabaseError(error.message) };
+        return { error: mapAuthError(error.message) };
       }
 
       return { success: true };

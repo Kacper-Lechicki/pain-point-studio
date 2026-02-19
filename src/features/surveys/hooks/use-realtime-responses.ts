@@ -5,10 +5,10 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { REALTIME_STATS_DEBOUNCE_MS } from '@/features/surveys/config';
-import { createClient } from '@/lib/supabase/client';
+import { createBrowserRealtimeProvider } from '@/lib/providers/client';
 
 /**
- * Subscribes to Supabase Realtime changes on `survey_responses` and `surveys`
+ * Subscribes to Realtime changes on `survey_responses` and `surveys`
  * for a given survey. On any INSERT/UPDATE/DELETE, triggers `router.refresh()`
  * (debounced at 1 s) so the server component re-fetches the cached stats RPC.
  *
@@ -38,7 +38,7 @@ export function useRealtimeResponses(surveyId: string, onSync?: () => void, enab
       return;
     }
 
-    const supabase = createClient();
+    const realtime = createBrowserRealtimeProvider();
 
     const debouncedRefresh = () => {
       if (timerRef.current) {
@@ -51,38 +51,32 @@ export function useRealtimeResponses(surveyId: string, onSync?: () => void, enab
       }, REALTIME_STATS_DEBOUNCE_MS);
     };
 
-    const channel = supabase
-      .channel(`survey-stats:${surveyId}`)
-      .on(
-        'postgres_changes',
+    const channel = realtime.subscribe(
+      `survey-stats:${surveyId}`,
+      [
         {
           event: '*',
-          schema: 'public',
           table: 'survey_responses',
           filter: `survey_id=eq.${surveyId}`,
         },
-        debouncedRefresh
-      )
-      .on(
-        'postgres_changes',
         {
           event: 'UPDATE',
-          schema: 'public',
           table: 'surveys',
           filter: `id=eq.${surveyId}`,
         },
-        debouncedRefresh
-      )
-      .subscribe((status) => {
+      ],
+      debouncedRefresh,
+      (status) => {
         setIsConnected(status === 'SUBSCRIBED');
-      });
+      }
+    );
 
     return () => {
       if (timerRef.current) {
         clearTimeout(timerRef.current);
       }
 
-      void supabase.removeChannel(channel);
+      channel.unsubscribe();
     };
   }, [surveyId, enabled]);
 

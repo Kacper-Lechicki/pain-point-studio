@@ -3,34 +3,34 @@
 import { deleteAccountSchema } from '@/features/settings/types';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
-import { createAdminClient } from '@/lib/supabase/admin';
+import { createAuthAdmin } from '@/lib/providers/server';
 
 export const deleteAccount = withProtectedAction('delete-account', {
   schema: deleteAccountSchema,
   rateLimit: RATE_LIMITS.destructive,
   validationError: 'settings.errors.confirmationMismatch',
-  action: async ({ data, user, supabase }) => {
+  action: async ({ data, user, auth, storage }) => {
     if (data.confirmation !== user.email) {
       return { error: 'settings.errors.confirmationMismatch' };
     }
 
-    const { data: avatarFiles } = await supabase.storage.from('avatars').list(user.id);
+    const { data: avatarFiles } = await storage.list('avatars', user.id);
 
     if (avatarFiles && avatarFiles.length > 0) {
       const filePaths = avatarFiles.map((file) => `${user.id}/${file.name}`);
 
-      await supabase.storage.from('avatars').remove(filePaths);
+      await storage.remove('avatars', filePaths);
     }
 
-    const adminClient = createAdminClient();
+    const authAdmin = createAuthAdmin();
 
-    const { error } = await adminClient.auth.admin.deleteUser(user.id);
+    const { error } = await authAdmin.deleteUser(user.id);
 
     if (error) {
       return { error: 'settings.errors.deleteFailed' };
     }
 
-    await supabase.auth.signOut();
+    await auth.signOut();
 
     return { success: true };
   },

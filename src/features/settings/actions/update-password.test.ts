@@ -2,6 +2,8 @@
 /** Tests for the changePassword and setPassword server actions that manage password updates and initial password creation. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import type { AppUser } from '@/lib/providers/types';
+
 vi.mock('@/lib/common/env', () => ({
   env: {
     NODE_ENV: 'production',
@@ -15,26 +17,44 @@ vi.mock('@/lib/common/rate-limit', () => ({
   rateLimit: vi.fn().mockResolvedValue({ limited: false }),
 }));
 
+// ── Provider mocks ──────────────────────────────────────────────────
 const mockUpdateUser = vi.fn();
 const mockGetUser = vi.fn();
 const mockRpc = vi.fn();
 const mockAdminUpdateUserById = vi.fn();
 
 vi.mock('@/lib/supabase/server', () => ({
-  createClient: vi.fn().mockResolvedValue({
-    auth: {
-      updateUser: mockUpdateUser,
-      getUser: mockGetUser,
-    },
-    rpc: mockRpc,
+  createClient: vi.fn().mockResolvedValue({}),
+}));
+
+vi.mock('@/lib/supabase/providers/auth.server', () => ({
+  createServerAuthProvider: vi.fn().mockReturnValue({
+    getUser: mockGetUser,
+    updateUser: mockUpdateUser,
   }),
 }));
 
-vi.mock('@/lib/supabase/admin', () => ({
-  createAdminClient: vi.fn().mockReturnValue({
-    auth: { admin: { updateUserById: mockAdminUpdateUserById } },
+vi.mock('@/lib/supabase/providers/database', () => ({
+  createSupabaseDatabaseClient: vi.fn().mockReturnValue({
+    rpc: mockRpc,
+    profiles: { update: vi.fn(), findById: vi.fn() },
   }),
 }));
+
+vi.mock('@/lib/supabase/providers/storage.server', () => ({
+  createServerStorageProvider: vi.fn().mockReturnValue({}),
+}));
+
+vi.mock('@/lib/providers/server', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/providers/server')>();
+
+  return {
+    ...actual,
+    createAuthAdmin: vi.fn().mockReturnValue({
+      updateUserById: mockAdminUpdateUserById,
+    }),
+  };
+});
 
 const changeData = {
   currentPassword: 'OldPass1!',
@@ -47,11 +67,20 @@ const setData = {
   confirmPassword: 'NewSecurePass1!',
 };
 
+const defaultUser: AppUser = {
+  id: 'user-id-123',
+  email: 'user@example.com',
+  identities: [{ identityId: 'e-456', provider: 'email' }],
+  userMetadata: {},
+  createdAt: new Date().toISOString(),
+};
+
 describe('Settings Actions – changePassword', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockGetUser.mockResolvedValue({
-      data: { user: { email: 'user@example.com', identities: [{ provider: 'email' }] } },
+      data: { user: defaultUser },
+      error: null,
     });
     mockRpc.mockResolvedValue({ data: true });
     mockUpdateUser.mockResolvedValue({ error: null });
@@ -135,7 +164,7 @@ describe('Settings Actions – changePassword', () => {
   });
 
   it('should return unexpected error when getUser returns no user', async () => {
-    mockGetUser.mockResolvedValue({ data: { user: null } });
+    mockGetUser.mockResolvedValue({ data: { user: null }, error: null });
 
     const { changePassword } = await import('./update-password');
     const result = await changePassword(changeData);
@@ -148,14 +177,18 @@ describe('Settings Actions – changePassword', () => {
 describe('Settings Actions – setPassword', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+
+    const oauthOnlyUser: AppUser = {
+      id: 'user-id-123',
+      email: 'user@example.com',
+      identities: [{ identityId: 'g-123', provider: 'google' }],
+      userMetadata: {},
+      createdAt: new Date().toISOString(),
+    };
+
     mockGetUser.mockResolvedValue({
-      data: {
-        user: {
-          id: 'user-id-123',
-          email: 'user@example.com',
-          identities: [{ provider: 'google', identity_id: 'g-123' }],
-        },
-      },
+      data: { user: oauthOnlyUser },
+      error: null,
     });
     mockRpc.mockResolvedValue({ data: false });
     mockUpdateUser.mockResolvedValue({ error: null });
@@ -176,17 +209,20 @@ describe('Settings Actions – setPassword', () => {
   });
 
   it('should not create email identity if one already exists', async () => {
+    const userWithEmail: AppUser = {
+      id: 'user-id-123',
+      email: 'user@example.com',
+      identities: [
+        { identityId: 'g-123', provider: 'google' },
+        { identityId: 'e-456', provider: 'email' },
+      ],
+      userMetadata: {},
+      createdAt: new Date().toISOString(),
+    };
+
     mockGetUser.mockResolvedValue({
-      data: {
-        user: {
-          id: 'user-id-123',
-          email: 'user@example.com',
-          identities: [
-            { provider: 'google', identity_id: 'g-123' },
-            { provider: 'email', identity_id: 'e-456' },
-          ],
-        },
-      },
+      data: { user: userWithEmail },
+      error: null,
     });
 
     const { setPassword } = await import('./update-password');

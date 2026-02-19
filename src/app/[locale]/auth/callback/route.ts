@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { ROUTES } from '@/config';
-import { createClient } from '@/lib/supabase/server';
+import { createServerProviders } from '@/lib/providers/server';
 
 const ALLOWED_CALLBACK_TYPES = ['signup', 'email_change'] as const;
 
@@ -48,19 +48,15 @@ export async function GET(
   const type = requestUrl.searchParams.get('type');
 
   if (code) {
-    const supabase = await createClient();
-    const { error, data } = await supabase.auth.exchangeCodeForSession(code);
+    const { auth, db } = await createServerProviders();
+    const { error, data } = await auth.exchangeCodeForSession(code);
 
     if (!error) {
-      if (data.user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('avatar_url')
-          .eq('id', data.user.id)
-          .single();
+      if (data?.user) {
+        const { data: profile } = await db.profiles.findById(data.user.id);
 
-        if (profile?.avatar_url && profile.avatar_url !== data.user.user_metadata?.avatar_url) {
-          await supabase.auth.updateUser({
+        if (profile?.avatar_url && profile.avatar_url !== data.user.userMetadata?.avatar_url) {
+          await auth.updateUser({
             data: { avatar_url: profile.avatar_url },
           });
         }

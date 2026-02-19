@@ -8,8 +8,8 @@ import { withProtectedAction } from '@/lib/common/with-protected-action';
 export const cancelEmailChange = withProtectedAction('cancel-email-change', {
   schema: z.object({}),
   rateLimit: RATE_LIMITS.sensitive,
-  action: async ({ supabase }) => {
-    const { error } = await supabase.rpc('cancel_email_change');
+  action: async ({ db }) => {
+    const { error } = await db.rpc('cancel_email_change');
 
     if (error) {
       return { error: 'settings.errors.unexpected' };

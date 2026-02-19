@@ -22,17 +22,21 @@ vi.mock('@/lib/common/rate-limit', () => ({
   rateLimit: vi.fn().mockResolvedValue({ limited: false }),
 }));
 
-// Mock Supabase server client
+// Mock Supabase server client (still needed by withPublicAction for the db client)
+vi.mock('@/lib/supabase/server', () => ({
+  createClient: vi.fn().mockResolvedValue({}),
+}));
+
+// Mock server auth provider
 const mockResetPasswordForEmail = vi.fn();
 const mockUpdateUser = vi.fn();
 
-vi.mock('@/lib/supabase/server', () => ({
-  createClient: vi.fn().mockResolvedValue({
-    auth: {
-      resetPasswordForEmail: mockResetPasswordForEmail,
-      updateUser: mockUpdateUser,
-    },
+vi.mock('@/lib/providers/server', () => ({
+  createServerAuth: vi.fn().mockResolvedValue({
+    resetPasswordForEmail: mockResetPasswordForEmail,
+    updateUser: mockUpdateUser,
   }),
+  mapAuthError: vi.fn((msg: string) => `mapped:${msg}`),
 }));
 
 describe('Auth Actions – Password', () => {
@@ -54,7 +58,7 @@ describe('Auth Actions – Password', () => {
       });
     });
 
-    it('should return an error when Supabase fails', async () => {
+    it('should return an error when the auth provider fails', async () => {
       mockResetPasswordForEmail.mockResolvedValue({
         error: { message: 'User not found' },
       });
@@ -66,7 +70,7 @@ describe('Auth Actions – Password', () => {
       expect(result).not.toHaveProperty('success');
     });
 
-    it('should not call Supabase when email is invalid', async () => {
+    it('should not call the auth provider when email is invalid', async () => {
       const { resetPassword } = await import('./password');
       const result = await resetPassword({ email: 'bad-email' });
 
@@ -105,7 +109,7 @@ describe('Auth Actions – Password', () => {
       });
     });
 
-    it('should return an error when Supabase rejects the update', async () => {
+    it('should return an error when the auth provider rejects the update', async () => {
       mockUpdateUser.mockResolvedValue({
         error: { message: 'Same password' },
       });
@@ -121,7 +125,7 @@ describe('Auth Actions – Password', () => {
       expect(result).not.toHaveProperty('success');
     });
 
-    it('should not call Supabase when passwords do not match', async () => {
+    it('should not call the auth provider when passwords do not match', async () => {
       const { updatePassword } = await import('./password');
 
       const result = await updatePassword({
@@ -133,7 +137,7 @@ describe('Auth Actions – Password', () => {
       expect(mockUpdateUser).not.toHaveBeenCalled();
     });
 
-    it('should not call Supabase when password is too short', async () => {
+    it('should not call the auth provider when password is too short', async () => {
       const { updatePassword } = await import('./password');
 
       const result = await updatePassword({

@@ -3,17 +3,16 @@
 import { changePasswordSchema, setPasswordSchema } from '@/features/settings/types';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
-import { createAdminClient } from '@/lib/supabase/admin';
-import { mapSupabaseError } from '@/lib/supabase/errors';
+import { createAuthAdmin, mapAuthError } from '@/lib/providers/server';
 
 export const changePassword = withProtectedAction('change-password', {
   schema: changePasswordSchema,
   rateLimit: RATE_LIMITS.sensitive,
-  action: async ({ data, supabase }) => {
+  action: async ({ data, auth, db }) => {
     // Verify the current password via an RPC that checks the hash directly,
     // instead of signInWithPassword which would create a new session and
     // invalidate the existing refresh token.
-    const { data: isValid } = await supabase.rpc('verify_password', {
+    const { data: isValid } = await db.rpc('verify_password', {
       current_plain_password: data.currentPassword,
     });
 
@@ -21,12 +20,12 @@ export const changePassword = withProtectedAction('change-password', {
       return { error: 'settings.errors.currentPasswordIncorrect' };
     }
 
-    const { error } = await supabase.auth.updateUser({
+    const { error } = await auth.updateUser({
       password: data.password,
     });
 
     if (error) {
-      return { error: mapSupabaseError(error.message) };
+      return { error: mapAuthError(error.message) };
     }
 
     return { success: true };
@@ -36,19 +35,19 @@ export const changePassword = withProtectedAction('change-password', {
 export const setPassword = withProtectedAction('set-password', {
   schema: setPasswordSchema,
   rateLimit: RATE_LIMITS.sensitive,
-  action: async ({ data, user, supabase }) => {
-    const { data: alreadyHasPassword } = await supabase.rpc('has_password');
+  action: async ({ data, user, auth, db }) => {
+    const { data: alreadyHasPassword } = await db.rpc('has_password');
 
     if (alreadyHasPassword) {
       return { error: 'settings.errors.unexpected' };
     }
 
-    const { error } = await supabase.auth.updateUser({
+    const { error } = await auth.updateUser({
       password: data.password,
     });
 
     if (error) {
-      return { error: mapSupabaseError(error.message) };
+      return { error: mapAuthError(error.message) };
     }
 
     // Supabase's updateUser({password}) only sets encrypted_password — it does NOT
@@ -56,11 +55,11 @@ export const setPassword = withProtectedAction('set-password', {
     // provider (single_identity_not_deletable). Use the admin API to ensure the
     // email identity exists so the user can later disconnect all OAuth providers.
     if (user.email) {
-      const hasEmailIdentity = user.identities?.some((i) => i.provider === 'email');
+      const hasEmailIdentity = user.identities.some((i) => i.provider === 'email');
 
       if (!hasEmailIdentity) {
-        const admin = createAdminClient();
-        await admin.auth.admin.updateUserById(user.id, { email: user.email });
+        const authAdmin = createAuthAdmin();
+        await authAdmin.updateUserById(user.id, { email: user.email });
       }
     }
 
