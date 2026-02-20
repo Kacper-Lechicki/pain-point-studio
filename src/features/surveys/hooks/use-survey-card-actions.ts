@@ -8,7 +8,6 @@ import { getSurveyShareUrl } from '@/features/surveys/lib/share-url';
 
 export function useSurveyCardActions(slug: string | null) {
   const locale = useLocale();
-
   const shareUrl = slug ? getSurveyShareUrl(locale, slug) : null;
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
 

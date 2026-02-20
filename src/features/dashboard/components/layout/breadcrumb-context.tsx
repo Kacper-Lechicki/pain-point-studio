@@ -34,6 +34,7 @@ export function BreadcrumbProvider({ children }: { children: ReactNode }) {
       }
 
       const next = { ...prev };
+
       delete next[segment];
 
       return next;

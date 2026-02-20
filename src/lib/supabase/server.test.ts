@@ -50,6 +50,7 @@ describe('Supabase Server Client', () => {
 
   it('should provide a working getAll cookie handler', async () => {
     const { createClient } = await import('./server');
+
     await createClient();
 
     const lastCall = mockCreateServerClient.mock.calls.at(-1) as unknown[];

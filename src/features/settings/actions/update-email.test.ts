@@ -53,6 +53,7 @@ describe('Settings Actions – Update Email', () => {
     const result = await updateEmail({ email: 'new@example.com' });
 
     expect(result).toEqual({ success: true });
+
     expect(mockUpdateUser).toHaveBeenCalledWith(
       { email: 'new@example.com' },
       {

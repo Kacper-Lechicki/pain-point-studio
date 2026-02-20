@@ -30,9 +30,11 @@ vi.mock('@/lib/supabase/server', () => ({
 describe('Settings Actions – Cancel Email Change', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+
     mockGetUser.mockResolvedValue({
       data: { user: { id: 'user-123', email: 'user@example.com' } },
     });
+
     mockRpc.mockResolvedValue({ error: null });
   });
 
@@ -41,7 +43,7 @@ describe('Settings Actions – Cancel Email Change', () => {
     const result = await cancelEmailChange({});
 
     expect(result).toEqual({ success: true });
-    expect(mockRpc).toHaveBeenCalledWith('cancel_email_change', undefined);
+    expect(mockRpc).toHaveBeenCalledWith('cancel_email_change');
   });
 
   it('should return error when RPC fails', async () => {

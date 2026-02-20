@@ -56,17 +56,21 @@ export const QuestionStatsCard = ({ question, index }: QuestionStatsCardProps) =
         <span className="text-muted-foreground tabular-nums">{index + 1}. </span>
         {question.text || '—'}
       </p>
+
       <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1">
         <Badge variant="secondary" className="gap-1 px-1.5 py-0 text-[10px] font-normal">
           <TypeIcon className="size-3" aria-hidden />
           {typeLabel}
         </Badge>
+
         <Badge variant="outline" className="gap-1 px-1.5 py-0 text-[10px] font-normal">
           <Users className="size-3" aria-hidden />
           {t('surveys.stats.responsesCount', { count: responseCount })}
         </Badge>
       </div>
+
       <div className="mt-3">{renderChart()}</div>
+
       {insight && (
         <div className="mt-3 flex items-start gap-2 rounded-md border border-dashed border-amber-500/40 px-3 py-2">
           <Lightbulb className="mt-0.5 size-3.5 shrink-0 text-amber-500" aria-hidden />

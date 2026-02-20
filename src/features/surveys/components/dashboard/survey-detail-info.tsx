@@ -28,12 +28,14 @@ export function SurveyDetailInfo({
   return (
     <>
       <SectionLabel>{t('surveys.dashboard.detailPanel.detailsLabel')}</SectionLabel>
+
       <div className="space-y-2">
         <MetricRow
           icon={SURVEY_STATUS_CONFIG[survey.status].icon}
           label={t('surveys.dashboard.detailPanel.status')}
           value={<SurveyStatusBadge status={survey.status} />}
         />
+
         {survey.category &&
           (() => {
             const cat = SURVEY_CATEGORIES.find((c) => c.value === survey.category);
@@ -54,6 +56,7 @@ export function SurveyDetailInfo({
             value={formatDate(survey.startsAt)}
           />
         )}
+
         {showActiveDetails && survey.endsAt && (
           <MetricRow
             icon={CalendarX2}
@@ -61,6 +64,7 @@ export function SurveyDetailInfo({
             value={formatDate(survey.endsAt)}
           />
         )}
+
         {showActiveDetails && survey.maxRespondents != null && (
           <MetricRow
             icon={Users}
@@ -75,12 +79,14 @@ export function SurveyDetailInfo({
             labelKey="surveys.dashboard.detailPanel.linkExpires"
           />
         )}
+
         {isCancelled && (
           <ExpiryMetricRow
             timestampAt={survey.cancelledAt}
             labelKey="surveys.dashboard.detailPanel.linkExpires"
           />
         )}
+
         {isArchived && survey.archivedAt && (
           <MetricRow
             icon={Archive}
@@ -88,6 +94,7 @@ export function SurveyDetailInfo({
             value={formatDate(survey.archivedAt)}
           />
         )}
+
         {isArchived && (
           <ExpiryMetricRow
             timestampAt={survey.archivedAt}
@@ -100,6 +107,7 @@ export function SurveyDetailInfo({
           label={t('surveys.dashboard.detailPanel.created')}
           value={formatDate(survey.createdAt)}
         />
+
         <MetricRow
           icon={Clock}
           label={t('surveys.dashboard.detailPanel.updated')}

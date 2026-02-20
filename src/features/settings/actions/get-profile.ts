@@ -8,7 +8,8 @@ import { ROLES } from '@/features/settings/config/roles';
 import { SOCIAL_LINK_TYPES } from '@/features/settings/config/social-link-types';
 import type { SocialLink } from '@/features/settings/types';
 import { sortOptionsAlphabetically } from '@/lib/common/sort-options';
-import { createServerProviders } from '@/lib/providers/server';
+import { createClient } from '@/lib/supabase/server';
+import { mapSupabaseUser } from '@/lib/supabase/user-mapper';
 
 export interface LookupValue {
   value: string;
@@ -38,21 +39,23 @@ export interface ProfileData {
  * Returns null when unauthenticated. Wrapped with React `cache()` for per-request deduplication.
  */
 export const getProfile = cache(async (): Promise<ProfileData | null> => {
-  const { auth, db } = await createServerProviders();
+  const supabase = await createClient();
 
-  const { data: userData } = await auth.getUser();
+  const {
+    data: { user: rawUser },
+  } = await supabase.auth.getUser();
 
-  if (!userData?.user || !userData.user.email) {
+  if (!rawUser || !rawUser.email) {
     return null;
   }
 
-  const user = userData.user;
+  const user = mapSupabaseUser(rawUser);
 
   const [{ data: profile }, { data: hasPasswordResult }, { data: emailChangeStatus }] =
     await Promise.all([
-      db.profiles.findById(user.id),
-      db.rpc('has_password'),
-      db.rpc('get_email_change_status'),
+      supabase.from('profiles').select('*').eq('id', user.id).single(),
+      supabase.rpc('has_password'),
+      supabase.rpc('get_email_change_status'),
     ]);
 
   const hasPassword = hasPasswordResult === true;

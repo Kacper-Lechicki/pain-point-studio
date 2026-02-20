@@ -41,8 +41,10 @@ export function SurveyDetailSheet({
           <SheetTitle className="text-foreground text-base font-semibold">
             {detailsLabel}
           </SheetTitle>
+
           <SheetDescription className="sr-only">{survey?.title}</SheetDescription>
         </SheetHeader>
+
         {open && survey && (
           <div className="min-h-0 flex-1 overflow-y-auto px-4 pt-4 pb-16">
             <SurveyDetailPanel

@@ -48,7 +48,6 @@ class InMemoryRateLimiter implements RateLimiter {
 
     const storeKey = `${config.key}:${forwarded}`;
     const now = Date.now();
-
     const entry = this.store.get(storeKey);
 
     if (!entry || now > entry.resetAt) {

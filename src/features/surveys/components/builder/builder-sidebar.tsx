@@ -27,8 +27,10 @@ const ITEM_ID_ATTR = 'data-question-id';
 
 function BuilderSidebarContent({ onItemSelect }: { onItemSelect?: (() => void) | undefined }) {
   const t = useTranslations();
+
   const { state, addQuestion, selectQuestion, deleteQuestion, reorderQuestions } =
     useQuestionBuilderContext();
+
   const [deleteQuestionId, setDeleteQuestionId] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -63,6 +65,7 @@ function BuilderSidebarContent({ onItemSelect }: { onItemSelect?: (() => void) |
             max: QUESTIONS_MAX,
           })}
         </span>
+
         <Button
           variant="ghost"
           size="icon-xs"
@@ -106,6 +109,7 @@ function BuilderSidebarContent({ onItemSelect }: { onItemSelect?: (() => void) |
             </div>
           </Fragment>
         ))}
+
         {showPlaceholderAtEnd && (
           <div
             className="border-primary/50 bg-primary/5 min-h-10 shrink-0 rounded-lg border border-dashed md:min-h-9"
@@ -140,10 +144,13 @@ function BuilderSidebarContent({ onItemSelect }: { onItemSelect?: (() => void) |
               }}
             >
               <span className="text-muted-foreground size-4 shrink-0" />
+
               <span className="text-muted-foreground shrink-0 text-xs font-medium tabular-nums">
                 {index + 1}.
               </span>
+
               <TypeIcon className="text-muted-foreground size-4 shrink-0" />
+
               <span
                 className={cn(
                   'min-w-0 flex-1 truncate text-xs',
@@ -152,6 +159,7 @@ function BuilderSidebarContent({ onItemSelect }: { onItemSelect?: (() => void) |
               >
                 {displayText}
               </span>
+
               <span className="size-9 shrink-0" />
             </div>,
             document.body

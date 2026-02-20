@@ -17,7 +17,6 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
   ({ className, size, ...props }, ref) => {
     const t = useTranslations();
     const [showPassword, setShowPassword] = React.useState(false);
-
     const togglePassword = () => setShowPassword((prev) => !prev);
 
     return (

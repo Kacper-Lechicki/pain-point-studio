@@ -2,68 +2,47 @@ name: CI
 
 on:
   push:
-    branches:
-      - main
-      - release/*
+    branches: [main, release/*]
   pull_request:
-    branches:
-      - main
-      - release/*
+    branches: [main, release/*]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  branch-naming-rules:
-    runs-on: ubuntu-latest
-    steps:
-      # Verify that the current branch name follows the required naming convention
-      - name: Check Branch Name
-        if: github.event_name == 'pull_request'
-        run: |
-          BRANCH_NAME=${{ github.head_ref }}
-          echo "Checking branch name: $BRANCH_NAME"
-          if [[ ! "$BRANCH_NAME" =~ ^(fix|feat|docs|setup|test|release)\/.+ ]]; then
-            echo "::error::Branch name '$BRANCH_NAME' does not match the allowed pattern: fix/..., feat/..., docs/..., setup/..., test/..., or release/..."
-            exit 1
-          fi
-
   lint-and-test:
     name: Lint & Test
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs: [branch-naming-rules]
-    if: always() && (needs.branch-naming-rules.result == 'success' || github.event_name != 'pull_request')
 
     steps:
-      # Clone the repository code into the CI runner
-      - name: Checkout Repo
-        uses: actions/checkout@v4
+      - name: Check Branch Name
+        if: github.event_name == 'pull_request'
+        env:
+          BRANCH_NAME: ${{ github.head_ref }}
+        run: |
+          echo "Checking branch name: $BRANCH_NAME"
+          if [[ ! "$BRANCH_NAME" =~ ^(fix|feat|docs|setup|test|release)\/.+ ]]; then
+            echo "::error::Branch name '$BRANCH_NAME' does not match: fix|feat|docs|setup|test|release/..."
+            exit 1
+          fi
 
-      # Install the pnpm package manager (must be before setup-node for caching to work)
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.0.0
-
-      # Install Node.js with the specified version and enable pnpm caching
-      - name: Setup Node.js 22
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: 'pnpm'
 
-      # Install project dependencies using the lockfile to ensure reproducible builds
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
-      # Run TypeScript compiler to verify type safety
       - name: Type Check
         run: pnpm test:types
 
-      # Check for code style and linting issues using ESLint and Prettier
-      - name: Lint (ESLint & Prettier)
-        run: |
-          pnpm lint
-          pnpm lint:prettier
+      - name: Lint
+        run: pnpm lint && pnpm lint:prettier
 
-      # Execute Vitest unit tests to verify core logic
       - name: Unit Tests
         run: pnpm test:unit

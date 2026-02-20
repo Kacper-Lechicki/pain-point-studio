@@ -1,11 +1,14 @@
 'use server';
 
-import { createServerAuth } from '@/lib/providers/server';
+import { createClient } from '@/lib/supabase/server';
+import { mapSupabaseUser } from '@/lib/supabase/user-mapper';
 
 export const getAuthUser = async () => {
-  const auth = await createServerAuth();
+  const supabase = await createClient();
 
-  const { data } = await auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  return data?.user ?? null;
+  return user ? mapSupabaseUser(user) : null;
 };

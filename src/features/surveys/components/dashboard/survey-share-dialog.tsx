@@ -31,16 +31,20 @@ export function SurveyShareDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{t('surveys.dashboard.shareDialog.title')}</DialogTitle>
+
           <DialogDescription className="sr-only">
             {t('surveys.dashboard.shareDialog.title')}
           </DialogDescription>
         </DialogHeader>
+
         <div>
           <span className="text-muted-foreground text-[11px] font-medium tracking-wide uppercase">
             {t('surveys.stats.surveyNameLabel')}
           </span>
+
           <p className="text-foreground truncate text-sm">{surveyTitle}</p>
         </div>
+
         <SurveyShareContent shareUrl={shareUrl} surveyTitle={surveyTitle} compact />
       </DialogContent>
     </Dialog>

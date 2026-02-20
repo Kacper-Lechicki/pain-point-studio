@@ -8,7 +8,8 @@ import { cn } from '@/lib/common/utils';
 
 const getEncodedPattern = (color: string) => {
   const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='16' height='24' fill='none'><circle fill='${color}' id='pattern-circle' cx='10' cy='10' r='2.5'></circle></svg>`;
-  const base64 = typeof btoa !== 'undefined' ? btoa(svg) : Buffer.from(svg).toString('base64');
+
+  const base64 = btoa(svg);
 
   return `url("data:image/svg+xml;base64,${base64}")`;
 };
@@ -79,17 +80,7 @@ export const HeroHighlight = ({
     >
       <div
         className={cn(
-          'pointer-events-none absolute inset-0 mask-[radial-gradient(ellipse_at_center,black,transparent_100%)] sm:mask-[radial-gradient(ellipse_at_center,black,transparent_80%)] dark:hidden',
-          !showDotsOnMobile && 'max-lg:hidden!'
-        )}
-        style={{
-          backgroundImage: dotPatterns.default,
-        }}
-      />
-
-      <div
-        className={cn(
-          'pointer-events-none absolute inset-0 hidden mask-[radial-gradient(ellipse_at_center,black,transparent_100%)] sm:mask-[radial-gradient(ellipse_at_center,black,transparent_80%)] dark:block',
+          'pointer-events-none absolute inset-0 mask-[radial-gradient(ellipse_at_center,black,transparent_100%)] sm:mask-[radial-gradient(ellipse_at_center,black,transparent_80%)]',
           !showDotsOnMobile && 'max-lg:hidden!'
         )}
         style={{
@@ -99,35 +90,7 @@ export const HeroHighlight = ({
 
       <motion.div
         className={cn(
-          'pointer-events-none absolute inset-0 mask-[radial-gradient(ellipse_at_center,black,transparent_80%)] opacity-0 transition duration-300 md:group-hover:opacity-100 dark:hidden',
-          !showDotsOnMobile && 'max-lg:hidden!'
-        )}
-        style={{
-          backgroundImage: dotPatterns.hover,
-          WebkitMaskImage: useMotionTemplate`
-            radial-gradient(
-              180px circle at ${mouseX}px ${mouseY}px,
-              black 60%,
-              transparent 100%
-            ),
-            radial-gradient(ellipse at center, black, transparent 80%)
-          `,
-          maskImage: useMotionTemplate`
-            radial-gradient(
-              180px circle at ${mouseX}px ${mouseY}px,
-              black 60%,
-              transparent 100%
-            ),
-            radial-gradient(ellipse at center, black, transparent 80%)
-          `,
-          maskComposite: 'intersect',
-          WebkitMaskComposite: 'source-in',
-        }}
-      />
-
-      <motion.div
-        className={cn(
-          'pointer-events-none absolute inset-0 hidden mask-[radial-gradient(ellipse_at_center,black,transparent_80%)] opacity-0 transition duration-300 md:group-hover:opacity-100 dark:block',
+          'pointer-events-none absolute inset-0 mask-[radial-gradient(ellipse_at_center,black,transparent_80%)] opacity-0 transition duration-300 md:group-hover:opacity-100',
           !showDotsOnMobile && 'max-lg:hidden!'
         )}
         style={{
@@ -154,6 +117,7 @@ export const HeroHighlight = ({
       />
 
       <div className={cn('relative z-20', className)}>{children}</div>
+
       {navbar != null ? <div className="relative z-50">{navbar}</div> : null}
     </div>
   );

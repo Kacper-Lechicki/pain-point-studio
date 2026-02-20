@@ -89,6 +89,7 @@ export const SurveyFlow = ({ survey, responseId, slug }: SurveyFlowProps) => {
             <div className="mb-2">
               <h2 className="text-foreground text-lg font-medium">{currentQuestion.text}</h2>
             </div>
+
             {currentQuestion.description && (
               <p className="text-muted-foreground text-xs">{currentQuestion.description}</p>
             )}
@@ -112,6 +113,7 @@ export const SurveyFlow = ({ survey, responseId, slug }: SurveyFlowProps) => {
               {t('respondent.flow.skip')}
               <SkipForward className="size-4" />
             </Button>
+
             <Button onClick={goToNext} className="gap-1.5">
               {isLast ? t('respondent.flow.finish') : t('respondent.flow.next')}
               {!isLast && <ArrowRight className="size-4" />}

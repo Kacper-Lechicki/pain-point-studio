@@ -12,7 +12,7 @@ interface ChoiceDistributionChartProps {
 }
 
 export const ChoiceDistributionChart = ({ answers }: ChoiceDistributionChartProps) => {
-  const t = useTranslations();
+  const t = useTranslations('surveys.stats');
 
   const { rows, total, respondentCount } = useMemo(() => {
     const counts = new Map<string, number>();
@@ -27,7 +27,7 @@ export const ChoiceDistributionChart = ({ answers }: ChoiceDistributionChartProp
       const other = a.value.other as string | undefined;
 
       if (other) {
-        const otherKey = `${t('surveys.stats.otherLabel')}: ${other}`;
+        const otherKey = `${t('otherLabel')}: ${other}`;
         counts.set(otherKey, (counts.get(otherKey) ?? 0) + 1);
       }
     }
@@ -41,7 +41,7 @@ export const ChoiceDistributionChart = ({ answers }: ChoiceDistributionChartProp
   }, [answers, t]);
 
   if (rows.length === 0) {
-    return <p className="text-muted-foreground text-xs">{t('surveys.stats.noChartData')}</p>;
+    return <p className="text-muted-foreground text-xs">{t('noChartData')}</p>;
   }
 
   const maxCount = rows[0]!.count;
@@ -51,7 +51,7 @@ export const ChoiceDistributionChart = ({ answers }: ChoiceDistributionChartProp
     <div className="space-y-3">
       {isMultiSelect && (
         <p className="text-muted-foreground text-[11px]">
-          {t('surveys.stats.totalSelectionsFromRespondents', {
+          {t('totalSelectionsFromRespondents', {
             selections: total,
             respondents: respondentCount,
           })}
@@ -76,10 +76,12 @@ export const ChoiceDistributionChart = ({ answers }: ChoiceDistributionChartProp
                 >
                   {row.name}
                 </span>
+
                 <span className="text-foreground shrink-0 text-xs font-medium tabular-nums">
                   {row.count} <span className="text-muted-foreground font-normal">({pct}%)</span>
                 </span>
               </div>
+
               <div className="bg-muted h-2 w-full overflow-hidden rounded-full">
                 <div
                   className={cn(

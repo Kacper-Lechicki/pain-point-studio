@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 
 import { ProblemCard } from '@/features/marketing/components/common/problem-card';
-import { PROBLEMS, type Problem } from '@/features/marketing/config';
+import { PROBLEMS } from '@/features/marketing/config';
 
 const Problems = () => {
   const t = useTranslations();
@@ -21,7 +21,7 @@ const Problems = () => {
 
         <div className="cards-grid">
           <ul className="grid auto-rows-fr grid-cols-1 gap-8 lg:grid-cols-3">
-            {PROBLEMS.map((problem: Problem, index: number) => (
+            {PROBLEMS.map((problem, index) => (
               <li key={`problem-${index}`}>
                 <ProblemCard
                   icon={problem.icon}

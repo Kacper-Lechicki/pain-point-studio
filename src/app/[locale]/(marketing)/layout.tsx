@@ -9,7 +9,7 @@ const MarketingLayout = ({ children }: MarketingLayoutProps) => {
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />
-      <main className="page-top-spacing p flex-1">{children}</main>
+      <main className="page-top-spacing flex-1">{children}</main>
       <Footer />
     </div>
   );

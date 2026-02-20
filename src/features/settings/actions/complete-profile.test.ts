@@ -46,7 +46,6 @@ describe('Settings Actions – Complete Profile', () => {
     });
 
     mockUpsert.mockResolvedValue({ error: null });
-
     mockUpdateUser.mockResolvedValue({ error: null });
   });
 
@@ -55,11 +54,13 @@ describe('Settings Actions – Complete Profile', () => {
     const result = await completeProfile(validData);
 
     expect(result).toEqual({ success: true });
+
     expect(mockUpsert).toHaveBeenCalledWith(
       { id: 'user-123', full_name: 'John Doe', role: 'solo-developer' },
       { onConflict: 'id' }
     );
-    expect(mockUpdateUser).toHaveBeenCalledWith({ data: { full_name: 'John Doe' } }, undefined);
+
+    expect(mockUpdateUser).toHaveBeenCalledWith({ data: { full_name: 'John Doe' } });
   });
 
   it('should reject empty fullName', async () => {
@@ -80,6 +81,7 @@ describe('Settings Actions – Complete Profile', () => {
 
   it('should reject fullName exceeding max length', async () => {
     const { completeProfile } = await import('./complete-profile');
+
     const result = await completeProfile({
       fullName: 'a'.repeat(101),
       role: 'other',

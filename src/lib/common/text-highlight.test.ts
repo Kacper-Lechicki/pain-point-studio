@@ -17,19 +17,16 @@ describe('buildHighlightRegex', () => {
 
   it('should create alternation regex for multiple words', () => {
     const regex = buildHighlightRegex(['foo', 'bar']);
-
     expect(regex!.source).toBe('\\b(foo|bar)\\b');
   });
 
   it('should escape special regex characters', () => {
     const regex = buildHighlightRegex(['file.txt', 'price$']);
-
     expect(regex!.source).toBe('\\b(file\\.txt|price\\$)\\b');
   });
 
   it('should be case insensitive', () => {
     const regex = buildHighlightRegex(['test']);
-
     expect(regex!.flags).toContain('i');
   });
 });
@@ -37,7 +34,6 @@ describe('buildHighlightRegex', () => {
 describe('highlightText', () => {
   it('should return single non-highlighted segment for null regex', () => {
     const result = highlightText('hello world', null);
-
     expect(result).toEqual([{ text: 'hello world', highlight: false }]);
   });
 

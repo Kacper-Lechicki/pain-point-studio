@@ -1,12 +1,12 @@
 'use client';
 
-import { Github, Globe, Link as LinkIcon, Linkedin, Twitter } from 'lucide-react';
+import { Github, Globe, Link as LinkIcon, Linkedin, type LucideIcon, Twitter } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { SocialLink } from '@/features/settings/types';
 import { cn } from '@/lib/common/utils';
 
-const SOCIAL_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+const SOCIAL_ICONS: Record<string, LucideIcon> = {
   website: Globe,
   github: Github,
   twitter: Twitter,
@@ -39,11 +39,11 @@ interface SocialLinksListProps {
 }
 
 const SocialLinksList = ({ links }: SocialLinksListProps) => {
-  const t = useTranslations();
+  const t = useTranslations('profile.sections');
 
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-medium">{t('profile.sections.socialLinks')}</h3>
+      <h3 className="text-sm font-medium">{t('socialLinks')}</h3>
 
       <div className="flex flex-wrap gap-2">
         {links.map((link) => {

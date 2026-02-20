@@ -73,12 +73,10 @@ function computeDropIndex(
 
 export function useSortableList(options: UseSortableListOptions): UseSortableListResult {
   const { itemIds, containerRef, itemIdAttribute, onReorder } = options;
-
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [placeholderIndex, setPlaceholderIndex] = useState<number | null>(null);
   const [ghostPosition, setGhostPosition] = useState<{ x: number; y: number } | null>(null);
   const [ghostWidth, setGhostWidth] = useState(0);
-
   const dragOffsetRef = useRef({ x: 0, y: 0 });
   const ghostPositionRef = useRef({ x: 0, y: 0 });
   const placeholderIndexRef = useRef(0);
@@ -201,7 +199,6 @@ export function useSortableList(options: UseSortableListOptions): UseSortableLis
 
     const onMove = (e: PointerEvent) => handlePointerMoveRef.current(e);
     const onUp = () => handlePointerUpRef.current();
-
     const moveOpts: AddEventListenerOptions = { capture: true, passive: true };
 
     window.addEventListener('pointermove', onMove, moveOpts);

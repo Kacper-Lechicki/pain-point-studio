@@ -96,6 +96,7 @@ export function SurveyMetadataFields({ form, categoryOptions }: SurveyMetadataFi
         render={({ field, fieldState }) => (
           <FormItem>
             <FormLabel>{t('surveys.create.category')}</FormLabel>
+
             <FormDescription>
               {t.rich('surveys.create.categoryHelper', {
                 link: (chunks) => (

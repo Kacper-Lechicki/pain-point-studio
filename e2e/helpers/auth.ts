@@ -3,8 +3,9 @@ import { createClient } from '@supabase/supabase-js';
 
 import { env } from './env';
 import { ROUTES, url } from './routes';
+import { E2E_PASSWORD } from './selectors';
 
-const DEFAULT_PASSWORD = 'E2eTestPass1!';
+const DEFAULT_PASSWORD = E2E_PASSWORD;
 
 /**
  * Generates a project-scoped email to prevent collisions when
@@ -90,42 +91,5 @@ export function makeApiSignIn(email: string, password = DEFAULT_PASSWORD) {
     //    validates the session, so the page renders as authenticated.
     await page.goto(url(ROUTES.common.dashboard), { timeout: 30_000 });
     await expect(page).toHaveURL(/\/dashboard/, { timeout: 15_000 });
-  };
-}
-
-// ── Form-based sign-in (for testing the sign-in flow) ────────────
-
-/**
- * Returns a reusable sign-in function that drives the sign-in form.
- * Uses toPass() to handle WebKit hydration issues where .fill()
- * can be swallowed during first render.
- *
- * Only use this for tests that specifically test the sign-in UI.
- * For everything else, use `makeApiSignIn` instead.
- */
-export function makeSignIn(email: string, password = DEFAULT_PASSWORD) {
-  return async function signIn(page: import('@playwright/test').Page) {
-    await expect(async () => {
-      if (page.url().includes('/dashboard')) {
-        return;
-      }
-
-      await page.goto(url(ROUTES.auth.signIn), { timeout: 15_000 });
-      // Wait for hydration to stabilize (JS bundles loaded + executed)
-      await page.waitForLoadState('networkidle', { timeout: 10_000 }).catch(() => {});
-
-      const emailInput = page.locator('input[name="email"]');
-      const pwInput = page.locator('input[name="password"]');
-
-      await emailInput.fill(email);
-      await pwInput.fill(password);
-
-      // Verify BOTH fields after filling both — catches hydration resets
-      await expect(emailInput).toHaveValue(email);
-      await expect(pwInput).toHaveValue(password);
-
-      await page.locator('form button[type="submit"]').click();
-      await expect(page).toHaveURL(/\/dashboard/, { timeout: 15_000 });
-    }).toPass({ timeout: 60_000 });
   };
 }

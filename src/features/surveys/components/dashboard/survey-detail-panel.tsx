@@ -44,8 +44,8 @@ export function SurveyDetailPanel({
 }: SurveyDetailPanelProps) {
   const t = useTranslations();
   const format = useFormatter();
-
   const { handleActionClick, confirmDialogProps } = useSurveyAction(survey.id, onStatusChange, t);
+
   const { shareUrl, shareDialogOpen, setShareDialogOpen, handleShare } = useSurveyCardActions(
     survey.slug
   );
@@ -57,12 +57,13 @@ export function SurveyDetailPanel({
   const canExport = !isDraft && !isArchived;
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const sparklineColor = getSparklineColor(survey.recentActivity);
+
   const respondentProgress = calculateRespondentProgress(
     survey.completedCount,
     survey.maxRespondents
   );
-  const availableActions = getAvailableActions(survey.status);
 
+  const availableActions = getAvailableActions(survey.status);
   const formatDate = (iso: string) => format.dateTime(new Date(iso), DATE_FORMAT_SHORT);
 
   const titleHeadingClass =
@@ -78,6 +79,7 @@ export function SurveyDetailPanel({
         ) : (
           <h3 className={titleHeadingClass}>{survey.title}</h3>
         )}
+
         {variant === 'sheet' && (
           <Button
             variant="ghost"
@@ -110,6 +112,7 @@ export function SurveyDetailPanel({
       {showActiveDetails && (
         <>
           <Separator className="my-4" />
+
           <DetailPanelMetrics
             surveyId={survey.id}
             viewCount={survey.viewCount}
@@ -153,6 +156,7 @@ export function SurveyDetailPanel({
   );
 
   const confirmDialogElement = confirmDialogProps && <ConfirmDialog {...confirmDialogProps} />;
+
   const shareDialogElement = hasShareableLink && shareUrl && (
     <SurveyShareDialog
       open={shareDialogOpen}
@@ -161,6 +165,7 @@ export function SurveyDetailPanel({
       surveyTitle={survey.title}
     />
   );
+
   const exportDialogElement = canExport && (
     <ExportDialog
       open={exportDialogOpen}

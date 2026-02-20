@@ -105,6 +105,14 @@ describe('Auth Actions – Sign In', () => {
   });
 
   describe('signInWithOAuth', () => {
+    it('should return an error for an invalid provider', async () => {
+      const { signInWithOAuth } = await import('./sign-in');
+      const result = await signInWithOAuth('invalid-provider');
+
+      expect(result.error).toBe('auth.errors.invalidData');
+      expect(mockSignInWithOAuth).not.toHaveBeenCalled();
+    });
+
     it('should redirect on successful OAuth', async () => {
       const { redirect } = await import('next/navigation');
 

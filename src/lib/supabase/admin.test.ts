@@ -22,6 +22,7 @@ describe('createAdminClient', () => {
 
   it('should call createClient with url and service role key when key is set', async () => {
     const { createAdminClient } = await import('./admin');
+
     createAdminClient();
 
     expect(mockCreateClient).toHaveBeenCalledWith(
@@ -40,7 +41,9 @@ describe('createAdminClient', () => {
         SUPABASE_SERVICE_ROLE_KEY: '',
       },
     }));
+
     vi.resetModules();
+
     const { createAdminClient } = await import('./admin');
 
     expect(() => createAdminClient()).toThrow('SUPABASE_SERVICE_ROLE_KEY');

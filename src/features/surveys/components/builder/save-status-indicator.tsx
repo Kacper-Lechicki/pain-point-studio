@@ -16,7 +16,7 @@ export function SaveStatusIndicator({
   truncate = false,
   className,
 }: SaveStatusIndicatorProps) {
-  const t = useTranslations();
+  const t = useTranslations('surveys.builder');
 
   const showSaved = status === 'saved' || (status === 'idle' && !isDirty);
 
@@ -29,19 +29,19 @@ export function SaveStatusIndicator({
       {status === 'saving' && (
         <>
           <Loader2 className="size-3 animate-spin" />
-          <span className={cn(truncate && 'truncate')}>{t('surveys.builder.saving')}</span>
+          <span className={cn(truncate && 'truncate')}>{t('saving')}</span>
         </>
       )}
+
       {showSaved && (
         <>
           <Check className="size-3" />
-          <span className={cn(truncate && 'truncate')}>{t('surveys.builder.saved')}</span>
+          <span className={cn(truncate && 'truncate')}>{t('saved')}</span>
         </>
       )}
+
       {status === 'error' && (
-        <span className={cn('text-destructive', truncate && 'truncate')}>
-          {t('surveys.builder.saveError')}
-        </span>
+        <span className={cn('text-destructive', truncate && 'truncate')}>{t('saveError')}</span>
       )}
     </div>
   );

@@ -45,6 +45,7 @@ export function QuestionConfigDetails({ question }: { question: MappedQuestion }
 
   if (question.type === 'multiple_choice') {
     const options = (config.options as string[] | undefined) ?? [];
+
     rows.push(
       <p key="options">
         <span className="font-medium">{t('surveys.dashboard.detailPanel.optionsLabel')}:</span>{' '}
@@ -90,6 +91,7 @@ export function QuestionConfigDetails({ question }: { question: MappedQuestion }
     const max = (config.max as number | undefined) ?? 5;
     const minLabel = (config.minLabel as string | undefined)?.trim();
     const maxLabel = (config.maxLabel as string | undefined)?.trim();
+
     rows.push(
       <p key="scale">
         <span className="font-medium">{t('surveys.dashboard.detailPanel.scaleLabel')}:</span>{' '}

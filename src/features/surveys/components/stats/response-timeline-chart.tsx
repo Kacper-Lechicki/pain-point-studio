@@ -18,11 +18,11 @@ interface ResponseTimelineChartProps {
 }
 
 export const ResponseTimelineChart = ({ data, className }: ResponseTimelineChartProps) => {
-  const t = useTranslations();
+  const t = useTranslations('surveys.stats');
 
   const chartConfig = {
     responses: {
-      label: t('surveys.stats.chartResponses'),
+      label: t('chartResponses'),
       color: 'var(--chart-emerald)',
     },
   } satisfies ChartConfig;
@@ -56,7 +56,9 @@ export const ResponseTimelineChart = ({ data, className }: ResponseTimelineChart
             <stop offset="95%" stopColor="var(--color-responses)" stopOpacity={0} />
           </linearGradient>
         </defs>
+
         <CartesianGrid vertical={false} strokeDasharray="3 3" className="stroke-border/40" />
+
         <XAxis
           dataKey="date"
           tickLine={false}
@@ -65,6 +67,7 @@ export const ResponseTimelineChart = ({ data, className }: ResponseTimelineChart
           interval="preserveStartEnd"
           minTickGap={40}
         />
+
         <YAxis
           allowDecimals={false}
           tickLine={false}
@@ -72,7 +75,9 @@ export const ResponseTimelineChart = ({ data, className }: ResponseTimelineChart
           width={28}
           tick={{ fontSize: 11 }}
         />
+
         <ChartTooltip content={<ChartTooltipContent />} />
+
         <Area
           dataKey="responses"
           type="monotone"

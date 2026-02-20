@@ -14,7 +14,7 @@ interface ShortTextChartProps {
 }
 
 export const ShortTextChart = ({ answers, questionText }: ShortTextChartProps) => {
-  const t = useTranslations();
+  const t = useTranslations('surveys.stats');
 
   const textAnswers = useMemo<ResponseItem[]>(
     () =>
@@ -28,7 +28,7 @@ export const ShortTextChart = ({ answers, questionText }: ShortTextChartProps) =
   );
 
   if (textAnswers.length === 0) {
-    return <p className="text-muted-foreground text-xs">{t('surveys.stats.noTextResponses')}</p>;
+    return <p className="text-muted-foreground text-xs">{t('noTextResponses')}</p>;
   }
 
   return <InlineTextSearch responses={textAnswers} questionText={questionText} />;

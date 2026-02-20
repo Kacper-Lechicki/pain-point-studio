@@ -44,6 +44,7 @@ describe('startResponse', () => {
     const result = await startResponse({ surveyId: SURVEY_ID });
 
     expect(result).toEqual({ success: true, data: { responseId: RESPONSE_ID } });
+
     expect(mockRpc).toHaveBeenCalledWith('start_survey_response', {
       p_survey_id: SURVEY_ID,
     });
@@ -53,6 +54,7 @@ describe('startResponse', () => {
     mockRpc.mockResolvedValue({ data: RESPONSE_ID, error: null });
 
     const { startResponse } = await import('./start-response');
+
     await startResponse({ surveyId: SURVEY_ID, deviceType: 'mobile' });
 
     expect(mockRpc).toHaveBeenCalledWith('start_survey_response', {
@@ -65,11 +67,15 @@ describe('startResponse', () => {
     mockRpc.mockResolvedValue({ data: RESPONSE_ID, error: null });
 
     const { startResponse } = await import('./start-response');
+
     await startResponse({ surveyId: SURVEY_ID });
 
     const firstCall = mockRpc.mock.calls[0];
+
     expect(firstCall).toBeDefined();
+
     const rpcArgs = firstCall?.[1];
+
     expect(rpcArgs).not.toHaveProperty('p_device_type');
   });
 

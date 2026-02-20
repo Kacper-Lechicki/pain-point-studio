@@ -19,6 +19,7 @@ describe('useBreakpoint', () => {
 
   it('should return true when window width is above breakpoint', () => {
     vi.stubGlobal('innerWidth', BREAKPOINTS.lg + 100);
+
     const { result } = renderHook(() => useBreakpoint('lg'));
 
     expect(result.current).toBe(true);
@@ -26,6 +27,7 @@ describe('useBreakpoint', () => {
 
   it('should return true when window width equals breakpoint', () => {
     vi.stubGlobal('innerWidth', BREAKPOINTS.md);
+
     const { result } = renderHook(() => useBreakpoint('md'));
 
     expect(result.current).toBe(true);
@@ -33,6 +35,7 @@ describe('useBreakpoint', () => {
 
   it('should return false when window width is below breakpoint', () => {
     vi.stubGlobal('innerWidth', BREAKPOINTS.lg - 1);
+
     const { result } = renderHook(() => useBreakpoint('lg'));
 
     expect(result.current).toBe(false);
@@ -40,6 +43,7 @@ describe('useBreakpoint', () => {
 
   it('should update when window is resized', () => {
     vi.stubGlobal('innerWidth', 500);
+
     const { result } = renderHook(() => useBreakpoint('md'));
 
     expect(result.current).toBe(false);

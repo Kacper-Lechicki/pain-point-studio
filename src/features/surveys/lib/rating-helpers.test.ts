@@ -1,13 +1,7 @@
 /** Tests for rating display helpers (sentiment keys, colors, ring/bar colors). */
 import { describe, expect, it } from 'vitest';
 
-import {
-  getBarColor,
-  getBarMutedColor,
-  getRingColor,
-  getSentimentColor,
-  getSentimentKey,
-} from './rating-helpers';
+import { getBarColor, getRingColor, getSentimentColor, getSentimentKey } from './rating-helpers';
 
 // ── getSentimentKey ───────────────────────────────────────────────────
 
@@ -133,34 +127,34 @@ describe('getBarColor', () => {
   });
 });
 
-// ── getBarMutedColor ──────────────────────────────────────────────────
+// ── getBarColor (muted) ──────────────────────────────────────────────
 
-describe('getBarMutedColor', () => {
+describe('getBarColor (muted)', () => {
   it('should return muted amber when range is 0', () => {
-    expect(getBarMutedColor(5, 5, 5)).toBe('bg-amber-500/20');
+    expect(getBarColor(5, 5, 5, true)).toBe('bg-amber-500/20');
   });
 
   it('should return muted rose below low boundary', () => {
-    expect(getBarMutedColor(0.2, 0, 1)).toBe('bg-rose-500/20');
+    expect(getBarColor(0.2, 0, 1, true)).toBe('bg-rose-500/20');
   });
 
   it('should return muted rose when position is exactly 0.33', () => {
-    expect(getBarMutedColor(0.33, 0, 1)).toBe('bg-rose-500/20');
+    expect(getBarColor(0.33, 0, 1, true)).toBe('bg-rose-500/20');
   });
 
   it('should return muted amber just above low boundary', () => {
-    expect(getBarMutedColor(0.34, 0, 1)).toBe('bg-amber-500/20');
+    expect(getBarColor(0.34, 0, 1, true)).toBe('bg-amber-500/20');
   });
 
   it('should return muted amber at mid boundary (position <= 0.66)', () => {
-    expect(getBarMutedColor(0.66, 0, 1)).toBe('bg-amber-500/20');
+    expect(getBarColor(0.66, 0, 1, true)).toBe('bg-amber-500/20');
   });
 
   it('should return muted emerald just above mid boundary', () => {
-    expect(getBarMutedColor(0.67, 0, 1)).toBe('bg-emerald-500/20');
+    expect(getBarColor(0.67, 0, 1, true)).toBe('bg-emerald-500/20');
   });
 
   it('should return muted emerald at max of scale', () => {
-    expect(getBarMutedColor(10, 1, 10)).toBe('bg-emerald-500/20');
+    expect(getBarColor(10, 1, 10, true)).toBe('bg-emerald-500/20');
   });
 });

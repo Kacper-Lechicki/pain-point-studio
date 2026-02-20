@@ -16,7 +16,6 @@ interface LoadingLinkProps extends Omit<ComponentProps<'button'>, 'onClick'> {
 const LoadingLink = ({ href, icon, onClick, children, disabled, ...props }: LoadingLinkProps) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-
   const isDisabled = disabled || isPending;
 
   const handleClick = () => {
@@ -25,6 +24,7 @@ const LoadingLink = ({ href, icon, onClick, children, disabled, ...props }: Load
     }
 
     onClick?.();
+
     startTransition(() => {
       router.push(href);
     });

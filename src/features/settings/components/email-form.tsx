@@ -87,10 +87,12 @@ const EmailForm = ({ currentEmail, pendingEmail, emailChangeConfirmStatus }: Ema
             <div className="min-w-0 flex-1 space-y-1">
               <div className="flex items-center gap-2">
                 <Mail className="text-primary size-4 shrink-0" aria-hidden="true" />
+
                 <p className="text-sm font-medium">
                   {t('settings.email.pendingChange', { newEmail: pendingEmail })}
                 </p>
               </div>
+
               <p className="text-muted-foreground text-xs">
                 {t('settings.email.confirmationsStatus', {
                   count: emailChangeConfirmStatus,

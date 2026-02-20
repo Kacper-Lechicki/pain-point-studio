@@ -82,6 +82,7 @@ describe('Survey Actions – Create Survey Draft', () => {
 
   it('should create a new survey draft when no surveyId is provided', async () => {
     const insertChain = chain({ data: { id: 'new-survey-id' } });
+
     mockFrom.mockReturnValue(insertChain);
 
     const { createSurveyDraft } = await import('./create-survey');
@@ -89,6 +90,7 @@ describe('Survey Actions – Create Survey Draft', () => {
 
     expect(result).toEqual({ success: true, data: { surveyId: 'new-survey-id' } });
     expect(mockFrom).toHaveBeenCalledWith('surveys');
+
     expect(insertChain.insert).toHaveBeenCalledWith(
       expect.objectContaining({
         user_id: USER.id,
@@ -104,12 +106,14 @@ describe('Survey Actions – Create Survey Draft', () => {
   it('should update an existing survey when surveyId is provided', async () => {
     const surveyId = '00000000-0000-4000-8000-000000000001';
     const updateChain = chain({ data: { id: surveyId }, error: null });
+
     mockFrom.mockReturnValue(updateChain);
 
     const { createSurveyDraft } = await import('./create-survey');
     const result = await createSurveyDraft({ ...VALID_INPUT, surveyId });
 
     expect(result).toEqual({ success: true, data: { surveyId } });
+
     expect(updateChain.update).toHaveBeenCalledWith(
       expect.objectContaining({
         title: VALID_INPUT.title,
@@ -122,6 +126,7 @@ describe('Survey Actions – Create Survey Draft', () => {
 
   it('should return error on insert failure', async () => {
     const insertChain = chain({ data: null, error: { message: 'Insert failed' } });
+
     mockFrom.mockReturnValue(insertChain);
 
     const { createSurveyDraft } = await import('./create-survey');
@@ -133,6 +138,7 @@ describe('Survey Actions – Create Survey Draft', () => {
 
   it('should return error on update failure', async () => {
     const updateChain = chain({ data: null, error: { message: 'Update failed' } });
+
     mockFrom.mockReturnValue(updateChain);
 
     const surveyId = '00000000-0000-4000-8000-000000000001';

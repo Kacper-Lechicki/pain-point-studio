@@ -19,15 +19,15 @@ interface DeviceBreakdownChartProps {
 }
 
 export const DeviceBreakdownChart = ({ data, className }: DeviceBreakdownChartProps) => {
-  const t = useTranslations();
+  const t = useTranslations('surveys.stats');
 
   const chartConfig = {
     desktop: {
-      label: t('surveys.stats.deviceDesktop'),
+      label: t('deviceDesktop'),
       color: 'var(--chart-violet)',
     },
     mobile: {
-      label: t('surveys.stats.deviceMobile'),
+      label: t('deviceMobile'),
       color: 'var(--chart-cyan)',
     },
   } satisfies ChartConfig;
@@ -61,12 +61,15 @@ export const DeviceBreakdownChart = ({ data, className }: DeviceBreakdownChartPr
             <stop offset="5%" stopColor="var(--color-desktop)" stopOpacity={0.25} />
             <stop offset="95%" stopColor="var(--color-desktop)" stopOpacity={0} />
           </linearGradient>
+
           <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
             <stop offset="5%" stopColor="var(--color-mobile)" stopOpacity={0.25} />
             <stop offset="95%" stopColor="var(--color-mobile)" stopOpacity={0} />
           </linearGradient>
         </defs>
+
         <CartesianGrid vertical={false} strokeDasharray="3 3" className="stroke-border/40" />
+
         <XAxis
           dataKey="date"
           tickLine={false}
@@ -75,6 +78,7 @@ export const DeviceBreakdownChart = ({ data, className }: DeviceBreakdownChartPr
           interval="preserveStartEnd"
           minTickGap={40}
         />
+
         <YAxis
           allowDecimals={false}
           tickLine={false}
@@ -82,7 +86,9 @@ export const DeviceBreakdownChart = ({ data, className }: DeviceBreakdownChartPr
           width={28}
           tick={{ fontSize: 11 }}
         />
+
         <ChartTooltip content={<ChartTooltipContent />} />
+
         <Area
           dataKey="desktop"
           type="monotone"
@@ -90,6 +96,7 @@ export const DeviceBreakdownChart = ({ data, className }: DeviceBreakdownChartPr
           stroke="var(--color-desktop)"
           strokeWidth={2}
         />
+
         <Area
           dataKey="mobile"
           type="monotone"

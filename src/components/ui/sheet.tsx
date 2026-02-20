@@ -4,6 +4,7 @@ import * as React from 'react';
 
 import { type VariantProps, cva } from 'class-variance-authority';
 import { XIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Dialog as DialogPrimitive } from 'radix-ui';
 
 import { cn } from '@/lib/common/utils';
@@ -69,9 +70,12 @@ function SheetContent({
   VariantProps<typeof sheetContentVariants> & {
     showCloseButton?: boolean;
   }) {
+  const t = useTranslations();
+
   return (
     <SheetPortal>
       <SheetOverlay />
+
       <DialogPrimitive.Content
         data-slot="sheet-content"
         className={cn(sheetContentVariants({ side }), className)}
@@ -90,7 +94,7 @@ function SheetContent({
             )}
           >
             <XIcon className="size-4" aria-hidden />
-            <span className="sr-only">Close</span>
+            <span className="sr-only">{t('common.close')}</span>
           </DialogPrimitive.Close>
         )}
       </DialogPrimitive.Content>

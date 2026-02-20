@@ -1,4 +1,3 @@
-import type { LucideIcon } from 'lucide-react';
 import { Linkedin, Mail, Twitter } from 'lucide-react';
 
 import type { ShareUrls } from '@/features/surveys/lib/build-share-urls';
@@ -13,11 +12,9 @@ function RedditIcon({ className }: { className?: string }) {
 
 export type SocialChannelKey = keyof ShareUrls;
 
-type IconComponent = LucideIcon | ((props: { className?: string }) => React.JSX.Element);
-
 export interface SocialChannel {
   key: SocialChannelKey;
-  icon: IconComponent;
+  icon: React.ElementType;
   iconClass: string;
   labelKey: `surveys.publish.${SocialChannelKey}`;
 }

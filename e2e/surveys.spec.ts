@@ -1,22 +1,19 @@
 /**
- * Survey dashboard: creation flow, status lifecycle, and stats page.
+ * Survey dashboard: creation flow, status lifecycle, duplicate, and stats page.
  */
 import { expect, test } from '@playwright/test';
 
 import { makeApiSignIn, scopedEmail } from './helpers/auth';
 import { ROUTES, url } from './helpers/routes';
+import { E2E_PASSWORD, sel as sharedSel } from './helpers/selectors';
 import { deleteUserByEmail, ensureUser } from './helpers/supabase-admin';
 import { createSurveyWithQuestions } from './helpers/survey-admin';
 
-// ── Selectors ────────────────────────────────────────────────────
 const sel = {
-  toast: '[data-sonner-toast]',
+  ...sharedSel,
   titleInput: 'input[name="title"]',
   descriptionInput: 'textarea[name="description"]',
-  alertDialog: '[role="alertdialog"]',
 } as const;
-
-const PASSWORD = 'E2eSurveyPass1!';
 
 /**
  * Finds the survey row/card element containing the given title.
@@ -29,9 +26,6 @@ function surveyItem(page: import('@playwright/test').Page, title: string) {
 /**
  * Opens the "More actions" dropdown on a survey row, clicks a menu item,
  * and optionally confirms the alert dialog.
- *
- * Uses body-click dismiss before each attempt to handle Radix DropdownMenu
- * toggle behavior (Escape returns focus to trigger → next click closes menu).
  */
 async function executeActionOnRow(
   page: import('@playwright/test').Page,
@@ -40,6 +34,7 @@ async function executeActionOnRow(
   confirmButtonName?: string
 ) {
   const row = surveyItem(page, title);
+
   await expect(row).toBeVisible({ timeout: 15_000 });
 
   await expect(async () => {
@@ -47,10 +42,12 @@ async function executeActionOnRow(
     await row.getByRole('button', { name: 'More actions' }).click();
     await expect(page.getByRole('menuitem', { name: menuItemName })).toBeVisible();
   }).toPass({ timeout: 10_000 });
+
   await page.getByRole('menuitem', { name: menuItemName }).click();
 
   if (confirmButtonName) {
     const dialog = page.locator(sel.alertDialog);
+
     await expect(dialog).toBeVisible({ timeout: 5_000 });
     await dialog.getByRole('button', { name: confirmButtonName }).click();
   }
@@ -62,12 +59,13 @@ async function executeActionOnRow(
 test.describe('Surveys – Creation Flow', () => {
   let email: string;
   let signIn: ReturnType<typeof makeApiSignIn>;
+
   const SURVEY_TITLE = `E2E Creation ${Date.now()}`;
 
   test.beforeAll(async ({}, testInfo) => {
     email = scopedEmail('e2e-surveys-create', testInfo.project.name);
-    signIn = makeApiSignIn(email, PASSWORD);
-    await ensureUser(email, PASSWORD);
+    signIn = makeApiSignIn(email, E2E_PASSWORD);
+    await ensureUser(email, E2E_PASSWORD);
   });
 
   test.afterAll(async ({}, testInfo) => {
@@ -75,27 +73,20 @@ test.describe('Surveys – Creation Flow', () => {
     await deleteUserByEmail(e).catch(() => {});
   });
 
-  // Fresh user: empty state visible, create via metadata form, confirm in list
   test('empty state → create survey → verify in list', async ({ page }) => {
     await signIn(page);
-
-    // ── Empty state ──
     await page.goto(url(ROUTES.dashboard.research));
     await expect(page.getByText('No surveys yet')).toBeVisible({ timeout: 15_000 });
-
-    // ── Create survey metadata ──
     await page.goto(url(ROUTES.dashboard.researchNew));
     await expect(page.locator(sel.titleInput)).toBeVisible({ timeout: 15_000 });
 
     await expect(async () => {
       await page.locator(sel.titleInput).fill(SURVEY_TITLE);
       await expect(page.locator(sel.titleInput)).toHaveValue(SURVEY_TITLE);
-
       await page.locator(sel.descriptionInput).fill('E2E test survey description');
+
       await expect(page.locator(sel.descriptionInput)).toHaveValue('E2E test survey description');
 
-      // Select category only if not already chosen (avoids re-opening
-      // the dropdown on toPass() retries which blocks the "Next" button)
       const combobox = page.getByRole('combobox');
       const comboboxText = await combobox.textContent();
 
@@ -109,17 +100,16 @@ test.describe('Surveys – Creation Flow', () => {
       await expect(page).toHaveURL(/\/dashboard\/research\/new\/[0-9a-f-]+/);
     }).toPass({ timeout: 30_000 });
 
-    // ── Verify survey appears in list ──
     await page.goto(url(ROUTES.dashboard.research));
+
     const row = surveyItem(page, SURVEY_TITLE);
+
     await expect(row).toBeVisible({ timeout: 15_000 });
   });
 });
 
 // ─────────────────────────────────────────────────────────────────
 // Surveys – Status Lifecycle
-// Pre-created active survey. Tests the full state machine in one test:
-// active → completed → archived → restored (draft) → deleted.
 // ─────────────────────────────────────────────────────────────────
 test.describe('Surveys – Status Lifecycle', () => {
   let email: string;
@@ -128,10 +118,12 @@ test.describe('Surveys – Status Lifecycle', () => {
 
   test.beforeAll(async ({}, testInfo) => {
     email = scopedEmail('e2e-surveys-lifecycle', testInfo.project.name);
-    signIn = makeApiSignIn(email, PASSWORD);
-    const userId = await ensureUser(email, PASSWORD);
+    signIn = makeApiSignIn(email, E2E_PASSWORD);
+
+    const userId = await ensureUser(email, E2E_PASSWORD);
 
     surveyTitle = `E2E Lifecycle ${Date.now()}`;
+
     await createSurveyWithQuestions(userId, { title: surveyTitle, status: 'active' }, 2);
   });
 
@@ -140,44 +132,64 @@ test.describe('Surveys – Status Lifecycle', () => {
     await deleteUserByEmail(e).catch(() => {});
   });
 
-  // Pre-seeded active survey: walk through the full status state machine
   test('complete → archive → restore → delete', async ({ page }) => {
     await signIn(page);
     await page.goto(url(ROUTES.dashboard.research));
-
-    // ── Complete active survey ──
     await executeActionOnRow(page, surveyTitle, 'Complete survey', 'Complete survey');
     await expect(page.locator(sel.toast).first()).toBeVisible({ timeout: 10_000 });
 
-    // ── Archive completed survey ──
-    // Dismiss toast first, then execute next action
     await page
       .locator(sel.toast)
       .first()
       .waitFor({ state: 'hidden', timeout: 10_000 })
       .catch(() => {});
+
     await executeActionOnRow(page, surveyTitle, 'Archive', 'Archive');
     await expect(page.locator(sel.toast).first()).toBeVisible({ timeout: 10_000 });
-
-    // Survey disappears from main list
     await expect(surveyItem(page, surveyTitle)).not.toBeVisible({ timeout: 10_000 });
-
-    // ── Verify on archive page ──
     await page.goto(url(ROUTES.dashboard.researchArchive));
     await expect(surveyItem(page, surveyTitle)).toBeVisible({ timeout: 15_000 });
-
-    // ── Restore from archive ──
     await executeActionOnRow(page, surveyTitle, 'Restore', 'Restore');
     await expect(page.locator(sel.toast).first()).toBeVisible({ timeout: 10_000 });
-
-    // Restored survey appears on main page
     await page.goto(url(ROUTES.dashboard.research));
     await expect(surveyItem(page, surveyTitle)).toBeVisible({ timeout: 15_000 });
-
-    // ── Delete restored draft ──
     await executeActionOnRow(page, surveyTitle, 'Delete', 'Delete');
     await expect(page.locator(sel.toast).first()).toBeVisible({ timeout: 10_000 });
     await expect(surveyItem(page, surveyTitle)).not.toBeVisible({ timeout: 10_000 });
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────
+// Surveys – Duplicate (skipped: UI not wired up yet)
+// ─────────────────────────────────────────────────────────────────
+test.describe.skip('Surveys – Duplicate', () => {
+  let email: string;
+  let signIn: ReturnType<typeof makeApiSignIn>;
+  let surveyTitle: string;
+
+  test.beforeAll(async ({}, testInfo) => {
+    email = scopedEmail('e2e-surveys-duplicate', testInfo.project.name);
+    signIn = makeApiSignIn(email, E2E_PASSWORD);
+    const userId = await ensureUser(email, E2E_PASSWORD);
+
+    surveyTitle = `E2E Duplicate ${Date.now()}`;
+    await createSurveyWithQuestions(userId, { title: surveyTitle }, 2);
+  });
+
+  test.afterAll(async ({}, testInfo) => {
+    const e = scopedEmail('e2e-surveys-duplicate', testInfo.project.name);
+    await deleteUserByEmail(e).catch(() => {});
+  });
+
+  test('duplicates survey and shows copy in list', async ({ page }) => {
+    await signIn(page);
+    await page.goto(url(ROUTES.dashboard.research));
+    await executeActionOnRow(page, surveyTitle, 'Duplicate');
+    await expect(page.locator(sel.toast).first()).toBeVisible({ timeout: 10_000 });
+
+    const copy = surveyItem(page, `${surveyTitle} (copy)`);
+
+    await expect(copy).toBeVisible({ timeout: 15_000 });
   });
 });
 
@@ -192,15 +204,18 @@ test.describe('Surveys – Stats Page', () => {
 
   test.beforeAll(async ({}, testInfo) => {
     email = scopedEmail('e2e-surveys-stats', testInfo.project.name);
-    signIn = makeApiSignIn(email, PASSWORD);
-    const userId = await ensureUser(email, PASSWORD);
+
+    signIn = makeApiSignIn(email, E2E_PASSWORD);
+    const userId = await ensureUser(email, E2E_PASSWORD);
 
     surveyTitle = `E2E Stats ${Date.now()}`;
+
     const result = await createSurveyWithQuestions(
       userId,
       { title: surveyTitle, status: 'active' },
       3
     );
+
     surveyId = result.surveyId;
   });
 
@@ -209,12 +224,12 @@ test.describe('Surveys – Stats Page', () => {
     await deleteUserByEmail(e).catch(() => {});
   });
 
-  // Pre-seeded active survey with 3 questions → verify stats page layout
   test('stats page loads with overview structure', async ({ page }) => {
     await signIn(page);
     await page.goto(url(`${ROUTES.dashboard.researchStats}/${surveyId}`));
 
     await expect(page.getByRole('heading', { name: surveyTitle })).toBeVisible({ timeout: 15_000 });
+
     await expect(page.getByText('Metrics')).toBeVisible();
     await expect(page.getByText('Views')).toBeVisible();
     await expect(page.getByText('Participants')).toBeVisible();

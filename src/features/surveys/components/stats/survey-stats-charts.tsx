@@ -13,36 +13,40 @@ interface SurveyStatsChartsProps {
 }
 
 export function SurveyStatsCharts({ responseTimeline, deviceTimeline }: SurveyStatsChartsProps) {
-  const t = useTranslations();
+  const t = useTranslations('surveys.stats');
 
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
       <div>
-        <SectionLabel>{t('surveys.stats.responseTimeline')}</SectionLabel>
+        <SectionLabel>{t('responseTimeline')}</SectionLabel>
         <ResponseTimelineChart data={responseTimeline} className="h-48 w-full" />
       </div>
+
       <div>
         <div className="mb-2 flex items-center justify-between">
           <p className="text-muted-foreground text-[11px] font-medium tracking-wider uppercase">
-            {t('surveys.stats.deviceBreakdown')}
+            {t('deviceBreakdown')}
           </p>
+
           <div className="flex items-center gap-2.5">
             <span className="text-muted-foreground flex items-center gap-1 text-[10px]">
               <span
                 className="inline-block size-2 rounded-full"
                 style={{ backgroundColor: 'var(--chart-violet)' }}
               />
-              {t('surveys.stats.deviceDesktop')}
+              {t('deviceDesktop')}
             </span>
+
             <span className="text-muted-foreground flex items-center gap-1 text-[10px]">
               <span
                 className="inline-block size-2 rounded-full"
                 style={{ backgroundColor: 'var(--chart-cyan)' }}
               />
-              {t('surveys.stats.deviceMobile')}
+              {t('deviceMobile')}
             </span>
           </div>
         </div>
+
         <DeviceBreakdownChart data={deviceTimeline} className="h-48 w-full" />
       </div>
     </div>

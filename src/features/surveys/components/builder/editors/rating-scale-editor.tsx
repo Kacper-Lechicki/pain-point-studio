@@ -30,6 +30,7 @@ export function RatingScaleEditor({ config }: RatingScaleEditorProps) {
           </button>
         ))}
       </div>
+
       {(minLabel || maxLabel) && (
         <div className="flex w-full justify-between gap-2">
           <span className="text-muted-foreground shrink-0 text-xs">{minLabel}</span>

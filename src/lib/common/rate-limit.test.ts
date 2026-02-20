@@ -36,7 +36,6 @@ describe('rate-limit', () => {
 
   it('should allow requests within the limit', async () => {
     const { rateLimit } = await import('./rate-limit');
-
     const result1 = await rateLimit({ key: 'test-action', limit: 3, windowSeconds: 60 });
     const result2 = await rateLimit({ key: 'test-action', limit: 3, windowSeconds: 60 });
     const result3 = await rateLimit({ key: 'test-action', limit: 3, windowSeconds: 60 });
@@ -52,6 +51,7 @@ describe('rate-limit', () => {
 
     await rateLimit(config); // 1
     await rateLimit(config); // 2
+
     const result = await rateLimit(config); // 3 — should be blocked
 
     expect(result.limited).toBe(true);
@@ -76,12 +76,15 @@ describe('rate-limit', () => {
 
     // First IP hits limit
     mockHeaders.set('x-forwarded-for', '10.0.0.1');
+
     await rateLimit(config);
+
     const blocked = await rateLimit(config);
     expect(blocked.limited).toBe(true);
 
     // Second IP is independent
     mockHeaders.set('x-forwarded-for', '10.0.0.2');
+
     const allowed = await rateLimit(config);
     expect(allowed.limited).toBe(false);
   });
@@ -94,6 +97,7 @@ describe('rate-limit', () => {
 
     await rateLimit(config);
     await rateLimit(config);
+
     const result = await rateLimit(config);
 
     expect(result.limited).toBe(false);
@@ -106,6 +110,7 @@ describe('rate-limit', () => {
     const config = { key: 'test-no-ip', limit: 1, windowSeconds: 60 };
 
     await rateLimit(config);
+
     const result = await rateLimit(config);
 
     // Should still work using 'unknown' as the IP key
@@ -117,7 +122,9 @@ describe('rate-limit', () => {
     const config = { key: 'test-expire', limit: 1, windowSeconds: 1 };
 
     await rateLimit(config);
+
     const blocked = await rateLimit(config);
+
     expect(blocked.limited).toBe(true);
 
     // Advance time past the window
@@ -125,6 +132,7 @@ describe('rate-limit', () => {
     vi.advanceTimersByTime(1500);
 
     const allowed = await rateLimit(config);
+
     expect(allowed.limited).toBe(false);
 
     vi.useRealTimers();

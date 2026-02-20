@@ -18,7 +18,6 @@ import { usePathname } from '@/i18n/routing';
 
 const STORAGE_KEY = 'sidebar-pinned';
 const HOVER_DELAY = 75;
-
 const pinnedListeners = new Set<() => void>();
 
 function subscribePinned(callback: () => void) {
@@ -87,13 +86,11 @@ export function SidebarProvider({ children }: SidebarProviderProps) {
     getPinnedSnapshot,
     getPinnedServerSnapshot
   );
+
   const [isHovered, setIsHovered] = useState(false);
   const [isMobileOpenRaw, setMobileOpenRaw] = useState(false);
-
   const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   const isMobileOpen = isMobileOpenRaw;
-
   const activeNavItem = findActiveNavItem(pathname);
   const hasSubPanel = activeNavItem !== undefined;
 

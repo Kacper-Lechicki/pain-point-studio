@@ -50,7 +50,6 @@ export function InlineTextSearch({ responses, questionText }: InlineTextSearchPr
   const [sortMode, setSortMode] = useState<SortMode>('newest');
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const [dialogResponse, setDialogResponse] = useState<string | null>(null);
-
   const responseTexts = useMemo(() => responses.map((r) => r.text), [responses]);
   const keywords = useKeywordExtraction(responseTexts);
 
@@ -95,6 +94,7 @@ export function InlineTextSearch({ responses, questionText }: InlineTextSearchPr
 
     if (dateRange?.from) {
       const from = startOfDay(dateRange.from);
+
       result = result.filter((item) => {
         if (!item.completedAt) {
           return false;
@@ -226,6 +226,7 @@ export function InlineTextSearch({ responses, questionText }: InlineTextSearchPr
                   </span>
                 </Button>
               </DropdownMenuTrigger>
+
               <DropdownMenuContent align="end" className="min-w-36">
                 <DropdownMenuRadioGroup
                   value={activeKeyword ?? ''}
@@ -234,6 +235,7 @@ export function InlineTextSearch({ responses, questionText }: InlineTextSearchPr
                   <DropdownMenuRadioItem value="">
                     {t('surveys.stats.filter.all' as Parameters<typeof t>[0])}
                   </DropdownMenuRadioItem>
+
                   {keywords.map(({ word, count }) => (
                     <DropdownMenuRadioItem key={word} value={word}>
                       <span className="flex-1">{word}</span>
@@ -243,9 +245,11 @@ export function InlineTextSearch({ responses, questionText }: InlineTextSearchPr
                     </DropdownMenuRadioItem>
                   ))}
                 </DropdownMenuRadioGroup>
+
                 {activeKeyword && (
                   <>
                     <DropdownMenuSeparator />
+
                     <DropdownMenuItem onSelect={clearFilters}>
                       <X className="size-3.5" aria-hidden />
                       {t('surveys.stats.dialog.clearAll' as Parameters<typeof t>[0])}
@@ -265,11 +269,13 @@ export function InlineTextSearch({ responses, questionText }: InlineTextSearchPr
                   className="shrink-0 gap-1.5 text-xs"
                 >
                   <CalendarIcon className="size-3.5" />
+
                   <span className="hidden sm:inline">
                     {dateLabel ?? t('surveys.stats.filter.dateRange' as Parameters<typeof t>[0])}
                   </span>
                 </Button>
               </PopoverTrigger>
+
               <PopoverContent className="w-auto p-0" align="end">
                 <Calendar
                   mode="range"
@@ -283,6 +289,7 @@ export function InlineTextSearch({ responses, questionText }: InlineTextSearchPr
                   className="p-2 [--cell-size:--spacing(7)] [&_.rdp-month]:gap-2 [&_.rdp-nav]:h-(--cell-size) [&_.rdp-week]:mt-0.5"
                   fixedWeeks
                 />
+
                 {hasDateFilter && (
                   <div className="border-t px-2 py-1.5">
                     <Button
@@ -316,6 +323,7 @@ export function InlineTextSearch({ responses, questionText }: InlineTextSearchPr
             <span className="text-muted-foreground text-[10px] tabular-nums">
               {filteredResponses.length} / {responses.length}
             </span>
+
             <button
               type="button"
               onClick={clearFilters}

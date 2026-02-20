@@ -42,7 +42,6 @@ function Combobox({
   const [search, setSearch] = React.useState('');
   const inputRef = React.useRef<HTMLInputElement>(null);
   const listboxId = React.useId();
-
   const selectedLabel = options.find((o) => o.value === value)?.label;
 
   const filtered = search
@@ -84,6 +83,7 @@ function Combobox({
           <span className={cn('truncate', !selectedLabel && 'text-muted-foreground')}>
             {selectedLabel ?? placeholder}
           </span>
+
           <ChevronDownIcon className="size-4 shrink-0 opacity-50" />
         </button>
       </PopoverTrigger>
@@ -100,6 +100,7 @@ function Combobox({
         <div className="border-b px-2">
           <div className="flex items-center gap-2">
             <Search className="text-muted-foreground size-4 shrink-0" />
+
             <input
               ref={inputRef}
               value={search}

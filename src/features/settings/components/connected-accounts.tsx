@@ -34,6 +34,7 @@ interface ConnectedAccountsProps {
 const ConnectedAccounts = ({ identities, hasPassword }: ConnectedAccountsProps) => {
   const t = useTranslations();
   const router = useRouter();
+
   const [unlinkTarget, setUnlinkTarget] = useState<{
     identity: IdentityData;
     config: OAuthProviderConfig;
@@ -42,7 +43,6 @@ const ConnectedAccounts = ({ identities, hasPassword }: ConnectedAccountsProps) 
   const oauthIdentities = identities.filter((identity) => identity.provider !== 'email');
   const totalLoginMethods = oauthIdentities.length + (hasPassword ? 1 : 0);
   const canUnlink = totalLoginMethods >= 2;
-
   const { linkingProvider, linkProvider } = useLinkIdentity();
 
   const { isLoading: isUnlinking, execute } = useFormAction({
@@ -180,6 +180,7 @@ const ConnectedAccounts = ({ identities, hasPassword }: ConnectedAccountsProps) 
       {!canUnlink && oauthIdentities.length > 0 && (
         <Alert variant="info" className="text-xs">
           <Info className="size-3.5" />
+
           <AlertDescription>
             {hasPassword
               ? t('settings.connectedAccounts.cannotUnlinkOnlyOAuth')

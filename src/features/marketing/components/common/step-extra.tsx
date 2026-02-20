@@ -21,7 +21,7 @@ const StepExtra = ({ type, stepKey }: StepExtraProps) => {
     return (
       <div className="card-static mt-6 text-left text-sm">
         <div className="flex items-center gap-2 font-medium">
-          <div className="h-2 w-2 rounded-full bg-emerald-500" />
+          <div className="size-2 rounded-full bg-emerald-500" />
           {exampleTitle}
         </div>
 

@@ -34,10 +34,8 @@ export function usePagination({
 }: UsePaginationOptions): PaginationState {
   const [page, setPage] = useState(1);
   const [perPage, setPerPageState] = useState<PerPage>(defaultPerPage);
-
   const totalPages = Math.max(1, Math.ceil(totalItems / perPage));
   const effectivePage = Math.min(page, totalPages);
-
   const startIndex = (effectivePage - 1) * perPage;
   const endIndex = Math.min(startIndex + perPage, totalItems);
 

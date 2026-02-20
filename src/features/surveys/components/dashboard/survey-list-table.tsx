@@ -42,6 +42,7 @@ export function SurveyListTable({
               label={t('surveys.dashboard.table.title')}
               className="w-[30%]"
             />
+
             <SortableTableHeader
               sortKey="status"
               currentSortKey={sortBy}
@@ -51,6 +52,7 @@ export function SurveyListTable({
               className="border-border/30 border-l"
               centered
             />
+
             <SortableTableHeader
               sortKey="responses"
               currentSortKey={sortBy}
@@ -59,6 +61,7 @@ export function SurveyListTable({
               label={t('surveys.dashboard.table.responses')}
               className="border-border/30 border-l"
             />
+
             <SortableTableHeader
               sortKey="questions"
               currentSortKey={sortBy}
@@ -67,6 +70,7 @@ export function SurveyListTable({
               label={t('surveys.dashboard.table.questions')}
               className="border-border/30 hidden border-l lg:table-cell"
             />
+
             <SortableTableHeader
               sortKey="lastResponse"
               currentSortKey={sortBy}
@@ -75,6 +79,7 @@ export function SurveyListTable({
               label={t('surveys.dashboard.table.lastResponse')}
               className="border-border/30 hidden border-l xl:table-cell"
             />
+
             <SortableTableHeader
               sortKey="activity"
               currentSortKey={sortBy}
@@ -84,9 +89,11 @@ export function SurveyListTable({
               className="border-border/30 hidden border-l 2xl:table-cell"
               centered
             />
+
             <TableHead className="w-10" aria-hidden />
           </TableRow>
         </TableHeader>
+
         <TableBody>
           {surveys.map((survey: UserSurvey) => (
             <SurveyListRow

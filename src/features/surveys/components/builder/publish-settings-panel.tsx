@@ -70,6 +70,7 @@ export function PublishSettingsPanel({
 
   async function handlePublish() {
     dispatch({ type: 'SET_SAVE_STATUS', payload: { status: 'saving' } });
+
     const saveResult = await saveAction.execute(saveSurveyQuestions, {
       surveyId,
       questions: buildQuestionsPayload(),
@@ -101,6 +102,7 @@ export function PublishSettingsPanel({
           <SheetTitle className="text-foreground text-base font-semibold">
             {t('surveys.publish.settingsTitle')}
           </SheetTitle>
+
           <SheetDescription className="sr-only">
             {t('surveys.publish.settingsDescription')}
           </SheetDescription>
@@ -115,6 +117,7 @@ export function PublishSettingsPanel({
           <div className="space-y-2">
             <Label>{t('surveys.publish.endDate')}</Label>
             <p className="text-muted-foreground text-xs">{t('surveys.publish.endDateHelper')}</p>
+
             <DateTimePicker
               value={endsAt}
               onChange={setEndsAt}
@@ -125,9 +128,11 @@ export function PublishSettingsPanel({
 
           <div className="space-y-2">
             <Label>{t('surveys.publish.maxRespondents')}</Label>
+
             <p className="text-muted-foreground text-xs">
               {t('surveys.publish.maxRespondentsHelper')}
             </p>
+
             <NumberInput
               min={1}
               placeholder={t('surveys.publish.unlimited')}

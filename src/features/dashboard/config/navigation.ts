@@ -277,10 +277,3 @@ export function findActiveNavItem(pathname: string): NavItem | undefined {
 
   return undefined;
 }
-
-/**
- * Determine whether the current pathname should show the sub-panel.
- */
-export function hasSubNavForPath(pathname: string): boolean {
-  return findActiveNavItem(pathname) !== undefined;
-}

@@ -25,12 +25,14 @@ export function useRefresh() {
   const refresh = useCallback(() => {
     startTransition(() => {
       router.refresh();
+
       const now = Date.now();
+
       lastSyncedAtRef.current = now;
       setLastSyncedAt(now);
       toast.success(t('common.dataRefreshed'));
     });
-  }, [router, startTransition, t]);
+  }, [router, t]);
 
   /** Call from realtime or any external sync to bump the timestamp. */
   const markSynced = useCallback(() => {

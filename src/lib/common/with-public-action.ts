@@ -1,22 +1,25 @@
 /**
  * HOF for server actions that do not require auth. Applies rate limit and Zod
- * validation, then runs the action with db only. Use for respondent flows,
- * public forms, etc. For authenticated flows use withProtectedAction.
+ * validation, then runs the action with supabase client only. Use for respondent
+ * flows, public forms, etc. For authenticated flows use withProtectedAction.
  */
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { ZodType, z } from 'zod';
 
 import { RateLimitConfig, rateLimit } from '@/lib/common/rate-limit';
 import { ActionResult } from '@/lib/common/types';
-import type { DatabaseClient } from '@/lib/providers/database';
-import { createSupabaseDatabaseClient } from '@/lib/supabase/providers/database';
 import { createClient } from '@/lib/supabase/server';
+import type { Database } from '@/lib/supabase/types';
 
 interface PublicActionConfig<TSchema extends ZodType, TData = undefined> {
   schema: TSchema;
   rateLimit: Omit<RateLimitConfig, 'key'>;
   rateLimitError?: string;
   validationError?: string;
-  action: (params: { data: z.infer<TSchema>; db: DatabaseClient }) => Promise<ActionResult<TData>>;
+  action: (params: {
+    data: z.infer<TSchema>;
+    supabase: SupabaseClient<Database>;
+  }) => Promise<ActionResult<TData>>;
 }
 
 export function withPublicAction<TSchema extends ZodType, TData = undefined>(
@@ -37,8 +40,7 @@ export function withPublicAction<TSchema extends ZodType, TData = undefined>(
     }
 
     const supabase = await createClient();
-    const db = createSupabaseDatabaseClient(supabase);
 
-    return config.action({ data: validation.data, db });
+    return config.action({ data: validation.data, supabase });
   };
 }

@@ -41,6 +41,7 @@ const ConfirmDialog = ({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{title ?? t('common.confirm.title')}</AlertDialogTitle>
+
           <AlertDialogDescription>
             {description ?? t('common.confirm.description')}
           </AlertDialogDescription>

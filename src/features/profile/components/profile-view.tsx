@@ -15,45 +15,41 @@ interface ProfileViewProps {
 }
 
 const ProfileView = ({ profile, isPreview = false }: ProfileViewProps) => {
-  const t = useTranslations();
+  const t = useTranslations('profile');
 
   return (
     <div className="space-y-8">
       {isPreview && (
         <div className="space-y-1">
-          <h1 className="text-xl font-bold tracking-tight">{t('profile.preview.title')}</h1>
-          <p className="text-muted-foreground text-xs">{t('profile.preview.description')}</p>
+          <h1 className="text-xl font-bold tracking-tight">{t('preview.title')}</h1>
+          <p className="text-muted-foreground text-xs">{t('preview.description')}</p>
         </div>
       )}
 
-      <div>
-        <div className="space-y-8">
-          <ProfileHeader profile={profile} />
+      <ProfileHeader profile={profile} />
 
-          {profile.socialLinks.length > 0 && (
-            <>
-              <Separator />
-              <SocialLinksList links={profile.socialLinks} />
-            </>
-          )}
-
+      {profile.socialLinks.length > 0 && (
+        <>
           <Separator />
+          <SocialLinksList links={profile.socialLinks} />
+        </>
+      )}
 
-          <EmptySection
-            title={t('profile.sections.projects.title')}
-            description={t('profile.sections.projects.emptyDescription')}
-            icon={FolderOpen}
-          />
+      <Separator />
 
-          <Separator />
+      <EmptySection
+        title={t('sections.projects.title')}
+        description={t('sections.projects.emptyDescription')}
+        icon={FolderOpen}
+      />
 
-          <EmptySection
-            title={t('profile.sections.statistics.title')}
-            description={t('profile.sections.statistics.emptyDescription')}
-            icon={BarChart3}
-          />
-        </div>
-      </div>
+      <Separator />
+
+      <EmptySection
+        title={t('sections.statistics.title')}
+        description={t('sections.statistics.emptyDescription')}
+        icon={BarChart3}
+      />
     </div>
   );
 };

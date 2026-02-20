@@ -3,20 +3,21 @@
 import { rateLimit } from '@/lib/common/rate-limit';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { ActionResult } from '@/lib/common/types';
-import { createServerAuth, mapAuthError } from '@/lib/providers/server';
+import { mapSupabaseError } from '@/lib/supabase/errors';
+import { createClient } from '@/lib/supabase/server';
 
 export const signOut = async (): Promise<ActionResult> => {
   const { limited } = await rateLimit({ key: 'sign-out', ...RATE_LIMITS.signOut });
 
   if (limited) {
-    return { error: 'common.errors.rateLimitExceeded' };
+    return { error: 'auth.errors.rateLimitExceeded' };
   }
 
-  const auth = await createServerAuth();
-  const { error } = await auth.signOut();
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signOut();
 
   if (error) {
-    return { error: mapAuthError(error.message) };
+    return { error: mapSupabaseError(error.message) };
   }
 
   return { success: true };

@@ -37,4 +37,6 @@ export type SignUpSchema = z.infer<typeof signUpSchema>;
 export type ForgotPasswordSchema = z.infer<typeof forgotPasswordSchema>;
 export type UpdatePasswordSchema = z.infer<typeof updatePasswordSchema>;
 
-export type AuthProvider = 'google' | 'github';
+export const AUTH_PROVIDERS = ['google', 'github'] as const;
+export type AuthProvider = (typeof AUTH_PROVIDERS)[number];
+export const authProviderSchema = z.enum(AUTH_PROVIDERS);

@@ -9,18 +9,23 @@ describe('mapSupabaseError', () => {
     expect(mapSupabaseError('Email not confirmed')).toBe('auth.errors.emailNotConfirmed');
     expect(mapSupabaseError('User already registered')).toBe('auth.errors.userAlreadyRegistered');
     expect(mapSupabaseError('Email rate limit exceeded')).toBe('auth.errors.rateLimitExceeded');
+
     expect(mapSupabaseError('Password should be at least 8 characters')).toBe(
       'auth.errors.passwordTooShort'
     );
+
     expect(mapSupabaseError('New password should be different from the old password.')).toBe(
       'auth.errors.samePassword'
     );
+
     expect(mapSupabaseError('Unable to validate email address: invalid format')).toBe(
       'auth.errors.invalidEmail'
     );
+
     expect(mapSupabaseError('Signups not allowed for this instance')).toBe(
       'auth.errors.signupsDisabled'
     );
+
     expect(mapSupabaseError('Email link is invalid or has expired')).toBe(
       'auth.errors.linkExpired'
     );

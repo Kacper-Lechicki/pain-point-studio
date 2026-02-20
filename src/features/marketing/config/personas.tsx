@@ -2,9 +2,7 @@ import { GraduationCap, User, Users } from 'lucide-react';
 
 import type { PersonaFeature } from '@/features/marketing/types';
 
-export type DeveloperPersona = PersonaFeature;
-
-export const DEVELOPER_PERSONAS: DeveloperPersona[] = [
+export const DEVELOPER_PERSONAS: PersonaFeature[] = [
   {
     icon: User,
     titleKey: 'marketing.personas.items.solo.title',

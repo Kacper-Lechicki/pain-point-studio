@@ -55,6 +55,7 @@ export function SortDropdown<T extends string>({
           {sortLabel && <span className="hidden sm:inline">{sortLabel}</span>}
         </Button>
       </DropdownMenuTrigger>
+
       <DropdownMenuContent align="end" className="min-w-40">
         <DropdownMenuRadioGroup value={sortBy} onValueChange={(v) => onSortByChange(v as T)}>
           {options.map((option) => (
@@ -63,9 +64,11 @@ export function SortDropdown<T extends string>({
             </DropdownMenuRadioItem>
           ))}
         </DropdownMenuRadioGroup>
+
         {showDirToggle && (
           <>
             <DropdownMenuSeparator />
+
             <DropdownMenuItem
               onSelect={(e) => {
                 e.preventDefault();

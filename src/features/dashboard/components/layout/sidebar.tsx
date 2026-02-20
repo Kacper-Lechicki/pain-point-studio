@@ -13,6 +13,7 @@ import { cn } from '@/lib/common/utils';
 export function Sidebar() {
   const { isExpanded, isPinned, hasSubPanel, togglePin, handleMouseEnter, handleMouseLeave } =
     useSidebar();
+
   const t = useTranslations();
 
   return (

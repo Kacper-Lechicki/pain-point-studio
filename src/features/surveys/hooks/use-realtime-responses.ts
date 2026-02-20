@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { REALTIME_STATS_DEBOUNCE_MS } from '@/features/surveys/config';
-import { createBrowserRealtimeProvider } from '@/lib/providers/client';
+import { createClient } from '@/lib/supabase/client';
 
 /**
  * Subscribes to Realtime changes on `survey_responses` and `surveys`
@@ -38,7 +38,7 @@ export function useRealtimeResponses(surveyId: string, onSync?: () => void, enab
       return;
     }
 
-    const realtime = createBrowserRealtimeProvider();
+    const supabase = createClient();
 
     const debouncedRefresh = () => {
       if (timerRef.current) {
@@ -51,32 +51,35 @@ export function useRealtimeResponses(surveyId: string, onSync?: () => void, enab
       }, REALTIME_STATS_DEBOUNCE_MS);
     };
 
-    const channel = realtime.subscribe(
-      `survey-stats:${surveyId}`,
-      [
+    let channel = supabase.channel(`survey-stats:${surveyId}`);
+
+    channel = channel
+      .on(
+        'postgres_changes',
         {
           event: '*',
+          schema: 'public',
           table: 'survey_responses',
           filter: `survey_id=eq.${surveyId}`,
         },
-        {
-          event: 'UPDATE',
-          table: 'surveys',
-          filter: `id=eq.${surveyId}`,
-        },
-      ],
-      debouncedRefresh,
-      (status) => {
-        setIsConnected(status === 'SUBSCRIBED');
-      }
-    );
+        debouncedRefresh
+      )
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'surveys', filter: `id=eq.${surveyId}` },
+        debouncedRefresh
+      );
+
+    channel.subscribe((status) => {
+      setIsConnected(status === 'SUBSCRIBED');
+    });
 
     return () => {
       if (timerRef.current) {
         clearTimeout(timerRef.current);
       }
 
-      channel.unsubscribe();
+      void supabase.removeChannel(channel);
     };
   }, [surveyId, enabled]);
 

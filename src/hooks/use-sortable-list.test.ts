@@ -13,6 +13,7 @@ function createContainer(ids: string[], itemHeight = 50): HTMLDivElement {
     const el = document.createElement('div');
 
     el.setAttribute(ATTR, id);
+
     // Mock getBoundingClientRect for each element.
     el.getBoundingClientRect = () => ({
       top: i * itemHeight,
@@ -35,10 +36,12 @@ function createContainer(ids: string[], itemHeight = 50): HTMLDivElement {
 
 describe('useSortableList', () => {
   let container: HTMLDivElement;
+
   const onReorder = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
+
     vi.stubGlobal(
       'requestAnimationFrame',
       vi.fn((cb: FrameRequestCallback) => {
@@ -47,6 +50,7 @@ describe('useSortableList', () => {
         return 0;
       })
     );
+
     vi.stubGlobal('cancelAnimationFrame', vi.fn());
   });
 
@@ -83,6 +87,7 @@ describe('useSortableList', () => {
   // isDragging returns false for all items when not dragging.
   it('should return false for isDragging when idle', () => {
     container = createContainer(['a', 'b', 'c']);
+
     const ref = { current: container };
 
     const { result } = renderHook(() =>
@@ -102,6 +107,7 @@ describe('useSortableList', () => {
   // handleDragStart sets draggedId and related state.
   it('should set drag state on handleDragStart', () => {
     container = createContainer(['a', 'b', 'c']);
+
     const ref = { current: container };
 
     const { result } = renderHook(() =>
@@ -136,6 +142,7 @@ describe('useSortableList', () => {
   // showPlaceholderAt returns false at the dragged item's own index.
   it('should not show placeholder at the dragged items own index', () => {
     container = createContainer(['a', 'b', 'c']);
+
     const ref = { current: container };
 
     const { result } = renderHook(() =>
@@ -164,6 +171,7 @@ describe('useSortableList', () => {
   // pointerup resets all drag state back to idle.
   it('should reset drag state on pointerup', () => {
     container = createContainer(['a', 'b', 'c']);
+
     const ref = { current: container };
 
     const { result } = renderHook(() =>
@@ -201,6 +209,7 @@ describe('useSortableList', () => {
   // pointercancel also resets drag state (e.g. touch interrupted).
   it('should reset drag state on pointercancel', () => {
     container = createContainer(['a', 'b', 'c']);
+
     const ref = { current: container };
 
     const { result } = renderHook(() =>
@@ -233,6 +242,7 @@ describe('useSortableList', () => {
   // Dropping at the same position should not call onReorder.
   it('should not call onReorder when dropped at same position', () => {
     container = createContainer(['a', 'b', 'c']);
+
     const ref = { current: container };
 
     const { result } = renderHook(() =>
@@ -266,6 +276,7 @@ describe('useSortableList', () => {
   // Dragging first item down past the second should reorder.
   it('should call onReorder when item is moved to a new position', () => {
     container = createContainer(['a', 'b', 'c']);
+
     const ref = { current: container };
 
     const { result } = renderHook(() =>
@@ -305,6 +316,7 @@ describe('useSortableList', () => {
   // handleDragStart calls stopPropagation on the event.
   it('should call stopPropagation on drag start', () => {
     container = createContainer(['a', 'b']);
+
     const ref = { current: container };
 
     const { result } = renderHook(() =>
@@ -331,6 +343,7 @@ describe('useSortableList', () => {
   // Empty list should not break.
   it('should handle empty item list', () => {
     container = createContainer([]);
+
     const ref = { current: container };
 
     const { result } = renderHook(() =>

@@ -86,6 +86,7 @@ describe('Survey Actions – Publish Survey', () => {
     const updateChain = chain({ data: { id: SURVEY_ID }, error: null });
 
     let fromCallCount = 0;
+
     mockFrom.mockImplementation((table: string) => {
       if (table === 'survey_questions') {
         return countChain;
@@ -108,6 +109,7 @@ describe('Survey Actions – Publish Survey', () => {
 
   it('should return error when question count is below minimum', async () => {
     const countChain = chain({ count: 0 });
+
     mockFrom.mockReturnValue(countChain);
 
     const { publishSurvey } = await import('./publish-survey');
@@ -147,7 +149,6 @@ describe('Survey Actions – Publish Survey', () => {
     });
 
     const pastDate = new Date(Date.now() - 86_400_000).toISOString();
-
     const { publishSurvey } = await import('./publish-survey');
     const result = await publishSurvey({ surveyId: SURVEY_ID, endsAt: pastDate });
 
@@ -161,6 +162,7 @@ describe('Survey Actions – Publish Survey', () => {
     const successChain = chain({ data: { id: SURVEY_ID }, error: null });
 
     let surveysCallCount = 0;
+
     mockFrom.mockImplementation((table: string) => {
       if (table === 'survey_questions') {
         return countChain;
@@ -202,6 +204,7 @@ describe('Survey Actions – Publish Survey', () => {
     const collisionChain = chain({ error: { code: '23505', message: 'unique violation' } });
 
     let surveysCallCount = 0;
+
     mockFrom.mockImplementation((table: string) => {
       if (table === 'survey_questions') {
         return countChain;
@@ -232,6 +235,7 @@ describe('Survey Actions – Publish Survey', () => {
     const updateChain = chain({ data: { id: SURVEY_ID }, error: null });
 
     let surveysCallCount = 0;
+
     mockFrom.mockImplementation((table: string) => {
       if (table === 'survey_questions') {
         return countChain;
@@ -249,6 +253,7 @@ describe('Survey Actions – Publish Survey', () => {
     const futureDate = new Date(Date.now() + 86_400_000).toISOString();
 
     const { publishSurvey } = await import('./publish-survey');
+
     const result = await publishSurvey({
       surveyId: SURVEY_ID,
       endsAt: futureDate,
@@ -256,6 +261,7 @@ describe('Survey Actions – Publish Survey', () => {
     });
 
     expect(result).toEqual({ success: true, data: { slug: 'test-slug1' } });
+
     expect(updateChain.update).toHaveBeenCalledWith(
       expect.objectContaining({
         status: 'active',

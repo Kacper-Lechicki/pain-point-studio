@@ -17,6 +17,7 @@ const EmptySection = ({ title, description, icon: Icon }: EmptySectionProps) => 
             <Icon className="text-muted-foreground size-5" />
           </div>
         )}
+
         <p className="text-muted-foreground max-w-xs text-sm">{description}</p>
       </div>
     </div>

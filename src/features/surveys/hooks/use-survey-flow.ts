@@ -20,11 +20,8 @@ export function useSurveyFlow({ questions, responseId, onSaveError }: UseSurveyF
   const [isComplete, setIsComplete] = useState(false);
   const [, startTransition] = useTransition();
   const lastSavedRef = useRef<Map<string, string>>(new Map());
-
   const currentQuestion = questions[currentIndex];
-
   const currentAnswer = answers.get(currentQuestion?.id ?? '') ?? {};
-
   const answeredCount = Array.from(answers.entries()).filter(([, v]) => !isAnswerEmpty(v)).length;
 
   const updateAnswer = useCallback(
@@ -35,6 +32,7 @@ export function useSurveyFlow({ questions, responseId, onSaveError }: UseSurveyF
 
       setAnswers((prev) => {
         const next = new Map(prev);
+
         next.set(currentQuestion.id, value);
 
         return next;

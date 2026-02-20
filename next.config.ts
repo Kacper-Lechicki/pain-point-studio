@@ -10,7 +10,6 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
 // Supabase origin used in CSP and image remotePatterns (auth avatars, storage)
 const supabaseUrl = new URL(env.NEXT_PUBLIC_SUPABASE_URL);
-
 const isDev = process.env.NODE_ENV === 'development';
 
 // Content-Security-Policy: allow Supabase, Google/GitHub OAuth; unsafe-eval only in dev (HMR)

@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { BUILDER_SETTINGS_PANEL_WIDTH_CLASS } from '@/features/dashboard/config/layout';
+import { BUILDER_PANEL_WIDTH_CLASS } from '@/features/dashboard/config/layout';
 import { ResponsivePanel } from '@/features/surveys/components/builder/responsive-panel';
 import { MultipleChoiceSettings } from '@/features/surveys/components/builder/settings/multiple-choice-settings';
 import { RatingScaleSettings } from '@/features/surveys/components/builder/settings/rating-scale-settings';
@@ -44,6 +44,7 @@ function BuilderSettingsPanelContent() {
         <Label className="text-muted-foreground mb-2 block text-xs font-medium tracking-wide uppercase">
           {t('surveys.builder.questionType')}
         </Label>
+
         <div className="grid grid-cols-3 gap-1.5">
           {[...QUESTION_TYPES]
             .sort((a, b) =>
@@ -68,6 +69,7 @@ function BuilderSettingsPanelContent() {
                   )}
                 >
                   <Icon className="size-4" />
+
                   <span className="text-[10px] leading-tight">
                     {t(labelKey as Parameters<typeof t>[0])}
                   </span>
@@ -116,7 +118,7 @@ export function BuilderSettingsPanel({ isDesktop, open, onOpenChange }: BuilderS
       onOpenChange={onOpenChange}
       side="right"
       title={t('surveys.builder.questionSettings')}
-      desktopClassName={`border-border flex ${BUILDER_SETTINGS_PANEL_WIDTH_CLASS} flex-col border-l`}
+      desktopClassName={`border-border flex ${BUILDER_PANEL_WIDTH_CLASS} flex-col border-l`}
     >
       <BuilderSettingsPanelContent />
     </ResponsivePanel>

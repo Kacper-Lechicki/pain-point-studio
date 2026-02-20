@@ -40,16 +40,16 @@ export function useSurveyListState<TSortKey extends string>({
 }: UseSurveyListStateOptions<TSortKey>) {
   const now = useNow({ updateInterval: NOW_UPDATE_INTERVAL_MS });
   const isMd = useBreakpoint('md');
-
   const resolvedDefaultDir = defaultSortDir ?? getDefaultSortDir(defaultSortBy);
-
   const [searchQuery, setSearchQueryRaw] = useSessionState(`${storageKey}:q`, '');
   const [categoryFilter, setCategoryFilterRaw] = useSessionState<string[]>(`${storageKey}:cat`, []);
   const [sortBy, setSortByRaw] = useSessionState<TSortKey>(`${storageKey}:sort`, defaultSortBy);
+
   const [sortDir, setSortDirRaw] = useSessionState<SortDir>(
     `${storageKey}:dir`,
     resolvedDefaultDir
   );
+
   const [page, setPage] = useSessionState(`${storageKey}:page`, 1);
   const [perPage, setPerPageRaw] = useSessionState<PerPage>(`${storageKey}:pp`, defaultPerPage);
 
@@ -112,6 +112,7 @@ export function useSurveyListState<TSortKey extends string>({
 
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
+
       result = result.filter(
         (s) => s.title.toLowerCase().includes(q) || s.description.toLowerCase().includes(q)
       );
@@ -138,7 +139,6 @@ export function useSurveyListState<TSortKey extends string>({
 
   // Clamp page if it exceeds total (e.g. filter narrows results)
   const clampedPage = Math.min(page, totalPages);
-
   const startIndex = (clampedPage - 1) * perPage;
   const endIndex = Math.min(startIndex + perPage, totalItems);
 

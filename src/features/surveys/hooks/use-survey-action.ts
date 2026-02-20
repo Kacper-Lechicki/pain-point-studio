@@ -68,6 +68,7 @@ export function useSurveyAction(
   const executeAction = (action: SurveyAction) => {
     startTransition(async () => {
       const result = await ACTION_FN[action]({ surveyId });
+
       setConfirmDialog(null);
 
       if (result.success) {

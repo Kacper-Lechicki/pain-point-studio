@@ -40,6 +40,7 @@ export function BuilderTopBar({
 }: BuilderTopBarProps) {
   const t = useTranslations();
   const { state, dispatch, buildQuestionsPayload } = useQuestionBuilderContext();
+
   useUnsavedChangesWarning('builder-questions', state.isDirty);
 
   const saveAction = useFormAction({
@@ -81,8 +82,10 @@ export function BuilderTopBar({
               <ArrowLeft className="size-4 shrink-0" aria-hidden />
               {t('surveys.title')}
             </Link>
+
             <span className="text-muted-foreground text-sm">/</span>
             <span className="min-w-0 truncate text-sm font-medium">{surveyTitle}</span>
+
             <Button
               variant="ghost"
               size="icon-xs"
@@ -106,6 +109,7 @@ export function BuilderTopBar({
               {saveAction.isLoading && <Spinner />}
               {t('surveys.builder.saveDraft')}
             </Button>
+
             <Button
               size="sm"
               disabled={isLoading || !canPublish}
@@ -113,6 +117,7 @@ export function BuilderTopBar({
             >
               {t('surveys.builder.publish')}
             </Button>
+
             <div className="ml-4 pr-4">
               <UserMenu />
             </div>
@@ -129,8 +134,10 @@ export function BuilderTopBar({
               <ArrowLeft className="size-3.5 shrink-0" aria-hidden />
               {t('surveys.title')}
             </Link>
+
             <span className="text-muted-foreground text-xs">/</span>
             <span className="min-w-0 truncate text-xs font-medium">{surveyTitle}</span>
+
             <Button
               variant="ghost"
               size="icon-xs"
@@ -140,6 +147,7 @@ export function BuilderTopBar({
             >
               <Pencil className="size-3" />
             </Button>
+
             <div className="ml-auto shrink-0">
               <UserMenu />
             </div>
@@ -156,6 +164,7 @@ export function BuilderTopBar({
               >
                 <List className="size-4" />
               </Button>
+
               <Button
                 variant="ghost"
                 size="icon-sm"
@@ -183,6 +192,7 @@ export function BuilderTopBar({
               >
                 {saveAction.isLoading ? <Spinner /> : <Save className="size-4" />}
               </Button>
+
               <Button
                 size="icon-sm"
                 disabled={isLoading || !canPublish}

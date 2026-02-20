@@ -33,9 +33,10 @@ describe('downloadBlob', () => {
 
   it('creates a Blob with the given content and MIME type', () => {
     downloadBlob('hello', 'test.txt', 'text/plain');
-
     expect(URL.createObjectURL).toHaveBeenCalledWith(expect.any(Blob));
+
     const blob = vi.mocked(URL.createObjectURL).mock.calls[0]![0] as Blob;
+
     expect(blob.type).toBe('text/plain');
   });
 
@@ -56,7 +57,6 @@ describe('downloadBlob', () => {
 
   it('revokes the object URL after download', () => {
     downloadBlob('data', 'file.txt', 'text/plain');
-
     expect(URL.revokeObjectURL).toHaveBeenCalledWith(fakeUrl);
   });
 
@@ -68,12 +68,15 @@ describe('downloadBlob', () => {
 
       return node;
     });
+
     clickSpy.mockImplementation(() => callOrder.push('click'));
+
     vi.mocked(document.body.removeChild).mockImplementation((node) => {
       callOrder.push('removeChild');
 
       return node;
     });
+
     vi.mocked(URL.revokeObjectURL).mockImplementation(() => callOrder.push('revokeObjectURL'));
 
     downloadBlob('data', 'file.txt', 'text/plain');

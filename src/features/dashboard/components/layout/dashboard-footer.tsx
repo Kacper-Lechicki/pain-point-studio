@@ -18,6 +18,7 @@ export function DashboardFooter() {
   const { isDesktop, isPinned, hasSubPanel } = useSidebar();
   const isBuilder = isBuilderPath(pathname ?? null);
   const copyright = getCopyrightText(t);
+
   const marginLeft =
     isDesktop && !isBuilder ? getDashboardContentMarginLeft(isPinned, hasSubPanel) : undefined;
 

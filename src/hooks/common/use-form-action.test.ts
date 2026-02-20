@@ -36,6 +36,7 @@ describe('useFormAction', () => {
   // isLoading becomes true while action is in flight, then false after resolve.
   it('should set isLoading true during execution', async () => {
     let resolveAction: (value: ActionResult) => void;
+
     const action = () =>
       new Promise<ActionResult>((resolve) => {
         resolveAction = resolve;
@@ -83,7 +84,6 @@ describe('useFormAction', () => {
   // When successMessage is omitted, no success toast is shown on success.
   it('should not show success toast when successMessage is not provided', async () => {
     const action = vi.fn().mockResolvedValue({ success: true });
-
     const { result } = renderHook(() => useFormAction());
 
     await act(async () => {
@@ -97,7 +97,6 @@ describe('useFormAction', () => {
   it('should show error toast and call onError when action returns error', async () => {
     const action = vi.fn().mockResolvedValue({ error: 'settings.errors.invalidData' });
     const onError = vi.fn();
-
     const { result } = renderHook(() => useFormAction({ onError }));
 
     await act(async () => {
@@ -112,7 +111,6 @@ describe('useFormAction', () => {
   // When action throws: unexpected error toast (default key) is shown.
   it('should show unexpected error toast when action throws', async () => {
     const action = vi.fn().mockRejectedValue(new Error('Network error'));
-
     const { result } = renderHook(() => useFormAction());
 
     await act(async () => {
@@ -141,7 +139,6 @@ describe('useFormAction', () => {
   // execute resolves to the action result object on success.
   it('should return the action result on success', async () => {
     const action = vi.fn().mockResolvedValue({ success: true });
-
     const { result } = renderHook(() => useFormAction());
 
     let actionResult: ActionResult | undefined;
@@ -156,7 +153,6 @@ describe('useFormAction', () => {
   // execute resolves to { error } when action returns error.
   it('should return error result on action error', async () => {
     const action = vi.fn().mockResolvedValue({ error: 'some.error' });
-
     const { result } = renderHook(() => useFormAction());
 
     let actionResult: ActionResult | undefined;
@@ -171,7 +167,6 @@ describe('useFormAction', () => {
   // execute resolves to { error: unexpectedErrorMessage } when action throws.
   it('should return error result when action throws', async () => {
     const action = vi.fn().mockRejectedValue(new Error('fail'));
-
     const { result } = renderHook(() => useFormAction());
 
     let actionResult: ActionResult | undefined;
@@ -187,7 +182,6 @@ describe('useFormAction', () => {
   it('should call onError when action throws', async () => {
     const action = vi.fn().mockRejectedValue(new Error('fail'));
     const onError = vi.fn();
-
     const { result } = renderHook(() => useFormAction({ onError }));
 
     await act(async () => {
@@ -200,7 +194,6 @@ describe('useFormAction', () => {
   // Second argument of execute is passed through to the action function.
   it('should pass data to the action function', async () => {
     const action = vi.fn().mockResolvedValue({ success: true });
-
     const { result } = renderHook(() => useFormAction());
 
     await act(async () => {

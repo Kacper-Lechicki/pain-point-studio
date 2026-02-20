@@ -36,15 +36,16 @@ export function SurveyShareContent({
 
     const url = canvas.toDataURL('image/png');
     const a = document.createElement('a');
+
     a.href = url;
     a.download = 'survey-qr-code.png';
+
     a.click();
   }
 
   const shareBody = t('surveys.publish.shareBody', { title: surveyTitle, url: shareUrl });
   const emailSubject = t('surveys.publish.shareEmailSubject', { title: surveyTitle });
   const urls = buildShareUrls(shareUrl, surveyTitle, shareBody, emailSubject);
-
   const qrSize = compact ? 88 : 160;
 
   return (
@@ -54,6 +55,7 @@ export function SurveyShareContent({
           <div className="border-border shrink-0 overflow-hidden rounded-md border bg-white p-1">
             <QRCodeCanvas ref={qrRef} value={shareUrl} size={qrSize} level="M" />
           </div>
+
           <button
             type="button"
             onClick={handleDownloadQR}
@@ -71,7 +73,9 @@ export function SurveyShareContent({
           <label className="text-muted-foreground text-[11px] font-medium tracking-wide uppercase">
             {t('surveys.publish.shareLink')}
           </label>
+
           <ClipboardInput value={shareUrl} size={compact ? 'sm' : 'default'} />
+
           <p className="text-muted-foreground text-[11px] leading-snug">
             {t('surveys.publish.qrDescription')}
           </p>
@@ -84,6 +88,7 @@ export function SurveyShareContent({
         <label className="text-muted-foreground text-[11px] font-medium tracking-wide uppercase">
           {t('surveys.publish.shareVia')}
         </label>
+
         <div className="grid grid-cols-2 gap-2">
           {SOCIAL_CHANNELS.map(({ key, icon: Icon, iconClass, labelKey }) => (
             <Button key={key} variant="outline" size={compact ? 'md' : 'default'} asChild>

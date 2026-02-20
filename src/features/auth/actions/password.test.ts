@@ -22,21 +22,22 @@ vi.mock('@/lib/common/rate-limit', () => ({
   rateLimit: vi.fn().mockResolvedValue({ limited: false }),
 }));
 
-// Mock Supabase server client (still needed by withPublicAction for the db client)
-vi.mock('@/lib/supabase/server', () => ({
-  createClient: vi.fn().mockResolvedValue({}),
-}));
-
-// Mock server auth provider
+// Mock Supabase server client — withPublicAction calls createClient() and passes supabase to the action
 const mockResetPasswordForEmail = vi.fn();
 const mockUpdateUser = vi.fn();
 
-vi.mock('@/lib/providers/server', () => ({
-  createServerAuth: vi.fn().mockResolvedValue({
-    resetPasswordForEmail: mockResetPasswordForEmail,
-    updateUser: mockUpdateUser,
+vi.mock('@/lib/supabase/server', () => ({
+  createClient: vi.fn().mockResolvedValue({
+    auth: {
+      resetPasswordForEmail: mockResetPasswordForEmail,
+      updateUser: mockUpdateUser,
+    },
   }),
-  mapAuthError: vi.fn((msg: string) => `mapped:${msg}`),
+}));
+
+// Mock Supabase error mapper
+vi.mock('@/lib/supabase/errors', () => ({
+  mapSupabaseError: vi.fn((msg: string) => `mapped:${msg}`),
 }));
 
 describe('Auth Actions – Password', () => {

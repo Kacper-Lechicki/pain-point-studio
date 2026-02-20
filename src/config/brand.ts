@@ -6,8 +6,6 @@ export const BRAND = {
   author: 'brand.author',
 } as const;
 
-export type BrandConfig = typeof BRAND;
-
 /**
  * Returns localized copyright string (e.g. "© {year} {author}").
  * @param t - Translation function (useTranslations())

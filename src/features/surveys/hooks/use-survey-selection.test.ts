@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 /** Tests for the useSurveySelection hook that syncs selected survey state with URL search params. */
-import { act, renderHook } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
@@ -77,6 +77,7 @@ const SURVEYS: UserSurvey[] = [
 describe('useSurveySelection', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+
     mockGetSurveyWithQuestions.mockResolvedValue({
       survey: {},
       questions: [
@@ -93,13 +94,15 @@ describe('useSurveySelection', () => {
     });
   });
 
-  it('should return selectedId and selectedSurvey from searchParams and surveys list', () => {
+  it('should return selectedId and selectedSurvey from searchParams and surveys list', async () => {
     const { result } = renderHook(() => useSurveySelection(SURVEYS));
 
-    expect(result.current.selectedId).toBe('survey-1');
-    expect(result.current.selectedSurvey?.id).toBe('survey-1');
-    expect(result.current.selectedSurvey?.title).toBe('Survey One');
-    expect(result.current.showSheet).toBe(true);
+    await waitFor(() => {
+      expect(result.current.selectedId).toBe('survey-1');
+      expect(result.current.selectedSurvey?.id).toBe('survey-1');
+      expect(result.current.selectedSurvey?.title).toBe('Survey One');
+      expect(result.current.showSheet).toBe(true);
+    });
   });
 
   it('should call router.replace with selected param when setSelected is called', () => {

@@ -1,11 +1,13 @@
 'use server';
 
+import type { SupabaseClient } from '@supabase/supabase-js';
+
 import { MAX_EXPORT_RESPONSES } from '@/features/surveys/config';
 import { slugifyTitle } from '@/features/surveys/lib/generate-slug';
 import { type QuestionType, surveyIdSchema } from '@/features/surveys/types';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
-import type { DatabaseClient } from '@/lib/providers/database';
+import type { Database } from '@/lib/supabase/types';
 
 function formatAnswerValue(type: QuestionType, value: Record<string, unknown>): string {
   switch (type) {
@@ -39,40 +41,58 @@ function escapeCsvField(field: string): string {
   return sanitized;
 }
 
-async function fetchExportData(db: DatabaseClient, surveyId: string, userId: string) {
+async function fetchExportData(
+  supabase: SupabaseClient<Database>,
+  surveyId: string,
+  userId: string
+) {
   // Guard: check response count before loading everything into memory
-  const { count } = await db.surveyResponses.countBySurveyId(surveyId, { status: 'completed' });
+  const { count } = await supabase
+    .from('survey_responses')
+    .select('*', { count: 'exact', head: true })
+    .eq('survey_id', surveyId)
+    .eq('status', 'completed');
 
   if (count != null && count > MAX_EXPORT_RESPONSES) {
     return 'TOO_MANY_RESPONSES' as const;
   }
 
   const [{ data: survey }, { data: questions }, { data: responses }] = await Promise.all([
-    db.surveys.findByIdSelect<{ id: string; title: string }>(surveyId, 'id, title', {
-      userId,
-    }),
-    db.surveyQuestions.findBySurveyId(surveyId, 'id, text, type, sort_order'),
+    supabase
+      .from('surveys')
+      .select('id, title')
+      .eq('id', surveyId)
+      .eq('user_id', userId)
+      .maybeSingle(),
+    supabase
+      .from('survey_questions')
+      .select('id, text, type, sort_order')
+      .eq('survey_id', surveyId)
+      .order('sort_order'),
     // RPC decrypts PII server-side and verifies ownership
-    db.rpc<
-      Array<{
-        id: string;
-        completed_at: string | null;
-        contact_name: string | null;
-        contact_email: string | null;
-        feedback: string | null;
-      }>
-    >('get_export_responses', { p_survey_id: surveyId, p_user_id: userId }),
+    supabase.rpc('get_export_responses', { p_survey_id: surveyId, p_user_id: userId }),
   ]);
 
   if (!survey) {
     return null;
   }
 
-  const responseIds = (responses ?? []).map((r) => r.id);
+  const typedResponses = (responses ?? []) as Array<{
+    id: string;
+    completed_at: string | null;
+    contact_name: string | null;
+    contact_email: string | null;
+    feedback: string | null;
+  }>;
+
+  const responseIds = typedResponses.map((r) => r.id);
   let answers: Array<{ response_id: string; question_id: string; value: unknown }> = [];
 
   if (responseIds.length > 0) {
-    const { data } = await db.surveyAnswers.findByResponseIds(responseIds);
+    const { data } = await supabase
+      .from('survey_answers')
+      .select('response_id, question_id, value')
+      .in('response_id', responseIds);
 
     answers = data ?? [];
   }
@@ -90,7 +110,7 @@ async function fetchExportData(db: DatabaseClient, surveyId: string, userId: str
     responseMap.set(a.question_id, a.value as Record<string, unknown>);
   }
 
-  return { survey, questions: questions ?? [], responses: responses ?? [], answerMap };
+  return { survey, questions: questions ?? [], responses: typedResponses, answerMap };
 }
 
 export const exportSurveyCSV = withProtectedAction<
@@ -99,8 +119,8 @@ export const exportSurveyCSV = withProtectedAction<
 >('export-survey-csv', {
   schema: surveyIdSchema,
   rateLimit: RATE_LIMITS.export,
-  action: async ({ data, user, db }) => {
-    const result = await fetchExportData(db, data.surveyId, user.id);
+  action: async ({ data, user, supabase }) => {
+    const result = await fetchExportData(supabase, data.surveyId, user.id);
 
     if (result === 'TOO_MANY_RESPONSES') {
       return { error: 'surveys.errors.exportTooManyResponses' };
@@ -156,8 +176,8 @@ export const exportSurveyJSON = withProtectedAction<
 >('export-survey-json', {
   schema: surveyIdSchema,
   rateLimit: RATE_LIMITS.export,
-  action: async ({ data, user, db }) => {
-    const result = await fetchExportData(db, data.surveyId, user.id);
+  action: async ({ data, user, supabase }) => {
+    const result = await fetchExportData(supabase, data.surveyId, user.id);
 
     if (result === 'TOO_MANY_RESPONSES') {
       return { error: 'surveys.errors.exportTooManyResponses' };

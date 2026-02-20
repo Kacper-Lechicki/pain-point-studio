@@ -25,6 +25,7 @@ export function DetailQuestionsList({ questions }: DetailQuestionsListProps) {
           <span className="ml-1 tabular-nums">({questions.length})</span>
         )}
       </SectionLabel>
+
       {questions === null ? (
         <div className="text-muted-foreground flex items-center gap-2 py-2 text-xs">
           <Loader2 className="size-3.5 animate-spin" aria-hidden />
@@ -46,11 +47,13 @@ export function DetailQuestionsList({ questions }: DetailQuestionsListProps) {
                   <span className="text-muted-foreground tabular-nums">{i + 1}. </span>
                   {q.text || '—'}
                 </p>
+
                 <div className="mt-1.5">
                   <span className="bg-secondary text-secondary-foreground inline-flex items-center gap-1 rounded-full border px-1.5 py-0 text-[10px] font-normal">
                     <TypeIcon className="size-3" aria-hidden />
                     {typeLabel}
                   </span>
+
                   <QuestionConfigDetails question={q} />
                 </div>
               </div>

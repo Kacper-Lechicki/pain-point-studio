@@ -1,4 +1,4 @@
-type QuestionType = 'open_text' | 'short_text' | 'multiple_choice' | 'rating_scale' | 'yes_no';
+import type { QuestionType } from '@/features/surveys/types';
 
 interface QuestionRow {
   id: string;

@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import type { AuthProvider } from '@/features/auth/types';
 import type { MessageKey } from '@/i18n/types';
 import { env } from '@/lib/common/env';
-import { createBrowserAuthProvider } from '@/lib/providers/client';
+import { createClient } from '@/lib/supabase/client';
 
 /** Initiate an OAuth identity link flow, tracking the in-progress provider. */
 export function useLinkIdentity() {
@@ -20,11 +20,13 @@ export function useLinkIdentity() {
     setLinkingProvider(provider);
 
     try {
-      const auth = createBrowserAuthProvider();
+      const supabase = createClient();
 
-      const { error } = await auth.linkIdentity({
+      const { error } = await supabase.auth.linkIdentity({
         provider,
-        redirectTo: `${env.NEXT_PUBLIC_APP_URL}/${locale}/auth/callback?next=/${locale}/settings%23connected-accounts`,
+        options: {
+          redirectTo: `${env.NEXT_PUBLIC_APP_URL}/${locale}/auth/callback?next=/${locale}/settings%23connected-accounts`,
+        },
       });
 
       if (error) {

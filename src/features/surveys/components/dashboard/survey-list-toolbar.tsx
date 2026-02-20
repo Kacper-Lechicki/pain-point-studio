@@ -131,6 +131,7 @@ export const SurveyListToolbar = ({
           >
             <Filter className="size-4" />
             <span className="hidden sm:inline">{t('surveys.dashboard.filters.label')}</span>
+
             {isFiltered && (
               <Badge variant="secondary" className="ml-0.5 size-5 px-0 text-[10px]">
                 {activeFilterCount}
@@ -138,12 +139,13 @@ export const SurveyListToolbar = ({
             )}
           </Button>
         </PopoverTrigger>
+
         <PopoverContent align="end" className="w-56 p-0">
-          {/* Status section */}
           <div className="p-2">
             <p className="text-muted-foreground mb-1 px-2 text-xs font-medium">
               {t('surveys.dashboard.filters.statusSection')}
             </p>
+
             <div className="flex flex-col">
               {sortedStatusOptions.map((opt) => (
                 <label key={opt.value} className={FILTER_ITEM_CLASS}>
@@ -151,7 +153,9 @@ export const SurveyListToolbar = ({
                     checked={statusFilter.includes(opt.value as SurveyStatusFilter)}
                     onCheckedChange={() => handleStatusToggle(opt.value as SurveyStatusFilter)}
                   />
+
                   <span className="min-w-0 flex-1 truncate">{opt.label}</span>
+
                   <span className="text-muted-foreground text-xs tabular-nums">
                     {statusCounts[opt.value] ?? 0}
                   </span>
@@ -160,14 +164,15 @@ export const SurveyListToolbar = ({
             </div>
           </div>
 
-          {/* Category section */}
           {sortedCategories.length > 0 && (
             <>
               <Separator />
+
               <div className="p-2">
                 <p className="text-muted-foreground mb-1 px-2 text-xs font-medium">
                   {t('surveys.dashboard.filters.categorySection')}
                 </p>
+
                 <div className="flex flex-col">
                   {sortedCategories.map((cat) => (
                     <label key={cat.value} className={FILTER_ITEM_CLASS}>
@@ -175,7 +180,9 @@ export const SurveyListToolbar = ({
                         checked={categoryFilter.includes(cat.value)}
                         onCheckedChange={() => handleCategoryToggle(cat.value)}
                       />
+
                       <span className="min-w-0 flex-1 truncate">{cat.label}</span>
+
                       <span className="text-muted-foreground text-xs tabular-nums">
                         {categoryCounts[cat.value]}
                       </span>
@@ -186,10 +193,10 @@ export const SurveyListToolbar = ({
             </>
           )}
 
-          {/* Clear filters */}
           {isFiltered && (
             <>
               <Separator />
+
               <div className="p-2">
                 <Button
                   variant="ghost"

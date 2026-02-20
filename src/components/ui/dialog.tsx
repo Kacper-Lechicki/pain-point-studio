@@ -3,6 +3,7 @@
 import * as React from 'react';
 
 import { XIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Dialog as DialogPrimitive } from 'radix-ui';
 
 import { Button } from '@/components/ui/button';
@@ -51,6 +52,7 @@ function DialogContent({
   return (
     <DialogPortal data-slot="dialog-portal">
       <DialogOverlay />
+
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
@@ -58,7 +60,7 @@ function DialogContent({
           className
         )}
         {...props}
-        data-hide-header-close={!showCloseButton || undefined}
+        {...(!showCloseButton && { 'data-hide-header-close': '' })}
       >
         {children}
       </DialogPrimitive.Content>
@@ -67,6 +69,8 @@ function DialogContent({
 }
 
 function DialogHeader({ className, children, ...props }: React.ComponentProps<'div'>) {
+  const t = useTranslations();
+
   return (
     <div
       data-slot="dialog-header"
@@ -74,14 +78,15 @@ function DialogHeader({ className, children, ...props }: React.ComponentProps<'d
       {...props}
     >
       <div className="min-w-0 flex-1 space-y-1">{children}</div>
+
       <DialogPrimitive.Close asChild>
         <Button
           variant="ghost"
           size="icon-xs"
-          className="text-muted-foreground hover:text-foreground -my-1 shrink-0 [[data-hide-header-close]_&]:hidden"
+          className="text-muted-foreground hover:text-foreground -my-1 shrink-0 in-data-hide-header-close:hidden"
         >
           <XIcon className="size-4" />
-          <span className="sr-only">Close</span>
+          <span className="sr-only">{t('common.close')}</span>
         </Button>
       </DialogPrimitive.Close>
     </div>
@@ -96,6 +101,8 @@ function DialogFooter({
 }: React.ComponentProps<'div'> & {
   showCloseButton?: boolean;
 }) {
+  const t = useTranslations();
+
   return (
     <div
       data-slot="dialog-footer"
@@ -106,7 +113,7 @@ function DialogFooter({
       {showCloseButton && (
         <DialogPrimitive.Close asChild>
           <Button variant="outline" size="md">
-            Close
+            {t('common.close')}
           </Button>
         </DialogPrimitive.Close>
       )}

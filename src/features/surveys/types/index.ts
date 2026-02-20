@@ -7,11 +7,13 @@ import {
   QUESTION_OPTIONS_MIN,
   QUESTION_OPTION_MAX_LENGTH,
   QUESTION_TEXT_MAX_LENGTH,
+  RATING_LABEL_MAX_LENGTH,
   RATING_SCALE_MAX,
   RATING_SCALE_MIN,
   SURVEY_CATEGORY_VALUES,
   SURVEY_DESCRIPTION_MAX_LENGTH,
   SURVEY_TITLE_MAX_LENGTH,
+  TEXT_PLACEHOLDER_MAX_LENGTH,
 } from '@/features/surveys/config';
 
 // ── Enum tuples (source of truth) ───────────────────────────────────
@@ -98,8 +100,8 @@ export const ratingScaleConfigSchema = z
   .object({
     min: z.number().int().min(RATING_SCALE_MIN, 'surveys.builder.errors.ratingMinValue'),
     max: z.number().int().max(RATING_SCALE_MAX, 'surveys.builder.errors.ratingMaxValue'),
-    minLabel: z.string().max(100).optional(),
-    maxLabel: z.string().max(100).optional(),
+    minLabel: z.string().max(RATING_LABEL_MAX_LENGTH).optional(),
+    maxLabel: z.string().max(RATING_LABEL_MAX_LENGTH).optional(),
   })
   .refine((data) => data.min < data.max, {
     message: 'surveys.builder.errors.ratingMinGreaterMax',
@@ -108,7 +110,7 @@ export const ratingScaleConfigSchema = z
 
 /** Config schema for text questions (placeholder, max length). */
 export const textConfigSchema = z.object({
-  placeholder: z.string().max(200).optional(),
+  placeholder: z.string().max(TEXT_PLACEHOLDER_MAX_LENGTH).optional(),
   maxLength: z.number().int().min(1).optional(),
 });
 

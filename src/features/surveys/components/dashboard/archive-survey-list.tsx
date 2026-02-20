@@ -120,9 +120,11 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
               <span className="text-foreground text-base font-semibold tabular-nums">
                 {surveys.length}
               </span>
+
               <span className="ml-1">{t('surveys.dashboard.summary.totalLabel')}</span>
             </span>
           </div>
+
           <span className="text-muted-foreground hidden shrink-0 items-center gap-1 text-[11px] md:flex">
             <MousePointerClick className="size-3" aria-hidden />
             {t('surveys.dashboard.clickHint')}
@@ -187,6 +189,7 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
                   label={t('surveys.dashboard.table.title')}
                   className="w-[30%]"
                 />
+
                 <SortableTableHeader
                   sortKey="questions"
                   currentSortKey={sortBy}
@@ -195,6 +198,7 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
                   label={t('surveys.dashboard.table.questions')}
                   className="border-border/30 border-l"
                 />
+
                 <SortableTableHeader
                   sortKey="archivedAt"
                   currentSortKey={sortBy}
@@ -203,6 +207,7 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
                   label={t('surveys.dashboard.table.archivedAt')}
                   className="border-border/30 border-l"
                 />
+
                 <SortableTableHeader
                   sortKey="autoDeletes"
                   currentSortKey={sortBy}
@@ -211,9 +216,11 @@ export function ArchiveSurveyList({ initialSurveys }: ArchiveSurveyListProps) {
                   label={t('surveys.dashboard.table.autoDeletes')}
                   className="border-border/30 border-l"
                 />
+
                 <TableHead className="w-10" aria-hidden />
               </TableRow>
             </TableHeader>
+
             <TableBody>
               {paginatedSurveys.map((survey) => (
                 <SurveyListRow

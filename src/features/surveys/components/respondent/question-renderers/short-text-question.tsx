@@ -22,6 +22,7 @@ export const ShortTextQuestion = ({ value, config, onChange }: ShortTextQuestion
         placeholder={placeholder}
         maxLength={maxLength}
       />
+
       <CharacterCounter current={value.length} max={maxLength} />
     </div>
   );

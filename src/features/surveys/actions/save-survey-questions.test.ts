@@ -63,7 +63,6 @@ function chain(result: { data?: unknown; error?: unknown } = {}) {
 
 const USER = { id: 'user-123', email: 'test@example.com' };
 const SURVEY_ID = '00000000-0000-4000-8000-000000000001';
-
 const QUESTION_ID = '00000000-0000-4000-8000-000000000002';
 
 const VALID_INPUT = {
@@ -97,6 +96,7 @@ describe('saveSurveyQuestions', () => {
     const result = await saveSurveyQuestions(VALID_INPUT);
 
     expect(result).toEqual({ success: true });
+
     expect(mockRpc).toHaveBeenCalledWith(
       'save_survey_questions',
       expect.objectContaining({
@@ -126,6 +126,7 @@ describe('saveSurveyQuestions', () => {
 
   it('should return validation error for invalid input', async () => {
     const { saveSurveyQuestions } = await import('./save-survey-questions');
+
     const result = await saveSurveyQuestions({
       surveyId: 'not-a-uuid',
       questions: [],

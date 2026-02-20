@@ -15,6 +15,7 @@ export function MetricRow({
         {Icon != null && <Icon className="size-3.5 shrink-0" aria-hidden />}
         {label}
       </span>
+
       <span className="text-foreground text-right text-xs font-medium tabular-nums">{value}</span>
     </div>
   );

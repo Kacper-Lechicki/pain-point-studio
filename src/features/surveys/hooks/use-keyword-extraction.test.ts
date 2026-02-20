@@ -8,13 +8,11 @@ import { useKeywordExtraction } from './use-keyword-extraction';
 describe('useKeywordExtraction', () => {
   it('should return empty array for empty texts', () => {
     const { result } = renderHook(() => useKeywordExtraction([]));
-
     expect(result.current).toEqual([]);
   });
 
   it('should return empty when a word appears only once (count < 2)', () => {
     const { result } = renderHook(() => useKeywordExtraction(['unique word here']));
-
     expect(result.current).toEqual([]);
   });
 

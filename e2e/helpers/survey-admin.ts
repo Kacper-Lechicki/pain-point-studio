@@ -1,26 +1,4 @@
-import { type SupabaseClient, createClient } from '@supabase/supabase-js';
-
-import { env } from './env';
-
-// ── Admin client (same pattern as supabase-admin.ts) ─────────────
-
-let _admin: SupabaseClient | null = null;
-
-function getAdminClient() {
-  if (_admin) {
-    return _admin;
-  }
-
-  if (!env.SUPABASE_SERVICE_ROLE_KEY) {
-    throw new Error('[e2e] SUPABASE_SERVICE_ROLE_KEY is required for survey admin operations.');
-  }
-
-  _admin = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
-
-  return _admin;
-}
+import { getAdminClient } from './supabase-admin';
 
 // ── Types ────────────────────────────────────────────────────────
 
@@ -127,7 +105,6 @@ export async function updateSurveyViaDb(
   fields: Record<string, unknown>
 ): Promise<void> {
   const admin = getAdminClient();
-
   const { error } = await admin.from('surveys').update(fields).eq('id', surveyId);
 
   if (error) {

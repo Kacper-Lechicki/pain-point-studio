@@ -14,9 +14,8 @@ interface MultipleChoiceEditorProps {
 }
 
 export function MultipleChoiceEditor({ question }: MultipleChoiceEditorProps) {
-  const t = useTranslations();
+  const t = useTranslations('surveys.builder.typeSettings');
   const { updateQuestion } = useQuestionBuilderContext();
-
   const config = question.config as Record<string, unknown>;
   const options = (config.options as string[]) ?? ['', ''];
   const maxSelections = config.maxSelections as number | undefined;
@@ -28,6 +27,7 @@ export function MultipleChoiceEditor({ question }: MultipleChoiceEditorProps) {
 
   function handleOptionChange(index: number, value: string) {
     const updated = [...options];
+
     updated[index] = value;
     updateOptions(updated);
   }
@@ -61,19 +61,21 @@ export function MultipleChoiceEditor({ question }: MultipleChoiceEditorProps) {
       {options.map((option, index) => (
         <div key={index} className="flex items-center gap-2">
           <Circle className="text-muted-foreground size-4 shrink-0" />
+
           <Input
             value={option}
             onChange={(e) => handleOptionChange(index, e.target.value)}
-            placeholder={t('surveys.builder.typeSettings.optionPlaceholder', { number: index + 1 })}
+            placeholder={t('optionPlaceholder', { number: index + 1 })}
             maxLength={QUESTION_OPTION_MAX_LENGTH}
             className="h-9 flex-1"
           />
+
           {options.length > 2 && (
             <Button
               variant="ghostDestructive"
               size="icon-xs"
               onClick={() => removeOption(index)}
-              aria-label={t('surveys.builder.typeSettings.removeOption')}
+              aria-label={t('removeOption')}
             >
               <X className="size-3.5" />
             </Button>
@@ -84,7 +86,7 @@ export function MultipleChoiceEditor({ question }: MultipleChoiceEditorProps) {
       {options.length < QUESTION_OPTIONS_MAX && (
         <Button variant="ghost" size="sm" onClick={addOption} className="text-muted-foreground">
           <Plus className="size-4" />
-          {t('surveys.builder.typeSettings.addOption')}
+          {t('addOption')}
         </Button>
       )}
     </div>

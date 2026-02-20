@@ -24,6 +24,7 @@ export const OpenTextQuestion = ({ value, config, onChange }: OpenTextQuestionPr
         rows={6}
         className="resize-none"
       />
+
       <CharacterCounter current={value.length} max={maxLength} />
     </div>
   );

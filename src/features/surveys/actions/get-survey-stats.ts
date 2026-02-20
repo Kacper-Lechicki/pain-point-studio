@@ -5,7 +5,7 @@ import { cache } from 'react';
 import { z } from 'zod';
 
 import { QUESTION_TYPES, type QuestionType, type SurveyStatus } from '@/features/surveys/types';
-import { createServerProviders } from '@/lib/providers/server';
+import { createClient } from '@/lib/supabase/server';
 
 export interface QuestionAnswerData {
   value: Record<string, unknown>;
@@ -87,17 +87,19 @@ const surveyStatsRpcSchema = z.object({
 });
 
 export const getSurveyStats = cache(async (surveyId: string): Promise<SurveyStats | null> => {
-  const { auth, db } = await createServerProviders();
+  const supabase = await createClient();
 
-  const { data: userData } = await auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (!userData?.user) {
+  if (!user) {
     return null;
   }
 
-  const { data, error } = await db.rpc('get_survey_stats_data', {
+  const { data, error } = await supabase.rpc('get_survey_stats_data', {
     p_survey_id: surveyId,
-    p_user_id: userData.user.id,
+    p_user_id: user.id,
   });
 
   if (error || !data) {

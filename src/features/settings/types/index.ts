@@ -2,14 +2,7 @@ import { z } from 'zod';
 
 import { basePasswordSchema } from '@/features/auth/config/password';
 import { BIO_MAX_LENGTH, FULL_NAME_MAX_LENGTH, MAX_SOCIAL_LINKS } from '@/features/settings/config';
-
-// ── Domain restrictions for provider-specific social links ──────────
-
-const SOCIAL_LINK_DOMAINS: Record<string, string[]> = {
-  github: ['github.com'],
-  twitter: ['twitter.com', 'x.com'],
-  linkedin: ['linkedin.com'],
-};
+import { SOCIAL_LINK_DOMAINS } from '@/features/settings/config/social-link-types';
 
 // ── Validation schemas ──────────────────────────────────────────────
 

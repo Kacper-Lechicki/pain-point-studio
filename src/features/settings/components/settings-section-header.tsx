@@ -9,32 +9,25 @@ interface SettingsSectionHeaderProps {
   variant?: 'default' | 'destructive';
 }
 
-const isDestructive = (variant: string) => variant === 'destructive';
-
 const SettingsSectionHeader = ({
   title,
   description,
   action,
   variant = 'default',
 }: SettingsSectionHeaderProps) => {
+  const destructive = variant === 'destructive';
+
   return (
     <div
       className={cn(
         'flex flex-wrap items-start justify-between gap-3 border-b pb-6',
-        isDestructive(variant) ? 'border-destructive/20' : 'border-border/40'
+        destructive ? 'border-destructive/20' : 'border-border/40'
       )}
     >
       <div className="space-y-1">
-        <h2 className={cn('text-lg font-semibold', isDestructive(variant) && 'text-destructive')}>
-          {title}
-        </h2>
+        <h2 className={cn('text-lg font-semibold', destructive && 'text-destructive')}>{title}</h2>
 
-        <p
-          className={cn(
-            'text-xs',
-            isDestructive(variant) ? 'text-destructive' : 'text-muted-foreground'
-          )}
-        >
+        <p className={cn('text-xs', destructive ? 'text-destructive' : 'text-muted-foreground')}>
           {description}
         </p>
       </div>

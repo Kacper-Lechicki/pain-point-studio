@@ -1,6 +1,8 @@
 // @vitest-environment node
-/** getAuthUser action: authenticated user retrieval via auth provider. */
+/** getAuthUser action: authenticated user retrieval via Supabase client. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import type { AppUser } from '@/lib/supabase/helpers';
 
 // Mock env (required by server client module if it interacts with env)
 vi.mock('@/lib/common/env', () => ({
@@ -11,13 +13,20 @@ vi.mock('@/lib/common/env', () => ({
   },
 }));
 
-// Mock server auth provider
+// Mock Supabase server client
 const mockGetUser = vi.fn();
 
-vi.mock('@/lib/providers/server', () => ({
-  createServerAuth: vi.fn().mockResolvedValue({
-    getUser: mockGetUser,
+vi.mock('@/lib/supabase/server', () => ({
+  createClient: vi.fn().mockResolvedValue({
+    auth: {
+      getUser: mockGetUser,
+    },
   }),
+}));
+
+// Mock user mapper to pass through the value as-is
+vi.mock('@/lib/supabase/user-mapper', () => ({
+  mapSupabaseUser: (user: AppUser) => user,
 }));
 
 describe('Auth Actions – Get User', () => {
