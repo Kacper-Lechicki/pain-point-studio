@@ -1,13 +1,7 @@
-/** Route config: ROUTES groups, SIBLING_GROUPS, and settings section round-trip. */
+/** Route config: ROUTES groups, SIBLING_GROUPS, and settings section mapping. */
 import { describe, expect, it } from 'vitest';
 
-import {
-  HASH_TO_SECTION,
-  ROUTES,
-  SECTION_TO_HASH,
-  SETTINGS_SECTION_VALUES,
-  SIBLING_GROUPS,
-} from './routes';
+import { ROUTES, SECTION_TO_HASH, SETTINGS_SECTION_VALUES, SIBLING_GROUPS } from './routes';
 
 // ── ROUTES ───────────────────────────────────────────────────────────
 
@@ -58,9 +52,9 @@ describe('SIBLING_GROUPS', () => {
   });
 });
 
-// ── SETTINGS_SECTION_VALUES and SECTION_TO_HASH / HASH_TO_SECTION ───
+// ── SETTINGS_SECTION_VALUES and SECTION_TO_HASH ─────────────────────
 
-describe('settings section round-trip', () => {
+describe('settings section mapping', () => {
   it('should have expected SETTINGS_SECTION_VALUES entries', () => {
     expect(SETTINGS_SECTION_VALUES).toContain('profile');
     expect(SETTINGS_SECTION_VALUES).toContain('dangerZone');
@@ -70,19 +64,6 @@ describe('settings section round-trip', () => {
     for (const section of SETTINGS_SECTION_VALUES) {
       expect(SECTION_TO_HASH[section]).toBeDefined();
       expect(typeof SECTION_TO_HASH[section]).toBe('string');
-    }
-  });
-
-  it('should round-trip section → hash → section to original value', () => {
-    for (const section of SETTINGS_SECTION_VALUES) {
-      const hash = SECTION_TO_HASH[section];
-      expect(HASH_TO_SECTION[hash]).toBe(section);
-    }
-  });
-
-  it('should have HASH_TO_SECTION entry for each SECTION_TO_HASH value', () => {
-    for (const hash of Object.values(SECTION_TO_HASH)) {
-      expect(HASH_TO_SECTION[hash]).toBeDefined();
     }
   });
 });

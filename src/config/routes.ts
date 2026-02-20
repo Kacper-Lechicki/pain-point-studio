@@ -27,7 +27,6 @@ export const ROUTES = {
     research: '/dashboard/research' as AppRoute,
     researchNew: '/dashboard/research/new' as AppRoute,
     researchArchive: '/dashboard/research/archive' as AppRoute,
-    researchBuilder: '/dashboard/research/new/[id]',
     researchStats: '/dashboard/research/stats',
     analytics: '/dashboard/analytics' as AppRoute,
     analyticsProjectIdea: '/dashboard/analytics/project-idea-evaluation' as AppRoute,
@@ -68,7 +67,3 @@ export const SECTION_TO_HASH: Record<SettingsSectionValue, string> = {
   connectedAccounts: 'connected-accounts',
   dangerZone: 'danger-zone',
 };
-
-export const HASH_TO_SECTION: Record<string, SettingsSectionValue> = Object.fromEntries(
-  Object.entries(SECTION_TO_HASH).map(([k, v]) => [v, k as SettingsSectionValue])
-) as Record<string, SettingsSectionValue>;
