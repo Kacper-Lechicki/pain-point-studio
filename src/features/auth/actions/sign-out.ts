@@ -10,7 +10,7 @@ export const signOut = async (): Promise<ActionResult> => {
   const { limited } = await rateLimit({ key: 'sign-out', ...RATE_LIMITS.signOut });
 
   if (limited) {
-    return { error: 'common.errors.rateLimitExceeded' };
+    return { error: 'auth.errors.rateLimitExceeded' };
   }
 
   const supabase = await createClient();

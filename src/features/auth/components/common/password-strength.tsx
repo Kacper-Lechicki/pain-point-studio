@@ -11,11 +11,6 @@ interface PasswordStrengthProps {
   isError?: boolean;
 }
 
-interface Requirement {
-  key: string;
-  met: boolean;
-}
-
 const PasswordStrength = ({ password = '', isError = false }: PasswordStrengthProps) => {
   const t = useTranslations('auth');
   const strength = calculatePasswordStrength(password);
@@ -72,6 +67,7 @@ const PasswordStrength = ({ password = '', isError = false }: PasswordStrengthPr
     <div className="mt-1.5 space-y-2">
       <div className="flex items-center justify-between text-[10px]">
         <span className="text-muted-foreground">{t('passwordStrength')}</span>
+
         <span
           className={cn(
             'font-semibold',
@@ -90,7 +86,7 @@ const PasswordStrength = ({ password = '', isError = false }: PasswordStrengthPr
       </div>
 
       <ul className="grid grid-cols-1 gap-1 sm:grid-cols-2" aria-label={t('passwordRequirements')}>
-        {requirements.map((req: Requirement) => (
+        {requirements.map((req) => (
           <li key={req.key} className="flex items-center gap-1.5 text-[10px]">
             {req.met ? (
               <Check className="text-success size-2.5" aria-hidden="true" />

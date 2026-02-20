@@ -4,8 +4,8 @@ import { redirect } from 'next/navigation';
 
 import { getLocale } from 'next-intl/server';
 
-import { AuthProvider, signInSchema } from '@/features/auth/types';
-import { env } from '@/lib/common/env';
+import { getAuthCallbackUrl } from '@/features/auth/config/urls';
+import { authProviderSchema, signInSchema } from '@/features/auth/types';
 import { rateLimit } from '@/lib/common/rate-limit';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withPublicAction } from '@/lib/common/with-public-action';
@@ -31,7 +31,13 @@ export const signInWithEmail = withPublicAction('sign-in', {
   },
 });
 
-export const signInWithOAuth = async (provider: AuthProvider): Promise<{ error: string }> => {
+export const signInWithOAuth = async (provider: string): Promise<{ error: string }> => {
+  const parsed = authProviderSchema.safeParse(provider);
+
+  if (!parsed.success) {
+    return { error: 'auth.errors.invalidData' };
+  }
+
   const { limited } = await rateLimit({ key: 'sign-in-oauth', ...RATE_LIMITS.auth });
 
   if (limited) {
@@ -42,8 +48,8 @@ export const signInWithOAuth = async (provider: AuthProvider): Promise<{ error: 
   const locale = await getLocale();
 
   const { data, error } = await supabase.auth.signInWithOAuth({
-    provider,
-    options: { redirectTo: `${env.NEXT_PUBLIC_APP_URL}/${locale}/auth/callback` },
+    provider: parsed.data,
+    options: { redirectTo: getAuthCallbackUrl(locale) },
   });
 
   if (error) {

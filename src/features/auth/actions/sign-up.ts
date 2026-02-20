@@ -2,8 +2,8 @@
 
 import { getLocale } from 'next-intl/server';
 
+import { getAuthCallbackUrl } from '@/features/auth/config/urls';
 import { signUpSchema } from '@/features/auth/types';
-import { env } from '@/lib/common/env';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withPublicAction } from '@/lib/common/with-public-action';
 import { mapSupabaseError } from '@/lib/supabase/errors';
@@ -20,7 +20,7 @@ export const signUpWithEmail = withPublicAction('sign-up', {
       email: data.email,
       password: data.password,
       options: {
-        emailRedirectTo: `${env.NEXT_PUBLIC_APP_URL}/${locale}/auth/callback`,
+        emailRedirectTo: getAuthCallbackUrl(locale),
       },
     });
 

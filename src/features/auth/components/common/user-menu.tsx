@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 
 import { Home, LogOut, Settings, User as UserIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -8,32 +8,28 @@ import { toast } from 'sonner';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Spinner } from '@/components/ui/spinner';
 import { ROUTES } from '@/config';
 import { signOut } from '@/features/auth/actions';
 import { useAuth } from '@/features/auth/hooks/use-auth';
 import { Link, useRouter } from '@/i18n/routing';
-import { cn, proxyImageUrl } from '@/lib/common/utils';
+import type { MessageKey } from '@/i18n/types';
+import { proxyImageUrl } from '@/lib/common/utils';
 
 const UserMenu = () => {
   const t = useTranslations();
   const router = useRouter();
   const { user, loading } = useAuth();
-  const [isOpen, setIsOpen] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   if (loading) {
     return (
@@ -64,7 +60,7 @@ const UserMenu = () => {
       const result = await signOut();
 
       if (result.error) {
-        toast.error(result.error);
+        toast.error(t(result.error as MessageKey));
         setIsSigningOut(false);
       } else {
         toast.success(t('auth.signOutSuccess'));
@@ -78,76 +74,61 @@ const UserMenu = () => {
   };
 
   return (
-    <div ref={menuRef} className="relative">
-      <button
-        onClick={() => setIsOpen((prev) => !prev)}
-        className="ring-ring/30 flex items-center rounded-full transition-all md:hover:ring-2"
-        aria-label="User menu"
-      >
-        <Avatar className="size-8 text-xs font-semibold">
-          <AvatarImage src={proxyImageUrl(avatarUrl)} alt="" />
-          <AvatarFallback>{initials}</AvatarFallback>
-        </Avatar>
-      </button>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          className="ring-ring/30 flex items-center rounded-full transition-all md:hover:ring-2"
+          aria-label="User menu"
+        >
+          <Avatar className="size-8 text-xs font-semibold">
+            <AvatarImage src={proxyImageUrl(avatarUrl)} alt="" />
+            <AvatarFallback>{initials}</AvatarFallback>
+          </Avatar>
+        </button>
+      </DropdownMenuTrigger>
 
-      <div
-        className={cn(
-          'bg-popover text-popover-foreground absolute right-0 mt-2 w-56 origin-top-right rounded-xl border shadow-lg transition-all duration-200',
-          isOpen
-            ? 'pointer-events-auto scale-100 opacity-100'
-            : 'pointer-events-none scale-95 opacity-0'
-        )}
-      >
-        <div className="border-b px-4 py-3">
+      <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuLabel className="font-normal">
           <p className="truncate text-sm font-medium">{user.email}</p>
-        </div>
+        </DropdownMenuLabel>
 
-        <div className="p-1">
-          <Link
-            href={ROUTES.common.dashboard}
-            onClick={() => setIsOpen(false)}
-            className="md:hover:text-foreground md:hover:border-muted-foreground/30 flex min-h-10 w-full items-center gap-2.5 rounded-lg border border-transparent px-3 text-sm font-medium transition-colors md:min-h-9 md:hover:border-dashed"
-          >
-            <Home className="size-4 shrink-0" aria-hidden="true" />
-            {t('common.dashboard')}
-          </Link>
+        <DropdownMenuSeparator />
 
-          <Link
-            href={ROUTES.profile.preview}
-            onClick={() => setIsOpen(false)}
-            className="md:hover:text-foreground md:hover:border-muted-foreground/30 flex min-h-10 w-full items-center gap-2.5 rounded-lg border border-transparent px-3 text-sm font-medium transition-colors md:min-h-9 md:hover:border-dashed"
-          >
-            <UserIcon className="size-4 shrink-0" aria-hidden="true" />
-            {t('common.profile')}
-          </Link>
+        <DropdownMenuGroup>
+          <DropdownMenuItem asChild>
+            <Link href={ROUTES.common.dashboard}>
+              <Home className="size-4" aria-hidden="true" />
+              {t('common.dashboard')}
+            </Link>
+          </DropdownMenuItem>
 
-          <Link
-            href={ROUTES.settings.profile}
-            onClick={() => setIsOpen(false)}
-            className="md:hover:text-foreground md:hover:border-muted-foreground/30 flex min-h-10 w-full items-center gap-2.5 rounded-lg border border-transparent px-3 text-sm font-medium transition-colors md:min-h-9 md:hover:border-dashed"
-          >
-            <Settings className="size-4 shrink-0" aria-hidden="true" />
-            {t('common.settings')}
-          </Link>
-        </div>
+          <DropdownMenuItem asChild>
+            <Link href={ROUTES.profile.preview}>
+              <UserIcon className="size-4" aria-hidden="true" />
+              {t('common.profile')}
+            </Link>
+          </DropdownMenuItem>
 
-        <div className="border-t p-1">
-          <button
-            onClick={handleSignOut}
-            disabled={isSigningOut}
-            data-testid="sign-out"
-            className="md:hover:text-foreground md:hover:border-muted-foreground/30 flex min-h-10 w-full items-center gap-2.5 rounded-lg border border-transparent px-3 text-sm font-medium transition-colors disabled:opacity-50 md:min-h-9 md:hover:border-dashed"
-          >
-            {isSigningOut ? (
-              <Spinner className="size-4" />
-            ) : (
-              <LogOut className="size-4" aria-hidden="true" />
-            )}
-            {t('auth.signOut')}
-          </button>
-        </div>
-      </div>
-    </div>
+          <DropdownMenuItem asChild>
+            <Link href={ROUTES.settings.profile}>
+              <Settings className="size-4" aria-hidden="true" />
+              {t('common.settings')}
+            </Link>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+
+        <DropdownMenuSeparator />
+
+        <DropdownMenuItem onClick={handleSignOut} disabled={isSigningOut} data-testid="sign-out">
+          {isSigningOut ? (
+            <Spinner className="size-4" />
+          ) : (
+            <LogOut className="size-4" aria-hidden="true" />
+          )}
+          {t('auth.signOut')}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 

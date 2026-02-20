@@ -25,6 +25,7 @@ const AuthHeader = ({ title, description, icon: Icon, linkText, linkHref }: Auth
         {linkText && linkHref && (
           <>
             <ArrowRight className="mx-1.5 inline size-3" />
+
             <Link
               href={linkHref}
               className="md:hover:text-primary font-semibold underline underline-offset-4"

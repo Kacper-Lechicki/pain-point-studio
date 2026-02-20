@@ -2,8 +2,8 @@
 
 import { getLocale } from 'next-intl/server';
 
+import { getAuthCallbackUrl } from '@/features/auth/config/urls';
 import { forgotPasswordSchema, updatePasswordSchema } from '@/features/auth/types';
-import { env } from '@/lib/common/env';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withPublicAction } from '@/lib/common/with-public-action';
 import { mapSupabaseError } from '@/lib/supabase/errors';
@@ -17,7 +17,7 @@ export const resetPassword = withPublicAction('reset-password', {
     const locale = await getLocale();
 
     const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
-      redirectTo: `${env.NEXT_PUBLIC_APP_URL}/${locale}/auth/callback?next=/${locale}/update-password`,
+      redirectTo: getAuthCallbackUrl(locale, '/update-password'),
     });
 
     if (error) {

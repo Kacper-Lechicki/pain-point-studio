@@ -1,15 +1,18 @@
 import { z } from 'zod';
 
+const MIN_LENGTH = 8;
+const STRONG_LENGTH = 12;
+
 export const PASSWORD_CONFIG = {
-  MIN_LENGTH: 8,
-  STRONG_LENGTH: 12,
+  MIN_LENGTH,
+  STRONG_LENGTH,
   REQUIREMENTS: {
-    LENGTH: (pass: string) => pass.length >= 8,
+    LENGTH: (pass: string) => pass.length >= MIN_LENGTH,
     UPPER: (pass: string) => /[A-Z]/.test(pass),
     LOWER: (pass: string) => /[a-z]/.test(pass),
     NUMBER: (pass: string) => /\d/.test(pass),
     SPECIAL: (pass: string) => /[^A-Za-z0-9]/.test(pass),
-    EXTENDED: (pass: string) => pass.length >= 12,
+    EXTENDED: (pass: string) => pass.length >= STRONG_LENGTH,
   },
 } as const;
 
