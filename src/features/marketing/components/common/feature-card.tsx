@@ -14,7 +14,6 @@ interface FeatureCardProps {
 
 const FeatureCard = ({ titleKey, descriptionKey, icon: Icon }: FeatureCardProps) => {
   const t = useTranslations();
-
   const title = t(titleKey);
   const description = t(descriptionKey);
 
@@ -23,9 +22,9 @@ const FeatureCard = ({ titleKey, descriptionKey, icon: Icon }: FeatureCardProps)
       <CardBody className="card-interactive group/card flex h-full w-full flex-col items-start gap-6">
         <CardItem
           translateZ="50"
-          className="bg-primary text-primary-foreground flex h-12 w-12 shrink-0 items-center justify-center rounded-lg"
+          className="bg-primary text-primary-foreground flex size-12 shrink-0 items-center justify-center rounded-lg"
         >
-          <Icon className="h-6 w-6" aria-hidden="true" />
+          <Icon className="size-6" aria-hidden="true" />
         </CardItem>
 
         <div className="flex flex-col gap-4">

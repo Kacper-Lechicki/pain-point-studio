@@ -7,9 +7,8 @@ import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { LoadingLink } from '@/components/ui/loading-link';
-import { BRAND, getCopyrightText } from '@/config';
-import { ROUTES } from '@/config';
-import { NAV_LINKS, NavLink } from '@/features/marketing/config';
+import { BRAND, ROUTES, getCopyrightText } from '@/config';
+import { NAV_LINKS } from '@/features/marketing/config';
 import { useBreakpoint } from '@/hooks/common/use-breakpoint';
 import { Link } from '@/i18n/routing';
 import { cn } from '@/lib/common/utils';
@@ -19,7 +18,6 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const isDesktop = useBreakpoint('lg');
   const showMobileMenu = !isDesktop && isMobileMenuOpen;
-
   const brandName = t(BRAND.name);
   const copyrightText = getCopyrightText(t);
   const exploreLabel = t('common.explore');
@@ -60,7 +58,7 @@ const Navbar = () => {
 
         <div className="hidden flex-1 items-center justify-center lg:flex">
           <div className="flex items-center gap-6">
-            {NAV_LINKS.map((link: NavLink, index: number) =>
+            {NAV_LINKS.map((link, index) =>
               link.disabled ? (
                 <span
                   key={`nav-link-disabled-${index}`}
@@ -97,7 +95,7 @@ const Navbar = () => {
               <Link href={ROUTES.common.home}>
                 {exploreLabel}
                 <Globe
-                  className="h-4 w-4 transition-transform duration-300 md:group-hover:rotate-12"
+                  className="size-4 transition-transform duration-300 md:group-hover:rotate-12"
                   aria-hidden="true"
                 />
               </Link>
@@ -139,7 +137,7 @@ const Navbar = () => {
             <Button variant="secondary" className="flex-1 justify-center gap-2" asChild>
               <Link href={ROUTES.common.home} onClick={() => setIsMobileMenuOpen(false)}>
                 {exploreLabel}
-                <Globe className="h-4 w-4" aria-hidden="true" />
+                <Globe className="size-4" aria-hidden="true" />
               </Link>
             </Button>
           </div>
@@ -147,7 +145,7 @@ const Navbar = () => {
 
         <div className="flex-1 overflow-y-auto px-6 py-4">
           <div className="flex flex-col items-start gap-2">
-            {NAV_LINKS.map((link: NavLink, index: number) =>
+            {NAV_LINKS.map((link, index) =>
               link.disabled ? (
                 <span
                   key={`mobile-nav-disabled-${index}`}

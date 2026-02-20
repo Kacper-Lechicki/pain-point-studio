@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 
 import { ScrollReveal } from '@/components/ui/scroll-reveal';
 import { PersonaCard } from '@/features/marketing/components/common/persona-card';
-import { DEVELOPER_PERSONAS, DeveloperPersona } from '@/features/marketing/config';
+import { DEVELOPER_PERSONAS } from '@/features/marketing/config';
 
 const Developers = () => {
   const t = useTranslations();
@@ -23,7 +23,7 @@ const Developers = () => {
 
           <div className="cards-grid">
             <div className="grid auto-rows-fr grid-cols-1 gap-8 lg:grid-cols-3">
-              {DEVELOPER_PERSONAS.map((persona: DeveloperPersona, index: number) => (
+              {DEVELOPER_PERSONAS.map((persona, index) => (
                 <PersonaCard
                   key={`persona-${index}`}
                   icon={persona.icon}

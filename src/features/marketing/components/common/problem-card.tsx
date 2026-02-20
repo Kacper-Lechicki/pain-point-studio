@@ -23,9 +23,9 @@ const ProblemCard = ({ icon: Icon, titleKey, descriptionKey }: ProblemCardProps)
       <CardBody className="card-interactive group/card flex h-full w-full flex-col items-start">
         <CardItem
           translateZ="50"
-          className="bg-primary/10 ring-ring/10 flex h-12 w-12 items-center justify-center rounded-lg ring-1"
+          className="bg-primary/10 ring-ring/10 flex size-12 items-center justify-center rounded-lg ring-1"
         >
-          <Icon className="text-primary h-6 w-6" aria-hidden="true" />
+          <Icon className="text-primary size-6" aria-hidden="true" />
         </CardItem>
 
         <CardItem

@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 
 import { ScrollReveal } from '@/components/ui/scroll-reveal';
 import { FeatureCard } from '@/features/marketing/components/common/feature-card';
-import { MINIMALISM_FEATURES, MinimalismFeature } from '@/features/marketing/config';
+import { MINIMALISM_FEATURES } from '@/features/marketing/config';
 
 const FunctionalMinimalism = () => {
   const t = useTranslations();
@@ -23,7 +23,7 @@ const FunctionalMinimalism = () => {
 
           <div className="cards-grid">
             <div className="grid auto-rows-fr grid-cols-1 gap-8 lg:grid-cols-2">
-              {MINIMALISM_FEATURES.map((feature: MinimalismFeature, index: number) => (
+              {MINIMALISM_FEATURES.map((feature, index) => (
                 <FeatureCard
                   key={`feature-${index}`}
                   titleKey={feature.titleKey}

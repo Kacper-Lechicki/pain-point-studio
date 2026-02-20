@@ -57,9 +57,7 @@ const QuestionEngagementChart = () => {
             />
 
             <XAxis dataKey="count" type="number" hide />
-
             <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-
             <Bar dataKey="count" layout="vertical" radius={5} />
           </BarChart>
         </ChartContainer>

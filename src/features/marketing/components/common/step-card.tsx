@@ -17,11 +17,9 @@ interface StepCardProps {
 const StepCard = ({ step, isReversed }: StepCardProps) => {
   const t = useTranslations();
   const baseKey = `marketing.howItWorks.steps.${step.stepKey}`;
-
   const title = t(`${baseKey}.title` as MessageKey);
   const description = t(`${baseKey}.description` as MessageKey);
   const visualLabel = t(`${baseKey}.visualLabel` as MessageKey);
-
   const contentClass = cn('flex min-w-0 flex-col gap-6', isReversed && 'lg:order-last');
   const visualClass = cn('relative', isReversed && 'lg:order-first');
 

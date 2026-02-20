@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 
 import { PointerHighlight } from '@/components/ui/pointer-highlight';
 import { ScrollReveal } from '@/components/ui/scroll-reveal';
-import { GRID_FEATURES, GridFeature } from '@/features/marketing/config';
+import { GRID_FEATURES } from '@/features/marketing/config';
 
 const FeaturesGrid = () => {
   const t = useTranslations();
@@ -26,7 +26,7 @@ const FeaturesGrid = () => {
 
           <div className="cards-grid">
             <div className="grid auto-rows-fr grid-cols-1 gap-x-8 gap-y-12 lg:grid-cols-2">
-              {GRID_FEATURES.map((feature: GridFeature, index: number) => {
+              {GRID_FEATURES.map((feature, index) => {
                 const isActive = hoveredIndex === index;
                 const featureTitle = t(feature.titleKey);
                 const featureDescription = t(feature.descriptionKey);
@@ -39,7 +39,7 @@ const FeaturesGrid = () => {
                     onMouseLeave={() => setHoveredIndex(null)}
                   >
                     <div className="icon-box-primary">
-                      <feature.icon className="h-6 w-6" aria-hidden="true" />
+                      <feature.icon className="size-6" aria-hidden="true" />
                     </div>
 
                     <div className="flex-1">

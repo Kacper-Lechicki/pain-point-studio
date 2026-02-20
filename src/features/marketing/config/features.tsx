@@ -13,9 +13,7 @@ import {
 
 import type { BaseFeature } from '@/features/marketing/types';
 
-export type MinimalismFeature = BaseFeature;
-
-export const MINIMALISM_FEATURES: MinimalismFeature[] = [
+export const MINIMALISM_FEATURES: BaseFeature[] = [
   {
     icon: Sparkles,
     titleKey: 'marketing.functionalMinimalism.items.onboarding.title',
@@ -38,9 +36,7 @@ export const MINIMALISM_FEATURES: MinimalismFeature[] = [
   },
 ];
 
-export type GridFeature = BaseFeature;
-
-export const GRID_FEATURES: GridFeature[] = [
+export const GRID_FEATURES: BaseFeature[] = [
   {
     icon: FileQuestion,
     titleKey: 'marketing.features.items.templates.title',

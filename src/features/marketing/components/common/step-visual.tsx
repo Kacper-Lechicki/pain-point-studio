@@ -1,7 +1,5 @@
-import type { LucideIcon } from 'lucide-react';
-
 interface StepVisualProps {
-  icon: LucideIcon | React.ElementType;
+  icon: React.ElementType;
   label: string;
   chart?: React.ElementType | undefined;
 }
@@ -16,7 +14,7 @@ const StepVisual = ({ icon: Icon, label, chart: Chart }: StepVisualProps) => {
       ) : (
         <div className="flex flex-col items-center gap-4 text-center">
           <div className="bg-background rounded-2xl border p-4 shadow-sm">
-            <Icon className="text-muted-foreground h-8 w-8 sm:h-10 sm:w-10" aria-hidden="true" />
+            <Icon className="text-muted-foreground size-8 sm:size-10" aria-hidden="true" />
           </div>
 
           <span className="text-muted-foreground text-xs font-medium sm:text-sm">{label}</span>

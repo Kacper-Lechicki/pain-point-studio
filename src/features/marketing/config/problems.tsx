@@ -2,9 +2,7 @@ import { Code2, HelpCircle, Users } from 'lucide-react';
 
 import type { BaseFeature } from '@/features/marketing/types';
 
-export type Problem = BaseFeature;
-
-export const PROBLEMS: Problem[] = [
+export const PROBLEMS: BaseFeature[] = [
   {
     icon: Code2,
     titleKey: 'marketing.problems.items.vacuum.title',

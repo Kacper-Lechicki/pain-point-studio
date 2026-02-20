@@ -4,14 +4,12 @@ import { ArrowUp } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
-import { BRAND, getCopyrightText } from '@/config';
-import { ROUTES } from '@/config';
-import { FOOTER_SECTIONS, type FooterItem, type FooterSection } from '@/features/marketing/config';
+import { BRAND, ROUTES, getCopyrightText } from '@/config';
+import { FOOTER_SECTIONS } from '@/features/marketing/config';
 import { Link } from '@/i18n/routing';
 
 const Footer = () => {
   const t = useTranslations();
-
   const brandName = t(BRAND.name);
   const brandTagline = t(BRAND.tagline);
   const copyrightText = getCopyrightText(t);
@@ -28,7 +26,7 @@ const Footer = () => {
             <p className="text-muted-foreground text-xs leading-relaxed">{brandTagline}</p>
           </div>
 
-          {FOOTER_SECTIONS.map((section: FooterSection, sectionIndex: number) => (
+          {FOOTER_SECTIONS.map((section, sectionIndex) => (
             <div
               key={`footer-section-${sectionIndex}`}
               className="col-span-1 flex min-w-0 flex-col gap-4 py-8 last:pb-0 lg:py-0"
@@ -36,7 +34,7 @@ const Footer = () => {
               <h3 className="text-sm font-semibold">{t(section.title)}</h3>
 
               <ul className="flex flex-col gap-2">
-                {section.items.map((item: FooterItem, itemIndex: number) => (
+                {section.items.map((item, itemIndex) => (
                   <li key={`footer-item-${sectionIndex}-${itemIndex}`}>
                     {item.disabled ? (
                       <span className="text-disabled-foreground block cursor-not-allowed py-2 text-lg font-medium wrap-break-word lg:py-0 lg:text-sm lg:font-normal">

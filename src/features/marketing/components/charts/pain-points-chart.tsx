@@ -45,7 +45,6 @@ const PainPointsChart = () => {
             />
 
             <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-
             <Bar dataKey="intensity" radius={8} />
           </BarChart>
         </ChartContainer>
