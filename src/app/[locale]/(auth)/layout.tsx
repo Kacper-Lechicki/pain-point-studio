@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 import { HeroHighlight } from '@/components/ui/hero-highlight';
 import { Navbar } from '@/features/auth/components/layout/navbar';

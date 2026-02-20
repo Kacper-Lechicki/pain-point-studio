@@ -4,7 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { PageTransition } from '@/components/ui/page-transition';
-import { ROUTES } from '@/config/routes';
+import { ROUTES } from '@/config';
 import { DASHBOARD_PAGE_BODY_GAP_TOP } from '@/features/dashboard/config/layout';
 import { getUserSurveys } from '@/features/surveys/actions';
 import { SurveyList } from '@/features/surveys/components/dashboard/survey-list';

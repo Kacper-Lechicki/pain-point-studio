@@ -1,7 +1,7 @@
 import { notFound, redirect } from 'next/navigation';
 
 import { PageTransition } from '@/components/ui/page-transition';
-import { ROUTES } from '@/config/routes';
+import { ROUTES } from '@/config';
 import { getSurveyFormData, getSurveyWithQuestions } from '@/features/surveys/actions';
 import { QuestionBuilderPage } from '@/features/surveys/components/builder/question-builder-page';
 
