@@ -14,7 +14,7 @@ import { updateAvatarUrl } from '@/features/settings/actions';
 import { AvatarCropDialog } from '@/features/settings/components/avatar-crop-dialog';
 import { AVATAR_ACCEPTED_TYPES, AVATAR_MAX_SIZE } from '@/features/settings/config';
 import { proxyImageUrl } from '@/lib/common/utils';
-import { createBrowserStorageProvider } from '@/lib/providers/client';
+import { createClient } from '@/lib/supabase/client';
 
 interface AvatarUploadProps {
   userId: string;
@@ -76,11 +76,11 @@ const AvatarUpload = ({
     setIsUploading(true);
 
     try {
-      const storage = createBrowserStorageProvider();
+      const supabase = createClient();
       const ext = blob.type.split('/')[1] || 'jpg';
       const filePath = `${userId}/${Date.now()}.${ext}`;
 
-      const { error: uploadError } = await storage.upload('avatars', filePath, blob, {
+      const { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, blob, {
         upsert: true,
         contentType: blob.type,
       });
@@ -95,11 +95,13 @@ const AvatarUpload = ({
         const oldPath = currentUrl.split('/avatars/')[1];
 
         if (oldPath) {
-          await storage.remove('avatars', [oldPath]);
+          await supabase.storage.from('avatars').remove([oldPath]);
         }
       }
 
-      const publicUrl = storage.getPublicUrl('avatars', filePath);
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from('avatars').getPublicUrl(filePath);
 
       const result = await updateAvatarUrl({ avatarUrl: publicUrl });
 
@@ -134,11 +136,11 @@ const AvatarUpload = ({
     setIsUploading(true);
 
     try {
-      const storage = createBrowserStorageProvider();
+      const supabase = createClient();
       const oldPath = currentUrl.split('/avatars/')[1];
 
       if (oldPath) {
-        await storage.remove('avatars', [oldPath]);
+        await supabase.storage.from('avatars').remove([oldPath]);
       }
 
       const result = await updateAvatarUrl({ avatarUrl: '' });

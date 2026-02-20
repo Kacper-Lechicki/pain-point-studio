@@ -10,8 +10,8 @@ export const startResponse = withPublicAction<typeof startResponseSchema, { resp
   {
     schema: startResponseSchema,
     rateLimit: RATE_LIMITS.respondentStart,
-    action: async ({ data, db }) => {
-      const { data: responseId, error } = await db.rpc<string>('start_survey_response', {
+    action: async ({ data, supabase }) => {
+      const { data: responseId, error } = await supabase.rpc('start_survey_response', {
         p_survey_id: data.surveyId,
         ...(data.deviceType ? { p_device_type: data.deviceType } : {}),
       });

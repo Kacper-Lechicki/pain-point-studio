@@ -4,7 +4,7 @@ import { PageTransition } from '@/components/ui/page-transition';
 import { ROUTES } from '@/config';
 import { getProfile } from '@/features/settings/actions';
 import { DangerZone } from '@/features/settings/components/danger-zone';
-import { createServerDatabase } from '@/lib/providers/server';
+import { createClient } from '@/lib/supabase/server';
 
 export default async function SettingsDangerZonePage() {
   const profile = await getProfile();
@@ -13,11 +13,19 @@ export default async function SettingsDangerZonePage() {
     redirect(ROUTES.auth.signIn);
   }
 
-  const db = await createServerDatabase();
+  const supabase = await createClient();
 
   const [{ count: activeSurveyCount }, { count: responseCount }] = await Promise.all([
-    db.surveys.countByUserId(profile.id, { status: 'active' }),
-    db.surveyResponses.countByUserSurveys(profile.id, { status: 'completed' }),
+    supabase
+      .from('surveys')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', profile.id)
+      .eq('status', 'active'),
+    supabase
+      .from('survey_responses')
+      .select('*, surveys!inner(*)', { count: 'exact', head: true })
+      .eq('surveys.user_id', profile.id)
+      .eq('status', 'completed'),
   ]);
 
   return (

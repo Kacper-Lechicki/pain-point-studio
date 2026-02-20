@@ -6,23 +6,22 @@ import { forgotPasswordSchema, updatePasswordSchema } from '@/features/auth/type
 import { env } from '@/lib/common/env';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withPublicAction } from '@/lib/common/with-public-action';
-import { createServerAuth, mapAuthError } from '@/lib/providers/server';
+import { mapSupabaseError } from '@/lib/supabase/errors';
 
 export const resetPassword = withPublicAction('reset-password', {
   schema: forgotPasswordSchema,
   rateLimit: RATE_LIMITS.sensitive,
   rateLimitError: 'auth.errors.rateLimitExceeded',
   validationError: 'auth.errors.invalidData',
-  action: async ({ data }) => {
-    const auth = await createServerAuth();
+  action: async ({ data, supabase }) => {
     const locale = await getLocale();
 
-    const { error } = await auth.resetPasswordForEmail(data.email, {
+    const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
       redirectTo: `${env.NEXT_PUBLIC_APP_URL}/${locale}/auth/callback?next=/${locale}/update-password`,
     });
 
     if (error) {
-      return { error: mapAuthError(error.message) };
+      return { error: mapSupabaseError(error.message) };
     }
 
     return { success: true };
@@ -34,15 +33,13 @@ export const updatePassword = withPublicAction('update-password', {
   rateLimit: RATE_LIMITS.sensitiveRelaxed,
   rateLimitError: 'auth.errors.rateLimitExceeded',
   validationError: 'auth.errors.invalidData',
-  action: async ({ data }) => {
-    const auth = await createServerAuth();
-
-    const { error } = await auth.updateUser({
+  action: async ({ data, supabase }) => {
+    const { error } = await supabase.auth.updateUser({
       password: data.password,
     });
 
     if (error) {
-      return { error: mapAuthError(error.message) };
+      return { error: mapSupabaseError(error.message) };
     }
 
     return { success: true };

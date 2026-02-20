@@ -41,7 +41,7 @@ describe('Settings Actions – Cancel Email Change', () => {
     const result = await cancelEmailChange({});
 
     expect(result).toEqual({ success: true });
-    expect(mockRpc).toHaveBeenCalledWith('cancel_email_change', undefined);
+    expect(mockRpc).toHaveBeenCalledWith('cancel_email_change');
   });
 
   it('should return error when RPC fails', async () => {

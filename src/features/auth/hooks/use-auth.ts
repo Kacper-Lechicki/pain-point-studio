@@ -2,31 +2,34 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { createBrowserAuthProvider } from '@/lib/providers/client';
-import type { AppUser } from '@/lib/providers/types';
+import { createClient } from '@/lib/supabase/client';
+import type { AppUser } from '@/lib/supabase/helpers';
+import { mapSupabaseUser } from '@/lib/supabase/user-mapper';
 
 export function useAuth() {
   const [user, setUser] = useState<AppUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const authRef = useRef(createBrowserAuthProvider());
+  const supabaseRef = useRef(createClient());
 
   useEffect(() => {
-    const auth = authRef.current;
+    const supabase = supabaseRef.current;
 
-    void auth.getUser().then(({ data }) => {
-      setUser(data?.user ?? null);
+    void supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user ? mapSupabaseUser(user) : null);
       setLoading(false);
     });
 
     const {
       data: { subscription },
-    } = auth.onAuthStateChange!((_event, user) => {
-      setUser(user);
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ? mapSupabaseUser(session.user) : null);
       setLoading(false);
     });
 
     const handleRefresh = () => {
-      void auth.getUser().then(({ data }) => setUser(data?.user ?? null));
+      void supabase.auth
+        .getUser()
+        .then(({ data: { user } }) => setUser(user ? mapSupabaseUser(user) : null));
     };
 
     window.addEventListener('auth:refresh', handleRefresh);

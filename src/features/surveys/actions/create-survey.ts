@@ -3,7 +3,7 @@
 import { createSurveyDraftSchema } from '@/features/surveys/types';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
-import { mapAuthError } from '@/lib/providers/server';
+import { mapSupabaseError } from '@/lib/supabase/errors';
 
 export const createSurveyDraft = withProtectedAction<
   typeof createSurveyDraftSchema,
@@ -11,21 +11,24 @@ export const createSurveyDraft = withProtectedAction<
 >('create-survey-draft', {
   schema: createSurveyDraftSchema,
   rateLimit: RATE_LIMITS.bulkCreate,
-  action: async ({ data, user, db }) => {
+  action: async ({ data, user, supabase }) => {
     if (data.surveyId) {
-      const { data: row, error } = await db.surveys.update(
-        data.surveyId,
-        {
+      const { data: row, error } = await supabase
+        .from('surveys')
+        .update({
           title: data.title,
           description: data.description,
           category: data.category,
           visibility: data.visibility,
-        },
-        { userId: user.id, status: 'draft' }
-      );
+        })
+        .eq('id', data.surveyId)
+        .eq('user_id', user.id)
+        .eq('status', 'draft')
+        .select('id')
+        .maybeSingle();
 
       if (error) {
-        return { error: mapAuthError(error.message) };
+        return { error: mapSupabaseError(error.message) };
       }
 
       if (!row) {
@@ -35,17 +38,21 @@ export const createSurveyDraft = withProtectedAction<
       return { success: true, data: { surveyId: row.id } };
     }
 
-    const { data: survey, error } = await db.surveys.insert({
-      user_id: user.id,
-      title: data.title,
-      description: data.description,
-      category: data.category,
-      visibility: data.visibility,
-      status: 'draft',
-    });
+    const { data: survey, error } = await supabase
+      .from('surveys')
+      .insert({
+        user_id: user.id,
+        title: data.title,
+        description: data.description,
+        category: data.category,
+        visibility: data.visibility,
+        status: 'draft',
+      })
+      .select('id')
+      .single();
 
     if (error) {
-      return { error: mapAuthError(error.message) };
+      return { error: mapSupabaseError(error.message) };
     }
 
     if (!survey) {

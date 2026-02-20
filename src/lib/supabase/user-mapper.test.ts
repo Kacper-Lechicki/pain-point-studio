@@ -125,6 +125,7 @@ describe('mapSupabaseUser', () => {
         identityData: { login: 'octocat' },
       },
     ]);
+
     expect(result.identities[0]).not.toHaveProperty('email');
   });
 
@@ -147,12 +148,14 @@ describe('mapSupabaseUser', () => {
     );
 
     expect(result.identities).toHaveLength(2);
+
     expect(result.identities[0]).toEqual({
       identityId: 'g-1',
       provider: 'google',
       email: 'g@example.com',
       identityData: { email: 'g@example.com' },
     });
+
     expect(result.identities[1]).toEqual({
       identityId: 'gh-2',
       provider: 'github',

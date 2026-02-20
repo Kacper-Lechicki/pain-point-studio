@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { env } from '@/lib/common/env';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
-import { mapAuthError } from '@/lib/providers/server';
+import { mapSupabaseError } from '@/lib/supabase/errors';
 
 const ALLOWED_AVATAR_HOSTS: string[] = [
   'lh3.googleusercontent.com',
@@ -34,21 +34,24 @@ const avatarUrlSchema = z.object({
 export const updateAvatarUrl = withProtectedAction('update-avatar-url', {
   schema: avatarUrlSchema,
   rateLimit: RATE_LIMITS.upload,
-  action: async ({ data, user, auth, db }) => {
-    const { error: profileError } = await db.profiles.update(user.id, {
-      avatar_url: data.avatarUrl,
-    });
+  action: async ({ data, user, supabase }) => {
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .update({
+        avatar_url: data.avatarUrl,
+      })
+      .eq('id', user.id);
 
     if (profileError) {
-      return { error: mapAuthError(profileError.message) };
+      return { error: mapSupabaseError(profileError.message) };
     }
 
-    const { error: metaError } = await auth.updateUser({
+    const { error: metaError } = await supabase.auth.updateUser({
       data: { avatar_url: data.avatarUrl },
     });
 
     if (metaError) {
-      return { error: mapAuthError(metaError.message) };
+      return { error: mapSupabaseError(metaError.message) };
     }
 
     return { success: true };

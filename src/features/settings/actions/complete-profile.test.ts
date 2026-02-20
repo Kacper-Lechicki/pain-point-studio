@@ -59,7 +59,7 @@ describe('Settings Actions – Complete Profile', () => {
       { id: 'user-123', full_name: 'John Doe', role: 'solo-developer' },
       { onConflict: 'id' }
     );
-    expect(mockUpdateUser).toHaveBeenCalledWith({ data: { full_name: 'John Doe' } }, undefined);
+    expect(mockUpdateUser).toHaveBeenCalledWith({ data: { full_name: 'John Doe' } });
   });
 
   it('should reject empty fullName', async () => {

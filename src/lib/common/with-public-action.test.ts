@@ -16,16 +16,10 @@ vi.mock('@/lib/common/rate-limit', () => ({
   rateLimit: vi.fn().mockResolvedValue({ limited: false }),
 }));
 
-const mockSupabase = { auth: {}, from: vi.fn() };
+const mockSupabase = { auth: {}, from: vi.fn(), rpc: vi.fn() };
 
 vi.mock('@/lib/supabase/server', () => ({
   createClient: vi.fn().mockResolvedValue(mockSupabase),
-}));
-
-const mockDb = { profiles: {}, surveys: {} } as Record<string, unknown>;
-
-vi.mock('@/lib/supabase/providers/database', () => ({
-  createSupabaseDatabaseClient: vi.fn().mockReturnValue(mockDb),
 }));
 
 const testSchema = z.object({
@@ -37,10 +31,10 @@ describe('withPublicAction', () => {
     vi.clearAllMocks();
   });
 
-  it('should call the action with validated data and db client', async () => {
+  it('should call the action with validated data and supabase client', async () => {
     const actionFn = vi.fn().mockResolvedValue({ success: true });
-
     const { withPublicAction } = await import('./with-public-action');
+
     const publicAction = withPublicAction('test-action', {
       schema: testSchema,
       rateLimit: { limit: 5, windowSeconds: 60 },
@@ -50,20 +44,23 @@ describe('withPublicAction', () => {
     const result = await publicAction({ name: 'John' });
 
     expect(result).toEqual({ success: true });
+
     expect(actionFn).toHaveBeenCalledWith(
       expect.objectContaining({
         data: { name: 'John' },
-        db: mockDb,
+        supabase: mockSupabase,
       })
     );
   });
 
   it('should return rate limit error when rate limited', async () => {
     const { rateLimit } = await import('@/lib/common/rate-limit');
+
     vi.mocked(rateLimit).mockResolvedValueOnce({ limited: true });
 
     const actionFn = vi.fn();
     const { withPublicAction } = await import('./with-public-action');
+
     const publicAction = withPublicAction('test-action', {
       schema: testSchema,
       rateLimit: { limit: 5, windowSeconds: 60 },
@@ -78,9 +75,11 @@ describe('withPublicAction', () => {
 
   it('should use custom rate limit error message', async () => {
     const { rateLimit } = await import('@/lib/common/rate-limit');
+
     vi.mocked(rateLimit).mockResolvedValueOnce({ limited: true });
 
     const { withPublicAction } = await import('./with-public-action');
+
     const publicAction = withPublicAction('test-action', {
       schema: testSchema,
       rateLimit: { limit: 5, windowSeconds: 60 },
@@ -95,8 +94,8 @@ describe('withPublicAction', () => {
 
   it('should return validation error for invalid data', async () => {
     const actionFn = vi.fn();
-
     const { withPublicAction } = await import('./with-public-action');
+
     const publicAction = withPublicAction('test-action', {
       schema: testSchema,
       rateLimit: { limit: 5, windowSeconds: 60 },
@@ -111,6 +110,7 @@ describe('withPublicAction', () => {
 
   it('should use custom validation error message', async () => {
     const { withPublicAction } = await import('./with-public-action');
+
     const publicAction = withPublicAction('test-action', {
       schema: testSchema,
       rateLimit: { limit: 5, windowSeconds: 60 },
@@ -125,9 +125,11 @@ describe('withPublicAction', () => {
 
   it('should use default rate limit error when not customized', async () => {
     const { rateLimit } = await import('@/lib/common/rate-limit');
+
     vi.mocked(rateLimit).mockResolvedValueOnce({ limited: true });
 
     const { withPublicAction } = await import('./with-public-action');
+
     const publicAction = withPublicAction('test-action', {
       schema: testSchema,
       rateLimit: { limit: 5, windowSeconds: 60 },
@@ -141,6 +143,7 @@ describe('withPublicAction', () => {
 
   it('should use default validation error when not customized', async () => {
     const { withPublicAction } = await import('./with-public-action');
+
     const publicAction = withPublicAction('test-action', {
       schema: testSchema,
       rateLimit: { limit: 5, windowSeconds: 60 },

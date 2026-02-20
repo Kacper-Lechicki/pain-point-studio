@@ -9,39 +9,41 @@ export const duplicateSurvey = withProtectedAction<typeof surveyIdSchema, { surv
   {
     schema: surveyIdSchema,
     rateLimit: RATE_LIMITS.bulkCreate,
-    action: async ({ data, user, db }) => {
-      const { data: original, error: fetchError } = await db.surveys.findByIdSelect<{
-        title: string;
-        description: string;
-        category: string;
-        visibility: string;
-        max_respondents: number | null;
-      }>(data.surveyId, 'title, description, category, visibility, max_respondents', {
-        userId: user.id,
-      });
+    action: async ({ data, user, supabase }) => {
+      const { data: original, error: fetchError } = await supabase
+        .from('surveys')
+        .select('title, description, category, visibility, max_respondents')
+        .eq('id', data.surveyId)
+        .eq('user_id', user.id)
+        .maybeSingle();
 
       if (fetchError || !original) {
         return { error: 'surveys.errors.unexpected' };
       }
 
-      const { data: newSurvey, error: insertError } = await db.surveys.insert({
-        user_id: user.id,
-        title: `${original.title} (copy)`,
-        description: original.description,
-        category: original.category,
-        visibility: original.visibility,
-        max_respondents: original.max_respondents,
-        status: 'draft',
-      });
+      const { data: newSurvey, error: insertError } = await supabase
+        .from('surveys')
+        .insert({
+          user_id: user.id,
+          title: `${original.title} (copy)`,
+          description: original.description,
+          category: original.category,
+          visibility: original.visibility,
+          max_respondents: original.max_respondents,
+          status: 'draft',
+        })
+        .select('id')
+        .single();
 
       if (insertError || !newSurvey) {
         return { error: 'surveys.errors.unexpected' };
       }
 
-      const { data: questions } = await db.surveyQuestions.findBySurveyId(
-        data.surveyId,
-        'text, type, required, description, config, sort_order'
-      );
+      const { data: questions } = await supabase
+        .from('survey_questions')
+        .select('text, type, required, description, config, sort_order')
+        .eq('survey_id', data.surveyId)
+        .order('sort_order');
 
       if (questions && questions.length > 0) {
         const questionRows = questions.map((q) => ({
@@ -54,11 +56,19 @@ export const duplicateSurvey = withProtectedAction<typeof surveyIdSchema, { surv
           sort_order: q.sort_order,
         }));
 
-        const { error: questionsError } = await db.surveyQuestions.insert(questionRows);
+        const { error: questionsError } = await supabase
+          .from('survey_questions')
+          .insert(questionRows);
 
         if (questionsError) {
           // Clean up the survey if questions failed to copy
-          await db.surveys.delete(newSurvey.id, { userId: user.id });
+          await supabase
+            .from('surveys')
+            .delete()
+            .eq('id', newSurvey.id)
+            .eq('user_id', user.id)
+            .select('id')
+            .maybeSingle();
 
           return { error: 'surveys.errors.unexpected' };
         }

@@ -4,7 +4,7 @@ import { ROUTES } from '@/config';
 import i18nMiddleware from '@/i18n/config';
 import { type Locale, defaultLocale, locales } from '@/i18n/constants';
 import { isAuthenticated, isProtectionEnabled } from '@/lib/common/deploy-credentials';
-import { createSupabaseSessionMiddleware } from '@/lib/supabase/providers/middleware';
+import { updateSession } from '@/lib/supabase/middleware';
 
 // Public routes (allowlist) — no auth required; everything else is protected by default.
 const PUBLIC_ROUTES = [
@@ -19,7 +19,6 @@ const PUBLIC_ROUTES = [
 
 // Auth pages — logged-in users are redirected to dashboard when visiting these.
 const AUTH_ROUTES = [ROUTES.auth.signIn, ROUTES.auth.signUp, ROUTES.auth.forgotPassword];
-
 const LOCALE_LIST: readonly string[] = locales;
 
 function getPathnameAndLocale(pathname: string): { pathname: string; locale: Locale } {
@@ -41,10 +40,8 @@ function copyCookies(from: NextResponse, to: NextResponse): void {
   });
 }
 
-const sessionMiddleware = createSupabaseSessionMiddleware();
-
 const middleware = async (req: NextRequest) => {
-  const { response: supabaseResponse, user } = await sessionMiddleware.updateSession(req);
+  const { response: supabaseResponse, user } = await updateSession(req);
 
   // Enforce Basic Auth when deploy protection is enabled (e.g. preview envs).
   if (isProtectionEnabled() && !isAuthenticated(req)) {

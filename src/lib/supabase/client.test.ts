@@ -23,6 +23,7 @@ describe('Supabase Browser Client', () => {
 
   it('should call createBrowserClient with correct env values', async () => {
     const { createClient } = await import('./client');
+
     createClient();
 
     expect(mockCreateBrowserClient).toHaveBeenCalledWith('http://127.0.0.1:54321', 'test-anon-key');
@@ -30,6 +31,7 @@ describe('Supabase Browser Client', () => {
 
   it('should call createBrowserClient exactly once per invocation', async () => {
     const { createClient } = await import('./client');
+
     createClient();
 
     expect(mockCreateBrowserClient).toHaveBeenCalledTimes(1);

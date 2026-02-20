@@ -19,22 +19,26 @@ export const publishSurvey = withProtectedAction<typeof publishSurveySchema, { s
   {
     schema: publishSurveySchema,
     rateLimit: RATE_LIMITS.crud,
-    action: async ({ data, user, db }) => {
+    action: async ({ data, user, supabase }) => {
       // Verify survey has at least QUESTIONS_MIN questions with non-empty text
-      const { count } = await db.surveyQuestions.countBySurveyId(data.surveyId, {
-        textNotEmpty: true,
-      });
+      const { count } = await supabase
+        .from('survey_questions')
+        .select('id', { count: 'exact', head: true })
+        .eq('survey_id', data.surveyId)
+        .neq('text', '');
 
       if (!count || count < QUESTIONS_MIN) {
         return { error: 'surveys.builder.errors.minQuestionsToPublish' };
       }
 
       // Verify the survey exists and is a draft owned by this user
-      const { data: survey } = await db.surveys.findByIdSelect<{ id: string }>(
-        data.surveyId,
-        'id',
-        { userId: user.id, status: 'draft' }
-      );
+      const { data: survey } = await supabase
+        .from('surveys')
+        .select('id')
+        .eq('id', data.surveyId)
+        .eq('user_id', user.id)
+        .eq('status', 'draft')
+        .maybeSingle();
 
       if (!survey) {
         return { error: 'surveys.errors.unexpected' };
@@ -54,17 +58,20 @@ export const publishSurvey = withProtectedAction<typeof publishSurveySchema, { s
       for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
         const slug = generateSurveySlug();
 
-        const { data: row, error } = await db.surveys.update(
-          data.surveyId,
-          {
+        const { data: row, error } = await supabase
+          .from('surveys')
+          .update({
             status: 'active',
             slug,
             starts_at: new Date().toISOString(),
             ends_at: data.endsAt ?? null,
             max_respondents: data.maxRespondents ?? null,
-          },
-          { userId: user.id, status: 'draft' }
-        );
+          })
+          .eq('id', data.surveyId)
+          .eq('user_id', user.id)
+          .eq('status', 'draft')
+          .select('id')
+          .maybeSingle();
 
         if (!error && row) {
           return { success: true, data: { slug } };

@@ -31,6 +31,7 @@ export function highlightText(text: string, regex: RegExp | null): TextSegment[]
     }
 
     segments.push({ text: match[0], highlight: true });
+
     lastIndex = regex.lastIndex;
   }
 

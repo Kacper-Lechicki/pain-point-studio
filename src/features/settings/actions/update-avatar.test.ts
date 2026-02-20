@@ -2,7 +2,7 @@
 /** Tests for the updateAvatarUrl server action that persists the avatar URL to profile and user metadata. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { AppUser } from '@/lib/providers/types';
+import type { AppUser } from '@/lib/supabase/helpers';
 
 // Mock env
 vi.mock('@/lib/common/env', () => ({
@@ -19,31 +19,33 @@ vi.mock('@/lib/common/rate-limit', () => ({
   rateLimit: vi.fn().mockResolvedValue({ limited: false }),
 }));
 
-// ── Provider mocks ──────────────────────────────────────────────────
+// ── Supabase mocks ──────────────────────────────────────────────────
 const mockUpdateUser = vi.fn();
 const mockGetUser = vi.fn();
-const mockProfilesUpdate = vi.fn();
+const mockUpdate = vi.fn();
+
+// Chain builder for supabase.from('profiles').update({}).eq()
+const mockEq = vi.fn();
+mockUpdate.mockReturnValue({ eq: mockEq });
 
 vi.mock('@/lib/supabase/server', () => ({
-  createClient: vi.fn().mockResolvedValue({}),
-}));
-
-vi.mock('@/lib/supabase/providers/auth.server', () => ({
-  createServerAuthProvider: vi.fn().mockReturnValue({
-    getUser: mockGetUser,
-    updateUser: mockUpdateUser,
+  createClient: vi.fn().mockResolvedValue({
+    auth: {
+      getUser: mockGetUser,
+      updateUser: mockUpdateUser,
+    },
+    from: () => ({
+      update: mockUpdate,
+    }),
   }),
 }));
 
-vi.mock('@/lib/supabase/providers/database', () => ({
-  createSupabaseDatabaseClient: vi.fn().mockReturnValue({
-    profiles: { update: mockProfilesUpdate },
-    rpc: vi.fn(),
-  }),
+vi.mock('@/lib/supabase/user-mapper', () => ({
+  mapSupabaseUser: (user: AppUser) => user,
 }));
 
-vi.mock('@/lib/supabase/providers/storage.server', () => ({
-  createServerStorageProvider: vi.fn().mockReturnValue({}),
+vi.mock('@/lib/supabase/errors', () => ({
+  mapSupabaseError: vi.fn((msg: string) => `mapped:${msg}`),
 }));
 
 const defaultUser: AppUser = {
@@ -64,8 +66,9 @@ describe('Settings Actions – Update Avatar URL', () => {
       error: null,
     });
 
-    // Default: DB profile update succeeds
-    mockProfilesUpdate.mockResolvedValue({ error: null });
+    // Default: chain builder returns success
+    mockUpdate.mockReturnValue({ eq: mockEq });
+    mockEq.mockResolvedValue({ error: null });
 
     // Default: metadata update succeeds
     mockUpdateUser.mockResolvedValue({ error: null });
@@ -78,9 +81,10 @@ describe('Settings Actions – Update Avatar URL', () => {
     });
 
     expect(result).toEqual({ success: true });
-    expect(mockProfilesUpdate).toHaveBeenCalledWith('user-123', {
+    expect(mockUpdate).toHaveBeenCalledWith({
       avatar_url: 'https://lh3.googleusercontent.com/a/avatar.png',
     });
+    expect(mockEq).toHaveBeenCalledWith('id', 'user-123');
     expect(mockUpdateUser).toHaveBeenCalledWith({
       data: { avatar_url: 'https://lh3.googleusercontent.com/a/avatar.png' },
     });
@@ -106,11 +110,11 @@ describe('Settings Actions – Update Avatar URL', () => {
 
     expect(result.error).toBeDefined();
     expect(result).not.toHaveProperty('success');
-    expect(mockProfilesUpdate).not.toHaveBeenCalled();
+    expect(mockUpdate).not.toHaveBeenCalled();
   });
 
   it('should return error when profile DB update fails', async () => {
-    mockProfilesUpdate.mockResolvedValue({ error: { message: 'Database error' } });
+    mockEq.mockResolvedValue({ error: { message: 'Database error' } });
 
     const { updateAvatarUrl } = await import('./update-avatar');
     const result = await updateAvatarUrl({

@@ -2,7 +2,7 @@
 /** Tests for the changePassword and setPassword server actions that manage password updates and initial password creation. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { AppUser } from '@/lib/providers/types';
+import type { AppUser } from '@/lib/supabase/helpers';
 
 vi.mock('@/lib/common/env', () => ({
   env: {
@@ -10,6 +10,7 @@ vi.mock('@/lib/common/env', () => ({
     NEXT_PUBLIC_APP_URL: 'https://example.com',
     NEXT_PUBLIC_SUPABASE_URL: 'http://127.0.0.1:54321',
     NEXT_PUBLIC_SUPABASE_ANON_KEY: 'test-anon-key',
+    SUPABASE_SERVICE_ROLE_KEY: 'test-service-role-key',
   },
 }));
 
@@ -17,44 +18,44 @@ vi.mock('@/lib/common/rate-limit', () => ({
   rateLimit: vi.fn().mockResolvedValue({ limited: false }),
 }));
 
-// ── Provider mocks ──────────────────────────────────────────────────
+// ── Supabase mocks ──────────────────────────────────────────────────
 const mockUpdateUser = vi.fn();
 const mockGetUser = vi.fn();
 const mockRpc = vi.fn();
 const mockAdminUpdateUserById = vi.fn();
 
+// Mock Supabase server client — withProtectedAction calls createClient(),
+// then uses supabase.auth.getUser() internally and passes supabase to the action
 vi.mock('@/lib/supabase/server', () => ({
-  createClient: vi.fn().mockResolvedValue({}),
-}));
-
-vi.mock('@/lib/supabase/providers/auth.server', () => ({
-  createServerAuthProvider: vi.fn().mockReturnValue({
-    getUser: mockGetUser,
-    updateUser: mockUpdateUser,
-  }),
-}));
-
-vi.mock('@/lib/supabase/providers/database', () => ({
-  createSupabaseDatabaseClient: vi.fn().mockReturnValue({
+  createClient: vi.fn().mockResolvedValue({
+    auth: {
+      getUser: mockGetUser,
+      updateUser: mockUpdateUser,
+    },
     rpc: mockRpc,
-    profiles: { update: vi.fn(), findById: vi.fn() },
   }),
 }));
 
-vi.mock('@/lib/supabase/providers/storage.server', () => ({
-  createServerStorageProvider: vi.fn().mockReturnValue({}),
+// Mock user mapper — withProtectedAction maps the raw Supabase user via mapSupabaseUser
+vi.mock('@/lib/supabase/user-mapper', () => ({
+  mapSupabaseUser: (user: AppUser) => user,
 }));
 
-vi.mock('@/lib/providers/server', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/lib/providers/server')>();
+// Mock admin client — used by setPassword to create email identity
+vi.mock('@/lib/supabase/admin', () => ({
+  createAdminClient: vi.fn().mockReturnValue({
+    auth: {
+      admin: {
+        updateUserById: mockAdminUpdateUserById,
+      },
+    },
+  }),
+}));
 
-  return {
-    ...actual,
-    createAuthAdmin: vi.fn().mockReturnValue({
-      updateUserById: mockAdminUpdateUserById,
-    }),
-  };
-});
+// Mock Supabase error mapper
+vi.mock('@/lib/supabase/errors', () => ({
+  mapSupabaseError: vi.fn((msg: string) => `mapped:${msg}`),
+}));
 
 const changeData = {
   currentPassword: 'OldPass1!',

@@ -57,13 +57,11 @@ describe('sortOptionsAlphabetically', () => {
 
   it('handles a single option', () => {
     const options = [{ value: 'a', label: 'Apple' }];
-
     expect(sortOptionsAlphabetically(options)).toEqual([{ value: 'a', label: 'Apple' }]);
   });
 
   it('handles a single "other" option', () => {
     const options = [{ value: 'other', label: 'Other' }];
-
     expect(sortOptionsAlphabetically(options)).toEqual([{ value: 'other', label: 'Other' }]);
   });
 

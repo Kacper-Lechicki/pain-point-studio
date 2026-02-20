@@ -45,7 +45,7 @@ const answers = [
   { response_id: 'r1', question_id: 'q4', value: { answer: true } },
 ];
 
-// ── DatabaseClient mock ─────────────────────────────────────────────
+// ── Supabase mock ───────────────────────────────────────────────────
 
 let mockSurveyData: unknown;
 let mockQuestionsData: unknown;
@@ -53,43 +53,79 @@ let mockAnswersData: unknown;
 let mockResponsesData: unknown;
 let mockResponseCount: number | null;
 
-function createMockDb() {
+/**
+ * Build a mock supabase client that simulates PostgREST query builder chains.
+ * The action calls:
+ *   - supabase.from('survey_responses').select('*', { count, head }).eq().eq()  → { count }
+ *   - supabase.from('surveys').select('id, title').eq().eq().maybeSingle()      → { data: survey }
+ *   - supabase.from('survey_questions').select(...).eq().order()                → { data: questions }
+ *   - supabase.rpc('get_export_responses', ...)                                → { data: responses }
+ *   - supabase.from('survey_answers').select(...).in(...)                       → { data: answers }
+ */
+function createMockSupabase() {
   return {
-    surveys: {
-      findByIdSelect: vi
-        .fn()
-        .mockImplementation(() => Promise.resolve({ data: mockSurveyData, error: null })),
-    },
-    surveyQuestions: {
-      findBySurveyId: vi
-        .fn()
-        .mockImplementation(() => Promise.resolve({ data: mockQuestionsData, error: null })),
-    },
-    surveyResponses: {
-      countBySurveyId: vi
-        .fn()
-        .mockImplementation(() => Promise.resolve({ count: mockResponseCount, error: null })),
-    },
-    surveyAnswers: {
-      findByResponseIds: vi
-        .fn()
-        .mockImplementation(() => Promise.resolve({ data: mockAnswersData, error: null })),
-    },
+    from: vi.fn((table: string) => {
+      if (table === 'survey_responses') {
+        return {
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              eq: vi.fn().mockResolvedValue({ count: mockResponseCount, error: null }),
+            }),
+          }),
+        };
+      }
+
+      if (table === 'surveys') {
+        return {
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              eq: vi.fn().mockReturnValue({
+                maybeSingle: vi.fn().mockResolvedValue({ data: mockSurveyData, error: null }),
+              }),
+            }),
+          }),
+        };
+      }
+
+      if (table === 'survey_questions') {
+        return {
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              order: vi.fn().mockResolvedValue({ data: mockQuestionsData, error: null }),
+            }),
+          }),
+        };
+      }
+
+      if (table === 'survey_answers') {
+        return {
+          select: vi.fn().mockReturnValue({
+            in: vi.fn().mockResolvedValue({ data: mockAnswersData, error: null }),
+          }),
+        };
+      }
+
+      return {};
+    }),
     rpc: vi
       .fn()
       .mockImplementation(() => Promise.resolve({ data: mockResponsesData, error: null })),
+    auth: {
+      getUser: vi.fn().mockResolvedValue({
+        data: { user: { id: USER_ID } },
+        error: null,
+      }),
+    },
   };
 }
 
-let mockDb = createMockDb();
+let mockSupabase = createMockSupabase();
 
 interface MockProtectedActionConfig {
   action: (params: {
     data: unknown;
     user: { id: string; email: string };
-    auth: unknown;
-    db: unknown;
-    storage: unknown;
+    supabase: unknown;
   }) => Promise<{ error?: string; success?: boolean; data?: unknown }>;
   schema: {
     safeParse: (data: unknown) => { success: boolean; data?: unknown; error?: unknown };
@@ -108,9 +144,7 @@ vi.mock('@/lib/common/with-protected-action', () => ({
       return config.action({
         data: validation.data,
         user: { id: USER_ID, email: 'test@example.com' },
-        auth: {},
-        db: mockDb,
-        storage: {},
+        supabase: mockSupabase,
       });
     };
   },
@@ -129,7 +163,7 @@ describe('exportSurveyCSV', () => {
     mockAnswersData = answers;
     mockResponsesData = responses;
     mockResponseCount = 1;
-    mockDb = createMockDb();
+    mockSupabase = createMockSupabase();
   });
 
   it('should return error when survey not found', async () => {
@@ -301,7 +335,7 @@ describe('exportSurveyJSON', () => {
     mockAnswersData = answers;
     mockResponsesData = responses;
     mockResponseCount = 1;
-    mockDb = createMockDb();
+    mockSupabase = createMockSupabase();
   });
 
   it('should return error when survey not found', async () => {

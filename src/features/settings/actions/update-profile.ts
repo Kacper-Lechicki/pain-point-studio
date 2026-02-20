@@ -3,29 +3,32 @@
 import { updateProfileSchema } from '@/features/settings/types';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
-import { mapAuthError } from '@/lib/providers/server';
+import { mapSupabaseError } from '@/lib/supabase/errors';
 
 export const updateProfile = withProtectedAction('update-profile', {
   schema: updateProfileSchema,
   rateLimit: RATE_LIMITS.profileUpdate,
-  action: async ({ data, user, auth, db }) => {
-    const { error: profileError } = await db.profiles.update(user.id, {
-      full_name: data.fullName,
-      role: data.role,
-      bio: data.bio,
-      social_links: data.socialLinks,
-    });
+  action: async ({ data, user, supabase }) => {
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .update({
+        full_name: data.fullName,
+        role: data.role,
+        bio: data.bio,
+        social_links: data.socialLinks,
+      })
+      .eq('id', user.id);
 
     if (profileError) {
-      return { error: mapAuthError(profileError.message) };
+      return { error: mapSupabaseError(profileError.message) };
     }
 
-    const { error: metaError } = await auth.updateUser({
+    const { error: metaError } = await supabase.auth.updateUser({
       data: { full_name: data.fullName },
     });
 
     if (metaError) {
-      return { error: mapAuthError(metaError.message) };
+      return { error: mapSupabaseError(metaError.message) };
     }
 
     return { success: true };

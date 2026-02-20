@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { ROUTES } from '@/config';
-import { createServerProviders } from '@/lib/providers/server';
+import { createClient } from '@/lib/supabase/server';
 
 const ALLOWED_CALLBACK_TYPES = ['signup', 'email_change'] as const;
 
@@ -48,25 +48,33 @@ export async function GET(
   const type = requestUrl.searchParams.get('type');
 
   if (code) {
-    const { auth, db } = await createServerProviders();
-    const { error, data } = await auth.exchangeCodeForSession(code);
+    const supabase = await createClient();
+    const { error, data } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
       if (data?.user) {
-        const { data: profile } = await db.profiles.findById(data.user.id);
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', data.user.id)
+          .single();
 
         if (!profile) {
           // Trigger on auth.users may not have fired (e.g. Supabase cloud
           // restrictions on auth-schema triggers). Ensure a profile row exists.
-          await db.profiles.upsert(data.user.id, {
-            full_name: (data.user.userMetadata?.full_name as string) ?? '',
-            avatar_url: (data.user.userMetadata?.avatar_url as string) ?? '',
-          });
+          await supabase.from('profiles').upsert(
+            {
+              id: data.user.id,
+              full_name: (data.user.user_metadata?.full_name as string) ?? '',
+              avatar_url: (data.user.user_metadata?.avatar_url as string) ?? '',
+            },
+            { onConflict: 'id' }
+          );
         } else if (
           profile.avatar_url &&
-          profile.avatar_url !== data.user.userMetadata?.avatar_url
+          profile.avatar_url !== data.user.user_metadata?.avatar_url
         ) {
-          await auth.updateUser({
+          await supabase.auth.updateUser({
             data: { avatar_url: profile.avatar_url },
           });
         }

@@ -16,51 +16,55 @@ vi.mock('@/lib/common/rate-limit', () => ({
   rateLimit: vi.fn().mockResolvedValue({ limited: false }),
 }));
 
-const mockSupabase = { auth: {}, from: vi.fn(), storage: {} };
+const mockRawUser = {
+  id: 'user-123',
+  email: 'test@example.com',
+  created_at: '2024-01-01T00:00:00Z',
+  user_metadata: {},
+  identities: [],
+};
+
+const mockGetUser = vi.fn().mockResolvedValue({
+  data: { user: mockRawUser },
+  error: null,
+});
+
+const mockSupabase = {
+  auth: { getUser: mockGetUser },
+  from: vi.fn(),
+  storage: { from: vi.fn() },
+  rpc: vi.fn(),
+};
 
 vi.mock('@/lib/supabase/server', () => ({
   createClient: vi.fn().mockResolvedValue(mockSupabase),
 }));
 
-const mockGetUser = vi.fn();
-const mockAuth = { getUser: mockGetUser } as Record<string, unknown>;
-const mockDb = { profiles: {}, surveys: {} } as Record<string, unknown>;
-const mockStorage = { upload: vi.fn() } as Record<string, unknown>;
-
-vi.mock('@/lib/supabase/providers/auth.server', () => ({
-  createServerAuthProvider: vi.fn().mockReturnValue(mockAuth),
-}));
-
-vi.mock('@/lib/supabase/providers/database', () => ({
-  createSupabaseDatabaseClient: vi.fn().mockReturnValue(mockDb),
-}));
-
-vi.mock('@/lib/supabase/providers/storage.server', () => ({
-  createServerStorageProvider: vi.fn().mockReturnValue(mockStorage),
+vi.mock('@/lib/supabase/user-mapper', () => ({
+  mapSupabaseUser: vi.fn((user: typeof mockRawUser) => ({
+    id: user.id,
+    email: user.email,
+    identities: [],
+    userMetadata: user.user_metadata,
+    createdAt: user.created_at,
+  })),
 }));
 
 const testSchema = z.object({
   name: z.string().min(1),
 });
 
-const mockUser = {
-  id: 'user-123',
-  email: 'test@example.com',
-  identities: [],
-  userMetadata: {},
-  createdAt: '2024-01-01T00:00:00Z',
-};
-
 describe('withProtectedAction', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockGetUser.mockResolvedValue({ data: { user: mockUser }, error: null });
+    mockGetUser.mockResolvedValue({ data: { user: mockRawUser }, error: null });
   });
 
-  it('should call the action with validated data, user, and provider objects', async () => {
+  it('should call the action with validated data, user, and supabase client', async () => {
     const actionFn = vi.fn().mockResolvedValue({ success: true });
 
     const { withProtectedAction } = await import('./with-protected-action');
+
     const protectedAction = withProtectedAction('test-action', {
       schema: testSchema,
       rateLimit: { limit: 5, windowSeconds: 60 },
@@ -70,23 +74,24 @@ describe('withProtectedAction', () => {
     const result = await protectedAction({ name: 'John' });
 
     expect(result).toEqual({ success: true });
+
     expect(actionFn).toHaveBeenCalledWith(
       expect.objectContaining({
         data: { name: 'John' },
-        user: mockUser,
-        auth: mockAuth,
-        db: mockDb,
-        storage: mockStorage,
+        user: expect.objectContaining({ id: 'user-123', email: 'test@example.com' }),
+        supabase: mockSupabase,
       })
     );
   });
 
   it('should return rate limit error when rate limited', async () => {
     const { rateLimit } = await import('@/lib/common/rate-limit');
+
     vi.mocked(rateLimit).mockResolvedValueOnce({ limited: true });
 
     const actionFn = vi.fn();
     const { withProtectedAction } = await import('./with-protected-action');
+
     const protectedAction = withProtectedAction('test-action', {
       schema: testSchema,
       rateLimit: { limit: 5, windowSeconds: 60 },
@@ -102,9 +107,11 @@ describe('withProtectedAction', () => {
 
   it('should use custom rate limit error message', async () => {
     const { rateLimit } = await import('@/lib/common/rate-limit');
+
     vi.mocked(rateLimit).mockResolvedValueOnce({ limited: true });
 
     const { withProtectedAction } = await import('./with-protected-action');
+
     const protectedAction = withProtectedAction('test-action', {
       schema: testSchema,
       rateLimit: { limit: 5, windowSeconds: 60 },
@@ -121,6 +128,7 @@ describe('withProtectedAction', () => {
     const actionFn = vi.fn();
 
     const { withProtectedAction } = await import('./with-protected-action');
+
     const protectedAction = withProtectedAction('test-action', {
       schema: testSchema,
       rateLimit: { limit: 5, windowSeconds: 60 },
@@ -136,6 +144,7 @@ describe('withProtectedAction', () => {
 
   it('should use custom validation error message', async () => {
     const { withProtectedAction } = await import('./with-protected-action');
+
     const protectedAction = withProtectedAction('test-action', {
       schema: testSchema,
       rateLimit: { limit: 5, windowSeconds: 60 },
@@ -153,6 +162,7 @@ describe('withProtectedAction', () => {
 
     const actionFn = vi.fn();
     const { withProtectedAction } = await import('./with-protected-action');
+
     const protectedAction = withProtectedAction('test-action', {
       schema: testSchema,
       rateLimit: { limit: 5, windowSeconds: 60 },
@@ -173,6 +183,7 @@ describe('withProtectedAction', () => {
 
     const actionFn = vi.fn();
     const { withProtectedAction } = await import('./with-protected-action');
+
     const protectedAction = withProtectedAction('test-action', {
       schema: testSchema,
       rateLimit: { limit: 5, windowSeconds: 60 },

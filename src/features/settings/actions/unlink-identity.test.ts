@@ -2,7 +2,7 @@
 /** Tests for the unlinkIdentity server action that disconnects an OAuth provider from the user account. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { AppIdentity, AppUser } from '@/lib/providers/types';
+import type { AppIdentity, AppUser } from '@/lib/supabase/helpers';
 
 vi.mock('@/lib/common/env', () => ({
   env: {
@@ -17,32 +17,46 @@ vi.mock('@/lib/common/rate-limit', () => ({
   rateLimit: vi.fn().mockResolvedValue({ limited: false }),
 }));
 
-// ── Provider mocks ──────────────────────────────────────────────────
+// ── Supabase mocks ──────────────────────────────────────────────────
 const mockUnlinkIdentity = vi.fn();
 const mockGetUser = vi.fn();
 const mockRpc = vi.fn();
 
+// Raw Supabase identity shape (snake_case) for the fresh getUser() call inside the action
+const rawGoogleIdentity = {
+  identity_id: 'google-identity-123',
+  provider: 'google',
+  id: 'google-identity-123',
+  user_id: 'user-123',
+  identity_data: { email: 'user@example.com' },
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+  last_sign_in_at: new Date().toISOString(),
+};
+
+const rawGithubIdentity = {
+  identity_id: 'github-identity-456',
+  provider: 'github',
+  id: 'github-identity-456',
+  user_id: 'user-123',
+  identity_data: { email: 'user@example.com' },
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+  last_sign_in_at: new Date().toISOString(),
+};
+
 vi.mock('@/lib/supabase/server', () => ({
-  createClient: vi.fn().mockResolvedValue({}),
-}));
-
-vi.mock('@/lib/supabase/providers/auth.server', () => ({
-  createServerAuthProvider: vi.fn().mockReturnValue({
-    getUser: mockGetUser,
-    updateUser: vi.fn(),
-    unlinkIdentity: mockUnlinkIdentity,
-  }),
-}));
-
-vi.mock('@/lib/supabase/providers/database', () => ({
-  createSupabaseDatabaseClient: vi.fn().mockReturnValue({
+  createClient: vi.fn().mockResolvedValue({
+    auth: {
+      getUser: mockGetUser,
+      unlinkIdentity: mockUnlinkIdentity,
+    },
     rpc: mockRpc,
-    profiles: { update: vi.fn(), findById: vi.fn() },
   }),
 }));
 
-vi.mock('@/lib/supabase/providers/storage.server', () => ({
-  createServerStorageProvider: vi.fn().mockReturnValue({}),
+vi.mock('@/lib/supabase/user-mapper', () => ({
+  mapSupabaseUser: (user: AppUser) => user,
 }));
 
 const googleIdentity: AppIdentity = {
@@ -67,13 +81,25 @@ const defaultUser: AppUser = {
   createdAt: new Date().toISOString(),
 };
 
+// Raw Supabase user with raw identities (returned by supabase.auth.getUser() inside the action)
+const rawUserWithIdentities = {
+  ...defaultUser,
+  identities: [rawGoogleIdentity, rawGithubIdentity],
+};
+
 describe('Settings Actions – Unlink Identity', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockGetUser.mockResolvedValue({
-      data: { user: defaultUser },
-      error: null,
-    });
+
+    // First getUser call is by withProtectedAction (returns AppUser via mapSupabaseUser)
+    // Second getUser call is inside the action itself (returns raw Supabase user with raw identities)
+    mockGetUser
+      .mockResolvedValueOnce({ data: { user: defaultUser }, error: null })
+      .mockResolvedValueOnce({
+        data: { user: rawUserWithIdentities },
+        error: null,
+      });
+
     mockUnlinkIdentity.mockResolvedValue({ error: null });
     mockRpc.mockResolvedValue({ data: false });
   });
@@ -87,7 +113,7 @@ describe('Settings Actions – Unlink Identity', () => {
     });
 
     expect(result).toEqual({ success: true });
-    expect(mockUnlinkIdentity).toHaveBeenCalledWith(googleIdentity);
+    expect(mockUnlinkIdentity).toHaveBeenCalledWith(rawGoogleIdentity);
   });
 
   it('should successfully unlink when user has 1 OAuth + password', async () => {
@@ -96,10 +122,18 @@ describe('Settings Actions – Unlink Identity', () => {
       identities: [googleIdentity],
     };
 
-    mockGetUser.mockResolvedValue({
-      data: { user: singleOAuthUser },
-      error: null,
-    });
+    const rawSingleOAuthUser = {
+      ...singleOAuthUser,
+      identities: [rawGoogleIdentity],
+    };
+
+    mockGetUser
+      .mockReset()
+      .mockResolvedValueOnce({ data: { user: singleOAuthUser }, error: null })
+      .mockResolvedValueOnce({
+        data: { user: rawSingleOAuthUser },
+        error: null,
+      });
     mockRpc.mockResolvedValue({ data: true });
 
     const { unlinkIdentity } = await import('./unlink-identity');
@@ -111,7 +145,7 @@ describe('Settings Actions – Unlink Identity', () => {
 
     expect(result).toEqual({ success: true });
     expect(mockRpc).toHaveBeenCalledWith('has_password');
-    expect(mockUnlinkIdentity).toHaveBeenCalledWith(googleIdentity);
+    expect(mockUnlinkIdentity).toHaveBeenCalledWith(rawGoogleIdentity);
   });
 
   it('should reject when user has only 1 OAuth and no password', async () => {
@@ -120,7 +154,7 @@ describe('Settings Actions – Unlink Identity', () => {
       identities: [googleIdentity],
     };
 
-    mockGetUser.mockResolvedValue({
+    mockGetUser.mockReset().mockResolvedValue({
       data: { user: singleOAuthUser },
       error: null,
     });
@@ -150,6 +184,14 @@ describe('Settings Actions – Unlink Identity', () => {
   });
 
   it('should return error when Supabase rejects the unlink', async () => {
+    mockGetUser
+      .mockReset()
+      .mockResolvedValueOnce({ data: { user: defaultUser }, error: null })
+      .mockResolvedValueOnce({
+        data: { user: rawUserWithIdentities },
+        error: null,
+      });
+    mockRpc.mockResolvedValue({ data: false });
     mockUnlinkIdentity.mockResolvedValue({
       error: { message: 'Unlink failed' },
     });
