@@ -26,6 +26,7 @@ export const PointerHighlight = memo(function PointerHighlight({
 }: PointerHighlightProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState<Dimensions>({ width: 0, height: 0 });
+
   const prefersReducedMotion = useSyncExternalStore(
     (callback) => {
       const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');

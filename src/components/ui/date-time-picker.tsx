@@ -113,6 +113,7 @@ function DateTimePicker({
   }
 
   const currentHour = selectedDate ? String(selectedDate.getHours()).padStart(2, '0') : undefined;
+
   const currentMinute = selectedDate
     ? String(selectedDate.getMinutes()).padStart(2, '0')
     : undefined;
@@ -215,6 +216,7 @@ function DateTimePicker({
         <div className="border-t px-2 py-1.5">
           <div className="flex items-center gap-1.5">
             <ClockIcon className="text-muted-foreground size-3.5 shrink-0" />
+
             <Select
               {...(currentHour ? { value: currentHour } : {})}
               onValueChange={handleHourChange}

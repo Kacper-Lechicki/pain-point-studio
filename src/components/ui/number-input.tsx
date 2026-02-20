@@ -126,7 +126,7 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
           disabled={disabled || !canDecrement}
           onClick={handleDecrement}
           tabIndex={-1}
-          aria-label="Decrease"
+          aria-label={`Decrease${name ? ` ${name}` : ''}`}
         >
           <Minus className="size-4" />
         </Button>
@@ -156,7 +156,7 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
           disabled={disabled || !canIncrement}
           onClick={handleIncrement}
           tabIndex={-1}
-          aria-label="Increase"
+          aria-label={`Increase${name ? ` ${name}` : ''}`}
         >
           <Plus className="size-4" />
         </Button>

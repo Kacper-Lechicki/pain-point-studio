@@ -17,6 +17,7 @@
     ]
   },
   "common": {
+    "close": "Close",
     "cancel": "Cancel",
     "confirm": {
       "title": "Are you sure?",

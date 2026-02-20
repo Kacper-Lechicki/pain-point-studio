@@ -46,7 +46,7 @@ export const ListPagination = ({
   }
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+    <nav aria-label="Pagination" className="flex flex-wrap items-center justify-between gap-3 pt-2">
       <p className="text-muted-foreground text-xs tabular-nums">
         {t('common.pagination.showing', {
           start: startIndex + 1,
@@ -63,6 +63,7 @@ export const ListPagination = ({
           <SelectTrigger size="sm" className="w-auto gap-1 text-xs">
             <SelectValue />
           </SelectTrigger>
+
           <SelectContent align="end">
             {PER_PAGE_OPTIONS.map((opt) => (
               <SelectItem key={opt} value={String(opt)} className="text-xs">
@@ -94,6 +95,6 @@ export const ListPagination = ({
           </Button>
         </div>
       </div>
-    </div>
+    </nav>
   );
 };

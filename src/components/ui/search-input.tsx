@@ -37,6 +37,7 @@ export function SearchInput({
           s.icon
         )}
       />
+
       <Input
         size={size}
         value={value}
@@ -44,6 +45,7 @@ export function SearchInput({
         placeholder={placeholder}
         className={cn(s.pad, hasValue && s.clearPad, size === 'sm' && 'text-xs')}
       />
+
       {hasValue && (
         <button
           type="button"

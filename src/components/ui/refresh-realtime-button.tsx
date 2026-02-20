@@ -26,7 +26,7 @@ export function RefreshRealtimeButton({
   lastSyncedAt,
 }: RefreshRealtimeButtonProps) {
   const t = useTranslations('common.sync');
-  const [now, setNow] = useState(Date.now);
+  const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
     if (lastSyncedAt == null) {
@@ -49,6 +49,7 @@ export function RefreshRealtimeButton({
           {elapsed}
         </span>
       )}
+
       <div className="relative">
         <Button
           variant="ghost"
