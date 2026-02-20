@@ -19,7 +19,7 @@ import {
 } from '@/features/surveys/config';
 
 export function RatingScaleSettings({ config, onUpdate }: SettingsProps) {
-  const t = useTranslations();
+  const t = useTranslations('surveys.builder.typeSettings');
 
   const min = (config.min as number) ?? RATING_SCALE_MIN;
   const max = (config.max as number) ?? 5;
@@ -40,7 +40,7 @@ export function RatingScaleSettings({ config, onUpdate }: SettingsProps) {
     <div className="space-y-3">
       <div className="grid grid-cols-2 gap-2">
         <div>
-          <Label className="mb-1 block text-xs">{t('surveys.builder.typeSettings.scaleMin')}</Label>
+          <Label className="mb-1 block text-xs">{t('scaleMin')}</Label>
           <Select value={String(min)} onValueChange={(val) => onUpdate({ min: Number(val) })}>
             <SelectTrigger className="h-8 w-full">
               <SelectValue />
@@ -55,7 +55,7 @@ export function RatingScaleSettings({ config, onUpdate }: SettingsProps) {
           </Select>
         </div>
         <div>
-          <Label className="mb-1 block text-xs">{t('surveys.builder.typeSettings.scaleMax')}</Label>
+          <Label className="mb-1 block text-xs">{t('scaleMax')}</Label>
           <Select value={String(max)} onValueChange={(val) => onUpdate({ max: Number(val) })}>
             <SelectTrigger className="h-8 w-full">
               <SelectValue />
@@ -71,21 +71,21 @@ export function RatingScaleSettings({ config, onUpdate }: SettingsProps) {
         </div>
       </div>
       <div>
-        <Label className="mb-1 block text-xs">{t('surveys.builder.typeSettings.minLabel')}</Label>
+        <Label className="mb-1 block text-xs">{t('minLabel')}</Label>
         <Input
           value={minLabel}
           onChange={(e) => onUpdate({ minLabel: e.target.value })}
-          placeholder={t('surveys.builder.typeSettings.minLabelPlaceholder')}
+          placeholder={t('minLabelPlaceholder')}
           maxLength={RATING_LABEL_MAX_LENGTH}
           className="h-8"
         />
       </div>
       <div>
-        <Label className="mb-1 block text-xs">{t('surveys.builder.typeSettings.maxLabel')}</Label>
+        <Label className="mb-1 block text-xs">{t('maxLabel')}</Label>
         <Input
           value={maxLabel}
           onChange={(e) => onUpdate({ maxLabel: e.target.value })}
-          placeholder={t('surveys.builder.typeSettings.maxLabelPlaceholder')}
+          placeholder={t('maxLabelPlaceholder')}
           maxLength={RATING_LABEL_MAX_LENGTH}
           className="h-8"
         />

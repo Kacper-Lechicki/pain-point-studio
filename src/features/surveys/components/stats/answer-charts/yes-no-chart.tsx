@@ -11,14 +11,14 @@ interface YesNoChartProps {
 }
 
 export const YesNoChart = ({ answers }: YesNoChartProps) => {
-  const t = useTranslations();
+  const t = useTranslations('surveys.stats');
 
   const yesCount = answers.filter((a) => a.value.answer === true).length;
   const noCount = answers.filter((a) => a.value.answer === false).length;
   const total = yesCount + noCount;
 
   if (total === 0) {
-    return <p className="text-muted-foreground text-xs">{t('surveys.stats.noChartData')}</p>;
+    return <p className="text-muted-foreground text-xs">{t('noChartData')}</p>;
   }
 
   const yesPercentage = Math.round((yesCount / total) * 100);
@@ -101,7 +101,7 @@ export const YesNoChart = ({ answers }: YesNoChartProps) => {
                 )}
                 aria-hidden
               />
-              {t('surveys.stats.yesLabel')}
+              {t('yesLabel')}
             </span>
             <span className="text-foreground text-xs font-medium tabular-nums">
               {yesCount}{' '}
@@ -133,7 +133,7 @@ export const YesNoChart = ({ answers }: YesNoChartProps) => {
                 )}
                 aria-hidden
               />
-              {t('surveys.stats.noLabel')}
+              {t('noLabel')}
             </span>
             <span className="text-foreground text-xs font-medium tabular-nums">
               {noCount} <span className="text-muted-foreground font-normal">({noPercentage}%)</span>

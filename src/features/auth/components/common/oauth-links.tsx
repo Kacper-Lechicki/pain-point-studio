@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { OAuthButtons } from '@/features/auth/components/common/oauth-buttons';
 
 const OAuthLinks = () => {
-  const t = useTranslations();
+  const t = useTranslations('auth');
 
   return (
     <div className="space-y-4">
@@ -16,7 +16,7 @@ const OAuthLinks = () => {
 
         <div className="relative flex justify-center text-xs lowercase">
           <span className="border-border/60 bg-background text-muted-foreground rounded-full border px-3 py-1">
-            {t('auth.orContinueWith')}
+            {t('orContinueWith')}
           </span>
         </div>
       </div>

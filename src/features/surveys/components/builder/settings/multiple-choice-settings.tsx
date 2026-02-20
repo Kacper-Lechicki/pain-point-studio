@@ -15,7 +15,7 @@ import type { SettingsProps } from '@/features/surveys/components/builder/settin
 import { SELECTION_MIN } from '@/features/surveys/config';
 
 export function MultipleChoiceSettings({ config, onUpdate }: SettingsProps) {
-  const t = useTranslations();
+  const t = useTranslations('surveys.builder.typeSettings');
 
   const options = (config.options as string[]) ?? [];
   const allowOther = (config.allowOther as boolean) ?? false;
@@ -43,9 +43,7 @@ export function MultipleChoiceSettings({ config, onUpdate }: SettingsProps) {
   return (
     <div className="space-y-3">
       <div>
-        <Label className="mb-1 block text-xs">
-          {t('surveys.builder.typeSettings.maxSelections')}
-        </Label>
+        <Label className="mb-1 block text-xs">{t('maxSelections')}</Label>
         <Select
           value={String(clampedMax)}
           onValueChange={(val) => onUpdate({ maxSelections: Number(val) })}
@@ -63,7 +61,7 @@ export function MultipleChoiceSettings({ config, onUpdate }: SettingsProps) {
         </Select>
       </div>
       <div className="flex items-center justify-between">
-        <Label className="text-xs">{t('surveys.builder.typeSettings.allowOther')}</Label>
+        <Label className="text-xs">{t('allowOther')}</Label>
         <Switch checked={allowOther} onCheckedChange={handleAllowOtherChange} />
       </div>
     </div>

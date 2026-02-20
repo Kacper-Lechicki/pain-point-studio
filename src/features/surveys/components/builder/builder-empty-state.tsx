@@ -8,7 +8,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { useQuestionBuilderContext } from '@/features/surveys/hooks/use-question-builder-context';
 
 export function BuilderEmptyState() {
-  const t = useTranslations();
+  const t = useTranslations('surveys.builder.emptyState');
   const { addQuestion } = useQuestionBuilderContext();
 
   return (
@@ -16,12 +16,12 @@ export function BuilderEmptyState() {
       <div className="mx-auto w-full max-w-3xl">
         <EmptyState
           icon={ClipboardList}
-          title={t('surveys.builder.emptyState.title')}
-          description={t('surveys.builder.emptyState.description')}
+          title={t('title')}
+          description={t('description')}
           action={
             <Button onClick={() => addQuestion()}>
               <Plus className="size-4" aria-hidden />
-              {t('surveys.builder.emptyState.addQuestion')}
+              {t('addQuestion')}
             </Button>
           }
         />

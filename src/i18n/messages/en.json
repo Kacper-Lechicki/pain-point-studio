@@ -142,7 +142,6 @@
     "emailConfirmed": "Email confirmed. You are now signed in",
     "emailChangeConfirmed": "Email address updated",
     "passwordUpdated": "Password updated",
-    "unexpectedError": "Something went wrong. Please try again.",
     "errors": {
       "passwordRequired": "Password is required.",
       "invalidCredentials": "Invalid email or password. Please try again.",
@@ -343,9 +342,6 @@
       "cancelSurveyConfirm": "This will withdraw the survey. The survey link will remain accessible for 14 days with a withdrawal notice.",
       "surveyCancelled": "Survey cancelled successfully.",
       "shareLink": "Share Link",
-      "surveyLink": "Survey link",
-      "copyLink": "Copy link",
-      "linkCopied": "Link copied!",
       "export": "Export",
       "surveyNameLabel": "Name",
       "exportTitle": "Export Responses",
@@ -369,8 +365,6 @@
       "yesLabel": "Yes",
       "noLabel": "No",
       "otherLabel": "Other",
-      "statusActive": "Active",
-      "statusCompleted": "Completed",
       "average": "Average: {value}",
       "median": "Median: {value}",
       "minMax": "Range: {min}–{max}",
@@ -559,7 +553,6 @@
         "status": "Status",
         "surveyLink": "Survey link",
         "copyLink": "Copy link",
-        "linkCopied": "Link copied!",
         "metricsLabel": "Metrics",
         "viewAllMetrics": "View all metrics",
         "detailsLabel": "Details",
@@ -602,7 +595,6 @@
         "deleted": "Survey deleted.",
         "restored": "Survey restored.",
         "duplicated": "Survey duplicated as draft.",
-        "linkCopied": "Survey link copied!",
         "actionFailed": "Something went wrong. Please try again."
       },
       "shareDialog": {
@@ -661,8 +653,7 @@
         "viewResults": "View results"
       },
       "toast": {
-        "restored": "Survey restored.",
-        "actionFailed": "Something went wrong. Please try again."
+        "restored": "Survey restored."
       },
       "empty": {
         "title": "No archived surveys",

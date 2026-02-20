@@ -72,7 +72,7 @@ const UserMenu = () => {
         router.refresh();
       }
     } catch {
-      toast.error(t('auth.unexpectedError'));
+      toast.error(t('auth.errors.unexpected'));
       setIsSigningOut(false);
     }
   };

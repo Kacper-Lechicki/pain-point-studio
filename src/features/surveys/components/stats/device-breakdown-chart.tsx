@@ -19,15 +19,15 @@ interface DeviceBreakdownChartProps {
 }
 
 export const DeviceBreakdownChart = ({ data, className }: DeviceBreakdownChartProps) => {
-  const t = useTranslations();
+  const t = useTranslations('surveys.stats');
 
   const chartConfig = {
     desktop: {
-      label: t('surveys.stats.deviceDesktop'),
+      label: t('deviceDesktop'),
       color: 'var(--chart-violet)',
     },
     mobile: {
-      label: t('surveys.stats.deviceMobile'),
+      label: t('deviceMobile'),
       color: 'var(--chart-cyan)',
     },
   } satisfies ChartConfig;

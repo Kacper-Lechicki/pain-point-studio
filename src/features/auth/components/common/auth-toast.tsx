@@ -17,13 +17,13 @@ function isValidToastKey(value: string): value is ToastKey {
 
 const AuthToast = () => {
   const searchParams = useSearchParams();
-  const t = useTranslations();
+  const t = useTranslations('auth');
 
   useEffect(() => {
     const toastKey = searchParams.get('toast');
 
     if (toastKey && isValidToastKey(toastKey)) {
-      toast.success(t(`auth.${toastKey}`));
+      toast.success(t(toastKey));
 
       window.history.replaceState(null, '', window.location.pathname);
     }

@@ -17,7 +17,7 @@ export const MultipleChoiceQuestion = ({
   config,
   onChange,
 }: MultipleChoiceQuestionProps) => {
-  const t = useTranslations();
+  const t = useTranslations('respondent.questions');
 
   const options = (config.options as string[]) ?? [];
   const maxSelections = (config.maxSelections as number) || options.length;
@@ -43,7 +43,7 @@ export const MultipleChoiceQuestion = ({
   return (
     <div
       role={isSingleSelect ? 'radiogroup' : 'group'}
-      aria-label={t('respondent.questions.choiceGroup')}
+      aria-label={t('choiceGroup')}
       className="space-y-2"
     >
       {options.map((option) => {
@@ -84,7 +84,7 @@ export const MultipleChoiceQuestion = ({
           <Input
             value={value.other ?? ''}
             onChange={(e) => onChange({ ...value, other: e.target.value || null })}
-            placeholder={t('respondent.questions.otherPlaceholder')}
+            placeholder={t('otherPlaceholder')}
             className="text-sm"
           />
         </div>

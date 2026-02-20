@@ -11,8 +11,8 @@ interface TextPreviewEditorProps {
 }
 
 export function TextPreviewEditor({ config, variant }: TextPreviewEditorProps) {
-  const t = useTranslations();
-  const placeholder = (config.placeholder as string) || t('surveys.builder.defaultTextPlaceholder');
+  const t = useTranslations('surveys.builder');
+  const placeholder = (config.placeholder as string) || t('defaultTextPlaceholder');
 
   if (variant === 'long') {
     return (

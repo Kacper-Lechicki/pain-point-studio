@@ -18,11 +18,11 @@ interface ResponseTimelineChartProps {
 }
 
 export const ResponseTimelineChart = ({ data, className }: ResponseTimelineChartProps) => {
-  const t = useTranslations();
+  const t = useTranslations('surveys.stats');
 
   const chartConfig = {
     responses: {
-      label: t('surveys.stats.chartResponses'),
+      label: t('chartResponses'),
       color: 'var(--chart-emerald)',
     },
   } satisfies ChartConfig;

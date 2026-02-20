@@ -26,7 +26,7 @@ const reasonKeys: Record<ClosedReason, string> = {
 };
 
 export const SurveyClosed = ({ title, reason = 'completed' }: SurveyClosedProps) => {
-  const t = useTranslations();
+  const t = useTranslations('respondent.closed');
   const Icon = reasonIcons[reason];
 
   return (
@@ -35,11 +35,9 @@ export const SurveyClosed = ({ title, reason = 'completed' }: SurveyClosedProps)
         <div className="bg-muted mb-6 flex size-16 items-center justify-center rounded-full">
           <Icon className="text-muted-foreground size-8" />
         </div>
-        <h1 className="text-foreground mb-2 text-xl font-semibold">
-          {t('respondent.closed.title')}
-        </h1>
+        <h1 className="text-foreground mb-2 text-xl font-semibold">{t('title')}</h1>
         <p className="text-muted-foreground mb-6 max-w-sm">
-          {t(`respondent.closed.${reasonKeys[reason]}` as Parameters<typeof t>[0])}
+          {t(reasonKeys[reason] as Parameters<typeof t>[0])}
         </p>
         <p className="text-muted-foreground text-xs">{title}</p>
       </div>

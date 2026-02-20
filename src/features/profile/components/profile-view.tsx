@@ -15,14 +15,14 @@ interface ProfileViewProps {
 }
 
 const ProfileView = ({ profile, isPreview = false }: ProfileViewProps) => {
-  const t = useTranslations();
+  const t = useTranslations('profile');
 
   return (
     <div className="space-y-8">
       {isPreview && (
         <div className="space-y-1">
-          <h1 className="text-xl font-bold tracking-tight">{t('profile.preview.title')}</h1>
-          <p className="text-muted-foreground text-xs">{t('profile.preview.description')}</p>
+          <h1 className="text-xl font-bold tracking-tight">{t('preview.title')}</h1>
+          <p className="text-muted-foreground text-xs">{t('preview.description')}</p>
         </div>
       )}
 
@@ -40,16 +40,16 @@ const ProfileView = ({ profile, isPreview = false }: ProfileViewProps) => {
           <Separator />
 
           <EmptySection
-            title={t('profile.sections.projects.title')}
-            description={t('profile.sections.projects.emptyDescription')}
+            title={t('sections.projects.title')}
+            description={t('sections.projects.emptyDescription')}
             icon={FolderOpen}
           />
 
           <Separator />
 
           <EmptySection
-            title={t('profile.sections.statistics.title')}
-            description={t('profile.sections.statistics.emptyDescription')}
+            title={t('sections.statistics.title')}
+            description={t('sections.statistics.emptyDescription')}
             icon={BarChart3}
           />
         </div>

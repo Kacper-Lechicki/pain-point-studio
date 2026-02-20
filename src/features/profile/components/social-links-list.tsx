@@ -39,11 +39,11 @@ interface SocialLinksListProps {
 }
 
 const SocialLinksList = ({ links }: SocialLinksListProps) => {
-  const t = useTranslations();
+  const t = useTranslations('profile.sections');
 
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-medium">{t('profile.sections.socialLinks')}</h3>
+      <h3 className="text-sm font-medium">{t('socialLinks')}</h3>
 
       <div className="flex flex-wrap gap-2">
         {links.map((link) => {

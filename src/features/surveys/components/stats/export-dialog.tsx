@@ -31,7 +31,7 @@ interface ExportDialogProps {
 }
 
 export function ExportDialog({ open, onOpenChange, surveyId, surveyTitle }: ExportDialogProps) {
-  const t = useTranslations();
+  const t = useTranslations('surveys.stats');
   const [exporting, setExporting] = useState<ExportFormat | null>(null);
 
   const handleExport = async (format: ExportFormat) => {
@@ -47,10 +47,10 @@ export function ExportDialog({ open, onOpenChange, surveyId, surveyTitle }: Expo
         downloadBlob(content, result.data.filename, mime);
         onOpenChange(false);
       } else {
-        toast.error(t('surveys.stats.exportFailed'));
+        toast.error(t('exportFailed'));
       }
     } catch {
-      toast.error(t('surveys.stats.exportFailed'));
+      toast.error(t('exportFailed'));
     } finally {
       setExporting(null);
     }
@@ -60,14 +60,14 @@ export function ExportDialog({ open, onOpenChange, surveyId, surveyTitle }: Expo
     {
       format: 'csv' as const,
       icon: FileSpreadsheet,
-      title: t('surveys.stats.exportCSV'),
-      description: t('surveys.stats.exportCSVDescription'),
+      title: t('exportCSV'),
+      description: t('exportCSVDescription'),
     },
     {
       format: 'json' as const,
       icon: FileText,
-      title: t('surveys.stats.exportJSON'),
-      description: t('surveys.stats.exportJSONDescription'),
+      title: t('exportJSON'),
+      description: t('exportJSONDescription'),
     },
   ];
 
@@ -75,15 +75,13 @@ export function ExportDialog({ open, onOpenChange, surveyId, surveyTitle }: Expo
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{t('surveys.stats.exportTitle')}</DialogTitle>
-          <DialogDescription className="sr-only">
-            {t('surveys.stats.exportTitle')}
-          </DialogDescription>
+          <DialogTitle>{t('exportTitle')}</DialogTitle>
+          <DialogDescription className="sr-only">{t('exportTitle')}</DialogDescription>
         </DialogHeader>
 
         <div>
           <span className="text-muted-foreground text-[11px] font-medium tracking-wide uppercase">
-            {t('surveys.stats.surveyNameLabel')}
+            {t('surveyNameLabel')}
           </span>
           <p className="text-foreground truncate text-sm">{surveyTitle}</p>
         </div>
@@ -113,7 +111,7 @@ export function ExportDialog({ open, onOpenChange, surveyId, surveyTitle }: Expo
                 </div>
                 <div className="min-w-0">
                   <p className="text-foreground text-sm font-medium">
-                    {isExporting ? t('surveys.stats.exporting') : title}
+                    {isExporting ? t('exporting') : title}
                   </p>
                   <p className="text-muted-foreground text-xs">{description}</p>
                 </div>

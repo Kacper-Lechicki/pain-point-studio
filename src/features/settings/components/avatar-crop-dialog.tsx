@@ -39,7 +39,7 @@ const AvatarCropDialog = ({
   mimeType,
   onCropComplete,
 }: AvatarCropDialogProps) => {
-  const t = useTranslations();
+  const t = useTranslations('settings.profile');
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedArea, setCroppedArea] = useState<CropArea | null>(null);
@@ -79,8 +79,8 @@ const AvatarCropDialog = ({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{t('settings.profile.cropAvatar')}</DialogTitle>
-          <DialogDescription>{t('settings.profile.cropAvatarDescription')}</DialogDescription>
+          <DialogTitle>{t('cropAvatar')}</DialogTitle>
+          <DialogDescription>{t('cropAvatarDescription')}</DialogDescription>
         </DialogHeader>
 
         <div className="bg-muted relative aspect-square w-full overflow-hidden rounded-md">
@@ -106,7 +106,7 @@ const AvatarCropDialog = ({
             max={MAX_ZOOM}
             step={ZOOM_STEP}
             onValueChange={([value]) => value !== undefined && setZoom(value)}
-            aria-label={t('settings.profile.cropZoom')}
+            aria-label={t('cropZoom')}
           />
 
           <ZoomIn className="text-muted-foreground size-4 shrink-0" aria-hidden="true" />
@@ -119,12 +119,12 @@ const AvatarCropDialog = ({
             onClick={() => handleOpenChange(false)}
             disabled={isProcessing}
           >
-            {t('settings.profile.cropCancel')}
+            {t('cropCancel')}
           </Button>
 
           <Button type="button" onClick={handleConfirm} disabled={isProcessing || !croppedArea}>
             {isProcessing && <Spinner className="size-4" />}
-            {t('settings.profile.cropConfirm')}
+            {t('cropConfirm')}
           </Button>
         </DialogFooter>
       </DialogContent>
