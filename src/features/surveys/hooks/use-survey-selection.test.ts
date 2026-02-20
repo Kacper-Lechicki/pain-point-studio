@@ -77,6 +77,7 @@ const SURVEYS: UserSurvey[] = [
 describe('useSurveySelection', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+
     mockGetSurveyWithQuestions.mockResolvedValue({
       survey: {},
       questions: [

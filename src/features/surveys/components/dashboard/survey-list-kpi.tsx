@@ -38,6 +38,7 @@ export function SurveyListKpi({
           <span className={cn('text-base font-semibold tabular-nums', KPI_COLOR_ALL)}>
             {Object.values(statusCounts).reduce((sum, n) => sum + n, 0)}
           </span>
+
           <span className="ml-1">{t('surveys.dashboard.summary.totalLabel')}</span>
         </span>
 
@@ -52,6 +53,7 @@ export function SurveyListKpi({
                 /
               </span>
             )}
+
             <span>
               <span
                 className={cn(
@@ -61,6 +63,7 @@ export function SurveyListKpi({
               >
                 {statusCounts[status] ?? 0}
               </span>
+
               <span className="ml-1">
                 {t(`surveys.dashboard.status.${status}` as Parameters<typeof t>[0])}
               </span>
@@ -68,11 +71,13 @@ export function SurveyListKpi({
           </span>
         ))}
       </div>
+
       <div className="flex shrink-0 items-center gap-2">
         <span className="text-muted-foreground hidden items-center gap-1 text-[11px] md:flex">
           <MousePointerClick className="size-3" aria-hidden />
           {t('surveys.dashboard.clickHint')}
         </span>
+
         {hasActiveSurveys && (
           <RefreshRealtimeButton
             isRefreshing={isRefreshing}

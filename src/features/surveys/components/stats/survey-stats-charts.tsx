@@ -21,11 +21,13 @@ export function SurveyStatsCharts({ responseTimeline, deviceTimeline }: SurveySt
         <SectionLabel>{t('responseTimeline')}</SectionLabel>
         <ResponseTimelineChart data={responseTimeline} className="h-48 w-full" />
       </div>
+
       <div>
         <div className="mb-2 flex items-center justify-between">
           <p className="text-muted-foreground text-[11px] font-medium tracking-wider uppercase">
             {t('deviceBreakdown')}
           </p>
+
           <div className="flex items-center gap-2.5">
             <span className="text-muted-foreground flex items-center gap-1 text-[10px]">
               <span
@@ -34,6 +36,7 @@ export function SurveyStatsCharts({ responseTimeline, deviceTimeline }: SurveySt
               />
               {t('deviceDesktop')}
             </span>
+
             <span className="text-muted-foreground flex items-center gap-1 text-[10px]">
               <span
                 className="inline-block size-2 rounded-full"
@@ -43,6 +46,7 @@ export function SurveyStatsCharts({ responseTimeline, deviceTimeline }: SurveySt
             </span>
           </div>
         </div>
+
         <DeviceBreakdownChart data={deviceTimeline} className="h-48 w-full" />
       </div>
     </div>

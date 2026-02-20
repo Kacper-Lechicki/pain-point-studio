@@ -20,7 +20,6 @@ export function useSurveySelection(surveys: UserSurvey[]): UseSurveySelectionRet
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-
   const selectedId = searchParams.get('selected');
   const [questions, setQuestions] = useState<MappedQuestion[] | null>(null);
   const fetchedForRef = useRef<string | null>(null);

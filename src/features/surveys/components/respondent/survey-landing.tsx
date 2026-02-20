@@ -34,6 +34,7 @@ export const SurveyLanding = ({ survey, slug }: SurveyLandingProps) => {
 
       if (stored) {
         const parsed = JSON.parse(stored) as CompletedData;
+
         queueMicrotask(() => {
           setCompletedData(parsed);
           setShowDuplicateWarning(true);
@@ -67,6 +68,7 @@ export const SurveyLanding = ({ survey, slug }: SurveyLandingProps) => {
     <PageTransition>
       <div className="flex flex-col items-center py-8 text-center sm:py-16">
         <h1 className="text-foreground mb-3 text-2xl font-bold sm:text-3xl">{survey.title}</h1>
+
         <p className="text-muted-foreground mb-8 max-w-lg text-sm leading-relaxed sm:text-base">
           {survey.description}
         </p>
@@ -76,10 +78,12 @@ export const SurveyLanding = ({ survey, slug }: SurveyLandingProps) => {
             <MessageSquare className="size-4" />
             {tLanding('respondent.landing.questionsCount', { count: survey.questionCount })}
           </span>
+
           <span className="flex items-center gap-1.5">
             <Clock className="size-4" />
             {tLanding('respondent.landing.estimatedTime', { minutes: estimatedMinutes })}
           </span>
+
           {survey.responseCount > 0 && (
             <span className="flex items-center gap-1.5">
               <Users className="size-4" />
@@ -98,11 +102,13 @@ export const SurveyLanding = ({ survey, slug }: SurveyLandingProps) => {
             <p className="text-foreground mb-1 text-sm font-medium">
               {tLanding('respondent.landing.alreadyCompleted.title')}
             </p>
+
             <p className="text-muted-foreground mb-3 text-xs">
               {tLanding('respondent.landing.alreadyCompleted.description', {
                 date: new Date(completedData.timestamp).toLocaleDateString(),
               })}
             </p>
+
             <Button variant="outline" size="sm" onClick={() => setShowDuplicateWarning(false)}>
               {tLanding('respondent.landing.alreadyCompleted.respondAgain')}
             </Button>

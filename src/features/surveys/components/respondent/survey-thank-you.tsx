@@ -14,6 +14,7 @@ export const SurveyThankYou = () => {
         <div className="bg-success/10 mb-6 flex size-16 items-center justify-center rounded-full">
           <CheckCircle2 className="text-success size-8" />
         </div>
+
         <h1 className="text-foreground mb-2 text-xl font-semibold">{t('title')}</h1>
         <p className="text-muted-foreground max-w-sm">{t('description')}</p>
       </div>

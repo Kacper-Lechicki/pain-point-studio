@@ -28,8 +28,10 @@ export function SingleResponseDialog({
           <DialogTitle className="text-sm leading-snug font-semibold">
             {questionText || '—'}
           </DialogTitle>
+
           <DialogDescription className="sr-only">Full response</DialogDescription>
         </DialogHeader>
+
         <div className="overflow-y-auto px-5 py-4">
           <p className="text-foreground/90 text-[13px] leading-relaxed break-all whitespace-pre-wrap">
             {responseText}

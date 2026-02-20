@@ -20,7 +20,6 @@ import {
 
 export function RatingScaleSettings({ config, onUpdate }: SettingsProps) {
   const t = useTranslations('surveys.builder.typeSettings');
-
   const min = (config.min as number) ?? RATING_SCALE_MIN;
   const max = (config.max as number) ?? 5;
   const minLabel = (config.minLabel as string) ?? '';
@@ -41,10 +40,12 @@ export function RatingScaleSettings({ config, onUpdate }: SettingsProps) {
       <div className="grid grid-cols-2 gap-2">
         <div>
           <Label className="mb-1 block text-xs">{t('scaleMin')}</Label>
+
           <Select value={String(min)} onValueChange={(val) => onUpdate({ min: Number(val) })}>
             <SelectTrigger className="h-8 w-full">
               <SelectValue />
             </SelectTrigger>
+
             <SelectContent>
               {minOptions.map((n) => (
                 <SelectItem key={n} value={String(n)}>
@@ -54,12 +55,15 @@ export function RatingScaleSettings({ config, onUpdate }: SettingsProps) {
             </SelectContent>
           </Select>
         </div>
+
         <div>
           <Label className="mb-1 block text-xs">{t('scaleMax')}</Label>
+
           <Select value={String(max)} onValueChange={(val) => onUpdate({ max: Number(val) })}>
             <SelectTrigger className="h-8 w-full">
               <SelectValue />
             </SelectTrigger>
+
             <SelectContent>
               {maxOptions.map((n) => (
                 <SelectItem key={n} value={String(n)}>
@@ -70,6 +74,7 @@ export function RatingScaleSettings({ config, onUpdate }: SettingsProps) {
           </Select>
         </div>
       </div>
+
       <div>
         <Label className="mb-1 block text-xs">{t('minLabel')}</Label>
         <Input
@@ -80,6 +85,7 @@ export function RatingScaleSettings({ config, onUpdate }: SettingsProps) {
           className="h-8"
         />
       </div>
+
       <div>
         <Label className="mb-1 block text-xs">{t('maxLabel')}</Label>
         <Input

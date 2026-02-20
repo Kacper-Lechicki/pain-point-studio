@@ -18,7 +18,6 @@ export const MultipleChoiceQuestion = ({
   onChange,
 }: MultipleChoiceQuestionProps) => {
   const t = useTranslations('respondent.questions');
-
   const options = (config.options as string[]) ?? [];
   const maxSelections = (config.maxSelections as number) || options.length;
   const allowOther = (config.allowOther as boolean) ?? false;

@@ -45,6 +45,7 @@ export function PublishSuccessPanel({
           <SheetTitle className="text-foreground text-base font-semibold">
             {t('surveys.publish.panelTitle')}
           </SheetTitle>
+
           <SheetDescription className="sr-only">{surveyTitle}</SheetDescription>
         </SheetHeader>
 
@@ -53,16 +54,17 @@ export function PublishSuccessPanel({
             <div className="bg-success/10 mb-2 flex size-10 items-center justify-center rounded-full">
               <CheckCircle2 className="text-success size-5" />
             </div>
+
             <h3 className="text-sm font-semibold">
               {t('surveys.publish.successTitle', { name: surveyTitle })}
             </h3>
+
             <p className="text-muted-foreground mt-0.5 text-xs">
               {t('surveys.publish.successDescription')}
             </p>
           </div>
 
           <SurveyShareContent shareUrl={shareUrl} surveyTitle={surveyTitle} compact />
-
           <Separator className="my-5" />
 
           <div className="flex flex-col gap-2">
@@ -71,12 +73,14 @@ export function PublishSuccessPanel({
                 {t('surveys.publish.viewDashboard')}
               </Link>
             </Button>
+
             <Button variant="outline" size="sm" asChild>
               <Link href={ROUTES.dashboard.researchNew} replace>
                 <Plus className="size-3.5" />
                 {t('surveys.publish.createAnother')}
               </Link>
             </Button>
+
             <Button variant="ghost" size="sm" asChild>
               <Link href={ROUTES.dashboard.research} replace>
                 <ClipboardList className="size-3.5" />

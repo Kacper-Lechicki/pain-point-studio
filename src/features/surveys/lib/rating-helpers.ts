@@ -40,42 +40,28 @@ export function getRingColor(ratio: number): string {
   return 'stroke-rose-500';
 }
 
-export function getBarColor(rating: number, scaleMin: number, scaleMax: number): string {
+export function getBarColor(
+  rating: number,
+  scaleMin: number,
+  scaleMax: number,
+  muted = false
+): string {
   const range = scaleMax - scaleMin;
+  const suffix = muted ? '/20' : '';
 
   if (range === 0) {
-    return 'bg-amber-500';
+    return `bg-amber-500${suffix}`;
   }
 
   const position = (rating - scaleMin) / range;
 
   if (position <= RATING_THRESHOLDS.bar.low) {
-    return 'bg-rose-500';
+    return `bg-rose-500${suffix}`;
   }
 
   if (position <= RATING_THRESHOLDS.bar.mid) {
-    return 'bg-amber-500';
+    return `bg-amber-500${suffix}`;
   }
 
-  return 'bg-emerald-500';
-}
-
-export function getBarMutedColor(rating: number, scaleMin: number, scaleMax: number): string {
-  const range = scaleMax - scaleMin;
-
-  if (range === 0) {
-    return 'bg-amber-500/20';
-  }
-
-  const position = (rating - scaleMin) / range;
-
-  if (position <= RATING_THRESHOLDS.bar.low) {
-    return 'bg-rose-500/20';
-  }
-
-  if (position <= RATING_THRESHOLDS.bar.mid) {
-    return 'bg-amber-500/20';
-  }
-
-  return 'bg-emerald-500/20';
+  return `bg-emerald-500${suffix}`;
 }

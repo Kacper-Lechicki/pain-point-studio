@@ -119,6 +119,7 @@ export function BuilderSidebarItem({
             <MoreVertical className="size-3.5" />
           </Button>
         </DropdownMenuTrigger>
+
         <DropdownMenuContent align="end">
           <DropdownMenuItem variant="destructive" onClick={onDelete}>
             <Trash2 className="size-4" />

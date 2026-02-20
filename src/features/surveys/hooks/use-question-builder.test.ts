@@ -201,6 +201,7 @@ describe('useQuestionBuilder – UPDATE_QUESTION', () => {
 
     act(() => {
       const [, dispatch] = result.current;
+
       dispatch({
         type: 'UPDATE_QUESTION',
         payload: { questionId: q1.id, updates: { text: 'Updated text', required: true } },
@@ -224,6 +225,7 @@ describe('useQuestionBuilder – CHANGE_QUESTION_TYPE', () => {
 
     act(() => {
       const [, dispatch] = result.current;
+
       dispatch({
         type: 'CHANGE_QUESTION_TYPE',
         payload: { questionId: q1.id, newType: 'rating_scale' },
@@ -249,6 +251,7 @@ describe('useQuestionBuilder – REORDER_QUESTIONS', () => {
 
     act(() => {
       const [, dispatch] = result.current;
+
       dispatch({
         type: 'REORDER_QUESTIONS',
         payload: { questionIds: [q3.id, q1.id, q2.id] },
@@ -268,6 +271,7 @@ describe('useQuestionBuilder – REORDER_QUESTIONS', () => {
 
     act(() => {
       const [, dispatch] = result.current;
+
       dispatch({
         type: 'REORDER_QUESTIONS',
         payload: { questionIds: [q1.id, 'non-existent-id'] },

@@ -32,12 +32,14 @@ export function SaveStatusIndicator({
           <span className={cn(truncate && 'truncate')}>{t('saving')}</span>
         </>
       )}
+
       {showSaved && (
         <>
           <Check className="size-3" />
           <span className={cn(truncate && 'truncate')}>{t('saved')}</span>
         </>
       )}
+
       {status === 'error' && (
         <span className={cn('text-destructive', truncate && 'truncate')}>{t('saveError')}</span>
       )}

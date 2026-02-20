@@ -13,12 +13,10 @@ import type { SettingsProps } from '@/features/surveys/components/builder/settin
 import { TEXT_PLACEHOLDER_MAX_LENGTH } from '@/features/surveys/config';
 
 const MAX_LENGTH_OPTIONS = [100, 200, 500, 1000, 2000, 5000, 10_000] as const;
-
 const NO_LIMIT = 'none';
 
 export function TextSettings({ config, onUpdate }: SettingsProps) {
   const t = useTranslations('surveys.builder.typeSettings');
-
   const placeholder = (config.placeholder as string) ?? '';
   const maxLength = (config.maxLength as number) ?? undefined;
 
@@ -33,8 +31,10 @@ export function TextSettings({ config, onUpdate }: SettingsProps) {
           className="h-8"
         />
       </div>
+
       <div>
         <Label className="mb-1 block text-xs">{t('maxLength')}</Label>
+
         <Select
           value={maxLength !== undefined ? String(maxLength) : NO_LIMIT}
           onValueChange={(val) =>
@@ -44,6 +44,7 @@ export function TextSettings({ config, onUpdate }: SettingsProps) {
           <SelectTrigger className="h-8 w-full">
             <SelectValue />
           </SelectTrigger>
+
           <SelectContent>
             <SelectItem value={NO_LIMIT}>{t('noLimit')}</SelectItem>
             {MAX_LENGTH_OPTIONS.map((n) => (

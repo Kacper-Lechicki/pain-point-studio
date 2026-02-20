@@ -80,20 +80,24 @@ export function SurveyTableRow({
           <span className="text-foreground block truncate text-sm font-semibold">
             {survey.title}
           </span>
+
           {survey.description && (
             <p className="text-muted-foreground mt-0.5 truncate text-[11px]">
               {survey.description}
             </p>
           )}
         </TableCell>
+
         {archivedLayout ? (
           <>
             <TableCell className="text-muted-foreground border-border/30 min-w-0 truncate border-l text-xs tabular-nums">
               {survey.questionCount}
             </TableCell>
+
             <TableCell className="text-muted-foreground border-border/30 min-w-0 truncate border-l text-xs">
               {row.archivedAtLabel ?? '—'}
             </TableCell>
+
             <TableCell className="text-muted-foreground border-border/30 min-w-0 truncate border-l text-xs tabular-nums">
               {row.autoDeleteDays != null
                 ? row.t('surveys.dashboard.detailPanel.inDays', { days: row.autoDeleteDays })
@@ -105,6 +109,7 @@ export function SurveyTableRow({
             <TableCell className="border-border/30 min-w-0 border-l text-center">
               <SurveyStatusBadge status={survey.status} />
             </TableCell>
+
             <TableCell className="text-muted-foreground border-border/30 min-w-0 truncate border-l text-xs tabular-nums">
               {row.isDraft
                 ? '—'
@@ -112,12 +117,15 @@ export function SurveyTableRow({
                   ? `${survey.completedCount}/${survey.maxRespondents}`
                   : survey.completedCount}
             </TableCell>
+
             <TableCell className="text-muted-foreground border-border/30 hidden min-w-0 truncate border-l text-xs tabular-nums lg:table-cell">
               {survey.questionCount}
             </TableCell>
+
             <TableCell className="text-muted-foreground border-border/30 hidden min-w-0 truncate border-l pr-4 pl-3 text-xs xl:table-cell">
               {row.isDraft ? '—' : (row.lastResponseLabel ?? '—')}
             </TableCell>
+
             <TableCell className="border-border/30 hidden min-w-0 border-l text-center 2xl:table-cell">
               {row.isDraft || row.isCompleted || row.isCancelled ? (
                 <span className="text-muted-foreground text-xs">—</span>
@@ -130,6 +138,7 @@ export function SurveyTableRow({
             </TableCell>
           </>
         )}
+
         <TableCell className="w-10 p-0" onClick={(e) => e.stopPropagation()}>
           <div className="flex items-center justify-center">
             <DropdownMenu>
@@ -149,7 +158,9 @@ export function SurveyTableRow({
           </div>
         </TableCell>
       </TableRow>
+
       {row.confirmDialogProps && <ConfirmDialog {...row.confirmDialogProps} />}
+
       {row.hasShareableLink && row.shareUrl && (
         <SurveyShareDialog
           open={row.shareDialogOpen}
@@ -158,6 +169,7 @@ export function SurveyTableRow({
           surveyTitle={survey.title}
         />
       )}
+
       {row.canExport && (
         <ExportDialog
           open={row.exportDialogOpen}

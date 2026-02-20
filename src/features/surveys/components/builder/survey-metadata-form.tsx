@@ -116,6 +116,7 @@ const SurveyMetadataForm = ({
           <div className="min-h-0 flex-1 space-y-6 overflow-y-auto px-4 py-4 sm:px-6 sm:py-6">
             {formFields}
           </div>
+
           {renderFooter({ handleSave, isLoading, isDirty: form.formState.isDirty })}
         </form>
       </Form>

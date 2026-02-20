@@ -26,7 +26,6 @@ export function getSparklineTrend(data: number[]): SparklineTrend {
   const mid = Math.floor(data.length / 2);
   const firstHalf = data.slice(0, mid);
   const secondHalf = data.slice(mid);
-
   const avgFirst = firstHalf.reduce((s, v) => s + v, 0) / (firstHalf.length || 1);
   const avgSecond = secondHalf.reduce((s, v) => s + v, 0) / (secondHalf.length || 1);
 
@@ -118,7 +117,9 @@ export function Sparkline({ data, className }: SparklineProps) {
           <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
         </linearGradient>
       </defs>
+
       <path d={closedArea} fill={`url(#${gradientId})`} />
+
       <polyline
         points={linePoints}
         fill="none"

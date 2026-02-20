@@ -50,6 +50,7 @@ describe('saveAnswer', () => {
     const result = await saveAnswer(VALID_INPUT);
 
     expect(result).toEqual({ success: true });
+
     expect(mockRpc).toHaveBeenCalledWith('validate_and_save_answer', {
       p_response_id: VALID_INPUT.responseId,
       p_question_id: VALID_INPUT.questionId,
@@ -73,10 +74,12 @@ describe('saveAnswer', () => {
 
   it('should return validation error for invalid data', async () => {
     const { saveAnswer } = await import('./save-answer');
+
     const invalidPayload = {
       questionId: crypto.randomUUID(),
       value: {},
     } as z.infer<typeof saveAnswerSchema>;
+
     const result = await saveAnswer(invalidPayload);
 
     expect(result.error).toBeDefined();

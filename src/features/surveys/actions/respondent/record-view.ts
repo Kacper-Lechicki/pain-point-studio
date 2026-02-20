@@ -9,6 +9,5 @@ import { createClient } from '@/lib/supabase/server';
  */
 export async function recordView(surveyId: string): Promise<void> {
   const supabase = await createClient();
-
   await supabase.rpc('record_survey_view', { p_survey_id: surveyId });
 }

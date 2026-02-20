@@ -44,20 +44,24 @@ export function DetailMetricsGrid({
           <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
             {viewCount}
           </div>
+
           <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
             <Eye className="mt-0.5 size-3 shrink-0" aria-hidden />
             {t('surveys.dashboard.detailPanel.views')}
           </div>
         </div>
+
         <div className="border-border/50 rounded-md border px-3 py-2.5">
           <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
             {responseCount}
           </div>
+
           <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
             <MousePointerClick className="mt-0.5 size-3 shrink-0" aria-hidden />
             {t('surveys.dashboard.detailPanel.participants')}
           </div>
         </div>
+
         <div className="border-border/50 rounded-md border px-3 py-2.5">
           <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
             {completedCount}
@@ -65,10 +69,12 @@ export function DetailMetricsGrid({
               <span className="text-muted-foreground text-xs font-normal"> / {maxRespondents}</span>
             )}
           </div>
+
           <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
             <Users className="mt-0.5 size-3 shrink-0" aria-hidden />
             {t('surveys.dashboard.detailPanel.responses')}
           </div>
+
           {respondentProgress != null && (
             <div className="bg-muted mt-2 h-1 w-full overflow-hidden rounded-full">
               <div
@@ -78,48 +84,58 @@ export function DetailMetricsGrid({
             </div>
           )}
         </div>
+
         {isActive && (
           <div className="border-border/50 rounded-md border px-3 py-2.5">
             <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
               {inProgressCount}
             </div>
+
             <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
               <Clock className="mt-0.5 size-3 shrink-0" aria-hidden />
               {t('surveys.dashboard.detailPanel.inProgress')}
             </div>
           </div>
         )}
+
         <div className="border-border/50 rounded-md border px-3 py-2.5">
           <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
             {submissionRate != null ? `${submissionRate}%` : '—'}
           </div>
+
           <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
             <Percent className="mt-0.5 size-3 shrink-0" aria-hidden />
             {t('surveys.dashboard.detailPanel.submissionRate')}
           </div>
         </div>
+
         <div className="border-border/50 rounded-md border px-3 py-2.5">
           <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
             {avgQuestionCompletion != null ? `${avgQuestionCompletion}%` : '—'}
           </div>
+
           <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
             <ListChecks className="mt-0.5 size-3 shrink-0" aria-hidden />
             {t('surveys.dashboard.detailPanel.avgQuestionCompletion')}
           </div>
         </div>
+
         <div className="border-border/50 rounded-md border px-3 py-2.5">
           <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
             {completionTimeLabel ?? '—'}
           </div>
+
           <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
             <Timer className="mt-0.5 size-3 shrink-0" aria-hidden />
             {t('surveys.dashboard.detailPanel.avgCompletionTime')}
           </div>
         </div>
+
         <div className="border-border/50 rounded-md border px-3 py-2.5">
           <div className="text-foreground text-sm leading-none font-semibold">
             {lastResponseLabel ?? '—'}
           </div>
+
           <div className="text-muted-foreground mt-1.5 text-[11px]">
             {t('surveys.dashboard.detailPanel.lastResponse')}
           </div>

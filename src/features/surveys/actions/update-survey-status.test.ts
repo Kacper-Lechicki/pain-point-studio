@@ -71,6 +71,7 @@ describe('Survey status actions', () => {
   describe('completeSurvey', () => {
     it('should return success when update returns a row', async () => {
       const updateChain = chain({ data: { id: SURVEY_ID } });
+
       mockFrom.mockReturnValue(updateChain);
 
       const { completeSurvey } = await import('./update-survey-status');
@@ -105,7 +106,9 @@ describe('Survey status actions', () => {
     it('should return success when select and update succeed', async () => {
       const selectChain = chain({ data: { status: 'draft' } });
       const updateChain = chain({ data: { id: SURVEY_ID } });
+
       let callCount = 0;
+
       mockFrom.mockImplementation(() => {
         callCount++;
 
@@ -123,6 +126,7 @@ describe('Survey status actions', () => {
     it('should return success when update and delete succeed', async () => {
       const updateChain = chain({ data: { id: SURVEY_ID } });
       const deleteChain = chain({ data: null, error: null });
+
       mockFrom.mockImplementation((table: string) => {
         if (table === 'survey_responses') {
           return deleteChain;

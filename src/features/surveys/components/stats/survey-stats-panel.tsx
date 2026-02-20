@@ -43,11 +43,13 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
   useBreadcrumbSegment(stats.survey.id, stats.survey.title);
 
   const initialIsActive = deriveSurveyFlags(stats.survey.status).isActive;
+
   const { isConnected: isRealtimeConnected } = useRealtimeResponses(
     stats.survey.id,
     markSynced,
     initialIsActive
   );
+
   const { shareUrl, shareDialogOpen, setShareDialogOpen, handleShare } = useSurveyCardActions(
     stats.survey.slug
   );
@@ -56,16 +58,16 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [optimisticStatus, setOptimisticStatus] = useState<SurveyStatus | null>(null);
   const [, startTransition] = useTransition();
-
   const currentStatus = optimisticStatus ?? stats.survey.status;
   const { isActive } = deriveSurveyFlags(currentStatus);
   const hasShareableLink = !!shareUrl;
-
   const submissionRate = calculateSubmissionRate(stats.completedResponses, stats.totalResponses);
+
   const respondentProgress = calculateRespondentProgress(
     stats.completedResponses,
     stats.survey.maxRespondents
   );
+
   const avgQuestionCompletion = useMemo(
     () =>
       calculateAvgQuestionCompletion(
@@ -74,6 +76,7 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
       ),
     [stats.questions, stats.completedResponses]
   );
+
   const lastResponseLabel =
     stats.lastResponseAt != null ? format.relativeTime(new Date(stats.lastResponseAt), now) : null;
 
@@ -162,6 +165,7 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
           <>
             <Separator />
             <SectionLabel>{t('surveys.stats.questionBreakdown')}</SectionLabel>
+
             <div className="space-y-3">
               {stats.questions.map((q: QuestionStats, i: number) => (
                 <QuestionStatsCard key={q.id} question={q} index={i} />

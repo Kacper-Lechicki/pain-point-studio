@@ -92,7 +92,9 @@ const QUESTION_ROWS = [
 describe('getSurveyWithQuestions', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+
     mockGetUser.mockResolvedValue({ data: { user: USER } });
+
     mockFrom.mockImplementation((table: string) => {
       if (table === 'surveys') {
         return chain({ data: SURVEY_ROW });
@@ -136,6 +138,7 @@ describe('getSurveyWithQuestions', () => {
     const result = await getSurveyWithQuestions(SURVEY_ID);
 
     expect(result).not.toBeNull();
+
     expect(result?.survey).toMatchObject({
       id: SURVEY_ID,
       title: 'My Survey',
@@ -154,6 +157,7 @@ describe('getSurveyWithQuestions', () => {
     const result = await getSurveyWithQuestions(SURVEY_ID);
 
     expect(result?.questions).toHaveLength(2);
+
     expect(result?.questions?.[0]).toMatchObject({
       id: 'q1',
       text: 'Q1?',
@@ -161,23 +165,28 @@ describe('getSurveyWithQuestions', () => {
       required: true,
       sortOrder: 0,
     });
+
     expect(result?.questions?.[1]?.sortOrder).toBe(1);
   });
 
   it('should call from surveys with expected select and eq', async () => {
     const surveyChain = chain({ data: SURVEY_ROW });
+
     mockFrom.mockImplementation((table: string) =>
       table === 'surveys' ? surveyChain : chain({ data: QUESTION_ROWS })
     );
 
     const { getSurveyWithQuestions } = await import('./get-survey-with-questions');
+
     await getSurveyWithQuestions(SURVEY_ID);
 
     expect(mockFrom).toHaveBeenCalledWith('surveys');
     expect(mockFrom).toHaveBeenCalledWith('survey_questions');
+
     expect(surveyChain.select).toHaveBeenCalledWith(
       'id, title, description, category, visibility, starts_at, ends_at, max_respondents, status'
     );
+
     expect(surveyChain.eq).toHaveBeenCalledWith('id', SURVEY_ID);
     expect(surveyChain.eq).toHaveBeenCalledWith('user_id', USER.id);
   });

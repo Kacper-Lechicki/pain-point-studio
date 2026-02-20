@@ -12,6 +12,7 @@ export function YesNoEditor() {
       <Button variant="outline" disabled className="flex-1 opacity-60">
         {t('yesLabel')}
       </Button>
+
       <Button variant="outline" disabled className="flex-1 opacity-60">
         {t('noLabel')}
       </Button>

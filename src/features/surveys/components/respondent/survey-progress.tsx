@@ -17,6 +17,7 @@ export const SurveyProgress = ({ current, total }: SurveyProgressProps) => {
         <span className="text-muted-foreground text-xs">{t('questionOf', { current, total })}</span>
         <span className="text-muted-foreground text-xs">{percentage}%</span>
       </div>
+
       <div className="bg-muted h-1.5 w-full overflow-hidden rounded-full">
         <div
           className="bg-primary h-full rounded-full transition-all duration-300 ease-out"

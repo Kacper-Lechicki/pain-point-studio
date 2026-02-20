@@ -37,6 +37,7 @@ export function ExportDialog({ open, onOpenChange, surveyId, surveyTitle }: Expo
   const handleExport = async (format: ExportFormat) => {
     const { field, mime } = EXPORT_FORMATS[format];
     const action = EXPORT_ACTIONS[format];
+
     setExporting(format);
 
     try {
@@ -44,6 +45,7 @@ export function ExportDialog({ open, onOpenChange, surveyId, surveyTitle }: Expo
 
       if (result.success && result.data) {
         const content = (result.data as Record<string, string>)[field]!;
+
         downloadBlob(content, result.data.filename, mime);
         onOpenChange(false);
       } else {
@@ -109,10 +111,12 @@ export function ExportDialog({ open, onOpenChange, surveyId, surveyTitle }: Expo
                     <Icon className="text-muted-foreground size-5" />
                   )}
                 </div>
+
                 <div className="min-w-0">
                   <p className="text-foreground text-sm font-medium">
                     {isExporting ? t('exporting') : title}
                   </p>
+
                   <p className="text-muted-foreground text-xs">{description}</p>
                 </div>
               </button>

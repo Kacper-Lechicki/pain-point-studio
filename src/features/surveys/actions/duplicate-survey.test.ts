@@ -105,6 +105,7 @@ describe('Survey Actions – Duplicate Survey', () => {
     const questionsInsertChain = chain({ data: null, error: null });
 
     let fromCallCount = 0;
+
     mockFrom.mockImplementation((table: string) => {
       if (table === 'surveys') {
         fromCallCount++;
@@ -127,6 +128,7 @@ describe('Survey Actions – Duplicate Survey', () => {
     const result = await duplicateSurvey({ surveyId: SURVEY_ID });
 
     expect(result).toEqual({ success: true, data: { surveyId: NEW_SURVEY_ID } });
+
     expect(insertChain.insert).toHaveBeenCalledWith(
       expect.objectContaining({
         user_id: USER.id,
@@ -138,6 +140,7 @@ describe('Survey Actions – Duplicate Survey', () => {
 
   it('should return error when original survey not found', async () => {
     const fetchChain = chain({ data: null, error: { message: 'Not found' } });
+
     mockFrom.mockReturnValue(fetchChain);
 
     const { duplicateSurvey } = await import('./duplicate-survey');
@@ -151,6 +154,7 @@ describe('Survey Actions – Duplicate Survey', () => {
     const insertChain = chain({ data: null, error: { message: 'Insert failed' } });
 
     let fromCallCount = 0;
+
     mockFrom.mockImplementation((table: string) => {
       if (table === 'surveys') {
         fromCallCount++;
@@ -171,14 +175,17 @@ describe('Survey Actions – Duplicate Survey', () => {
     const fetchChain = chain({ data: ORIGINAL_SURVEY });
     const insertChain = chain({ data: { id: NEW_SURVEY_ID } });
     const questionsSelectChain = chain({ data: QUESTIONS });
+
     const questionsInsertChain = chain({
       data: null,
       error: { message: 'Insert questions failed' },
     });
+
     const deleteChain = chain({ data: null, error: null });
 
     let surveysCallCount = 0;
     let questionsCallCount = 0;
+
     mockFrom.mockImplementation((table: string) => {
       if (table === 'surveys') {
         surveysCallCount++;
@@ -217,6 +224,7 @@ describe('Survey Actions – Duplicate Survey', () => {
     const questionsSelectChain = chain({ data: [] });
 
     let surveysCallCount = 0;
+
     mockFrom.mockImplementation((table: string) => {
       if (table === 'surveys') {
         surveysCallCount++;

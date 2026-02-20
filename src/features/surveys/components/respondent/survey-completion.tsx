@@ -69,6 +69,7 @@ export const SurveyCompletion = ({
           <h2 className="text-foreground text-xl font-semibold">
             {t('respondent.completion.title')}
           </h2>
+
           <p className="text-muted-foreground mt-1 text-sm">
             {t('respondent.completion.summary', { answered: answeredCount, total: totalQuestions })}
           </p>
@@ -79,6 +80,7 @@ export const SurveyCompletion = ({
             <h3 className="text-foreground mb-1 text-sm font-medium">
               {t('respondent.completion.contactTitle')}
             </h3>
+
             <p className="text-muted-foreground mb-3 text-xs">
               {t('respondent.completion.contactDescription')}
             </p>
@@ -89,6 +91,7 @@ export const SurveyCompletion = ({
               <Label htmlFor="contact-name" className="text-sm">
                 {t('respondent.completion.name')}
               </Label>
+
               <Input
                 id="contact-name"
                 value={contactName}
@@ -103,6 +106,7 @@ export const SurveyCompletion = ({
               <Label htmlFor="contact-email" className="text-sm">
                 {t('respondent.completion.email')}
               </Label>
+
               <Input
                 id="contact-email"
                 type="email"
@@ -120,6 +124,7 @@ export const SurveyCompletion = ({
           <h3 className="text-foreground mb-1 text-sm font-medium">
             {t('respondent.completion.feedbackTitle')}
           </h3>
+
           <Textarea
             value={feedback}
             onChange={(e) => setFeedback(e.target.value)}
@@ -134,6 +139,7 @@ export const SurveyCompletion = ({
           <Button variant="outline" onClick={onBack} disabled={isPending}>
             {t('respondent.completion.back')}
           </Button>
+
           <Button onClick={handleSubmit} disabled={isPending} className="flex-1">
             {isPending ? t('respondent.completion.submitting') : t('respondent.completion.submit')}
           </Button>

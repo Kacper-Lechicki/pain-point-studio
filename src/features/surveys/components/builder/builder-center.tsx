@@ -90,6 +90,7 @@ export function BuilderCenter() {
               className="min-h-[60px] resize-none"
               rows={2}
             />
+
             <div className="mt-1.5 flex items-center justify-between">
               <Button
                 variant="ghostDestructive"
@@ -99,6 +100,7 @@ export function BuilderCenter() {
                 <X className="size-4" aria-hidden />
                 {t('surveys.builder.removeDescription')}
               </Button>
+
               <span className="text-muted-foreground text-xs tabular-nums">
                 {(activeQuestion.description ?? '').length}/{QUESTION_DESCRIPTION_MAX_LENGTH}
               </span>

@@ -46,6 +46,7 @@ export const TextQuestion = ({ value, config, variant, onChange }: TextQuestionP
           maxLength={maxLength}
         />
       )}
+
       <CharacterCounter current={value.length} max={maxLength} />
     </div>
   );

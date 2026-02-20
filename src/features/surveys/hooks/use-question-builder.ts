@@ -37,6 +37,7 @@ function questionBuilderReducer(
       }
 
       const type = action.payload?.questionType ?? 'open_text';
+
       const newQuestion: QuestionSchema = {
         id: crypto.randomUUID(),
         text: '',

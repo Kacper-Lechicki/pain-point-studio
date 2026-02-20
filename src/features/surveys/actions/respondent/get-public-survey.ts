@@ -31,6 +31,7 @@ export const getPublicSurvey = cache(async (slug: string): Promise<PublicSurveyD
         : survey.cancelled_at
           ? new Date(survey.cancelled_at)
           : null;
+
     const retentionCutoff = new Date(Date.now() - SURVEY_RETENTION_DAYS * 24 * 60 * 60 * 1000);
 
     if (!closedAt || closedAt < retentionCutoff) {
@@ -40,6 +41,7 @@ export const getPublicSurvey = cache(async (slug: string): Promise<PublicSurveyD
 
   // Determine if accepting responses
   const now = new Date();
+
   let isAcceptingResponses = survey.status === 'active';
   let closedReason: PublicSurveyData['closedReason'];
 

@@ -102,14 +102,17 @@ describe('getSurveyStats', () => {
     const result = await getSurveyStats(SURVEY_ID);
 
     expect(result).not.toBeNull();
+
     expect(result?.survey).toMatchObject({
       id: SURVEY_ID,
       title: 'My Survey',
       slug: 'my-survey',
       status: 'active',
     });
+
     expect(result?.totalResponses).toBe(10);
     expect(result?.questions).toHaveLength(1);
+
     expect(mockRpc).toHaveBeenCalledWith('get_survey_stats_data', {
       p_survey_id: SURVEY_ID,
       p_user_id: USER.id,

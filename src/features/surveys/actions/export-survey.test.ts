@@ -18,7 +18,6 @@ vi.mock('@/lib/common/rate-limit', () => ({
 
 const SURVEY_ID = '00000000-0000-4000-8000-000000000001';
 const USER_ID = 'user-1';
-
 const survey = { id: SURVEY_ID, title: 'Customer Feedback 2025' };
 
 const questions = [
@@ -181,6 +180,7 @@ describe('exportSurveyCSV', () => {
     const result = await exportSurveyCSV(validInput);
 
     expect(result.success).toBe(true);
+
     const lines = result.data!.csv.split('\n');
     const headerLine = lines[0];
 
@@ -313,7 +313,6 @@ describe('exportSurveyCSV', () => {
 
     const { exportSurveyCSV } = await import('./export-survey');
     const result = await exportSurveyCSV(validInput);
-
     const lines = result.data!.csv.split('\n');
     const dataRow = lines[1];
     const fields = dataRow?.split(',');
@@ -365,7 +364,6 @@ describe('exportSurveyJSON', () => {
   it('should map question fields correctly', async () => {
     const { exportSurveyJSON } = await import('./export-survey');
     const result = await exportSurveyJSON(validInput);
-
     const parsed = JSON.parse(result.data!.json);
     const q = parsed.questions[0];
 
@@ -380,7 +378,6 @@ describe('exportSurveyJSON', () => {
   it('should map response fields correctly', async () => {
     const { exportSurveyJSON } = await import('./export-survey');
     const result = await exportSurveyJSON(validInput);
-
     const parsed = JSON.parse(result.data!.json);
     const r = parsed.responses[0];
 
@@ -394,7 +391,6 @@ describe('exportSurveyJSON', () => {
   it('should include answer values in responses', async () => {
     const { exportSurveyJSON } = await import('./export-survey');
     const result = await exportSurveyJSON(validInput);
-
     const parsed = JSON.parse(result.data!.json);
     const responseAnswers = parsed.responses[0].answers;
 
@@ -412,7 +408,6 @@ describe('exportSurveyJSON', () => {
 
     const { exportSurveyJSON } = await import('./export-survey');
     const result = await exportSurveyJSON(validInput);
-
     const parsed = JSON.parse(result.data!.json);
     const responseAnswers = parsed.responses[0].answers;
 

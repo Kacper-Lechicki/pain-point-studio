@@ -17,8 +17,8 @@ export function useSurveyRow(
 ) {
   const t = useTranslations();
   const format = useFormatter();
-
   const { handleActionClick, confirmDialogProps } = useSurveyAction(survey.id, onStatusChange, t);
+
   const { shareUrl, shareDialogOpen, setShareDialogOpen, handleShare } = useSurveyCardActions(
     survey.slug
   );
@@ -34,17 +34,21 @@ export function useSurveyRow(
     isArchived && (survey.archivedAt ?? survey.updatedAt)
       ? format.relativeTime(new Date(survey.archivedAt ?? survey.updatedAt), now)
       : null;
+
   const sparklineColor = getSparklineColor(survey.recentActivity);
   const updatedAtLabel = format.relativeTime(new Date(survey.updatedAt), now);
+
   const lastResponseLabel =
     survey.lastResponseAt != null
       ? format.relativeTime(new Date(survey.lastResponseAt), now)
       : null;
+
   const availableActions = getAvailableActions(survey.status);
 
   const autoDeleteDays = isArchived
     ? daysUntilExpiry(survey.archivedAt, SURVEY_RETENTION_DAYS)
     : null;
+
   const linkExpiryDays = (() => {
     if (isCompleted) {
       return daysUntilExpiry(survey.completedAt, SURVEY_RETENTION_DAYS);

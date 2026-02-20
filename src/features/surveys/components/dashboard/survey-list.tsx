@@ -134,7 +134,6 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
     return counts;
   }, [surveys]);
 
-  // Faceted category counts — respect current status filter but NOT category filter
   const categoryCounts = useMemo(() => {
     const counts: Record<string, number> = {};
 

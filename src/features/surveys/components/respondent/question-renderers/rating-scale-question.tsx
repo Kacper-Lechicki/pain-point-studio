@@ -38,6 +38,7 @@ export const RatingScaleQuestion = ({ value, config, onChange }: RatingScaleQues
           </button>
         ))}
       </div>
+
       {(minLabel || maxLabel) && (
         <div className="text-muted-foreground mt-2 flex justify-between text-xs">
           <span>{minLabel}</span>

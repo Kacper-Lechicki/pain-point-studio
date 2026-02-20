@@ -100,6 +100,7 @@ describe('getUserSurveys', () => {
 
     expect(result).toHaveLength(1);
     expect(result?.[0]).toMatchObject({ title: 'My Survey' });
+
     expect(mockRpc).toHaveBeenCalledWith('get_user_surveys_with_counts', {
       p_user_id: USER.id,
     });

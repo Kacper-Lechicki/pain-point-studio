@@ -56,6 +56,7 @@ export function SurveyCardRow({
             <span className="text-foreground truncate text-sm font-semibold">{survey.title}</span>
             <SurveyStatusBadge status={survey.status} className="shrink-0" />
           </div>
+
           <div className="shrink-0">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -69,6 +70,7 @@ export function SurveyCardRow({
                   <MoreHorizontal className="size-4" aria-hidden />
                 </Button>
               </DropdownMenuTrigger>
+
               {menuContent}
             </DropdownMenu>
           </div>
@@ -94,10 +96,12 @@ export function SurveyCardRow({
                 <span>{row.t('surveys.dashboard.table.responses')}</span>
                 <span className="text-foreground font-medium tabular-nums">—</span>
               </div>
+
               <div className="flex flex-col gap-0.5">
                 <span>{row.t('surveys.dashboard.table.lastEdited')}</span>
                 <span className="text-foreground font-medium">{row.updatedAtLabel}</span>
               </div>
+
               <div />
             </>
           ) : row.isArchived || archivedLayout ? (
@@ -106,8 +110,10 @@ export function SurveyCardRow({
                 <span>{row.t('surveys.dashboard.table.archivedAt')}</span>
                 <span className="text-foreground font-medium">{row.archivedAtLabel ?? '—'}</span>
               </div>
+
               <div className="flex flex-col gap-0.5">
                 <span>{row.t('surveys.dashboard.table.autoDeletes')}</span>
+
                 <span className="text-foreground font-medium tabular-nums">
                   {row.autoDeleteDays != null
                     ? row.t('surveys.dashboard.detailPanel.inDays', { days: row.autoDeleteDays })
@@ -119,6 +125,7 @@ export function SurveyCardRow({
             <>
               <div className="flex flex-col gap-0.5">
                 <span>{row.t('surveys.dashboard.table.responses')}</span>
+
                 <span className="text-foreground font-medium tabular-nums">
                   {survey.maxRespondents != null
                     ? row.t('surveys.dashboard.card.responsesOfMax', {
@@ -128,15 +135,19 @@ export function SurveyCardRow({
                     : survey.completedCount}
                 </span>
               </div>
+
               <div className="flex flex-col gap-0.5">
                 <span>{row.t('surveys.dashboard.table.lastResponse')}</span>
+
                 <span className="text-foreground font-medium tabular-nums">
                   {row.lastResponseLabel ?? '—'}
                 </span>
               </div>
+
               {row.linkExpiryDays != null ? (
                 <div className="flex flex-col gap-0.5">
                   <span>{row.t('surveys.dashboard.detailPanel.linkExpires')}</span>
+
                   <span className="text-foreground font-medium tabular-nums">
                     {row.t('surveys.dashboard.detailPanel.inDays', { days: row.linkExpiryDays })}
                   </span>
@@ -144,6 +155,7 @@ export function SurveyCardRow({
               ) : (
                 <div className="flex flex-col gap-0.5">
                   <span>{row.t('surveys.dashboard.table.activity')}</span>
+
                   <Sparkline
                     data={survey.recentActivity}
                     className={cn('shrink-0', row.sparklineColor)}
@@ -154,7 +166,9 @@ export function SurveyCardRow({
           )}
         </div>
       </div>
+
       {row.confirmDialogProps && <ConfirmDialog {...row.confirmDialogProps} />}
+
       {row.hasShareableLink && row.shareUrl && (
         <SurveyShareDialog
           open={row.shareDialogOpen}

@@ -76,10 +76,12 @@ export const ChoiceDistributionChart = ({ answers }: ChoiceDistributionChartProp
                 >
                   {row.name}
                 </span>
+
                 <span className="text-foreground shrink-0 text-xs font-medium tabular-nums">
                   {row.count} <span className="text-muted-foreground font-normal">({pct}%)</span>
                 </span>
               </div>
+
               <div className="bg-muted h-2 w-full overflow-hidden rounded-full">
                 <div
                   className={cn(

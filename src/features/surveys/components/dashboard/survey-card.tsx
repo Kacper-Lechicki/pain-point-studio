@@ -37,8 +37,8 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
   const t = useTranslations();
   const format = useFormatter();
   const now = useNow({ updateInterval: NOW_UPDATE_INTERVAL_MS });
-
   const { handleActionClick, confirmDialogProps } = useSurveyAction(survey.id, onStatusChange, t);
+
   const { shareUrl, shareDialogOpen, setShareDialogOpen, handleShare } = useSurveyCardActions(
     survey.slug
   );
@@ -46,11 +46,11 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
   const { isDraft, isActive, isCompleted, isCancelled, isArchived } = deriveSurveyFlags(
     survey.status
   );
+
   const hasShareableLink = (isActive || isCompleted || isCancelled) && !!survey.slug;
   const canExport = !isDraft && !isArchived;
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const href = isDraft ? getSurveyEditUrl(survey.id) : getSurveyStatsUrl(survey.id);
-
   const hint = computeHint(survey, t);
   const sparklineColor = getSparklineColor(survey.recentActivity);
   const inProgressCount = survey.responseCount - survey.completedCount;
@@ -105,6 +105,7 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
                 <h3 className="text-foreground truncate text-sm leading-snug font-semibold">
                   {survey.title}
                 </h3>
+
                 <SurveyStatusBadge status={survey.status} />
               </div>
 
@@ -127,6 +128,7 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
                   <MoreHorizontal className="size-4" />
                 </Button>
               </DropdownMenuTrigger>
+
               <SurveyActionMenuContent
                 surveyId={survey.id}
                 flags={{
@@ -151,17 +153,22 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
                 <span className="truncate">
                   {t(`surveys.categories.${survey.category}` as Parameters<typeof t>[0])}
                 </span>
+
                 <span className="text-border/60 shrink-0" aria-hidden>
                   ·
                 </span>
+
                 <span className="shrink-0">
                   {t('surveys.dashboard.card.questions', { count: survey.questionCount })}
                 </span>
+
                 <span className="text-border/60 shrink-0" aria-hidden>
                   ·
                 </span>
+
                 <span className="shrink-0">{relativeUpdated}</span>
               </div>
+
               {!isDraft && (
                 <div
                   className={cn(
@@ -175,6 +182,7 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
                       <span className="text-border/60 shrink-0" aria-hidden>
                         ·
                       </span>
+
                       <span>
                         {t('surveys.dashboard.card.submissionRate', { rate: submissionRate })}
                       </span>
@@ -182,10 +190,12 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
                   )}
                 </div>
               )}
+
               {lastResponseLabel != null && (
                 <div className="mt-0.5 truncate">{lastResponseLabel}</div>
               )}
             </div>
+
             {!isCancelled && (
               <Sparkline data={survey.recentActivity} className={cn('shrink-0', sparklineColor)} />
             )}
@@ -226,6 +236,7 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
       </div>
 
       {confirmDialogProps && <ConfirmDialog {...confirmDialogProps} />}
+
       {hasShareableLink && shareUrl && (
         <SurveyShareDialog
           open={shareDialogOpen}
@@ -234,6 +245,7 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
           surveyTitle={survey.title}
         />
       )}
+
       {canExport && (
         <ExportDialog
           open={exportDialogOpen}

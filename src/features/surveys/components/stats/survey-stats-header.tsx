@@ -63,7 +63,6 @@ export function SurveyStatsHeader({
   const t = useTranslations();
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
 
-  // Build and sort primary items alphabetically
   const primaryItems = useMemo(() => {
     const items: MenuItem[] = [];
 
@@ -86,7 +85,6 @@ export function SurveyStatsHeader({
     return items.sort((a, b) => a.label.localeCompare(b.label));
   }, [t, hasShareableLink, onShare]);
 
-  // Build and sort status-change actions alphabetically
   const statusActions = useMemo(() => {
     const items: MenuItem[] = [];
 
@@ -120,6 +118,7 @@ export function SurveyStatsHeader({
           <h1 className="text-foreground min-w-0 truncate text-3xl leading-tight font-bold">
             {title}
           </h1>
+
           <div className="mt-2 flex flex-wrap items-center gap-1.5">
             <SurveyStatusBadge status={status} />
           </div>
@@ -147,6 +146,7 @@ export function SurveyStatsHeader({
                 <MoreHorizontal className="size-4" aria-hidden />
               </Button>
             </DropdownMenuTrigger>
+
             <DropdownMenuContent align="end">
               {primaryItems.map((item) => (
                 <DropdownMenuItem key={item.key} onClick={item.onClick}>
@@ -158,6 +158,7 @@ export function SurveyStatsHeader({
               {statusActions.length > 0 && (
                 <>
                   <DropdownMenuSeparator />
+
                   {statusActions.map((item) => (
                     <DropdownMenuItem
                       key={item.key}

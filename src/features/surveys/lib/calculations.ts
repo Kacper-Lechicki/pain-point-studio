@@ -6,9 +6,6 @@ export function calculateSubmissionRate(completed: number, total: number): numbe
   return total > 0 ? Math.round((completed / total) * 100) : null;
 }
 
-/** @deprecated Use `calculateSubmissionRate` instead. */
-export const calculateCompletionRate = calculateSubmissionRate;
-
 /**
  * Average question completion: across all completed responses, what % of
  * questions were actually answered on average?

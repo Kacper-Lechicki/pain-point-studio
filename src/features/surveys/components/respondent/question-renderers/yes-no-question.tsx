@@ -30,6 +30,7 @@ export const YesNoQuestion = ({ value, onChange }: YesNoQuestionProps) => {
         <ThumbsUp className="size-4" />
         {t('yesLabel')}
       </button>
+
       <button
         type="button"
         role="radio"

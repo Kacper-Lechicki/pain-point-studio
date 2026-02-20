@@ -146,6 +146,7 @@ describe('getPublicSurvey', () => {
         responseCount: 0,
       })
     );
+
     expect(result?.closedReason).toBeUndefined();
   });
 
@@ -250,6 +251,7 @@ describe('getPublicSurvey', () => {
     const result = await getPublicSurvey('test-slug');
 
     expect(result?.questions).toHaveLength(2);
+
     expect(result?.questions?.[0]).toEqual({
       id: QUESTION_ROWS[0]!.id,
       text: 'How do you feel?',
@@ -259,6 +261,7 @@ describe('getPublicSurvey', () => {
       config: {},
       sortOrder: 0,
     });
+
     expect(result?.questions?.[1]).toEqual({
       id: QUESTION_ROWS[1]!.id,
       text: 'Rate us',

@@ -74,9 +74,11 @@ describe('useSurveyFlow – goToNext / goToPrevious', () => {
     act(() => {
       result.current.goToNext();
     });
+
     act(() => {
       result.current.goToNext();
     });
+
     act(() => {
       result.current.goToNext();
     });
@@ -91,6 +93,7 @@ describe('useSurveyFlow – goToNext / goToPrevious', () => {
     act(() => {
       result.current.goToNext();
     });
+
     act(() => {
       result.current.goToPrevious();
     });

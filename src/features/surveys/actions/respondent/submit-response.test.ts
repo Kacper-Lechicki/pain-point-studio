@@ -41,6 +41,7 @@ describe('submitResponse', () => {
     const result = await submitResponse({ responseId: RESPONSE_ID });
 
     expect(result).toEqual({ success: true });
+
     expect(mockRpc).toHaveBeenCalledWith(
       'submit_survey_response',
       expect.objectContaining({ p_response_id: RESPONSE_ID })
@@ -49,6 +50,7 @@ describe('submitResponse', () => {
 
   it('should pass contactName and contactEmail when provided', async () => {
     const { submitResponse } = await import('./submit-response');
+
     await submitResponse({
       responseId: RESPONSE_ID,
       contactName: 'Jane',
@@ -67,6 +69,7 @@ describe('submitResponse', () => {
 
   it('should pass feedback when provided', async () => {
     const { submitResponse } = await import('./submit-response');
+
     await submitResponse({
       responseId: RESPONSE_ID,
       feedback: 'Great survey!',

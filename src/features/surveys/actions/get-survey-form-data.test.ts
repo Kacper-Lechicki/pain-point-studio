@@ -19,13 +19,14 @@ describe('getSurveyFormData', () => {
 
     expect(result).toHaveProperty('categoryOptions');
     expect(result?.categoryOptions).toHaveLength(SURVEY_CATEGORIES.length);
-
     expect(result).toBeDefined();
+
     const options = result!.categoryOptions ?? [];
 
     for (let i = 0; i < SURVEY_CATEGORIES.length; i++) {
       const opt = options[i];
       const cat = SURVEY_CATEGORIES[i];
+
       expect(opt).toBeDefined();
       expect(cat).toBeDefined();
       expect(opt).toHaveProperty('value', cat!.value);

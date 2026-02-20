@@ -44,6 +44,7 @@ function BuilderSettingsPanelContent() {
         <Label className="text-muted-foreground mb-2 block text-xs font-medium tracking-wide uppercase">
           {t('surveys.builder.questionType')}
         </Label>
+
         <div className="grid grid-cols-3 gap-1.5">
           {[...QUESTION_TYPES]
             .sort((a, b) =>
@@ -68,6 +69,7 @@ function BuilderSettingsPanelContent() {
                   )}
                 >
                   <Icon className="size-4" />
+
                   <span className="text-[10px] leading-tight">
                     {t(labelKey as Parameters<typeof t>[0])}
                   </span>

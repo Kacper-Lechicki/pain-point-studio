@@ -48,10 +48,12 @@ export function BuilderMetadataPanel({
           <SheetTitle className="text-foreground text-base font-semibold">
             {t('surveys.builder.editMetadata')}
           </SheetTitle>
+
           <SheetDescription className="sr-only">
             {t('surveys.builder.editMetadata')}
           </SheetDescription>
         </SheetHeader>
+
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
           <SurveyMetadataForm
             categoryOptions={categoryOptions}

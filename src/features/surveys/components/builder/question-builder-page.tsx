@@ -87,6 +87,7 @@ export function QuestionBuilderPage({
           onOpenMetadataPanel={openMetadataPanel}
           onOpenPublishSettings={openPublishSettings}
         />
+
         <div className="flex min-h-0 flex-1 overflow-hidden">
           <BuilderSidebar isDesktop={isDesktop} open={sidebarOpen} onOpenChange={setSidebarOpen} />
           <BuilderCenter />
@@ -96,6 +97,7 @@ export function QuestionBuilderPage({
             open={settingsOpen}
             onOpenChange={setSettingsOpen}
           />
+
           <BuilderMetadataPanel
             open={metadataPanelOpen}
             onOpenChange={setMetadataPanelOpen}
