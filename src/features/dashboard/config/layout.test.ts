@@ -39,19 +39,16 @@ describe('getDashboardBackConfig', () => {
 
   it('should return survey list fallback for stats sub-path', () => {
     const config = getDashboardBackConfig('/dashboard/research/stats/abc-123');
-
     expect(config).toEqual({ fallbackHref: '/dashboard/research' });
   });
 
   it('should return survey list fallback for single survey detail', () => {
     const config = getDashboardBackConfig('/dashboard/research/some-id');
-
     expect(config).toEqual({ fallbackHref: '/dashboard/research' });
   });
 
   it('should return profile settings fallback for profile preview', () => {
     const config = getDashboardBackConfig('/profile/preview');
-
     expect(config).toEqual({ fallbackHref: '/settings/profile' });
   });
 

@@ -34,7 +34,6 @@ export function Breadcrumbs() {
   const pathname = usePathname();
   const t = useTranslations();
   const breadcrumbCtx = useBreadcrumbContext();
-
   const segments = pathname.split('/').filter(Boolean);
 
   if (segments.length === 0) {
@@ -53,8 +52,10 @@ export function Breadcrumbs() {
 
       if (collapsedKey) {
         const href = '/' + segments.slice(0, i + 2).join('/');
+
         crumbs.push({ label: t(`breadcrumbs.${collapsedKey}` as Parameters<typeof t>[0]), href });
         i += 2;
+
         continue;
       }
     }

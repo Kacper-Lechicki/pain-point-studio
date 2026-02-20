@@ -35,8 +35,8 @@ export function SidebarItem({
 }: SidebarItemProps) {
   const pathname = usePathname();
   const t = useTranslations();
-
   const matchPath = activePrefix ?? href;
+
   const isActive = hasSubNav
     ? pathname === matchPath || pathname.startsWith(matchPath + '/')
     : pathname === matchPath;
@@ -55,6 +55,7 @@ export function SidebarItem({
   const content = (
     <>
       <Icon className="size-4 shrink-0" aria-hidden />
+
       <span
         className={cn(
           'min-w-0 truncate transition-opacity duration-200',
@@ -63,6 +64,7 @@ export function SidebarItem({
       >
         {label}
       </span>
+
       {isExpanded && hasSubNav && (
         <ChevronRight className="size-4 shrink-0 opacity-50" aria-hidden />
       )}

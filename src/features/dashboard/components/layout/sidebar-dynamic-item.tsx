@@ -11,7 +11,6 @@ interface SidebarDynamicItemProps {
 
 export function SidebarDynamicItem({ isExpanded }: SidebarDynamicItemProps) {
   const pathname = usePathname();
-
   const match = DYNAMIC_SIDEBAR_ITEMS.find((item) => pathname === item.path);
 
   if (!match) {
@@ -21,6 +20,7 @@ export function SidebarDynamicItem({ isExpanded }: SidebarDynamicItemProps) {
   return (
     <>
       <Separator className="my-1.5" />
+
       <div className={`flex flex-col gap-1.5 ${isExpanded ? '' : 'items-center'}`}>
         <SidebarItem
           labelKey={match.labelKey}

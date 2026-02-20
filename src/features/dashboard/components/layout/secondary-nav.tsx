@@ -9,12 +9,13 @@ import { useTranslations } from 'next-intl';
 import { useBreadcrumbContext } from '@/features/dashboard/components/layout/breadcrumb-context';
 import { SIDEBAR_NAV_ITEM_CLASSES } from '@/features/dashboard/config/nav-styles';
 import type { SubNavConfig } from '@/features/dashboard/config/navigation';
-import { DYNAMIC_ROUTE_TABS } from '@/features/dashboard/config/navigation';
 import { useHashSync } from '@/features/dashboard/hooks/use-hash-sync';
 import {
   collectSearchParamKeys,
+  findDynamicTab,
   getSubItemHref,
   isSubItemActive,
+  resolveDynamicLabel,
 } from '@/features/dashboard/lib/nav-utils';
 import { Link, usePathname } from '@/i18n/routing';
 import type { MessageKey } from '@/i18n/types';
@@ -32,56 +33,15 @@ export function SecondaryNav({ titleKey, groups, parentHref }: SecondaryNavProps
   const hash = useHashSync();
   const t = useTranslations();
   const breadcrumb = useBreadcrumbContext();
-
   const searchString = nextSearchParams.toString();
   const currentSearchParams = useMemo(() => new URLSearchParams(searchString), [searchString]);
-
   const searchParamKeys = collectSearchParamKeys(groups);
+  const dynamicTab = useMemo(() => findDynamicTab(parentHref, pathname), [parentHref, pathname]);
 
-  const dynamicTab = useMemo(() => {
-    if (!parentHref) {
-      return null;
-    }
-
-    const tabs = DYNAMIC_ROUTE_TABS[parentHref];
-
-    if (!tabs) {
-      return null;
-    }
-
-    return (
-      tabs.find((tab) => {
-        if (!pathname.startsWith(tab.prefix + '/')) {
-          return false;
-        }
-
-        if (tab.excludeSegments) {
-          const nextSegment = pathname.slice(tab.prefix.length + 1).split('/')[0];
-
-          if (nextSegment && tab.excludeSegments.includes(nextSegment)) {
-            return false;
-          }
-        }
-
-        return true;
-      }) ?? null
-    );
-  }, [parentHref, pathname]);
-
-  const dynamicLabel = useMemo(() => {
-    if (!dynamicTab || !breadcrumb) {
-      return null;
-    }
-
-    const suffix = pathname.slice(dynamicTab.prefix.length + 1);
-    const segmentId = suffix.split('/')[0];
-
-    if (!segmentId) {
-      return null;
-    }
-
-    return breadcrumb.segments[segmentId] ?? null;
-  }, [dynamicTab, breadcrumb, pathname]);
+  const dynamicLabel = useMemo(
+    () => resolveDynamicLabel(dynamicTab, pathname, breadcrumb?.segments),
+    [dynamicTab, breadcrumb, pathname]
+  );
 
   return (
     <>
@@ -165,6 +125,7 @@ export function SecondaryNav({ titleKey, groups, parentHref }: SecondaryNavProps
             <div className="text-sidebar-foreground/50 mt-4 mb-1 px-2 text-xs font-semibold tracking-wider uppercase">
               {t('sidebar.dynamicHeading' as Parameters<typeof t>[0])}
             </div>
+
             <div className="flex flex-col gap-1.5">
               <Link href={pathname} data-state="active" className={SIDEBAR_NAV_ITEM_CLASSES}>
                 <dynamicTab.icon className="size-4 shrink-0" aria-hidden />

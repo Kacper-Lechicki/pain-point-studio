@@ -47,9 +47,6 @@ export function getDashboardBackConfig(pathname: string | null): DashboardBackCo
 //   --sidebar-width-expanded:  224px
 //   --sidebar-sub-panel-width: 224px
 
-/** Tailwind class for sidebar sub-panel width. */
-export const SIDEBAR_SUB_PANEL_WIDTH_CLASS = 'w-[var(--sidebar-sub-panel-width)]';
-
 /** Left offset for main content and page footer (so they start where sidebars end). */
 export function getDashboardContentMarginLeft(isPinned: boolean, hasSubPanel: boolean): string {
   if (hasSubPanel) {
@@ -61,11 +58,8 @@ export function getDashboardContentMarginLeft(isPinned: boolean, hasSubPanel: bo
   return isPinned ? 'var(--sidebar-width-expanded)' : 'var(--sidebar-width-collapsed)';
 }
 
-/** Builder side-panels share the same width for visual symmetry. */
+/** Builder side-panels share the same fixed width for visual symmetry. */
 export const BUILDER_PANEL_WIDTH_CLASS = 'min-w-72 max-w-72';
-
-/** Right-hand settings panel in builder is wider for editing comfort. */
-export const BUILDER_SETTINGS_PANEL_WIDTH_CLASS = 'min-w-72 max-w-72';
 
 // ── Footer (page + sidebar) ──────────────────────────────────────────
 
@@ -74,7 +68,6 @@ export const DASHBOARD_FOOTER_HEIGHT_CLASS = 'h-12';
 
 // ── Content area ────────────────────────────────────────────────────
 
-export const DASHBOARD_CONTENT_PADDING = 'px-4 pt-6 pb-12 sm:px-6 lg:px-8';
 export const DASHBOARD_CONTENT_MAX_WIDTH = 'max-w-7xl';
 export const DASHBOARD_PAGE_BODY_GAP = 'mb-8';
 export const DASHBOARD_PAGE_BODY_GAP_TOP = 'mt-8';

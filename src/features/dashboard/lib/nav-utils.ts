@@ -1,4 +1,9 @@
-import type { SubNavGroup, SubNavItem } from '@/features/dashboard/config/navigation';
+import type {
+  DynamicRouteTab,
+  SubNavGroup,
+  SubNavItem,
+} from '@/features/dashboard/config/navigation';
+import { DYNAMIC_ROUTE_TABS } from '@/features/dashboard/config/navigation';
 
 export function getSubItemHref(item: SubNavItem): string {
   if (item.searchParams) {
@@ -56,4 +61,68 @@ export function isSubItemActive(
   }
 
   return item.alsoActiveFor?.includes(pathname) ?? false;
+}
+
+// ── Dynamic route tab helpers ─────────────────────────────────────────
+
+/**
+ * Find the first matching dynamic route tab for the given pathname.
+ * Returns `null` when no tab matches or when `parentHref` is not configured
+ * in `DYNAMIC_ROUTE_TABS`.
+ */
+export function findDynamicTab(
+  parentHref: string | undefined,
+  pathname: string
+): DynamicRouteTab | null {
+  if (!parentHref) {
+    return null;
+  }
+
+  const tabs = DYNAMIC_ROUTE_TABS[parentHref];
+
+  if (!tabs) {
+    return null;
+  }
+
+  return (
+    tabs.find((tab) => {
+      if (!pathname.startsWith(tab.prefix + '/')) {
+        return false;
+      }
+
+      if (tab.excludeSegments) {
+        const nextSegment = pathname.slice(tab.prefix.length + 1).split('/')[0];
+
+        if (nextSegment && tab.excludeSegments.includes(nextSegment)) {
+          return false;
+        }
+      }
+
+      return true;
+    }) ?? null
+  );
+}
+
+/**
+ * Resolve a human-readable label for a dynamic tab from breadcrumb segments.
+ * Returns `null` when no label can be resolved (missing breadcrumb data or
+ * segment ID).
+ */
+export function resolveDynamicLabel(
+  dynamicTab: DynamicRouteTab | null,
+  pathname: string,
+  breadcrumbSegments: Record<string, string> | undefined | null
+): string | null {
+  if (!dynamicTab || !breadcrumbSegments) {
+    return null;
+  }
+
+  const suffix = pathname.slice(dynamicTab.prefix.length + 1);
+  const segmentId = suffix.split('/')[0];
+
+  if (!segmentId) {
+    return null;
+  }
+
+  return breadcrumbSegments[segmentId] ?? null;
 }

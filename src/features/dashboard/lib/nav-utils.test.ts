@@ -36,7 +36,6 @@ describe('getSubItemHref', () => {
 
   it('should encode special characters in searchParams', () => {
     const href = getSubItemHref({ ...base, searchParams: { q: 'hello world' } });
-
     expect(href).toBe('/dashboard/research?q=hello+world');
   });
 });
@@ -53,7 +52,6 @@ describe('collectSearchParamKeys', () => {
 
   it('should return empty array when no items have searchParams', () => {
     const groups: SubNavGroup[] = [{ items: [item(), item()] }];
-
     expect(collectSearchParamKeys(groups)).toEqual([]);
   });
 
@@ -84,7 +82,6 @@ describe('collectSearchParamKeys', () => {
 
   it('should skip items without searchParams', () => {
     const groups: SubNavGroup[] = [{ items: [item(), item({ status: 'active' })] }];
-
     expect(collectSearchParamKeys(groups)).toEqual(['status']);
   });
 });
@@ -205,7 +202,6 @@ describe('isSubItemActive', () => {
 
   it('should return false when nothing matches', () => {
     const result = isSubItemActive(item(), '/other', '', new URLSearchParams(), []);
-
     expect(result).toBe(false);
   });
 });

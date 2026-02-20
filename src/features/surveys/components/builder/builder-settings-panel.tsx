@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { BUILDER_SETTINGS_PANEL_WIDTH_CLASS } from '@/features/dashboard/config/layout';
+import { BUILDER_PANEL_WIDTH_CLASS } from '@/features/dashboard/config/layout';
 import { ResponsivePanel } from '@/features/surveys/components/builder/responsive-panel';
 import { MultipleChoiceSettings } from '@/features/surveys/components/builder/settings/multiple-choice-settings';
 import { RatingScaleSettings } from '@/features/surveys/components/builder/settings/rating-scale-settings';
@@ -116,7 +116,7 @@ export function BuilderSettingsPanel({ isDesktop, open, onOpenChange }: BuilderS
       onOpenChange={onOpenChange}
       side="right"
       title={t('surveys.builder.questionSettings')}
-      desktopClassName={`border-border flex ${BUILDER_SETTINGS_PANEL_WIDTH_CLASS} flex-col border-l`}
+      desktopClassName={`border-border flex ${BUILDER_PANEL_WIDTH_CLASS} flex-col border-l`}
     >
       <BuilderSettingsPanelContent />
     </ResponsivePanel>

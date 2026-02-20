@@ -10,6 +10,7 @@ import { getHash, useHashSync } from './use-hash-sync';
 describe('getHash', () => {
   it('should return value without leading # when window.location.hash is set', () => {
     const originalHash = window.location.hash;
+
     window.location.hash = '#section-one';
 
     expect(getHash()).toBe('section-one');
@@ -19,6 +20,7 @@ describe('getHash', () => {
 
   it('should return empty string when hash is empty', () => {
     const originalHash = window.location.hash;
+
     window.location.hash = '';
 
     expect(getHash()).toBe('');
@@ -32,6 +34,7 @@ describe('getHash', () => {
 describe('useHashSync', () => {
   it('should update returned hash when hashchange is dispatched', () => {
     const originalHash = window.location.hash;
+
     window.location.hash = '#profile';
 
     const { result } = renderHook(() => useHashSync());

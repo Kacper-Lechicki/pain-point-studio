@@ -8,7 +8,6 @@ import {
 } from '@/features/dashboard/config/nav-styles';
 import type { SubNavGroup } from '@/features/dashboard/config/navigation';
 import {
-  DYNAMIC_ROUTE_TABS,
   DYNAMIC_SIDEBAR_ITEMS,
   type NavItem,
   SIDEBAR_BOTTOM_ITEM,
@@ -16,8 +15,10 @@ import {
 } from '@/features/dashboard/config/navigation';
 import {
   collectSearchParamKeys,
+  findDynamicTab,
   getSubItemHref,
   isSubItemActive,
+  resolveDynamicLabel,
 } from '@/features/dashboard/lib/nav-utils';
 import { Link } from '@/i18n/routing';
 import type { MessageKey } from '@/i18n/types';
@@ -43,55 +44,10 @@ export function SubNavItems({
   breadcrumbSegments,
 }: SubNavItemsProps) {
   const searchParamKeys = collectSearchParamKeys(groups);
-
   const currentSearchParams = clientState ? new URLSearchParams(clientState.search) : null;
   const hash = clientState?.hash ?? '';
-
-  const dynamicTab = (() => {
-    if (!parentHref) {
-      return null;
-    }
-
-    const tabs = DYNAMIC_ROUTE_TABS[parentHref];
-
-    if (!tabs) {
-      return null;
-    }
-
-    return (
-      tabs.find((tab) => {
-        if (!pathname.startsWith(tab.prefix + '/')) {
-          return false;
-        }
-
-        if (tab.excludeSegments) {
-          const nextSegment = pathname.slice(tab.prefix.length + 1).split('/')[0];
-
-          if (nextSegment && tab.excludeSegments.includes(nextSegment)) {
-            return false;
-          }
-        }
-
-        return true;
-      }) ?? null
-    );
-  })();
-
-  const dynamicLabel = (() => {
-    if (!dynamicTab || !breadcrumbSegments) {
-      return null;
-    }
-
-    const suffix = pathname.slice(dynamicTab.prefix.length + 1);
-    const segmentId = suffix.split('/')[0];
-
-    if (!segmentId) {
-      return null;
-    }
-
-    return breadcrumbSegments[segmentId] ?? null;
-  })();
-
+  const dynamicTab = findDynamicTab(parentHref, pathname);
+  const dynamicLabel = resolveDynamicLabel(dynamicTab, pathname, breadcrumbSegments);
   const isDynamicActive = dynamicTab != null && dynamicLabel != null;
 
   return (
@@ -208,6 +164,7 @@ export function MobileNavMainLevel({ pathname, t, onItemClick, onClose }: Mobile
               }
 
               const matchPath = item.activePrefix ?? item.href;
+
               const isActive = item.subNav
                 ? pathname === matchPath || pathname.startsWith(matchPath + '/')
                 : pathname === matchPath;

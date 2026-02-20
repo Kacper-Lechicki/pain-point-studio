@@ -44,6 +44,7 @@ export function MobileNav() {
 
   useEffect(() => {
     queueMicrotask(syncFromWindow);
+
     window.addEventListener('hashchange', syncFromWindow);
     window.addEventListener('popstate', syncFromWindow);
 

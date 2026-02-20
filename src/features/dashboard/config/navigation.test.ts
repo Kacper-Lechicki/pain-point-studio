@@ -3,12 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import { ROUTES } from '@/config/routes';
 
-import {
-  DYNAMIC_SIDEBAR_ITEMS,
-  SIDEBAR_NAV,
-  findActiveNavItem,
-  hasSubNavForPath,
-} from './navigation';
+import { DYNAMIC_SIDEBAR_ITEMS, SIDEBAR_NAV, findActiveNavItem } from './navigation';
 
 // ── findActiveNavItem ───────────────────────────────────────────────
 
@@ -69,23 +64,6 @@ describe('findActiveNavItem', () => {
 
   it('should return undefined for unknown paths', () => {
     expect(findActiveNavItem('/unknown')).toBeUndefined();
-  });
-});
-
-// ── hasSubNavForPath ────────────────────────────────────────────────
-
-describe('hasSubNavForPath', () => {
-  it('should return true for paths with sub-navigation', () => {
-    expect(hasSubNavForPath('/dashboard/research')).toBe(true);
-    expect(hasSubNavForPath('/settings')).toBe(true);
-    expect(hasSubNavForPath('/settings/profile')).toBe(true);
-    expect(hasSubNavForPath('/dashboard/analytics')).toBe(true);
-    expect(hasSubNavForPath('/dashboard/analytics/project-idea-evaluation')).toBe(true);
-  });
-
-  it('should return false for paths without sub-navigation', () => {
-    expect(hasSubNavForPath('/dashboard')).toBe(false);
-    expect(hasSubNavForPath('/unknown')).toBe(false);
   });
 });
 

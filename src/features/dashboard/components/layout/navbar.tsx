@@ -16,6 +16,7 @@ const Navbar = () => {
   const { setMobileOpen, isDesktop } = useSidebar();
   const t = useTranslations();
   const pathname = usePathname();
+
   const hasSidebar =
     pathname.startsWith('/dashboard') ||
     pathname.startsWith('/settings') ||
