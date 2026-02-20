@@ -26,34 +26,30 @@ const ProfileView = ({ profile, isPreview = false }: ProfileViewProps) => {
         </div>
       )}
 
-      <div>
-        <div className="space-y-8">
-          <ProfileHeader profile={profile} />
+      <ProfileHeader profile={profile} />
 
-          {profile.socialLinks.length > 0 && (
-            <>
-              <Separator />
-              <SocialLinksList links={profile.socialLinks} />
-            </>
-          )}
-
+      {profile.socialLinks.length > 0 && (
+        <>
           <Separator />
+          <SocialLinksList links={profile.socialLinks} />
+        </>
+      )}
 
-          <EmptySection
-            title={t('sections.projects.title')}
-            description={t('sections.projects.emptyDescription')}
-            icon={FolderOpen}
-          />
+      <Separator />
 
-          <Separator />
+      <EmptySection
+        title={t('sections.projects.title')}
+        description={t('sections.projects.emptyDescription')}
+        icon={FolderOpen}
+      />
 
-          <EmptySection
-            title={t('sections.statistics.title')}
-            description={t('sections.statistics.emptyDescription')}
-            icon={BarChart3}
-          />
-        </div>
-      </div>
+      <Separator />
+
+      <EmptySection
+        title={t('sections.statistics.title')}
+        description={t('sections.statistics.emptyDescription')}
+        icon={BarChart3}
+      />
     </div>
   );
 };

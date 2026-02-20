@@ -58,6 +58,7 @@ describe('getProfileStatistics', () => {
     mockRpc.mockResolvedValue({ data: validPayload, error: null });
 
     const getProfileStatistics = await importFresh();
+
     await getProfileStatistics();
 
     expect(mockRpc).toHaveBeenCalledWith('get_profile_statistics', { p_user_id: 'user-1' });
@@ -95,6 +96,7 @@ describe('getProfileStatistics', () => {
 
   it('should return null when response fails schema validation', async () => {
     mockGetUser.mockResolvedValue({ data: { user: { id: 'user-1' } } });
+
     mockRpc.mockResolvedValue({
       data: { totalSurveys: 'not-a-number' },
       error: null,

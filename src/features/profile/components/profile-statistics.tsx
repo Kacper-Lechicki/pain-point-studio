@@ -1,6 +1,6 @@
 'use client';
 
-import { Calendar, ClipboardList, MessageSquare, TrendingUp } from 'lucide-react';
+import { Calendar, ClipboardList, type LucideIcon, MessageSquare, TrendingUp } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import type { ProfileStatistics } from '@/features/profile/actions/get-profile-statistics';
@@ -54,13 +54,14 @@ function StatCard({
   label,
   value,
 }: {
-  icon: React.ComponentType<{ className?: string }>;
+  icon: LucideIcon;
   label: string;
   value: string;
 }) {
   return (
     <div className="border-border/50 rounded-md border px-3 py-2.5">
       <div className="text-foreground text-lg leading-none font-semibold tabular-nums">{value}</div>
+
       <div className="text-muted-foreground mt-1.5 flex items-center gap-1 text-[11px]">
         <Icon className="size-3" aria-hidden />
         {label}

@@ -1,12 +1,12 @@
 'use client';
 
-import { Github, Globe, Link as LinkIcon, Linkedin, Twitter } from 'lucide-react';
+import { Github, Globe, Link as LinkIcon, Linkedin, type LucideIcon, Twitter } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { SocialLink } from '@/features/settings/types';
 import { cn } from '@/lib/common/utils';
 
-const SOCIAL_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+const SOCIAL_ICONS: Record<string, LucideIcon> = {
   website: Globe,
   github: Github,
   twitter: Twitter,

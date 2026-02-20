@@ -17,7 +17,6 @@ interface ProfileHeaderProps {
 const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
   const t = useTranslations('profile');
   const format = useFormatter();
-
   const fallbackInitials = getInitials(profile.fullName, '?');
 
   const memberSinceFormatted = profile.memberSince
@@ -28,6 +27,7 @@ const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
     <div className="flex flex-col items-start gap-5 sm:flex-row">
       <div className="relative shrink-0">
         <div className="bg-primary/10 absolute -inset-2 rounded-full blur-xl" />
+
         <Avatar className="ring-offset-background ring-primary/20 relative size-24 ring-4 ring-offset-2">
           {profile.avatarUrl ? (
             <Image
