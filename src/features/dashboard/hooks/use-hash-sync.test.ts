@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 /** Tests for URL hash reading and the useHashSync reactive hook. */
-import { act, renderHook } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
 import { getHash, useHashSync } from './use-hash-sync';
@@ -32,19 +32,21 @@ describe('getHash', () => {
 // ── useHashSync ───────────────────────────────────────────────────────
 
 describe('useHashSync', () => {
-  it('should update returned hash when hashchange is dispatched', () => {
+  it('should update returned hash when hashchange is dispatched', async () => {
     const originalHash = window.location.hash;
 
     window.location.hash = '#profile';
 
     const { result } = renderHook(() => useHashSync());
 
-    act(() => {
+    await act(async () => {
       window.location.hash = '#email';
       window.dispatchEvent(new HashChangeEvent('hashchange'));
     });
 
-    expect(result.current).toBe('email');
+    await waitFor(() => {
+      expect(result.current).toBe('email');
+    });
 
     window.location.hash = originalHash;
   });

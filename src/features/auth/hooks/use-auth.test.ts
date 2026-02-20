@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 /** useAuth hook: auth state management, user fetching, and subscription cleanup. */
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { AppUser } from '@/lib/supabase/helpers';
@@ -38,12 +38,16 @@ describe('useAuth Hook', () => {
     });
   });
 
-  it('should return loading state initially', () => {
+  it('should return loading state initially', async () => {
     const { result } = renderHook(() => useAuth());
 
     expect(result.current.loading).toBe(true);
     expect(result.current.user).toBeNull();
     expect(result.current.isAuthenticated).toBe(false);
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
   });
 
   it('should fetch and set user on mount', async () => {
@@ -90,9 +94,9 @@ describe('useAuth Hook', () => {
       expect(mockOnAuthStateChange).toHaveBeenCalled();
     });
 
-    if (authStateCallback) {
-      authStateCallback('SIGNED_IN', { user: mockUser });
-    }
+    await act(async () => {
+      authStateCallback?.('SIGNED_IN', { user: mockUser });
+    });
 
     await waitFor(() => {
       expect(result.current.user).toEqual(mockUser);
