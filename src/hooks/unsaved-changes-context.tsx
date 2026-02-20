@@ -173,7 +173,6 @@ function UnsavedChangesProvider({ children }: UnsavedChangesProviderProps) {
   const [dirtyIds, setDirtyIds] = useState<Set<string>>(new Set());
   const [pending, setPending] = useState<PendingNavigation | null>(null);
   const hasUnsavedChanges = dirtyIds.size > 0;
-
   const routerRef = useRef(router);
 
   useEffect(() => {
@@ -256,7 +255,6 @@ function UnsavedChangesProvider({ children }: UnsavedChangesProviderProps) {
 
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       e.preventDefault();
-      e.returnValue = '';
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);

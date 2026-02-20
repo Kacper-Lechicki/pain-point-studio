@@ -20,14 +20,18 @@ vi.mock('@/i18n/routing', () => ({
 vi.mock('@/components/ui/alert-dialog', () => ({
   AlertDialog: ({ children, open }: { children: ReactNode; open: boolean }) =>
     open ? <div data-testid="alert-dialog">{children}</div> : null,
+
   AlertDialogContent: ({ children }: { children: ReactNode }) => <div>{children}</div>,
   AlertDialogHeader: ({ children }: { children: ReactNode }) => <div>{children}</div>,
+
   AlertDialogTitle: ({ children }: { children: ReactNode }) => (
     <div data-testid="dialog-title">{children}</div>
   ),
+
   AlertDialogDescription: ({ children }: { children: ReactNode }) => (
     <div data-testid="dialog-description">{children}</div>
   ),
+
   AlertDialogFooter: ({ children }: { children: ReactNode }) => <div>{children}</div>,
   AlertDialogCancel: ({ children }: { children: ReactNode }) => <button>{children}</button>,
   AlertDialogAction: ({

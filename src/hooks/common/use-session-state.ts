@@ -34,10 +34,12 @@ export function useSessionState<T>(key: string, defaultValue: T): [T, (value: T)
 
       try {
         if (typeof sessionStorage !== 'undefined') {
-          if (JSON.stringify(value) === JSON.stringify(defaultValue)) {
+          const serialised = JSON.stringify(value);
+
+          if (serialised === JSON.stringify(defaultValue)) {
             sessionStorage.removeItem(key);
           } else {
-            sessionStorage.setItem(key, JSON.stringify(value));
+            sessionStorage.setItem(key, serialised);
           }
         }
       } catch {
