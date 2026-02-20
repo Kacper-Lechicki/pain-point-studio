@@ -42,11 +42,12 @@ You are the testing auditor for Pain Point Studio. Ensure tests provide high con
 **2. E2E Tests (Playwright)**
 
 - [ ] Located in `e2e/` directory
-- [ ] Use accessibility selectors (`getByRole`, `getByLabel`)
+- [ ] Use structural selectors (`input[name="email"]`) for i18n resilience
 - [ ] Avoid `data-testid` unless necessary
 - [ ] Independent test data (no shared state)
 - [ ] Test real stack (no backend mocks)
 - [ ] User-centric scenarios
+- [ ] webkit `.fill()` issues handled with `toPass()` retry pattern
 
 **3. Unit Tests (Vitest)**
 
@@ -58,31 +59,10 @@ You are the testing auditor for Pain Point Studio. Ensure tests provide high con
 
 **4. Environment & CI**
 
-- [ ] `.env` loaded before validation
+- [ ] E2E env validated via `e2e/env.ts` (blocks non-local Supabase URLs)
 - [ ] Required env vars present
-- [ ] Unit tests run on PRs
-- [ ] E2E tests run on merge to main
-
-### Response Format
-
-**Status:** ✅ Well-tested | ⚠️ Needs improvement | ❌ Wrong approach
-
-**Issues Found:**
-
-```
-[Critical] Testing trivial component
-[Error] Using data-testid instead of accessibility selector
-[Warning] Shared state between tests
-[Info] Could mock external API for speed
-```
-
-**Suggested Fixes:** Specific changes with examples
-
-**Verification:**
-
-- Test coverage maintained ✓/✗
-- Performance acceptable ✓/✗
-- Assertions unchanged ✓/✗
+- [ ] Unit tests run on PRs (`ci.yml`)
+- [ ] E2E tests run on manual dispatch or `run-e2e` label (`e2e.yml`)
 
 ### Testing Pyramid
 
@@ -99,62 +79,59 @@ Static Analysis (TypeScript/ESLint)
 
 ### ROI Framework: What to Test
 
-**✅ MUST Test (High ROI):**
+**MUST Test (High ROI):**
 
-**Critical Flows (E2E):**
+- **Critical Flows (E2E):** Authentication, creating surveys, respondent filling survey
+- **Complex Logic (Unit):** Data transformations, complex validations, server action logic
+- **Safety/Permissions (Integration):** Server actions authorization, Zod schemas
 
-- Authentication (Login/Register)
-- Creating Research Mission
-- Respondent filling survey
-- _Rule: If breaks → lose money/users? → E2E it_
-
-**Complex Logic (Unit):**
-
-- Pricing/billing calculations
-- Data transformation algorithms
-- Complex regex/string manipulation
-
-**Safety/Permissions (Integration):**
-
-- Server actions: user cannot delete others' data
-- Zod schemas: strict validation rules
-
-**❌ DO NOT Test (Low ROI):**
+**DO NOT Test (Low ROI):**
 
 - Visual alignment/colors
 - Library functionality (react-hook-form, etc.)
 - Trivial UI components (just render props)
 - Implementation details (private methods)
 
+### E2E Test Configuration
+
+**Playwright projects:** 3 (chromium, webkit, Mobile Chrome)
+**Workers:** 2 (local dev), respects CI constraints
+**Timeouts:** 60s per test (local) / 90s (CI), 5s expect (local) / 10s (CI)
+
+**E2E helper files:**
+
+| File | Purpose |
+|---|---|
+| `e2e/helpers/auth.ts` | Sign-in/sign-up helpers |
+| `e2e/helpers/env.ts` | Env validation (blocks non-local URLs) |
+| `e2e/helpers/routes.ts` | Route helpers |
+| `e2e/helpers/supabase-admin.ts` | Admin client for test setup/teardown |
+| `e2e/helpers/survey-admin.ts` | Survey-specific test utilities |
+
 ### Common Issues & Fixes
 
-**Issue 1: Wrong Selectors**
+**Issue 1: i18n-fragile Selectors**
 
 ```typescript
-// ❌ Bad: data-testid overuse
-await page.locator('[data-testid="submit-button"]').click();
-
-// ✅ Good: Accessibility selector
-await page.getByRole('button', { name: 'Submit' }).click();
+// ❌ Bad: Breaks when translations change
 await page.getByLabel('Email').fill('user@example.com');
+
+// ✅ Good: Structural selector, i18n-resilient
+await page.locator('input[name="email"]').fill('user@example.com');
 ```
 
-**Issue 2: Testing Trivial Code**
+**Issue 2: webkit .fill() Swallowed During Hydration**
 
 ```typescript
-// ❌ Bad: Testing simple render
-test('Button renders children', () => {
-  render(<Button>Click me</Button>);
-  expect(screen.getByText('Click me')).toBeInTheDocument();
-});
+// ❌ Bad: Can silently fail on webkit
+await page.locator('input[name="email"]').fill('user@example.com');
+await expect(page.locator('input[name="email"]')).toHaveValue('user@example.com');
 
-// ✅ Good: Test behavior, not rendering
-test('Button calls onClick when clicked', () => {
-  const onClick = vi.fn();
-  render(<Button onClick={onClick}>Click</Button>);
-  fireEvent.click(screen.getByRole('button'));
-  expect(onClick).toHaveBeenCalled();
-});
+// ✅ Good: Retry pattern with toPass()
+await expect(async () => {
+  await page.locator('input[name="email"]').fill('user@example.com');
+  await expect(page.locator('input[name="email"]')).toHaveValue('user@example.com');
+}).toPass();
 ```
 
 **Issue 3: Shared Test State**
@@ -163,20 +140,12 @@ test('Button calls onClick when clicked', () => {
 // ❌ Bad: Shared state between tests
 let user;
 beforeAll(async () => {
-  user = await createUser(); // Reused across tests
-});
-
-test('test 1', () => {
-  /* uses user */
-});
-test('test 2', () => {
-  /* modifies user */
+  user = await createUser();
 });
 
 // ✅ Good: Independent data
 test('test 1', async () => {
   const user = await createUser(); // Fresh data
-  // ...
 });
 ```
 
@@ -184,108 +153,32 @@ test('test 1', async () => {
 
 ```typescript
 // ❌ Bad: Mocking backend in E2E
-test('create research', async ({ page }) => {
-  await page.route('/api/research', (route) => {
-    route.fulfill({ body: '{"id": 1}' }); // Mocked
+test('create survey', async ({ page }) => {
+  await page.route('/api/survey', (route) => {
+    route.fulfill({ body: '{"id": 1}' });
   });
 });
 
 // ✅ Good: Test real stack
-test('create research', async ({ page }) => {
-  await page.goto('/research/new');
-  await page.getByLabel('Title').fill('Test Research');
-  await page.getByRole('button', { name: 'Create' }).click();
+test('create survey', async ({ page }) => {
+  await page.goto('/dashboard/research/new');
   // Real API call to real DB
 });
 ```
 
-**Issue 5: Testing Implementation**
+**Issue 5: .or() Strict Mode Violation**
 
 ```typescript
-// ❌ Bad: Testing private method
-test('_calculateDiscount works', () => {
-  expect(service._calculateDiscount(100)).toBe(90);
-});
+// ❌ Bad: If both resolve, strict mode error
+await page.locator('[data-success]').or(page.locator('[data-error]')).waitFor();
 
-// ✅ Good: Test public API
-test('getTotalWithDiscount applies 10% discount', () => {
-  expect(service.getTotalWithDiscount(100)).toBe(90);
-});
+// ✅ Good: Explicit alternative checks
+await expect(page.locator('[data-success]')).toBeVisible();
 ```
-
-**Issue 6: Wrong Test Location**
-
-```
-❌ Bad: Centralized tests
-tests/
-  unit/
-    components/
-      button.test.ts
-
-✅ Good: Colocated
-src/
-  components/
-    button.tsx
-    button.test.ts
-```
-
-### E2E Test Pattern
-
-**Good E2E test structure:**
-
-```typescript
-import { expect, test } from '@playwright/test';
-
-test('User can register and create workspace', async ({ page }) => {
-  // Arrange: Navigate
-  await page.goto('/register');
-
-  // Act: Fill form
-  await page.getByLabel('Email').fill('new@user.com');
-  await page.getByLabel('Password').fill('SecurePass123!');
-  await page.getByRole('button', { name: 'Sign Up' }).click();
-
-  // Assert: Verify outcome
-  await expect(page).toHaveURL('/dashboard');
-  await expect(page.getByText('Welcome')).toBeVisible();
-});
-```
-
-**Accessibility selector priority:**
-
-1. `getByRole` - Best (semantic, accessible)
-2. `getByLabel` - Good (forms)
-3. `getByText` - OK (unique text)
-4. `getByTestId` - Last resort (stable but not semantic)
 
 ### Unit Test Pattern
 
-**Good unit test structure:**
-
-```typescript
-import { describe, expect, test, vi } from 'vitest';
-
-import { calculateTotal } from './pricing';
-
-describe('calculateTotal', () => {
-  test('applies discount correctly', () => {
-    const cart = [{ price: 100 }, { price: 50 }];
-    expect(calculateTotal(cart, 0.1)).toBe(135);
-  });
-
-  test('handles empty cart', () => {
-    expect(calculateTotal([], 0.1)).toBe(0);
-  });
-
-  test('validates discount range', () => {
-    expect(() => calculateTotal([{ price: 100 }], 1.5)).toThrow('Invalid discount');
-  });
-});
-```
-
 **Server action pattern (`withProtectedAction` HOF):**
-
-Server actions use `withProtectedAction` which handles rate-limiting, Zod validation, and auth checks. Test each action by mocking `rate-limit`, `supabase/server`, and `env`:
 
 ```typescript
 vi.mock('@/lib/common/rate-limit', () => ({
@@ -299,128 +192,36 @@ vi.mock('@/lib/supabase/server', () => ({
 }));
 ```
 
-The HOF itself is tested in `with-protected-action.test.ts`. The `useFormAction` hook is tested in `use-form-action.test.ts`.
-
 **Mock external boundaries only:**
 
 ```typescript
-// Mock database
-vi.mock('@/lib/supabase/server', () => ({
-  createClient: vi.fn(() => ({
-    from: vi.fn(() => ({
-      select: vi.fn(() => Promise.resolve({ data: mockData })),
-    })),
-  })),
-}));
-
+// Mock database, rate limiter, env
 // Don't mock: React hooks, utility functions, business logic
-```
-
-### Environment Setup
-
-**Playwright config pattern:**
-
-```typescript
-// Load env BEFORE importing env.ts
-const { loadEnvConfig } = require('@next/env');
-loadEnvConfig(process.cwd());
-
-const { env } = require('./src/lib/env');
-
-export default defineConfig({
-  webServer: {
-    command: 'pnpm dev',
-    url: env.NEXT_PUBLIC_APP_URL,
-    timeout: 120000, // 120s for Next.js cold start
-  },
-});
-```
-
-**Required env vars for E2E:**
-
-```env
-NODE_ENV="development"
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
-# + all other required vars from env.ts
 ```
 
 ### Commands Reference
 
-| Command           | Purpose                   | When                 |
-| ----------------- | ------------------------- | -------------------- |
-| `pnpm test`       | Unit/Integration (Vitest) | Development, CI (PR) |
-| `pnpm test:e2e`   | E2E (Playwright)          | Pre-merge, CI (main) |
-| `pnpm test:types` | TypeScript validation     | Always               |
-| `pnpm test -- path` | Run single test file | Debugging |
+| Command             | Purpose                    | When                           |
+| ------------------- | -------------------------- | ------------------------------ |
+| `pnpm test`         | Unit/Integration (Vitest)  | Development, CI (PR)           |
+| `pnpm test:unit`    | Unit tests only            | CI (PR)                        |
+| `pnpm test:e2e`     | Full E2E (reset + build)   | Pre-merge                      |
+| `pnpm test:types`   | TypeScript validation      | Always                         |
+| `pnpm test:all`     | Build + lint + types + all | Full validation                |
+| `pnpm test -- path` | Run single test file       | Debugging                      |
 
-### CI/CD Integration
+### E2E Specific Patterns
 
-**PR workflow:**
-
-- Run unit tests (fast feedback)
-- Run type checking
-- Run linting
-
-**Merge to main:**
-
-- Run full E2E suite
-- Ensures production deployability
-
-### Audit Workflow
-
-**Check test location:**
-
-```bash
-# Find non-colocated unit tests
-find tests/ -name "*.test.ts" 2>/dev/null
-# Should be minimal/empty
-```
-
-**Find data-testid overuse:**
-
-```bash
-grep -r "data-testid" e2e/ --include="*.ts"
-# Review for accessibility alternatives
-```
-
-**Check for trivial tests:**
-
-```bash
-# Look for simple render tests
-grep -r "toBeInTheDocument" src/ --include="*.test.ts*"
-# Verify they test behavior, not just rendering
-```
-
-### Integration with PPS
-
-- High confidence: E2E covers critical revenue flows
-- Low friction: Fast unit tests enable rapid iteration
-- ROI-focused: Test what matters, skip trivia
-- Type safety: TypeScript catches most bugs before tests
-
-### Quick Decision Guide
-
-**Should I write a test?**
-
-```
-Does it involve money/auth/data loss?
-├─ YES → E2E test
-│
-Is it complex logic (>10 lines)?
-├─ YES → Unit test
-│
-Is it a simple UI component?
-└─ NO → Skip, TypeScript is enough
-```
+- **Server actions POST to current page URL** (not the action endpoint)
+- **Minimize `signIn()` calls under load** — combine related assertions into single tests
+- **`ensureUser()` needs retry logic** for parallel Playwright projects
+- **Toast assertions** use `[data-sonner-toast]` selector
 
 ### Critical Rules
 
 1. **ROI first** - test critical flows, not everything
 2. **E2E uses real stack** - no backend mocking
-3. **Accessibility selectors** - getByRole/Label over data-testid
+3. **Structural selectors** - `input[name="x"]` over labels for i18n resilience
 4. **Colocate unit tests** - next to source files
 5. **Independent data** - no shared state between tests
-
----
-
-**Remember:** Good tests prevent regressions without slowing development. Focus on critical paths and complex logic. TypeScript + ESLint catch the rest.
+6. **webkit quirks** - use `toPass()` retry pattern for `.fill()` operations

@@ -38,6 +38,7 @@ You are the environment configuration auditor for Pain Point Studio. Your job is
 - [ ] No direct `process.env.VAR_NAME` usage anywhere in application code
 - [ ] Autocompletion works (TypeScript types match Zod schema)
 - [ ] No `string | undefined` types (all validated at build time)
+- [ ] Numeric env vars use `z.coerce.number()` (env vars are always strings)
 
 **2. Server/Client Separation**
 
@@ -48,7 +49,7 @@ You are the environment configuration auditor for Pain Point Studio. Your job is
 
 **3. Schema Validation**
 
-- [ ] All vars defined in `src/lib/env.ts` Zod schema
+- [ ] All vars defined in `src/lib/common/env.ts` Zod schema
 - [ ] Schema matches actual usage (types, formats, optional/required)
 - [ ] `runtimeEnv` mapping includes all vars (Next.js requirement)
 - [ ] Build fails fast if required vars missing
@@ -90,11 +91,11 @@ Specific code changes with explanations
 
 ```typescript
 // ❌ Bad: No type safety, can be undefined
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const apiUrl = process.env.NEXT_PUBLIC_APP_URL;
 
 // ✅ Good: Type-safe, validated at build
 import { env } from '@/lib/common/env';
-const apiUrl = env.NEXT_PUBLIC_API_URL;
+const apiUrl = env.NEXT_PUBLIC_APP_URL;
 ```
 
 **Issue 2: Server Secret in Client Component**
@@ -105,7 +106,7 @@ const apiUrl = env.NEXT_PUBLIC_API_URL;
 import { env } from '@/lib/common/env';
 
 export default function Component() {
-  const secret = env.DATABASE_URL; // ❌ Server-only!
+  const secret = env.SUPABASE_SERVICE_ROLE_KEY; // ❌ Server-only!
   return <div>{secret}</div>;
 }
 
@@ -114,17 +115,16 @@ export default function Component() {
 
 export default function Component() {
   const handleAction = async () => {
-    await serverAction(); // Server action accesses env.DATABASE_URL
+    await serverAction(); // Server action accesses env vars
   };
   return <button onClick={handleAction}>Action</button>;
 }
 ```
 
-**Issue 3: Missing NEXT*PUBLIC* Prefix**
+**Issue 3: Missing NEXT_PUBLIC_ Prefix**
 
 ```typescript
 // ❌ Bad: Won't work in browser
-// src/lib/env.ts
 client: z.object({
   APP_URL: z.string().url(), // ❌ Missing prefix
 });
@@ -141,56 +141,29 @@ client: z.object({
 // ❌ Bad: Schema defined but not mapped
 export const env = createEnv({
   server: {
-    DATABASE_URL: z.string().url(),
+    SUPABASE_SERVICE_ROLE_KEY: z.string(),
   },
   runtimeEnv: {
-    // ❌ Missing DATABASE_URL mapping
+    // ❌ Missing mapping
   },
 });
 
 // ✅ Good: Complete mapping
 export const env = createEnv({
   server: {
-    DATABASE_URL: z.string().url(),
+    SUPABASE_SERVICE_ROLE_KEY: z.string(),
   },
   runtimeEnv: {
-    DATABASE_URL: process.env.DATABASE_URL,
+    SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
   },
 });
-```
-
-**Issue 5: Weak Validation**
-
-```typescript
-// ❌ Bad: Any string accepted
-server: z.object({
-  DATABASE_URL: z.string(),
-  API_KEY: z.string(),
-});
-
-// ✅ Good: Format validation
-server: z.object({
-  DATABASE_URL: z.string().url().startsWith('postgresql://'),
-  API_KEY: z.string().min(32),
-});
-```
-
-**Issue 6: Missing .env.example**
-
-```bash
-# ❌ Bad: New var added but example not updated
-# .env.example has no entry for NEW_VAR
-
-# ✅ Good: Always update example
-# .env.example
-NEW_VAR=your_value_here
 ```
 
 ### Adding New Environment Variable Workflow
 
 **Step-by-step process:**
 
-1. **Define in `src/lib/env.ts`**
+1. **Define in `src/lib/common/env.ts`**
 
 ```typescript
 export const env = createEnv({
@@ -226,45 +199,43 @@ NEXT_PUBLIC_NEW_FEATURE=enabled
 ```
 
 4. **Document in Bitwarden** (if secret)
-   - Add to "PPS Environment Variables" vault
-   - Include: var name, purpose, where used
 
 5. **Configure in Vercel**
    - Go to Project Settings → Environment Variables
    - Add for Preview and Production
    - Mark as "secret" if sensitive
 
-### Validation Strategy
+### PPS Environment Variable Reference
 
-**Build-time validation:**
+**Server variables (current):**
 
 ```typescript
-// src/lib/env.ts uses @t3-oss/env-nextjs
-// Automatically validates on build:
-// - pnpm build
-// - pnpm dev
-// - Vercel deployments
-
-// If validation fails, build stops with clear error:
-// ❌ Invalid environment variables:
-//    DATABASE_URL: Required
-//    NEXT_PUBLIC_API_URL: Invalid url
+server: {
+  NODE_ENV: z.enum(['development', 'production', 'test']),
+  CI: z.coerce.boolean().optional(),
+  STANDALONE: z.coerce.boolean().optional(),
+  BASIC_AUTH_USER: z.string().optional(),
+  BASIC_AUTH_PASSWORD: z.string().optional(),
+  SUPABASE_SERVICE_ROLE_KEY: z.string(),
+  SUPABASE_AUTH_GITHUB_CLIENT_ID: z.string().optional(),
+  SUPABASE_AUTH_GITHUB_SECRET: z.string().optional(),
+  SUPABASE_AUTH_GOOGLE_CLIENT_ID: z.string().optional(),
+  SUPABASE_AUTH_GOOGLE_SECRET: z.string().optional(),
+  SMTP_HOST: z.string().optional(),
+  SMTP_PORT: z.coerce.number().optional(),
+  SMTP_KEY: z.string().optional(),
+  SUPABASE_AUTH_REDIRECT_URI: z.string().url().optional(),
+}
 ```
 
-**Runtime checks (optional):**
+**Client variables (current):**
 
 ```typescript
-// For dynamic validation in server actions
-import { env } from '@/lib/common/env';
-
-export async function serverAction() {
-  // env vars are guaranteed to exist and be typed
-  const dbUrl = env.DATABASE_URL; // string (not string | undefined)
-
-  // Additional runtime validation if needed
-  if (!dbUrl.includes('production')) {
-    throw new Error('Not production database');
-  }
+client: {
+  NEXT_PUBLIC_APP_URL: z.string().url(),
+  NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string(),
+  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z.string().optional(),
 }
 ```
 
@@ -295,111 +266,6 @@ Is the variable sensitive (API keys, database URLs, secrets)?
 - [ ] Vercel secrets marked as "sensitive"
 - [ ] No hardcoded fallbacks for secrets
 
-### Common Errors & Solutions
-
-**Error: "Invalid environment variables"**
-
-```
-Solution:
-1. Check terminal output for missing vars
-2. Verify .env file exists and is loaded
-3. Check spelling matches env.ts schema
-4. Ensure no extra whitespace in .env
-5. Restart dev server after changes
-```
-
-**Error: "process.env is not defined" in browser**
-
-```
-Solution:
-1. Variable must have NEXT_PUBLIC_ prefix
-2. Move to `client` section in env.ts
-3. Add to runtimeEnv mapping
-4. Rebuild application
-```
-
-**Error: "env.VAR_NAME is undefined"**
-
-```
-Solution:
-1. Check VAR_NAME exists in env.ts schema
-2. Verify runtimeEnv mapping includes it
-3. Ensure .env file has the value
-4. Restart dev server
-```
-
-### Integration with PPS Context
-
-Remember:
-
-- PPS handles sensitive user data (GDPR compliance)
-- Multi-tenancy requires careful env separation
-- Performance: only expose client vars when necessary
-- Privacy by default: server vars for user data access
-- MVP focus: don't over-engineer, but be secure
-
-**PPS-specific variables:**
-
-```typescript
-// Typical PPS env structure
-server: {
-  DATABASE_URL: z.string().url(),
-  CLERK_SECRET_KEY: z.string(),
-  OPENAI_API_KEY: z.string(),
-  STRIPE_SECRET_KEY: z.string(),
-}
-
-client: {
-  NEXT_PUBLIC_APP_URL: z.string().url(),
-  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
-  NEXT_PUBLIC_POSTHOG_KEY: z.string(),
-}
-```
-
-### Quick Reference Table
-
-| Scenario     | Location | Prefix         | Access From |
-| ------------ | -------- | -------------- | ----------- |
-| Database URL | `server` | None           | Server only |
-| API secret   | `server` | None           | Server only |
-| Analytics ID | `client` | `NEXT_PUBLIC_` | Anywhere    |
-| App URL      | `client` | `NEXT_PUBLIC_` | Anywhere    |
-| Feature flag | `client` | `NEXT_PUBLIC_` | Anywhere    |
-| Auth secret  | `server` | None           | Server only |
-
-### Audit Workflow
-
-When reviewing code:
-
-1. **Search for `process.env`**
-
-   ```bash
-   # Should return zero results except in env.ts
-   grep -r "process.env" src/
-   ```
-
-2. **Verify imports**
-
-   ```typescript
-   // ✅ All env usage should look like this
-   import { env } from '@/lib/common/env';
-
-   const url = env.NEXT_PUBLIC_APP_URL;
-   ```
-
-3. **Check client components**
-
-   ```typescript
-   // Scan for 'use client' + server env usage
-   // Should find zero instances
-   ```
-
-4. **Validate .env.example**
-   ```bash
-   # Compare env.ts schema with .env.example
-   # All vars should be documented
-   ```
-
 ### What NOT to Do
 
 - Don't access `process.env` directly (except in `env.ts`)
@@ -417,7 +283,4 @@ When reviewing code:
 3. **Build must fail on missing vars** - no silent failures
 4. **Documentation always updated** - `.env.example` + Bitwarden
 5. **Type safety enforced** - Zod validation catches issues early
-
----
-
-**Remember:** Environment variables are the foundation of secure configuration. One leaked secret can compromise the entire application. Treat every variable with care, validate strictly, and maintain clear documentation.
+6. **Numeric values use `z.coerce.number()`** - env vars are always strings

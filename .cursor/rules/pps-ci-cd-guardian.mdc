@@ -51,21 +51,34 @@ Must trigger on:
 - Push to `main` or `release/*`
 - Pull Request to `main` or `release/*`
 
+Uses: Node 22, pnpm 10.0.0
+
 **3. E2E Pipeline (`e2e.yml`)**
 
 - Must NOT run automatically on every commit
-- Must trigger on: manual dispatch OR PR label `run-e2e`
-- Should use Playwright
-- Must be isolated from main CI
+- Must trigger on: manual dispatch (`workflow_dispatch`) OR PR label `run-e2e`
+- Uses Playwright with chromium + webkit browsers
+- Starts local Supabase, builds production app, runs tests
+- Uploads Playwright report as artifact
+- Timeout: 25 minutes
 
-**4. Environment & Security**
+**4. Migration Pipeline (`migrate.yml`)**
+
+- Triggers on: changes to `supabase/migrations/**` OR manual dispatch
+- Links to production project via `SUPABASE_PROJECT_REF`
+- Runs `scripts/make-migration-idempotent.mjs` before push
+- Repairs drifted migrations (marks remote-only as reverted)
+- Applies migrations with `supabase db push`
+- Uses concurrency to prevent parallel deployments
+
+**5. Environment & Security**
 
 - Check for hardcoded secrets (flag as error)
 - Verify proper use of GitHub secrets
-- Validate Node.js version consistency
-- Check pnpm version/setup
+- Node.js version: 22
+- pnpm version: 10.0.0
 
-**5. Workflow Triggers**
+**6. Workflow Triggers**
 
 - Validate `on:` blocks match requirements
 - Check `paths:` filters if present (should include relevant files)
@@ -80,25 +93,6 @@ When reviewing workflows, provide:
 3. **Suggested Fixes**: Specific YAML changes
 4. **Verification**: Confirm behavior unchanged
 
-### Example Audit
-
-```
-✅ Status: Mostly compliant
-
-⚠️ Issues Found:
-1. [Warning] ci.yml missing Prettier check
-2. [Info] E2E workflow could add failure notifications
-
-Suggested Fixes:
-- Add step after lint: `pnpm lint:prettier`
-- Behavior unchanged: adds missing quality gate
-
-Verification:
-- All triggers preserved ✓
-- Step order maintained ✓
-- No new breaking changes ✓
-```
-
 ### What NOT to do
 
 - Don't change workflow triggers unless explicitly wrong
@@ -112,16 +106,16 @@ Verification:
 1. Branch validation MUST fail pipeline on non-compliant names
 2. E2E tests MUST NOT run on every commit
 3. Main CI MUST run all 4 checks (types, lint, prettier, unit)
-4. Workflow behavior MUST remain identical after optimization
+4. Migration pipeline MUST use `make-migration-idempotent.mjs` before push
+5. Workflow behavior MUST remain identical after optimization
 
 ### Integration with PPS Context
 
 Remember:
 
-- PPS is TypeScript monorepo (pnpm workspace)
+- PPS uses Node 22 + pnpm 10.0.0
 - MVP focus: fast feedback loops matter
-- E2E tests are expensive by design (validates full flows)
+- E2E tests are expensive (full Supabase + production build)
 - Branch strategy enforces clean git history for small team
 - CI should catch issues before merge, not block velocity
-
-When suggesting fixes, balance strictness with developer experience. CI exists to maintain quality, not to frustrate the team.
+- Migrations auto-deploy via `migrate.yml` when migration files change

@@ -39,7 +39,7 @@ You are the project structure auditor for Pain Point Studio. Your job is to ensu
 - [ ] Global config in `src/config`
 - [ ] Feature-specific config in `src/features/[domain]/config`
 - [ ] Routes properly nested under `src/app/[locale]`
-- [ ] Route groups used correctly: `(marketing)`, `(auth)`, `(dashboard)`
+- [ ] Route groups used correctly: `(marketing)`, `(auth)`, `(dashboard)`, `(survey)`
 
 **2. Naming Conventions**
 
@@ -94,8 +94,19 @@ src/
 ├── app/                        # Next.js App Router
 │   ├── [locale]/               # i18n routing
 │   │   ├── (marketing)/        # SEO-optimized landing pages
-│   │   ├── (auth)/             # Login/Register (planned)
-│   │   ├── (dashboard)/        # Authenticated UI (planned)
+│   │   ├── (auth)/             # Login/Register/Password flows
+│   │   │   ├── sign-in/
+│   │   │   ├── sign-up/
+│   │   │   ├── forgot-password/
+│   │   │   └── update-password/
+│   │   ├── (dashboard)/        # Authenticated UI
+│   │   │   └── (sidebar)/
+│   │   │       └── dashboard/
+│   │   │           ├── research/
+│   │   │           └── research/new/
+│   │   ├── (survey)/           # Public survey response
+│   │   │   └── r/[slug]/
+│   │   ├── auth/callback/      # OAuth callback
 │   │   ├── layout.tsx          # Locale layout
 │   │   └── [...not-found]/     # 404 handling
 │   ├── favicon.ico             # Static assets
@@ -103,41 +114,124 @@ src/
 │   └── layout.tsx              # Root layout
 │
 ├── components/                 # Shared UI
-│   └── ui/                     # Shadcn primitives (DO NOT modify logic)
+│   └── ui/                     # Shadcn primitives (DO NOT add business logic)
 │
 ├── config/                     # Global configuration
-│   ├── brand.ts                # Brand constants
 │   ├── breakpoints.ts          # Responsive breakpoints
 │   ├── metadata.ts             # SEO defaults
-│   └── routes.ts               # Route definitions
+│   └── routes.ts               # Route definitions + SIBLING_GROUPS
 │
 ├── features/                   # Feature-First domains
-│   └── marketing/              # Example: Marketing domain
-│       ├── components/         # Marketing-specific components
-│       ├── config/             # Marketing constants
-│       └── types/              # Marketing types
+│   ├── auth/                   # Authentication
+│   │   ├── actions/            # Server actions (sign-in, sign-up, etc.)
+│   │   ├── components/         # Auth-specific UI
+│   │   ├── config/             # Auth constants
+│   │   ├── hooks/              # Auth hooks
+│   │   └── types/              # Auth types
+│   ├── dashboard/              # Dashboard & research management
+│   │   ├── components/         # Dashboard UI
+│   │   │   └── layout/         # Sidebar, nav lists
+│   │   ├── config/             # Dashboard constants
+│   │   ├── hooks/              # Dashboard hooks
+│   │   └── lib/                # Dashboard utilities
+│   ├── marketing/              # Landing page & public content
+│   │   ├── components/         # Marketing UI
+│   │   ├── config/             # Marketing constants (pricing, etc.)
+│   │   └── types/              # Marketing types
+│   ├── profile/                # User profile & preview
+│   │   ├── actions/            # Profile server actions
+│   │   ├── components/         # Profile UI
+│   │   └── types/              # Profile types
+│   ├── settings/               # Account settings
+│   │   ├── actions/            # Settings server actions
+│   │   ├── components/         # Settings UI (forms, sections)
+│   │   ├── config/             # Settings constants
+│   │   ├── hooks/              # Settings hooks
+│   │   ├── types/              # Settings types
+│   │   └── utils/              # Settings utilities
+│   └── surveys/                # Core survey builder & response
+│       ├── actions/            # Survey server actions
+│       ├── components/         # Survey builder UI
+│       ├── config/             # Survey constants
+│       ├── hooks/              # Survey hooks
+│       ├── lib/                # Survey utilities
+│       └── types/              # Survey types
 │
 ├── hooks/                      # Shared React hooks
+│   └── common/                 # use-breakpoint, use-form-action, etc.
 │
 ├── i18n/                       # Internationalization
-│   ├── config.ts               # Locale config
-│   ├── messages/               # Translation JSONs
-│   ├── request.ts              # next-intl setup
-│   └── routing.ts              # Navigation wrappers
+│   ├── constants.ts            # Locale config (locales, defaultLocale)
+│   ├── config.ts               # next-intl request config
+│   ├── link.tsx                # Custom Link with sibling route detection
+│   ├── navigation.ts           # next-intl navigation primitives
+│   ├── pathnames.ts            # Abstract path → URL mapping
+│   ├── request.ts              # Server-side message loading
+│   ├── routing.tsx             # Re-exports (Link, redirect, useRouter, etc.)
+│   ├── types.ts                # Message type safety
+│   └── messages/
+│       └── en.json             # English translations
 │
 ├── lib/                        # Core utilities
-│   ├── supabase/               # Database client
-│   ├── env.ts                  # Environment validation
-│   ├── utils.ts                # Helpers (cn, formatters)
-│   └── deploy-credentials.ts   # Deployment helpers
+│   ├── common/                 # Shared app logic
+│   │   ├── env.ts              # Environment validation (t3-env)
+│   │   ├── with-protected-action.ts  # Server action HOF (auth + rate limit)
+│   │   ├── with-public-action.ts     # Public server action HOF
+│   │   ├── rate-limit.ts       # Rate limiting
+│   │   ├── deploy-credentials.ts # Basic Auth for preview deploys
+│   │   ├── utils.ts            # cn, getInitials, etc.
+│   │   └── types.ts            # ActionResult<T>, LookupItem
+│   ├── providers/              # Backend abstraction (vendor-agnostic)
+│   │   ├── auth.ts             # Auth provider interface
+│   │   ├── auth-admin.ts       # Admin auth interface
+│   │   ├── database.ts         # Database provider interface
+│   │   ├── storage.ts          # Storage provider interface
+│   │   ├── middleware.ts        # Middleware provider interface
+│   │   ├── realtime.ts         # Realtime provider interface
+│   │   ├── client.ts           # Client-side provider creation
+│   │   ├── server.ts           # Server-side provider creation
+│   │   └── types.ts            # AppUser, AppIdentity, Json
+│   └── supabase/               # Supabase implementation
+│       ├── client.ts           # Browser Supabase client
+│       ├── server.ts           # Server Supabase client
+│       ├── admin.ts            # Service role client
+│       ├── middleware.ts        # Session refresh middleware
+│       ├── errors.ts           # Error mapping
+│       ├── types.ts            # Generated DB types (DO NOT EDIT)
+│       ├── index.ts            # Type helper re-exports
+│       └── providers/          # Supabase provider implementations
+│           ├── auth.server.ts
+│           ├── auth.client.ts
+│           ├── auth-admin.ts
+│           ├── database.ts
+│           ├── storage.server.ts
+│           ├── storage.client.ts
+│           ├── middleware.ts
+│           ├── realtime.ts
+│           └── user-mapper.ts
 │
-├── types/                      # Global TypeScript
-└── proxy.ts                    # Next.js 16 i18n proxy
+└── proxy.ts                    # Next.js middleware (auth + i18n + deploy protection)
 
 e2e/                            # E2E tests (Playwright)
-├── helpers/                    # Test infra (auth, env, supabase-admin)
+├── helpers/                    # Test infra
+│   ├── auth.ts                 # Sign-in/sign-up helpers
+│   ├── env.ts                  # Playwright env validation
+│   ├── routes.ts               # Route helpers
+│   ├── supabase-admin.ts       # Admin client for test setup/teardown
+│   └── survey-admin.ts         # Survey test utilities
 ├── auth.spec.ts
+├── surveys.spec.ts
+├── survey-builder.spec.ts
 └── settings.spec.ts
+
+supabase/                       # Supabase configuration
+├── config.toml                 # Local stack config
+├── migrations/                 # SQL migration files
+├── seed.sql                    # Dev seed data
+└── auth_trigger.sql            # Manual auth trigger (not auto-deployed)
+
+scripts/                        # Build/CI scripts
+└── make-migration-idempotent.mjs  # Strips auth triggers from migrations
 ```
 
 ### Common Issues & Fixes
@@ -149,7 +243,7 @@ e2e/                            # E2E tests (Playwright)
 // src/components/ui/research-card.tsx - has useQuery, business logic
 
 // ✅ Good: Move to features/
-// src/features/research/components/research-card.tsx
+// src/features/surveys/components/research-card.tsx
 
 // Keep ui/ simple: src/components/ui/card.tsx
 export default function Card({ children }: Props) {
@@ -175,7 +269,7 @@ export default function Card({ children }: Props) {
 
 ```
 ❌ Scattered: components/, types/, lib/, hooks/
-✅ Colocated: features/research/{components,types,lib,hooks}/
+✅ Colocated: features/surveys/{components,types,lib,hooks}/
 ```
 
 **Issue 5: Server in Client**
@@ -185,11 +279,14 @@ export default function Card({ children }: Props) {
 // ✅ Use server actions instead
 ```
 
-**Issue 6: Using `any`**
+**Issue 6: Bypassing Provider Abstraction**
 
 ```typescript
-// ❌ const handleSubmit = (data: any) => {}
-// ✅ const handleSubmit = (data: FormData) => {}
+// ❌ Bad: Importing Supabase directly in feature code
+import { createClient } from '@/lib/supabase/server';
+
+// ✅ Good: Use provider abstraction
+import { createServerProviders } from '@/lib/providers/server';
 ```
 
 ### Feature-First Architecture Decision Tree
@@ -207,21 +304,25 @@ Is it a UI primitive (Button, Input, Card)?
     │   ├─ Type? → types/
     │   ├─ Config? → config/
     │   ├─ Hook? → hooks/
+    │   ├─ Server action? → actions/
     │   └─ Utility? → lib/
     │
     └─ NO → Is it shared across features?
         ├─ Global config → src/config/
-        ├─ Shared hook → src/hooks/
-        ├─ Core utility → src/lib/
-        └─ Global type → src/types/
+        ├─ Shared hook → src/hooks/common/
+        ├─ Core utility → src/lib/common/
+        ├─ Provider interface → src/lib/providers/
+        ├─ Supabase implementation → src/lib/supabase/
+        └─ Global type → src/lib/common/types.ts or src/lib/providers/types.ts
 ```
 
 ### Route Groups Usage
 
 ```
 (marketing)/  → SEO-optimized public pages
-(auth)/       → Login/Register (planned)
-(dashboard)/  → Authenticated area (planned)
+(auth)/       → Login/Register/Password flows
+(dashboard)/  → Authenticated area (sidebar layout)
+(survey)/     → Public survey response pages
 ```
 
 Benefits: separate layouts, different metadata, independent error boundaries.
@@ -231,9 +332,9 @@ Benefits: separate layouts, different metadata, independent error boundaries.
 | Type             | Convention    | Example                          |
 | ---------------- | ------------- | -------------------------------- |
 | Files/Folders    | `kebab-case`  | `user-profile.tsx`, `marketing/` |
-| Components/Types | `PascalCase`  | `UserProfile`, `ResearchMission` |
+| Components/Types | `PascalCase`  | `UserProfile`, `SurveyBuilder`   |
 | Functions/Vars   | `camelCase`   | `getUserData`, `isLoading`       |
-| Constants        | `UPPER_SNAKE` | `MAX_RETRIES`, `API_URL`         |
+| Constants        | `UPPER_SNAKE` | `MAX_RETRIES`, `ROUTES`          |
 | Server Actions   | `verb-noun`   | `createResearch`, `updateUser`   |
 
 ### Repository Hygiene
@@ -244,87 +345,37 @@ Benefits: separate layouts, different metadata, independent error boundaries.
 
 **Secrets:** Never commit `.env`. Use `.env.example`, Vercel, and GitHub Secrets.
 
-### The Golden Rules
-
-**1. Colocation**
-Keep related things close. If a component is only used by Marketing, it belongs in `features/marketing`.
-
-**2. Strict Types**
-No `any`. Define proper types. TypeScript is your friend.
-
-**3. Server Only**
-Database logic (Supabase) must never leak to client bundle. Use server actions.
-
-**4. Zero Friction**
-If a file is hard to find, the structure is wrong. Refactor early.
-
-**5. Feature-First**
-Organize by what it does (domain), not by what it is (technical type).
-
-### Audit Workflow
-
-**Check File Placement:**
-
-```bash
-find src/components/ui -name "*.tsx" -exec grep -l "useQuery\|useState" {} \;
-# Business logic in UI → move to features/
-```
-
-**Validate Naming:**
-
-```bash
-find src -name "*[A-Z]*.tsx" -o -name "*[A-Z]*.ts"  # PascalCase files
-find src -type d -name "*[A-Z]*"                    # PascalCase folders
-```
-
-**Check `any` Types:**
-
-```bash
-grep -r ": any" src/ --include="*.ts" --include="*.tsx"
-```
-
-**Verify Server/Client:**
-
-```bash
-grep -r "'use client'" src/ -A 20 | grep "supabase/server"  # Should be empty
-```
-
-### Integration with PPS Context
-
-PPS values velocity with discipline. Feature-First structure enables rapid iteration without technical debt.
-
-**Current/Planned domains:** `marketing/` ✓, `research/` ⏳, `analytics/` ⏳, `responses/` ⏳, `community/` ⏳
-
 ### Quick Decision Guide
 
-**"Where does this file go?"**
+| What is it?         | Where?                               | Example                     |
+| ------------------- | ------------------------------------ | --------------------------- |
+| Shadcn component    | `components/ui/`                     | `button.tsx`                |
+| Feature component   | `features/[domain]/components/`      | `survey-builder.tsx`        |
+| Layout component    | `features/[domain]/components/layout/` | `sidebar-nav-list.tsx`    |
+| Shared hook         | `hooks/common/`                      | `use-breakpoint.ts`         |
+| Feature hook        | `features/[domain]/hooks/`           | `use-sortable-list.ts`      |
+| Global config       | `config/`                            | `routes.ts`, `metadata.ts`  |
+| Feature config      | `features/[domain]/config/`          | `pricing.ts`                |
+| Provider interface  | `lib/providers/`                     | `auth.ts`, `database.ts`    |
+| Provider impl       | `lib/supabase/providers/`            | `auth.server.ts`            |
+| Core utility        | `lib/common/`                        | `utils.ts`, `rate-limit.ts` |
+| Feature utility     | `features/[domain]/lib/`             | `survey-utils.ts`           |
+| Server action HOF   | `lib/common/`                        | `with-protected-action.ts`  |
+| Shared auth UI      | `features/auth/components/common/`   | `auth-success-message.tsx`  |
+| App-level types     | `lib/common/types.ts`                | `ActionResult<T>`           |
+| Provider types      | `lib/providers/types.ts`             | `AppUser`, `AppIdentity`    |
 
-| What is it?         | Where?                           | Example                 |
-| ------------------- | -------------------------------- | ----------------------- |
-| Shadcn component    | `components/ui/`                 | `button.tsx`            |
-| Marketing component | `features/marketing/components/` | `pricing-card.tsx`      |
-| Shared hook         | `hooks/`                         | `use-media-query.ts`    |
-| Feature hook        | `features/[domain]/hooks/`       | `use-research.ts`       |
-| Global config       | `config/`                        | `brand.ts`, `routes.ts` |
-| Feature config      | `features/[domain]/config/`      | `pricing.ts`            |
-| Global type         | `types/`                         | `common.ts`             |
-| Feature type        | `features/[domain]/types/`       | `research.ts`           |
-| Core utility        | `lib/`                           | `utils.ts`, `format.ts` |
-| Feature utility     | `features/[domain]/lib/`         | `research-utils.ts`     |
-| Server action HOF   | `lib/common/`                    | `with-protected-action.ts` |
-| Shared auth UI      | `features/auth/components/common/` | `auth-success-message.tsx` |
-| Layout component    | `features/[domain]/components/layout/` | `sidebar-nav-list.tsx` |
+### Architecture: Provider Abstraction Layer
 
-### What NOT to Do
+PPS uses a provider abstraction (`src/lib/providers/`) to avoid vendor lock-in:
 
-- Don't put business logic in `components/ui/`
-- Don't use PascalCase for file/folder names
-- Don't scatter related code across the project
-- Don't use `any` types
-- Don't leak server code to client
-- Don't create deep folder nesting (max 3-4 levels)
-- Don't ignore colocation opportunities
-- Don't commit `.env` files
+```
+Feature Code → lib/providers/ (interfaces) → lib/supabase/providers/ (implementation)
+```
+
+- Feature code imports from `@/lib/providers/server` or `@/lib/providers/client`
+- Never import `@supabase/supabase-js` or `@/lib/supabase/*` directly in features
+- Supabase is one implementation; can be swapped for another backend
 
 ### Critical Rules
 
@@ -333,7 +384,4 @@ PPS values velocity with discipline. Feature-First structure enables rapid itera
 3. **Colocation wins** - keep related code together
 4. **Names matter** - follow conventions strictly
 5. **Types required** - no `any` in production code
-
----
-
-**Remember:** Good structure is invisible. If developers need to think about where files go, the structure has failed. Make it obvious, make it consistent, make it fast to navigate.
+6. **Provider abstraction** - features use `lib/providers/`, not `lib/supabase/` directly

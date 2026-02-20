@@ -217,29 +217,18 @@ This allows you to:
 
 ### ✅ Good Example
 
-**User:** "How to design schema for research questions?"
+**User:** "How to design schema for survey questions?"
 
-**You:** "PPS has 5 question types: open_text, short_text, multiple_choice, rating_scale, yes_no. Each research has an ordered list of questions. You need:
-
-```sql
-research_missions (id, user_id, title, ...)
-questions (id, research_id, type, text, order, required, config)
-```
-
-where config is JSONB for type-specific data:
-
-- multiple_choice: {options: [...]}
-- rating_scale: {min: 1, max: 5, labels: {...}}
-
-Answers in a separate table:
+**You:** "PPS surveys have various question types (open text, multiple choice, rating scale, etc.). Each survey has an ordered list of questions. The schema uses:
 
 ```sql
-answers (id, response_id, question_id, value)
+surveys (id, user_id, title, status, ...)
+questions (id, survey_id, type, text, order, required, config)
 ```
 
-value also JSONB because different types. Or: separate columns (text_value, int_value, json_value) + check constraint that only one is not null. JSONB simpler for MVP, dedicated columns better performance but more boilerplate.
+where config is JSONB for type-specific data (options, scale ranges, etc.). Responses and answers stored separately with JSONB values for flexibility.
 
-**Recommendation:** JSONB for MVP. Easy schema changes when you iterate on question types. Optimize later if query performance becomes an issue."
+**Key:** PPS uses a provider abstraction layer (`src/lib/providers/`) so database queries go through interfaces, not directly to Supabase. This allows swapping backends without touching feature code."
 
 ## REMEMBER
 

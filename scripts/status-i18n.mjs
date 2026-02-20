@@ -83,7 +83,6 @@ async function runGuardian() {
 
   const flatObj = flattenKeys(translations);
   const allKeys = Object.keys(flatObj);
-
   const filePaths = await glob(SRC_PATTERN);
 
   const files = filePaths.map((filePath) => ({

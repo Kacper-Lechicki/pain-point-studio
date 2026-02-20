@@ -6,15 +6,15 @@ let _admin: SupabaseClient | null = null;
 
 /**
  * Returns a cached Supabase admin client using the service role key.
- * Only used for e2e test cleanup (e.g. deleting users created during tests).
+ * Shared by all e2e helpers (user management, survey seeding, etc.).
  */
-function getAdminClient() {
+export function getAdminClient() {
   if (_admin) {
     return _admin;
   }
 
   if (!env.SUPABASE_SERVICE_ROLE_KEY) {
-    throw new Error('[e2e] SUPABASE_SERVICE_ROLE_KEY is required for admin cleanup operations.');
+    throw new Error('[e2e] SUPABASE_SERVICE_ROLE_KEY is required for admin operations.');
   }
 
   _admin = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {

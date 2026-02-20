@@ -2,9 +2,6 @@
 -- Run with: pnpm supabase:reset (applies migrations + seed)
 -- All seed user passwords: Password1!
 
--- Lookup tables (roles, social_link_types, survey_categories) were dropped in
--- migration 20260214183223. Validation is now app-level via Zod + config files.
-
 -- ============================================================
 -- Auth trigger: create profile row when a new user signs up.
 -- In production this must be created manually via Dashboard → SQL Editor
@@ -154,3 +151,24 @@ VALUES (
   now(), now(), now()
 )
 ON CONFLICT DO NOTHING;
+
+-- ============================================================
+-- pg_cron jobs: schedule background maintenance tasks.
+-- In production these must be created manually via Dashboard → SQL Editor
+-- (similar to the auth trigger — cron.schedule runs as postgres role).
+-- See: supabase/cron_jobs.sql
+-- ============================================================
+
+-- Mark in-progress responses older than 24h as abandoned (every hour)
+SELECT cron.schedule(
+  'cleanup_abandoned_responses',
+  '0 * * * *',
+  $$SELECT public.cleanup_abandoned_responses()$$
+);
+
+-- Auto-complete surveys past their ends_at date (every 15 min)
+SELECT cron.schedule(
+  'complete_expired_surveys',
+  '*/15 * * * *',
+  $$SELECT public.complete_expired_surveys()$$
+);

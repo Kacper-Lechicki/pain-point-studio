@@ -250,6 +250,10 @@ Before creating new patterns, check if an existing component handles the use cas
 | Settings section title+desc | `SettingsSectionHeader` (with `action` slot) | `@/features/settings/components/settings-section-header` |
 | Sidebar navigation items | `SidebarNavList` | `@/features/dashboard/components/layout/sidebar-nav-list` |
 | Utility: name → initials | `getInitials(name, fallback)` | `@/lib/common/utils` |
+| Empty state placeholder | `EmptyState` | `@/components/ui/empty-state` |
+| Confirm dialog (destructive) | `ConfirmDialog` | `@/components/ui/confirm-dialog` |
+| Number input with stepper | `NumberInput` | `@/components/ui/number-input` |
+| Search input with clear | `SearchInput` | `@/components/ui/search-input` |
 
 **Rule:** Duplicating these patterns instead of importing the shared component is a Critical issue.
 

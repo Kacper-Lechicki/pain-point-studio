@@ -1,0 +1,231 @@
+---
+alwaysApply: true
+---
+
+---
+trigger: always_on
+---
+
+# Skill: PPS Routing Guardian
+
+## Description
+
+Validates and optimizes routing implementation in Pain Point Studio using next-intl native routing. Ensures type-safe navigation, proper i18n integration, and centralized route management through ROUTES config.
+
+## Triggers
+
+Use this skill when:
+
+- Adding new routes or pages
+- Reviewing navigation components
+- Fixing broken links
+- Someone asks "how do I add a new route?"
+- Debugging routing issues
+- Setting up navigation menus
+
+## Instructions
+
+You are the routing auditor for Pain Point Studio. Ensure all navigation uses type-safe, i18n-compatible routing through centralized ROUTES config.
+
+### Core Validation Checklist
+
+**1. Import Sources**
+
+- [ ] `Link` from `@/i18n/routing`, NOT `next/link`
+- [ ] `redirect`, `usePathname`, `useRouter` from `@/i18n/routing`
+- [ ] `ROUTES` imported from `@/config/routes`
+
+**2. Route Configuration**
+
+- [ ] New routes added to `src/i18n/pathnames.ts`
+- [ ] New routes added to `src/config/routes.ts` with `AppRoute` type
+- [ ] Translation labels in `src/i18n/messages/*.json`
+- [ ] If sibling route: add to `SIBLING_GROUPS` in `src/config/routes.ts`
+
+**3. Usage Patterns**
+
+- [ ] Links use `ROUTES.group.name` (not raw strings)
+- [ ] Labels use translation keys
+- [ ] Hash links properly typed
+
+### Sibling Route Navigation
+
+`Link` from `@/i18n/routing` auto-detects sibling routes and uses `replace` instead of `push` to prevent history buildup. Sibling groups are defined in `SIBLING_GROUPS` in `src/config/routes.ts`:
+
+```typescript
+export const SIBLING_GROUPS: readonly (readonly AppRoute[])[] = [
+  [ROUTES.auth.signIn, ROUTES.auth.signUp, ROUTES.auth.forgotPassword],
+  [ROUTES.dashboard.research, ROUTES.dashboard.researchArchive, ROUTES.dashboard.researchNew],
+];
+```
+
+No manual `replace` prop needed on links — just use `<Link>` normally.
+
+### Common Issues & Fixes
+
+**Issue 1: Wrong Link Import**
+
+```tsx
+// ❌ Bad: Direct next/link
+import Link from 'next/link';
+<Link href="/features">Features</Link>
+
+// ✅ Good: i18n routing
+import { Link } from '@/i18n/routing';
+import { ROUTES } from '@/config/routes';
+<Link href={ROUTES.common.home}>Home</Link>
+```
+
+**Issue 2: Raw String Href**
+
+```tsx
+// ❌ Bad: Hardcoded path
+<Link href="/settings/profile">Profile</Link>
+
+// ✅ Good: ROUTES config
+<Link href={ROUTES.settings.profile}>Profile</Link>
+```
+
+**Issue 3: Hardcoded Labels**
+
+```tsx
+// ❌ Bad: Hardcoded text
+<Link href={ROUTES.auth.signIn}>Sign In</Link>;
+
+// ✅ Good: Translated label
+const t = useTranslations('common');
+<Link href={ROUTES.auth.signIn}>{t('signIn')}</Link>;
+```
+
+### Adding New Route Workflow
+
+**Step 1: Define pathname**
+
+```typescript
+// src/i18n/pathnames.ts
+export const PATHNAMES = {
+  // ... existing
+  '/new-page': '/new-page', // New route
+} as const;
+```
+
+**Step 2: Add to ROUTES**
+
+```typescript
+// src/config/routes.ts
+export const ROUTES = {
+  dashboard: {
+    // ... existing
+    newPage: '/new-page' as AppRoute,
+  },
+} as const;
+```
+
+**Step 3: Add translation**
+
+```json
+// src/i18n/messages/en.json
+{
+  "common": {
+    "newPage": "New Page"
+  }
+}
+```
+
+**Step 4: Use in component**
+
+```tsx
+import { useTranslations } from 'next-intl';
+import { ROUTES } from '@/config/routes';
+import { Link } from '@/i18n/routing';
+
+const t = useTranslations('common');
+<Link href={ROUTES.dashboard.newPage}>{t('newPage')}</Link>;
+```
+
+**Step 5 (optional): Add sibling group**
+
+```typescript
+// If this route ping-pongs with others, add to SIBLING_GROUPS
+export const SIBLING_GROUPS: readonly (readonly AppRoute[])[] = [
+  // ... existing
+  [ROUTES.dashboard.existingPage, ROUTES.dashboard.newPage],
+];
+```
+
+### Navigation Patterns
+
+**Standard navigation:**
+
+```tsx
+import { ROUTES } from '@/config/routes';
+import { Link } from '@/i18n/routing';
+
+<Link href={ROUTES.dashboard.research}>Research</Link>;
+```
+
+**External links:**
+
+```tsx
+<a href="https://external.com" target="_blank" rel="noopener noreferrer">
+  External
+</a>
+```
+
+**Programmatic navigation:**
+
+```tsx
+import { useRouter } from '@/i18n/routing';
+
+const router = useRouter();
+router.push(ROUTES.common.dashboard);
+```
+
+**Server redirects:**
+
+```tsx
+import { redirect } from '@/i18n/routing';
+
+redirect(ROUTES.auth.signIn);
+```
+
+### ROUTES Object (Current)
+
+```typescript
+export const ROUTES = {
+  auth: { signIn, signUp, signOut, forgotPassword, updatePassword, callback },
+  common: { home: '/', dashboard, settings },
+  settings: { profile, email, password, connectedAccounts, dangerZone },
+  dashboard: { research, researchNew, researchArchive, researchBuilder, researchStats, analytics, analyticsProjectIdea },
+  profile: { preview },
+  survey: { respond: '/r' },
+} as const;
+```
+
+### Quick Reference
+
+| Action   | Import                              | Usage                       |
+| -------- | ----------------------------------- | --------------------------- |
+| Navigate | `Link` from `@/i18n/routing`        | `<Link href={ROUTES.x.y}>` |
+| Router   | `useRouter` from `@/i18n/routing`   | `router.push(ROUTES.x.y)`  |
+| Redirect | `redirect` from `@/i18n/routing`    | `redirect(ROUTES.x.y)`     |
+| Pathname | `usePathname` from `@/i18n/routing` | `const path = usePathname()`|
+
+### Middleware Routing Logic (src/proxy.ts)
+
+1. Supabase session refresh
+2. Basic Auth enforcement (preview deploys)
+3. Public route allowlist: `/`, `/auth/callback`, `/sign-in`, `/sign-up`, `/forgot-password`, `/update-password`, `/r` (survey)
+4. Protected routes (everything else): redirect unauthenticated to sign-in
+5. Auth routes: redirect logged-in users to dashboard
+6. i18n locale processing
+7. Cache control headers for protected pages
+
+### Critical Rules
+
+1. **Always use i18n routing** - never import from `next/link`
+2. **ROUTES object required** - no raw string paths
+3. **Translate labels** - all navigation text from i18n
+4. **Complete config** - add routes to pathnames.ts AND routes.ts
+5. **Type safety enforced** - AppRoute catches invalid paths
+6. **Sibling groups** - add to `SIBLING_GROUPS` for related route sets (no manual `replace` needed)

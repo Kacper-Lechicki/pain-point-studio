@@ -18,8 +18,8 @@ import path from 'path';
  * Usage:
  *   node scripts/make-migration-idempotent.mjs [path]
  *
- *   path  Optional. Defaults to the single .sql file in supabase/migrations/.
- *         If multiple files exist, you must specify which one to transform.
+ *   path  Optional. If omitted, processes ALL .sql files in supabase/migrations/.
+ *         If provided, processes only the specified file.
  */
 
 const MIGRATIONS_DIR = path.resolve('supabase/migrations');
@@ -28,15 +28,18 @@ const MIGRATIONS_DIR = path.resolve('supabase/migrations');
 // Resolve target file
 // ---------------------------------------------------------------------------
 
-function resolveTarget() {
+function resolveTargets() {
   const explicit = process.argv[2];
+
   if (explicit) {
     const resolved = path.resolve(explicit);
+
     if (!fs.existsSync(resolved)) {
       console.error(`File not found: ${resolved}`);
       process.exit(1);
     }
-    return resolved;
+
+    return [resolved];
   }
 
   const files = fs.readdirSync(MIGRATIONS_DIR).filter((f) => f.endsWith('.sql'));
@@ -45,17 +48,8 @@ function resolveTarget() {
     console.error('No .sql files found in supabase/migrations/');
     process.exit(1);
   }
-  if (files.length > 1) {
-    console.error(
-      'Multiple migration files found. Specify which one to transform:\n' +
-        files
-          .map((f) => `  node scripts/make-migration-idempotent.mjs supabase/migrations/${f}`)
-          .join('\n')
-    );
-    process.exit(1);
-  }
 
-  return path.join(MIGRATIONS_DIR, files[0]);
+  return files.map((f) => path.join(MIGRATIONS_DIR, f));
 }
 
 // ---------------------------------------------------------------------------
@@ -75,6 +69,7 @@ function wrapConstraints(content) {
   content = content.replace(re, (_match, full, conname) => {
     count++;
     const indented = full.replace(/\n\s+/g, '\n        ');
+
     return [
       `DO $$ BEGIN`,
       `  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = '${conname}') THEN`,
@@ -98,11 +93,16 @@ function addDropPolicies(content) {
 
   // Collect matches first to avoid issues with overlapping replacements
   const replacements = [];
+
   let m;
+
   while ((m = re.exec(content)) !== null) {
     // Check preceding text for DROP POLICY IF EXISTS on the same line area
     const before = content.substring(Math.max(0, m.index - 200), m.index);
-    if (before.includes(`DROP POLICY IF EXISTS "${m[1]}"`)) continue;
+
+    if (before.includes(`DROP POLICY IF EXISTS "${m[1]}"`)) {
+      continue;
+    }
 
     replacements.push({
       index: m.index,
@@ -115,6 +115,7 @@ function addDropPolicies(content) {
   for (let i = replacements.length - 1; i >= 0; i--) {
     const { index, policyName, tableRef } = replacements[i];
     const dropLine = `DROP POLICY IF EXISTS "${policyName}" ON ${tableRef};\n`;
+
     content = content.substring(0, index) + dropLine + content.substring(index);
     count++;
   }
@@ -154,6 +155,7 @@ function wrapCreateTypes(content) {
   content = content.replace(re, (_match, createStmt, _schema, typeName, trailing) => {
     count++;
     const indented = createStmt.replace(/\n/g, '\n    ');
+
     const lines = [
       `DO $$ BEGIN`,
       `  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = '${typeName}') THEN`,
@@ -163,6 +165,7 @@ function wrapCreateTypes(content) {
       '',
       trailing.trim() ? trailing.trim() : '',
     ];
+
     return lines.filter((l) => l !== '').join('\n') + '\n';
   });
 
@@ -182,12 +185,14 @@ function stripAuthTriggers(content) {
 
   content = content.replace(re, (match) => {
     count++;
+
     const lines = [
       `-- [REMOVED BY make-migration-idempotent] The following trigger targets the`,
       `-- auth schema which cannot be managed by \`supabase db push\`.`,
       `-- Apply it manually via Supabase Dashboard. See: supabase/auth_trigger.sql`,
       `-- ${match}`,
     ];
+
     return lines.join('\n');
   });
 
@@ -205,6 +210,7 @@ function wrapPublicationAddTable(content) {
 
   content = content.replace(re, (_match, pubName, schema, table) => {
     count++;
+
     return [
       `DO $$ BEGIN`,
       `  IF NOT EXISTS (`,
@@ -226,35 +232,51 @@ function wrapPublicationAddTable(content) {
 // Main
 // ---------------------------------------------------------------------------
 
-const filePath = resolveTarget();
-console.log(`Transforming: ${filePath}\n`);
+function transformFile(filePath) {
+  console.log(`Transforming: ${filePath}`);
 
-let content = fs.readFileSync(filePath, 'utf-8');
+  let content = fs.readFileSync(filePath, 'utf-8');
 
-const r1 = wrapCreateTypes(content);
-content = r1.content;
+  const r1 = wrapCreateTypes(content);
+  content = r1.content;
 
-const r2 = wrapConstraints(content);
-content = r2.content;
+  const r2 = wrapConstraints(content);
+  content = r2.content;
 
-const r3 = addDropPolicies(content);
-content = r3.content;
+  const r3 = addDropPolicies(content);
+  content = r3.content;
 
-const r4 = addIndexIfNotExists(content);
-content = r4.content;
+  const r4 = addIndexIfNotExists(content);
+  content = r4.content;
 
-const r5 = wrapPublicationAddTable(content);
-content = r5.content;
+  const r5 = wrapPublicationAddTable(content);
+  content = r5.content;
 
-const r6 = stripAuthTriggers(content);
-content = r6.content;
+  const r6 = stripAuthTriggers(content);
+  content = r6.content;
 
-fs.writeFileSync(filePath, content, 'utf-8');
+  const totalChanges = r1.count + r2.count + r3.count + r4.count + r5.count + r6.count;
 
-console.log(`  CREATE TYPE     → IF NOT EXISTS wrappers:   ${r1.count}`);
-console.log(`  ADD CONSTRAINT  → IF NOT EXISTS wrappers:   ${r2.count}`);
-console.log(`  CREATE POLICY   → DROP IF EXISTS prepended: ${r3.count}`);
-console.log(`  CREATE INDEX    → IF NOT EXISTS added:       ${r4.count}`);
-console.log(`  ADD TABLE (pub) → IF NOT EXISTS wrappers:   ${r5.count}`);
-console.log(`  AUTH triggers   → stripped (manual apply):   ${r6.count}`);
-console.log(`\nDone. File updated in-place.`);
+  if (totalChanges === 0) {
+    console.log('  No transformations needed.\n');
+    return;
+  }
+
+  fs.writeFileSync(filePath, content, 'utf-8');
+
+  console.log(`  CREATE TYPE     → IF NOT EXISTS wrappers:   ${r1.count}`);
+  console.log(`  ADD CONSTRAINT  → IF NOT EXISTS wrappers:   ${r2.count}`);
+  console.log(`  CREATE POLICY   → DROP IF EXISTS prepended: ${r3.count}`);
+  console.log(`  CREATE INDEX    → IF NOT EXISTS added:       ${r4.count}`);
+  console.log(`  ADD TABLE (pub) → IF NOT EXISTS wrappers:   ${r5.count}`);
+  console.log(`  AUTH triggers   → stripped (manual apply):   ${r6.count}`);
+  console.log('');
+}
+
+const targets = resolveTargets();
+
+for (const filePath of targets) {
+  transformFile(filePath);
+}
+
+console.log('Done.');

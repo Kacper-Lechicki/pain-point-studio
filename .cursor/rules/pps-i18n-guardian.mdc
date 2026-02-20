@@ -50,10 +50,9 @@ You are the internationalization auditor for Pain Point Studio. Your job is to e
 
 **3. Locale Configuration**
 
-- [ ] New locales added to `src/i18n/constants.ts`
+- [ ] New locales added to `src/i18n/constants.ts` (`locales` array)
 - [ ] Proxy matcher updated in `src/proxy.ts`
 - [ ] Translation file created in `src/i18n/messages/{locale}.json`
-- [ ] Static params updated in `src/app/[locale]/layout.tsx`
 - [ ] TypeScript validation passes
 
 **4. Routing**
@@ -62,6 +61,35 @@ You are the internationalization auditor for Pain Point Studio. Your job is to e
 - [ ] Proxy handles locale redirects
 - [ ] Default locale redirects correctly
 - [ ] All routes nested under `[locale]`
+
+### i18n Architecture
+
+```
+src/i18n/
+├── constants.ts     # locales = ['en'], defaultLocale = 'en', Locale type
+├── config.ts        # next-intl request config (locale detection, message loading)
+├── link.tsx         # Custom Link with sibling route auto-replace
+├── navigation.ts    # next-intl defineRouting + createNavigation
+├── pathnames.ts     # Abstract path → locale-specific URL mapping
+├── request.ts       # Server-side getRequestConfig
+├── routing.tsx      # Re-exports: Link, redirect, usePathname, useRouter, etc.
+├── types.ts         # MessageKey type derived from en.json structure
+└── messages/
+    └── en.json      # English translations (currently only locale)
+```
+
+**Import convention:**
+
+```typescript
+// Components import from routing.tsx
+import { Link, redirect, usePathname, useRouter } from '@/i18n/routing';
+
+// Server components
+import { getTranslations } from 'next-intl/server';
+
+// Client components
+import { useTranslations } from 'next-intl';
+```
 
 ### Response Format
 
@@ -72,20 +100,11 @@ When reviewing i18n implementation, provide:
 **Issues Found:**
 
 ```
-[Critical] Missing translation key in de.json
+[Critical] Missing translation key in locale file
 [Error] Hardcoded string in component
 [Warning] Using wrong translation hook (client vs server)
 [Info] Could group related translations
 ```
-
-**Suggested Fixes:**
-Specific code changes with explanations
-
-**Verification:**
-
-- TypeScript compiles ✓/✗
-- All locales consistent ✓/✗
-- No hardcoded strings ✓/✗
 
 ### Common Issues & Fixes
 
@@ -107,26 +126,6 @@ export default async function Page() {
 }
 ```
 
-```tsx
-// ❌ Bad: Client component using server hook
-'use client';
-
-export default function Counter() {
-  const t = await getTranslations('HomePage'); // ❌ Server hook in client component
-  return <p>{t('description')}</p>;
-}
-
-// ✅ Good: Client component using client hook
-'use client';
-
-import { useTranslations } from 'next-intl';
-
-export default function Counter() {
-  const t = useTranslations('HomePage');
-  return <p>{t('description')}</p>;
-}
-```
-
 **Issue 2: Hardcoded Strings**
 
 ```tsx
@@ -139,422 +138,120 @@ export default function Button() {
 import { useTranslations } from 'next-intl';
 
 export default function Button() {
-  const t = useTranslations('Common');
+  const t = useTranslations('common');
   return <button>{t('clickHere')}</button>;
 }
-
-// And in src/i18n/messages/en.json:
-{
-  "Common": {
-    "clickHere": "Click here"
-  }
-}
 ```
 
-**Issue 3: Inconsistent Translation Files**
-
-```json
-// ❌ Bad: Missing key in de.json
-// en.json
-{
-  "HomePage": {
-    "title": "Welcome",
-    "description": "Validate your ideas"
-  }
-}
-
-// de.json (missing description!)
-{
-  "HomePage": {
-    "title": "Willkommen"
-  }
-}
-
-// ✅ Good: Identical structure
-// en.json
-{
-  "HomePage": {
-    "title": "Welcome",
-    "description": "Validate your ideas"
-  }
-}
-
-// de.json
-{
-  "HomePage": {
-    "title": "Willkommen",
-    "description": "Validieren Sie Ihre Ideen"
-  }
-}
-```
-
-**Issue 4: Wrong Namespace**
+**Issue 3: Wrong Namespace**
 
 ```tsx
 // ❌ Bad: Namespace doesn't match JSON structure
-const t = useTranslations('Home'); // ❌ JSON has "HomePage"
-return <h1>{t('title')}</h1>;
+const t = useTranslations('Home'); // ❌ JSON has lowercase "common"
 
-// ✅ Good: Correct namespace
-const t = useTranslations('HomePage');
-return <h1>{t('title')}</h1>;
-
-// JSON structure:
-{
-  "HomePage": {
-    "title": "Welcome"
-  }
-}
-```
-
-**Issue 5: Incomplete Locale Setup**
-
-```typescript
-// ❌ Bad: Added locale but missing configuration
-
-// Only updated config.ts
-export const locales = ['en', 'de'] as const;
-
-// Forgot to update:
-// - src/proxy.ts matcher
-// - src/i18n/messages/de.json
-// - src/app/[locale]/layout.tsx generateStaticParams
-
-// ✅ Good: Complete locale setup (see workflow below)
+// ✅ Good: Correct namespace matching JSON
+const t = useTranslations('common');
 ```
 
 ### Adding New Locale Workflow
 
-**Complete checklist for adding a new language (e.g., German 'de'):**
+**Complete checklist for adding a new language (e.g., Polish 'pl'):**
 
 **Step 1: Update Constants**
 
 ```typescript
 // src/i18n/constants.ts
-export const locales = ['en', 'de'] as const;
+export const locales = ['en', 'pl'] as const;
 ```
 
 **Step 2: Update Proxy Matcher**
 
 ```typescript
-// src/proxy.ts
-export const config = {
-  matcher: ['/', '/(de|en)/:path*'], // Add 'de'
-};
+// src/proxy.ts - update the locale matcher regex
 ```
 
 **Step 3: Create Translation File**
 
 ```bash
 # Copy en.json structure
-cp src/i18n/messages/en.json src/i18n/messages/de.json
-
+cp src/i18n/messages/en.json src/i18n/messages/pl.json
 # Then translate all values (keep keys identical!)
 ```
 
-```json
-// src/i18n/messages/de.json
-{
-  "HomePage": {
-    "title": "Willkommen",
-    "description": "Ihre Produktideen validieren"
-  },
-  "Common": {
-    "features": "Funktionen",
-    "pricing": "Preise"
-  }
-}
-```
-
-**Step 4: Update Static Params**
-
-```typescript
-// src/app/[locale]/layout.tsx
-export function generateStaticParams() {
-  return [
-    { locale: 'en' },
-    { locale: 'de' }, // Add new locale
-  ];
-}
-```
-
-**Step 5: Verify**
+**Step 4: Verify**
 
 ```bash
-# TypeScript validation
 pnpm test:types
-
-# Test routing
 pnpm dev
-# Visit: http://localhost:3000/de
+# Visit: http://localhost:3000/pl
 ```
 
-### Translation File Structure Best Practices
+### Translation Patterns
 
-**Organize by feature/page:**
+**Dynamic Values:**
 
 ```json
 {
-  "HomePage": {
-    "hero": {
-      "title": "Welcome",
-      "subtitle": "Get started",
-      "cta": "Sign up"
-    },
-    "features": {
-      "title": "Features",
-      "item1": "Fast validation"
-    }
-  },
-  "Dashboard": {
-    "title": "Dashboard",
-    "welcome": "Welcome back"
-  },
-  "Common": {
-    "buttons": {
-      "submit": "Submit",
-      "cancel": "Cancel",
-      "save": "Save"
-    },
-    "errors": {
-      "required": "This field is required",
-      "invalid": "Invalid input"
-    }
-  }
-}
-```
-
-**Access nested translations:**
-
-```tsx
-const t = useTranslations('HomePage.hero');
-return (
-  <>
-    <h1>{t('title')}</h1>
-    <p>{t('subtitle')}</p>
-    <button>{t('cta')}</button>
-  </>
-);
-```
-
-### Type Safety Validation
-
-**next-intl provides automatic type checking:**
-
-```tsx
-// ✅ Good: Existing key
-const t = useTranslations('HomePage');
-return <h1>{t('title')}</h1>; // ✓ Types correctly
-
-// ❌ Bad: Non-existent key
-return <h1>{t('nonExistent')}</h1>; // TypeScript error!
-
-// ❌ Bad: Wrong namespace
-const t = useTranslations('NonExistentPage'); // TypeScript error!
-```
-
-**Run type check before commit:**
-
-```bash
-pnpm test:types
-```
-
-### Common Translation Patterns
-
-**Pattern 1: Dynamic Values**
-
-```json
-{
-  "Common": {
+  "common": {
     "greeting": "Hello, {name}!"
   }
 }
 ```
 
 ```tsx
-const t = useTranslations('Common');
+const t = useTranslations('common');
 return <p>{t('greeting', { name: user.name })}</p>;
 ```
 
-**Pattern 2: Pluralization**
+**Pluralization:**
 
 ```json
 {
-  "Common": {
+  "common": {
     "items": "{count, plural, =0 {No items} =1 {One item} other {# items}}"
   }
 }
 ```
 
-```tsx
-const t = useTranslations('Common');
-return <p>{t('items', { count: items.length })}</p>;
-```
-
-**Pattern 3: Rich Text**
+**Rich Text:**
 
 ```json
 {
-  "Common": {
+  "common": {
     "terms": "By signing up, you agree to our <link>Terms of Service</link>"
   }
 }
 ```
 
 ```tsx
-const t = useTranslations('Common');
+const t = useTranslations('common');
 return (
   <p>
     {t.rich('terms', {
-      link: (chunks) => <a href="/terms">{chunks}</a>
+      link: (chunks) => <a href="/terms">{chunks}</a>,
     })}
   </p>
 );
 ```
 
-### Architecture Verification
+### Type Safety
 
-**Check file structure:**
+next-intl provides automatic type checking via `src/i18n/types.ts`:
 
-```
-src/
-├── app/
-│   ├── [locale]/          ✓ Dynamic locale segment
-│   │   ├── layout.tsx     ✓ Sets requestLocale
-│   │   └── (marketing)/   ✓ Route groups inside [locale]
-│   └── layout.tsx         ✓ Wraps NextIntlClientProvider
-├── i18n/
-│   ├── config.ts          ✓ Locale configuration
-│   ├── request.ts         ✓ Server-side resolution
-│   └── messages/
-│       ├── en.json        ✓ English translations
-│       └── de.json        ✓ German translations
-└── proxy.ts               ✓ Routing proxy (Next.js 16)
+```tsx
+// ✅ Good: Existing key
+const t = useTranslations('common');
+return <h1>{t('signIn')}</h1>; // ✓ Types correctly
+
+// ❌ Bad: Non-existent key
+return <h1>{t('nonExistent')}</h1>; // TypeScript error!
 ```
 
-### Routing Validation
+### Critical Rules
 
-**Verify locale routing:**
-
-```
-/ → redirects to /en (default locale)
-/en → English version
-/en/pricing → English pricing page
-/de → German version (when added)
-/de/pricing → German pricing page
-/fr → 404 (if not configured)
-```
-
-**Check proxy configuration:**
-
-```typescript
-// src/proxy.ts
-export const config = {
-  matcher: ['/', '/(de|en)/:path*'], // Must include all locales
-};
-```
-
-### Integration with PPS Context
-
-Remember:
-
-- PPS has global users (i18n critical for growth)
-- Performance: locale detection should be fast
-- Privacy: locale preference can be stored client-side
-- SEO: each locale needs proper metadata
-- MVP: Start with English, add locales as needed
-
-**PPS-specific translation structure:**
-
-```json
-{
-  "Marketing": {
-    "hero": { "title": "...", "subtitle": "..." }
-  },
-  "Dashboard": {
-    "research": { "create": "...", "edit": "..." }
-  },
-  "Research": {
-    "questions": { "add": "...", "remove": "..." }
-  },
-  "Common": {
-    "navigation": { "home": "...", "pricing": "..." },
-    "buttons": { "submit": "...", "cancel": "..." },
-    "errors": { "required": "...", "invalid": "..." }
-  }
-}
-```
-
-### Audit Workflow
-
-When reviewing i18n implementation:
-
-**1. Check for hardcoded strings**
-
-```bash
-# Search for hardcoded text patterns
-grep -r ">\s*[A-Z]" src/app --include="*.tsx"
-# Review results for user-facing text
-```
-
-**2. Verify translation file consistency**
-
-```bash
-# Compare JSON structures
-diff <(jq -S 'keys' src/i18n/messages/en.json) \
-     <(jq -S 'keys' src/i18n/messages/de.json)
-# Should be identical
-```
-
-**3. Check translation hook usage**
-
-```bash
-# Find server components using wrong hook
-grep -r "useTranslations" src/app --include="*.tsx" -B5 | grep -v "use client"
-
-# Find client components using wrong hook
-grep -r "getTranslations" src/app --include="*.tsx" -B5 | grep "use client"
-```
-
-**4. Validate locale configuration**
-
-```typescript
-// Verify all these match:
-// - src/i18n/config.ts: locales array
-// - src/proxy.ts: matcher regex
-// - src/i18n/messages/: files exist
-// - src/app/[locale]/layout.tsx: generateStaticParams
-```
-
-### Security & Performance
-
-**Security considerations:**
-
-- Translation values can contain user input in some cases
-- Always sanitize dynamic values
-- Don't expose sensitive data in translation keys
-
-**Performance tips:**
-
-- Load only needed translations (namespace-based)
-- Use static rendering where possible
-- Cache translation files
-- Consider lazy loading for large translation files
-
-What NOT to Do
-
-Don't use different hooks for server/client
-Don't hardcode user-facing strings
-Don't create inconsistent JSON structures across locales
-Don't forget to update all config files when adding locales
-Don't translate technical terms (API, URL, etc.)
-Don't include HTML in translation values (use rich text API)
-Don't nest locales deeper than necessary (flat is better)
-
-Critical Rules
-
-Always use translation hooks - never hardcode user-facing text
-Server uses getTranslations - client uses useTranslations
-Identical JSON structure - all locales must have same keys
-Complete locale setup - update all 4 required files
-Type safety enforced - missing keys cause TypeScript errors
+1. **Always use translation hooks** - never hardcode user-facing text
+2. **Server uses `getTranslations`** - client uses `useTranslations`
+3. **Identical JSON structure** - all locales must have same keys
+4. **Complete locale setup** - update constants, proxy, and message file
+5. **Type safety enforced** - `MessageKey` type catches missing keys
+6. **Import from `@/i18n/routing`** - not from `next-intl` directly for Link/router
