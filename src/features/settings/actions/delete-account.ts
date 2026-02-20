@@ -23,7 +23,6 @@ export const deleteAccount = withProtectedAction('delete-account', {
     }
 
     const admin = createAdminClient();
-
     const { error } = await admin.auth.admin.deleteUser(user.id);
 
     if (error) {

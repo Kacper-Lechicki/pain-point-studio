@@ -29,6 +29,7 @@ export const unlinkIdentity = withProtectedAction('unlink-identity', {
     const {
       data: { user: freshUser },
     } = await supabase.auth.getUser();
+
     const supabaseIdentity = freshUser?.identities?.find(
       (i) =>
         i.identity_id === identityToUnlink.identityId && i.provider === identityToUnlink.provider

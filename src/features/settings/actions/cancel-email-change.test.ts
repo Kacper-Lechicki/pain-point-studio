@@ -30,9 +30,11 @@ vi.mock('@/lib/supabase/server', () => ({
 describe('Settings Actions – Cancel Email Change', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+
     mockGetUser.mockResolvedValue({
       data: { user: { id: 'user-123', email: 'user@example.com' } },
     });
+
     mockRpc.mockResolvedValue({ error: null });
   });
 

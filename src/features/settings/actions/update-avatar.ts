@@ -14,9 +14,7 @@ const ALLOWED_AVATAR_HOSTS: string[] = [
 
 try {
   ALLOWED_AVATAR_HOSTS.push(new URL(env.NEXT_PUBLIC_SUPABASE_URL).hostname);
-} catch {
-  // env not available in test; Supabase hostname will be validated at runtime
-}
+} catch {}
 
 const avatarUrlSchema = z.object({
   avatarUrl: z.union([

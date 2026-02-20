@@ -6,20 +6,16 @@ import { Button } from '@/components/ui/button';
 import { Combobox } from '@/components/ui/combobox';
 import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import type { LookupValue } from '@/features/settings/actions';
 import { MAX_SOCIAL_LINKS } from '@/features/settings/config';
 import type { UpdateProfileSchema } from '@/features/settings/types';
-
-interface SocialLinkOption {
-  value: string;
-  label: string;
-}
 
 interface SocialLinksSectionProps {
   control: Control<UpdateProfileSchema>;
   fields: UseFieldArrayReturn<UpdateProfileSchema, 'socialLinks'>['fields'];
   append: UseFieldArrayReturn<UpdateProfileSchema, 'socialLinks'>['append'];
   onRemoveRequest: (index: number) => void;
-  socialLinkOptions: SocialLinkOption[];
+  socialLinkOptions: LookupValue[];
 }
 
 export function SocialLinksSection({
@@ -36,6 +32,7 @@ export function SocialLinksSection({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="space-y-1">
           <p className="text-sm font-medium">{t('settings.profile.socialLinks.title')}</p>
+
           <p className="text-muted-foreground text-xs">
             {t('settings.profile.socialLinks.description')}
           </p>
@@ -73,6 +70,7 @@ export function SocialLinksSection({
               <span className="text-muted-foreground text-xs font-medium">
                 {t('settings.profile.socialLinks.linkLabel', { number: index + 1 })}
               </span>
+
               <Button
                 type="button"
                 variant="ghostDestructive"
@@ -100,6 +98,7 @@ export function SocialLinksSection({
                       aria-label={t('settings.profile.socialLinks.labelPlaceholder')}
                     />
                   </FormControl>
+
                   <FormMessage />
                 </FormItem>
               )}
@@ -118,6 +117,7 @@ export function SocialLinksSection({
                       {...urlField}
                     />
                   </FormControl>
+
                   <FormMessage />
                 </FormItem>
               )}

@@ -38,7 +38,6 @@ interface PasswordFormProps {
 const PasswordForm = ({ hasPassword }: PasswordFormProps) => {
   const t = useTranslations();
   const router = useRouter();
-
   const schema = hasPassword ? changePasswordSchema : setPasswordSchema;
 
   const form = useForm<ChangePasswordSchema | SetPasswordSchema>({

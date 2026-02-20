@@ -112,6 +112,7 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('settings.profile.fullName')}</FormLabel>
+
                   <FormControl>
                     <Input
                       placeholder={t('settings.profile.fullNamePlaceholder')}
@@ -119,6 +120,7 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
                       {...field}
                     />
                   </FormControl>
+
                   <FormMessage />
                 </FormItem>
               )}
@@ -130,6 +132,7 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('settings.profile.role')}</FormLabel>
+
                   <FormControl>
                     <Combobox
                       options={profile.roleOptions}
@@ -141,6 +144,7 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
                       aria-label={t('settings.profile.role')}
                     />
                   </FormControl>
+
                   <FormMessage />
                 </FormItem>
               )}
@@ -152,6 +156,7 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t('settings.profile.bio')}</FormLabel>
+
                   <FormControl>
                     <Textarea
                       placeholder={t('settings.profile.bioPlaceholder')}
@@ -161,12 +166,14 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
                       {...field}
                     />
                   </FormControl>
+
                   <FormDescription>
                     {t('settings.profile.bioCounter', {
                       count: (field.value ?? '').length,
                       max: BIO_MAX_LENGTH,
                     })}
                   </FormDescription>
+
                   <FormMessage />
                 </FormItem>
               )}

@@ -166,6 +166,7 @@ const AvatarUpload = ({
           src={proxyImageUrl(currentUrl || undefined)}
           alt={t('settings.profile.avatar')}
         />
+
         <AvatarFallback className="text-lg">{fallbackInitials}</AvatarFallback>
       </Avatar>
 

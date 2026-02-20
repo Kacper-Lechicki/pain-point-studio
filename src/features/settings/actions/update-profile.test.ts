@@ -103,6 +103,7 @@ describe('Settings Actions – Update Profile', () => {
 
     expect(result).toEqual({ success: true });
     expect(mockEq).toHaveBeenCalledWith('id', 'user-123');
+
     expect(mockUpdateUser).toHaveBeenCalledWith({
       data: { full_name: validData.fullName },
     });
@@ -141,6 +142,7 @@ describe('Settings Actions – Update Profile', () => {
 
     expect(result.error).toBeDefined();
     expect(result).not.toHaveProperty('success');
+
     // Metadata update should not be attempted after profile update failure
     expect(mockUpdateUser).not.toHaveBeenCalled();
   });
@@ -169,6 +171,7 @@ describe('Settings Actions – Update Profile', () => {
 
   it('should reject empty role', async () => {
     const { updateProfile } = await import('./update-profile');
+
     const result = await updateProfile({
       ...validData,
       role: '',
@@ -180,6 +183,7 @@ describe('Settings Actions – Update Profile', () => {
 
   it('should reject empty fullName', async () => {
     const { updateProfile } = await import('./update-profile');
+
     const result = await updateProfile({
       ...validData,
       fullName: '',
@@ -191,6 +195,7 @@ describe('Settings Actions – Update Profile', () => {
 
   it('should reject social link with mismatched domain', async () => {
     const { updateProfile } = await import('./update-profile');
+
     const result = await updateProfile({
       ...validData,
       socialLinks: [{ label: 'github', url: 'https://twitter.com/user' }],

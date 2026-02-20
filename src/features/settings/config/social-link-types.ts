@@ -9,4 +9,9 @@ export const SOCIAL_LINK_TYPES: readonly LookupItem[] = [
   { value: 'other', labelKey: 'settings.profile.socialLinks.labels.other' },
 ] as const;
 
-export const SOCIAL_LINK_TYPE_VALUES = SOCIAL_LINK_TYPES.map((s) => s.value);
+/** Domain restrictions for provider-specific social links (used by Zod validation). */
+export const SOCIAL_LINK_DOMAINS: Record<string, string[]> = {
+  github: ['github.com'],
+  twitter: ['twitter.com', 'x.com'],
+  linkedin: ['linkedin.com'],
+};

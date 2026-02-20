@@ -134,6 +134,7 @@ describe('Settings Actions – Unlink Identity', () => {
         data: { user: rawSingleOAuthUser },
         error: null,
       });
+
     mockRpc.mockResolvedValue({ data: true });
 
     const { unlinkIdentity } = await import('./unlink-identity');
@@ -158,6 +159,7 @@ describe('Settings Actions – Unlink Identity', () => {
       data: { user: singleOAuthUser },
       error: null,
     });
+
     mockRpc.mockResolvedValue({ data: false });
 
     const { unlinkIdentity } = await import('./unlink-identity');
@@ -191,7 +193,9 @@ describe('Settings Actions – Unlink Identity', () => {
         data: { user: rawUserWithIdentities },
         error: null,
       });
+
     mockRpc.mockResolvedValue({ data: false });
+
     mockUnlinkIdentity.mockResolvedValue({
       error: { message: 'Unlink failed' },
     });

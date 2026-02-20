@@ -129,6 +129,7 @@ describe('Settings Actions – Get Profile', () => {
       { value: 'student', label: 'translated:settings.roles.student' },
       { value: 'other', label: 'translated:settings.roles.other' },
     ]);
+
     expect(result!.socialLinkOptions).toEqual([
       { value: 'github', label: 'translated:settings.profile.socialLinks.labels.github' },
       { value: 'linkedin', label: 'translated:settings.profile.socialLinks.labels.linkedin' },
@@ -207,6 +208,7 @@ describe('Settings Actions – Get Profile', () => {
     mockProfileSingle.mockResolvedValue({
       data: { ...mockProfile, avatar_url: null },
     });
+
     mockGetUser.mockResolvedValue({
       data: {
         user: {

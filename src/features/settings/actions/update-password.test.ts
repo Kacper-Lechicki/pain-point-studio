@@ -79,10 +79,12 @@ const defaultUser: AppUser = {
 describe('Settings Actions – changePassword', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+
     mockGetUser.mockResolvedValue({
       data: { user: defaultUser },
       error: null,
     });
+
     mockRpc.mockResolvedValue({ data: true });
     mockUpdateUser.mockResolvedValue({ error: null });
   });
@@ -92,9 +94,11 @@ describe('Settings Actions – changePassword', () => {
     const result = await changePassword(changeData);
 
     expect(result).toEqual({ success: true });
+
     expect(mockRpc).toHaveBeenCalledWith('verify_password', {
       current_plain_password: changeData.currentPassword,
     });
+
     expect(mockUpdateUser).toHaveBeenCalledWith({
       password: changeData.password,
     });
@@ -154,6 +158,7 @@ describe('Settings Actions – changePassword', () => {
     mockRpc.mockResolvedValue({ data: false });
 
     const { changePassword } = await import('./update-password');
+
     const result = await changePassword({
       currentPassword: 'WrongPass1!',
       password: 'NewSecurePass1!',
@@ -191,6 +196,7 @@ describe('Settings Actions – setPassword', () => {
       data: { user: oauthOnlyUser },
       error: null,
     });
+
     mockRpc.mockResolvedValue({ data: false });
     mockUpdateUser.mockResolvedValue({ error: null });
     mockAdminUpdateUserById.mockResolvedValue({ error: null });
@@ -203,9 +209,11 @@ describe('Settings Actions – setPassword', () => {
     expect(result).toEqual({ success: true });
     expect(mockRpc).toHaveBeenCalledWith('has_password');
     expect(mockUpdateUser).toHaveBeenCalledWith({ password: setData.password });
+
     expect(mockAdminUpdateUserById).toHaveBeenCalledWith('user-id-123', {
       email: 'user@example.com',
     });
+
     expect(mockRpc).not.toHaveBeenCalledWith('verify_password', expect.anything());
   });
 
