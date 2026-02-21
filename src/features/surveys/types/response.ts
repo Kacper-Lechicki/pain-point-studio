@@ -7,22 +7,22 @@ export const DEVICE_TYPES = ['desktop', 'mobile', 'tablet'] as const;
 export type DeviceType = (typeof DEVICE_TYPES)[number];
 
 export const startResponseSchema = z.object({
-  surveyId: z.string().uuid(),
+  surveyId: z.uuid(),
   deviceType: z.enum(DEVICE_TYPES).optional(),
 });
 
 export type StartResponseSchema = z.infer<typeof startResponseSchema>;
 
 export const saveAnswerSchema = z.object({
-  responseId: z.string().uuid(),
-  questionId: z.string().uuid(),
+  responseId: z.uuid(),
+  questionId: z.uuid(),
   value: z.record(z.string(), z.unknown()),
 });
 
 export type SaveAnswerSchema = z.infer<typeof saveAnswerSchema>;
 
 export const submitResponseSchema = z.object({
-  responseId: z.string().uuid(),
+  responseId: z.uuid(),
   contactName: z.string().max(100).optional(),
   contactEmail: z.string().email().max(320).optional().or(z.literal('')),
   feedback: z.string().max(2000).optional(),

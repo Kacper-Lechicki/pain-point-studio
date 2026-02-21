@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { RESEARCH_PHASES } from '@/features/projects/types';
 import {
   QUESTIONS_MAX,
   QUESTION_DESCRIPTION_MAX_LENGTH,
@@ -48,7 +49,7 @@ export type DraftAction = (typeof DRAFT_ACTIONS)[number];
 
 /** Schema for validating a single survey UUID. */
 export const surveyIdSchema = z.object({
-  surveyId: z.string().uuid(),
+  surveyId: z.uuid(),
 });
 
 // ── Survey metadata schemas ─────────────────────────────────────────
@@ -72,11 +73,13 @@ export const surveyMetadataSchema = z.object({
 
 export type SurveyMetadataSchema = z.infer<typeof surveyMetadataSchema>;
 
-/** Extends metadata schema with optional surveyId and action for draft creation. */
+/** Extends metadata schema with optional surveyId, action, and project linking. */
 export const createSurveyDraftSchema = surveyMetadataSchema.and(
   z.object({
-    surveyId: z.string().uuid().optional(),
+    surveyId: z.uuid().optional(),
     action: z.enum(DRAFT_ACTIONS),
+    projectId: z.uuid().nullable().optional(),
+    researchPhase: z.enum(RESEARCH_PHASES).nullable().optional(),
   })
 );
 
@@ -129,7 +132,7 @@ const configSchema = z
 
 /** Schema for a single survey question (text, type, required flag, config). */
 export const questionSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   text: z
     .string()
     .min(1, 'surveys.builder.errors.questionTextRequired')
@@ -148,7 +151,7 @@ export type QuestionSchema = z.infer<typeof questionSchema>;
 
 /** Relaxed question schema for saving drafts (empty text allowed). */
 const draftQuestionSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   text: z.string().max(QUESTION_TEXT_MAX_LENGTH, 'surveys.builder.errors.questionTextTooLong'),
   type: z.enum(QUESTION_TYPES),
   required: z.boolean(),
@@ -163,7 +166,7 @@ const draftQuestionSchema = z.object({
 
 /** Schema for saving a full set of survey questions with sort order. */
 export const surveyQuestionsSchema = z.object({
-  surveyId: z.string().uuid(),
+  surveyId: z.uuid(),
   questions: z.array(draftQuestionSchema).max(QUESTIONS_MAX, 'surveys.builder.errors.maxQuestions'),
 });
 
