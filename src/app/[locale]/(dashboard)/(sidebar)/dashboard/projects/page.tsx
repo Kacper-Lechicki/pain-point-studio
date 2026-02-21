@@ -1,9 +1,12 @@
-import { FolderKanban } from 'lucide-react';
+import { FolderKanban, Plus } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
+import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { PageTransition } from '@/components/ui/page-transition';
+import { ROUTES } from '@/config';
 import { DASHBOARD_PAGE_BODY_GAP_TOP } from '@/features/dashboard/config/layout';
+import Link from '@/i18n/link';
 
 export const dynamic = 'force-dynamic';
 
@@ -26,6 +29,14 @@ export default async function ProjectsPage() {
           icon={FolderKanban}
           title={t('projects.empty.title')}
           description={t('projects.empty.description')}
+          action={
+            <Button asChild>
+              <Link href={ROUTES.dashboard.projectNew}>
+                <Plus className="size-4" aria-hidden />
+                {t('projects.empty.cta')}
+              </Link>
+            </Button>
+          }
         />
       </div>
     </PageTransition>
