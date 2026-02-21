@@ -687,6 +687,13 @@
       "nameTooLong": "Name must be 100 characters or fewer.",
       "descriptionTooLong": "Description must be 500 characters or fewer.",
       "contentTooLong": "Content must be 500 characters or fewer."
+    },
+    "title": "Projects",
+    "description": "Manage your research projects and track validation progress.",
+    "empty": {
+      "title": "No projects yet",
+      "description": "Create your first project to organize research around a specific idea or product.",
+      "cta": "New Project"
     }
   },
   "respondent": {
@@ -754,6 +761,7 @@
   },
   "sidebar": {
     "home": "Home",
+    "projects": "Projects",
     "research": "Research",
     "surveys": "Surveys",
     "analytics": "Analytics",
@@ -786,12 +794,11 @@
     "preview": "Preview",
     "new": "New",
     "create": "Create",
-    "archive": "Archive"
+    "archive": "Archive",
+    "projects": "Projects"
   },
   "navbar": {
-    "openMenu": "Open menu",
-    "projectPlaceholder": "Default Project",
-    "selectProject": "Select project"
+    "openMenu": "Open menu"
   },
   "marketing": {
     "hero": {

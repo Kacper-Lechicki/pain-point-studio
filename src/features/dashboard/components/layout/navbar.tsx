@@ -6,14 +6,13 @@ import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { UserMenu } from '@/features/auth/components/common/user-menu';
 import { Breadcrumbs } from '@/features/dashboard/components/layout/breadcrumbs';
-import { ProjectSelector } from '@/features/dashboard/components/layout/project-selector';
 import { useSidebar } from '@/features/dashboard/components/layout/sidebar-provider';
 import { DYNAMIC_SIDEBAR_ITEMS } from '@/features/dashboard/config/navigation';
 import { usePathname } from '@/i18n/routing';
 import { cn } from '@/lib/common/utils';
 
 const Navbar = () => {
-  const { setMobileOpen, isDesktop } = useSidebar();
+  const { setMobileOpen } = useSidebar();
   const t = useTranslations();
   const pathname = usePathname();
 
@@ -35,15 +34,6 @@ const Navbar = () => {
           >
             <Menu className="size-5" />
           </Button>
-        )}
-
-        {isDesktop && (
-          <div
-            className="dashboard:flex hidden shrink-0"
-            style={{ width: 'calc(var(--sidebar-width-expanded) - 1rem)' }}
-          >
-            <ProjectSelector className="w-full" />
-          </div>
         )}
 
         <div className="min-w-0 flex-1 pl-1">

@@ -34,6 +34,10 @@ export function getDashboardBackConfig(pathname: string | null): DashboardBackCo
     return { fallbackHref: ROUTES.dashboard.research };
   }
 
+  if (/^\/dashboard\/projects\/[^/]+$/.test(pathname) && pathname !== ROUTES.dashboard.projectNew) {
+    return { fallbackHref: ROUTES.dashboard.projects };
+  }
+
   if (pathname === ROUTES.profile.preview) {
     return { fallbackHref: ROUTES.settings.profile };
   }
@@ -92,7 +96,8 @@ function isFullWidthPath(pathname: string): boolean {
   return (
     path === ROUTES.dashboard.research ||
     path === ROUTES.dashboard.researchArchive ||
-    path.startsWith(ROUTES.dashboard.researchArchive + '/')
+    path.startsWith(ROUTES.dashboard.researchArchive + '/') ||
+    path === ROUTES.dashboard.projects
   );
 }
 

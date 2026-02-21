@@ -146,7 +146,7 @@ interface MobileNavMainLevelProps {
 export function MobileNavMainLevel({ pathname, t, onItemClick, onClose }: MobileNavMainLevelProps) {
   return (
     <>
-      <nav className="flex flex-1 flex-col gap-2 p-2">
+      <nav className="flex flex-1 flex-col gap-2 px-2 pt-4">
         {SIDEBAR_NAV.map((group, gi) => (
           <div key={gi} className="flex flex-col gap-2">
             {group.items.map((item) => {
@@ -223,7 +223,7 @@ export function MobileNavMainLevel({ pathname, t, onItemClick, onClose }: Mobile
         )}
       </nav>
 
-      <div className="px-2 pb-4">
+      <div className="px-2 pb-6">
         {(() => {
           if (SIDEBAR_BOTTOM_ITEM.disabled) {
             return (
@@ -290,7 +290,7 @@ export function MobileNavSubLevel({
 }: MobileNavSubLevelProps) {
   return (
     <>
-      <div className="px-2 pt-2">
+      <div className="px-2 pt-4">
         <button
           type="button"
           onClick={onBack}

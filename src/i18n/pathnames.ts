@@ -39,6 +39,12 @@ export const PATHNAMES = {
   '/dashboard/research/archive': {
     en: '/dashboard/research/archive',
   },
+  '/dashboard/projects': {
+    en: '/dashboard/projects',
+  },
+  '/dashboard/projects/new': {
+    en: '/dashboard/projects/new',
+  },
   '/dashboard/analytics': {
     en: '/dashboard/analytics',
   },
