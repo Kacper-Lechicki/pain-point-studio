@@ -17,7 +17,7 @@ export const createProjectSchema = z.object({
     .max(500, 'projects.errors.descriptionTooLong')
     .optional()
     .or(z.literal('')),
-  context: z.enum(PROJECT_CONTEXTS),
+  context: z.enum(PROJECT_CONTEXTS, { message: 'projects.errors.fieldRequired' }),
 });
 
 export type CreateProjectInput = z.infer<typeof createProjectSchema>;

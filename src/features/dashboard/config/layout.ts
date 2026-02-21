@@ -112,6 +112,10 @@ function isNarrowPath(pathname: string): boolean {
     return true;
   }
 
+  if (path === ROUTES.dashboard.projectNew) {
+    return true;
+  }
+
   if (/^\/dashboard\/research\/[^/]+$/.test(path) && path !== ROUTES.dashboard.researchArchive) {
     return true;
   }

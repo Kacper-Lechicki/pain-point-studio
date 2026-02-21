@@ -82,6 +82,25 @@ export const SIDEBAR_NAV: NavGroup[] = [
         labelKey: 'sidebar.projects',
         icon: FolderKanban,
         href: ROUTES.dashboard.projects,
+        subNav: {
+          titleKey: 'sidebar.projects',
+          groups: [
+            {
+              items: [
+                {
+                  labelKey: 'sidebar.allProjects',
+                  icon: FolderKanban,
+                  href: ROUTES.dashboard.projects,
+                },
+                {
+                  labelKey: 'sidebar.newProject',
+                  icon: Plus,
+                  href: ROUTES.dashboard.projectNew,
+                },
+              ],
+            },
+          ],
+        },
       },
       {
         labelKey: 'sidebar.research',

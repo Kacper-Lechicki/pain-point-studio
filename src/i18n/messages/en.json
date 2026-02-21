@@ -686,14 +686,32 @@
       "fieldRequired": "This field is required.",
       "nameTooLong": "Name must be 100 characters or fewer.",
       "descriptionTooLong": "Description must be 500 characters or fewer.",
-      "contentTooLong": "Content must be 500 characters or fewer."
+      "contentTooLong": "Content must be 500 characters or fewer.",
+      "unexpected": "Something went wrong. Please try again."
     },
     "title": "Projects",
     "description": "Manage your research projects and track validation progress.",
+    "createProject": "New Project",
     "empty": {
       "title": "No projects yet",
       "description": "Create your first project to organize research around a specific idea or product.",
       "cta": "New Project"
+    },
+    "create": {
+      "title": "New Project",
+      "pageDescription": "Set up a new research project to track your validation journey.",
+      "name": "Project Name",
+      "namePlaceholder": "e.g., AI Writing Assistant",
+      "nameCounter": "{count}/{max}",
+      "descriptionLabel": "Description",
+      "descriptionHelper": "A brief summary of what you're researching or validating.",
+      "descriptionPlaceholder": "Describe your project idea or research goal...",
+      "descriptionCounter": "{count}/{max}",
+      "context": "Research Context",
+      "contextHelper": "Choose the type of research this project is about.",
+      "contextPlaceholder": "Select a context...",
+      "submit": "Create Project",
+      "success": "Project created successfully."
     }
   },
   "respondent": {
@@ -762,6 +780,8 @@
   "sidebar": {
     "home": "Home",
     "projects": "Projects",
+    "allProjects": "All projects",
+    "newProject": "New project",
     "research": "Research",
     "surveys": "Surveys",
     "analytics": "Analytics",
