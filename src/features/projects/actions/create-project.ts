@@ -1,0 +1,36 @@
+'use server';
+
+import { createProjectSchema } from '@/features/projects/types';
+import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
+import { withProtectedAction } from '@/lib/common/with-protected-action';
+import { mapSupabaseError } from '@/lib/supabase/errors';
+
+export const createProject = withProtectedAction<typeof createProjectSchema, { projectId: string }>(
+  'create-project',
+  {
+    schema: createProjectSchema,
+    rateLimit: RATE_LIMITS.bulkCreate,
+    action: async ({ data, user, supabase }) => {
+      const { data: project, error } = await supabase
+        .from('projects')
+        .insert({
+          user_id: user.id,
+          name: data.name,
+          description: data.description || null,
+          context: data.context,
+        })
+        .select('id')
+        .single();
+
+      if (error) {
+        return { error: mapSupabaseError(error.message) };
+      }
+
+      if (!project) {
+        return { error: 'projects.errors.unexpected' };
+      }
+
+      return { success: true, data: { projectId: project.id } };
+    },
+  }
+);
