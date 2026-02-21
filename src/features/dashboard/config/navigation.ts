@@ -3,6 +3,7 @@ import {
   BarChart3,
   CircleUserRound,
   ClipboardList,
+  FolderKanban,
   FolderOpen,
   Home,
   KeyRound,
@@ -77,6 +78,11 @@ export const SIDEBAR_NAV: NavGroup[] = [
   {
     items: [
       { labelKey: 'sidebar.home', icon: Home, href: ROUTES.common.dashboard },
+      {
+        labelKey: 'sidebar.projects',
+        icon: FolderKanban,
+        href: ROUTES.dashboard.projects,
+      },
       {
         labelKey: 'sidebar.research',
         icon: Lightbulb,

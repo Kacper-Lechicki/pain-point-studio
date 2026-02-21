@@ -28,6 +28,9 @@ export const ROUTES = {
     researchNew: '/dashboard/research/new' as AppRoute,
     researchArchive: '/dashboard/research/archive' as AppRoute,
     researchStats: '/dashboard/research/stats',
+    projects: '/dashboard/projects' as AppRoute,
+    projectDetail: '/dashboard/projects' as AppRoute,
+    projectNew: '/dashboard/projects/new' as AppRoute,
     analytics: '/dashboard/analytics' as AppRoute,
     analyticsProjectIdea: '/dashboard/analytics/project-idea-evaluation' as AppRoute,
   },
@@ -48,6 +51,7 @@ export const ROUTES = {
 export const SIBLING_GROUPS: readonly (readonly AppRoute[])[] = [
   [ROUTES.auth.signIn, ROUTES.auth.signUp, ROUTES.auth.forgotPassword],
   [ROUTES.dashboard.research, ROUTES.dashboard.researchArchive, ROUTES.dashboard.researchNew],
+  [ROUTES.dashboard.projects, ROUTES.dashboard.projectNew],
 ];
 
 export const SETTINGS_SECTION_VALUES = [

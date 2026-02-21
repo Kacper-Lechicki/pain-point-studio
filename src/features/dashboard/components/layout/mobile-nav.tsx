@@ -5,13 +5,12 @@ import { useCallback, useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet';
 import { useBreadcrumbContext } from '@/features/dashboard/components/layout/breadcrumb-context';
 import {
   MobileNavMainLevel,
   MobileNavSubLevel,
 } from '@/features/dashboard/components/layout/mobile-nav-levels';
-import { ProjectSelector } from '@/features/dashboard/components/layout/project-selector';
 import { useSidebar } from '@/features/dashboard/components/layout/sidebar-provider';
 import type { NavItem } from '@/features/dashboard/config/navigation';
 import { findActiveNavItem } from '@/features/dashboard/config/navigation';
@@ -116,10 +115,7 @@ export function MobileNav() {
         showCloseButton={false}
         aria-describedby={undefined}
       >
-        <SheetHeader className="flex h-14 items-center justify-start px-3">
-          <SheetTitle className="sr-only">Navigation</SheetTitle>
-          <ProjectSelector className="w-full" />
-        </SheetHeader>
+        <SheetTitle className="sr-only">Navigation</SheetTitle>
 
         <AnimatePresence mode="wait">
           {activeLevel === 'main' ? (
