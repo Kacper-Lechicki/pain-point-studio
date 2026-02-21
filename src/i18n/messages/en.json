@@ -666,6 +666,29 @@
       }
     }
   },
+  "projects": {
+    "contexts": {
+      "ideaValidation": "Idea Validation",
+      "customResearch": "Custom Research"
+    },
+    "phases": {
+      "problemDiscovery": "Problem Discovery",
+      "solutionValidation": "Solution Validation",
+      "marketValidation": "Market Validation",
+      "launchReadiness": "Launch Readiness"
+    },
+    "insightTypes": {
+      "strength": "Strength",
+      "threat": "Threat",
+      "decision": "Decision"
+    },
+    "errors": {
+      "fieldRequired": "This field is required.",
+      "nameTooLong": "Name must be 100 characters or fewer.",
+      "descriptionTooLong": "Description must be 500 characters or fewer.",
+      "contentTooLong": "Content must be 500 characters or fewer."
+    }
+  },
   "respondent": {
     "landing": {
       "questionsCount": "{count, plural, one {# question} other {# questions}}",

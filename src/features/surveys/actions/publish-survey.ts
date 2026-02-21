@@ -9,7 +9,7 @@ import { withProtectedAction } from '@/lib/common/with-protected-action';
 
 /** Schema for publish action — surveyId is required, endsAt and maxRespondents are optional. */
 const publishSurveySchema = z.object({
-  surveyId: z.string().uuid(),
+  surveyId: z.uuid(),
   endsAt: z.string().nullable().optional(),
   maxRespondents: z.number().int().min(SURVEY_MAX_RESPONDENTS_MIN).nullable().optional(),
 });
