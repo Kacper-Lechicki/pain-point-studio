@@ -58,6 +58,80 @@ export type Database = {
         };
         Relationships: [];
       };
+      project_insights: {
+        Row: {
+          content: string;
+          created_at: string;
+          id: string;
+          phase: string | null;
+          project_id: string;
+          type: string;
+          updated_at: string;
+        };
+        Insert: {
+          content: string;
+          created_at?: string;
+          id?: string;
+          phase?: string | null;
+          project_id: string;
+          type: string;
+          updated_at?: string;
+        };
+        Update: {
+          content?: string;
+          created_at?: string;
+          id?: string;
+          phase?: string | null;
+          project_id?: string;
+          type?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'project_insights_project_id_fkey';
+            columns: ['project_id'];
+            isOneToOne: false;
+            referencedRelation: 'projects';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      projects: {
+        Row: {
+          archived_at: string | null;
+          context: string;
+          created_at: string;
+          description: string | null;
+          id: string;
+          name: string;
+          status: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          archived_at?: string | null;
+          context?: string;
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          name: string;
+          status?: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          archived_at?: string | null;
+          context?: string;
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          name?: string;
+          status?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       survey_answers: {
         Row: {
           created_at: string;
@@ -209,6 +283,8 @@ export type Database = {
           id: string;
           max_respondents: number | null;
           previous_status: Database['public']['Enums']['survey_status'] | null;
+          project_id: string | null;
+          research_phase: string | null;
           slug: string | null;
           starts_at: string | null;
           status: Database['public']['Enums']['survey_status'];
@@ -229,6 +305,8 @@ export type Database = {
           id?: string;
           max_respondents?: number | null;
           previous_status?: Database['public']['Enums']['survey_status'] | null;
+          project_id?: string | null;
+          research_phase?: string | null;
           slug?: string | null;
           starts_at?: string | null;
           status?: Database['public']['Enums']['survey_status'];
@@ -249,6 +327,8 @@ export type Database = {
           id?: string;
           max_respondents?: number | null;
           previous_status?: Database['public']['Enums']['survey_status'] | null;
+          project_id?: string | null;
+          research_phase?: string | null;
           slug?: string | null;
           starts_at?: string | null;
           status?: Database['public']['Enums']['survey_status'];
@@ -258,7 +338,15 @@ export type Database = {
           view_count?: number;
           visibility?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'surveys_project_id_fkey';
+            columns: ['project_id'];
+            isOneToOne: false;
+            referencedRelation: 'projects';
+            referencedColumns: ['id'];
+          },
+        ];
       };
     };
     Views: {
@@ -307,12 +395,10 @@ export type Database = {
         Args: { p_questions: Json; p_survey_id: string; p_user_id: string };
         Returns: undefined;
       };
-      start_survey_response:
-        | { Args: { p_survey_id: string }; Returns: string }
-        | {
-            Args: { p_device_type?: string; p_survey_id: string };
-            Returns: string;
-          };
+      start_survey_response: {
+        Args: { p_device_type?: string; p_survey_id: string };
+        Returns: string;
+      };
       submit_survey_response: {
         Args: {
           p_contact_email?: string;
