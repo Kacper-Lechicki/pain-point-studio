@@ -712,6 +712,85 @@
       "contextPlaceholder": "Select a context...",
       "submit": "Create Project",
       "success": "Project created successfully."
+    },
+    "list": {
+      "summary": {
+        "totalLabel": "total"
+      },
+      "clickHint": "Click row for details",
+      "status": {
+        "active": "Active",
+        "archived": "Archived"
+      },
+      "search": {
+        "placeholder": "Search projects..."
+      },
+      "filters": {
+        "label": "Filter",
+        "statusSection": "Status",
+        "contextSection": "Context",
+        "clearFilters": "Clear all filters"
+      },
+      "sort": {
+        "updated": "Last updated",
+        "created": "Date created",
+        "name": "Name",
+        "surveys": "Surveys",
+        "responses": "Responses",
+        "asc": "Ascending",
+        "desc": "Descending"
+      },
+      "table": {
+        "name": "Name",
+        "status": "Status",
+        "context": "Context",
+        "surveys": "Surveys",
+        "responses": "Responses",
+        "progress": "Progress",
+        "updated": "Updated"
+      },
+      "card": {
+        "surveys": "{count, plural, one {# survey} other {# surveys}}",
+        "responses": "{count, plural, one {# response} other {# responses}}",
+        "progress": "{percent}% validated",
+        "updated": "Updated"
+      },
+      "actions": {
+        "moreActions": "More actions",
+        "edit": "Edit",
+        "archive": "Archive",
+        "restore": "Restore",
+        "delete": "Delete"
+      },
+      "confirm": {
+        "archiveTitle": "Archive project?",
+        "archiveDescription": "This project will be moved to the archive. You can restore it later.",
+        "archiveAction": "Archive",
+        "restoreTitle": "Restore project?",
+        "restoreDescription": "This project will be restored to active status.",
+        "restoreAction": "Restore",
+        "deleteTitle": "Delete project?",
+        "deleteDescription": "This will permanently delete the project and all its notes. Surveys will remain but won't be linked to this project anymore.",
+        "deleteAction": "Delete"
+      },
+      "edit": {
+        "title": "Edit Project",
+        "description": "Update the project name or description.",
+        "submit": "Save Changes",
+        "success": "Project updated successfully."
+      },
+      "emptySearch": {
+        "title": "No projects match \"{query}\"",
+        "description": "Try a different search term."
+      },
+      "emptyFilter": {
+        "title": "No projects match filters",
+        "description": "Try adjusting your filters."
+      },
+      "archiveSuccess": "Project archived.",
+      "restoreSuccess": "Project restored.",
+      "deleteSuccess": "Project deleted.",
+      "clearFilters": "Clear filters"
     }
   },
   "respondent": {
