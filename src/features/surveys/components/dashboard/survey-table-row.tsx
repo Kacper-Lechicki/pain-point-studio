@@ -9,6 +9,7 @@ import { TableCell, TableRow } from '@/components/ui/table';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import { Sparkline } from '@/features/surveys/components/dashboard/sparkline';
 import { SurveyActionMenuContent } from '@/features/surveys/components/dashboard/survey-action-menu';
+import { SurveyProjectBadge } from '@/features/surveys/components/dashboard/survey-project-badge';
 import { SurveyShareDialog } from '@/features/surveys/components/dashboard/survey-share-dialog';
 import { SurveyStatusBadge } from '@/features/surveys/components/dashboard/survey-status-badge';
 import { ExportDialog } from '@/features/surveys/components/stats/export-dialog';
@@ -85,6 +86,17 @@ export function SurveyTableRow({
             <p className="text-muted-foreground mt-0.5 truncate text-[11px]">
               {survey.description}
             </p>
+          )}
+
+          {survey.projectId && (
+            <div className="mt-1">
+              <SurveyProjectBadge
+                projectId={survey.projectId}
+                projectName={survey.projectName}
+                projectContext={survey.projectContext}
+                researchPhase={survey.researchPhase}
+              />
+            </div>
           )}
         </TableCell>
 
