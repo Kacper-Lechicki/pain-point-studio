@@ -7,6 +7,7 @@ import { Separator } from '@/components/ui/separator';
 import { ProjectActionButtons } from '@/features/projects/components/project-action-buttons';
 import { ProjectStatusBadge } from '@/features/projects/components/project-status-badge';
 import { PROJECT_CONTEXTS_CONFIG } from '@/features/projects/config/contexts';
+import { isProjectArchived } from '@/features/projects/lib/project-helpers';
 import type { Project, ProjectContext, ProjectStatus } from '@/features/projects/types';
 import type { MessageKey } from '@/i18n/types';
 
@@ -28,7 +29,7 @@ export function ProjectDashboardHeader({
   onDelete,
 }: ProjectDashboardHeaderProps) {
   const t = useTranslations();
-  const isArchived = project.status === 'archived';
+  const isArchived = isProjectArchived(project);
   const contextConfig = PROJECT_CONTEXTS_CONFIG[project.context as ProjectContext];
 
   return (

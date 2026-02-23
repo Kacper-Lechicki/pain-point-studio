@@ -20,6 +20,7 @@ import { ProjectScorecard } from '@/features/projects/components/project-scoreca
 import { ValidationProgressStepper } from '@/features/projects/components/validation-progress-stepper';
 import { PROJECT_CONTEXTS_CONFIG } from '@/features/projects/config/contexts';
 import { computePhaseStatuses } from '@/features/projects/lib/phase-status';
+import { isProjectArchived } from '@/features/projects/lib/project-helpers';
 import { generateSignals } from '@/features/projects/lib/signals';
 import type { Project, ProjectContext, ProjectInsight } from '@/features/projects/types';
 import { RESEARCH_PHASES } from '@/features/projects/types';
@@ -112,7 +113,7 @@ export function ProjectDashboardPage({
     }
 
     if (confirmAction === 'archive') {
-      const isArchived = project.status === 'archived';
+      const isArchived = isProjectArchived(project);
 
       const successMsg = (
         isArchived ? 'projects.detail.restoreSuccess' : 'projects.detail.archiveSuccess'
@@ -153,7 +154,7 @@ export function ProjectDashboardPage({
       return null;
     }
 
-    const isArchived = project.status === 'archived';
+    const isArchived = isProjectArchived(project);
 
     if (confirmAction === 'archive') {
       return {
@@ -178,7 +179,7 @@ export function ProjectDashboardPage({
       confirmLabel: t('projects.list.confirm.deleteAction'),
       variant: 'destructive' as const,
     };
-  }, [confirmAction, project.status, t]);
+  }, [confirmAction, project, t]);
 
   const isIdeaValidation = project.context === 'idea_validation';
   const contextConfig = PROJECT_CONTEXTS_CONFIG[project.context as ProjectContext];
