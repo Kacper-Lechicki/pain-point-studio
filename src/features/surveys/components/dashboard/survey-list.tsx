@@ -13,7 +13,6 @@ import { SurveyDetailSheet } from '@/features/surveys/components/dashboard/surve
 import { SurveyListKpi } from '@/features/surveys/components/dashboard/survey-list-kpi';
 import { SurveyListRow } from '@/features/surveys/components/dashboard/survey-list-row';
 import { SurveyListTable } from '@/features/surveys/components/dashboard/survey-list-table';
-import { SURVEY_CATEGORIES } from '@/features/surveys/config/survey-categories';
 import { deriveSurveyFlags } from '@/features/surveys/config/survey-status';
 import {
   useRealtimeSurveyList,
@@ -115,8 +114,6 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
     isMd,
     searchQuery,
     setSearchQuery,
-    categoryFilter,
-    setCategoryFilter,
     sortBy,
     sortDir,
     setSortDir,
@@ -156,28 +153,6 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
 
     return counts;
   }, [surveys]);
-
-  const categoryCounts = useMemo(() => {
-    const counts: Record<string, number> = {};
-
-    for (const cat of SURVEY_CATEGORIES) {
-      counts[cat.value] = 0;
-    }
-
-    for (const s of surveys) {
-      if (!deriveSurveyFlags(s.status).isArchived) {
-        if (statusFilter.length === 0 || statusFilter.includes(s.status as SurveyStatusFilter)) {
-          const current = counts[s.category];
-
-          if (current !== undefined) {
-            counts[s.category] = current + 1;
-          }
-        }
-      }
-    }
-
-    return counts;
-  }, [surveys, statusFilter]);
 
   const projectOptions = useMemo(() => {
     const map = new Map<string, { name: string; count: number }>();
@@ -231,8 +206,7 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
     return order.filter((s) => (statusCounts[s] ?? 0) > 0);
   }, [statusCounts]);
 
-  const isFiltered =
-    statusFilter.length > 0 || categoryFilter.length > 0 || projectFilter.length > 0;
+  const isFiltered = statusFilter.length > 0 || projectFilter.length > 0;
 
   const handleStatusChange = (surveyId: string, action: string) => {
     const { shouldDeselect, updatedSurveys } = applyOptimisticStatusChange(
@@ -264,8 +238,6 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
       <SurveyListToolbar
         statusFilter={statusFilter}
         onStatusFilterChange={setStatusFilter}
-        categoryFilter={categoryFilter}
-        onCategoryFilterChange={setCategoryFilter}
         projectFilter={projectFilter}
         onProjectFilterChange={setProjectFilter}
         projectOptions={projectOptions}
@@ -276,7 +248,6 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
         onSortByChange={handleSortByChange}
         onSortDirChange={setSortDir}
         statusCounts={statusCounts}
-        categoryCounts={categoryCounts}
       />
 
       {filteredSurveys.length === 0 ? (
@@ -300,7 +271,6 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
                 onClick={() => {
                   setSearchQuery('');
                   setStatusFilter([]);
-                  setCategoryFilter([]);
                   setProjectFilter([]);
                 }}
               >

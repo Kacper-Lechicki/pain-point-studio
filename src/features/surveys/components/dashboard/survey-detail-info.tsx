@@ -5,7 +5,6 @@ import {
   CalendarX2,
   Clock,
   FolderKanban,
-  Tag,
   Users,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -17,7 +16,6 @@ import type { ResearchPhase } from '@/features/projects/types';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import { ExpiryMetricRow } from '@/features/surveys/components/dashboard/expiry-metric-row';
 import { SurveyStatusBadge } from '@/features/surveys/components/dashboard/survey-status-badge';
-import { SURVEY_CATEGORIES } from '@/features/surveys/config/survey-categories';
 import { SURVEY_STATUS_CONFIG } from '@/features/surveys/config/survey-status';
 import type { SurveyStatusFlags } from '@/features/surveys/config/survey-status';
 import Link from '@/i18n/link';
@@ -49,19 +47,6 @@ export function SurveyDetailInfo({
           label={t('surveys.dashboard.detailPanel.status')}
           value={<SurveyStatusBadge status={survey.status} />}
         />
-
-        {survey.category &&
-          (() => {
-            const cat = SURVEY_CATEGORIES.find((c) => c.value === survey.category);
-
-            return cat ? (
-              <MetricRow
-                icon={Tag}
-                label={t('surveys.dashboard.detailPanel.category')}
-                value={t(cat.labelKey as Parameters<typeof t>[0])}
-              />
-            ) : null;
-          })()}
 
         {survey.projectName && survey.projectId && (
           <MetricRow

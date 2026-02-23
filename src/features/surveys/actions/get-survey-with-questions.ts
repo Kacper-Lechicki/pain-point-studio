@@ -16,7 +16,6 @@ export interface SurveyBuilderData {
     id: string;
     title: string;
     description: string;
-    category: string;
     visibility: SurveyVisibility;
     startsAt: string | null;
     endsAt: string | null;
@@ -43,7 +42,7 @@ export const getSurveyWithQuestions = cache(
     const { data: survey } = (await supabase
       .from('surveys')
       .select(
-        'id, title, description, category, visibility, starts_at, ends_at, max_respondents, status, project_id, research_phase'
+        'id, title, description, visibility, starts_at, ends_at, max_respondents, status, project_id, research_phase'
       )
       .eq('id', surveyId)
       .eq('user_id', user.id)
@@ -52,7 +51,6 @@ export const getSurveyWithQuestions = cache(
         id: string;
         title: string;
         description: string;
-        category: string;
         visibility: string;
         starts_at: string | null;
         ends_at: string | null;
@@ -78,7 +76,6 @@ export const getSurveyWithQuestions = cache(
         id: survey.id,
         title: survey.title,
         description: survey.description ?? '',
-        category: survey.category ?? '',
         visibility: (survey.visibility as SurveyVisibility) ?? SURVEY_VISIBILITY_VALUES[0],
         startsAt: survey.starts_at,
         endsAt: survey.ends_at,

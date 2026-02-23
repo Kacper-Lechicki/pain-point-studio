@@ -31,12 +31,10 @@ export default async function SurveyBuilderRoute({ params }: Props) {
         surveyStatus={data.survey.status}
         surveyMetadata={{
           description: data.survey.description,
-          category: data.survey.category,
           visibility: data.survey.visibility,
           projectId: data.survey.projectId,
           researchPhase: (data.survey.researchPhase as ResearchPhase | null) ?? null,
         }}
-        categoryOptions={formData.categoryOptions}
         projectOptions={formData.projectOptions}
         initialQuestions={data.questions.map((q) => ({
           id: q.id,

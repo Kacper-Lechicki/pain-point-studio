@@ -57,7 +57,6 @@ function makeSurvey(overrides: Partial<UserSurvey> = {}): UserSurvey {
     id: 'survey-1',
     title: 'Test Survey',
     description: 'A test survey',
-    category: 'product',
     status: 'active',
     slug: 'test-survey',
     viewCount: 100,

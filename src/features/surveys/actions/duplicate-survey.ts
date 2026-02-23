@@ -12,7 +12,7 @@ export const duplicateSurvey = withProtectedAction<typeof surveyIdSchema, { surv
     action: async ({ data, user, supabase }) => {
       const { data: original, error: fetchError } = await supabase
         .from('surveys')
-        .select('title, description, category, visibility, max_respondents')
+        .select('title, description, visibility, max_respondents')
         .eq('id', data.surveyId)
         .eq('user_id', user.id)
         .maybeSingle();
@@ -27,7 +27,6 @@ export const duplicateSurvey = withProtectedAction<typeof surveyIdSchema, { surv
           user_id: user.id,
           title: `${original.title} (copy)`,
           description: original.description,
-          category: original.category,
           visibility: original.visibility,
           max_respondents: original.max_respondents,
           status: 'draft',

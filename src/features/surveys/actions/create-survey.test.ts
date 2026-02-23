@@ -65,7 +65,6 @@ function chain(result: { data?: unknown; error?: unknown } = {}) {
 const VALID_INPUT = {
   title: 'My Survey',
   description: 'A test survey',
-  category: 'project-idea-evaluation',
   visibility: 'public' as const,
   action: 'saveDraft' as const,
 };
@@ -96,7 +95,6 @@ describe('Survey Actions – Create Survey Draft', () => {
         user_id: USER.id,
         title: VALID_INPUT.title,
         description: VALID_INPUT.description,
-        category: VALID_INPUT.category,
         visibility: VALID_INPUT.visibility,
         status: 'draft',
       })
@@ -118,7 +116,6 @@ describe('Survey Actions – Create Survey Draft', () => {
       expect.objectContaining({
         title: VALID_INPUT.title,
         description: VALID_INPUT.description,
-        category: VALID_INPUT.category,
         visibility: VALID_INPUT.visibility,
       })
     );
