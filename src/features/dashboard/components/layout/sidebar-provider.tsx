@@ -12,7 +12,8 @@ import {
   useSyncExternalStore,
 } from 'react';
 
-import { type NavItem, findActiveNavItem } from '@/features/dashboard/config/navigation';
+import type { NavItem } from '@/features/dashboard/config/navigation';
+import { findActiveNavItem } from '@/features/dashboard/lib/nav-utils';
 import { useBreakpoint } from '@/hooks/common/use-breakpoint';
 import { usePathname } from '@/i18n/routing';
 

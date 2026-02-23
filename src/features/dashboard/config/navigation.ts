@@ -1,21 +1,16 @@
 import {
   Archive,
   BarChart3,
-  CircleUserRound,
   ClipboardList,
   FolderKanban,
   FolderOpen,
   Home,
-  KeyRound,
   LayoutTemplate,
   Lightbulb,
-  Link2,
   type LucideIcon,
-  Mail,
   Plug,
   Plus,
   Settings,
-  Trash2,
 } from 'lucide-react';
 
 import type { AppRoute } from '@/config/routes';
@@ -193,34 +188,6 @@ export const SIDEBAR_NAV: NavGroup[] = [
   },
 ];
 
-const USER_SETTINGS_SUB_NAV_ITEMS: SubNavItem[] = [
-  { labelKey: 'settings.nav.profile', icon: CircleUserRound, href: ROUTES.settings.profile },
-  { labelKey: 'settings.nav.email', icon: Mail, href: ROUTES.settings.email },
-  { labelKey: 'settings.nav.password', icon: KeyRound, href: ROUTES.settings.password },
-  {
-    labelKey: 'settings.nav.connectedAccounts',
-    icon: Link2,
-    href: ROUTES.settings.connectedAccounts,
-  },
-  { labelKey: 'settings.nav.dangerZone', icon: Trash2, href: ROUTES.settings.dangerZone },
-];
-
-/**
- * Virtual nav item for user account settings (not shown in sidebar).
- * Returned by `findActiveNavItem` so the sub-panel renders when
- * the user navigates to /settings/* via the user menu.
- */
-const USER_SETTINGS_NAV_ITEM: NavItem = {
-  labelKey: 'sidebar.settings',
-  icon: Settings,
-  href: ROUTES.settings.profile,
-  activePrefix: ROUTES.common.settings,
-  subNav: {
-    titleKey: 'settings.title',
-    groups: [{ items: USER_SETTINGS_SUB_NAV_ITEMS }],
-  },
-};
-
 export const SIDEBAR_BOTTOM_ITEM: NavItem = {
   labelKey: 'sidebar.projectSettings',
   icon: Settings,
@@ -228,84 +195,9 @@ export const SIDEBAR_BOTTOM_ITEM: NavItem = {
   disabled: true,
 };
 
-// ── Dynamic route tabs (sub-panel) ──────────────────────────────────
+// ── Re-exports for backward compatibility ─────────────────────────────
+// NOTE: findActiveNavItem is in lib/nav-utils.ts (not re-exported to avoid circular deps)
 
-export interface DynamicRouteTab {
-  prefix: string;
-  icon: LucideIcon;
-  /**
-   * Segments immediately after `prefix` that should NOT activate this tab.
-   * Used when `prefix` is broad (e.g. `/dashboard/research`) to avoid
-   * matching known static child routes like `new`, `archive`, etc.
-   */
-  excludeSegments?: readonly string[] | undefined;
-}
-
-export const DYNAMIC_ROUTE_TABS: Record<string, DynamicRouteTab[]> = {
-  [ROUTES.dashboard.research]: [
-    { prefix: ROUTES.dashboard.researchStats, icon: BarChart3 },
-    {
-      prefix: ROUTES.dashboard.research,
-      icon: ClipboardList,
-      excludeSegments: ['new', 'archive', 'templates', 'folders', 'settings', 'integrations'],
-    },
-  ],
-  [ROUTES.dashboard.projects]: [
-    {
-      prefix: ROUTES.dashboard.projects,
-      icon: FolderKanban,
-      excludeSegments: ['new'],
-    },
-  ],
-};
-
-// ── Dynamic sidebar items (main sidebar) ────────────────────────────
-
-export interface DynamicSidebarItem {
-  /** Path that, when matched exactly, shows this item in the sidebar. */
-  path: AppRoute;
-  labelKey: MessageKey;
-  icon: LucideIcon;
-}
-
-/**
- * Routes that are not part of the static sidebar but should still
- * show a highlighted item when the user is on them.
- */
-export const DYNAMIC_SIDEBAR_ITEMS: DynamicSidebarItem[] = [
-  { path: ROUTES.profile.preview, labelKey: 'sidebar.profilePreview', icon: CircleUserRound },
-];
-
-// ── Helpers ───────────────────────────────────────────────────────────
-
-/**
- * Find the nav item whose href matches the current pathname or whose
- * sub-nav contains a matching child. Returns the NavItem if it has
- * subNav, otherwise undefined.
- */
-function matchesNavItem(pathname: string, item: NavItem): boolean {
-  const prefix = item.activePrefix ?? item.href;
-
-  return pathname === prefix || pathname.startsWith(prefix + '/');
-}
-
-export function findActiveNavItem(pathname: string): NavItem | undefined {
-  for (const group of SIDEBAR_NAV) {
-    for (const item of group.items) {
-      if (!item.subNav) {
-        continue;
-      }
-
-      if (matchesNavItem(pathname, item)) {
-        return item;
-      }
-    }
-  }
-
-  // User account settings — accessible via user menu, sub-panel still needed
-  if (matchesNavItem(pathname, USER_SETTINGS_NAV_ITEM)) {
-    return USER_SETTINGS_NAV_ITEM;
-  }
-
-  return undefined;
-}
+export { USER_SETTINGS_NAV_ITEM, USER_SETTINGS_SUB_NAV_ITEMS } from './navigation-settings';
+export type { DynamicRouteTab, DynamicSidebarItem } from './navigation-dynamic';
+export { DYNAMIC_ROUTE_TABS, DYNAMIC_SIDEBAR_ITEMS } from './navigation-dynamic';
