@@ -250,6 +250,13 @@ export const DYNAMIC_ROUTE_TABS: Record<string, DynamicRouteTab[]> = {
       excludeSegments: ['new', 'archive', 'templates', 'folders', 'settings', 'integrations'],
     },
   ],
+  [ROUTES.dashboard.projects]: [
+    {
+      prefix: ROUTES.dashboard.projects,
+      icon: FolderKanban,
+      excludeSegments: ['new'],
+    },
+  ],
 };
 
 // ── Dynamic sidebar items (main sidebar) ────────────────────────────

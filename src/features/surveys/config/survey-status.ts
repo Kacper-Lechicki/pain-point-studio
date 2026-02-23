@@ -1,6 +1,7 @@
 import { Archive, Ban, CheckCircle2, CircleDot, FilePen, RotateCcw, Trash2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
+import { COMPACT_ACTION_COLORS } from '@/components/ui/action-button-styles';
 import type { SurveyStatus } from '@/features/surveys/types';
 
 // ── Status visual config ────────────────────────────────────────────
@@ -13,6 +14,8 @@ interface StatusBadgeConfig {
 
 interface StatusConfig {
   labelKey: string;
+  descriptionKey: string;
+  ariaLabelKey: string;
   icon: LucideIcon;
   badge: StatusBadgeConfig;
   kpiColor: string;
@@ -25,12 +28,16 @@ export const KPI_COLOR_ALL = 'text-foreground';
 export const SURVEY_STATUS_CONFIG: Record<SurveyStatus, StatusConfig> = {
   draft: {
     labelKey: 'surveys.dashboard.status.draft',
+    descriptionKey: 'surveys.dashboard.statusInfo.draft',
+    ariaLabelKey: 'surveys.dashboard.statusInfo.ariaLabel',
     icon: FilePen,
     badge: { variant: 'secondary', className: '', showPulseDot: false },
     kpiColor: 'text-foreground',
   },
   active: {
     labelKey: 'surveys.dashboard.status.active',
+    descriptionKey: 'surveys.dashboard.statusInfo.active',
+    ariaLabelKey: 'surveys.dashboard.statusInfo.ariaLabel',
     icon: CircleDot,
     badge: {
       variant: 'default',
@@ -41,6 +48,8 @@ export const SURVEY_STATUS_CONFIG: Record<SurveyStatus, StatusConfig> = {
   },
   completed: {
     labelKey: 'surveys.dashboard.status.completed',
+    descriptionKey: 'surveys.dashboard.statusInfo.completed',
+    ariaLabelKey: 'surveys.dashboard.statusInfo.ariaLabel',
     icon: CheckCircle2,
     badge: {
       variant: 'outline',
@@ -51,6 +60,8 @@ export const SURVEY_STATUS_CONFIG: Record<SurveyStatus, StatusConfig> = {
   },
   cancelled: {
     labelKey: 'surveys.dashboard.status.cancelled',
+    descriptionKey: 'surveys.dashboard.statusInfo.cancelled',
+    ariaLabelKey: 'surveys.dashboard.statusInfo.ariaLabel',
     icon: Ban,
     badge: {
       variant: 'outline',
@@ -61,6 +72,8 @@ export const SURVEY_STATUS_CONFIG: Record<SurveyStatus, StatusConfig> = {
   },
   archived: {
     labelKey: 'surveys.dashboard.status.archived',
+    descriptionKey: 'surveys.dashboard.statusInfo.archived',
+    ariaLabelKey: 'surveys.dashboard.statusInfo.ariaLabel',
     icon: Archive,
     badge: {
       variant: 'outline',
@@ -155,8 +168,7 @@ export const SURVEY_ACTION_UI: Record<SurveyAction, ActionUIConfig> = {
   complete: {
     icon: CheckCircle2,
     toastKey: 'toast.completed',
-    buttonClassName:
-      'border-violet-500/30 text-violet-600 hover:border-violet-500/40 hover:text-violet-600 md:hover:text-violet-600 dark:text-violet-400 dark:hover:text-violet-400 dark:md:hover:text-violet-400',
+    buttonClassName: COMPACT_ACTION_COLORS.complete,
     menuItemVariant: 'accent',
     confirm: {
       titleKey: 'confirm.completeTitle',
@@ -167,8 +179,7 @@ export const SURVEY_ACTION_UI: Record<SurveyAction, ActionUIConfig> = {
   cancel: {
     icon: Ban,
     toastKey: 'toast.cancelled',
-    buttonClassName:
-      'text-destructive hover:text-destructive md:hover:text-destructive border-destructive/30 hover:border-destructive/40',
+    buttonClassName: COMPACT_ACTION_COLORS.destructive,
     menuItemVariant: 'destructive',
     confirm: {
       titleKey: 'confirm.cancelTitle',
@@ -179,8 +190,7 @@ export const SURVEY_ACTION_UI: Record<SurveyAction, ActionUIConfig> = {
   archive: {
     icon: Archive,
     toastKey: 'toast.archived',
-    buttonClassName:
-      'border-amber-500/30 text-amber-600 hover:border-amber-500/40 hover:text-amber-600 md:hover:text-amber-600 dark:text-amber-500 dark:hover:text-amber-500 dark:md:hover:text-amber-500',
+    buttonClassName: COMPACT_ACTION_COLORS.archive,
     menuItemVariant: 'warning',
     confirm: {
       titleKey: 'confirm.archiveTitle',
@@ -191,6 +201,7 @@ export const SURVEY_ACTION_UI: Record<SurveyAction, ActionUIConfig> = {
   restore: {
     icon: RotateCcw,
     toastKey: 'toast.restored',
+    buttonClassName: COMPACT_ACTION_COLORS.restore,
     confirm: {
       titleKey: 'confirm.restoreTitle',
       descriptionKey: 'confirm.restoreDescription',
@@ -200,8 +211,7 @@ export const SURVEY_ACTION_UI: Record<SurveyAction, ActionUIConfig> = {
   delete: {
     icon: Trash2,
     toastKey: 'toast.deleted',
-    buttonClassName:
-      'text-destructive hover:text-destructive md:hover:text-destructive border-destructive/30 hover:border-destructive/40',
+    buttonClassName: COMPACT_ACTION_COLORS.destructive,
     menuItemVariant: 'destructive',
     confirm: {
       titleKey: 'confirm.deleteTitle',

@@ -791,6 +791,37 @@
       "restoreSuccess": "Project restored.",
       "deleteSuccess": "Project deleted.",
       "clearFilters": "Clear filters"
+    },
+    "statusInfo": {
+      "ariaLabel": "Status info: {status}",
+      "active": "This project is active and accepting new surveys. You can add surveys, collect responses, and track validation progress.",
+      "archived": "This project has been archived. Surveys are preserved but no longer accept new responses. You can restore it at any time."
+    },
+    "detail": {
+      "allSurveys": "All Surveys",
+      "unassigned": "Unassigned",
+      "noSurveysInPhase": "No surveys in this phase yet.",
+      "noSurveys": "No surveys yet.",
+      "createSurvey": "Create survey",
+      "responses": "{count, plural, one {# response} other {# responses}}",
+      "archiveSuccess": "Project archived.",
+      "restoreSuccess": "Project restored.",
+      "deleteSuccess": "Project deleted.",
+      "searchPlaceholder": "Search surveys...",
+      "noMatchingSurveys": "No matching surveys.",
+      "sheetTitle": "Project details",
+      "detailsLabel": "Details",
+      "surveysLabel": "Surveys",
+      "actionsLabel": "Actions",
+      "context": "Context",
+      "status": "Status",
+      "surveyCount": "Surveys",
+      "responseCount": "Responses",
+      "progress": "Progress",
+      "progressValue": "{percent}% validated",
+      "activeSurveys": "Active",
+      "completedSurveys": "Completed",
+      "draftSurveys": "Drafts"
     }
   },
   "respondent": {

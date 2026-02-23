@@ -28,7 +28,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
-import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
 import { updateProject } from '@/features/projects/actions/update-project';
 import {
   PROJECT_DESCRIPTION_MAX_LENGTH,
@@ -38,10 +37,16 @@ import { type UpdateProjectInput, updateProjectSchema } from '@/features/project
 import { useFormAction } from '@/hooks/common/use-form-action';
 import type { MessageKey } from '@/i18n/types';
 
+export interface EditableProject {
+  id: string;
+  name: string;
+  description: string | null;
+}
+
 interface EditProjectDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  project: ProjectWithMetrics;
+  project: EditableProject;
   onSuccess: (data: { name: string; description: string | undefined }) => void;
 }
 

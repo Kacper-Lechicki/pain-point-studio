@@ -5,7 +5,6 @@ import type React from 'react';
 import { Archive, MoreHorizontal, Pencil, Trash2, Undo2 } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -16,8 +15,9 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { TableCell, TableRow } from '@/components/ui/table';
 import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
+import { ProjectStatusBadge } from '@/features/projects/components/project-status-badge';
 import { PROJECT_CONTEXTS_CONFIG } from '@/features/projects/config/contexts';
-import type { ProjectContext } from '@/features/projects/types';
+import type { ProjectContext, ProjectStatus } from '@/features/projects/types';
 import type { MessageKey } from '@/i18n/types';
 import { cn } from '@/lib/common/utils';
 
@@ -83,17 +83,7 @@ export function ProjectTableRow({
       </TableCell>
 
       <TableCell className="border-border/30 min-w-0 border-l text-center">
-        <Badge
-          variant={isArchived ? 'outline' : 'default'}
-          className={cn(
-            'text-[11px]',
-            isArchived
-              ? 'border-amber-500/25 bg-amber-500/15 text-amber-700 dark:text-amber-400'
-              : 'border-emerald-500/25 bg-emerald-500/15 text-emerald-700 dark:text-emerald-400'
-          )}
-        >
-          {t(`projects.list.status.${project.status}` as MessageKey)}
-        </Badge>
+        <ProjectStatusBadge status={project.status as ProjectStatus} />
       </TableCell>
 
       <TableCell className="text-muted-foreground border-border/30 min-w-0 truncate border-l text-xs">

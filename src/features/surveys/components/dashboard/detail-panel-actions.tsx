@@ -4,8 +4,9 @@ import { BarChart3, Download, Pencil, Send, Share2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { COMPACT_ACTION_BASE } from '@/components/ui/action-button-styles';
 import { Button } from '@/components/ui/button';
-import { SectionLabel } from '@/features/surveys/components/shared/metric-display';
+import { SectionLabel } from '@/components/ui/metric-display';
 import { QUESTIONS_MIN } from '@/features/surveys/config';
 import { SURVEY_ACTION_UI, type SurveyAction } from '@/features/surveys/config/survey-status';
 import type { SurveyStatusFlags } from '@/features/surveys/config/survey-status';
@@ -28,7 +29,6 @@ interface DetailPanelActionsProps {
   onActionClick: (action: SurveyAction) => void;
 }
 
-// ── Primary action item definition ────────────────────────────────────
 type PrimaryActionItem =
   | {
       kind: 'link';
@@ -60,7 +60,6 @@ export function DetailPanelActions({
   const t = useTranslations();
   const canPublish = flags.isDraft && questionCount >= QUESTIONS_MIN;
 
-  // Build visible primary items then sort alphabetically by label
   const primaryItems = useMemo(() => {
     const items: PrimaryActionItem[] = [];
 
@@ -122,7 +121,6 @@ export function DetailPanelActions({
     return items.sort((a, b) => a.label.localeCompare(b.label));
   }, [t, flags, canPublish, hasShareableLink, onShare, onExport, surveyId]);
 
-  // Sort status-change actions alphabetically by translated label
   const sortedActions = useMemo(
     () =>
       [...availableActions].sort((a, b) =>
@@ -134,16 +132,10 @@ export function DetailPanelActions({
   return (
     <>
       <SectionLabel>{t('surveys.dashboard.detailPanel.actionsLabel')}</SectionLabel>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-wrap gap-2">
         {primaryItems.map((item) =>
           item.kind === 'link' ? (
-            <Button
-              key={item.key}
-              variant={item.variant ?? 'outline'}
-              size="sm"
-              className="w-full"
-              asChild
-            >
+            <Button key={item.key} variant={item.variant ?? 'outline'} size="sm" asChild>
               <Link href={item.href}>
                 <item.icon className="size-4" aria-hidden />
                 {item.label}
@@ -154,7 +146,6 @@ export function DetailPanelActions({
               key={item.key}
               variant={item.variant ?? 'outline'}
               size="sm"
-              className="w-full"
               onClick={item.onClick}
             >
               <item.icon className="size-4" aria-hidden />
@@ -175,10 +166,7 @@ export function DetailPanelActions({
                 key={action}
                 variant="outline"
                 size="sm"
-                className={cn(
-                  'h-7 gap-1 px-2 text-xs hover:bg-transparent md:hover:bg-transparent',
-                  ui.buttonClassName
-                )}
+                className={cn(COMPACT_ACTION_BASE, ui.buttonClassName)}
                 onClick={() => onActionClick(action)}
               >
                 <Icon className="size-3.5" aria-hidden />

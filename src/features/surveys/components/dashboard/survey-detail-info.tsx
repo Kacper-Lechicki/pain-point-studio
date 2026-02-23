@@ -1,10 +1,10 @@
 import { Archive, Calendar, CalendarClock, CalendarX2, Clock, Tag, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { MetricRow, SectionLabel } from '@/components/ui/metric-display';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import { ExpiryMetricRow } from '@/features/surveys/components/dashboard/expiry-metric-row';
 import { SurveyStatusBadge } from '@/features/surveys/components/dashboard/survey-status-badge';
-import { MetricRow, SectionLabel } from '@/features/surveys/components/shared/metric-display';
 import { SURVEY_CATEGORIES } from '@/features/surveys/config/survey-categories';
 import { SURVEY_STATUS_CONFIG } from '@/features/surveys/config/survey-status';
 import type { SurveyStatusFlags } from '@/features/surveys/config/survey-status';
