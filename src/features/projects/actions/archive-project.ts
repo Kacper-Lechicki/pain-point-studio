@@ -2,6 +2,7 @@
 
 import { z } from 'zod';
 
+import { isProjectArchived } from '@/features/projects/lib/project-helpers';
 import type { ProjectStatus } from '@/features/projects/types';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
@@ -25,7 +26,7 @@ export const archiveProject = withProtectedAction<typeof archiveProjectSchema>('
       return { error: 'projects.errors.unexpected' };
     }
 
-    const isArchived = current.status === 'archived';
+    const isArchived = isProjectArchived(current.status);
 
     const { data: row, error } = await supabase
       .from('projects')

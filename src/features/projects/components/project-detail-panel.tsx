@@ -22,6 +22,7 @@ import {
 import { ValidationProgressDots } from '@/features/projects/components/validation-progress-dots';
 import { PROJECT_CONTEXTS_CONFIG } from '@/features/projects/config/contexts';
 import { computePhaseStatuses } from '@/features/projects/lib/phase-status';
+import { isProjectArchived } from '@/features/projects/lib/project-helpers';
 import { getProjectDetailUrl } from '@/features/projects/lib/project-urls';
 import type { ProjectContext, ProjectStatus } from '@/features/projects/types';
 import Link from '@/i18n/link';
@@ -43,7 +44,7 @@ export function ProjectDetailPanel({
   onDelete,
 }: ProjectDetailPanelProps) {
   const t = useTranslations();
-  const isArchived = project.status === 'archived';
+  const isArchived = isProjectArchived(project);
   const contextConfig = PROJECT_CONTEXTS_CONFIG[project.context as ProjectContext];
   const isIdeaValidation = project.context === 'idea_validation';
   const [searchQuery, setSearchQuery] = useState('');

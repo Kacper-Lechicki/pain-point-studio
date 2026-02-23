@@ -23,6 +23,7 @@ import {
 import { PROJECT_CONTEXTS_CONFIG } from '@/features/projects/config/contexts';
 import { useProjectListState } from '@/features/projects/hooks/use-project-list-state';
 import { useProjectSelection } from '@/features/projects/hooks/use-project-selection';
+import { isProjectArchived } from '@/features/projects/lib/project-helpers';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import type { MessageKey } from '@/i18n/types';
 
@@ -148,7 +149,7 @@ export function ProjectsListPage({ projects }: ProjectsListPageProps) {
     const { type, project } = confirmAction;
 
     if (type === 'archive') {
-      const isArchived = project.status === 'archived';
+      const isArchived = isProjectArchived(project);
       const successMsg = (
         isArchived ? 'projects.list.restoreSuccess' : 'projects.list.archiveSuccess'
       ) as MessageKey;
@@ -211,7 +212,7 @@ export function ProjectsListPage({ projects }: ProjectsListPageProps) {
     }
 
     const { type, project } = confirmAction;
-    const isArchived = project.status === 'archived';
+    const isArchived = isProjectArchived(project);
 
     if (type === 'archive') {
       return {

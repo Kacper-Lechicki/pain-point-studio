@@ -1,15 +1,13 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
-
-import { useNow } from 'next-intl';
+import { useCallback } from 'react';
 
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import { NOW_UPDATE_INTERVAL_MS } from '@/features/surveys/config';
 import { getDefaultSortDir, getSurveyComparator } from '@/features/surveys/lib/sort-helpers';
-import { useBreakpoint } from '@/hooks/common/use-breakpoint';
+import { useListState } from '@/hooks/common/use-list-state';
+// Re-import PerPage so we don't depend on use-pagination directly
 import type { PerPage } from '@/hooks/common/use-pagination';
-import { useSessionState } from '@/hooks/common/use-session-state';
 
 type SortDir = 'asc' | 'desc';
 
@@ -29,6 +27,9 @@ interface UseSurveyListStateOptions<TSortKey extends string> {
   ) => ((a: UserSurvey, b: UserSurvey) => number) | undefined;
 }
 
+const searchFn = (s: UserSurvey, q: string) =>
+  s.title.toLowerCase().includes(q) || s.description.toLowerCase().includes(q);
+
 export function useSurveyListState<TSortKey extends string>({
   surveys,
   storageKey,
@@ -38,152 +39,45 @@ export function useSurveyListState<TSortKey extends string>({
   preFilter,
   customComparator,
 }: UseSurveyListStateOptions<TSortKey>) {
-  const now = useNow({ updateInterval: NOW_UPDATE_INTERVAL_MS });
-  const isMd = useBreakpoint('md');
-  const resolvedDefaultDir = defaultSortDir ?? getDefaultSortDir(defaultSortBy);
-  const [searchQuery, setSearchQueryRaw] = useSessionState(`${storageKey}:q`, '');
-  const [sortBy, setSortByRaw] = useSessionState<TSortKey>(`${storageKey}:sort`, defaultSortBy);
+  // Two-tier comparator: common sorts first, then custom
+  const comparator = useCallback(
+    (sortBy: TSortKey, sortDir: SortDir) => {
+      const common = getSurveyComparator(sortBy, sortDir);
 
-  const [sortDir, setSortDirRaw] = useSessionState<SortDir>(
-    `${storageKey}:dir`,
-    resolvedDefaultDir
-  );
-
-  const [page, setPage] = useSessionState(`${storageKey}:page`, 1);
-  const [perPage, setPerPageRaw] = useSessionState<PerPage>(`${storageKey}:pp`, defaultPerPage);
-
-  const setSearchQuery = useCallback(
-    (value: string) => {
-      setSearchQueryRaw(value);
-      setPage(1);
-    },
-    [setSearchQueryRaw, setPage]
-  );
-
-  const setSortBy = useCallback(
-    (key: TSortKey) => {
-      setSortByRaw(key);
-      setSortDirRaw(getDefaultSortDir(key) as SortDir);
-      setPage(1);
-    },
-    [setSortByRaw, setSortDirRaw, setPage]
-  );
-
-  const setSortDir = useCallback(
-    (dir: SortDir) => {
-      setSortDirRaw(dir);
-      setPage(1);
-    },
-    [setSortDirRaw, setPage]
-  );
-
-  const handleSortByChange = setSortBy;
-
-  const handleSortByColumn = useCallback(
-    (key: TSortKey) => {
-      if (sortBy === key) {
-        setSortDirRaw((sortDir === 'asc' ? 'desc' : 'asc') as SortDir);
-        setPage(1);
-      } else {
-        setSortByRaw(key);
-        setSortDirRaw(getDefaultSortDir(key) as SortDir);
-        setPage(1);
+      if (common) {
+        return common;
       }
+
+      return customComparator?.(sortBy, sortDir);
     },
-    [sortBy, sortDir, setSortByRaw, setSortDirRaw, setPage]
+    [customComparator]
   );
 
-  const filteredSurveys = useMemo(() => {
-    let result = preFilter ? surveys.filter(preFilter) : surveys;
-
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-
-      result = result.filter(
-        (s) => s.title.toLowerCase().includes(q) || s.description.toLowerCase().includes(q)
-      );
-    }
-
-    const common = getSurveyComparator(sortBy, sortDir);
-
-    if (common) {
-      return [...result].sort(common);
-    }
-
-    const custom = customComparator?.(sortBy, sortDir);
-
-    if (custom) {
-      return [...result].sort(custom);
-    }
-
-    return result;
-  }, [surveys, searchQuery, sortBy, sortDir, preFilter, customComparator]);
-
-  // Pagination
-  const totalItems = filteredSurveys.length;
-  const totalPages = Math.max(1, Math.ceil(totalItems / perPage));
-
-  // Clamp page if it exceeds total (e.g. filter narrows results)
-  const clampedPage = Math.min(page, totalPages);
-  const startIndex = (clampedPage - 1) * perPage;
-  const endIndex = Math.min(startIndex + perPage, totalItems);
-
-  const goToPage = useCallback(
-    (p: number) => {
-      setPage(Math.max(1, Math.min(p, totalPages)));
-    },
-    [setPage, totalPages]
-  );
-
-  const setPerPage = useCallback(
-    (pp: PerPage) => {
-      setPerPageRaw(pp);
-      setPage(1);
-    },
-    [setPerPageRaw, setPage]
-  );
-
-  const nextPage = useCallback(() => {
-    setPage(Math.min(clampedPage + 1, totalPages));
-  }, [setPage, clampedPage, totalPages]);
-
-  const prevPage = useCallback(() => {
-    setPage(Math.max(clampedPage - 1, 1));
-  }, [setPage, clampedPage]);
-
-  const pagination = useMemo(
-    () => ({
-      page: clampedPage,
-      perPage,
-      totalPages,
-      totalItems,
-      startIndex,
-      endIndex,
-      goToPage,
-      setPerPage,
-      nextPage,
-      prevPage,
-      canGoNext: clampedPage < totalPages,
-      canGoPrev: clampedPage > 1,
-    }),
-    [
-      clampedPage,
-      perPage,
-      totalPages,
-      totalItems,
-      startIndex,
-      endIndex,
-      goToPage,
-      setPerPage,
-      nextPage,
-      prevPage,
-    ]
-  );
-
-  const paginatedSurveys = useMemo(
-    () => filteredSurveys.slice(startIndex, endIndex),
-    [filteredSurveys, startIndex, endIndex]
-  );
+  const {
+    now,
+    isMd,
+    searchQuery,
+    setSearchQuery,
+    sortBy,
+    sortDir,
+    setSortDir,
+    handleSortByChange,
+    handleSortByColumn,
+    filteredItems,
+    paginatedItems,
+    pagination,
+  } = useListState<UserSurvey, TSortKey>({
+    items: surveys,
+    storageKey,
+    defaultSortBy,
+    defaultSortDir,
+    defaultPerPage,
+    nowUpdateInterval: NOW_UPDATE_INTERVAL_MS,
+    getDefaultSortDir,
+    preFilter,
+    searchFn,
+    comparator,
+  });
 
   return {
     now,
@@ -191,13 +85,13 @@ export function useSurveyListState<TSortKey extends string>({
     searchQuery,
     setSearchQuery,
     sortBy,
-    setSortBy,
+    setSortBy: handleSortByChange,
     sortDir,
     setSortDir,
     handleSortByChange,
     handleSortByColumn,
-    filteredSurveys,
-    paginatedSurveys,
+    filteredSurveys: filteredItems,
+    paginatedSurveys: paginatedItems,
     pagination,
   };
 }
