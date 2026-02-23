@@ -2,6 +2,7 @@ import { notFound, redirect } from 'next/navigation';
 
 import { PageTransition } from '@/components/ui/page-transition';
 import { ROUTES } from '@/config';
+import type { ResearchPhase } from '@/features/projects/types';
 import { getSurveyFormData, getSurveyWithQuestions } from '@/features/surveys/actions';
 import { QuestionBuilderPage } from '@/features/surveys/components/builder/question-builder-page';
 
@@ -32,8 +33,11 @@ export default async function SurveyBuilderRoute({ params }: Props) {
           description: data.survey.description,
           category: data.survey.category,
           visibility: data.survey.visibility,
+          projectId: data.survey.projectId,
+          researchPhase: (data.survey.researchPhase as ResearchPhase | null) ?? null,
         }}
         categoryOptions={formData.categoryOptions}
+        projectOptions={formData.projectOptions}
         initialQuestions={data.questions.map((q) => ({
           id: q.id,
           text: q.text,

@@ -203,6 +203,7 @@ export function ProjectDashboardPage({
                   key={phase.value}
                   phase={phase}
                   surveys={filteredSurveysByPhase[phase.value] ?? []}
+                  projectId={project.id}
                   totalCount={(surveysByPhase[phase.value] ?? []).length}
                   isSearching={isSearching}
                 />
@@ -212,6 +213,7 @@ export function ProjectDashboardPage({
                 <PhaseSection
                   phase={null}
                   surveys={filteredSurveysByPhase['unassigned'] ?? []}
+                  projectId={project.id}
                   totalCount={(surveysByPhase['unassigned'] ?? []).length}
                   isSearching={isSearching}
                   sectionTitle={t('projects.detail.unassigned')}
@@ -222,6 +224,7 @@ export function ProjectDashboardPage({
             <PhaseSection
               phase={null}
               surveys={filteredSurveys}
+              projectId={project.id}
               totalCount={surveys.length}
               isSearching={isSearching}
               sectionTitle={t('projects.detail.allSurveys')}

@@ -68,6 +68,10 @@ function makeSurvey(id: string, title: string, category = 'product'): UserSurvey
     updatedAt: '2025-01-15T00:00:00Z',
     avgCompletionSeconds: null,
     avgQuestionCompletion: null,
+    projectId: null,
+    researchPhase: null,
+    projectName: null,
+    projectContext: null,
   };
 }
 

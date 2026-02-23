@@ -16,6 +16,7 @@ import type { MessageKey } from '@/i18n/types';
 interface PhaseSectionProps {
   phase: PhaseConfig | null;
   surveys: ProjectSurvey[];
+  projectId: string;
   sectionTitle?: string;
   totalCount?: number;
   isSearching?: boolean;
@@ -24,12 +25,12 @@ interface PhaseSectionProps {
 export function PhaseSection({
   phase,
   surveys,
+  projectId,
   sectionTitle,
   totalCount,
   isSearching,
 }: PhaseSectionProps) {
   const t = useTranslations();
-
   const Icon = phase?.icon ?? List;
   const title = phase ? t(phase.labelKey as MessageKey) : (sectionTitle ?? '');
 
@@ -47,7 +48,13 @@ export function PhaseSection({
 
         {!isSearching && (
           <Button variant="default" size="sm" className="ml-auto" asChild>
-            <Link href={ROUTES.dashboard.researchNew}>
+            <Link
+              href={
+                phase
+                  ? `${ROUTES.dashboard.researchNew}?projectId=${projectId}&phase=${phase.value}`
+                  : `${ROUTES.dashboard.researchNew}?projectId=${projectId}`
+              }
+            >
               <Plus className="size-4" aria-hidden />
               {t('projects.detail.createSurvey')}
             </Link>

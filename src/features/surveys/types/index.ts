@@ -54,7 +54,7 @@ export const surveyIdSchema = z.object({
 
 // ── Survey metadata schemas ─────────────────────────────────────────
 
-/** Schema for survey metadata fields (title, description, category, visibility). */
+/** Schema for survey metadata fields (title, description, category, visibility, project linking). */
 export const surveyMetadataSchema = z.object({
   title: z
     .string()
@@ -69,6 +69,8 @@ export const surveyMetadataSchema = z.object({
     .min(1, 'surveys.errors.fieldRequired')
     .refine((val) => SURVEY_CATEGORY_VALUES.includes(val), 'surveys.errors.fieldRequired'),
   visibility: z.enum(SURVEY_VISIBILITY_VALUES),
+  projectId: z.uuid().nullable().optional(),
+  researchPhase: z.enum(RESEARCH_PHASES).nullable().optional(),
 });
 
 export type SurveyMetadataSchema = z.infer<typeof surveyMetadataSchema>;
