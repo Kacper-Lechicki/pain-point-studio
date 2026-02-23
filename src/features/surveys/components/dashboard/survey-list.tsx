@@ -25,6 +25,8 @@ import { useRefresh } from '@/hooks/common/use-refresh';
 import { useSessionState } from '@/hooks/common/use-session-state';
 
 import {
+  NO_PROJECT_FILTER_ID,
+  type ProjectFilterOption,
   SurveyListToolbar,
   type SurveySortBy,
   type SurveyStatusFilter,
@@ -73,6 +75,8 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
     []
   );
 
+  const [projectFilter, setProjectFilterRaw] = useSessionState<string[]>('surveyList:project', []);
+
   useEffect(() => {
     setSurveys(initialSurveys);
   }, [initialSurveys]);
@@ -81,10 +85,29 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
   const { isConnected: isRealtimeConnected } = useRealtimeSurveyList(markSynced, hasActiveSurveys);
 
   const preFilter = useCallback(
-    (s: UserSurvey) =>
-      PRE_FILTER(s) &&
-      (statusFilter.length === 0 || statusFilter.includes(s.status as SurveyStatusFilter)),
-    [statusFilter]
+    (s: UserSurvey) => {
+      if (!PRE_FILTER(s)) {
+        return false;
+      }
+
+      if (statusFilter.length > 0 && !statusFilter.includes(s.status as SurveyStatusFilter)) {
+        return false;
+      }
+
+      if (projectFilter.length > 0) {
+        const hasNone = projectFilter.includes(NO_PROJECT_FILTER_ID);
+        const projectIds = projectFilter.filter((id) => id !== NO_PROJECT_FILTER_ID);
+
+        if (s.projectId === null) {
+          return hasNone;
+        }
+
+        return projectIds.includes(s.projectId);
+      }
+
+      return true;
+    },
+    [statusFilter, projectFilter]
   );
 
   const {
@@ -156,13 +179,60 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
     return counts;
   }, [surveys, statusFilter]);
 
+  const projectOptions = useMemo(() => {
+    const map = new Map<string, { name: string; count: number }>();
+    let noProjectCount = 0;
+
+    for (const s of surveys) {
+      if (deriveSurveyFlags(s.status).isArchived) {
+        continue;
+      }
+
+      if (statusFilter.length > 0 && !statusFilter.includes(s.status as SurveyStatusFilter)) {
+        continue;
+      }
+
+      if (s.projectId && s.projectName) {
+        const entry = map.get(s.projectId);
+
+        if (entry) {
+          entry.count++;
+        } else {
+          map.set(s.projectId, { name: s.projectName, count: 1 });
+        }
+      } else {
+        noProjectCount++;
+      }
+    }
+
+    const options: ProjectFilterOption[] = [];
+
+    for (const [id, { name, count }] of map) {
+      options.push({ id, name, count });
+    }
+
+    if (noProjectCount > 0) {
+      options.push({ id: NO_PROJECT_FILTER_ID, name: '', count: noProjectCount });
+    }
+
+    return options;
+  }, [surveys, statusFilter]);
+
+  const setProjectFilter = useCallback(
+    (ids: string[]) => {
+      setProjectFilterRaw(ids);
+    },
+    [setProjectFilterRaw]
+  );
+
   const kpiStatuses = useMemo(() => {
     const order: SurveyStatusFilter[] = ['active', 'draft', 'completed', 'cancelled'];
 
     return order.filter((s) => (statusCounts[s] ?? 0) > 0);
   }, [statusCounts]);
 
-  const isFiltered = statusFilter.length > 0 || categoryFilter.length > 0;
+  const isFiltered =
+    statusFilter.length > 0 || categoryFilter.length > 0 || projectFilter.length > 0;
 
   const handleStatusChange = (surveyId: string, action: string) => {
     const { shouldDeselect, updatedSurveys } = applyOptimisticStatusChange(
@@ -196,6 +266,9 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
         onStatusFilterChange={setStatusFilter}
         categoryFilter={categoryFilter}
         onCategoryFilterChange={setCategoryFilter}
+        projectFilter={projectFilter}
+        onProjectFilterChange={setProjectFilter}
+        projectOptions={projectOptions}
         searchQuery={searchQuery}
         onSearchQueryChange={setSearchQuery}
         sortBy={sortBy}
@@ -228,6 +301,7 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
                   setSearchQuery('');
                   setStatusFilter([]);
                   setCategoryFilter([]);
+                  setProjectFilter([]);
                 }}
               >
                 {t('surveys.dashboard.clearFilters')}

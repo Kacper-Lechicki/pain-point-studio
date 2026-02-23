@@ -9,6 +9,7 @@ import { cn } from '@/lib/common/utils';
 
 import { Sparkline } from './sparkline';
 import { SurveyActionMenuContent } from './survey-action-menu';
+import { SurveyProjectBadge } from './survey-project-badge';
 import { SurveyShareDialog } from './survey-share-dialog';
 import { SurveyStatusBadge } from './survey-status-badge';
 
@@ -79,6 +80,15 @@ export function SurveyCardRow({
         <p className="text-muted-foreground -mt-1 line-clamp-1 min-h-4 text-xs">
           {survey.description || '\u00A0'}
         </p>
+
+        {survey.projectId && (
+          <SurveyProjectBadge
+            projectId={survey.projectId}
+            projectName={survey.projectName}
+            projectContext={survey.projectContext}
+            researchPhase={survey.researchPhase}
+          />
+        )}
 
         <div
           className={cn(

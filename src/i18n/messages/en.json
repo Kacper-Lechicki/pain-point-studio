@@ -461,6 +461,8 @@
         "cancelled": "Cancelled",
         "archived": "Archived",
         "statusSection": "Status",
+        "projectSection": "Project",
+        "noProject": "No project",
         "categorySection": "Category",
         "clearFilters": "Clear filters"
       },
