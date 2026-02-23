@@ -23,12 +23,14 @@ describe('SURVEY_STATUS_CONFIG', () => {
     }
   });
 
-  it('should have an icon, labelKey, and badge config in each entry', () => {
+  it('should have an icon, labelKey, descriptionKey, ariaLabelKey, and badge config in each entry', () => {
     for (const status of statuses) {
       const config = SURVEY_STATUS_CONFIG[status];
 
       expect(config.icon).toBeDefined();
       expect(config.labelKey).toMatch(/^surveys\./);
+      expect(config.descriptionKey).toMatch(/^surveys\./);
+      expect(config.ariaLabelKey).toMatch(/^surveys\./);
       expect(config.badge).toHaveProperty('variant');
       expect(config.badge).toHaveProperty('showPulseDot');
     }

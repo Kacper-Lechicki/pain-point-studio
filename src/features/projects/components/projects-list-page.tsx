@@ -2,8 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { useRouter } from 'next/navigation';
-
 import { FolderKanban } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -15,6 +13,7 @@ import { archiveProject } from '@/features/projects/actions/archive-project';
 import { deleteProject } from '@/features/projects/actions/delete-project';
 import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
 import { ProjectCardRow } from '@/features/projects/components/project-card-row';
+import { ProjectDetailSheet } from '@/features/projects/components/project-detail-sheet';
 import { ProjectListKpi } from '@/features/projects/components/project-list-kpi';
 import { ProjectListTable } from '@/features/projects/components/project-list-table';
 import {
@@ -23,7 +22,7 @@ import {
 } from '@/features/projects/components/project-list-toolbar';
 import { PROJECT_CONTEXTS_CONFIG } from '@/features/projects/config/contexts';
 import { useProjectListState } from '@/features/projects/hooks/use-project-list-state';
-import { getProjectDetailUrl } from '@/features/projects/lib/project-urls';
+import { useProjectSelection } from '@/features/projects/hooks/use-project-selection';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import type { MessageKey } from '@/i18n/types';
 
@@ -40,7 +39,6 @@ interface ProjectsListPageProps {
 
 export function ProjectsListPage({ projects }: ProjectsListPageProps) {
   const t = useTranslations();
-  const router = useRouter();
 
   const [localProjects, setLocalProjects] = useState(projects);
 
@@ -68,13 +66,16 @@ export function ProjectsListPage({ projects }: ProjectsListPageProps) {
     isFiltered,
   } = useProjectListState(localProjects);
 
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const { selectedId, selectedProject, projectDetail, showSheet, setSelected } =
+    useProjectSelection(localProjects);
+
   const [editProject, setEditProject] = useState<ProjectWithMetrics | null>(null);
   const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(null);
 
   const archiveAction = useFormAction({
     unexpectedErrorMessage: 'projects.errors.unexpected' as MessageKey,
   });
+
   const deleteAction = useFormAction({
     unexpectedErrorMessage: 'projects.errors.unexpected' as MessageKey,
   });
@@ -115,10 +116,9 @@ export function ProjectsListPage({ projects }: ProjectsListPageProps) {
 
   const handleSelect = useCallback(
     (projectId: string) => {
-      setSelectedId((prev) => (prev === projectId ? null : projectId));
-      router.push(getProjectDetailUrl(projectId));
+      setSelected(selectedId === projectId ? null : projectId);
     },
-    [router]
+    [setSelected, selectedId]
   );
 
   const handleEditSuccess = (data: { name: string; description: string | undefined }) => {
@@ -191,7 +191,7 @@ export function ProjectsListPage({ projects }: ProjectsListPageProps) {
       setConfirmAction(null);
 
       if (selectedId === project.id) {
-        setSelectedId(null);
+        setSelected(null);
       }
 
       const result = await deleteAction.execute(deleteProject, { projectId: project.id });
@@ -361,6 +361,29 @@ export function ProjectsListPage({ projects }: ProjectsListPageProps) {
           variant={confirmDialogProps.variant}
         />
       )}
+
+      <ProjectDetailSheet
+        open={showSheet}
+        onClose={() => setSelected(null)}
+        project={selectedProject}
+        projectDetail={projectDetail}
+        onEdit={() => {
+          if (selectedProject) {
+            setEditProject(selectedProject);
+          }
+        }}
+        onArchive={() => {
+          if (selectedProject) {
+            setConfirmAction({ type: 'archive', project: selectedProject });
+          }
+        }}
+        onDelete={() => {
+          if (selectedProject) {
+            setConfirmAction({ type: 'delete', project: selectedProject });
+          }
+        }}
+        detailsLabel={t('projects.detail.sheetTitle')}
+      />
     </div>
   );
 }

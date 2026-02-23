@@ -2,8 +2,8 @@
 
 import { useTranslations } from 'next-intl';
 
+import { SectionLabel } from '@/components/ui/metric-display';
 import type { DeviceTimelinePoint } from '@/features/surveys/actions/get-survey-stats';
-import { SectionLabel } from '@/features/surveys/components/shared/metric-display';
 import { DeviceBreakdownChart } from '@/features/surveys/components/stats/device-breakdown-chart';
 import { ResponseTimelineChart } from '@/features/surveys/components/stats/response-timeline-chart';
 

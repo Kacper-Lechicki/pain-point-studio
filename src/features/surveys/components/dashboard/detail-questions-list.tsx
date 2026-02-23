@@ -1,8 +1,8 @@
 import { Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { SectionLabel } from '@/components/ui/metric-display';
 import { QuestionConfigDetails } from '@/features/surveys/components/dashboard/question-config-details';
-import { SectionLabel } from '@/features/surveys/components/shared/metric-display';
 import { QUESTION_TYPE_ICONS, QUESTION_TYPE_LABEL_KEYS } from '@/features/surveys/config';
 import type { MappedQuestion } from '@/features/surveys/lib/map-question-row';
 

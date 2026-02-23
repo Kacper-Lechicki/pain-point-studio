@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl';
 
 import type { ProjectStatusFilter } from '@/features/projects/components/project-list-toolbar';
-import { PROJECT_STATUS_KPI_COLORS } from '@/features/projects/config/status';
+import { PROJECT_STATUS_CONFIG } from '@/features/projects/config/status';
 import type { MessageKey } from '@/i18n/types';
 import { cn } from '@/lib/common/utils';
 
@@ -44,7 +44,7 @@ export function ProjectListKpi({ statusCounts, kpiStatuses }: ProjectListKpiProp
               <span
                 className={cn(
                   'text-base font-semibold tabular-nums',
-                  PROJECT_STATUS_KPI_COLORS[status]
+                  PROJECT_STATUS_CONFIG[status as keyof typeof PROJECT_STATUS_CONFIG]?.kpiColor
                 )}
               >
                 {statusCounts[status] ?? 0}

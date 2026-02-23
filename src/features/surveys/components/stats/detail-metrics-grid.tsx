@@ -1,7 +1,7 @@
 import { Clock, Eye, ListChecks, MousePointerClick, Percent, Timer, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { SectionLabel } from '@/features/surveys/components/shared/metric-display';
+import { SectionLabel } from '@/components/ui/metric-display';
 import { formatCompletionTime } from '@/features/surveys/lib/calculations';
 import { cn } from '@/lib/common/utils';
 

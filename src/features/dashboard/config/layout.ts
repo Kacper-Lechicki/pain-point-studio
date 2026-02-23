@@ -101,31 +101,11 @@ function isFullWidthPath(pathname: string): boolean {
   );
 }
 
-/** Routes rendered at narrow content width (builder, survey detail, settings, profile). */
+/** Routes rendered at narrow content width (settings). */
 function isNarrowPath(pathname: string): boolean {
   const path = pathWithoutLocale(pathname);
 
-  if (
-    path === ROUTES.dashboard.researchNew ||
-    path.startsWith(ROUTES.dashboard.researchNew + '/')
-  ) {
-    return true;
-  }
-
-  if (path === ROUTES.dashboard.projectNew) {
-    return true;
-  }
-
-  if (/^\/dashboard\/research\/[^/]+$/.test(path) && path !== ROUTES.dashboard.researchArchive) {
-    return true;
-  }
-
-  if (
-    path === ROUTES.common.settings ||
-    path.startsWith(ROUTES.common.settings + '/') ||
-    path === '/profile' ||
-    path.startsWith('/profile/')
-  ) {
+  if (path === ROUTES.common.settings || path.startsWith(ROUTES.common.settings + '/')) {
     return true;
   }
 

@@ -7,6 +7,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { SectionLabel } from '@/components/ui/metric-display';
 import { Separator } from '@/components/ui/separator';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import { DetailPanelActions } from '@/features/surveys/components/dashboard/detail-panel-actions';
@@ -15,7 +16,6 @@ import { DetailQuestionsList } from '@/features/surveys/components/dashboard/det
 import { Sparkline, getSparklineColor } from '@/features/surveys/components/dashboard/sparkline';
 import { SurveyDetailInfo } from '@/features/surveys/components/dashboard/survey-detail-info';
 import { SurveyShareDialog } from '@/features/surveys/components/dashboard/survey-share-dialog';
-import { SectionLabel } from '@/features/surveys/components/shared/metric-display';
 import { ExportDialog } from '@/features/surveys/components/stats/export-dialog';
 import { DATE_FORMAT_SHORT } from '@/features/surveys/config';
 import { deriveSurveyFlags, getAvailableActions } from '@/features/surveys/config/survey-status';
