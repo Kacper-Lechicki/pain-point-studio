@@ -16,6 +16,7 @@ import {
 import { TableCell, TableRow } from '@/components/ui/table';
 import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
 import { ProjectStatusBadge } from '@/features/projects/components/project-status-badge';
+import { ValidationProgressDots } from '@/features/projects/components/validation-progress-dots';
 import { PROJECT_CONTEXTS_CONFIG } from '@/features/projects/config/contexts';
 import type { ProjectContext, ProjectStatus } from '@/features/projects/types';
 import type { MessageKey } from '@/i18n/types';
@@ -98,12 +99,12 @@ export function ProjectTableRow({
         {project.responseCount}
       </TableCell>
 
-      <TableCell className="text-muted-foreground border-border/30 hidden min-w-0 truncate border-l text-xs tabular-nums lg:table-cell">
-        {project.validationProgress !== null
-          ? t('projects.list.card.progress', {
-              percent: Math.round(project.validationProgress * 100),
-            })
-          : '—'}
+      <TableCell className="border-border/30 hidden min-w-0 border-l lg:table-cell">
+        {project.phaseStatuses ? (
+          <ValidationProgressDots phaseStatuses={project.phaseStatuses} />
+        ) : (
+          <span className="text-muted-foreground text-xs">—</span>
+        )}
       </TableCell>
 
       <TableCell className="text-muted-foreground border-border/30 hidden min-w-0 truncate border-l pr-4 pl-3 text-xs xl:table-cell">

@@ -15,7 +15,9 @@ import type { ProjectDetail, ProjectSurvey } from '@/features/projects/actions/g
 import { EditProjectDialog } from '@/features/projects/components/edit-project-dialog';
 import { PhaseSection } from '@/features/projects/components/phase-section';
 import { ProjectDashboardHeader } from '@/features/projects/components/project-dashboard-header';
+import { ValidationProgressStepper } from '@/features/projects/components/validation-progress-stepper';
 import { PROJECT_CONTEXTS_CONFIG } from '@/features/projects/config/contexts';
+import { computePhaseStatuses } from '@/features/projects/lib/phase-status';
 import type { Project, ProjectContext } from '@/features/projects/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import { useRouter } from '@/i18n/routing';
@@ -172,6 +174,11 @@ export function ProjectDashboardPage({
   const isIdeaValidation = project.context === 'idea_validation';
   const contextConfig = PROJECT_CONTEXTS_CONFIG[project.context as ProjectContext];
 
+  const phaseStatuses = useMemo(
+    () => (isIdeaValidation ? computePhaseStatuses(surveysByPhase) : null),
+    [isIdeaValidation, surveysByPhase]
+  );
+
   return (
     <main className="flex min-w-0 flex-col">
       <ProjectDashboardHeader
@@ -184,6 +191,8 @@ export function ProjectDashboardPage({
       />
 
       <div className={`${DASHBOARD_PAGE_BODY_GAP_TOP} flex flex-col gap-6`}>
+        {phaseStatuses && <ValidationProgressStepper phaseStatuses={phaseStatuses} />}
+
         {surveys.length > 0 && (
           <div className="flex flex-wrap items-center gap-2">
             <SearchInput

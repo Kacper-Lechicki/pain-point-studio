@@ -19,7 +19,9 @@ import {
   CompactSurveyList,
   SurveysListSkeleton,
 } from '@/features/projects/components/project-survey-list';
+import { ValidationProgressDots } from '@/features/projects/components/validation-progress-dots';
 import { PROJECT_CONTEXTS_CONFIG } from '@/features/projects/config/contexts';
+import { computePhaseStatuses } from '@/features/projects/lib/phase-status';
 import { getProjectDetailUrl } from '@/features/projects/lib/project-urls';
 import type { ProjectContext, ProjectStatus } from '@/features/projects/types';
 import Link from '@/i18n/link';
@@ -104,6 +106,18 @@ export function ProjectDetailPanel({
     return allSurveys.filter((s) => s.title.toLowerCase().includes(q));
   }, [allSurveys, searchQuery, isSearching]);
 
+  const phaseStatuses = useMemo(() => {
+    if (!isIdeaValidation) {
+      return null;
+    }
+
+    if (projectDetail?.surveysByPhase) {
+      return computePhaseStatuses(projectDetail.surveysByPhase);
+    }
+
+    return project.phaseStatuses;
+  }, [isIdeaValidation, projectDetail, project.phaseStatuses]);
+
   const showSearch = allSurveys !== null && allSurveys.length > 3;
 
   return (
@@ -146,12 +160,10 @@ export function ProjectDetailPanel({
           value={<ProjectStatusBadge status={project.status as ProjectStatus} />}
         />
 
-        {isIdeaValidation && project.validationProgress !== null && (
+        {phaseStatuses && (
           <MetricRow
             label={t('projects.detail.progress')}
-            value={t('projects.detail.progressValue', {
-              percent: Math.round(project.validationProgress * 100),
-            })}
+            value={<ValidationProgressDots phaseStatuses={phaseStatuses} />}
           />
         )}
 

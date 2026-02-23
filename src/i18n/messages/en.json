@@ -832,6 +832,11 @@
       "activeSurveys": "Active",
       "completedSurveys": "Completed",
       "draftSurveys": "Drafts"
+    },
+    "validation": {
+      "notStarted": "Not started",
+      "inProgress": "In progress",
+      "validated": "Validated"
     }
   },
   "respondent": {
