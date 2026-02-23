@@ -12,13 +12,16 @@ import { DASHBOARD_PAGE_BODY_GAP_TOP } from '@/features/dashboard/config/layout'
 import { archiveProject } from '@/features/projects/actions/archive-project';
 import { deleteProject } from '@/features/projects/actions/delete-project';
 import type { ProjectDetail, ProjectSurvey } from '@/features/projects/actions/get-project';
+import type { SurveySignalData } from '@/features/projects/actions/get-project-signals-data';
 import { EditProjectDialog } from '@/features/projects/components/edit-project-dialog';
 import { PhaseSection } from '@/features/projects/components/phase-section';
 import { ProjectDashboardHeader } from '@/features/projects/components/project-dashboard-header';
 import { ValidationProgressStepper } from '@/features/projects/components/validation-progress-stepper';
 import { PROJECT_CONTEXTS_CONFIG } from '@/features/projects/config/contexts';
 import { computePhaseStatuses } from '@/features/projects/lib/phase-status';
+import { generateSignals } from '@/features/projects/lib/signals';
 import type { Project, ProjectContext } from '@/features/projects/types';
+import { RESEARCH_PHASES } from '@/features/projects/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import { useRouter } from '@/i18n/routing';
 import type { MessageKey } from '@/i18n/types';
@@ -29,12 +32,14 @@ interface ProjectDashboardPageProps {
   project: Project;
   surveys: ProjectSurvey[];
   surveysByPhase: ProjectDetail['surveysByPhase'];
+  signalsData: SurveySignalData[];
 }
 
 export function ProjectDashboardPage({
   project: initialProject,
   surveys,
   surveysByPhase,
+  signalsData,
 }: ProjectDashboardPageProps) {
   const t = useTranslations();
   const router = useRouter();
@@ -179,6 +184,11 @@ export function ProjectDashboardPage({
     [isIdeaValidation, surveysByPhase]
   );
 
+  const signalsByPhase = useMemo(
+    () => (isIdeaValidation ? generateSignals(signalsData, RESEARCH_PHASES) : {}),
+    [isIdeaValidation, signalsData]
+  );
+
   return (
     <main className="flex min-w-0 flex-col">
       <ProjectDashboardHeader
@@ -213,6 +223,7 @@ export function ProjectDashboardPage({
                   phase={phase}
                   surveys={filteredSurveysByPhase[phase.value] ?? []}
                   projectId={project.id}
+                  signals={signalsByPhase[phase.value]}
                   totalCount={(surveysByPhase[phase.value] ?? []).length}
                   isSearching={isSearching}
                 />

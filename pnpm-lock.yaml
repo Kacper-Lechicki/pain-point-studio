@@ -157,8 +157,8 @@ importers:
         specifier: ^0.7.2
         version: 0.7.2(@ianvs/prettier-plugin-sort-imports@4.7.0(prettier@3.8.1))(@trivago/prettier-plugin-sort-imports@5.2.2(prettier@3.8.1))(prettier@3.8.1)
       supabase:
-        specifier: ^2.75.3
-        version: 2.75.3
+        specifier: ^2.76.12
+        version: 2.76.12
       tailwindcss:
         specifier: ^4.0.0
         version: 4.1.18
@@ -4472,8 +4472,8 @@ packages:
       babel-plugin-macros:
         optional: true
 
-  supabase@2.75.3:
-    resolution: {integrity: sha512-j2uHJfK8TE7SxL6cd+kQixwkl8H5ASBkQfOEVjf3d3XS1Wixy4UO8WudDYNVriu1KuKzsNnkkSC/jTyHNXNrcQ==}
+  supabase@2.76.12:
+    resolution: {integrity: sha512-UAWUjwmSOnxWNN07UOwL9Wb12HOx5jMrQ0HTSi+dKPqRc5g9kJCkp2q3i5gVNLq7NWNzpCZRixRXIQJznOGqGw==}
     engines: {npm: '>=8'}
     hasBin: true
 
@@ -4502,8 +4502,8 @@ packages:
     resolution: {integrity: sha512-g9ljZiwki/LfxmQADO3dEY1CbpmXT5Hm2fJ+QaGKwSXUylMybePR7/67YW7jOrrvjEgL1Fmz5kzyAjWVWLlucg==}
     engines: {node: '>=6'}
 
-  tar@7.5.7:
-    resolution: {integrity: sha512-fov56fJiRuThVFXD6o6/Q354S7pnWMJIVlDBYijsTNx6jKSE4pvrDTs6lUnmGvNyfJwFQQwWy3owKz1ucIhveQ==}
+  tar@7.5.9:
+    resolution: {integrity: sha512-BTLcK0xsDh2+PUe9F6c2TlRp4zOOBMTkoQHQIWSIzI0R7KG46uEwq4OPk2W7bZcprBMsuaeFsqwYr7pjh6CuHg==}
     engines: {node: '>=18'}
 
   text-extensions@2.4.0:
@@ -9265,12 +9265,12 @@ snapshots:
     optionalDependencies:
       '@babel/core': 7.28.6
 
-  supabase@2.75.3:
+  supabase@2.76.12:
     dependencies:
       bin-links: 6.0.0
       https-proxy-agent: 7.0.6
       node-fetch: 3.3.2
-      tar: 7.5.7
+      tar: 7.5.9
     transitivePeerDependencies:
       - supports-color
 
@@ -9292,7 +9292,7 @@ snapshots:
 
   tapable@2.3.0: {}
 
-  tar@7.5.7:
+  tar@7.5.9:
     dependencies:
       '@isaacs/fs-minipass': 4.0.1
       chownr: 3.0.0

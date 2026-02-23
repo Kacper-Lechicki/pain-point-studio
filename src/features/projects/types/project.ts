@@ -27,6 +27,33 @@ export const PROJECT_STATUSES = ['active', 'archived'] as const;
 
 export type ProjectStatus = (typeof PROJECT_STATUSES)[number];
 
+// ── Signal types (auto-generated from survey data) ──────────────────
+
+/** Signal classification: strength (positive), threat (negative), signal (neutral). */
+export const SIGNAL_TYPES = ['strength', 'threat', 'signal'] as const;
+export type SignalType = (typeof SIGNAL_TYPES)[number];
+
+/** Source of the auto-signal — which analysis produced it. */
+export const SIGNAL_SOURCES = [
+  'yes_no',
+  'rating',
+  'multiple_choice',
+  'completion_rate',
+  'no_data',
+] as const;
+export type SignalSource = (typeof SIGNAL_SOURCES)[number];
+
+/** An auto-generated signal derived from quantitative survey data. */
+export interface Signal {
+  type: SignalType;
+  source: SignalSource;
+  phase: ResearchPhase | null;
+  questionText?: string;
+  surveyTitle?: string;
+  value: number;
+  detail?: string;
+}
+
 // ── Row types (from DB) ─────────────────────────────────────────────
 
 export type Project = Tables<'projects'>;
