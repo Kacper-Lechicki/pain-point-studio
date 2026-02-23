@@ -13,7 +13,7 @@ import { Form } from '@/components/ui/form';
 import { Spinner } from '@/components/ui/spinner';
 import { ROUTES } from '@/config/routes';
 import { createSurveyDraft } from '@/features/surveys/actions';
-import type { SurveyCategoryOption } from '@/features/surveys/actions';
+import type { ProjectOption, SurveyCategoryOption } from '@/features/surveys/actions';
 import { SurveyMetadataFields } from '@/features/surveys/components/builder/survey-metadata-fields';
 import { getSurveyEditUrl } from '@/features/surveys/lib/survey-urls';
 import {
@@ -28,6 +28,7 @@ import type { MessageKey } from '@/i18n/types';
 
 interface SurveyMetadataFormProps {
   categoryOptions: SurveyCategoryOption[];
+  projectOptions: ProjectOption[];
   defaultValues?: Partial<SurveyMetadataSchema>;
   surveyId?: string;
   mode?: 'create' | 'edit';
@@ -41,6 +42,7 @@ interface SurveyMetadataFormProps {
 
 const SurveyMetadataForm = ({
   categoryOptions,
+  projectOptions,
   defaultValues,
   surveyId,
   mode = 'create',
@@ -76,6 +78,8 @@ const SurveyMetadataForm = ({
       description: defaultValues?.description ?? '',
       category: defaultValues?.category ?? '',
       visibility: defaultValues?.visibility ?? SURVEY_VISIBILITY_VALUES[0],
+      projectId: defaultValues?.projectId ?? null,
+      researchPhase: defaultValues?.researchPhase ?? null,
     },
   });
 
@@ -107,7 +111,13 @@ const SurveyMetadataForm = ({
     }
   }
 
-  const formFields = <SurveyMetadataFields form={form} categoryOptions={categoryOptions} />;
+  const formFields = (
+    <SurveyMetadataFields
+      form={form}
+      categoryOptions={categoryOptions}
+      projectOptions={projectOptions}
+    />
+  );
 
   if (renderFooter) {
     return (

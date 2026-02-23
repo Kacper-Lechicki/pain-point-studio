@@ -13,7 +13,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { Spinner } from '@/components/ui/spinner';
-import type { SurveyCategoryOption } from '@/features/surveys/actions';
+import type { ProjectOption, SurveyCategoryOption } from '@/features/surveys/actions';
 import { SurveyMetadataForm } from '@/features/surveys/components/builder/survey-metadata-form';
 import type { SurveyMetadataSchema } from '@/features/surveys/types';
 
@@ -24,6 +24,7 @@ interface BuilderMetadataPanelProps {
   surveyTitle: string;
   surveyMetadata: Omit<SurveyMetadataSchema, 'title'>;
   categoryOptions: SurveyCategoryOption[];
+  projectOptions: ProjectOption[];
 }
 
 export function BuilderMetadataPanel({
@@ -33,6 +34,7 @@ export function BuilderMetadataPanel({
   surveyTitle,
   surveyMetadata,
   categoryOptions,
+  projectOptions,
 }: BuilderMetadataPanelProps) {
   const t = useTranslations();
   const router = useRouter();
@@ -57,6 +59,7 @@ export function BuilderMetadataPanel({
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
           <SurveyMetadataForm
             categoryOptions={categoryOptions}
+            projectOptions={projectOptions}
             surveyId={surveyId}
             mode="edit"
             defaultValues={{

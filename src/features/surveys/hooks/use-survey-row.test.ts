@@ -76,6 +76,10 @@ function makeSurvey(overrides: Partial<UserSurvey> = {}): UserSurvey {
     updatedAt: '2025-01-15T08:00:00Z',
     avgCompletionSeconds: 120,
     avgQuestionCompletion: 0.95,
+    projectId: null,
+    researchPhase: null,
+    projectName: null,
+    projectContext: null,
     ...overrides,
   };
 }

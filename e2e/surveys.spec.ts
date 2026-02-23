@@ -76,6 +76,11 @@ test.describe('Surveys – Creation Flow', () => {
   test('empty state → create survey → verify in list', async ({ page }) => {
     await signIn(page);
     await page.goto(url(ROUTES.dashboard.research));
+    await expect(page.getByRole('heading', { name: 'Surveys', level: 1, exact: true })).toBeVisible(
+      {
+        timeout: 15_000,
+      }
+    );
     await expect(page.getByText('No surveys yet')).toBeVisible({ timeout: 15_000 });
     await page.goto(url(ROUTES.dashboard.researchNew));
     await expect(page.locator(sel.titleInput)).toBeVisible({ timeout: 15_000 });
@@ -87,7 +92,7 @@ test.describe('Surveys – Creation Flow', () => {
 
       await expect(page.locator(sel.descriptionInput)).toHaveValue('E2E test survey description');
 
-      const combobox = page.getByRole('combobox');
+      const combobox = page.getByRole('combobox', { name: 'Category' });
       const comboboxText = await combobox.textContent();
 
       if (!comboboxText || comboboxText.includes('Select')) {
