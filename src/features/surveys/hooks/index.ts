@@ -8,4 +8,5 @@ export { useSurveyCardActions } from './use-survey-card-actions';
 export { useSurveyFlow } from './use-survey-flow';
 export { useSurveyListState } from './use-survey-list-state';
 export { useSurveyRow } from './use-survey-row';
+export { useSurveyListFilters } from './use-survey-list-filters';
 export { useSurveySelection } from './use-survey-selection';

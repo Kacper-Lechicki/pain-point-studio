@@ -1,9 +1,11 @@
 import type {
   DynamicRouteTab,
+  NavItem,
   SubNavGroup,
   SubNavItem,
 } from '@/features/dashboard/config/navigation';
-import { DYNAMIC_ROUTE_TABS } from '@/features/dashboard/config/navigation';
+import { DYNAMIC_ROUTE_TABS, SIDEBAR_NAV } from '@/features/dashboard/config/navigation';
+import { USER_SETTINGS_NAV_ITEM } from '@/features/dashboard/config/navigation-settings';
 
 export function getSubItemHref(item: SubNavItem): string {
   if (item.searchParams) {
@@ -125,4 +127,38 @@ export function resolveDynamicLabel(
   }
 
   return breadcrumbSegments[segmentId] ?? null;
+}
+
+// ── Active nav item matching ────────────────────────────────────────
+
+function matchesNavItem(pathname: string, item: NavItem): boolean {
+  const prefix = item.activePrefix ?? item.href;
+
+  return pathname === prefix || pathname.startsWith(prefix + '/');
+}
+
+/**
+ * Find the nav item whose href matches the current pathname or whose
+ * sub-nav contains a matching child. Returns the NavItem if it has
+ * subNav, otherwise undefined.
+ */
+export function findActiveNavItem(pathname: string): NavItem | undefined {
+  for (const group of SIDEBAR_NAV) {
+    for (const item of group.items) {
+      if (!item.subNav) {
+        continue;
+      }
+
+      if (matchesNavItem(pathname, item)) {
+        return item;
+      }
+    }
+  }
+
+  // User account settings — accessible via user menu, sub-panel still needed
+  if (matchesNavItem(pathname, USER_SETTINGS_NAV_ITEM)) {
+    return USER_SETTINGS_NAV_ITEM;
+  }
+
+  return undefined;
 }

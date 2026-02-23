@@ -1,0 +1,33 @@
+import { CircleUserRound, KeyRound, Link2, Mail, Settings, Trash2 } from 'lucide-react';
+
+import { ROUTES } from '@/config/routes';
+
+import type { NavItem, SubNavItem } from './navigation';
+
+export const USER_SETTINGS_SUB_NAV_ITEMS: SubNavItem[] = [
+  { labelKey: 'settings.nav.profile', icon: CircleUserRound, href: ROUTES.settings.profile },
+  { labelKey: 'settings.nav.email', icon: Mail, href: ROUTES.settings.email },
+  { labelKey: 'settings.nav.password', icon: KeyRound, href: ROUTES.settings.password },
+  {
+    labelKey: 'settings.nav.connectedAccounts',
+    icon: Link2,
+    href: ROUTES.settings.connectedAccounts,
+  },
+  { labelKey: 'settings.nav.dangerZone', icon: Trash2, href: ROUTES.settings.dangerZone },
+];
+
+/**
+ * Virtual nav item for user account settings (not shown in sidebar).
+ * Returned by `findActiveNavItem` so the sub-panel renders when
+ * the user navigates to /settings/* via the user menu.
+ */
+export const USER_SETTINGS_NAV_ITEM: NavItem = {
+  labelKey: 'sidebar.settings',
+  icon: Settings,
+  href: ROUTES.settings.profile,
+  activePrefix: ROUTES.common.settings,
+  subNav: {
+    titleKey: 'settings.title',
+    groups: [{ items: USER_SETTINGS_SUB_NAV_ITEMS }],
+  },
+};

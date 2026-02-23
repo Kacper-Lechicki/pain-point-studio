@@ -13,8 +13,8 @@ import {
 } from '@/features/dashboard/components/layout/mobile-nav-levels';
 import { useSidebar } from '@/features/dashboard/components/layout/sidebar-provider';
 import type { NavItem } from '@/features/dashboard/config/navigation';
-import { findActiveNavItem } from '@/features/dashboard/config/navigation';
 import { getHash } from '@/features/dashboard/hooks/use-hash-sync';
+import { findActiveNavItem } from '@/features/dashboard/lib/nav-utils';
 import { usePathname } from '@/i18n/routing';
 
 const TRANSITION = { duration: 0.15, ease: [0.25, 0.1, 0.25, 1] as const };

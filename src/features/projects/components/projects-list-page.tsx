@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { FolderKanban } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -9,30 +9,17 @@ import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ListPagination } from '@/components/ui/list-pagination';
-import { archiveProject } from '@/features/projects/actions/archive-project';
-import { deleteProject } from '@/features/projects/actions/delete-project';
 import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
 import { ProjectCardRow } from '@/features/projects/components/project-card-row';
 import { ProjectDetailSheet } from '@/features/projects/components/project-detail-sheet';
 import { ProjectListKpi } from '@/features/projects/components/project-list-kpi';
 import { ProjectListTable } from '@/features/projects/components/project-list-table';
-import {
-  ProjectListToolbar,
-  type ProjectStatusFilter,
-} from '@/features/projects/components/project-list-toolbar';
-import { PROJECT_CONTEXTS_CONFIG } from '@/features/projects/config/contexts';
+import { ProjectListToolbar } from '@/features/projects/components/project-list-toolbar';
+import { useProjectListActions } from '@/features/projects/hooks/use-project-list-actions';
 import { useProjectListState } from '@/features/projects/hooks/use-project-list-state';
 import { useProjectSelection } from '@/features/projects/hooks/use-project-selection';
-import { isProjectArchived } from '@/features/projects/lib/project-helpers';
-import { useFormAction } from '@/hooks/common/use-form-action';
-import type { MessageKey } from '@/i18n/types';
 
 import { EditProjectDialog } from './edit-project-dialog';
-
-type ConfirmAction = {
-  type: 'archive' | 'delete';
-  project: ProjectWithMetrics;
-};
 
 interface ProjectsListPageProps {
   projects: ProjectWithMetrics[];
@@ -65,55 +52,23 @@ export function ProjectsListPage({ projects }: ProjectsListPageProps) {
     paginatedProjects,
     pagination,
     isFiltered,
+    statusCounts,
+    contextCounts,
+    kpiStatuses,
   } = useProjectListState(localProjects);
 
   const { selectedId, selectedProject, projectDetail, showSheet, setSelected } =
     useProjectSelection(localProjects);
 
-  const [editProject, setEditProject] = useState<ProjectWithMetrics | null>(null);
-  const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(null);
-
-  const archiveAction = useFormAction({
-    unexpectedErrorMessage: 'projects.errors.unexpected' as MessageKey,
-  });
-
-  const deleteAction = useFormAction({
-    unexpectedErrorMessage: 'projects.errors.unexpected' as MessageKey,
-  });
-
-  const statusCounts = useMemo(() => {
-    const counts: Record<string, number> = { active: 0, archived: 0 };
-
-    for (const p of localProjects) {
-      if (p.status in counts) {
-        counts[p.status] = (counts[p.status] ?? 0) + 1;
-      }
-    }
-
-    return counts;
-  }, [localProjects]);
-
-  const contextCounts = useMemo(() => {
-    const counts: Record<string, number> = {};
-
-    for (const key of Object.keys(PROJECT_CONTEXTS_CONFIG)) {
-      counts[key] = 0;
-    }
-
-    for (const p of localProjects) {
-      if (statusFilter.length === 0 || statusFilter.includes(p.status as ProjectStatusFilter)) {
-        counts[p.context] = (counts[p.context] ?? 0) + 1;
-      }
-    }
-
-    return counts;
-  }, [localProjects, statusFilter]);
-
-  const kpiStatuses = useMemo(() => {
-    const order: ProjectStatusFilter[] = ['active', 'archived'];
-
-    return order.filter((s) => (statusCounts[s] ?? 0) > 0);
-  }, [statusCounts]);
+  const {
+    editProject,
+    setEditProject,
+    confirmAction,
+    setConfirmAction,
+    handleEditSuccess,
+    handleConfirm,
+    confirmDialogProps,
+  } = useProjectListActions({ localProjects, setLocalProjects, selectedId, setSelected });
 
   const handleSelect = useCallback(
     (projectId: string) => {
@@ -121,123 +76,6 @@ export function ProjectsListPage({ projects }: ProjectsListPageProps) {
     },
     [setSelected, selectedId]
   );
-
-  const handleEditSuccess = (data: { name: string; description: string | undefined }) => {
-    if (!editProject) {
-      return;
-    }
-
-    setLocalProjects((prev) =>
-      prev.map((p) =>
-        p.id === editProject.id
-          ? {
-              ...p,
-              name: data.name,
-              description: data.description ?? null,
-              updated_at: new Date().toISOString(),
-            }
-          : p
-      )
-    );
-  };
-
-  const handleConfirm = async () => {
-    if (!confirmAction) {
-      return;
-    }
-
-    const { type, project } = confirmAction;
-
-    if (type === 'archive') {
-      const isArchived = isProjectArchived(project);
-      const successMsg = (
-        isArchived ? 'projects.list.restoreSuccess' : 'projects.list.archiveSuccess'
-      ) as MessageKey;
-
-      setLocalProjects((prev) =>
-        prev.map((p) =>
-          p.id === project.id
-            ? {
-                ...p,
-                status: (isArchived ? 'active' : 'archived') as ProjectWithMetrics['status'],
-                archived_at: isArchived ? null : new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-              }
-            : p
-        )
-      );
-      setConfirmAction(null);
-
-      const result = await archiveAction.execute(archiveProject, { projectId: project.id });
-
-      if (result && !result.error) {
-        const { toast } = await import('sonner');
-        toast.success(t(successMsg));
-      } else {
-        setLocalProjects((prev) =>
-          prev.map((p) =>
-            p.id === project.id
-              ? {
-                  ...p,
-                  status: project.status,
-                  archived_at: project.archived_at,
-                  updated_at: project.updated_at,
-                }
-              : p
-          )
-        );
-      }
-    } else {
-      setLocalProjects((prev) => prev.filter((p) => p.id !== project.id));
-      setConfirmAction(null);
-
-      if (selectedId === project.id) {
-        setSelected(null);
-      }
-
-      const result = await deleteAction.execute(deleteProject, { projectId: project.id });
-
-      if (result && !result.error) {
-        const { toast } = await import('sonner');
-        toast.success(t('projects.list.deleteSuccess' as MessageKey));
-      } else {
-        setLocalProjects((prev) => [...prev, project]);
-      }
-    }
-  };
-
-  const confirmDialogProps = useMemo(() => {
-    if (!confirmAction) {
-      return null;
-    }
-
-    const { type, project } = confirmAction;
-    const isArchived = isProjectArchived(project);
-
-    if (type === 'archive') {
-      return {
-        title: t(
-          isArchived ? 'projects.list.confirm.restoreTitle' : 'projects.list.confirm.archiveTitle'
-        ),
-        description: t(
-          isArchived
-            ? 'projects.list.confirm.restoreDescription'
-            : 'projects.list.confirm.archiveDescription'
-        ),
-        confirmLabel: t(
-          isArchived ? 'projects.list.confirm.restoreAction' : 'projects.list.confirm.archiveAction'
-        ),
-        variant: 'default' as const,
-      };
-    }
-
-    return {
-      title: t('projects.list.confirm.deleteTitle'),
-      description: t('projects.list.confirm.deleteDescription'),
-      confirmLabel: t('projects.list.confirm.deleteAction'),
-      variant: 'destructive' as const,
-    };
-  }, [confirmAction, t]);
 
   return (
     <div className="space-y-4">
