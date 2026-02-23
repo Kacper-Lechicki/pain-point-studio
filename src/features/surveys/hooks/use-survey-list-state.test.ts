@@ -44,12 +44,11 @@ vi.mock('@/hooks/common/use-session-state', async () => {
 
 // ── Helpers ──────────────────────────────────────────────────────────
 
-function makeSurvey(id: string, title: string, category = 'product'): UserSurvey {
+function makeSurvey(id: string, title: string): UserSurvey {
   return {
     id,
     title,
     description: `Description for ${title}`,
-    category,
     status: 'active',
     slug: id,
     viewCount: 10,
@@ -76,17 +75,17 @@ function makeSurvey(id: string, title: string, category = 'product'): UserSurvey
 }
 
 const SURVEYS: UserSurvey[] = [
-  makeSurvey('1', 'Charlie Survey', 'product'),
-  makeSurvey('2', 'Alpha Survey', 'ux'),
-  makeSurvey('3', 'Bravo Survey', 'product'),
-  makeSurvey('4', 'Delta Survey', 'ux'),
-  makeSurvey('5', 'Echo Survey', 'product'),
-  makeSurvey('6', 'Foxtrot Survey', 'product'),
-  makeSurvey('7', 'Golf Survey', 'ux'),
-  makeSurvey('8', 'Hotel Survey', 'product'),
-  makeSurvey('9', 'India Survey', 'ux'),
-  makeSurvey('10', 'Juliet Survey', 'product'),
-  makeSurvey('11', 'Kilo Survey', 'ux'),
+  makeSurvey('1', 'Charlie Survey'),
+  makeSurvey('2', 'Alpha Survey'),
+  makeSurvey('3', 'Bravo Survey'),
+  makeSurvey('4', 'Delta Survey'),
+  makeSurvey('5', 'Echo Survey'),
+  makeSurvey('6', 'Foxtrot Survey'),
+  makeSurvey('7', 'Golf Survey'),
+  makeSurvey('8', 'Hotel Survey'),
+  makeSurvey('9', 'India Survey'),
+  makeSurvey('10', 'Juliet Survey'),
+  makeSurvey('11', 'Kilo Survey'),
 ];
 
 const DEFAULT_OPTIONS = {
@@ -142,17 +141,6 @@ describe('useSurveyListState', () => {
 
     expect(result.current.filteredSurveys).toHaveLength(1);
     expect(result.current.filteredSurveys[0]!.title).toBe('Bravo Survey');
-  });
-
-  it('should filter by category', () => {
-    const { result } = renderHook(() => useSurveyListState(DEFAULT_OPTIONS));
-
-    act(() => {
-      result.current.setCategoryFilter(['ux']);
-    });
-
-    expect(result.current.filteredSurveys).toHaveLength(5);
-    expect(result.current.filteredSurveys.every((s) => s.category === 'ux')).toBe(true);
   });
 
   it('should reset page to 1 when search query changes', () => {
@@ -250,12 +238,16 @@ describe('useSurveyListState', () => {
   });
 
   it('should apply preFilter before other filters', () => {
-    const preFilter = (s: UserSurvey) => s.category === 'product';
+    const preFilter = (s: UserSurvey) => s.title.startsWith('A') || s.title.startsWith('B');
 
     const { result } = renderHook(() => useSurveyListState({ ...DEFAULT_OPTIONS, preFilter }));
 
-    expect(result.current.filteredSurveys).toHaveLength(6);
-    expect(result.current.filteredSurveys.every((s) => s.category === 'product')).toBe(true);
+    expect(result.current.filteredSurveys).toHaveLength(2);
+    expect(
+      result.current.filteredSurveys.every(
+        (s) => s.title.startsWith('A') || s.title.startsWith('B')
+      )
+    ).toBe(true);
   });
 
   it('should toggle sort direction via handleSortByColumn for the same key', () => {

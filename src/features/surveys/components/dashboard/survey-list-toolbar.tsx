@@ -10,7 +10,6 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { SearchInput } from '@/components/ui/search-input';
 import { Separator } from '@/components/ui/separator';
 import { SortDropdown } from '@/components/ui/sort-dropdown';
-import { SURVEY_CATEGORIES } from '@/features/surveys/config/survey-categories';
 import { sortOptionsAlphabetically } from '@/lib/common/sort-options';
 import { cn } from '@/lib/common/utils';
 
@@ -39,8 +38,6 @@ export const NO_PROJECT_FILTER_ID = '__none__';
 interface SurveyListToolbarProps {
   statusFilter: SurveyStatusFilter[];
   onStatusFilterChange: (filter: SurveyStatusFilter[]) => void;
-  categoryFilter: string[];
-  onCategoryFilterChange: (categories: string[]) => void;
   projectFilter: string[];
   onProjectFilterChange: (projectIds: string[]) => void;
   projectOptions: ProjectFilterOption[];
@@ -51,7 +48,6 @@ interface SurveyListToolbarProps {
   onSortByChange: (sort: SurveySortBy) => void;
   onSortDirChange: (dir: SurveySortDir) => void;
   statusCounts: Record<string, number>;
-  categoryCounts: Record<string, number>;
 }
 
 const STATUS_OPTIONS: SurveyStatusFilter[] = ['active', 'draft', 'completed', 'cancelled'];
@@ -73,8 +69,6 @@ const FILTER_ITEM_CLASS =
 export const SurveyListToolbar = ({
   statusFilter,
   onStatusFilterChange,
-  categoryFilter,
-  onCategoryFilterChange,
   projectFilter,
   onProjectFilterChange,
   projectOptions,
@@ -85,23 +79,14 @@ export const SurveyListToolbar = ({
   onSortByChange,
   onSortDirChange,
   statusCounts,
-  categoryCounts,
 }: SurveyListToolbarProps) => {
   const t = useTranslations();
 
-  const activeFilterCount = statusFilter.length + categoryFilter.length + projectFilter.length;
+  const activeFilterCount = statusFilter.length + projectFilter.length;
   const isFiltered = activeFilterCount > 0;
 
   const sortedStatusOptions = sortOptionsAlphabetically(
     STATUS_OPTIONS.map((s) => ({ value: s, label: t(`surveys.dashboard.filters.${s}`) }))
-  );
-
-  const sortedCategories = sortOptionsAlphabetically(
-    SURVEY_CATEGORIES.filter((cat) => (categoryCounts[cat.value] ?? 0) > 0).map((cat) => ({
-      value: cat.value,
-      label: t(cat.labelKey as Parameters<typeof t>[0]),
-      labelKey: cat.labelKey,
-    }))
   );
 
   const sortedProjects = sortOptionsAlphabetically(
@@ -120,14 +105,6 @@ export const SurveyListToolbar = ({
     }
   };
 
-  const handleCategoryToggle = (value: string) => {
-    if (categoryFilter.includes(value)) {
-      onCategoryFilterChange(categoryFilter.filter((c) => c !== value));
-    } else {
-      onCategoryFilterChange([...categoryFilter, value]);
-    }
-  };
-
   const handleProjectToggle = (value: string) => {
     if (projectFilter.includes(value)) {
       onProjectFilterChange(projectFilter.filter((p) => p !== value));
@@ -138,7 +115,6 @@ export const SurveyListToolbar = ({
 
   const handleClearAll = () => {
     onStatusFilterChange([]);
-    onCategoryFilterChange([]);
     onProjectFilterChange([]);
   };
 
@@ -237,35 +213,6 @@ export const SurveyListToolbar = ({
                       </span>
                     </label>
                   )}
-                </div>
-              </div>
-            </>
-          )}
-
-          {sortedCategories.length > 0 && (
-            <>
-              <Separator />
-
-              <div className="p-2">
-                <p className="text-muted-foreground mb-1 px-2 text-xs font-medium">
-                  {t('surveys.dashboard.filters.categorySection')}
-                </p>
-
-                <div className="flex flex-col">
-                  {sortedCategories.map((cat) => (
-                    <label key={cat.value} className={FILTER_ITEM_CLASS}>
-                      <Checkbox
-                        checked={categoryFilter.includes(cat.value)}
-                        onCheckedChange={() => handleCategoryToggle(cat.value)}
-                      />
-
-                      <span className="min-w-0 flex-1 truncate">{cat.label}</span>
-
-                      <span className="text-muted-foreground text-xs tabular-nums">
-                        {categoryCounts[cat.value]}
-                      </span>
-                    </label>
-                  ))}
                 </div>
               </div>
             </>

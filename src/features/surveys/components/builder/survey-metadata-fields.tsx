@@ -24,14 +24,12 @@ import {
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { ROUTES } from '@/config/routes';
 import { CreateProjectInlineDialog } from '@/features/projects/components/create-project-inline-dialog';
 import { RESEARCH_PHASE_CONFIG } from '@/features/projects/config/contexts';
 import { RESEARCH_PHASES, type ResearchPhase } from '@/features/projects/types';
-import type { ProjectOption, SurveyCategoryOption } from '@/features/surveys/actions';
+import type { ProjectOption } from '@/features/surveys/actions';
 import { SURVEY_DESCRIPTION_MAX_LENGTH, SURVEY_TITLE_MAX_LENGTH } from '@/features/surveys/config';
 import type { SurveyMetadataSchema } from '@/features/surveys/types';
-import { Link } from '@/i18n/routing';
 import type { MessageKey } from '@/i18n/types';
 
 /** Sentinel value for "no project" in combobox. */
@@ -39,15 +37,10 @@ const NO_PROJECT_VALUE = '__none__';
 
 interface SurveyMetadataFieldsProps {
   form: UseFormReturn<SurveyMetadataSchema>;
-  categoryOptions: SurveyCategoryOption[];
   projectOptions: ProjectOption[];
 }
 
-export function SurveyMetadataFields({
-  form,
-  categoryOptions,
-  projectOptions,
-}: SurveyMetadataFieldsProps) {
+export function SurveyMetadataFields({ form, projectOptions }: SurveyMetadataFieldsProps) {
   const t = useTranslations();
   const [localProjectOptions, setLocalProjectOptions] = useState<ProjectOption[]>(projectOptions);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -155,44 +148,6 @@ export function SurveyMetadataFields({
                 })}
               </span>
             </div>
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="category"
-        render={({ field, fieldState }) => (
-          <FormItem>
-            <FormLabel>{t('surveys.create.category')}</FormLabel>
-
-            <FormDescription>
-              {t.rich('surveys.create.categoryHelper', {
-                link: (chunks) => (
-                  <Link
-                    href={ROUTES.dashboard.analyticsProjectIdea}
-                    className="text-foreground underline underline-offset-2"
-                  >
-                    {chunks}
-                  </Link>
-                ),
-              })}
-            </FormDescription>
-
-            <FormControl>
-              <Combobox
-                options={categoryOptions}
-                value={field.value}
-                onValueChange={field.onChange}
-                placeholder={t('surveys.create.categoryPlaceholder')}
-                searchPlaceholder={t('common.search')}
-                emptyMessage={t('common.noResults')}
-                aria-label={t('surveys.create.category')}
-                aria-invalid={!!fieldState.error}
-              />
-            </FormControl>
-
-            <FormMessage />
           </FormItem>
         )}
       />

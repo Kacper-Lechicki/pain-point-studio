@@ -7,7 +7,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useLocale } from 'next-intl';
 
 import { ROUTES } from '@/config/routes';
-import type { ProjectOption, SurveyCategoryOption } from '@/features/surveys/actions';
+import type { ProjectOption } from '@/features/surveys/actions';
 import { BuilderCenter } from '@/features/surveys/components/builder/builder-center';
 import { BuilderMetadataPanel } from '@/features/surveys/components/builder/builder-metadata-panel';
 import { BuilderSettingsPanel } from '@/features/surveys/components/builder/builder-settings-panel';
@@ -25,7 +25,6 @@ interface QuestionBuilderPageProps {
   surveyTitle: string;
   surveyStatus: SurveyStatus;
   surveyMetadata: Omit<SurveyMetadataSchema, 'title'>;
-  categoryOptions: SurveyCategoryOption[];
   projectOptions: ProjectOption[];
   initialQuestions: QuestionSchema[];
 }
@@ -35,7 +34,6 @@ export function QuestionBuilderPage({
   surveyTitle,
   surveyStatus,
   surveyMetadata,
-  categoryOptions,
   projectOptions,
   initialQuestions,
 }: QuestionBuilderPageProps) {
@@ -106,7 +104,6 @@ export function QuestionBuilderPage({
             surveyId={surveyId}
             surveyTitle={surveyTitle}
             surveyMetadata={surveyMetadata}
-            categoryOptions={categoryOptions}
             projectOptions={projectOptions}
           />
 

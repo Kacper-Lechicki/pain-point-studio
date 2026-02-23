@@ -42,7 +42,6 @@ export function useSurveyListState<TSortKey extends string>({
   const isMd = useBreakpoint('md');
   const resolvedDefaultDir = defaultSortDir ?? getDefaultSortDir(defaultSortBy);
   const [searchQuery, setSearchQueryRaw] = useSessionState(`${storageKey}:q`, '');
-  const [categoryFilter, setCategoryFilterRaw] = useSessionState<string[]>(`${storageKey}:cat`, []);
   const [sortBy, setSortByRaw] = useSessionState<TSortKey>(`${storageKey}:sort`, defaultSortBy);
 
   const [sortDir, setSortDirRaw] = useSessionState<SortDir>(
@@ -59,14 +58,6 @@ export function useSurveyListState<TSortKey extends string>({
       setPage(1);
     },
     [setSearchQueryRaw, setPage]
-  );
-
-  const setCategoryFilter = useCallback(
-    (value: string[]) => {
-      setCategoryFilterRaw(value);
-      setPage(1);
-    },
-    [setCategoryFilterRaw, setPage]
   );
 
   const setSortBy = useCallback(
@@ -105,11 +96,6 @@ export function useSurveyListState<TSortKey extends string>({
   const filteredSurveys = useMemo(() => {
     let result = preFilter ? surveys.filter(preFilter) : surveys;
 
-    // Category filter (multi-select, empty = all)
-    if (categoryFilter.length > 0) {
-      result = result.filter((s) => categoryFilter.includes(s.category));
-    }
-
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
 
@@ -131,7 +117,7 @@ export function useSurveyListState<TSortKey extends string>({
     }
 
     return result;
-  }, [surveys, searchQuery, categoryFilter, sortBy, sortDir, preFilter, customComparator]);
+  }, [surveys, searchQuery, sortBy, sortDir, preFilter, customComparator]);
 
   // Pagination
   const totalItems = filteredSurveys.length;
@@ -204,8 +190,6 @@ export function useSurveyListState<TSortKey extends string>({
     isMd,
     searchQuery,
     setSearchQuery,
-    categoryFilter,
-    setCategoryFilter,
     sortBy,
     setSortBy,
     sortDir,

@@ -18,7 +18,6 @@ export const createSurveyDraft = withProtectedAction<
         .update({
           title: data.title,
           description: data.description,
-          category: data.category,
           visibility: data.visibility,
           project_id: data.projectId ?? null,
           research_phase: data.researchPhase ?? null,
@@ -46,7 +45,6 @@ export const createSurveyDraft = withProtectedAction<
         user_id: user.id,
         title: data.title,
         description: data.description,
-        category: data.category,
         visibility: data.visibility,
         status: 'draft',
         project_id: data.projectId ?? null,

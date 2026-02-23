@@ -150,14 +150,6 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
           <div className="border-border/50 bg-muted/30 mt-3 flex min-w-0 flex-col gap-2 rounded-lg px-2.5 py-2 sm:flex-row sm:items-end sm:justify-between sm:gap-3 sm:px-3 sm:py-2.5">
             <div className="text-muted-foreground min-w-0 shrink-0 text-xs leading-relaxed">
               <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
-                <span className="truncate">
-                  {t(`surveys.categories.${survey.category}` as Parameters<typeof t>[0])}
-                </span>
-
-                <span className="text-border/60 shrink-0" aria-hidden>
-                  ·
-                </span>
-
                 <span className="shrink-0">
                   {t('surveys.dashboard.card.questions', { count: survey.questionCount })}
                 </span>

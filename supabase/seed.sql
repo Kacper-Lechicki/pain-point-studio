@@ -183,13 +183,12 @@ VALUES (
 -- ============================================================
 
 -- Survey 1: Problem Discovery (completed, 8 responses)
-INSERT INTO public.surveys (id, user_id, title, description, category, visibility, status, slug, starts_at, ends_at, completed_at, view_count, project_id, research_phase)
+INSERT INTO public.surveys (id, user_id, title, description, visibility, status, slug, starts_at, ends_at, completed_at, view_count, project_id, research_phase)
 VALUES (
   'c1b2c3d4-0001-4000-8000-000000000001',
   'a1b2c3d4-0001-4000-8000-000000000001',
   'Do people struggle with fitness tracking?',
   'Understanding current pain points and habits around fitness activity tracking among developers and tech workers.',
-  'project-idea-evaluation',
   'public',
   'completed',
   'fitness-pain-pts',
@@ -202,13 +201,12 @@ VALUES (
 ) ON CONFLICT (id) DO NOTHING;
 
 -- Survey 2: Solution Validation (active, 7 responses)
-INSERT INTO public.surveys (id, user_id, title, description, category, visibility, status, slug, starts_at, view_count, project_id, research_phase)
+INSERT INTO public.surveys (id, user_id, title, description, visibility, status, slug, starts_at, view_count, project_id, research_phase)
 VALUES (
   'c1b2c3d4-0002-4000-8000-000000000002',
   'a1b2c3d4-0001-4000-8000-000000000001',
   'Fitness Tracker App - Feature Preferences',
   'Validating which features matter most and willingness to pay for a unified fitness tracking solution.',
-  'project-idea-evaluation',
   'public',
   'active',
   'fitness-features',

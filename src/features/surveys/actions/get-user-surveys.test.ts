@@ -33,7 +33,6 @@ function makeSurveyRow(overrides: Record<string, unknown> = {}) {
     id: crypto.randomUUID(),
     title: 'Survey',
     description: '',
-    category: 'product',
     status: 'draft',
     slug: null,
     responseCount: 0,

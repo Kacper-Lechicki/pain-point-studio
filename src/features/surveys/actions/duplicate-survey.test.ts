@@ -66,7 +66,6 @@ const USER = { id: 'user-123', email: 'test@example.com' };
 const ORIGINAL_SURVEY = {
   title: 'My Survey',
   description: 'Description',
-  category: 'product',
   visibility: 'public',
   max_respondents: 100,
 };

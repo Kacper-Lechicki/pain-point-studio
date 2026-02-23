@@ -31,7 +31,6 @@ export default async function NewSurveyPage({ searchParams }: Props) {
       </div>
 
       <SurveyMetadataForm
-        categoryOptions={formData.categoryOptions}
         projectOptions={formData.projectOptions}
         defaultValues={{ projectId, researchPhase }}
       />

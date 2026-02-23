@@ -58,7 +58,6 @@ const SURVEY_ROW = {
   id: SURVEY_ID,
   title: 'My Survey',
   description: 'Desc',
-  category: 'product',
   visibility: 'public',
   starts_at: null,
   ends_at: null,
@@ -143,7 +142,6 @@ describe('getSurveyWithQuestions', () => {
       id: SURVEY_ID,
       title: 'My Survey',
       description: 'Desc',
-      category: 'product',
       visibility: 'public',
       startsAt: null,
       endsAt: null,
@@ -184,7 +182,7 @@ describe('getSurveyWithQuestions', () => {
     expect(mockFrom).toHaveBeenCalledWith('survey_questions');
 
     expect(surveyChain.select).toHaveBeenCalledWith(
-      'id, title, description, category, visibility, starts_at, ends_at, max_respondents, status, project_id, research_phase'
+      'id, title, description, visibility, starts_at, ends_at, max_respondents, status, project_id, research_phase'
     );
 
     expect(surveyChain.eq).toHaveBeenCalledWith('id', SURVEY_ID);

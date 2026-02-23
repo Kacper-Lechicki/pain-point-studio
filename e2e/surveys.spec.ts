@@ -92,15 +92,6 @@ test.describe('Surveys – Creation Flow', () => {
 
       await expect(page.locator(sel.descriptionInput)).toHaveValue('E2E test survey description');
 
-      const combobox = page.getByRole('combobox', { name: 'Category' });
-      const comboboxText = await combobox.textContent();
-
-      if (!comboboxText || comboboxText.includes('Select')) {
-        await combobox.click();
-        await page.getByRole('option').first().click();
-      }
-
-      await page.keyboard.press('Escape');
       await page.getByRole('button', { name: 'Next', exact: true }).click();
       await expect(page).toHaveURL(/\/dashboard\/research\/new\/[0-9a-f-]+/);
     }).toPass({ timeout: 30_000 });

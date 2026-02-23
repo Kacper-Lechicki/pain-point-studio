@@ -207,9 +207,6 @@
       "description": "Create a short survey, share the link, and get real feedback from your audience — all in under 15 minutes.",
       "cta": "Create survey"
     },
-    "categories": {
-      "projectIdeaEvaluation": "Project Idea Evaluation"
-    },
     "create": {
       "title": "Survey Details",
       "description": "Fill in the basic information about your survey.",
@@ -220,9 +217,6 @@
       "surveyDescriptionPlaceholder": "What problem are you investigating and what do you want to learn from respondents?",
       "surveyDescriptionHelper": "For your own reference only. A branded landing page for respondents is coming soon.",
       "descriptionCounter": "{count}/{max}",
-      "category": "Category",
-      "categoryPlaceholder": "Select a category",
-      "categoryHelper": "Survey results will be aggregated under the selected category in <link>Analytics</link>.",
       "visibility": "Visibility",
       "visibilityPrivateDescription": "Only accessible via direct link. Not visible on the platform.",
       "visibilityPublicDescription": "Accessible via link and visible in the Community module.",
@@ -487,7 +481,6 @@
         "statusSection": "Status",
         "projectSection": "Project",
         "noProject": "No project",
-        "categorySection": "Category",
         "clearFilters": "Clear filters"
       },
       "summary": {
@@ -571,7 +564,6 @@
         "avgQuestionCompletion": "Avg. question completion",
         "avgCompletionTime": "Avg. time",
         "questions": "Questions",
-        "category": "Category",
         "project": "Project",
         "researchPhase": "Phase",
         "created": "Created",

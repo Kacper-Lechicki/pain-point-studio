@@ -1,8 +1,6 @@
 // @vitest-environment node
-/** Tests for retrieving translated survey form data (category options). */
+/** Tests for retrieving translated survey form data. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-
-import { SURVEY_CATEGORIES } from '@/features/surveys/config/survey-categories';
 
 // ── Mocks ────────────────────────────────────────────────────────────
 
@@ -43,33 +41,31 @@ beforeEach(() => {
 // ── Tests ────────────────────────────────────────────────────────────
 
 describe('getSurveyFormData', () => {
-  it('should return categoryOptions with value and label for each category', async () => {
+  it('should return projectOptions array', async () => {
     const { getSurveyFormData } = await import('./get-survey-form-data');
     const result = await getSurveyFormData();
 
-    expect(result).toHaveProperty('categoryOptions');
-    expect(result?.categoryOptions).toHaveLength(SURVEY_CATEGORIES.length);
     expect(result).toBeDefined();
-
-    const options = result!.categoryOptions ?? [];
-
-    for (let i = 0; i < SURVEY_CATEGORIES.length; i++) {
-      const opt = options[i];
-      const cat = SURVEY_CATEGORIES[i];
-
-      expect(opt).toBeDefined();
-      expect(cat).toBeDefined();
-      expect(opt).toHaveProperty('value', cat!.value);
-      expect(opt).toHaveProperty('label');
-      expect(typeof opt!.label).toBe('string');
-    }
+    expect(result).toHaveProperty('projectOptions');
+    expect(Array.isArray(result!.projectOptions)).toBe(true);
   });
 
-  it('should use translation for label (mock returns key as label)', async () => {
+  it('should return project options from database', async () => {
+    mockFrom.mockReturnValue({
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      order: vi.fn().mockResolvedValue({
+        data: [
+          { id: 'p1', name: 'Project One' },
+          { id: 'p2', name: 'Project Two' },
+        ],
+      }),
+    });
+
     const { getSurveyFormData } = await import('./get-survey-form-data');
     const result = await getSurveyFormData();
 
     expect(result).toBeDefined();
-    expect(result!.categoryOptions?.[0]?.label).toBe(SURVEY_CATEGORIES[0]?.labelKey);
+    expect(result!.projectOptions).toHaveLength(2);
   });
 });

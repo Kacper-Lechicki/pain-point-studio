@@ -9,7 +9,6 @@ interface CreateSurveyOptions {
   userId: string;
   title?: string;
   description?: string;
-  category?: string;
   status?: SurveyStatus;
   slug?: string | null;
   startsAt?: string | null;
@@ -53,7 +52,6 @@ export async function createSurveyViaDb(options: CreateSurveyOptions): Promise<s
       user_id: options.userId,
       title: options.title ?? `E2E Survey ${Date.now()}`,
       description: options.description ?? 'E2E test survey',
-      category: options.category ?? 'other',
       visibility: 'private',
       status: options.status ?? 'draft',
       slug: options.slug ?? null,

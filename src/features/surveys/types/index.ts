@@ -11,7 +11,6 @@ import {
   RATING_LABEL_MAX_LENGTH,
   RATING_SCALE_MAX,
   RATING_SCALE_MIN,
-  SURVEY_CATEGORY_VALUES,
   SURVEY_DESCRIPTION_MAX_LENGTH,
   SURVEY_TITLE_MAX_LENGTH,
   TEXT_PLACEHOLDER_MAX_LENGTH,
@@ -54,7 +53,7 @@ export const surveyIdSchema = z.object({
 
 // ── Survey metadata schemas ─────────────────────────────────────────
 
-/** Schema for survey metadata fields (title, description, category, visibility, project linking). */
+/** Schema for survey metadata fields (title, description, visibility, project linking). */
 export const surveyMetadataSchema = z.object({
   title: z
     .string()
@@ -64,10 +63,6 @@ export const surveyMetadataSchema = z.object({
     .string()
     .min(1, 'surveys.errors.fieldRequired')
     .max(SURVEY_DESCRIPTION_MAX_LENGTH, 'surveys.errors.descriptionTooLong'),
-  category: z
-    .string()
-    .min(1, 'surveys.errors.fieldRequired')
-    .refine((val) => SURVEY_CATEGORY_VALUES.includes(val), 'surveys.errors.fieldRequired'),
   visibility: z.enum(SURVEY_VISIBILITY_VALUES),
   projectId: z.uuid().nullable().optional(),
   researchPhase: z.enum(RESEARCH_PHASES).nullable().optional(),
