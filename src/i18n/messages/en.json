@@ -837,6 +837,16 @@
       "notStarted": "Not started",
       "inProgress": "In progress",
       "validated": "Validated"
+    },
+    "signals": {
+      "auto": "auto",
+      "yesNoStrength": "{pct}% of respondents said yes to \"{question}\"",
+      "yesNoThreat": "Only {pct}% said yes to \"{question}\"",
+      "ratingStrength": "Average rating {avg}/{max} for \"{question}\"",
+      "ratingThreat": "Low average rating {avg}/{max} for \"{question}\"",
+      "mcDominant": "{pct}% chose \"{option}\" for \"{question}\"",
+      "completionThreat": "Low completion rate ({pct}%) for \"{survey}\"",
+      "noData": "No research data in this phase yet"
     }
   },
   "respondent": {

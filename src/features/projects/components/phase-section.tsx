@@ -8,7 +8,9 @@ import { HeroHighlight } from '@/components/ui/hero-highlight';
 import { ROUTES } from '@/config/routes';
 import type { ProjectSurvey } from '@/features/projects/actions/get-project';
 import { PhaseSurveyCard } from '@/features/projects/components/phase-survey-card';
+import { SignalItem } from '@/features/projects/components/signal-item';
 import type { PhaseConfig } from '@/features/projects/config/contexts';
+import type { Signal } from '@/features/projects/types';
 import { getSurveyDetailUrl } from '@/features/surveys/lib/survey-urls';
 import Link from '@/i18n/link';
 import type { MessageKey } from '@/i18n/types';
@@ -17,6 +19,7 @@ interface PhaseSectionProps {
   phase: PhaseConfig | null;
   surveys: ProjectSurvey[];
   projectId: string;
+  signals?: Signal[] | undefined;
   sectionTitle?: string;
   totalCount?: number;
   isSearching?: boolean;
@@ -26,6 +29,7 @@ export function PhaseSection({
   phase,
   surveys,
   projectId,
+  signals,
   sectionTitle,
   totalCount,
   isSearching,
@@ -61,6 +65,14 @@ export function PhaseSection({
           </Button>
         )}
       </div>
+
+      {signals && signals.length > 0 && (
+        <div className="flex flex-col gap-1.5">
+          {signals.map((signal, i) => (
+            <SignalItem key={`${signal.source}-${signal.questionText ?? i}`} signal={signal} />
+          ))}
+        </div>
+      )}
 
       {surveys.length > 0 ? (
         <div className="flex flex-col gap-2">
