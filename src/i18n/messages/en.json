@@ -172,6 +172,30 @@
       "title": "No surveys yet",
       "description": "Create a survey to start collecting user feedback and discover real pain points.",
       "cta": "Create survey"
+    },
+    "overview": {
+      "subtitle": "Your validation research at a glance.",
+      "stats": {
+        "projects": "Projects",
+        "surveys": "Surveys",
+        "responses": "Responses"
+      },
+      "recentProjects": {
+        "title": "Recent Projects",
+        "viewAll": "View all",
+        "empty": "No projects yet"
+      },
+      "recentSurveys": {
+        "title": "Recent Surveys",
+        "viewAll": "View all",
+        "responses": "{count, plural, =0 {0 responses} one {# response} other {# responses}}",
+        "empty": "No surveys yet"
+      },
+      "empty": {
+        "title": "Start your validation journey",
+        "description": "Create a research project to organize your surveys and track your validation progress.",
+        "cta": "Create project"
+      }
     }
   },
   "surveys": {
