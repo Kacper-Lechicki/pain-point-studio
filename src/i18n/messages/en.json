@@ -847,6 +847,29 @@
       "mcDominant": "{pct}% chose \"{option}\" for \"{question}\"",
       "completionThreat": "Low completion rate ({pct}%) for \"{survey}\"",
       "noData": "No research data in this phase yet"
+    },
+    "scorecard": {
+      "title": "Project Scorecard",
+      "strengths": "Strengths",
+      "threats": "Threats",
+      "decisions": "Decisions & Next Steps",
+      "emptyStrengths": "No strengths identified yet.",
+      "emptyThreats": "No threats identified yet.",
+      "emptyDecisions": "No decisions recorded yet.",
+      "addNote": "Add note",
+      "noteBadge": "note",
+      "contentPlaceholder": "Write your observation or decision...",
+      "createSuccess": "Note added.",
+      "updateSuccess": "Note updated.",
+      "deleteSuccess": "Note deleted.",
+      "saveNote": "Save",
+      "cancelNote": "Cancel",
+      "confirmDeleteTitle": "Delete note?",
+      "confirmDeleteDescription": "This note will be permanently deleted.",
+      "confirmDeleteAction": "Delete",
+      "selectType": "Type",
+      "editNote": "Edit note",
+      "deleteNote": "Delete note"
     }
   },
   "respondent": {
