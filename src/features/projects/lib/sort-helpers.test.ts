@@ -2,6 +2,9 @@
 import { describe, expect, it } from 'vitest';
 
 import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
+import type { PhaseStatus } from '@/features/projects/lib/phase-status';
+import type { ResearchPhase } from '@/features/projects/types';
+import { RESEARCH_PHASES } from '@/features/projects/types';
 
 import { getDefaultSortDir, getProjectComparator } from './sort-helpers';
 
@@ -19,6 +22,9 @@ function makeProject(overrides: Partial<ProjectWithMetrics> = {}): ProjectWithMe
     surveyCount: 0,
     responseCount: 0,
     validationProgress: null,
+    phaseStatuses: Object.fromEntries(
+      RESEARCH_PHASES.map((p) => [p, 'not_started' as PhaseStatus])
+    ) as Record<ResearchPhase, PhaseStatus>,
     ...overrides,
   };
 }

@@ -4,6 +4,9 @@ import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
+import type { PhaseStatus } from '@/features/projects/lib/phase-status';
+import type { ResearchPhase } from '@/features/projects/types';
+import { RESEARCH_PHASES } from '@/features/projects/types';
 
 import { useProjectListState } from './use-project-list-state';
 
@@ -62,6 +65,12 @@ function makeProject(
     surveyCount: 3,
     responseCount: 10,
     validationProgress: null,
+    phaseStatuses:
+      context === 'idea_validation'
+        ? (Object.fromEntries(
+            RESEARCH_PHASES.map((p) => [p, 'not_started' as PhaseStatus])
+          ) as Record<ResearchPhase, PhaseStatus>)
+        : null,
   };
 }
 

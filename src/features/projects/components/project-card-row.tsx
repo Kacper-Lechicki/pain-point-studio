@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
 import { ProjectStatusBadge } from '@/features/projects/components/project-status-badge';
+import { ValidationProgressDots } from '@/features/projects/components/validation-progress-dots';
 import { PROJECT_CONTEXTS_CONFIG } from '@/features/projects/config/contexts';
 import type { ProjectContext, ProjectStatus } from '@/features/projects/types';
 import type { MessageKey } from '@/i18n/types';
@@ -122,13 +123,11 @@ export function ProjectCardRow({
 
         <div className="flex flex-col gap-0.5">
           <span>{t('projects.list.card.responses', { count: project.responseCount })}</span>
-          <span className="text-foreground font-medium">
-            {project.validationProgress !== null
-              ? t('projects.list.card.progress', {
-                  percent: Math.round(project.validationProgress * 100),
-                })
-              : '—'}
-          </span>
+          {project.phaseStatuses ? (
+            <ValidationProgressDots phaseStatuses={project.phaseStatuses} />
+          ) : (
+            <span className="text-foreground font-medium">—</span>
+          )}
         </div>
 
         <div className="flex flex-col gap-0.5">
