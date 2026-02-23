@@ -7,10 +7,12 @@ import { Button } from '@/components/ui/button';
 import { HeroHighlight } from '@/components/ui/hero-highlight';
 import { ROUTES } from '@/config/routes';
 import type { ProjectSurvey } from '@/features/projects/actions/get-project';
+import { InsightInlineForm } from '@/features/projects/components/insight-inline-form';
+import { InsightItem } from '@/features/projects/components/insight-item';
 import { PhaseSurveyCard } from '@/features/projects/components/phase-survey-card';
 import { SignalItem } from '@/features/projects/components/signal-item';
 import type { PhaseConfig } from '@/features/projects/config/contexts';
-import type { Signal } from '@/features/projects/types';
+import type { ProjectInsight, ResearchPhase, Signal } from '@/features/projects/types';
 import { getSurveyDetailUrl } from '@/features/surveys/lib/survey-urls';
 import Link from '@/i18n/link';
 import type { MessageKey } from '@/i18n/types';
@@ -20,9 +22,13 @@ interface PhaseSectionProps {
   surveys: ProjectSurvey[];
   projectId: string;
   signals?: Signal[] | undefined;
+  insights?: ProjectInsight[] | undefined;
   sectionTitle?: string;
   totalCount?: number;
   isSearching?: boolean;
+  onInsightCreated?: (insight: ProjectInsight) => void;
+  onInsightUpdated?: (insight: ProjectInsight) => void;
+  onInsightDeleted?: (insightId: string) => void;
 }
 
 export function PhaseSection({
@@ -30,9 +36,13 @@ export function PhaseSection({
   surveys,
   projectId,
   signals,
+  insights,
   sectionTitle,
   totalCount,
   isSearching,
+  onInsightCreated,
+  onInsightUpdated,
+  onInsightDeleted,
 }: PhaseSectionProps) {
   const t = useTranslations();
   const Icon = phase?.icon ?? List;
@@ -42,6 +52,9 @@ export function PhaseSection({
     isSearching && totalCount !== undefined
       ? `(${surveys.length} of ${totalCount})`
       : `(${surveys.length})`;
+
+  const hasInsights = insights && insights.length > 0;
+  const canManageInsights = phase && onInsightCreated && onInsightUpdated && onInsightDeleted;
 
   return (
     <section className="flex flex-col gap-3">
@@ -72,6 +85,28 @@ export function PhaseSection({
             <SignalItem key={`${signal.source}-${signal.questionText ?? i}`} signal={signal} />
           ))}
         </div>
+      )}
+
+      {hasInsights && onInsightUpdated && onInsightDeleted && (
+        <div className="flex flex-col gap-1.5">
+          {insights.map((insight) => (
+            <InsightItem
+              key={insight.id}
+              insight={insight}
+              onUpdated={onInsightUpdated}
+              onDeleted={onInsightDeleted}
+            />
+          ))}
+        </div>
+      )}
+
+      {canManageInsights && (
+        <InsightInlineForm
+          projectId={projectId}
+          phase={phase.value as ResearchPhase}
+          showTypeSelector
+          onCreated={onInsightCreated}
+        />
       )}
 
       {surveys.length > 0 ? (

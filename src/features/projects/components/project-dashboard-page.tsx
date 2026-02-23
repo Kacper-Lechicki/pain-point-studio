@@ -16,11 +16,12 @@ import type { SurveySignalData } from '@/features/projects/actions/get-project-s
 import { EditProjectDialog } from '@/features/projects/components/edit-project-dialog';
 import { PhaseSection } from '@/features/projects/components/phase-section';
 import { ProjectDashboardHeader } from '@/features/projects/components/project-dashboard-header';
+import { ProjectScorecard } from '@/features/projects/components/project-scorecard';
 import { ValidationProgressStepper } from '@/features/projects/components/validation-progress-stepper';
 import { PROJECT_CONTEXTS_CONFIG } from '@/features/projects/config/contexts';
 import { computePhaseStatuses } from '@/features/projects/lib/phase-status';
 import { generateSignals } from '@/features/projects/lib/signals';
-import type { Project, ProjectContext } from '@/features/projects/types';
+import type { Project, ProjectContext, ProjectInsight } from '@/features/projects/types';
 import { RESEARCH_PHASES } from '@/features/projects/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import { useRouter } from '@/i18n/routing';
@@ -33,6 +34,7 @@ interface ProjectDashboardPageProps {
   surveys: ProjectSurvey[];
   surveysByPhase: ProjectDetail['surveysByPhase'];
   signalsData: SurveySignalData[];
+  insights: ProjectInsight[];
 }
 
 export function ProjectDashboardPage({
@@ -40,6 +42,7 @@ export function ProjectDashboardPage({
   surveys,
   surveysByPhase,
   signalsData,
+  insights: initialInsights,
 }: ProjectDashboardPageProps) {
   const t = useTranslations();
   const router = useRouter();
@@ -47,6 +50,7 @@ export function ProjectDashboardPage({
   const [editOpen, setEditOpen] = useState(false);
   const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [insights, setInsights] = useState(initialInsights);
 
   useBreadcrumbSegment(project.id, project.name);
 
@@ -189,6 +193,55 @@ export function ProjectDashboardPage({
     [isIdeaValidation, signalsData]
   );
 
+  // Aggregate auto-signals across all phases for the scorecard (strength + threat only)
+  const scorecardSignals = useMemo(() => {
+    if (!isIdeaValidation) {
+      return { strengths: [], threats: [] };
+    }
+
+    const allSignals = Object.values(signalsByPhase).flat();
+
+    return {
+      strengths: allSignals.filter((s) => s.type === 'strength'),
+      threats: allSignals.filter((s) => s.type === 'threat' && s.source !== 'no_data'),
+    };
+  }, [isIdeaValidation, signalsByPhase]);
+
+  // Split insights: phase=null → scorecard, phase!=null → phase sections
+  const { scorecardInsights, insightsByPhase } = useMemo(() => {
+    const scorecard: ProjectInsight[] = [];
+    const byPhase: Record<string, ProjectInsight[]> = {};
+
+    for (const insight of insights) {
+      if (insight.phase === null) {
+        scorecard.push(insight);
+      } else {
+        const phase = insight.phase;
+
+        if (!byPhase[phase]) {
+          byPhase[phase] = [];
+        }
+
+        byPhase[phase]!.push(insight);
+      }
+    }
+
+    return { scorecardInsights: scorecard, insightsByPhase: byPhase };
+  }, [insights]);
+
+  // Insight CRUD callbacks
+  const handleInsightCreated = useCallback((insight: ProjectInsight) => {
+    setInsights((prev) => [...prev, insight]);
+  }, []);
+
+  const handleInsightUpdated = useCallback((updated: ProjectInsight) => {
+    setInsights((prev) => prev.map((i) => (i.id === updated.id ? updated : i)));
+  }, []);
+
+  const handleInsightDeleted = useCallback((insightId: string) => {
+    setInsights((prev) => prev.filter((i) => i.id !== insightId));
+  }, []);
+
   return (
     <main className="flex min-w-0 flex-col">
       <ProjectDashboardHeader
@@ -202,6 +255,17 @@ export function ProjectDashboardPage({
 
       <div className={`${DASHBOARD_PAGE_BODY_GAP_TOP} flex flex-col gap-6`}>
         {phaseStatuses && <ValidationProgressStepper phaseStatuses={phaseStatuses} />}
+
+        {isIdeaValidation && (
+          <ProjectScorecard
+            projectId={project.id}
+            signals={scorecardSignals}
+            insights={scorecardInsights}
+            onInsightCreated={handleInsightCreated}
+            onInsightUpdated={handleInsightUpdated}
+            onInsightDeleted={handleInsightDeleted}
+          />
+        )}
 
         {surveys.length > 0 && (
           <div className="flex flex-wrap items-center gap-2">
@@ -224,8 +288,12 @@ export function ProjectDashboardPage({
                   surveys={filteredSurveysByPhase[phase.value] ?? []}
                   projectId={project.id}
                   signals={signalsByPhase[phase.value]}
+                  insights={insightsByPhase[phase.value]}
                   totalCount={(surveysByPhase[phase.value] ?? []).length}
                   isSearching={isSearching}
+                  onInsightCreated={handleInsightCreated}
+                  onInsightUpdated={handleInsightUpdated}
+                  onInsightDeleted={handleInsightDeleted}
                 />
               ))}
 
