@@ -1,16 +1,11 @@
 import {
   Archive,
-  BarChart3,
   ClipboardList,
   FolderKanban,
-  FolderOpen,
   Home,
-  LayoutTemplate,
   Lightbulb,
   type LucideIcon,
-  Plug,
   Plus,
-  Settings,
 } from 'lucide-react';
 
 import type { AppRoute } from '@/config/routes';
@@ -56,7 +51,7 @@ export interface NavItem {
   /**
    * Path prefix used for active-state matching instead of `href`.
    * Useful when `href` points to a specific sub-page but the whole
-   * section (e.g. `/dashboard/analytics/*`) should highlight as active.
+   * section (e.g. `/settings/*`) should highlight as active.
    */
   activePrefix?: string | undefined;
   subNav?: SubNavConfig | undefined;
@@ -117,67 +112,9 @@ export const SIDEBAR_NAV: NavGroup[] = [
                   href: ROUTES.dashboard.researchNew,
                 },
                 {
-                  // Not yet implemented — will move to ROUTES when route exists
-                  labelKey: 'sidebar.templates',
-                  icon: LayoutTemplate,
-                  href: '/dashboard/research/templates' as AppRoute,
-                  disabled: true,
-                },
-              ],
-            },
-            {
-              headingKey: 'sidebar.organizeHeading',
-              items: [
-                {
-                  // Not yet implemented — will move to ROUTES when route exists
-                  labelKey: 'sidebar.folders',
-                  icon: FolderOpen,
-                  href: '/dashboard/research/folders' as AppRoute,
-                  disabled: true,
-                },
-                {
                   labelKey: 'sidebar.archive',
                   icon: Archive,
                   href: ROUTES.dashboard.researchArchive,
-                },
-              ],
-            },
-            {
-              headingKey: 'sidebar.configureHeading',
-              items: [
-                {
-                  // Not yet implemented — will move to ROUTES when route exists
-                  labelKey: 'sidebar.surveySettings',
-                  icon: Settings,
-                  href: '/dashboard/research/settings' as AppRoute,
-                  disabled: true,
-                },
-                {
-                  // Not yet implemented — will move to ROUTES when route exists
-                  labelKey: 'sidebar.integrations',
-                  icon: Plug,
-                  href: '/dashboard/research/integrations' as AppRoute,
-                  disabled: true,
-                },
-              ],
-            },
-          ],
-        },
-      },
-      {
-        labelKey: 'sidebar.analytics',
-        icon: BarChart3,
-        href: ROUTES.dashboard.analyticsProjectIdea,
-        activePrefix: ROUTES.dashboard.analytics,
-        subNav: {
-          titleKey: 'sidebar.analytics',
-          groups: [
-            {
-              items: [
-                {
-                  labelKey: 'sidebar.projectIdeaEvaluation',
-                  icon: ClipboardList,
-                  href: ROUTES.dashboard.analyticsProjectIdea,
                 },
               ],
             },
@@ -188,12 +125,7 @@ export const SIDEBAR_NAV: NavGroup[] = [
   },
 ];
 
-export const SIDEBAR_BOTTOM_ITEM: NavItem = {
-  labelKey: 'sidebar.projectSettings',
-  icon: Settings,
-  href: '/project-settings' as AppRoute,
-  disabled: true,
-};
+export { USER_SETTINGS_NAV_ITEM as SIDEBAR_BOTTOM_ITEM } from './navigation-settings';
 
 // ── Re-exports for backward compatibility ─────────────────────────────
 // NOTE: findActiveNavItem is in lib/nav-utils.ts (not re-exported to avoid circular deps)

@@ -12,8 +12,6 @@ const SEGMENT_KEYS: Record<string, string> = {
   dashboard: 'dashboard',
   research: 'research',
   projects: 'projects',
-  analytics: 'analytics',
-  'project-idea-evaluation': 'projectIdeaEvaluation',
   settings: 'settings',
   profile: 'profile',
   preview: 'preview',
