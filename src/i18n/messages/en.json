@@ -174,22 +174,19 @@
       "cta": "Create survey"
     },
     "overview": {
-      "subtitle": "Your validation research at a glance.",
-      "stats": {
-        "projects": "Projects",
-        "surveys": "Surveys",
-        "responses": "Responses"
+      "subtitle": "Your projects at a glance.",
+      "newProject": "New Project",
+      "quickSurvey": "Quick Survey",
+      "projectCard": {
+        "surveys": "{count, plural, =0 {0 surveys} one {# survey} other {# surveys}}",
+        "responses": "{count, plural, =0 {0 resp.} one {# resp.} other {# resp.}}"
       },
-      "recentProjects": {
-        "title": "Recent Projects",
-        "viewAll": "View all",
-        "empty": "No projects yet"
-      },
-      "recentSurveys": {
-        "title": "Recent Surveys",
-        "viewAll": "View all",
-        "responses": "{count, plural, =0 {0 responses} one {# response} other {# responses}}",
-        "empty": "No surveys yet"
+      "verdict": {
+        "notStarted": "Not started",
+        "needsData": "More data needed",
+        "inProgress": "In progress",
+        "ready": "Almost there",
+        "validated": "Validated"
       },
       "empty": {
         "title": "Start your validation journey",
