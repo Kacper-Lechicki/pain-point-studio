@@ -31,8 +31,6 @@ export const ROUTES = {
     projects: '/dashboard/projects' as AppRoute,
     projectDetail: '/dashboard/projects' as AppRoute,
     projectNew: '/dashboard/projects/new' as AppRoute,
-    analytics: '/dashboard/analytics' as AppRoute,
-    analyticsProjectIdea: '/dashboard/analytics/project-idea-evaluation' as AppRoute,
   },
   profile: {
     preview: '/profile/preview' as AppRoute,

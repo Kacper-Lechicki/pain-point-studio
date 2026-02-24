@@ -29,7 +29,7 @@ export const DYNAMIC_ROUTE_TABS: Record<string, DynamicRouteTab[]> = {
     {
       prefix: ROUTES.dashboard.research,
       icon: ClipboardList,
-      excludeSegments: ['new', 'archive', 'templates', 'folders', 'settings', 'integrations'],
+      excludeSegments: ['new', 'archive'],
     },
   ],
   [ROUTES.dashboard.projects]: [

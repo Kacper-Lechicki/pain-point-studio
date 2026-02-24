@@ -17,9 +17,9 @@ export const USER_SETTINGS_SUB_NAV_ITEMS: SubNavItem[] = [
 ];
 
 /**
- * Virtual nav item for user account settings (not shown in sidebar).
- * Returned by `findActiveNavItem` so the sub-panel renders when
- * the user navigates to /settings/* via the user menu.
+ * Nav item for user account settings. Shown as the sidebar bottom item
+ * and also returned by `findActiveNavItem` so the sub-panel renders
+ * when the user navigates to /settings/* via the user menu.
  */
 export const USER_SETTINGS_NAV_ITEM: NavItem = {
   labelKey: 'sidebar.settings',
