@@ -72,7 +72,7 @@ export const DASHBOARD_FOOTER_HEIGHT_CLASS = 'h-12';
 
 // ── Content area ────────────────────────────────────────────────────
 
-export const DASHBOARD_CONTENT_MAX_WIDTH = 'max-w-7xl';
+export const DASHBOARD_CONTENT_MAX_WIDTH = 'container';
 export const DASHBOARD_PAGE_BODY_GAP = 'mb-8';
 export const DASHBOARD_PAGE_BODY_GAP_TOP = 'mt-8';
 

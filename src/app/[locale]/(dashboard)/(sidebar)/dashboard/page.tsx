@@ -6,15 +6,30 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { PageTransition } from '@/components/ui/page-transition';
 import { ROUTES } from '@/config';
 import { getDashboardOverview } from '@/features/dashboard/actions/get-dashboard-overview';
-import { DashboardOverview } from '@/features/dashboard/components/dashboard-overview';
+import { getDashboardStats } from '@/features/dashboard/actions/get-dashboard-stats';
+import { DashboardBento } from '@/features/dashboard/components/bento';
+import { getProject } from '@/features/projects/actions/get-project';
+import { getProfile } from '@/features/settings/actions/get-profile';
 import Link from '@/i18n/link';
 
 export const dynamic = 'force-dynamic';
 
-export default async function DashboardPage() {
-  const [overview, t] = await Promise.all([getDashboardOverview(), getTranslations()]);
+interface Props {
+  searchParams: Promise<{ period?: string }>;
+}
 
-  if (!overview) {
+export default async function DashboardPage({ searchParams }: Props) {
+  const { period } = await searchParams;
+  const days = period === '7' ? 7 : period === '90' ? 90 : period === '0' ? 0 : 30;
+
+  const [overview, stats, profile, t] = await Promise.all([
+    getDashboardOverview(),
+    getDashboardStats(days),
+    getProfile(),
+    getTranslations(),
+  ]);
+
+  if (!overview || overview.projects.length === 0) {
     return (
       <PageTransition>
         <EmptyState
@@ -34,9 +49,20 @@ export default async function DashboardPage() {
     );
   }
 
+  // Fetch pinned project details if set
+  const pinnedProjectId = profile?.pinnedProjectId ?? null;
+  const pinnedProject = pinnedProjectId ? await getProject(pinnedProjectId) : null;
+
   return (
     <PageTransition>
-      <DashboardOverview data={overview} />
+      <DashboardBento
+        fullName={profile?.fullName ?? ''}
+        stats={stats}
+        projects={overview.projects}
+        pinnedProject={pinnedProject}
+        pinnedProjectId={pinnedProjectId}
+        currentPeriod={String(days)}
+      />
     </PageTransition>
   );
 }

@@ -3,7 +3,7 @@
   "configurations": [
     {
       "name": "dev",
-      "runtimeExecutable": "pnpm",
+      "runtimeExecutable": "/Users/kacper.lechicki/Library/pnpm/pnpm",
       "runtimeArgs": ["dev"],
       "port": 3000
     }

@@ -4,10 +4,12 @@ import { Menu } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
+import { BRAND, ROUTES } from '@/config';
 import { UserMenu } from '@/features/auth/components/common/user-menu';
 import { Breadcrumbs } from '@/features/dashboard/components/layout/breadcrumbs';
 import { useSidebar } from '@/features/dashboard/components/layout/sidebar-provider';
 import { DYNAMIC_SIDEBAR_ITEMS } from '@/features/dashboard/config/navigation';
+import Link from '@/i18n/link';
 import { usePathname } from '@/i18n/routing';
 import { cn } from '@/lib/common/utils';
 
@@ -35,6 +37,13 @@ const Navbar = () => {
             <Menu className="size-5" />
           </Button>
         )}
+
+        <Link
+          href={ROUTES.common.dashboard}
+          className="text-foreground hover:text-foreground/90 shrink-0 truncate text-lg font-semibold tracking-tight transition-colors"
+        >
+          {t(BRAND.name)}
+        </Link>
 
         <div className="min-w-0 flex-1 pl-1">
           <Breadcrumbs />

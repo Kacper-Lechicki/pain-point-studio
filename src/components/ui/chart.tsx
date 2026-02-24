@@ -36,10 +36,20 @@ function useChart() {
 
 type ChartContainerProps = React.ComponentProps<'div'> & {
   config: ChartConfig;
+  /** When set, chart uses these exact dimensions (avoids flex/percentage layout issues). */
+  dimensions?: { width: number; height: number };
   children: React.ComponentProps<typeof RechartsPrimitive.ResponsiveContainer>['children'];
 };
 
-function ChartContainer({ id, className, children, config, ...props }: ChartContainerProps) {
+function ChartContainer({
+  id,
+  className,
+  children,
+  config,
+  dimensions,
+  style,
+  ...props
+}: ChartContainerProps) {
   const uniqueId = React.useId();
   const chartId = `chart-${id || uniqueId.replace(/:/g, '')}`;
 
@@ -50,12 +60,21 @@ function ChartContainer({ id, className, children, config, ...props }: ChartCont
         data-chart={chartId}
         className={cn(
           "[&_.recharts-cartesian-axis-tick_text]:fill-muted-foreground [&_.recharts-cartesian-grid_line[stroke='#ccc']]:stroke-border/50 [&_.recharts-curve.recharts-tooltip-cursor]:stroke-border [&_.recharts-polar-grid_[stroke='#ccc']]:stroke-border [&_.recharts-radial-bar-background-sector]:fill-muted [&_.recharts-rectangle.recharts-tooltip-cursor]:fill-muted [&_.recharts-reference-line_[stroke='#ccc']]:stroke-border flex aspect-video justify-center text-xs [&_.recharts-dot[stroke='#fff']]:stroke-transparent [&_.recharts-layer]:outline-hidden [&_.recharts-sector]:outline-hidden [&_.recharts-sector[stroke='#fff']]:stroke-transparent [&_.recharts-surface]:outline-hidden",
+          dimensions && 'aspect-auto',
           className
         )}
+        style={
+          dimensions ? { width: dimensions.width, height: dimensions.height, ...style } : style
+        }
         {...props}
       >
         <ChartStyle id={chartId} config={config} />
-        <RechartsPrimitive.ResponsiveContainer>{children}</RechartsPrimitive.ResponsiveContainer>
+
+        <RechartsPrimitive.ResponsiveContainer
+          {...(dimensions && { width: dimensions.width, height: dimensions.height })}
+        >
+          {children}
+        </RechartsPrimitive.ResponsiveContainer>
       </div>
     </ChartContext.Provider>
   );

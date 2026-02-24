@@ -34,6 +34,7 @@ export type Database = {
           bio: string;
           full_name: string;
           id: string;
+          pinned_project_id: string | null;
           role: string | null;
           social_links: Json;
           updated_at: string;
@@ -43,6 +44,7 @@ export type Database = {
           bio?: string;
           full_name?: string;
           id: string;
+          pinned_project_id?: string | null;
           role?: string | null;
           social_links?: Json;
           updated_at?: string;
@@ -52,11 +54,20 @@ export type Database = {
           bio?: string;
           full_name?: string;
           id?: string;
+          pinned_project_id?: string | null;
           role?: string | null;
           social_links?: Json;
           updated_at?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'profiles_pinned_project_id_fkey';
+            columns: ['pinned_project_id'];
+            isOneToOne: false;
+            referencedRelation: 'projects';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       project_insights: {
         Row: {
@@ -355,6 +366,10 @@ export type Database = {
       complete_expired_surveys: { Args: never; Returns: undefined };
       decrypt_pii: { Args: { encrypted: string }; Returns: string };
       encrypt_pii: { Args: { plain_text: string }; Returns: string };
+      get_dashboard_stats: {
+        Args: { p_days: number; p_user_id: string };
+        Returns: Json;
+      };
       get_email_change_status: {
         Args: never;
         Returns: {
