@@ -6,10 +6,14 @@ import { SIGNAL_THRESHOLDS } from '@/features/projects/config/signals';
 import type { PhaseStatus } from '@/features/projects/lib/phase-status';
 import type { ProjectContext, ResearchPhase } from '@/features/projects/types';
 import { RESEARCH_PHASES } from '@/features/projects/types';
-import type { SurveyStatus } from '@/features/surveys/types';
 import { createClient } from '@/lib/supabase/server';
 
 // ── Types ────────────────────────────────────────────────────────────
+
+export interface PhaseMetrics {
+  surveyCount: number;
+  responseCount: number;
+}
 
 export interface OverviewProject {
   id: string;
@@ -22,26 +26,11 @@ export interface OverviewProject {
   responseCount: number;
   validationProgress: number | null;
   phaseStatuses: Record<ResearchPhase, PhaseStatus> | null;
-}
-
-export interface OverviewSurvey {
-  id: string;
-  title: string;
-  status: SurveyStatus;
-  responseCount: number;
-  updatedAt: string;
-  projectId: string | null;
-  projectName: string | null;
+  phaseMetrics: Record<ResearchPhase, PhaseMetrics> | null;
 }
 
 export interface DashboardOverview {
-  stats: {
-    totalProjects: number;
-    totalSurveys: number;
-    totalResponses: number;
-  };
-  recentProjects: OverviewProject[];
-  recentSurveys: OverviewSurvey[];
+  projects: OverviewProject[];
 }
 
 // ── Action ───────────────────────────────────────────────────────────
@@ -57,55 +46,25 @@ export const getDashboardOverview = cache(async (): Promise<DashboardOverview | 
     return null;
   }
 
-  // Run all queries in parallel for speed
-  const [projectsResult, surveysResult, allProjectSurveysResult] = await Promise.all([
-    // Recent active projects (max 3)
+  // Run both queries in parallel
+  const [projectsResult, allSurveysResult] = await Promise.all([
+    // All active projects
     supabase
       .from('projects')
       .select('*')
       .eq('user_id', user.id)
       .eq('status', 'active')
-      .order('updated_at', { ascending: false })
-      .limit(3),
+      .order('updated_at', { ascending: false }),
 
-    // Recent non-archived surveys (max 5)
-    supabase
-      .from('surveys')
-      .select('id, title, status, updated_at, project_id, survey_responses(count)')
-      .eq('user_id', user.id)
-      .neq('status', 'archived')
-      .order('updated_at', { ascending: false })
-      .limit(5),
-
-    // All surveys for stat counts + project metrics (lightweight: only IDs and counts)
+    // All surveys for project metrics (lightweight: only IDs and counts)
     supabase
       .from('surveys')
       .select('id, project_id, research_phase, status, survey_responses(count)')
       .eq('user_id', user.id),
   ]);
 
-  // Total projects count (separate lightweight query)
-  const { count: totalProjects } = await supabase
-    .from('projects')
-    .select('*', { count: 'exact', head: true })
-    .eq('user_id', user.id);
-
   const projects = projectsResult.data ?? [];
-  const surveys = surveysResult.data ?? [];
-  const allSurveys = allProjectSurveysResult.data ?? [];
-
-  // ── Compute stats ──────────────────────────────────────────────────
-
-  let totalResponses = 0;
-
-  for (const survey of allSurveys) {
-    const respCount =
-      Array.isArray(survey.survey_responses) && survey.survey_responses.length > 0
-        ? (survey.survey_responses[0] as { count: number }).count
-        : 0;
-
-    totalResponses += respCount;
-  }
+  const allSurveys = allSurveysResult.data ?? [];
 
   // ── Compute project metrics ────────────────────────────────────────
 
@@ -117,6 +76,7 @@ export const getDashboardOverview = cache(async (): Promise<DashboardOverview | 
       responseCount: number;
       phasesWithValidation: Set<string>;
       phasesWithAnySurvey: Set<string>;
+      phaseMetrics: Map<string, PhaseMetrics>;
     }
   >();
 
@@ -126,6 +86,7 @@ export const getDashboardOverview = cache(async (): Promise<DashboardOverview | 
       responseCount: 0,
       phasesWithValidation: new Set(),
       phasesWithAnySurvey: new Set(),
+      phaseMetrics: new Map(),
     });
   }
 
@@ -149,6 +110,16 @@ export const getDashboardOverview = cache(async (): Promise<DashboardOverview | 
 
     if (survey.research_phase) {
       metrics.phasesWithAnySurvey.add(survey.research_phase);
+
+      // Accumulate per-phase metrics
+      const pm = metrics.phaseMetrics.get(survey.research_phase) ?? {
+        surveyCount: 0,
+        responseCount: 0,
+      };
+
+      pm.surveyCount++;
+      pm.responseCount += respCount;
+      metrics.phaseMetrics.set(survey.research_phase, pm);
     }
 
     if (
@@ -160,8 +131,9 @@ export const getDashboardOverview = cache(async (): Promise<DashboardOverview | 
     }
   }
 
-  const recentProjects: OverviewProject[] = projects.map((project) => {
+  const overviewProjects: OverviewProject[] = projects.map((project) => {
     const metrics = projectMetricsMap.get(project.id)!;
+    const isIdeaValidation = (project.context as ProjectContext) === 'idea_validation';
     const totalPhases = RESEARCH_PHASES.length;
 
     return {
@@ -173,75 +145,29 @@ export const getDashboardOverview = cache(async (): Promise<DashboardOverview | 
       updatedAt: project.updated_at,
       surveyCount: metrics.surveyCount,
       responseCount: metrics.responseCount,
-      validationProgress:
-        (project.context as ProjectContext) === 'idea_validation'
-          ? metrics.phasesWithValidation.size / totalPhases
-          : null,
-      phaseStatuses:
-        (project.context as ProjectContext) === 'idea_validation'
-          ? (Object.fromEntries(
-              RESEARCH_PHASES.map((phase) => [
-                phase,
-                metrics.phasesWithValidation.has(phase)
-                  ? 'validated'
-                  : metrics.phasesWithAnySurvey.has(phase)
-                    ? 'in_progress'
-                    : 'not_started',
-              ])
-            ) as Record<ResearchPhase, PhaseStatus>)
-          : null,
+      validationProgress: isIdeaValidation ? metrics.phasesWithValidation.size / totalPhases : null,
+      phaseStatuses: isIdeaValidation
+        ? (Object.fromEntries(
+            RESEARCH_PHASES.map((phase) => [
+              phase,
+              metrics.phasesWithValidation.has(phase)
+                ? 'validated'
+                : metrics.phasesWithAnySurvey.has(phase)
+                  ? 'in_progress'
+                  : 'not_started',
+            ])
+          ) as Record<ResearchPhase, PhaseStatus>)
+        : null,
+      phaseMetrics: isIdeaValidation
+        ? (Object.fromEntries(
+            RESEARCH_PHASES.map((phase) => [
+              phase,
+              metrics.phaseMetrics.get(phase) ?? { surveyCount: 0, responseCount: 0 },
+            ])
+          ) as Record<ResearchPhase, PhaseMetrics>)
+        : null,
     };
   });
 
-  // ── Map recent surveys ─────────────────────────────────────────────
-
-  // Build project name lookup from recent projects (and all surveys with project_ids)
-  const projectNameMap = new Map<string, string>();
-
-  for (const p of projects) {
-    projectNameMap.set(p.id, p.name);
-  }
-
-  // For surveys linked to projects not in the top 3, fetch those project names
-  const missingProjectIds = surveys
-    .filter((s) => s.project_id && !projectNameMap.has(s.project_id))
-    .map((s) => s.project_id!);
-
-  if (missingProjectIds.length > 0) {
-    const { data: extraProjects } = await supabase
-      .from('projects')
-      .select('id, name')
-      .in('id', missingProjectIds);
-
-    for (const p of extraProjects ?? []) {
-      projectNameMap.set(p.id, p.name);
-    }
-  }
-
-  const recentSurveys: OverviewSurvey[] = surveys.map((survey) => {
-    const respCount =
-      Array.isArray(survey.survey_responses) && survey.survey_responses.length > 0
-        ? (survey.survey_responses[0] as { count: number }).count
-        : 0;
-
-    return {
-      id: survey.id,
-      title: survey.title,
-      status: survey.status as SurveyStatus,
-      responseCount: respCount,
-      updatedAt: survey.updated_at,
-      projectId: survey.project_id,
-      projectName: survey.project_id ? (projectNameMap.get(survey.project_id) ?? null) : null,
-    };
-  });
-
-  return {
-    stats: {
-      totalProjects: totalProjects ?? 0,
-      totalSurveys: allSurveys.length,
-      totalResponses,
-    },
-    recentProjects,
-    recentSurveys,
-  };
+  return { projects: overviewProjects };
 });
