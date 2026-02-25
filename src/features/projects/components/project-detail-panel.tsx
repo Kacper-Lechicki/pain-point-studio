@@ -2,10 +2,11 @@
 
 import { useMemo, useState } from 'react';
 
-import { Expand, Plus } from 'lucide-react';
+import { ClipboardList, Expand, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
+import { EmptyState } from '@/components/ui/empty-state';
 import { MetricRow, SectionLabel } from '@/components/ui/metric-display';
 import { SearchInput } from '@/components/ui/search-input';
 import { Separator } from '@/components/ui/separator';
@@ -159,15 +160,20 @@ export function ProjectDetailPanel({
       {allSurveys === null ? (
         <SurveysListSkeleton />
       ) : allSurveys.length === 0 ? (
-        <div className="flex flex-col items-start gap-2">
-          <p className="text-muted-foreground text-xs">{t('projects.detail.noSurveys')}</p>
-          <Button variant="default" size="sm" className="h-7 text-xs" asChild>
-            <Link href={ROUTES.dashboard.researchNew}>
-              <Plus className="size-3.5" aria-hidden />
-              {t('projects.detail.createSurvey')}
-            </Link>
-          </Button>
-        </div>
+        <EmptyState
+          variant="compact"
+          icon={ClipboardList}
+          title={t('projects.detail.noSurveys')}
+          description={t('projects.detail.noSurveysDescription')}
+          action={
+            <Button variant="default" size="sm" className="h-7 text-xs" asChild>
+              <Link href={ROUTES.dashboard.researchNew}>
+                <Plus className="size-3.5" aria-hidden />
+                {t('projects.detail.createSurvey')}
+              </Link>
+            </Button>
+          }
+        />
       ) : (
         <CompactSurveyList surveys={filteredSurveys ?? []} isSearching={isSearching} />
       )}
