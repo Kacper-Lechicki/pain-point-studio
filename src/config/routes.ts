@@ -27,15 +27,16 @@ export const ROUTES = {
     research: '/dashboard/research' as AppRoute,
     researchNew: '/dashboard/research/new' as AppRoute,
     researchArchive: '/dashboard/research/archive' as AppRoute,
+    /** Base path for dynamic stats routes — not an AppRoute. Use `getSurveyStatsUrl(id)`. */
     researchStats: '/dashboard/research/stats',
     projects: '/dashboard/projects' as AppRoute,
-    projectDetail: '/dashboard/projects' as AppRoute,
     projectNew: '/dashboard/projects/new' as AppRoute,
   },
   profile: {
     preview: '/profile/preview' as AppRoute,
   },
   survey: {
+    /** Base path for public respondent routes — not an AppRoute. Used as `/r/[slug]`. */
     respond: '/r',
   },
 } as const;
@@ -52,6 +53,7 @@ export const SIBLING_GROUPS: readonly (readonly AppRoute[])[] = [
   [ROUTES.dashboard.projects, ROUTES.dashboard.projectNew],
 ];
 
+/** Ordered list of settings page section identifiers (used for tabs / scroll anchors). */
 export const SETTINGS_SECTION_VALUES = [
   'profile',
   'email',
@@ -62,6 +64,7 @@ export const SETTINGS_SECTION_VALUES = [
 
 export type SettingsSectionValue = (typeof SETTINGS_SECTION_VALUES)[number];
 
+/** Maps section identifiers to URL-friendly hash fragments (camelCase → kebab-case). */
 export const SECTION_TO_HASH: Record<SettingsSectionValue, string> = {
   profile: 'profile',
   email: 'email',

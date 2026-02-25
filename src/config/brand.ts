@@ -1,5 +1,6 @@
 import type { MessageKey } from '@/i18n/types';
 
+/** Brand identity constants — values are i18n message keys, not raw strings. */
 export const BRAND = {
   name: 'brand.name',
   tagline: 'brand.tagline',

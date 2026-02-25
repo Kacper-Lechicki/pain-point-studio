@@ -1,7 +1,7 @@
 import { FolderKanban } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
-import { ROUTES } from '@/config/routes';
+import { getProjectDetailUrl } from '@/features/projects/lib/project-urls';
 import Link from '@/i18n/link';
 
 interface SurveyProjectBadgeProps {
@@ -17,10 +17,7 @@ export function SurveyProjectBadge({ projectId, projectName }: SurveyProjectBadg
   return (
     <div className="flex min-w-0 flex-wrap items-center gap-1">
       <Badge variant="secondary" className="max-w-full gap-1 px-1.5 py-0 text-[11px]" asChild>
-        <Link
-          href={`${ROUTES.dashboard.projectDetail}/${projectId}`}
-          onClick={(e) => e.stopPropagation()}
-        >
+        <Link href={getProjectDetailUrl(projectId)} onClick={(e) => e.stopPropagation()}>
           <FolderKanban className="!size-3 shrink-0" aria-hidden />
           <span className="truncate">{projectName}</span>
         </Link>

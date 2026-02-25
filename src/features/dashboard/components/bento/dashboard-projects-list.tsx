@@ -11,6 +11,7 @@ import { ROUTES } from '@/config';
 import type { OverviewProject } from '@/features/dashboard/actions/get-dashboard-overview';
 import { setPinnedProject } from '@/features/dashboard/actions/set-pinned-project';
 import { BENTO_CARD_CLASS } from '@/features/dashboard/components/bento/bento-styles';
+import { getProjectDetailUrl } from '@/features/projects/lib/project-urls';
 import Link from '@/i18n/link';
 import { cn } from '@/lib/common/utils';
 
@@ -92,7 +93,7 @@ export function DashboardProjectsList({ projects, pinnedProjectId }: DashboardPr
                   <div className="flex min-w-0 flex-1 flex-col gap-0">
                     <div className="flex items-center gap-2">
                       <Link
-                        href={`${ROUTES.dashboard.projectDetail}/${project.id}`}
+                        href={getProjectDetailUrl(project.id)}
                         className="hover:text-foreground min-w-0 flex-1 truncate text-sm font-medium transition-colors"
                       >
                         {project.name}

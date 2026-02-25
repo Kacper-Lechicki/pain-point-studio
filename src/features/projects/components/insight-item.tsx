@@ -12,6 +12,7 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { deleteInsight } from '@/features/projects/actions/delete-insight';
 import { updateInsight } from '@/features/projects/actions/update-insight';
+import { INSIGHT_CONTENT_MAX_LENGTH } from '@/features/projects/config';
 import { INSIGHT_COLORS, INSIGHT_ICONS } from '@/features/projects/config/insight-colors';
 import type { InsightType, ProjectInsight } from '@/features/projects/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
@@ -107,7 +108,7 @@ export function InsightItem({ insight, onUpdated, onDeleted }: InsightItemProps)
           ref={textareaRef}
           value={editContent}
           onChange={(e) => setEditContent(e.target.value)}
-          maxLength={500}
+          maxLength={INSIGHT_CONTENT_MAX_LENGTH}
           size="sm"
           className="bg-background"
           onKeyDown={(e) => {

@@ -11,7 +11,12 @@ import { Label } from '@/components/ui/label';
 import { PageTransition } from '@/components/ui/page-transition';
 import { Textarea } from '@/components/ui/textarea';
 import { submitResponse } from '@/features/surveys/actions/respondent';
-import { surveyCompletedKey } from '@/features/surveys/config';
+import {
+  COMPLETION_CONTACT_EMAIL_MAX_LENGTH,
+  COMPLETION_CONTACT_NAME_MAX_LENGTH,
+  COMPLETION_FEEDBACK_MAX_LENGTH,
+  surveyCompletedKey,
+} from '@/features/surveys/config';
 import type { CompletedData } from '@/features/surveys/types';
 
 interface SurveyCompletionProps {
@@ -97,7 +102,7 @@ export const SurveyCompletion = ({
                 value={contactName}
                 onChange={(e) => setContactName(e.target.value)}
                 placeholder={t('respondent.completion.namePlaceholder')}
-                maxLength={100}
+                maxLength={COMPLETION_CONTACT_NAME_MAX_LENGTH}
                 className="mt-1"
               />
             </div>
@@ -113,7 +118,7 @@ export const SurveyCompletion = ({
                 value={contactEmail}
                 onChange={(e) => setContactEmail(e.target.value)}
                 placeholder={t('respondent.completion.emailPlaceholder')}
-                maxLength={320}
+                maxLength={COMPLETION_CONTACT_EMAIL_MAX_LENGTH}
                 className="mt-1"
               />
             </div>
@@ -129,7 +134,7 @@ export const SurveyCompletion = ({
             value={feedback}
             onChange={(e) => setFeedback(e.target.value)}
             placeholder={t('respondent.completion.feedbackPlaceholder')}
-            maxLength={2000}
+            maxLength={COMPLETION_FEEDBACK_MAX_LENGTH}
             rows={4}
             className="mt-1 resize-none"
           />
