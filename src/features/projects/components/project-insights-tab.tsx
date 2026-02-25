@@ -136,6 +136,7 @@ export function ProjectInsightsTab({
           project_id: projectId,
           type: insightType,
           content,
+          phase: null,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         };

@@ -44,6 +44,8 @@ export interface UserSurvey {
   projectId: string | null;
   /** Project name (denormalized for display), or null. */
   projectName: string | null;
+  /** Research phase, or null if not assigned. */
+  researchPhase: string | null;
 }
 
 const userSurveySchema = z.object({
@@ -70,6 +72,7 @@ const userSurveySchema = z.object({
   avgQuestionCompletion: z.number().nullable(),
   projectId: z.string().nullable().optional().default(null),
   projectName: z.string().nullable().optional().default(null),
+  researchPhase: z.string().nullable().optional().default(null),
 });
 
 const userSurveysRpcSchema = z.array(userSurveySchema);

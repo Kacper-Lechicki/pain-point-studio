@@ -80,6 +80,7 @@ export function InsightInlineForm({
         project_id: projectId,
         type: activeType,
         content: trimmed,
+        phase: null,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };

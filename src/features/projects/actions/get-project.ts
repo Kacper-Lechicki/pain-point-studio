@@ -12,6 +12,7 @@ export interface ProjectSurvey {
   responseCount: number;
   completedCount: number;
   createdAt: string;
+  researchPhase: string | null;
 }
 
 export interface ProjectDetail {
@@ -42,7 +43,7 @@ export const getProject = cache(async (projectId: string): Promise<ProjectDetail
 
   const { data: rawSurveys } = await supabase
     .from('surveys')
-    .select('id, title, status, created_at, survey_responses(count)')
+    .select('id, title, status, created_at, research_phase, survey_responses(count)')
     .eq('project_id', projectId)
     .order('created_at', { ascending: false });
 
@@ -59,6 +60,7 @@ export const getProject = cache(async (projectId: string): Promise<ProjectDetail
       responseCount: respCount,
       completedCount: respCount,
       createdAt: s.created_at,
+      researchPhase: s.research_phase,
     };
   });
 

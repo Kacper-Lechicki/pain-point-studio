@@ -12,7 +12,7 @@ import { ROUTES } from '@/config/routes';
 import type { ProjectSurvey } from '@/features/projects/actions/get-project';
 import { PhaseSection } from '@/features/projects/components/phase-section';
 import { isProjectArchived } from '@/features/projects/lib/project-helpers';
-import type { Project } from '@/features/projects/types';
+import { type Project, RESEARCH_PHASES, type ResearchPhase } from '@/features/projects/types';
 import Link from '@/i18n/link';
 
 interface ProjectSurveysTabProps {
@@ -36,6 +36,51 @@ export function ProjectSurveysTab({ project, surveys }: ProjectSurveysTabProps) 
 
     return surveys.filter((s) => s.title.toLowerCase().includes(q));
   }, [surveys, searchQuery, isSearching]);
+
+  const groupedSurveys = useMemo(() => {
+    const groups: Record<ResearchPhase | 'unassigned', ProjectSurvey[]> = {
+      idea: [],
+      research: [],
+      validation: [],
+      decision: [],
+      unassigned: [],
+    };
+
+    for (const survey of filteredSurveys) {
+      const phase = survey.researchPhase as ResearchPhase | null;
+
+      if (phase && RESEARCH_PHASES.includes(phase)) {
+        groups[phase].push(survey);
+      } else {
+        groups.unassigned.push(survey);
+      }
+    }
+
+    return groups;
+  }, [filteredSurveys]);
+
+  /** Total surveys per group (before search filter) — used for "X of Y" labels. */
+  const totalCounts = useMemo(() => {
+    const counts: Record<ResearchPhase | 'unassigned', number> = {
+      idea: 0,
+      research: 0,
+      validation: 0,
+      decision: 0,
+      unassigned: 0,
+    };
+
+    for (const survey of surveys) {
+      const phase = survey.researchPhase as ResearchPhase | null;
+
+      if (phase && RESEARCH_PHASES.includes(phase)) {
+        counts[phase]++;
+      } else {
+        counts.unassigned++;
+      }
+    }
+
+    return counts;
+  }, [surveys]);
 
   if (surveys.length === 0) {
     return (
@@ -75,14 +120,36 @@ export function ProjectSurveysTab({ project, surveys }: ProjectSurveysTabProps) 
       </div>
 
       <div className="flex flex-col gap-8">
-        <PhaseSection
-          phase={null}
-          surveys={filteredSurveys}
-          projectId={project.id}
-          totalCount={surveys.length}
-          isSearching={isSearching}
-          sectionTitle={t('projects.detail.allSurveys')}
-        />
+        {RESEARCH_PHASES.map((phase) => {
+          const phaseSurveys = groupedSurveys[phase];
+
+          if (isSearching && phaseSurveys.length === 0) {
+            return null;
+          }
+
+          return (
+            <PhaseSection
+              key={phase}
+              phase={phase}
+              surveys={phaseSurveys}
+              projectId={project.id}
+              totalCount={totalCounts[phase]}
+              isSearching={isSearching}
+            />
+          );
+        })}
+
+        {/* Unassigned surveys (no phase) */}
+        {(!isSearching || groupedSurveys.unassigned.length > 0) && (
+          <PhaseSection
+            phase={null}
+            surveys={groupedSurveys.unassigned}
+            projectId={project.id}
+            totalCount={totalCounts.unassigned}
+            isSearching={isSearching}
+            sectionTitle={t('projects.phases.unassigned')}
+          />
+        )}
       </div>
     </div>
   );

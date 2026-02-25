@@ -30,6 +30,7 @@ function makeSurveyData(overrides: Partial<SurveySignalData> = {}): SurveySignal
   return {
     surveyId: crypto.randomUUID(),
     surveyTitle: 'Test Survey',
+    researchPhase: null,
     totalResponses: 10,
     completedResponses: 10,
     questions: [],

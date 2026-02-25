@@ -918,6 +918,20 @@
       "inProgress": "In progress",
       "validated": "Validated"
     },
+    "phases": {
+      "idea": "Idea",
+      "ideaDescription": "Defining the problem and hypothesis",
+      "research": "Research",
+      "researchDescription": "Gathering data through surveys",
+      "validation": "Validation",
+      "validationDescription": "Confirming findings with additional research",
+      "decision": "Decision",
+      "decisionDescription": "Making go/no-go decisions based on evidence",
+      "label": "Research Phase",
+      "placeholder": "Select a phase...",
+      "noPhase": "No phase",
+      "unassigned": "Unassigned"
+    },
     "findings": {
       "title": "Findings",
       "badge": "auto",
