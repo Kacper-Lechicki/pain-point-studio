@@ -239,6 +239,7 @@
         "emptyHint": "Pin a project from the list on the right to feature it here.",
         "surveys": "Surveys",
         "responses": "{count} responses",
+        "responsesShort": "{count} resp",
         "surveys_count": "{count} surveys"
       }
     }

@@ -101,11 +101,19 @@ function isFullWidthPath(pathname: string): boolean {
   );
 }
 
-/** Routes rendered at narrow content width (settings). */
+/** Routes rendered at narrow content width (settings, new project form, new survey form). */
 function isNarrowPath(pathname: string): boolean {
   const path = pathWithoutLocale(pathname);
 
   if (path === ROUTES.common.settings || path.startsWith(ROUTES.common.settings + '/')) {
+    return true;
+  }
+
+  if (path === ROUTES.dashboard.projectNew) {
+    return true;
+  }
+
+  if (path === ROUTES.dashboard.researchNew) {
     return true;
   }
 

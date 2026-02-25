@@ -20,7 +20,7 @@ interface Props {
 
 export default async function DashboardPage({ searchParams }: Props) {
   const { period } = await searchParams;
-  const days = period === '7' ? 7 : period === '90' ? 90 : period === '0' ? 0 : 30;
+  const days = period === '7' ? 7 : period === '90' ? 90 : 30;
 
   const [overview, stats, profile, t] = await Promise.all([
     getDashboardOverview(),

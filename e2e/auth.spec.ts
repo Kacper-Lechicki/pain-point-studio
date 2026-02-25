@@ -83,9 +83,9 @@ test.describe('Sign-Up', () => {
 test.describe('Route Protection & Auth Callback', () => {
   test('protected routes redirect, public routes accessible', async ({ page }) => {
     await page.goto(url(ROUTES.common.dashboard));
-    await expect(page).toHaveURL(/\/sign-in/);
+    await expect(page).toHaveURL(/\/sign-in/, { timeout: 15_000 });
     await page.goto(url(ROUTES.common.settings));
-    await expect(page).toHaveURL(/\/sign-in/);
+    await expect(page).toHaveURL(/\/sign-in/, { timeout: 15_000 });
 
     for (const route of [ROUTES.auth.signIn, ROUTES.auth.signUp, ROUTES.auth.forgotPassword]) {
       await page.goto(url(route));

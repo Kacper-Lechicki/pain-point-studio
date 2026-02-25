@@ -1,26 +1,21 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
-
 import Link from '@/i18n/link';
 import { cn } from '@/lib/common/utils';
 
-const PERIODS = ['7', '30', '90', '0'] as const;
+const PERIODS = ['7', '30', '90'] as const;
+
+const LABELS: Record<(typeof PERIODS)[number], string> = {
+  '7': '7d',
+  '30': '30d',
+  '90': '90d',
+};
 
 interface DashboardTimeFilterProps {
   currentPeriod: string;
 }
 
 export function DashboardTimeFilter({ currentPeriod }: DashboardTimeFilterProps) {
-  const t = useTranslations('dashboard.bento');
-
-  const labels: Record<string, string> = {
-    '7': '7d',
-    '30': '30d',
-    '90': '90d',
-    '0': t('period.all'),
-  };
-
   return (
     <div className="border-border/50 bg-card flex items-center gap-1.5 rounded-full border p-1 shadow-sm">
       {PERIODS.map((period) => (
@@ -35,7 +30,7 @@ export function DashboardTimeFilter({ currentPeriod }: DashboardTimeFilterProps)
               : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'
           )}
         >
-          {labels[period]}
+          {LABELS[period]}
         </Link>
       ))}
     </div>

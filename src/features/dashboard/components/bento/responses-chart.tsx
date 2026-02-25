@@ -54,8 +54,8 @@ export const ResponsesChart = ({ data, className }: ResponsesChartProps) => {
 
   return (
     <Card className={cn(BENTO_CARD_CLASS, 'flex h-full min-w-0 flex-col')}>
-      <CardContent className="flex min-h-0 flex-1 flex-col gap-2 px-3 pt-4 pb-2">
-        <div className="flex shrink-0 items-center justify-between gap-2 px-1">
+      <CardContent className="flex min-h-0 flex-1 flex-col gap-2 px-4 pt-4 pb-0">
+        <div className="flex shrink-0 items-center justify-between gap-2">
           <p className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
             {t('charts.responsesOverTime')}
           </p>
@@ -74,7 +74,7 @@ export const ResponsesChart = ({ data, className }: ResponsesChartProps) => {
                 dimensions={{ width: chartWidth, height: chartHeight }}
                 className={cn('text-xs', className)}
               >
-                <AreaChart data={chartData} margin={{ left: 0, right: 4, top: 0, bottom: 24 }}>
+                <AreaChart data={chartData} margin={{ left: 0, right: 4, top: 4, bottom: 4 }}>
                   <defs>
                     <linearGradient id="fillResponses" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="var(--color-responses)" stopOpacity={0.15} />
@@ -95,7 +95,7 @@ export const ResponsesChart = ({ data, className }: ResponsesChartProps) => {
                     tick={{ fontSize: 11 }}
                     interval="preserveStartEnd"
                     minTickGap={40}
-                    dy={10}
+                    dy={2}
                   />
 
                   <YAxis
@@ -111,7 +111,7 @@ export const ResponsesChart = ({ data, className }: ResponsesChartProps) => {
 
                   <Area
                     dataKey="responses"
-                    type="natural"
+                    type="linear"
                     fill="url(#fillResponses)"
                     stroke="var(--color-responses)"
                     strokeWidth={2}

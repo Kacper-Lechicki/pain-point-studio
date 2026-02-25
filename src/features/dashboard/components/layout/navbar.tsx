@@ -45,7 +45,9 @@ const Navbar = () => {
           {t(BRAND.name)}
         </Link>
 
-        <div className="min-w-0 flex-1 pl-1">
+        <span className="bg-border mx-2 h-5 w-px shrink-0 self-center" aria-hidden />
+
+        <div className="min-w-0 flex-1">
           <Breadcrumbs />
         </div>
 

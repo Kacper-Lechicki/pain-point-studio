@@ -151,6 +151,7 @@ export function PinnedProjectCard({ project, overviewProject }: PinnedProjectCar
 
 function SurveyRow({ survey }: { survey: ProjectSurvey }) {
   const t = useTranslations();
+  const tBento = useTranslations('dashboard.bento');
   const dotColor = SURVEY_STATUS_DOT[survey.status] ?? 'bg-muted-foreground/40';
   const phaseConfig = survey.researchPhase
     ? RESEARCH_PHASE_CONFIG[survey.researchPhase as ResearchPhase]
@@ -164,15 +165,18 @@ function SurveyRow({ survey }: { survey: ProjectSurvey }) {
       {/* Title */}
       <span className="min-w-0 flex-1 truncate">{survey.title}</span>
 
-      {/* Response count */}
-      <span className="text-muted-foreground shrink-0 tabular-nums">{survey.responseCount}</span>
-
-      {/* Phase label */}
-      {phaseConfig && (
-        <span className="text-muted-foreground hidden shrink-0 sm:inline">
-          {t(phaseConfig.labelKey as MessageKey)}
+      {/* Response count + phase: e.g. "8 resp. · Problem Discovery" */}
+      <span className="text-muted-foreground flex shrink-0 items-center gap-1.5">
+        <span className="tabular-nums">
+          {tBento('pinned.responsesShort', { count: survey.responseCount })}
         </span>
-      )}
+        {phaseConfig && (
+          <>
+            <span className="text-muted-foreground/30 hidden sm:inline">&middot;</span>
+            <span className="hidden sm:inline">{t(phaseConfig.labelKey as MessageKey)}</span>
+          </>
+        )}
+      </span>
     </li>
   );
 }
