@@ -29,7 +29,7 @@ export function DashboardProjectsList({ projects, pinnedProjectId }: DashboardPr
   function handleTogglePin(projectId: string) {
     startTransition(async () => {
       const nextValue = pinnedProjectId === projectId ? null : projectId;
-      await setPinnedProject(nextValue);
+      await setPinnedProject({ projectId: nextValue });
     });
   }
 

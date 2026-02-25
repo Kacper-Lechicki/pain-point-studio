@@ -363,6 +363,7 @@ export type Database = {
       complete_expired_surveys: { Args: never; Returns: undefined };
       decrypt_pii: { Args: { encrypted: string }; Returns: string };
       encrypt_pii: { Args: { plain_text: string }; Returns: string };
+      get_dashboard_overview: { Args: { p_user_id: string }; Returns: Json };
       get_dashboard_stats: {
         Args: { p_days: number; p_user_id: string };
         Returns: Json;

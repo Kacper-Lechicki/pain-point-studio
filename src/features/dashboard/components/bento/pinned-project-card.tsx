@@ -55,7 +55,7 @@ export function PinnedProjectCard({ project, overviewProject }: PinnedProjectCar
 
   function handleUnpin() {
     startTransition(async () => {
-      await setPinnedProject(null);
+      await setPinnedProject({ projectId: null });
     });
   }
 

@@ -33,13 +33,13 @@ export function withProtectedAction<TSchema extends ZodType, TData = undefined>(
     const { limited } = await rateLimit({ key, ...config.rateLimit });
 
     if (limited) {
-      return { error: config.rateLimitError ?? 'settings.errors.rateLimitExceeded' };
+      return { error: config.rateLimitError ?? 'common.errors.rateLimitExceeded' };
     }
 
     const validation = config.schema.safeParse(formData);
 
     if (!validation.success) {
-      return { error: config.validationError ?? 'settings.errors.invalidData' };
+      return { error: config.validationError ?? 'common.errors.invalidData' };
     }
 
     const supabase = await createClient();
@@ -49,7 +49,7 @@ export function withProtectedAction<TSchema extends ZodType, TData = undefined>(
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return { error: 'settings.errors.unexpected' };
+      return { error: 'common.errors.unexpected' };
     }
 
     return config.action({ data: validation.data, user: mapSupabaseUser(user), supabase });
