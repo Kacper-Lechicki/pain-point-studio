@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { createInsight } from '@/features/projects/actions/create-insight';
+import { INSIGHT_CONTENT_MAX_LENGTH } from '@/features/projects/config';
 import { INSIGHT_COLORS, INSIGHT_ICONS } from '@/features/projects/config/insight-colors';
 import type { InsightType, ProjectInsight } from '@/features/projects/types';
 import { INSIGHT_TYPES } from '@/features/projects/types';
@@ -131,7 +132,7 @@ export function InsightInlineForm({
         value={content}
         onChange={(e) => setContent(e.target.value)}
         placeholder={t('projects.scorecard.contentPlaceholder' as MessageKey)}
-        maxLength={500}
+        maxLength={INSIGHT_CONTENT_MAX_LENGTH}
         size="sm"
         onKeyDown={(e) => {
           if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {

@@ -1,5 +1,11 @@
 import { z } from 'zod';
 
+import {
+  INSIGHT_CONTENT_MAX_LENGTH,
+  PROJECT_DESCRIPTION_MAX_LENGTH,
+  PROJECT_NAME_MAX_LENGTH,
+} from '@/features/projects/config';
+
 import { INSIGHT_TYPES } from './project';
 
 // ── Project schemas ─────────────────────────────────────────────────
@@ -10,11 +16,11 @@ export const createProjectSchema = z.object({
     .string()
     .trim()
     .min(1, 'projects.errors.fieldRequired')
-    .max(100, 'projects.errors.nameTooLong'),
+    .max(PROJECT_NAME_MAX_LENGTH, 'projects.errors.nameTooLong'),
   description: z
     .string()
     .trim()
-    .max(500, 'projects.errors.descriptionTooLong')
+    .max(PROJECT_DESCRIPTION_MAX_LENGTH, 'projects.errors.descriptionTooLong')
     .optional()
     .or(z.literal('')),
 });
@@ -28,11 +34,11 @@ export const updateProjectSchema = z.object({
     .string()
     .trim()
     .min(1, 'projects.errors.fieldRequired')
-    .max(100, 'projects.errors.nameTooLong'),
+    .max(PROJECT_NAME_MAX_LENGTH, 'projects.errors.nameTooLong'),
   description: z
     .string()
     .trim()
-    .max(500, 'projects.errors.descriptionTooLong')
+    .max(PROJECT_DESCRIPTION_MAX_LENGTH, 'projects.errors.descriptionTooLong')
     .optional()
     .or(z.literal('')),
 });
@@ -49,7 +55,7 @@ export const createInsightSchema = z.object({
     .string()
     .trim()
     .min(1, 'projects.errors.fieldRequired')
-    .max(500, 'projects.errors.contentTooLong'),
+    .max(INSIGHT_CONTENT_MAX_LENGTH, 'projects.errors.contentTooLong'),
 });
 
 export type CreateInsightInput = z.infer<typeof createInsightSchema>;
@@ -62,7 +68,7 @@ export const updateInsightSchema = z.object({
     .string()
     .trim()
     .min(1, 'projects.errors.fieldRequired')
-    .max(500, 'projects.errors.contentTooLong')
+    .max(INSIGHT_CONTENT_MAX_LENGTH, 'projects.errors.contentTooLong')
     .optional(),
 });
 

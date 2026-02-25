@@ -10,7 +10,7 @@ import {
 import { useTranslations } from 'next-intl';
 
 import { MetricRow, SectionLabel } from '@/components/ui/metric-display';
-import { ROUTES } from '@/config/routes';
+import { getProjectDetailUrl } from '@/features/projects/lib/project-urls';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import { ExpiryMetricRow } from '@/features/surveys/components/dashboard/expiry-metric-row';
 import { SurveyStatusBadge } from '@/features/surveys/components/dashboard/survey-status-badge';
@@ -51,7 +51,7 @@ export function SurveyDetailInfo({
             label={t('surveys.dashboard.detailPanel.project')}
             value={
               <Link
-                href={`${ROUTES.dashboard.projectDetail}/${survey.projectId}`}
+                href={getProjectDetailUrl(survey.projectId)}
                 className="text-foreground underline underline-offset-2"
               >
                 {survey.projectName}

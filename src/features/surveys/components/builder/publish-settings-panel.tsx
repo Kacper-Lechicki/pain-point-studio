@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/sheet';
 import { Spinner } from '@/components/ui/spinner';
 import { publishSurvey, saveSurveyQuestions } from '@/features/surveys/actions';
+import { SURVEY_MAX_RESPONDENTS_MIN } from '@/features/surveys/config';
 import { useQuestionBuilderContext } from '@/features/surveys/hooks/use-question-builder-context';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import type { MessageKey } from '@/i18n/types';
@@ -134,7 +135,7 @@ export function PublishSettingsPanel({
             </p>
 
             <NumberInput
-              min={1}
+              min={SURVEY_MAX_RESPONDENTS_MIN}
               placeholder={t('surveys.publish.unlimited')}
               value={maxRespondents}
               onChange={setMaxRespondents}

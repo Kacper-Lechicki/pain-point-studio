@@ -1,3 +1,7 @@
+/**
+ * Pixel breakpoints matching Tailwind's default theme.
+ * `dashboard` is a custom breakpoint for the main dashboard content area.
+ */
 export const BREAKPOINTS = {
   sm: 640,
   md: 768,

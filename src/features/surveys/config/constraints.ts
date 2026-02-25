@@ -83,6 +83,12 @@ export const SPARKLINE_SHARPLY_DECLINING_THRESHOLD = -0.4;
 export const SPARKLINE_VIEWBOX_WIDTH = 64;
 export const SPARKLINE_VIEWBOX_HEIGHT = 20;
 
+// ── Survey completion form constraints ───────────────────────────
+
+export const COMPLETION_CONTACT_NAME_MAX_LENGTH = 100;
+export const COMPLETION_CONTACT_EMAIL_MAX_LENGTH = 320;
+export const COMPLETION_FEEDBACK_MAX_LENGTH = 2000;
+
 // ── Misc helpers ──────────────────────────────────────────────────
 
 /** Build the localStorage key for tracking completed survey responses. */
