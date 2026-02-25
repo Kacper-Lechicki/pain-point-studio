@@ -2,9 +2,15 @@ import type { ReactNode } from 'react';
 
 import { useTranslations } from 'next-intl';
 
-import type { MappedQuestion } from '@/features/surveys/lib/map-question-row';
+import type { QuestionType } from '@/features/surveys/types';
 
-export function QuestionConfigDetails({ question }: { question: MappedQuestion }) {
+interface QuestionConfigData {
+  type: QuestionType;
+  config: Record<string, unknown>;
+  description?: string | null;
+}
+
+export function QuestionConfigDetails({ question }: { question: QuestionConfigData }) {
   const t = useTranslations();
   const config = question.config;
   const rows: ReactNode[] = [];

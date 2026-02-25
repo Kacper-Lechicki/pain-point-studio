@@ -95,7 +95,7 @@ export function DetailPanelMetrics({
       >
         <Link href={getSurveyStatsUrl(surveyId)}>
           <BarChart3 className="size-3.5" aria-hidden />
-          {t('surveys.dashboard.detailPanel.viewAllMetrics')}
+          {t('surveys.dashboard.detailPanel.viewAnalytics')}
         </Link>
       </Button>
     </>

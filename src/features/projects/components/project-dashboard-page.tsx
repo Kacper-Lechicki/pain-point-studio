@@ -8,9 +8,9 @@ import { DASHBOARD_PAGE_BODY_GAP_TOP } from '@/features/dashboard/config/layout'
 import type { ProjectDetail, ProjectSurvey } from '@/features/projects/actions/get-project';
 import type { SurveySignalData } from '@/features/projects/actions/get-project-signals-data';
 import { EditProjectDialog } from '@/features/projects/components/edit-project-dialog';
-import { ProjectDashboardHeader } from '@/features/projects/components/project-dashboard-header';
-import { ProjectDashboardSurveys } from '@/features/projects/components/project-dashboard-surveys';
-import { ProjectScorecard } from '@/features/projects/components/project-scorecard';
+import { ProjectDetailHeader } from '@/features/projects/components/project-detail-header';
+import { ProjectDetailKpi } from '@/features/projects/components/project-detail-kpi';
+import { ProjectDetailTabs } from '@/features/projects/components/project-detail-tabs';
 import { ValidationProgressStepper } from '@/features/projects/components/validation-progress-stepper';
 import { useProjectDashboardActions } from '@/features/projects/hooks/use-project-dashboard-actions';
 import { computePhaseStatuses } from '@/features/projects/lib/phase-status';
@@ -78,26 +78,7 @@ export function ProjectDashboardPage({
     };
   }, [isIdeaValidation, signalsByPhase]);
 
-  const { scorecardInsights, insightsByPhase } = useMemo(() => {
-    const scorecard: ProjectInsight[] = [];
-    const byPhase: Record<string, ProjectInsight[]> = {};
-
-    for (const insight of insights) {
-      if (insight.phase === null) {
-        scorecard.push(insight);
-      } else {
-        const phase = insight.phase;
-
-        if (!byPhase[phase]) {
-          byPhase[phase] = [];
-        }
-
-        byPhase[phase]!.push(insight);
-      }
-    }
-
-    return { scorecardInsights: scorecard, insightsByPhase: byPhase };
-  }, [insights]);
+  const scorecardInsights = useMemo(() => insights.filter((i) => i.phase === null), [insights]);
 
   const handleInsightCreated = useCallback((insight: ProjectInsight) => {
     setInsights((prev) => [...prev, insight]);
@@ -113,35 +94,32 @@ export function ProjectDashboardPage({
 
   return (
     <main className="flex min-w-0 flex-col">
-      <ProjectDashboardHeader
+      <ProjectDetailHeader
         project={project}
-        surveyCount={surveys.length}
-        totalResponses={totalResponses}
         onEdit={() => setEditOpen(true)}
         onArchive={() => setConfirmAction('archive')}
         onDelete={() => setConfirmAction('delete')}
       />
 
       <div className={`${DASHBOARD_PAGE_BODY_GAP_TOP} flex flex-col gap-6`}>
+        <ProjectDetailKpi
+          surveys={surveys}
+          totalResponses={totalResponses}
+          scorecardSignals={scorecardSignals}
+          insights={insights}
+          isIdeaValidation={isIdeaValidation}
+        />
+
         {phaseStatuses && <ValidationProgressStepper phaseStatuses={phaseStatuses} />}
 
-        {isIdeaValidation && (
-          <ProjectScorecard
-            projectId={project.id}
-            signals={scorecardSignals}
-            insights={scorecardInsights}
-            onInsightCreated={handleInsightCreated}
-            onInsightUpdated={handleInsightUpdated}
-            onInsightDeleted={handleInsightDeleted}
-          />
-        )}
-
-        <ProjectDashboardSurveys
+        <ProjectDetailTabs
           project={project}
           surveys={surveys}
           surveysByPhase={surveysByPhase}
+          scorecardSignals={scorecardSignals}
           signalsByPhase={signalsByPhase}
-          insightsByPhase={insightsByPhase}
+          insights={insights}
+          scorecardInsights={scorecardInsights}
           onInsightCreated={handleInsightCreated}
           onInsightUpdated={handleInsightUpdated}
           onInsightDeleted={handleInsightDeleted}

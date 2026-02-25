@@ -453,7 +453,7 @@
       "copySurveyLink": "Copy survey link",
       "inProgressHint": "Not yet completed",
       "recentResponses": "Recent Responses",
-      "viewResults": "View Results",
+      "viewAnalytics": "View Analytics",
       "avgCompletionTime": "Avg. time",
       "responseTimeline": "Response timeline",
       "liveIndicator": "Live",
@@ -582,7 +582,7 @@
       "actions": {
         "share": "Share",
         "export": "Export",
-        "viewResults": "View results",
+        "viewAnalytics": "View analytics",
         "edit": "Edit",
         "publish": "Publish",
         "quickPreview": "Quick preview",
@@ -594,11 +594,11 @@
         "duplicate": "Duplicate",
         "moreActions": "More actions",
         "details": "Details",
-        "openInFullPage": "Open details in full page"
+        "actions": "Actions"
       },
       "detailPanel": {
         "preview": "Preview",
-        "viewResults": "View results",
+        "viewAnalytics": "View analytics",
         "complete": "Complete",
         "last14Days": "Last 14 days",
         "lastResponse": "Last response",
@@ -629,7 +629,7 @@
         "surveyLink": "Survey link",
         "copyLink": "Copy link",
         "metricsLabel": "Metrics",
-        "viewAllMetrics": "View all metrics",
+        "viewAnalytics": "View analytics",
         "detailsLabel": "Details",
         "actionsLabel": "Actions",
         "questionsLabel": "Questions",
@@ -725,7 +725,7 @@
       "actions": {
         "restore": "Restore",
         "moreActions": "More actions",
-        "viewResults": "View results"
+        "viewAnalytics": "View analytics"
       },
       "toast": {
         "restored": "Survey restored."
@@ -884,6 +884,7 @@
       "searchPlaceholder": "Search surveys...",
       "noMatchingSurveys": "No matching surveys.",
       "sheetTitle": "Project details",
+      "openInFullPage": "Open in full page",
       "detailsLabel": "Details",
       "surveysLabel": "Surveys",
       "actionsLabel": "Actions",
@@ -895,7 +896,39 @@
       "progressValue": "{percent}% validated",
       "activeSurveys": "Active",
       "completedSurveys": "Completed",
-      "draftSurveys": "Drafts"
+      "draftSurveys": "Drafts",
+      "archivedBanner": "This project is archived.",
+      "tabs": {
+        "overview": "Overview",
+        "surveys": "Surveys",
+        "insights": "Insights"
+      },
+      "kpi": {
+        "surveys": "Surveys",
+        "responses": "Responses",
+        "strengths": "Strengths",
+        "threats": "Threats",
+        "insights": "Insights",
+        "completion": "Completion",
+        "completionSubtitle": "{completed} of {total} completed"
+      },
+      "quickActions": {
+        "title": "Quick Actions",
+        "createSurvey": "Create survey"
+      },
+      "phaseCards": {
+        "title": "Phase Progress",
+        "meta": "{surveys, plural, one {# survey} other {# surveys}} · {responses, plural, one {# response} other {# responses}}"
+      },
+      "empty": {
+        "title": "Start your research journey",
+        "description": "Create your first survey to begin collecting data and validating your assumptions.",
+        "noSurveys": "No surveys yet",
+        "noSurveysDescription": "Create a survey to start collecting responses from your target audience.",
+        "noInsights": "Signals will appear automatically as you collect survey responses. You can also add manual notes.",
+        "noInsightsTitle": "No insights yet",
+        "noInsightsDescription": "Signals appear automatically from survey responses. You can also add manual notes to track your findings."
+      }
     },
     "validation": {
       "notStarted": "Not started",

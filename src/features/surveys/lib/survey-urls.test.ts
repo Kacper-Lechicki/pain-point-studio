@@ -36,6 +36,6 @@ describe('getSurveyStatsUrl', () => {
 
 describe('getSurveyDetailUrl', () => {
   it('should return the detail URL for a given survey ID', () => {
-    expect(getSurveyDetailUrl('abc-123')).toBe('/dashboard/research/abc-123');
+    expect(getSurveyDetailUrl('abc-123')).toBe('/dashboard/research/stats/abc-123');
   });
 });

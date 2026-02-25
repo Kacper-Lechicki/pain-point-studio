@@ -14,10 +14,12 @@ import { Separator } from '@/components/ui/separator';
 import { useBreadcrumbSegment } from '@/features/dashboard/components/layout/breadcrumb-context';
 import { cancelSurvey, completeSurvey } from '@/features/surveys/actions';
 import type { QuestionStats, SurveyStats } from '@/features/surveys/actions/get-survey-stats';
+import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import { SurveyShareDialog } from '@/features/surveys/components/dashboard/survey-share-dialog';
 import { DetailMetricsGrid } from '@/features/surveys/components/stats/detail-metrics-grid';
 import { QuestionStatsCard } from '@/features/surveys/components/stats/question-stats-card';
 import { SurveyStatsCharts } from '@/features/surveys/components/stats/survey-stats-charts';
+import { SurveyStatsDetailInfo } from '@/features/surveys/components/stats/survey-stats-detail-info';
 import { SurveyStatsHeader } from '@/features/surveys/components/stats/survey-stats-header';
 import { NOW_UPDATE_INTERVAL_MS } from '@/features/surveys/config';
 import { deriveSurveyFlags } from '@/features/surveys/config/survey-status';
@@ -32,9 +34,10 @@ import { useRefresh } from '@/hooks/common/use-refresh';
 
 interface SurveyStatsPanelProps {
   stats: SurveyStats;
+  survey: UserSurvey | null;
 }
 
-export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
+export const SurveyStatsPanel = ({ stats, survey }: SurveyStatsPanelProps) => {
   const t = useTranslations();
   const format = useFormatter();
   const now = useNow({ updateInterval: NOW_UPDATE_INTERVAL_MS });
@@ -111,6 +114,7 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
       <div className="space-y-6">
         <SurveyStatsHeader
           title={stats.survey.title}
+          description={survey?.description ?? null}
           status={currentStatus}
           surveyId={stats.survey.id}
           isActive={isActive}
@@ -146,6 +150,8 @@ export const SurveyStatsPanel = ({ stats }: SurveyStatsPanelProps) => {
             deviceTimeline={stats.deviceTimeline}
           />
         )}
+
+        {survey && <SurveyStatsDetailInfo survey={survey} />}
 
         {stats.completedResponses === 0 ? (
           <EmptyState

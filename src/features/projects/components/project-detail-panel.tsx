@@ -132,7 +132,7 @@ export function ProjectDetailPanel({
           variant="ghost"
           size="icon-xs"
           className="text-muted-foreground shrink-0"
-          aria-label={t('surveys.dashboard.actions.openInFullPage')}
+          aria-label={t('projects.detail.openInFullPage')}
           asChild
         >
           <Link href={getProjectDetailUrl(project.id)}>

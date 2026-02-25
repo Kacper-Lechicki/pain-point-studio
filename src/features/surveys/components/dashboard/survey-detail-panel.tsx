@@ -2,18 +2,19 @@
 
 import { useState } from 'react';
 
-import { Expand } from 'lucide-react';
+import { MoreHorizontal } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { DropdownMenu, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { SectionLabel } from '@/components/ui/metric-display';
 import { Separator } from '@/components/ui/separator';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
-import { DetailPanelActions } from '@/features/surveys/components/dashboard/detail-panel-actions';
 import { DetailPanelMetrics } from '@/features/surveys/components/dashboard/detail-panel-metrics';
 import { DetailQuestionsList } from '@/features/surveys/components/dashboard/detail-questions-list';
 import { Sparkline, getSparklineColor } from '@/features/surveys/components/dashboard/sparkline';
+import { SurveyActionMenuContent } from '@/features/surveys/components/dashboard/survey-action-menu';
 import { SurveyDetailInfo } from '@/features/surveys/components/dashboard/survey-detail-info';
 import { SurveyShareDialog } from '@/features/surveys/components/dashboard/survey-share-dialog';
 import { ExportDialog } from '@/features/surveys/components/stats/export-dialog';
@@ -22,11 +23,9 @@ import { deriveSurveyFlags, getAvailableActions } from '@/features/surveys/confi
 import { useSurveyAction, useSurveyCardActions } from '@/features/surveys/hooks';
 import { calculateRespondentProgress } from '@/features/surveys/lib/calculations';
 import type { MappedQuestion } from '@/features/surveys/lib/map-question-row';
-import { getSurveyDetailUrl } from '@/features/surveys/lib/survey-urls';
-import Link from '@/i18n/link';
 import { cn } from '@/lib/common/utils';
 
-type DetailPanelVariant = 'sheet' | 'page' | 'sidebar';
+type DetailPanelVariant = 'sheet' | 'sidebar';
 
 interface SurveyDetailPanelProps {
   survey: UserSurvey;
@@ -51,9 +50,9 @@ export function SurveyDetailPanel({
   );
 
   const flags = deriveSurveyFlags(survey.status);
-  const { isDraft, isActive, isCompleted, isCancelled, isArchived } = flags;
+  const { isDraft, isActive, isArchived } = flags;
   const showActiveDetails = !isDraft && !isArchived;
-  const hasShareableLink = (isActive || isCompleted || isCancelled) && !!shareUrl;
+  const hasShareableLink = (isActive || flags.isCompleted || flags.isCancelled) && !!shareUrl;
   const canExport = !isDraft && !isArchived;
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const sparklineColor = getSparklineColor(survey.recentActivity);
@@ -66,32 +65,40 @@ export function SurveyDetailPanel({
   const availableActions = getAvailableActions(survey.status);
   const formatDate = (iso: string) => format.dateTime(new Date(iso), DATE_FORMAT_SHORT);
 
-  const titleHeadingClass =
-    variant === 'page'
-      ? 'text-foreground min-w-0 flex-1 truncate text-3xl font-bold leading-tight'
-      : 'text-foreground min-w-0 flex-1 truncate text-base leading-snug font-semibold';
-
   const content = (
     <div className="flex min-w-0 flex-col">
       <div className="flex min-w-0 items-start justify-between gap-2">
-        {variant === 'page' ? (
-          <h1 className={titleHeadingClass}>{survey.title}</h1>
-        ) : (
-          <h3 className={titleHeadingClass}>{survey.title}</h3>
-        )}
+        <h3 className="text-foreground min-w-0 flex-1 truncate text-base leading-snug font-semibold">
+          {survey.title}
+        </h3>
 
         {variant === 'sheet' && (
-          <Button
-            variant="ghost"
-            size="icon-xs"
-            className="text-muted-foreground shrink-0"
-            aria-label={t('surveys.dashboard.actions.openInFullPage')}
-            asChild
-          >
-            <Link href={getSurveyDetailUrl(survey.id)}>
-              <Expand className="size-4" aria-hidden />
-            </Link>
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                className="text-muted-foreground shrink-0"
+                aria-label={t('surveys.dashboard.actions.actions')}
+              >
+                <MoreHorizontal className="size-4" aria-hidden />
+              </Button>
+            </DropdownMenuTrigger>
+
+            <SurveyActionMenuContent
+              surveyId={survey.id}
+              flags={{
+                isDraft,
+                isArchived,
+                hasShareableLink,
+                questionCount: survey.questionCount,
+              }}
+              availableActions={availableActions}
+              onShare={handleShare}
+              onExport={canExport ? () => setExportDialogOpen(true) : undefined}
+              handleActionClick={handleActionClick}
+            />
+          </DropdownMenu>
         )}
       </div>
 
@@ -133,19 +140,6 @@ export function SurveyDetailPanel({
         formatDate={formatDate}
       />
 
-      <Separator className="my-4" />
-
-      <DetailPanelActions
-        surveyId={survey.id}
-        questionCount={survey.questionCount}
-        flags={flags}
-        hasShareableLink={hasShareableLink}
-        availableActions={availableActions}
-        onShare={handleShare}
-        onExport={canExport ? () => setExportDialogOpen(true) : undefined}
-        onActionClick={handleActionClick}
-      />
-
       {!(questions != null && questions.length === 0) && (
         <>
           <Separator className="my-4" />
@@ -185,17 +179,6 @@ export function SurveyDetailPanel({
         {shareDialogElement}
         {exportDialogElement}
       </div>
-    );
-  }
-
-  if (variant === 'page') {
-    return (
-      <main className="flex min-w-0 flex-col" {...wrapperProps}>
-        {content}
-        {confirmDialogElement}
-        {shareDialogElement}
-        {exportDialogElement}
-      </main>
     );
   }
 

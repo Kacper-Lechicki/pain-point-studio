@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 
 import { Badge } from '@/components/ui/badge';
 import type { QuestionStats } from '@/features/surveys/actions/get-survey-stats';
+import { QuestionConfigDetails } from '@/features/surveys/components/dashboard/question-config-details';
 import { ChoiceDistributionChart } from '@/features/surveys/components/stats/answer-charts/choice-distribution-chart';
 import { RatingDistributionChart } from '@/features/surveys/components/stats/answer-charts/rating-distribution-chart';
 import { ShortTextChart } from '@/features/surveys/components/stats/answer-charts/short-text-chart';
@@ -68,6 +69,8 @@ export const QuestionStatsCard = ({ question, index }: QuestionStatsCardProps) =
           {t('surveys.stats.responsesCount', { count: responseCount })}
         </Badge>
       </div>
+
+      <QuestionConfigDetails question={question} />
 
       <div className="mt-3">{renderChart()}</div>
 
