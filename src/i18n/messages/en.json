@@ -230,7 +230,8 @@
         "responses": "{count, plural, one {# resp} other {# resp}}",
         "empty": "No projects yet",
         "emptyCta": "Create project",
-        "noProjectsToPin": "No projects to pin."
+        "noProjectsToPin": "No projects to pin.",
+        "noProjectsDescription": "Create a project to organize your surveys."
       },
       "pinned": {
         "title": "Pinned Project",
@@ -860,6 +861,7 @@
       "unassigned": "Unassigned",
       "noSurveysInPhase": "No surveys in this phase yet.",
       "noSurveys": "No surveys yet.",
+      "noSurveysDescription": "Create your first survey to start collecting responses.",
       "createSurvey": "Create survey",
       "responses": "{count, plural, one {# response} other {# responses}}",
       "archiveSuccess": "Project archived.",

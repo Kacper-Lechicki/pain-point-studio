@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { EmptyState } from '@/components/ui/empty-state';
 import { ROUTES } from '@/config';
 import type { OverviewProject } from '@/features/dashboard/actions/get-dashboard-overview';
 import { setPinnedProject } from '@/features/dashboard/actions/set-pinned-project';
@@ -55,17 +56,20 @@ export function DashboardProjectsList({ projects, pinnedProjectId }: DashboardPr
         </div>
 
         {visibleProjects.length === 0 ? (
-          <div className="mt-3 flex flex-col items-center gap-2 pb-1">
-            <p className="text-muted-foreground text-center text-xs">
-              {t('projects.noProjectsToPin')}
-            </p>
-            <Button variant="outline" size="sm" asChild>
-              <Link href={ROUTES.dashboard.projectNew}>
-                <Plus className="size-3.5" />
-                {t('projects.emptyCta')}
-              </Link>
-            </Button>
-          </div>
+          <EmptyState
+            variant="compact"
+            icon={FolderKanban}
+            title={t('projects.noProjectsToPin')}
+            description={t('projects.noProjectsDescription')}
+            action={
+              <Button variant="outline" size="sm" asChild>
+                <Link href={ROUTES.dashboard.projectNew}>
+                  <Plus className="size-3.5" />
+                  {t('projects.emptyCta')}
+                </Link>
+              </Button>
+            }
+          />
         ) : (
           <div className="mt-2">
             {visibleProjects.map((project) => {
