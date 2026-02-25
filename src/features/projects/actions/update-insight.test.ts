@@ -137,6 +137,21 @@ describe('Project Actions – Update Insight', () => {
     expect(result).toHaveProperty('error', 'projects.errors.unexpected');
   });
 
+  it('should update insight type to opportunity', async () => {
+    const updateChain = chain({ data: { id: INSIGHT_ID } });
+
+    mockFrom.mockReturnValue(updateChain);
+
+    const { updateInsight } = await import('./update-insight');
+
+    await updateInsight({
+      insightId: INSIGHT_ID,
+      type: 'opportunity',
+    });
+
+    expect(updateChain.update).toHaveBeenCalledWith({ type: 'opportunity' });
+  });
+
   it('should return validation error for invalid data', async () => {
     const { updateInsight } = await import('./update-insight');
 

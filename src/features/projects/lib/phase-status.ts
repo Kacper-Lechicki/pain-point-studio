@@ -1,5 +1,5 @@
 import type { ProjectSurvey } from '@/features/projects/actions/get-project';
-import { SIGNAL_THRESHOLDS } from '@/features/projects/config/signals';
+import { FINDING_THRESHOLDS } from '@/features/projects/config/signals';
 import type { ResearchPhase } from '@/features/projects/types';
 import { RESEARCH_PHASES } from '@/features/projects/types';
 
@@ -26,7 +26,7 @@ export function computePhaseStatuses(
     }
 
     const hasValidated = surveys.some(
-      (s) => s.status === 'completed' && s.completedCount >= SIGNAL_THRESHOLDS.minResponses
+      (s) => s.status === 'completed' && s.completedCount >= FINDING_THRESHOLDS.minResponses
     );
 
     result[phase] = hasValidated ? 'validated' : 'in_progress';

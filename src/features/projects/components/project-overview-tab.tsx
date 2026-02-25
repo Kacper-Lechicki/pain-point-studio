@@ -15,7 +15,7 @@ import { PROJECT_CONTEXTS_CONFIG } from '@/features/projects/config/contexts';
 import { computePhaseStatuses } from '@/features/projects/lib/phase-status';
 import type { PhaseStatus } from '@/features/projects/lib/phase-status';
 import { isProjectArchived } from '@/features/projects/lib/project-helpers';
-import type { Project, ProjectInsight, ResearchPhase, Signal } from '@/features/projects/types';
+import type { Project, ProjectInsight, ResearchPhase } from '@/features/projects/types';
 import Link from '@/i18n/link';
 import type { MessageKey } from '@/i18n/types';
 
@@ -23,7 +23,6 @@ interface ProjectOverviewTabProps {
   project: Project;
   surveys: ProjectSurvey[];
   surveysByPhase: ProjectDetail['surveysByPhase'];
-  scorecardSignals: { strengths: Signal[]; threats: Signal[] };
   scorecardInsights: ProjectInsight[];
   isIdeaValidation: boolean;
   onInsightCreated: (insight: ProjectInsight) => void;
@@ -36,7 +35,6 @@ export function ProjectOverviewTab({
   project,
   surveys,
   surveysByPhase,
-  scorecardSignals,
   scorecardInsights,
   isIdeaValidation,
   onInsightCreated,
@@ -52,10 +50,7 @@ export function ProjectOverviewTab({
     [isIdeaValidation, surveysByPhase]
   );
 
-  const hasScorecard =
-    scorecardSignals.strengths.length > 0 ||
-    scorecardSignals.threats.length > 0 ||
-    scorecardInsights.length > 0;
+  const hasScorecard = scorecardInsights.length > 0;
 
   const isEmpty = surveys.length === 0 && scorecardInsights.length === 0;
 
@@ -90,7 +85,6 @@ export function ProjectOverviewTab({
       <div className="lg:col-span-2">
         <ProjectScorecard
           projectId={project.id}
-          signals={scorecardSignals}
           insights={scorecardInsights}
           onInsightCreated={onInsightCreated}
           onInsightUpdated={onInsightUpdated}

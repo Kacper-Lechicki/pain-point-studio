@@ -2,25 +2,55 @@
 
 import { useMemo } from 'react';
 
-import { Compass, TrendingDown, TrendingUp } from 'lucide-react';
+import { Compass, Lightbulb, TrendingDown, TrendingUp } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { ScorecardSection } from '@/features/projects/components/scorecard-section';
-import type { InsightType, ProjectInsight, Signal } from '@/features/projects/types';
+import type { InsightType, ProjectInsight } from '@/features/projects/types';
 import type { MessageKey } from '@/i18n/types';
 
 interface ProjectScorecardProps {
   projectId: string;
-  signals: { strengths: Signal[]; threats: Signal[] };
   insights: ProjectInsight[];
   onInsightCreated: (insight: ProjectInsight) => void;
   onInsightUpdated: (insight: ProjectInsight) => void;
   onInsightDeleted: (insightId: string) => void;
 }
 
+const SECTIONS: {
+  type: InsightType;
+  titleKey: string;
+  emptyKey: string;
+  icon: typeof TrendingUp;
+}[] = [
+  {
+    type: 'strength',
+    titleKey: 'projects.scorecard.strengths',
+    emptyKey: 'projects.scorecard.emptyStrengths',
+    icon: TrendingUp,
+  },
+  {
+    type: 'opportunity',
+    titleKey: 'projects.scorecard.opportunities',
+    emptyKey: 'projects.scorecard.emptyOpportunities',
+    icon: Lightbulb,
+  },
+  {
+    type: 'threat',
+    titleKey: 'projects.scorecard.threats',
+    emptyKey: 'projects.scorecard.emptyThreats',
+    icon: TrendingDown,
+  },
+  {
+    type: 'decision',
+    titleKey: 'projects.scorecard.decisions',
+    emptyKey: 'projects.scorecard.emptyDecisions',
+    icon: Compass,
+  },
+];
+
 export function ProjectScorecard({
   projectId,
-  signals,
   insights,
   onInsightCreated,
   onInsightUpdated,
@@ -31,6 +61,7 @@ export function ProjectScorecard({
   const insightsByType = useMemo(() => {
     const grouped: Record<InsightType, ProjectInsight[]> = {
       strength: [],
+      opportunity: [],
       threat: [],
       decision: [],
     };
@@ -46,10 +77,7 @@ export function ProjectScorecard({
     return grouped;
   }, [insights]);
 
-  const hasContent =
-    signals.strengths.length > 0 || signals.threats.length > 0 || insights.length > 0;
-
-  if (!hasContent) {
+  if (insights.length === 0) {
     return null;
   }
 
@@ -59,45 +87,21 @@ export function ProjectScorecard({
         {t('projects.scorecard.title' as MessageKey)}
       </h2>
 
-      <div className="grid gap-6 md:grid-cols-3">
-        <ScorecardSection
-          title={t('projects.scorecard.strengths' as MessageKey)}
-          icon={TrendingUp}
-          signals={signals.strengths}
-          insights={insightsByType.strength}
-          insightType="strength"
-          projectId={projectId}
-          emptyMessageKey={'projects.scorecard.emptyStrengths' as MessageKey}
-          onInsightCreated={onInsightCreated}
-          onInsightUpdated={onInsightUpdated}
-          onInsightDeleted={onInsightDeleted}
-        />
-
-        <ScorecardSection
-          title={t('projects.scorecard.threats' as MessageKey)}
-          icon={TrendingDown}
-          signals={signals.threats}
-          insights={insightsByType.threat}
-          insightType="threat"
-          projectId={projectId}
-          emptyMessageKey={'projects.scorecard.emptyThreats' as MessageKey}
-          onInsightCreated={onInsightCreated}
-          onInsightUpdated={onInsightUpdated}
-          onInsightDeleted={onInsightDeleted}
-        />
-
-        <ScorecardSection
-          title={t('projects.scorecard.decisions' as MessageKey)}
-          icon={Compass}
-          signals={[]}
-          insights={insightsByType.decision}
-          insightType="decision"
-          projectId={projectId}
-          emptyMessageKey={'projects.scorecard.emptyDecisions' as MessageKey}
-          onInsightCreated={onInsightCreated}
-          onInsightUpdated={onInsightUpdated}
-          onInsightDeleted={onInsightDeleted}
-        />
+      <div className="grid gap-4 sm:grid-cols-2">
+        {SECTIONS.map((section) => (
+          <ScorecardSection
+            key={section.type}
+            title={t(section.titleKey as MessageKey)}
+            icon={section.icon}
+            insights={insightsByType[section.type]}
+            insightType={section.type}
+            projectId={projectId}
+            emptyMessageKey={section.emptyKey as MessageKey}
+            onInsightCreated={onInsightCreated}
+            onInsightUpdated={onInsightUpdated}
+            onInsightDeleted={onInsightDeleted}
+          />
+        ))}
       </div>
     </section>
   );

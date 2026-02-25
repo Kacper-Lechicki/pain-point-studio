@@ -1,23 +1,16 @@
 'use client';
 
-import {
-  CheckCircle2,
-  ClipboardList,
-  Lightbulb,
-  TrendingDown,
-  TrendingUp,
-  Users,
-} from 'lucide-react';
+import { CheckCircle2, ClipboardList, Lightbulb, Search, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { KpiCard } from '@/features/dashboard/components/bento/kpi-card';
 import type { ProjectSurvey } from '@/features/projects/actions/get-project';
-import type { ProjectInsight, Signal } from '@/features/projects/types';
+import type { Finding, ProjectInsight } from '@/features/projects/types';
 
 interface ProjectDetailKpiProps {
   surveys: ProjectSurvey[];
   totalResponses: number;
-  scorecardSignals: { strengths: Signal[]; threats: Signal[] };
+  allFindings: Finding[];
   insights: ProjectInsight[];
   isIdeaValidation: boolean;
 }
@@ -25,7 +18,7 @@ interface ProjectDetailKpiProps {
 export function ProjectDetailKpi({
   surveys,
   totalResponses,
-  scorecardSignals,
+  allFindings,
   insights,
   isIdeaValidation,
 }: ProjectDetailKpiProps) {
@@ -58,18 +51,18 @@ export function ProjectDetailKpi({
       {isIdeaValidation ? (
         <>
           <KpiCard
-            title={t('projects.detail.kpi.strengths')}
-            value={String(scorecardSignals.strengths.length)}
+            title={t('projects.detail.kpi.findings')}
+            value={String(allFindings.length)}
             delta={null}
-            icon={TrendingUp}
-            accent="emerald"
+            icon={Search}
+            accent="cyan"
           />
           <KpiCard
-            title={t('projects.detail.kpi.threats')}
-            value={String(scorecardSignals.threats.length)}
+            title={t('projects.detail.kpi.insights')}
+            value={String(insights.length)}
             delta={null}
-            icon={TrendingDown}
-            accent="rose"
+            icon={Lightbulb}
+            accent="pink"
           />
         </>
       ) : (

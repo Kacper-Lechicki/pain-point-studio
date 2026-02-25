@@ -1,13 +1,13 @@
-/** Tests for the auto-signals generation engine. */
+/** Tests for the auto-findings generation engine. */
 import { describe, expect, it } from 'vitest';
 
 import type {
   QuestionSignalData,
   SurveySignalData,
 } from '@/features/projects/actions/get-project-signals-data';
-import { RESEARCH_PHASES, type ResearchPhase, type Signal } from '@/features/projects/types';
+import { type Finding, RESEARCH_PHASES, type ResearchPhase } from '@/features/projects/types';
 
-import { generateSignals } from './signals';
+import { generateFindings } from './signals';
 
 // ── Helpers ────────────────────────────────────────────────────────────
 
@@ -53,41 +53,35 @@ function mcAnswers(selections: string[][]) {
   return selections.map((s) => ({ value: { selected: s } }));
 }
 
-// ── generateSignals ───────────────────────────────────────────────────
+// ── generateFindings ──────────────────────────────────────────────────
 
-describe('generateSignals', () => {
+describe('generateFindings', () => {
   // ── Empty / no data ─────────────────────────────────────────────────
 
-  it('generates "no_data" threat for each phase with no surveys', () => {
-    const result = generateSignals([], RESEARCH_PHASES);
+  it('returns empty arrays for phases with no surveys', () => {
+    const result = generateFindings([], RESEARCH_PHASES);
 
     for (const phase of RESEARCH_PHASES) {
-      expect(result[phase]).toHaveLength(1);
-      expect(result[phase]![0]).toMatchObject({
-        type: 'threat',
-        source: 'no_data',
-        phase,
-        value: 0,
-      });
+      expect(result[phase]).toHaveLength(0);
     }
   });
 
-  it('generates "no_data" threat only for phases without surveys', () => {
-    const result = generateSignals(
+  it('returns empty array for phases without surveys (others may have data)', () => {
+    const result = generateFindings(
       [makeSurveyData({ researchPhase: 'problem_discovery', questions: [] })],
       RESEARCH_PHASES
     );
 
     expect(result['problem_discovery']).toHaveLength(0);
-    expect(result['solution_validation']![0]!.source).toBe('no_data');
-    expect(result['market_validation']![0]!.source).toBe('no_data');
-    expect(result['launch_readiness']![0]!.source).toBe('no_data');
+    expect(result['solution_validation']).toHaveLength(0);
+    expect(result['market_validation']).toHaveLength(0);
+    expect(result['launch_readiness']).toHaveLength(0);
   });
 
   // ── Yes/No ──────────────────────────────────────────────────────────
 
-  it('generates strength signal for yes/no > 70%', () => {
-    const result = generateSignals(
+  it('generates finding for yes/no > 70%', () => {
+    const result = generateFindings(
       [
         makeSurveyData({
           questions: [makeQuestion('yes_no', yesNoAnswers(8, 2))],
@@ -96,16 +90,15 @@ describe('generateSignals', () => {
       RESEARCH_PHASES
     );
 
-    const signals = result['problem_discovery']!;
-    const yesSignal = signals.find((s: Signal) => s.source === 'yes_no');
+    const findings = result['problem_discovery']!;
+    const finding = findings.find((f: Finding) => f.source === 'yes_no');
 
-    expect(yesSignal).toBeDefined();
-    expect(yesSignal!.type).toBe('strength');
-    expect(yesSignal!.value).toBe(0.8);
+    expect(finding).toBeDefined();
+    expect(finding!.value).toBe(0.8);
   });
 
-  it('generates threat signal for yes/no < 40%', () => {
-    const result = generateSignals(
+  it('generates finding for yes/no < 40%', () => {
+    const result = generateFindings(
       [
         makeSurveyData({
           questions: [makeQuestion('yes_no', yesNoAnswers(3, 7))],
@@ -114,16 +107,15 @@ describe('generateSignals', () => {
       RESEARCH_PHASES
     );
 
-    const signals = result['problem_discovery']!;
-    const yesSignal = signals.find((s: Signal) => s.source === 'yes_no');
+    const findings = result['problem_discovery']!;
+    const finding = findings.find((f: Finding) => f.source === 'yes_no');
 
-    expect(yesSignal).toBeDefined();
-    expect(yesSignal!.type).toBe('threat');
-    expect(yesSignal!.value).toBe(0.3);
+    expect(finding).toBeDefined();
+    expect(finding!.value).toBe(0.3);
   });
 
-  it('generates no signal for yes/no between 40-70%', () => {
-    const result = generateSignals(
+  it('generates no finding for yes/no between 40-70%', () => {
+    const result = generateFindings(
       [
         makeSurveyData({
           questions: [makeQuestion('yes_no', yesNoAnswers(5, 5))],
@@ -132,15 +124,15 @@ describe('generateSignals', () => {
       RESEARCH_PHASES
     );
 
-    const signals = result['problem_discovery']!;
-    const yesSignal = signals.find((s: Signal) => s.source === 'yes_no');
+    const findings = result['problem_discovery']!;
+    const finding = findings.find((f: Finding) => f.source === 'yes_no');
 
-    expect(yesSignal).toBeUndefined();
+    expect(finding).toBeUndefined();
   });
 
-  it('generates strength signal at exactly 70% boundary', () => {
+  it('generates finding at exactly 70% boundary', () => {
     // 7 yes out of 10 = exactly 0.7
-    const result = generateSignals(
+    const result = generateFindings(
       [
         makeSurveyData({
           questions: [makeQuestion('yes_no', yesNoAnswers(7, 3))],
@@ -149,14 +141,15 @@ describe('generateSignals', () => {
       RESEARCH_PHASES
     );
 
-    const signal = result['problem_discovery']!.find((s: Signal) => s.source === 'yes_no');
+    const finding = result['problem_discovery']!.find((f: Finding) => f.source === 'yes_no');
 
-    expect(signal!.type).toBe('strength');
+    expect(finding).toBeDefined();
+    expect(finding!.value).toBe(0.7);
   });
 
-  it('generates threat signal at exactly 40% boundary', () => {
+  it('generates finding at exactly 40% boundary', () => {
     // 4 yes out of 10 = exactly 0.4
-    const result = generateSignals(
+    const result = generateFindings(
       [
         makeSurveyData({
           questions: [makeQuestion('yes_no', yesNoAnswers(4, 6))],
@@ -165,13 +158,14 @@ describe('generateSignals', () => {
       RESEARCH_PHASES
     );
 
-    const signal = result['problem_discovery']!.find((s: Signal) => s.source === 'yes_no');
+    const finding = result['problem_discovery']!.find((f: Finding) => f.source === 'yes_no');
 
-    expect(signal!.type).toBe('threat');
+    expect(finding).toBeDefined();
+    expect(finding!.value).toBe(0.4);
   });
 
   it('skips yes/no questions with no boolean answers', () => {
-    const result = generateSignals(
+    const result = generateFindings(
       [
         makeSurveyData({
           questions: [makeQuestion('yes_no', [])],
@@ -180,15 +174,15 @@ describe('generateSignals', () => {
       RESEARCH_PHASES
     );
 
-    const signals = result['problem_discovery']!;
+    const findings = result['problem_discovery']!;
 
-    expect(signals.find((s: Signal) => s.source === 'yes_no')).toBeUndefined();
+    expect(findings.find((f: Finding) => f.source === 'yes_no')).toBeUndefined();
   });
 
   // ── Rating ──────────────────────────────────────────────────────────
 
-  it('generates strength signal for avg rating >= 4.0', () => {
-    const result = generateSignals(
+  it('generates finding for avg rating >= 4.0', () => {
+    const result = generateFindings(
       [
         makeSurveyData({
           questions: [makeQuestion('rating_scale', ratingAnswers([5, 4, 5, 4, 4]))],
@@ -197,16 +191,15 @@ describe('generateSignals', () => {
       RESEARCH_PHASES
     );
 
-    const signal = result['problem_discovery']!.find((s: Signal) => s.source === 'rating');
+    const finding = result['problem_discovery']!.find((f: Finding) => f.source === 'rating');
 
-    expect(signal).toBeDefined();
-    expect(signal!.type).toBe('strength');
-    expect(signal!.value).toBeCloseTo(4.4);
-    expect(signal!.detail).toBe('5');
+    expect(finding).toBeDefined();
+    expect(finding!.value).toBeCloseTo(4.4);
+    expect(finding!.detail).toBe('5');
   });
 
-  it('generates threat signal for avg rating <= 2.5', () => {
-    const result = generateSignals(
+  it('generates finding for avg rating <= 2.5', () => {
+    const result = generateFindings(
       [
         makeSurveyData({
           questions: [makeQuestion('rating_scale', ratingAnswers([1, 2, 3, 2, 2]))],
@@ -215,15 +208,14 @@ describe('generateSignals', () => {
       RESEARCH_PHASES
     );
 
-    const signal = result['problem_discovery']!.find((s: Signal) => s.source === 'rating');
+    const finding = result['problem_discovery']!.find((f: Finding) => f.source === 'rating');
 
-    expect(signal).toBeDefined();
-    expect(signal!.type).toBe('threat');
-    expect(signal!.value).toBe(2);
+    expect(finding).toBeDefined();
+    expect(finding!.value).toBe(2);
   });
 
-  it('generates no signal for avg rating between 2.5 and 4.0', () => {
-    const result = generateSignals(
+  it('generates no finding for avg rating between 2.5 and 4.0', () => {
+    const result = generateFindings(
       [
         makeSurveyData({
           questions: [makeQuestion('rating_scale', ratingAnswers([3, 3, 3, 4, 3]))],
@@ -232,13 +224,13 @@ describe('generateSignals', () => {
       RESEARCH_PHASES
     );
 
-    const signal = result['problem_discovery']!.find((s: Signal) => s.source === 'rating');
+    const finding = result['problem_discovery']!.find((f: Finding) => f.source === 'rating');
 
-    expect(signal).toBeUndefined();
+    expect(finding).toBeUndefined();
   });
 
-  it('generates strength at exactly 4.0 boundary', () => {
-    const result = generateSignals(
+  it('generates finding at exactly 4.0 boundary', () => {
+    const result = generateFindings(
       [
         makeSurveyData({
           questions: [makeQuestion('rating_scale', ratingAnswers([4, 4, 4, 4, 4]))],
@@ -247,13 +239,13 @@ describe('generateSignals', () => {
       RESEARCH_PHASES
     );
 
-    const signal = result['problem_discovery']!.find((s: Signal) => s.source === 'rating');
+    const finding = result['problem_discovery']!.find((f: Finding) => f.source === 'rating');
 
-    expect(signal!.type).toBe('strength');
+    expect(finding).toBeDefined();
   });
 
-  it('generates threat at exactly 2.5 boundary', () => {
-    const result = generateSignals(
+  it('generates finding at exactly 2.5 boundary', () => {
+    const result = generateFindings(
       [
         makeSurveyData({
           questions: [makeQuestion('rating_scale', ratingAnswers([2, 3, 2, 3, 2, 3]))],
@@ -262,13 +254,13 @@ describe('generateSignals', () => {
       RESEARCH_PHASES
     );
 
-    const signal = result['problem_discovery']!.find((s: Signal) => s.source === 'rating');
+    const finding = result['problem_discovery']!.find((f: Finding) => f.source === 'rating');
 
-    expect(signal!.type).toBe('threat');
+    expect(finding).toBeDefined();
   });
 
   it('skips rating questions with no numeric answers', () => {
-    const result = generateSignals(
+    const result = generateFindings(
       [
         makeSurveyData({
           questions: [makeQuestion('rating_scale', [])],
@@ -277,11 +269,13 @@ describe('generateSignals', () => {
       RESEARCH_PHASES
     );
 
-    expect(result['problem_discovery']!.find((s: Signal) => s.source === 'rating')).toBeUndefined();
+    expect(
+      result['problem_discovery']!.find((f: Finding) => f.source === 'rating')
+    ).toBeUndefined();
   });
 
   it('uses config.max for rating detail', () => {
-    const result = generateSignals(
+    const result = generateFindings(
       [
         makeSurveyData({
           questions: [
@@ -294,15 +288,15 @@ describe('generateSignals', () => {
       RESEARCH_PHASES
     );
 
-    const signal = result['problem_discovery']!.find((s: Signal) => s.source === 'rating');
+    const finding = result['problem_discovery']!.find((f: Finding) => f.source === 'rating');
 
-    expect(signal!.detail).toBe('10');
+    expect(finding!.detail).toBe('10');
   });
 
   // ── Multiple Choice ─────────────────────────────────────────────────
 
-  it('generates signal for MC dominant option > 50%', () => {
-    const result = generateSignals(
+  it('generates finding for MC dominant option > 50%', () => {
+    const result = generateFindings(
       [
         makeSurveyData({
           questions: [
@@ -313,16 +307,17 @@ describe('generateSignals', () => {
       RESEARCH_PHASES
     );
 
-    const signal = result['problem_discovery']!.find((s: Signal) => s.source === 'multiple_choice');
+    const finding = result['problem_discovery']!.find(
+      (f: Finding) => f.source === 'multiple_choice'
+    );
 
-    expect(signal).toBeDefined();
-    expect(signal!.type).toBe('signal');
-    expect(signal!.value).toBe(0.6);
-    expect(signal!.detail).toBe('A');
+    expect(finding).toBeDefined();
+    expect(finding!.value).toBe(0.6);
+    expect(finding!.detail).toBe('A');
   });
 
-  it('generates no signal when no option exceeds 50%', () => {
-    const result = generateSignals(
+  it('generates no finding when no option exceeds 50%', () => {
+    const result = generateFindings(
       [
         makeSurveyData({
           questions: [
@@ -336,14 +331,16 @@ describe('generateSignals', () => {
       RESEARCH_PHASES
     );
 
-    const signal = result['problem_discovery']!.find((s: Signal) => s.source === 'multiple_choice');
+    const finding = result['problem_discovery']!.find(
+      (f: Finding) => f.source === 'multiple_choice'
+    );
 
-    expect(signal).toBeUndefined();
+    expect(finding).toBeUndefined();
   });
 
   it('handles multi-select MC answers (counts respondents, not selections)', () => {
     // 3 respondents; 2 picked 'A' (out of 3 respondents = 66%)
-    const result = generateSignals(
+    const result = generateFindings(
       [
         makeSurveyData({
           questions: [makeQuestion('multiple_choice', mcAnswers([['A', 'B'], ['A', 'C'], ['B']]))],
@@ -352,16 +349,18 @@ describe('generateSignals', () => {
       RESEARCH_PHASES
     );
 
-    const signal = result['problem_discovery']!.find((s: Signal) => s.source === 'multiple_choice');
+    const finding = result['problem_discovery']!.find(
+      (f: Finding) => f.source === 'multiple_choice'
+    );
 
-    expect(signal).toBeDefined();
-    expect(signal!.detail).toBe('A');
+    expect(finding).toBeDefined();
+    expect(finding!.detail).toBe('A');
     // 2 out of 3 respondents picked A
-    expect(signal!.value).toBeCloseTo(2 / 3);
+    expect(finding!.value).toBeCloseTo(2 / 3);
   });
 
   it('skips MC questions with no selected answers', () => {
-    const result = generateSignals(
+    const result = generateFindings(
       [
         makeSurveyData({
           questions: [makeQuestion('multiple_choice', [])],
@@ -371,14 +370,14 @@ describe('generateSignals', () => {
     );
 
     expect(
-      result['problem_discovery']!.find((s: Signal) => s.source === 'multiple_choice')
+      result['problem_discovery']!.find((f: Finding) => f.source === 'multiple_choice')
     ).toBeUndefined();
   });
 
   // ── Completion rate ─────────────────────────────────────────────────
 
-  it('generates threat for completion rate < 50%', () => {
-    const result = generateSignals(
+  it('generates finding for completion rate < 50%', () => {
+    const result = generateFindings(
       [
         makeSurveyData({
           totalResponses: 10,
@@ -389,15 +388,16 @@ describe('generateSignals', () => {
       RESEARCH_PHASES
     );
 
-    const signal = result['problem_discovery']!.find((s: Signal) => s.source === 'completion_rate');
+    const finding = result['problem_discovery']!.find(
+      (f: Finding) => f.source === 'completion_rate'
+    );
 
-    expect(signal).toBeDefined();
-    expect(signal!.type).toBe('threat');
-    expect(signal!.value).toBe(0.4);
+    expect(finding).toBeDefined();
+    expect(finding!.value).toBe(0.4);
   });
 
-  it('generates no signal for completion rate >= 50%', () => {
-    const result = generateSignals(
+  it('generates no finding for completion rate >= 50%', () => {
+    const result = generateFindings(
       [
         makeSurveyData({
           totalResponses: 10,
@@ -408,13 +408,15 @@ describe('generateSignals', () => {
       RESEARCH_PHASES
     );
 
-    const signal = result['problem_discovery']!.find((s: Signal) => s.source === 'completion_rate');
+    const finding = result['problem_discovery']!.find(
+      (f: Finding) => f.source === 'completion_rate'
+    );
 
-    expect(signal).toBeUndefined();
+    expect(finding).toBeUndefined();
   });
 
-  it('generates threat at exactly 50% completion boundary', () => {
-    const result = generateSignals(
+  it('generates finding at exactly 50% completion boundary', () => {
+    const result = generateFindings(
       [
         makeSurveyData({
           totalResponses: 10,
@@ -425,14 +427,15 @@ describe('generateSignals', () => {
       RESEARCH_PHASES
     );
 
-    const signal = result['problem_discovery']!.find((s: Signal) => s.source === 'completion_rate');
+    const finding = result['problem_discovery']!.find(
+      (f: Finding) => f.source === 'completion_rate'
+    );
 
-    expect(signal).toBeDefined();
-    expect(signal!.type).toBe('threat');
+    expect(finding).toBeDefined();
   });
 
   it('skips completion rate when totalResponses is 0', () => {
-    const result = generateSignals(
+    const result = generateFindings(
       [
         makeSurveyData({
           totalResponses: 0,
@@ -443,15 +446,17 @@ describe('generateSignals', () => {
       RESEARCH_PHASES
     );
 
-    const signal = result['problem_discovery']!.find((s: Signal) => s.source === 'completion_rate');
+    const finding = result['problem_discovery']!.find(
+      (f: Finding) => f.source === 'completion_rate'
+    );
 
-    expect(signal).toBeUndefined();
+    expect(finding).toBeUndefined();
   });
 
   // ── Ignored question types ──────────────────────────────────────────
 
   it('ignores open_text questions', () => {
-    const result = generateSignals(
+    const result = generateFindings(
       [
         makeSurveyData({
           questions: [makeQuestion('open_text', [{ value: { text: 'some feedback' } }])],
@@ -460,15 +465,15 @@ describe('generateSignals', () => {
       RESEARCH_PHASES
     );
 
-    const signals = result['problem_discovery']!.filter(
-      (s: Signal) => s.source !== 'no_data' && s.source !== 'completion_rate'
+    const findings = result['problem_discovery']!.filter(
+      (f: Finding) => f.source !== 'completion_rate'
     );
 
-    expect(signals).toHaveLength(0);
+    expect(findings).toHaveLength(0);
   });
 
   it('ignores short_text questions', () => {
-    const result = generateSignals(
+    const result = generateFindings(
       [
         makeSurveyData({
           questions: [makeQuestion('short_text', [{ value: { text: 'short answer' } }])],
@@ -477,17 +482,17 @@ describe('generateSignals', () => {
       RESEARCH_PHASES
     );
 
-    const signals = result['problem_discovery']!.filter(
-      (s: Signal) => s.source !== 'no_data' && s.source !== 'completion_rate'
+    const findings = result['problem_discovery']!.filter(
+      (f: Finding) => f.source !== 'completion_rate'
     );
 
-    expect(signals).toHaveLength(0);
+    expect(findings).toHaveLength(0);
   });
 
   // ── Mixed / integration scenarios ───────────────────────────────────
 
-  it('generates signals from multiple question types in one survey', () => {
-    const result = generateSignals(
+  it('generates findings from multiple question types in one survey', () => {
+    const result = generateFindings(
       [
         makeSurveyData({
           questions: [
@@ -500,19 +505,15 @@ describe('generateSignals', () => {
       RESEARCH_PHASES
     );
 
-    const signals = result['problem_discovery']!;
+    const findings = result['problem_discovery']!;
 
-    expect(
-      signals.find((s: Signal) => s.source === 'yes_no' && s.type === 'strength')
-    ).toBeDefined();
-    expect(signals.find((s: Signal) => s.source === 'rating' && s.type === 'threat')).toBeDefined();
-    expect(
-      signals.find((s: Signal) => s.source === 'multiple_choice' && s.type === 'signal')
-    ).toBeDefined();
+    expect(findings.find((f: Finding) => f.source === 'yes_no')).toBeDefined();
+    expect(findings.find((f: Finding) => f.source === 'rating')).toBeDefined();
+    expect(findings.find((f: Finding) => f.source === 'multiple_choice')).toBeDefined();
   });
 
-  it('generates signals from multiple surveys in one phase', () => {
-    const result = generateSignals(
+  it('generates findings from multiple surveys in one phase', () => {
+    const result = generateFindings(
       [
         makeSurveyData({
           surveyTitle: 'Survey A',
@@ -528,15 +529,13 @@ describe('generateSignals', () => {
       RESEARCH_PHASES
     );
 
-    const signals = result['problem_discovery']!.filter((s: Signal) => s.source === 'yes_no');
+    const findings = result['problem_discovery']!.filter((f: Finding) => f.source === 'yes_no');
 
-    expect(signals).toHaveLength(2);
-    expect(signals.find((s: Signal) => s.type === 'strength')).toBeDefined();
-    expect(signals.find((s: Signal) => s.type === 'threat')).toBeDefined();
+    expect(findings).toHaveLength(2);
   });
 
-  it('correctly routes signals to their respective phases', () => {
-    const result = generateSignals(
+  it('correctly routes findings to their respective phases', () => {
+    const result = generateFindings(
       [
         makeSurveyData({
           researchPhase: 'problem_discovery',
@@ -550,16 +549,17 @@ describe('generateSignals', () => {
       RESEARCH_PHASES
     );
 
-    expect(result['problem_discovery']!.find((s: Signal) => s.source === 'yes_no')!.type).toBe(
-      'strength'
-    );
-    expect(result['solution_validation']!.find((s: Signal) => s.source === 'yes_no')!.type).toBe(
-      'threat'
-    );
+    const pdFinding = result['problem_discovery']!.find((f: Finding) => f.source === 'yes_no');
+    const svFinding = result['solution_validation']!.find((f: Finding) => f.source === 'yes_no');
+
+    expect(pdFinding).toBeDefined();
+    expect(pdFinding!.value).toBe(0.9);
+    expect(svFinding).toBeDefined();
+    expect(svFinding!.value).toBe(0.2);
   });
 
-  it('includes questionText and surveyTitle in signals', () => {
-    const result = generateSignals(
+  it('includes questionText and surveyTitle in findings', () => {
+    const result = generateFindings(
       [
         makeSurveyData({
           surveyTitle: 'My Important Survey',
@@ -571,14 +571,14 @@ describe('generateSignals', () => {
       RESEARCH_PHASES
     );
 
-    const signal = result['problem_discovery']!.find((s: Signal) => s.source === 'yes_no')!;
+    const finding = result['problem_discovery']!.find((f: Finding) => f.source === 'yes_no')!;
 
-    expect(signal.questionText).toBe('Do you experience this problem?');
-    expect(signal.surveyTitle).toBe('My Important Survey');
+    expect(finding.questionText).toBe('Do you experience this problem?');
+    expect(finding.surveyTitle).toBe('My Important Survey');
   });
 
   it('handles empty phases list', () => {
-    const result = generateSignals(
+    const result = generateFindings(
       [makeSurveyData({ questions: [makeQuestion('yes_no', yesNoAnswers(9, 1))] })],
       [] as unknown as readonly ResearchPhase[]
     );

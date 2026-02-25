@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 
 import type { ProjectSurvey } from '@/features/projects/actions/get-project';
-import { SIGNAL_THRESHOLDS } from '@/features/projects/config/signals';
+import { FINDING_THRESHOLDS } from '@/features/projects/config/signals';
 
 import { computePhaseStatuses } from './phase-status';
 
@@ -22,7 +22,7 @@ function makeSurvey(overrides: Partial<ProjectSurvey> = {}): ProjectSurvey {
   };
 }
 
-const MIN = SIGNAL_THRESHOLDS.minResponses; // 5
+const MIN = FINDING_THRESHOLDS.minResponses; // 5
 
 // ── computePhaseStatuses ───────────────────────────────────────────
 

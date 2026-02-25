@@ -2,23 +2,18 @@ import type {
   QuestionSignalData,
   SurveySignalData,
 } from '@/features/projects/actions/get-project-signals-data';
-import { SIGNAL_THRESHOLDS } from '@/features/projects/config/signals';
-import type { ResearchPhase, Signal, SignalType } from '@/features/projects/types';
+import { FINDING_THRESHOLDS } from '@/features/projects/config/signals';
+import type { Finding, FindingSource, ResearchPhase } from '@/features/projects/types';
 
 // ── Helpers ────────────────────────────────────────────────────────────
 
-// function pct(n: number): number {
-//   return Math.round(n * 100);
-// }
-
-function makeSignal(
-  type: SignalType,
-  source: Signal['source'],
+function makeFinding(
+  source: FindingSource,
   phase: ResearchPhase | null,
   value: number,
-  opts?: Pick<Signal, 'questionText' | 'surveyTitle' | 'detail'>
-): Signal {
-  return { type, source, phase, value, ...opts };
+  opts?: Pick<Finding, 'questionText' | 'surveyTitle' | 'detail'>
+): Finding {
+  return { source, phase, value, ...opts };
 }
 
 // ── Per-question analysers ─────────────────────────────────────────────
@@ -27,7 +22,7 @@ function analyseYesNo(
   q: QuestionSignalData,
   phase: ResearchPhase | null,
   surveyTitle: string
-): Signal | null {
+): Finding | null {
   const answers = q.answers.filter((a) => typeof a.value.answer === 'boolean');
 
   if (answers.length === 0) {
@@ -37,15 +32,8 @@ function analyseYesNo(
   const yesCount = answers.filter((a) => a.value.answer === true).length;
   const fraction = yesCount / answers.length;
 
-  if (fraction >= SIGNAL_THRESHOLDS.yesNo.strengthMin) {
-    return makeSignal('strength', 'yes_no', phase, fraction, {
-      questionText: q.text,
-      surveyTitle,
-    });
-  }
-
-  if (fraction <= SIGNAL_THRESHOLDS.yesNo.threatMax) {
-    return makeSignal('threat', 'yes_no', phase, fraction, {
+  if (fraction >= FINDING_THRESHOLDS.yesNo.highMin || fraction <= FINDING_THRESHOLDS.yesNo.lowMax) {
+    return makeFinding('yes_no', phase, fraction, {
       questionText: q.text,
       surveyTitle,
     });
@@ -58,7 +46,7 @@ function analyseRating(
   q: QuestionSignalData,
   phase: ResearchPhase | null,
   surveyTitle: string
-): Signal | null {
+): Finding | null {
   const ratings: number[] = [];
 
   for (const a of q.answers) {
@@ -76,16 +64,8 @@ function analyseRating(
   const avg = ratings.reduce((s, v) => s + v, 0) / ratings.length;
   const max = (q.config.max as number) ?? 5;
 
-  if (avg >= SIGNAL_THRESHOLDS.rating.strengthMin) {
-    return makeSignal('strength', 'rating', phase, avg, {
-      questionText: q.text,
-      surveyTitle,
-      detail: String(max),
-    });
-  }
-
-  if (avg <= SIGNAL_THRESHOLDS.rating.threatMax) {
-    return makeSignal('threat', 'rating', phase, avg, {
+  if (avg >= FINDING_THRESHOLDS.rating.highMin || avg <= FINDING_THRESHOLDS.rating.lowMax) {
+    return makeFinding('rating', phase, avg, {
       questionText: q.text,
       surveyTitle,
       detail: String(max),
@@ -99,7 +79,7 @@ function analyseMultipleChoice(
   q: QuestionSignalData,
   phase: ResearchPhase | null,
   surveyTitle: string
-): Signal | null {
+): Finding | null {
   const counts = new Map<string, number>();
   let respondentCount = 0;
 
@@ -133,8 +113,8 @@ function analyseMultipleChoice(
 
   const fraction = dominantCount / respondentCount;
 
-  if (fraction >= SIGNAL_THRESHOLDS.multipleChoice.dominantMin) {
-    return makeSignal('signal', 'multiple_choice', phase, fraction, {
+  if (fraction >= FINDING_THRESHOLDS.multipleChoice.dominantMin) {
+    return makeFinding('multiple_choice', phase, fraction, {
       questionText: q.text,
       surveyTitle,
       detail: dominantOption,
@@ -149,15 +129,15 @@ function analyseMultipleChoice(
 function analyseCompletionRate(
   survey: SurveySignalData,
   phase: ResearchPhase | null
-): Signal | null {
+): Finding | null {
   if (survey.totalResponses === 0) {
     return null;
   }
 
   const rate = survey.completedResponses / survey.totalResponses;
 
-  if (rate <= SIGNAL_THRESHOLDS.completionRate.threatMax) {
-    return makeSignal('threat', 'completion_rate', phase, rate, {
+  if (rate <= FINDING_THRESHOLDS.completionRate.lowMax) {
+    return makeFinding('completion_rate', phase, rate, {
       surveyTitle: survey.surveyTitle,
     });
   }
@@ -168,17 +148,20 @@ function analyseCompletionRate(
 // ── Main entry point ───────────────────────────────────────────────────
 
 /**
- * Generate auto-signals from survey response data, grouped by phase.
+ * Generate auto-findings from survey response data, grouped by phase.
+ *
+ * Findings are neutral observations — they carry no positive/negative
+ * interpretation.  Users categorise them manually as insights.
  *
  * @param surveysData - Raw per-question answer data for all surveys in a project.
- * @param phases      - Research phases to check (empty phases produce a "no data" threat).
- * @returns Record keyed by phase value (or `'project'`) → Signal[].
+ * @param phases      - Research phases to check.
+ * @returns Record keyed by phase value → Finding[].
  */
-export function generateSignals(
+export function generateFindings(
   surveysData: SurveySignalData[],
   phases: readonly ResearchPhase[]
-): Record<string, Signal[]> {
-  const result: Record<string, Signal[]> = {};
+): Record<string, Finding[]> {
+  const result: Record<string, Finding[]> = {};
 
   // Group surveys by phase
   const surveysByPhase = new Map<string, SurveySignalData[]>();
@@ -195,47 +178,46 @@ export function generateSignals(
 
   // Analyse each phase
   for (const phase of phases) {
-    const phaseSignals: Signal[] = [];
+    const phaseFindings: Finding[] = [];
     const phaseSurveys = surveysByPhase.get(phase) ?? [];
 
     if (phaseSurveys.length === 0) {
-      phaseSignals.push(makeSignal('threat', 'no_data', phase, 0));
-      result[phase] = phaseSignals;
+      result[phase] = phaseFindings;
       continue;
     }
 
     for (const survey of phaseSurveys) {
-      // Per-question signals
+      // Per-question findings
       for (const question of survey.questions) {
-        let signal: Signal | null = null;
+        let finding: Finding | null = null;
 
         switch (question.type) {
           case 'yes_no':
-            signal = analyseYesNo(question, phase, survey.surveyTitle);
+            finding = analyseYesNo(question, phase, survey.surveyTitle);
             break;
           case 'rating_scale':
-            signal = analyseRating(question, phase, survey.surveyTitle);
+            finding = analyseRating(question, phase, survey.surveyTitle);
             break;
           case 'multiple_choice':
-            signal = analyseMultipleChoice(question, phase, survey.surveyTitle);
+            finding = analyseMultipleChoice(question, phase, survey.surveyTitle);
             break;
           // open_text, short_text — skip (no quantitative data)
         }
 
-        if (signal) {
-          phaseSignals.push(signal);
+        if (finding) {
+          phaseFindings.push(finding);
         }
       }
 
       // Survey-level: completion rate
-      const completionSignal = analyseCompletionRate(survey, phase);
+      const completionFinding = analyseCompletionRate(survey, phase);
 
-      if (completionSignal) {
-        phaseSignals.push(completionSignal);
+      if (completionFinding) {
+        phaseFindings.push(completionFinding);
       }
     }
 
-    result[phase] = phaseSignals;
+    result[phase] = phaseFindings;
   }
 
   return result;

@@ -14,7 +14,7 @@ import { ProjectDetailTabs } from '@/features/projects/components/project-detail
 import { ValidationProgressStepper } from '@/features/projects/components/validation-progress-stepper';
 import { useProjectDashboardActions } from '@/features/projects/hooks/use-project-dashboard-actions';
 import { computePhaseStatuses } from '@/features/projects/lib/phase-status';
-import { generateSignals } from '@/features/projects/lib/signals';
+import { generateFindings } from '@/features/projects/lib/signals';
 import type { Project, ProjectInsight } from '@/features/projects/types';
 import { RESEARCH_PHASES } from '@/features/projects/types';
 
@@ -60,23 +60,12 @@ export function ProjectDashboardPage({
     [isIdeaValidation, surveysByPhase]
   );
 
-  const signalsByPhase = useMemo(
-    () => (isIdeaValidation ? generateSignals(signalsData, RESEARCH_PHASES) : {}),
+  const findingsByPhase = useMemo(
+    () => (isIdeaValidation ? generateFindings(signalsData, RESEARCH_PHASES) : {}),
     [isIdeaValidation, signalsData]
   );
 
-  const scorecardSignals = useMemo(() => {
-    if (!isIdeaValidation) {
-      return { strengths: [], threats: [] };
-    }
-
-    const allSignals = Object.values(signalsByPhase).flat();
-
-    return {
-      strengths: allSignals.filter((s) => s.type === 'strength'),
-      threats: allSignals.filter((s) => s.type === 'threat' && s.source !== 'no_data'),
-    };
-  }, [isIdeaValidation, signalsByPhase]);
+  const allFindings = useMemo(() => Object.values(findingsByPhase).flat(), [findingsByPhase]);
 
   const scorecardInsights = useMemo(() => insights.filter((i) => i.phase === null), [insights]);
 
@@ -105,7 +94,7 @@ export function ProjectDashboardPage({
         <ProjectDetailKpi
           surveys={surveys}
           totalResponses={totalResponses}
-          scorecardSignals={scorecardSignals}
+          allFindings={allFindings}
           insights={insights}
           isIdeaValidation={isIdeaValidation}
         />
@@ -116,8 +105,8 @@ export function ProjectDashboardPage({
           project={project}
           surveys={surveys}
           surveysByPhase={surveysByPhase}
-          scorecardSignals={scorecardSignals}
-          signalsByPhase={signalsByPhase}
+          findingsByPhase={findingsByPhase}
+          allFindings={allFindings}
           insights={insights}
           scorecardInsights={scorecardInsights}
           onInsightCreated={handleInsightCreated}

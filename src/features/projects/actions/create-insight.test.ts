@@ -141,6 +141,21 @@ describe('Project Actions – Create Insight', () => {
     expect(result).toHaveProperty('error', 'projects.errors.unexpected');
   });
 
+  it('should create insight with opportunity type', async () => {
+    const projectChain = chain({ data: { id: PROJECT_ID } });
+    const insightChain = chain({ data: { id: INSIGHT_ID } });
+
+    mockFrom.mockReturnValueOnce(projectChain).mockReturnValueOnce(insightChain);
+
+    const { createInsight } = await import('./create-insight');
+    const result = await createInsight({ ...VALID_INPUT, type: 'opportunity' });
+
+    expect(result).toEqual({ success: true, data: { insightId: INSIGHT_ID } });
+    expect(insightChain.insert).toHaveBeenCalledWith(
+      expect.objectContaining({ type: 'opportunity' })
+    );
+  });
+
   it('should return validation error for invalid data', async () => {
     const { createInsight } = await import('./create-insight');
 

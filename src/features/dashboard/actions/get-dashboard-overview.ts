@@ -2,7 +2,7 @@
 
 import { cache } from 'react';
 
-import { SIGNAL_THRESHOLDS } from '@/features/projects/config/signals';
+import { FINDING_THRESHOLDS } from '@/features/projects/config/signals';
 import type { PhaseStatus } from '@/features/projects/lib/phase-status';
 import type { ProjectContext, ResearchPhase } from '@/features/projects/types';
 import { RESEARCH_PHASES } from '@/features/projects/types';
@@ -125,7 +125,7 @@ export const getDashboardOverview = cache(async (): Promise<DashboardOverview | 
     if (
       survey.status === 'completed' &&
       survey.research_phase &&
-      respCount >= SIGNAL_THRESHOLDS.minResponses
+      respCount >= FINDING_THRESHOLDS.minResponses
     ) {
       metrics.phasesWithValidation.add(survey.research_phase);
     }

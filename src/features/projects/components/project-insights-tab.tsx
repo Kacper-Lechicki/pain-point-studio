@@ -1,18 +1,85 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
-import { Compass, Lightbulb, TrendingDown, TrendingUp } from 'lucide-react';
+import {
+  DndContext,
+  type DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import { useDroppable } from '@dnd-kit/core';
+import { Compass, Lightbulb, Search, TrendingDown, TrendingUp } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 
 import { HeroHighlight } from '@/components/ui/hero-highlight';
+import { createInsight } from '@/features/projects/actions/create-insight';
+import { FindingCard, getFindingText } from '@/features/projects/components/finding-card';
 import { ScorecardSection } from '@/features/projects/components/scorecard-section';
-import type { InsightType, ProjectInsight, Signal } from '@/features/projects/types';
+import type { Finding, InsightType, ProjectInsight } from '@/features/projects/types';
+import { INSIGHT_TYPES } from '@/features/projects/types';
 import type { MessageKey } from '@/i18n/types';
+import { cn } from '@/lib/common/utils';
+
+// ── Scorecard section config ──────────────────────────────────────────
+
+const SCORECARD_SECTIONS: {
+  type: InsightType;
+  titleKey: string;
+  emptyKey: string;
+  icon: typeof TrendingUp;
+}[] = [
+  {
+    type: 'strength',
+    titleKey: 'projects.scorecard.strengths',
+    emptyKey: 'projects.scorecard.emptyStrengths',
+    icon: TrendingUp,
+  },
+  {
+    type: 'opportunity',
+    titleKey: 'projects.scorecard.opportunities',
+    emptyKey: 'projects.scorecard.emptyOpportunities',
+    icon: Lightbulb,
+  },
+  {
+    type: 'threat',
+    titleKey: 'projects.scorecard.threats',
+    emptyKey: 'projects.scorecard.emptyThreats',
+    icon: TrendingDown,
+  },
+  {
+    type: 'decision',
+    titleKey: 'projects.scorecard.decisions',
+    emptyKey: 'projects.scorecard.emptyDecisions',
+    icon: Compass,
+  },
+];
+
+// ── Droppable insight section ─────────────────────────────────────────
+
+interface DroppableSectionProps {
+  insightType: InsightType;
+  children: React.ReactNode;
+}
+
+function DroppableSection({ insightType, children }: DroppableSectionProps) {
+  const { setNodeRef, isOver } = useDroppable({ id: insightType });
+
+  return (
+    <div ref={setNodeRef} className={cn(isOver && '[&>*]:border-primary/40 [&>*]:bg-primary/5')}>
+      {children}
+    </div>
+  );
+}
+
+// ── Main component ────────────────────────────────────────────────────
 
 interface ProjectInsightsTabProps {
   projectId: string;
-  signalsByPhase: Record<string, Signal[]>;
+  findingsByPhase: Record<string, Finding[]>;
   insights: ProjectInsight[];
   isIdeaValidation: boolean;
   onInsightCreated: (insight: ProjectInsight) => void;
@@ -22,7 +89,7 @@ interface ProjectInsightsTabProps {
 
 export function ProjectInsightsTab({
   projectId,
-  signalsByPhase,
+  findingsByPhase,
   insights,
   isIdeaValidation,
   onInsightCreated,
@@ -31,22 +98,18 @@ export function ProjectInsightsTab({
 }: ProjectInsightsTabProps) {
   const t = useTranslations();
 
-  const allSignals = useMemo(() => {
+  const allFindings = useMemo(() => {
     if (!isIdeaValidation) {
-      return { strengths: [], threats: [] };
+      return [];
     }
 
-    const all = Object.values(signalsByPhase).flat();
-
-    return {
-      strengths: all.filter((s) => s.type === 'strength'),
-      threats: all.filter((s) => s.type === 'threat' && s.source !== 'no_data'),
-    };
-  }, [isIdeaValidation, signalsByPhase]);
+    return Object.values(findingsByPhase).flat();
+  }, [isIdeaValidation, findingsByPhase]);
 
   const insightsByType = useMemo(() => {
     const grouped: Record<InsightType, ProjectInsight[]> = {
       strength: [],
+      opportunity: [],
       threat: [],
       decision: [],
     };
@@ -62,7 +125,65 @@ export function ProjectInsightsTab({
     return grouped;
   }, [insights]);
 
-  const totalCount = allSignals.strengths.length + allSignals.threats.length + insights.length;
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor)
+  );
+
+  const handleCategorize = useCallback(
+    async (finding: Finding, insightType: InsightType) => {
+      const content = getFindingText(finding, t);
+
+      const result = await createInsight({
+        projectId,
+        type: insightType,
+        content,
+      });
+
+      if (result && !result.error && result.data) {
+        const newInsight: ProjectInsight = {
+          id: result.data.insightId,
+          project_id: projectId,
+          phase: null,
+          type: insightType,
+          content,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+
+        onInsightCreated(newInsight);
+        toast.success(
+          t('projects.findings.addedAs' as MessageKey, {
+            type: t(`projects.insightTypes.${insightType}` as MessageKey),
+          })
+        );
+      }
+    },
+    [projectId, t, onInsightCreated]
+  );
+
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event;
+
+      if (!over) {
+        return;
+      }
+
+      const insightType = over.id as InsightType;
+
+      if (!INSIGHT_TYPES.includes(insightType)) {
+        return;
+      }
+
+      const { finding } = active.data.current as { finding: Finding; index: number };
+
+      void handleCategorize(finding, insightType);
+    },
+    [handleCategorize]
+  );
+
+  const totalCount = allFindings.length + insights.length;
 
   if (totalCount === 0) {
     return (
@@ -84,45 +205,51 @@ export function ProjectInsightsTab({
   }
 
   return (
-    <div className="grid gap-6 md:grid-cols-3">
-      <ScorecardSection
-        title={t('projects.scorecard.strengths' as MessageKey)}
-        icon={TrendingUp}
-        signals={allSignals.strengths}
-        insights={insightsByType.strength}
-        insightType="strength"
-        projectId={projectId}
-        emptyMessageKey={'projects.scorecard.emptyStrengths' as MessageKey}
-        onInsightCreated={onInsightCreated}
-        onInsightUpdated={onInsightUpdated}
-        onInsightDeleted={onInsightDeleted}
-      />
+    <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+      <div className="flex flex-col gap-6">
+        {/* Findings section */}
+        {allFindings.length > 0 && (
+          <section>
+            <div className="mb-3 flex items-center gap-2">
+              <Search className="text-muted-foreground size-4 shrink-0" aria-hidden />
+              <h3 className="text-foreground text-sm font-medium">
+                {t('projects.findings.title' as MessageKey)}
+              </h3>
+              <span className="text-muted-foreground text-xs">({allFindings.length})</span>
+            </div>
 
-      <ScorecardSection
-        title={t('projects.scorecard.threats' as MessageKey)}
-        icon={TrendingDown}
-        signals={allSignals.threats}
-        insights={insightsByType.threat}
-        insightType="threat"
-        projectId={projectId}
-        emptyMessageKey={'projects.scorecard.emptyThreats' as MessageKey}
-        onInsightCreated={onInsightCreated}
-        onInsightUpdated={onInsightUpdated}
-        onInsightDeleted={onInsightDeleted}
-      />
+            <div className="flex flex-col gap-1.5">
+              {allFindings.map((finding, i) => (
+                <FindingCard
+                  key={`${finding.source}-${finding.questionText ?? i}`}
+                  finding={finding}
+                  index={i}
+                  onCategorize={(insightType) => void handleCategorize(finding, insightType)}
+                />
+              ))}
+            </div>
+          </section>
+        )}
 
-      <ScorecardSection
-        title={t('projects.scorecard.decisions' as MessageKey)}
-        icon={Compass}
-        signals={[]}
-        insights={insightsByType.decision}
-        insightType="decision"
-        projectId={projectId}
-        emptyMessageKey={'projects.scorecard.emptyDecisions' as MessageKey}
-        onInsightCreated={onInsightCreated}
-        onInsightUpdated={onInsightUpdated}
-        onInsightDeleted={onInsightDeleted}
-      />
-    </div>
+        {/* Insight categories — 2×2 grid */}
+        <div className="grid gap-4 sm:grid-cols-2">
+          {SCORECARD_SECTIONS.map((section) => (
+            <DroppableSection key={section.type} insightType={section.type}>
+              <ScorecardSection
+                title={t(section.titleKey as MessageKey)}
+                icon={section.icon}
+                insights={insightsByType[section.type]}
+                insightType={section.type}
+                projectId={projectId}
+                emptyMessageKey={section.emptyKey as MessageKey}
+                onInsightCreated={onInsightCreated}
+                onInsightUpdated={onInsightUpdated}
+                onInsightDeleted={onInsightDeleted}
+              />
+            </DroppableSection>
+          ))}
+        </div>
+      </div>
+    </DndContext>
   );
 }

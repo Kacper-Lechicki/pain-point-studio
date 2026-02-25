@@ -5,18 +5,19 @@ import { useTranslations } from 'next-intl';
 
 import { InsightInlineForm } from '@/features/projects/components/insight-inline-form';
 import { InsightItem } from '@/features/projects/components/insight-item';
-import { SignalItem } from '@/features/projects/components/signal-item';
-import type { InsightType, ProjectInsight, Signal } from '@/features/projects/types';
+import type { InsightType, ProjectInsight } from '@/features/projects/types';
 import type { MessageKey } from '@/i18n/types';
+import { cn } from '@/lib/common/utils';
 
 interface ScorecardSectionProps {
   title: string;
   icon: LucideIcon;
-  signals: Signal[];
   insights: ProjectInsight[];
   insightType: InsightType;
   projectId: string;
   emptyMessageKey: MessageKey;
+  /** Visual feedback when a finding is being dragged over this section. */
+  isOver?: boolean;
   onInsightCreated: (insight: ProjectInsight) => void;
   onInsightUpdated: (insight: ProjectInsight) => void;
   onInsightDeleted: (insightId: string) => void;
@@ -25,37 +26,34 @@ interface ScorecardSectionProps {
 export function ScorecardSection({
   title,
   icon: Icon,
-  signals,
   insights,
   insightType,
   projectId,
   emptyMessageKey,
+  isOver = false,
   onInsightCreated,
   onInsightUpdated,
   onInsightDeleted,
 }: ScorecardSectionProps) {
   const t = useTranslations();
-  const totalItems = signals.length + insights.length;
 
   return (
-    <div className="flex flex-col gap-2">
+    <div
+      className={cn(
+        'flex flex-col gap-2 rounded-lg border border-transparent p-3 transition-colors',
+        isOver && 'border-primary/40 bg-primary/5'
+      )}
+    >
       <div className="flex items-center gap-2">
         <Icon className="text-muted-foreground size-4 shrink-0" aria-hidden />
         <h3 className="text-foreground text-sm font-medium">{title}</h3>
-        <span className="text-muted-foreground text-xs">({totalItems})</span>
+        <span className="text-muted-foreground text-xs">({insights.length})</span>
       </div>
 
-      {totalItems === 0 ? (
+      {insights.length === 0 ? (
         <p className="text-muted-foreground px-3 py-2 text-xs">{t(emptyMessageKey)}</p>
       ) : (
         <div className="flex flex-col gap-1.5">
-          {signals.map((signal, i) => (
-            <SignalItem
-              key={`signal-${signal.source}-${signal.questionText ?? i}`}
-              signal={signal}
-            />
-          ))}
-
           {insights.map((insight) => (
             <InsightItem
               key={insight.id}

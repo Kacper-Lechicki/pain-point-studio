@@ -753,6 +753,7 @@
     },
     "insightTypes": {
       "strength": "Strength",
+      "opportunity": "Opportunity",
       "threat": "Threat",
       "decision": "Decision"
     },
@@ -906,8 +907,7 @@
       "kpi": {
         "surveys": "Surveys",
         "responses": "Responses",
-        "strengths": "Strengths",
-        "threats": "Threats",
+        "findings": "Findings",
         "insights": "Insights",
         "completion": "Completion",
         "completionSubtitle": "{completed} of {total} completed"
@@ -935,22 +935,27 @@
       "inProgress": "In progress",
       "validated": "Validated"
     },
-    "signals": {
-      "auto": "auto",
-      "yesNoStrength": "{pct}% of respondents said yes to \"{question}\"",
-      "yesNoThreat": "Only {pct}% said yes to \"{question}\"",
-      "ratingStrength": "Average rating {avg}/{max} for \"{question}\"",
-      "ratingThreat": "Low average rating {avg}/{max} for \"{question}\"",
+    "findings": {
+      "title": "Findings",
+      "badge": "auto",
+      "empty": "No findings yet. Findings appear automatically as survey responses come in.",
+      "yesNoHigh": "{pct}% of respondents said yes to \"{question}\"",
+      "yesNoLow": "Only {pct}% said yes to \"{question}\"",
+      "ratingHigh": "Average rating {avg}/{max} for \"{question}\"",
+      "ratingLow": "Average rating {avg}/{max} for \"{question}\"",
       "mcDominant": "{pct}% chose \"{option}\" for \"{question}\"",
-      "completionThreat": "Low completion rate ({pct}%) for \"{survey}\"",
-      "noData": "No research data in this phase yet"
+      "completionLow": "Completion rate {pct}% for \"{survey}\"",
+      "categorize": "Categorize",
+      "addedAs": "Finding added as {type}."
     },
     "scorecard": {
       "title": "Project Scorecard",
       "strengths": "Strengths",
+      "opportunities": "Opportunities",
       "threats": "Threats",
       "decisions": "Decisions & Next Steps",
       "emptyStrengths": "No strengths identified yet.",
+      "emptyOpportunities": "No opportunities identified yet.",
       "emptyThreats": "No threats identified yet.",
       "emptyDecisions": "No decisions recorded yet.",
       "addNote": "Add note",

@@ -11,7 +11,7 @@ import type { ProjectDetail, ProjectSurvey } from '@/features/projects/actions/g
 import { ProjectInsightsTab } from '@/features/projects/components/project-insights-tab';
 import { ProjectOverviewTab } from '@/features/projects/components/project-overview-tab';
 import { ProjectSurveysTab } from '@/features/projects/components/project-surveys-tab';
-import type { Project, ProjectInsight, Signal } from '@/features/projects/types';
+import type { Finding, Project, ProjectInsight } from '@/features/projects/types';
 
 type TabValue = 'overview' | 'surveys' | 'insights';
 
@@ -21,8 +21,8 @@ interface ProjectDetailTabsProps {
   project: Project;
   surveys: ProjectSurvey[];
   surveysByPhase: ProjectDetail['surveysByPhase'];
-  scorecardSignals: { strengths: Signal[]; threats: Signal[] };
-  signalsByPhase: Record<string, Signal[]>;
+  findingsByPhase: Record<string, Finding[]>;
+  allFindings: Finding[];
   insights: ProjectInsight[];
   scorecardInsights: ProjectInsight[];
   onInsightCreated: (insight: ProjectInsight) => void;
@@ -34,8 +34,8 @@ export function ProjectDetailTabs({
   project,
   surveys,
   surveysByPhase,
-  scorecardSignals,
-  signalsByPhase,
+  findingsByPhase,
+  allFindings,
   insights,
   scorecardInsights,
   onInsightCreated,
@@ -67,8 +67,7 @@ export function ProjectDetailTabs({
     [router, pathname, searchParams]
   );
 
-  const totalInsightCount =
-    scorecardSignals.strengths.length + scorecardSignals.threats.length + insights.length;
+  const totalInsightCount = allFindings.length + insights.length;
 
   const isIdeaValidation = project.context === 'idea_validation';
 
@@ -99,7 +98,6 @@ export function ProjectDetailTabs({
           project={project}
           surveys={surveys}
           surveysByPhase={surveysByPhase}
-          scorecardSignals={scorecardSignals}
           scorecardInsights={scorecardInsights}
           isIdeaValidation={isIdeaValidation}
           onInsightCreated={onInsightCreated}
@@ -116,7 +114,7 @@ export function ProjectDetailTabs({
       <TabsContent value="insights">
         <ProjectInsightsTab
           projectId={project.id}
-          signalsByPhase={signalsByPhase}
+          findingsByPhase={findingsByPhase}
           insights={insights}
           isIdeaValidation={isIdeaValidation}
           onInsightCreated={onInsightCreated}
