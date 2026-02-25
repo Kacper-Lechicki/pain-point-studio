@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { createInsight } from '@/features/projects/actions/create-insight';
 import { INSIGHT_COLORS, INSIGHT_ICONS } from '@/features/projects/config/insight-colors';
-import type { InsightType, ProjectInsight, ResearchPhase } from '@/features/projects/types';
+import type { InsightType, ProjectInsight } from '@/features/projects/types';
 import { INSIGHT_TYPES } from '@/features/projects/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import type { MessageKey } from '@/i18n/types';
@@ -20,8 +20,6 @@ interface InsightInlineFormProps {
   projectId: string;
   /** Pre-selected type (fixed in scorecard sections, selectable in phase sections). */
   type?: InsightType;
-  /** Phase to attach the insight to (null = scorecard-level). */
-  phase?: ResearchPhase | null;
   /** Whether to show a type selector (for phase-level forms). */
   showTypeSelector?: boolean;
   onCreated: (insight: ProjectInsight) => void;
@@ -30,7 +28,6 @@ interface InsightInlineFormProps {
 export function InsightInlineForm({
   projectId,
   type: fixedType,
-  phase = null,
   showTypeSelector = false,
   onCreated,
 }: InsightInlineFormProps) {
@@ -73,7 +70,6 @@ export function InsightInlineForm({
 
     const result = await action.execute(createInsight, {
       projectId,
-      phase: phase ?? undefined,
       type: activeType,
       content: trimmed,
     });
@@ -82,7 +78,6 @@ export function InsightInlineForm({
       const newInsight: ProjectInsight = {
         id: result.data.insightId,
         project_id: projectId,
-        phase: phase ?? null,
         type: activeType,
         content: trimmed,
         created_at: new Date().toISOString(),
@@ -94,7 +89,7 @@ export function InsightInlineForm({
       setContent('');
       setIsOpen(false);
     }
-  }, [content, action, projectId, phase, activeType, onCreated, t]);
+  }, [content, action, projectId, activeType, onCreated, t]);
 
   if (!isOpen) {
     return (

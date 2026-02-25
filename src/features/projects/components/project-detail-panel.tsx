@@ -10,23 +10,18 @@ import { MetricRow, SectionLabel } from '@/components/ui/metric-display';
 import { SearchInput } from '@/components/ui/search-input';
 import { Separator } from '@/components/ui/separator';
 import { ROUTES } from '@/config/routes';
-import type { ProjectDetail, ProjectSurvey } from '@/features/projects/actions/get-project';
+import type { ProjectDetail } from '@/features/projects/actions/get-project';
 import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
 import { ProjectActionButtons } from '@/features/projects/components/project-action-buttons';
 import { ProjectStatusBadge } from '@/features/projects/components/project-status-badge';
 import {
-  CompactPhaseGroup,
   CompactSurveyList,
   SurveysListSkeleton,
 } from '@/features/projects/components/project-survey-list';
-import { ValidationProgressDots } from '@/features/projects/components/validation-progress-dots';
-import { PROJECT_CONTEXTS_CONFIG } from '@/features/projects/config/contexts';
-import { computePhaseStatuses } from '@/features/projects/lib/phase-status';
 import { isProjectArchived } from '@/features/projects/lib/project-helpers';
 import { getProjectDetailUrl } from '@/features/projects/lib/project-urls';
-import type { ProjectContext, ProjectStatus } from '@/features/projects/types';
+import type { ProjectStatus } from '@/features/projects/types';
 import Link from '@/i18n/link';
-import type { MessageKey } from '@/i18n/types';
 
 interface ProjectDetailPanelProps {
   project: ProjectWithMetrics;
@@ -45,12 +40,9 @@ export function ProjectDetailPanel({
 }: ProjectDetailPanelProps) {
   const t = useTranslations();
   const isArchived = isProjectArchived(project);
-  const contextConfig = PROJECT_CONTEXTS_CONFIG[project.context as ProjectContext];
-  const isIdeaValidation = project.context === 'idea_validation';
   const [searchQuery, setSearchQuery] = useState('');
   const isSearching = searchQuery.trim().length > 0;
   const allSurveys = projectDetail?.surveys ?? null;
-  const surveysByPhase = projectDetail?.surveysByPhase ?? null;
 
   const statusCounts = useMemo(() => {
     if (!allSurveys) {
@@ -74,25 +66,6 @@ export function ProjectDetailPanel({
     return { active, completed, draft };
   }, [allSurveys]);
 
-  const filteredSurveysByPhase = useMemo(() => {
-    if (!surveysByPhase) {
-      return null;
-    }
-
-    if (!isSearching) {
-      return surveysByPhase;
-    }
-
-    const q = searchQuery.trim().toLowerCase();
-    const result: Record<string, ProjectSurvey[]> = {};
-
-    for (const [phase, phaseSurveys] of Object.entries(surveysByPhase)) {
-      result[phase] = phaseSurveys.filter((s) => s.title.toLowerCase().includes(q));
-    }
-
-    return result;
-  }, [surveysByPhase, searchQuery, isSearching]);
-
   const filteredSurveys = useMemo(() => {
     if (!allSurveys) {
       return null;
@@ -106,18 +79,6 @@ export function ProjectDetailPanel({
 
     return allSurveys.filter((s) => s.title.toLowerCase().includes(q));
   }, [allSurveys, searchQuery, isSearching]);
-
-  const phaseStatuses = useMemo(() => {
-    if (!isIdeaValidation) {
-      return null;
-    }
-
-    if (projectDetail?.surveysByPhase) {
-      return computePhaseStatuses(projectDetail.surveysByPhase);
-    }
-
-    return project.phaseStatuses;
-  }, [isIdeaValidation, projectDetail, project.phaseStatuses]);
 
   const showSearch = allSurveys !== null && allSurveys.length > 3;
 
@@ -152,21 +113,9 @@ export function ProjectDetailPanel({
       <SectionLabel>{t('projects.detail.detailsLabel')}</SectionLabel>
       <div className="flex flex-col gap-2">
         <MetricRow
-          label={t('projects.detail.context')}
-          value={t(contextConfig.labelKey as MessageKey)}
-        />
-
-        <MetricRow
           label={t('projects.detail.status')}
           value={<ProjectStatusBadge status={project.status as ProjectStatus} />}
         />
-
-        {phaseStatuses && (
-          <MetricRow
-            label={t('projects.detail.progress')}
-            value={<ValidationProgressDots phaseStatuses={phaseStatuses} />}
-          />
-        )}
 
         <MetricRow label={t('projects.detail.surveyCount')} value={project.surveyCount} />
         <MetricRow label={t('projects.detail.responseCount')} value={project.responseCount} />
@@ -218,47 +167,6 @@ export function ProjectDetailPanel({
               {t('projects.detail.createSurvey')}
             </Link>
           </Button>
-        </div>
-      ) : isIdeaValidation && surveysByPhase && filteredSurveysByPhase ? (
-        <div className="flex flex-col gap-4">
-          {contextConfig.phases.map((phase) => {
-            const phaseSurveys = filteredSurveysByPhase[phase.value] ?? [];
-            const totalCount = (surveysByPhase[phase.value] ?? []).length;
-
-            if (!isSearching && totalCount === 0) {
-              return null;
-            }
-
-            if (isSearching && phaseSurveys.length === 0 && totalCount === 0) {
-              return null;
-            }
-
-            return (
-              <CompactPhaseGroup
-                key={phase.value}
-                phase={phase}
-                surveys={phaseSurveys}
-                totalCount={totalCount}
-                isSearching={isSearching}
-              />
-            );
-          })}
-
-          {(surveysByPhase['unassigned']?.length ?? 0) > 0 && (
-            <CompactPhaseGroup
-              phase={null}
-              surveys={filteredSurveysByPhase['unassigned'] ?? []}
-              totalCount={(surveysByPhase['unassigned'] ?? []).length}
-              isSearching={isSearching}
-              label={t('projects.detail.unassigned')}
-            />
-          )}
-
-          {isSearching && filteredSurveys !== null && filteredSurveys.length === 0 && (
-            <p className="text-muted-foreground py-2 text-center text-xs">
-              {t('projects.detail.noMatchingSurveys')}
-            </p>
-          )}
         </div>
       ) : (
         <CompactSurveyList surveys={filteredSurveys ?? []} isSearching={isSearching} />

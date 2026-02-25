@@ -2,21 +2,6 @@ import type { Tables } from '@/lib/supabase/types';
 
 // ── Enum tuples (source of truth, matching DB CHECK constraints) ────
 
-/** All supported project contexts as a const tuple (source of truth). */
-export const PROJECT_CONTEXTS = ['idea_validation', 'custom'] as const;
-
-export type ProjectContext = (typeof PROJECT_CONTEXTS)[number];
-
-/** All research phases for idea_validation projects (source of truth). */
-export const RESEARCH_PHASES = [
-  'problem_discovery',
-  'solution_validation',
-  'market_validation',
-  'launch_readiness',
-] as const;
-
-export type ResearchPhase = (typeof RESEARCH_PHASES)[number];
-
 /** All insight types as a const tuple (source of truth). */
 export const INSIGHT_TYPES = ['strength', 'opportunity', 'threat', 'decision'] as const;
 
@@ -36,7 +21,6 @@ export type FindingSource = (typeof FINDING_SOURCES)[number];
 /** An auto-generated finding derived from quantitative survey data. */
 export interface Finding {
   source: FindingSource;
-  phase: ResearchPhase | null;
   questionText?: string;
   surveyTitle?: string;
   value: number;

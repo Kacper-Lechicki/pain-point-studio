@@ -9,7 +9,6 @@ export interface ProjectSurvey {
   id: string;
   title: string;
   status: string;
-  researchPhase: string | null;
   responseCount: number;
   completedCount: number;
   createdAt: string;
@@ -18,7 +17,6 @@ export interface ProjectSurvey {
 export interface ProjectDetail {
   project: Project;
   surveys: ProjectSurvey[];
-  surveysByPhase: Record<string, ProjectSurvey[]>;
 }
 
 export const getProject = cache(async (projectId: string): Promise<ProjectDetail | null> => {
@@ -44,7 +42,7 @@ export const getProject = cache(async (projectId: string): Promise<ProjectDetail
 
   const { data: rawSurveys } = await supabase
     .from('surveys')
-    .select('id, title, status, research_phase, created_at, survey_responses(count)')
+    .select('id, title, status, created_at, survey_responses(count)')
     .eq('project_id', projectId)
     .order('created_at', { ascending: false });
 
@@ -58,24 +56,11 @@ export const getProject = cache(async (projectId: string): Promise<ProjectDetail
       id: s.id,
       title: s.title,
       status: s.status,
-      researchPhase: s.research_phase,
       responseCount: respCount,
       completedCount: respCount,
       createdAt: s.created_at,
     };
   });
 
-  const surveysByPhase: Record<string, ProjectSurvey[]> = {};
-
-  for (const survey of surveys) {
-    const phase = survey.researchPhase ?? 'unassigned';
-
-    if (!surveysByPhase[phase]) {
-      surveysByPhase[phase] = [];
-    }
-
-    surveysByPhase[phase].push(survey);
-  }
-
-  return { project, surveys, surveysByPhase };
+  return { project, surveys };
 });

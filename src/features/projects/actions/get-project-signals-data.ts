@@ -20,7 +20,6 @@ export interface QuestionSignalData {
 export interface SurveySignalData {
   surveyId: string;
   surveyTitle: string;
-  researchPhase: string | null;
   totalResponses: number;
   completedResponses: number;
   questions: QuestionSignalData[];
@@ -32,7 +31,6 @@ const signalDataSchema = z.array(
   z.object({
     surveyId: z.string(),
     surveyTitle: z.string(),
-    researchPhase: z.string().nullable(),
     totalResponses: z.number(),
     completedResponses: z.number(),
     questions: z

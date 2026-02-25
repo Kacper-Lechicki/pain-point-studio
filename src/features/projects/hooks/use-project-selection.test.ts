@@ -4,9 +4,6 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
-import type { PhaseStatus } from '@/features/projects/lib/phase-status';
-import type { ResearchPhase } from '@/features/projects/types';
-import { RESEARCH_PHASES } from '@/features/projects/types';
 
 import { useProjectSelection } from './use-project-selection';
 
@@ -31,7 +28,6 @@ const PROJECTS: ProjectWithMetrics[] = [
     id: 'proj-1',
     name: 'Project One',
     description: null,
-    context: 'idea_validation',
     status: 'active',
     user_id: 'user-1',
     archived_at: null,
@@ -39,10 +35,6 @@ const PROJECTS: ProjectWithMetrics[] = [
     updated_at: '2025-01-02T00:00:00Z',
     surveyCount: 2,
     responseCount: 10,
-    validationProgress: 0.5,
-    phaseStatuses: Object.fromEntries(
-      RESEARCH_PHASES.map((p) => [p, 'not_started' as PhaseStatus])
-    ) as Record<ResearchPhase, PhaseStatus>,
   },
 ];
 
@@ -53,7 +45,6 @@ describe('useProjectSelection', () => {
     mockGetProject.mockResolvedValue({
       project: PROJECTS[0],
       surveys: [],
-      surveysByPhase: {},
     });
   });
 
@@ -73,7 +64,6 @@ describe('useProjectSelection', () => {
       expect(result.current.projectDetail).toEqual({
         project: PROJECTS[0],
         surveys: [],
-        surveysByPhase: {},
       });
     });
   });

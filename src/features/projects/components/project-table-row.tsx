@@ -16,11 +16,8 @@ import {
 import { TableCell, TableRow } from '@/components/ui/table';
 import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
 import { ProjectStatusBadge } from '@/features/projects/components/project-status-badge';
-import { ValidationProgressDots } from '@/features/projects/components/validation-progress-dots';
-import { PROJECT_CONTEXTS_CONFIG } from '@/features/projects/config/contexts';
 import { isProjectArchived } from '@/features/projects/lib/project-helpers';
-import type { ProjectContext, ProjectStatus } from '@/features/projects/types';
-import type { MessageKey } from '@/i18n/types';
+import type { ProjectStatus } from '@/features/projects/types';
 import { cn } from '@/lib/common/utils';
 
 interface ProjectTableRowProps {
@@ -45,7 +42,6 @@ export function ProjectTableRow({
   const t = useTranslations();
   const format = useFormatter();
   const isArchived = isProjectArchived(project);
-  const contextConfig = PROJECT_CONTEXTS_CONFIG[project.context as ProjectContext];
   const updatedAtLabel = format.relativeTime(new Date(project.updated_at), now);
 
   const tableRowInteraction = {
@@ -88,24 +84,12 @@ export function ProjectTableRow({
         <ProjectStatusBadge status={project.status as ProjectStatus} />
       </TableCell>
 
-      <TableCell className="text-muted-foreground border-border/30 min-w-0 truncate border-l text-xs">
-        {t(contextConfig.labelKey as MessageKey)}
-      </TableCell>
-
       <TableCell className="text-muted-foreground border-border/30 min-w-0 truncate border-l text-xs tabular-nums">
         {project.surveyCount}
       </TableCell>
 
       <TableCell className="text-muted-foreground border-border/30 min-w-0 truncate border-l text-xs tabular-nums">
         {project.responseCount}
-      </TableCell>
-
-      <TableCell className="border-border/30 hidden min-w-0 border-l lg:table-cell">
-        {project.phaseStatuses ? (
-          <ValidationProgressDots phaseStatuses={project.phaseStatuses} />
-        ) : (
-          <span className="text-muted-foreground text-xs">—</span>
-        )}
       </TableCell>
 
       <TableCell className="text-muted-foreground border-border/30 hidden min-w-0 truncate border-l pr-4 pl-3 text-xs xl:table-cell">

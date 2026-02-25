@@ -15,22 +15,12 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { CreateProjectInlineDialog } from '@/features/projects/components/create-project-inline-dialog';
-import { RESEARCH_PHASE_CONFIG } from '@/features/projects/config/contexts';
-import { RESEARCH_PHASES, type ResearchPhase } from '@/features/projects/types';
 import type { ProjectOption } from '@/features/surveys/actions';
 import { SURVEY_DESCRIPTION_MAX_LENGTH, SURVEY_TITLE_MAX_LENGTH } from '@/features/surveys/config';
 import type { SurveyMetadataSchema } from '@/features/surveys/types';
-import type { MessageKey } from '@/i18n/types';
 
 /** Sentinel value for "no project" in combobox. */
 const NO_PROJECT_VALUE = '__none__';
@@ -46,8 +36,6 @@ export function SurveyMetadataFields({ form, projectOptions }: SurveyMetadataFie
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
   const selectedProjectId = form.watch('projectId');
-  const selectedProject = localProjectOptions.find((p) => p.value === selectedProjectId);
-  const showPhaseSelect = selectedProject?.context === 'idea_validation';
 
   const comboboxOptions = [
     { value: NO_PROJECT_VALUE, label: t('surveys.create.noProject') },
@@ -58,33 +46,19 @@ export function SurveyMetadataFields({ form, projectOptions }: SurveyMetadataFie
     (value: string) => {
       if (value === NO_PROJECT_VALUE) {
         form.setValue('projectId', null, { shouldDirty: true });
-        form.setValue('researchPhase', null, { shouldDirty: true });
 
         return;
       }
 
       form.setValue('projectId', value, { shouldDirty: true });
-
-      const project = localProjectOptions.find((p) => p.value === value);
-
-      if (project?.context !== 'idea_validation') {
-        form.setValue('researchPhase', null, { shouldDirty: true });
-      }
     },
-    [form, localProjectOptions]
+    [form]
   );
 
   const handleProjectCreated = useCallback(
-    (project: { id: string; name: string; context: string }) => {
-      setLocalProjectOptions((prev) => [
-        ...prev,
-        { value: project.id, label: project.name, context: project.context },
-      ]);
+    (project: { id: string; name: string }) => {
+      setLocalProjectOptions((prev) => [...prev, { value: project.id, label: project.name }]);
       form.setValue('projectId', project.id, { shouldDirty: true });
-
-      if (project.context !== 'idea_validation') {
-        form.setValue('researchPhase', null, { shouldDirty: true });
-      }
     },
     [form]
   );
@@ -211,48 +185,6 @@ export function SurveyMetadataFields({ form, projectOptions }: SurveyMetadataFie
           </FormItem>
         )}
       />
-
-      {showPhaseSelect && (
-        <FormField
-          control={form.control}
-          name="researchPhase"
-          render={({ field, fieldState }) => (
-            <FormItem>
-              <FormLabel>{t('surveys.create.researchPhase')}</FormLabel>
-              <FormDescription>{t('surveys.create.researchPhaseHelper')}</FormDescription>
-
-              <FormControl>
-                <Select
-                  value={field.value ?? ''}
-                  onValueChange={(val) => field.onChange(val || null)}
-                >
-                  <SelectTrigger className="w-full" aria-invalid={!!fieldState.error}>
-                    <SelectValue placeholder={t('surveys.create.researchPhasePlaceholder')} />
-                  </SelectTrigger>
-
-                  <SelectContent>
-                    {RESEARCH_PHASES.map((phase) => {
-                      const config = RESEARCH_PHASE_CONFIG[phase as ResearchPhase];
-                      const Icon = config.icon;
-
-                      return (
-                        <SelectItem key={phase} value={phase}>
-                          <span className="flex items-center gap-2">
-                            <Icon className="size-4 shrink-0" aria-hidden />
-                            {t(config.labelKey as MessageKey)}
-                          </span>
-                        </SelectItem>
-                      );
-                    })}
-                  </SelectContent>
-                </Select>
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      )}
 
       <CreateProjectInlineDialog
         open={createDialogOpen}

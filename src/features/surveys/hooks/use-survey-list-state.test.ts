@@ -68,9 +68,7 @@ function makeSurvey(id: string, title: string): UserSurvey {
     avgCompletionSeconds: null,
     avgQuestionCompletion: null,
     projectId: null,
-    researchPhase: null,
     projectName: null,
-    projectContext: null,
   };
 }
 

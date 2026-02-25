@@ -11,15 +11,12 @@ import { useTranslations } from 'next-intl';
 
 import { MetricRow, SectionLabel } from '@/components/ui/metric-display';
 import { ROUTES } from '@/config/routes';
-import { RESEARCH_PHASE_CONFIG } from '@/features/projects/config/contexts';
-import type { ResearchPhase } from '@/features/projects/types';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import { ExpiryMetricRow } from '@/features/surveys/components/dashboard/expiry-metric-row';
 import { SurveyStatusBadge } from '@/features/surveys/components/dashboard/survey-status-badge';
 import { SURVEY_STATUS_CONFIG } from '@/features/surveys/config/survey-status';
 import type { SurveyStatusFlags } from '@/features/surveys/config/survey-status';
 import Link from '@/i18n/link';
-import type { MessageKey } from '@/i18n/types';
 
 interface SurveyDetailInfoProps {
   survey: UserSurvey;
@@ -62,20 +59,6 @@ export function SurveyDetailInfo({
             }
           />
         )}
-
-        {survey.researchPhase &&
-          survey.projectContext === 'idea_validation' &&
-          (() => {
-            const phaseConfig = RESEARCH_PHASE_CONFIG[survey.researchPhase as ResearchPhase];
-
-            return phaseConfig ? (
-              <MetricRow
-                icon={phaseConfig.icon}
-                label={t('surveys.dashboard.detailPanel.researchPhase')}
-                value={t(phaseConfig.labelKey as MessageKey)}
-              />
-            ) : null;
-          })()}
 
         {showActiveDetails && survey.startsAt && (
           <MetricRow

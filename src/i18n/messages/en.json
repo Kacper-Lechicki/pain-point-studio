@@ -269,9 +269,6 @@
       "project": "Project",
       "projectPlaceholder": "Select a project (optional)",
       "projectHelper": "Link this survey to a research project.",
-      "researchPhase": "Research Phase",
-      "researchPhasePlaceholder": "Select a phase",
-      "researchPhaseHelper": "Assign this survey to a specific validation phase.",
       "newProject": "+ New project",
       "noProject": "None (standalone)",
       "saveDraft": "Save Draft",
@@ -611,7 +608,6 @@
         "avgCompletionTime": "Avg. time",
         "questions": "Questions",
         "project": "Project",
-        "researchPhase": "Phase",
         "created": "Created",
         "updated": "Last edited",
         "schedule": "Schedule",
@@ -741,16 +737,6 @@
     }
   },
   "projects": {
-    "contexts": {
-      "ideaValidation": "Idea Validation",
-      "customResearch": "Custom Research"
-    },
-    "phases": {
-      "problemDiscovery": "Problem Discovery",
-      "solutionValidation": "Solution Validation",
-      "marketValidation": "Market Validation",
-      "launchReadiness": "Launch Readiness"
-    },
     "insightTypes": {
       "strength": "Strength",
       "opportunity": "Opportunity",
@@ -782,9 +768,6 @@
       "descriptionHelper": "A brief summary of what you're researching or validating.",
       "descriptionPlaceholder": "Describe your project idea or research goal...",
       "descriptionCounter": "{count}/{max}",
-      "context": "Research Context",
-      "contextHelper": "Choose the type of research this project is about.",
-      "contextPlaceholder": "Select a context...",
       "submit": "Create Project",
       "success": "Project created successfully."
     },

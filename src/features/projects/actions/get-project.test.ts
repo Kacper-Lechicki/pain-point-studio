@@ -1,5 +1,5 @@
 // @vitest-environment node
-/** Tests for fetching a single project with grouped surveys via getProject. */
+/** Tests for fetching a single project with surveys via getProject. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // ── Mocks ────────────────────────────────────────────────────────────
@@ -63,7 +63,6 @@ const PROJECT_ROW = {
   user_id: USER.id,
   name: 'Test Project',
   description: null,
-  context: 'idea_validation',
   status: 'active',
   archived_at: null,
   created_at: new Date().toISOString(),
@@ -105,7 +104,7 @@ describe('getProject', () => {
     expect(result).toBeNull();
   });
 
-  it('should return project detail with surveys grouped by phase', async () => {
+  it('should return project detail with surveys', async () => {
     const projectChain = chain({ data: PROJECT_ROW });
 
     const surveysChain = chain({
@@ -114,7 +113,6 @@ describe('getProject', () => {
           id: 's1',
           title: 'Survey A',
           status: 'active',
-          research_phase: 'problem_discovery',
           created_at: '2026-01-01T00:00:00Z',
           survey_responses: [{ count: 5 }],
         },
@@ -122,7 +120,6 @@ describe('getProject', () => {
           id: 's2',
           title: 'Survey B',
           status: 'draft',
-          research_phase: 'problem_discovery',
           created_at: '2026-01-02T00:00:00Z',
           survey_responses: [{ count: 0 }],
         },
@@ -130,7 +127,6 @@ describe('getProject', () => {
           id: 's3',
           title: 'Survey C',
           status: 'active',
-          research_phase: 'solution_validation',
           created_at: '2026-01-03T00:00:00Z',
           survey_responses: [{ count: 3 }],
         },
@@ -151,9 +147,6 @@ describe('getProject', () => {
     expect(result).not.toBeNull();
     expect(result!.project.id).toBe(PROJECT_ID);
     expect(result!.surveys).toHaveLength(3);
-
-    expect(result!.surveysByPhase.problem_discovery).toHaveLength(2);
-    expect(result!.surveysByPhase.solution_validation).toHaveLength(1);
   });
 
   it('should return project with empty surveys when none linked', async () => {
@@ -173,36 +166,5 @@ describe('getProject', () => {
 
     expect(result).not.toBeNull();
     expect(result!.surveys).toEqual([]);
-    expect(result!.surveysByPhase).toEqual({});
-  });
-
-  it('should group surveys without phase under "unassigned"', async () => {
-    const projectChain = chain({ data: PROJECT_ROW });
-
-    const surveysChain = chain({
-      data: [
-        {
-          id: 's1',
-          title: 'Unassigned Survey',
-          status: 'draft',
-          research_phase: null,
-          created_at: '2026-01-01T00:00:00Z',
-          survey_responses: [{ count: 0 }],
-        },
-      ],
-    });
-
-    mockFrom.mockImplementation((table: string) => {
-      if (table === 'surveys') {
-        return surveysChain;
-      }
-
-      return projectChain;
-    });
-
-    const { getProject } = await import('./get-project');
-    const result = await getProject(PROJECT_ID);
-
-    expect(result!.surveysByPhase.unassigned).toHaveLength(1);
   });
 });

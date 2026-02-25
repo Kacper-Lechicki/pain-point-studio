@@ -7,7 +7,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import type { ProjectDetail, ProjectSurvey } from '@/features/projects/actions/get-project';
+import type { ProjectSurvey } from '@/features/projects/actions/get-project';
 import { ProjectInsightsTab } from '@/features/projects/components/project-insights-tab';
 import { ProjectOverviewTab } from '@/features/projects/components/project-overview-tab';
 import { ProjectSurveysTab } from '@/features/projects/components/project-surveys-tab';
@@ -20,8 +20,6 @@ const VALID_TABS: TabValue[] = ['overview', 'surveys', 'insights'];
 interface ProjectDetailTabsProps {
   project: Project;
   surveys: ProjectSurvey[];
-  surveysByPhase: ProjectDetail['surveysByPhase'];
-  findingsByPhase: Record<string, Finding[]>;
   allFindings: Finding[];
   insights: ProjectInsight[];
   scorecardInsights: ProjectInsight[];
@@ -33,8 +31,6 @@ interface ProjectDetailTabsProps {
 export function ProjectDetailTabs({
   project,
   surveys,
-  surveysByPhase,
-  findingsByPhase,
   allFindings,
   insights,
   scorecardInsights,
@@ -69,8 +65,6 @@ export function ProjectDetailTabs({
 
   const totalInsightCount = allFindings.length + insights.length;
 
-  const isIdeaValidation = project.context === 'idea_validation';
-
   return (
     <Tabs value={activeTab} onValueChange={handleTabChange}>
       <TabsList variant="line">
@@ -97,9 +91,7 @@ export function ProjectDetailTabs({
         <ProjectOverviewTab
           project={project}
           surveys={surveys}
-          surveysByPhase={surveysByPhase}
           scorecardInsights={scorecardInsights}
-          isIdeaValidation={isIdeaValidation}
           onInsightCreated={onInsightCreated}
           onInsightUpdated={onInsightUpdated}
           onInsightDeleted={onInsightDeleted}
@@ -108,15 +100,14 @@ export function ProjectDetailTabs({
       </TabsContent>
 
       <TabsContent value="surveys">
-        <ProjectSurveysTab project={project} surveys={surveys} surveysByPhase={surveysByPhase} />
+        <ProjectSurveysTab project={project} surveys={surveys} />
       </TabsContent>
 
       <TabsContent value="insights">
         <ProjectInsightsTab
           projectId={project.id}
-          findingsByPhase={findingsByPhase}
+          allFindings={allFindings}
           insights={insights}
-          isIdeaValidation={isIdeaValidation}
           onInsightCreated={onInsightCreated}
           onInsightUpdated={onInsightUpdated}
           onInsightDeleted={onInsightDeleted}

@@ -2,9 +2,6 @@
 import { describe, expect, it } from 'vitest';
 
 import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
-import type { PhaseStatus } from '@/features/projects/lib/phase-status';
-import type { ResearchPhase } from '@/features/projects/types';
-import { RESEARCH_PHASES } from '@/features/projects/types';
 
 import { getDefaultSortDir, getProjectComparator } from './sort-helpers';
 
@@ -13,7 +10,6 @@ function makeProject(overrides: Partial<ProjectWithMetrics> = {}): ProjectWithMe
     id: '1',
     name: 'Test',
     description: null,
-    context: 'idea_validation',
     status: 'active',
     user_id: 'user-1',
     archived_at: null,
@@ -21,10 +17,6 @@ function makeProject(overrides: Partial<ProjectWithMetrics> = {}): ProjectWithMe
     updated_at: '2025-01-02T00:00:00Z',
     surveyCount: 0,
     responseCount: 0,
-    validationProgress: null,
-    phaseStatuses: Object.fromEntries(
-      RESEARCH_PHASES.map((p) => [p, 'not_started' as PhaseStatus])
-    ) as Record<ResearchPhase, PhaseStatus>,
     ...overrides,
   };
 }
@@ -38,10 +30,6 @@ describe('getDefaultSortDir', () => {
 
   it('should return "asc" for status', () => {
     expect(getDefaultSortDir('status')).toBe('asc');
-  });
-
-  it('should return "asc" for context', () => {
-    expect(getDefaultSortDir('context')).toBe('asc');
   });
 
   it('should return "desc" for updated', () => {
@@ -72,10 +60,8 @@ describe('getProjectComparator', () => {
     id: 'a',
     name: 'Alpha',
     status: 'active',
-    context: 'custom',
     surveyCount: 3,
     responseCount: 10,
-    validationProgress: 0.25,
     created_at: '2025-01-01T00:00:00Z',
     updated_at: '2025-01-10T00:00:00Z',
   });
@@ -84,10 +70,8 @@ describe('getProjectComparator', () => {
     id: 'b',
     name: 'Beta',
     status: 'archived',
-    context: 'idea_validation',
     surveyCount: 5,
     responseCount: 20,
-    validationProgress: 0.75,
     created_at: '2025-02-01T00:00:00Z',
     updated_at: '2025-02-10T00:00:00Z',
   });
@@ -119,23 +103,6 @@ describe('getProjectComparator', () => {
     expect(cmp(p1, p2)).toBeGreaterThan(0);
   });
 
-  it('should sort by context ascending', () => {
-    const cmp = getProjectComparator('context', 'asc');
-    expect(cmp(a, b)).toBeLessThan(0);
-  });
-
-  it('should sort by context descending', () => {
-    const cmp = getProjectComparator('context', 'desc');
-    expect(cmp(a, b)).toBeGreaterThan(0);
-  });
-
-  it('should use name as tiebreaker when contexts match', () => {
-    const p1 = makeProject({ name: 'Zebra', context: 'custom' });
-    const p2 = makeProject({ name: 'Apple', context: 'custom' });
-    const cmp = getProjectComparator('context', 'asc');
-    expect(cmp(p1, p2)).toBeGreaterThan(0);
-  });
-
   it('should sort by surveys ascending', () => {
     const cmp = getProjectComparator('surveys', 'asc');
     expect(cmp(a, b)).toBeLessThan(0);
@@ -161,30 +128,6 @@ describe('getProjectComparator', () => {
   it('should sort by responses descending', () => {
     const cmp = getProjectComparator('responses', 'desc');
     expect(cmp(a, b)).toBeGreaterThan(0);
-  });
-
-  it('should sort by progress ascending', () => {
-    const cmp = getProjectComparator('progress', 'asc');
-    expect(cmp(a, b)).toBeLessThan(0);
-  });
-
-  it('should sort by progress descending', () => {
-    const cmp = getProjectComparator('progress', 'desc');
-    expect(cmp(a, b)).toBeGreaterThan(0);
-  });
-
-  it('should treat null progress as -1 (sorted before 0)', () => {
-    const pNull = makeProject({ name: 'NoProgress', validationProgress: null });
-    const pZero = makeProject({ name: 'ZeroProgress', validationProgress: 0 });
-    const cmp = getProjectComparator('progress', 'asc');
-    expect(cmp(pNull, pZero)).toBeLessThan(0);
-  });
-
-  it('should use name as tiebreaker when progress matches', () => {
-    const p1 = makeProject({ name: 'Zebra', validationProgress: 0.5 });
-    const p2 = makeProject({ name: 'Apple', validationProgress: 0.5 });
-    const cmp = getProjectComparator('progress', 'asc');
-    expect(cmp(p1, p2)).toBeGreaterThan(0);
   });
 
   it('should sort by created ascending', () => {

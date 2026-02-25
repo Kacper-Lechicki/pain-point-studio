@@ -3,7 +3,6 @@
 import { Archive, EllipsisVertical, Pencil, RotateCcw, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -13,10 +12,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ProjectStatusBadge } from '@/features/projects/components/project-status-badge';
-import { PROJECT_CONTEXTS_CONFIG } from '@/features/projects/config/contexts';
 import { isProjectArchived } from '@/features/projects/lib/project-helpers';
-import type { Project, ProjectContext, ProjectStatus } from '@/features/projects/types';
-import type { MessageKey } from '@/i18n/types';
+import type { Project, ProjectStatus } from '@/features/projects/types';
 
 interface ProjectDetailHeaderProps {
   project: Project;
@@ -33,7 +30,6 @@ export function ProjectDetailHeader({
 }: ProjectDetailHeaderProps) {
   const t = useTranslations();
   const isArchived = isProjectArchived(project);
-  const contextConfig = PROJECT_CONTEXTS_CONFIG[project.context as ProjectContext];
 
   return (
     <div className="flex flex-col gap-2">
@@ -105,17 +101,14 @@ export function ProjectDetailHeader({
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+      <div className="flex flex-col gap-2">
         {project.description && (
-          <p className="text-muted-foreground line-clamp-2 basis-full text-sm leading-relaxed">
+          <p className="text-muted-foreground line-clamp-2 text-sm leading-relaxed">
             {project.description}
           </p>
         )}
 
         <div className="flex flex-wrap items-center gap-2">
-          <Badge variant="secondary" className="text-[11px]">
-            {t(contextConfig.labelKey as MessageKey)}
-          </Badge>
           <ProjectStatusBadge status={project.status as ProjectStatus} />
         </div>
       </div>

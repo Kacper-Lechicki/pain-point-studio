@@ -79,9 +79,8 @@ function DroppableSection({ insightType, children }: DroppableSectionProps) {
 
 interface ProjectInsightsTabProps {
   projectId: string;
-  findingsByPhase: Record<string, Finding[]>;
+  allFindings: Finding[];
   insights: ProjectInsight[];
-  isIdeaValidation: boolean;
   onInsightCreated: (insight: ProjectInsight) => void;
   onInsightUpdated: (insight: ProjectInsight) => void;
   onInsightDeleted: (insightId: string) => void;
@@ -89,22 +88,13 @@ interface ProjectInsightsTabProps {
 
 export function ProjectInsightsTab({
   projectId,
-  findingsByPhase,
+  allFindings,
   insights,
-  isIdeaValidation,
   onInsightCreated,
   onInsightUpdated,
   onInsightDeleted,
 }: ProjectInsightsTabProps) {
   const t = useTranslations();
-
-  const allFindings = useMemo(() => {
-    if (!isIdeaValidation) {
-      return [];
-    }
-
-    return Object.values(findingsByPhase).flat();
-  }, [isIdeaValidation, findingsByPhase]);
 
   const insightsByType = useMemo(() => {
     const grouped: Record<InsightType, ProjectInsight[]> = {
@@ -144,7 +134,6 @@ export function ProjectInsightsTab({
         const newInsight: ProjectInsight = {
           id: result.data.insightId,
           project_id: projectId,
-          phase: null,
           type: insightType,
           content,
           created_at: new Date().toISOString(),
@@ -231,7 +220,7 @@ export function ProjectInsightsTab({
           </section>
         )}
 
-        {/* Insight categories — 2×2 grid */}
+        {/* Insight categories -- 2x2 grid */}
         <div className="grid gap-4 sm:grid-cols-2">
           {SCORECARD_SECTIONS.map((section) => (
             <DroppableSection key={section.type} insightType={section.type}>

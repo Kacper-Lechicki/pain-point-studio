@@ -11,8 +11,6 @@ import { ROUTES } from '@/config';
 import type { OverviewProject } from '@/features/dashboard/actions/get-dashboard-overview';
 import { setPinnedProject } from '@/features/dashboard/actions/set-pinned-project';
 import { BENTO_CARD_CLASS } from '@/features/dashboard/components/bento/bento-styles';
-import { VerdictBadge } from '@/features/dashboard/components/overview/verdict-badge';
-import { deriveVerdictStatus } from '@/features/dashboard/lib/project-verdict';
 import Link from '@/i18n/link';
 import { cn } from '@/lib/common/utils';
 
@@ -71,7 +69,6 @@ export function DashboardProjectsList({ projects, pinnedProjectId }: DashboardPr
           <div className="mt-2">
             {visibleProjects.map((project) => {
               const isPinned = pinnedProjectId === project.id;
-              const verdict = deriveVerdictStatus(project.phaseStatuses);
 
               return (
                 <div
@@ -110,7 +107,6 @@ export function DashboardProjectsList({ projects, pinnedProjectId }: DashboardPr
                         {t('projects.responses', { count: project.responseCount })}
                       </span>
                     </div>
-                    {verdict && <VerdictBadge status={verdict} />}
                   </div>
                 </div>
               );

@@ -2,31 +2,18 @@
 
 import { cache } from 'react';
 
-import { FINDING_THRESHOLDS } from '@/features/projects/config/signals';
-import type { PhaseStatus } from '@/features/projects/lib/phase-status';
-import type { ProjectContext, ResearchPhase } from '@/features/projects/types';
-import { RESEARCH_PHASES } from '@/features/projects/types';
 import { createClient } from '@/lib/supabase/server';
 
 // ── Types ────────────────────────────────────────────────────────────
-
-export interface PhaseMetrics {
-  surveyCount: number;
-  responseCount: number;
-}
 
 export interface OverviewProject {
   id: string;
   name: string;
   description: string | null;
-  context: string;
   status: string;
   updatedAt: string;
   surveyCount: number;
   responseCount: number;
-  validationProgress: number | null;
-  phaseStatuses: Record<ResearchPhase, PhaseStatus> | null;
-  phaseMetrics: Record<ResearchPhase, PhaseMetrics> | null;
 }
 
 export interface DashboardOverview {
@@ -59,7 +46,7 @@ export const getDashboardOverview = cache(async (): Promise<DashboardOverview | 
     // All surveys for project metrics (lightweight: only IDs and counts)
     supabase
       .from('surveys')
-      .select('id, project_id, research_phase, status, survey_responses(count)')
+      .select('id, project_id, status, survey_responses(count)')
       .eq('user_id', user.id),
   ]);
 
@@ -74,9 +61,6 @@ export const getDashboardOverview = cache(async (): Promise<DashboardOverview | 
     {
       surveyCount: number;
       responseCount: number;
-      phasesWithValidation: Set<string>;
-      phasesWithAnySurvey: Set<string>;
-      phaseMetrics: Map<string, PhaseMetrics>;
     }
   >();
 
@@ -84,9 +68,6 @@ export const getDashboardOverview = cache(async (): Promise<DashboardOverview | 
     projectMetricsMap.set(id, {
       surveyCount: 0,
       responseCount: 0,
-      phasesWithValidation: new Set(),
-      phasesWithAnySurvey: new Set(),
-      phaseMetrics: new Map(),
     });
   }
 
@@ -107,65 +88,19 @@ export const getDashboardOverview = cache(async (): Promise<DashboardOverview | 
         : 0;
 
     metrics.responseCount += respCount;
-
-    if (survey.research_phase) {
-      metrics.phasesWithAnySurvey.add(survey.research_phase);
-
-      // Accumulate per-phase metrics
-      const pm = metrics.phaseMetrics.get(survey.research_phase) ?? {
-        surveyCount: 0,
-        responseCount: 0,
-      };
-
-      pm.surveyCount++;
-      pm.responseCount += respCount;
-      metrics.phaseMetrics.set(survey.research_phase, pm);
-    }
-
-    if (
-      survey.status === 'completed' &&
-      survey.research_phase &&
-      respCount >= FINDING_THRESHOLDS.minResponses
-    ) {
-      metrics.phasesWithValidation.add(survey.research_phase);
-    }
   }
 
   const overviewProjects: OverviewProject[] = projects.map((project) => {
     const metrics = projectMetricsMap.get(project.id)!;
-    const isIdeaValidation = (project.context as ProjectContext) === 'idea_validation';
-    const totalPhases = RESEARCH_PHASES.length;
 
     return {
       id: project.id,
       name: project.name,
       description: project.description,
-      context: project.context,
       status: project.status,
       updatedAt: project.updated_at,
       surveyCount: metrics.surveyCount,
       responseCount: metrics.responseCount,
-      validationProgress: isIdeaValidation ? metrics.phasesWithValidation.size / totalPhases : null,
-      phaseStatuses: isIdeaValidation
-        ? (Object.fromEntries(
-            RESEARCH_PHASES.map((phase) => [
-              phase,
-              metrics.phasesWithValidation.has(phase)
-                ? 'validated'
-                : metrics.phasesWithAnySurvey.has(phase)
-                  ? 'in_progress'
-                  : 'not_started',
-            ])
-          ) as Record<ResearchPhase, PhaseStatus>)
-        : null,
-      phaseMetrics: isIdeaValidation
-        ? (Object.fromEntries(
-            RESEARCH_PHASES.map((phase) => [
-              phase,
-              metrics.phaseMetrics.get(phase) ?? { surveyCount: 0, responseCount: 0 },
-            ])
-          ) as Record<ResearchPhase, PhaseMetrics>)
-        : null,
     };
   });
 

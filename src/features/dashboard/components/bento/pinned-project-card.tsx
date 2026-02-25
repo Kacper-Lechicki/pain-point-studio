@@ -10,14 +10,8 @@ import { Card } from '@/components/ui/card';
 import type { OverviewProject } from '@/features/dashboard/actions/get-dashboard-overview';
 import { setPinnedProject } from '@/features/dashboard/actions/set-pinned-project';
 import { BENTO_CARD_CLASS } from '@/features/dashboard/components/bento/bento-styles';
-import { PhaseProgressBar } from '@/features/dashboard/components/overview/phase-progress-bar';
-import { VerdictBadge } from '@/features/dashboard/components/overview/verdict-badge';
-import { deriveVerdictStatus } from '@/features/dashboard/lib/project-verdict';
 import type { ProjectDetail, ProjectSurvey } from '@/features/projects/actions/get-project';
-import { RESEARCH_PHASE_CONFIG } from '@/features/projects/config/contexts';
-import type { ResearchPhase } from '@/features/projects/types';
 import Link from '@/i18n/link';
-import type { MessageKey } from '@/i18n/types';
 import { cn } from '@/lib/common/utils';
 
 // ── Survey status dot colors ────────────────────────────────────────
@@ -47,10 +41,6 @@ interface PinnedProjectCardProps {
 export function PinnedProjectCard({ project, overviewProject }: PinnedProjectCardProps) {
   const t = useTranslations('dashboard.bento');
   const [isPending, startTransition] = useTransition();
-
-  const verdictStatus = deriveVerdictStatus(overviewProject.phaseStatuses);
-  const showPhaseProgress =
-    overviewProject.context === 'idea_validation' && overviewProject.phaseStatuses;
 
   const totalResponses = overviewProject.responseCount;
   const totalSurveys = overviewProject.surveyCount;
@@ -88,8 +78,6 @@ export function PinnedProjectCard({ project, overviewProject }: PinnedProjectCar
           {project.project.name}
         </Link>
 
-        {verdictStatus && <VerdictBadge status={verdictStatus} />}
-
         <Button
           variant="ghost"
           size="icon-xs"
@@ -121,13 +109,6 @@ export function PinnedProjectCard({ project, overviewProject }: PinnedProjectCar
         </span>
       </div>
 
-      {/* ── Phase progress bar ──────────────────────────────────────── */}
-      {showPhaseProgress && (
-        <div className="my-2 px-4">
-          <PhaseProgressBar phaseStatuses={overviewProject.phaseStatuses!} />
-        </div>
-      )}
-
       {/* ── Surveys list ────────────────────────────────────────────── */}
       {visibleSurveys.length > 0 && (
         <div className="px-4 pt-2 pb-4">
@@ -150,12 +131,8 @@ export function PinnedProjectCard({ project, overviewProject }: PinnedProjectCar
 // ── Survey row ──────────────────────────────────────────────────────
 
 function SurveyRow({ survey }: { survey: ProjectSurvey }) {
-  const t = useTranslations();
   const tBento = useTranslations('dashboard.bento');
   const dotColor = SURVEY_STATUS_DOT[survey.status] ?? 'bg-muted-foreground/40';
-  const phaseConfig = survey.researchPhase
-    ? RESEARCH_PHASE_CONFIG[survey.researchPhase as ResearchPhase]
-    : null;
 
   return (
     <li className="flex items-center gap-2 text-xs">
@@ -165,17 +142,9 @@ function SurveyRow({ survey }: { survey: ProjectSurvey }) {
       {/* Title */}
       <span className="min-w-0 flex-1 truncate">{survey.title}</span>
 
-      {/* Response count + phase: e.g. "8 resp. · Problem Discovery" */}
-      <span className="text-muted-foreground flex shrink-0 items-center gap-1.5">
-        <span className="tabular-nums">
-          {tBento('pinned.responsesShort', { count: survey.responseCount })}
-        </span>
-        {phaseConfig && (
-          <>
-            <span className="text-muted-foreground/30 hidden sm:inline">&middot;</span>
-            <span className="hidden sm:inline">{t(phaseConfig.labelKey as MessageKey)}</span>
-          </>
-        )}
+      {/* Response count */}
+      <span className="text-muted-foreground shrink-0 tabular-nums">
+        {tBento('pinned.responsesShort', { count: survey.responseCount })}
       </span>
     </li>
   );

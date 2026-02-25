@@ -1,27 +1,19 @@
 'use client';
 
-import { CheckCircle2, ClipboardList, Lightbulb, Search, Users } from 'lucide-react';
+import { CheckCircle2, ClipboardList, Lightbulb, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { KpiCard } from '@/features/dashboard/components/bento/kpi-card';
 import type { ProjectSurvey } from '@/features/projects/actions/get-project';
-import type { Finding, ProjectInsight } from '@/features/projects/types';
+import type { ProjectInsight } from '@/features/projects/types';
 
 interface ProjectDetailKpiProps {
   surveys: ProjectSurvey[];
   totalResponses: number;
-  allFindings: Finding[];
   insights: ProjectInsight[];
-  isIdeaValidation: boolean;
 }
 
-export function ProjectDetailKpi({
-  surveys,
-  totalResponses,
-  allFindings,
-  insights,
-  isIdeaValidation,
-}: ProjectDetailKpiProps) {
+export function ProjectDetailKpi({ surveys, totalResponses, insights }: ProjectDetailKpiProps) {
   const t = useTranslations();
 
   const completedSurveys = surveys.filter(
@@ -48,44 +40,24 @@ export function ProjectDetailKpi({
         accent="violet"
       />
 
-      {isIdeaValidation ? (
-        <>
-          <KpiCard
-            title={t('projects.detail.kpi.findings')}
-            value={String(allFindings.length)}
-            delta={null}
-            icon={Search}
-            accent="cyan"
-          />
-          <KpiCard
-            title={t('projects.detail.kpi.insights')}
-            value={String(insights.length)}
-            delta={null}
-            icon={Lightbulb}
-            accent="pink"
-          />
-        </>
-      ) : (
-        <>
-          <KpiCard
-            title={t('projects.detail.kpi.insights')}
-            value={String(insights.length)}
-            delta={null}
-            icon={Lightbulb}
-            accent="pink"
-          />
-          <KpiCard
-            title={t('projects.detail.kpi.completion')}
-            value={`${completionPct}%`}
-            delta={null}
-            icon={CheckCircle2}
-            subtitle={t('projects.detail.kpi.completionSubtitle', {
-              completed: completedSurveys,
-              total: surveys.length,
-            })}
-          />
-        </>
-      )}
+      <KpiCard
+        title={t('projects.detail.kpi.insights')}
+        value={String(insights.length)}
+        delta={null}
+        icon={Lightbulb}
+        accent="pink"
+      />
+
+      <KpiCard
+        title={t('projects.detail.kpi.completion')}
+        value={`${completionPct}%`}
+        delta={null}
+        icon={CheckCircle2}
+        subtitle={t('projects.detail.kpi.completionSubtitle', {
+          completed: completedSurveys,
+          total: surveys.length,
+        })}
+      />
     </div>
   );
 }

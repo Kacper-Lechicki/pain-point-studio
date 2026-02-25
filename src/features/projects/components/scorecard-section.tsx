@@ -65,12 +65,7 @@ export function ScorecardSection({
         </div>
       )}
 
-      <InsightInlineForm
-        projectId={projectId}
-        type={insightType}
-        phase={null}
-        onCreated={onInsightCreated}
-      />
+      <InsightInlineForm projectId={projectId} type={insightType} onCreated={onInsightCreated} />
     </div>
   );
 }

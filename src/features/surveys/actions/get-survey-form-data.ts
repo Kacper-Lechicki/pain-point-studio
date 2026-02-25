@@ -7,7 +7,6 @@ import { createClient } from '@/lib/supabase/server';
 export interface ProjectOption {
   value: string;
   label: string;
-  context: string;
 }
 
 export interface SurveyFormData {
@@ -26,7 +25,7 @@ export const getSurveyFormData = cache(async (): Promise<SurveyFormData> => {
   if (user) {
     const { data: projects } = await supabase
       .from('projects')
-      .select('id, name, context')
+      .select('id, name')
       .eq('user_id', user.id)
       .eq('status', 'active')
       .order('name');
@@ -34,7 +33,6 @@ export const getSurveyFormData = cache(async (): Promise<SurveyFormData> => {
     projectOptions = (projects ?? []).map((p) => ({
       value: p.id,
       label: p.name,
-      context: p.context,
     }));
   }
 

@@ -8,13 +8,11 @@ import { HeroHighlight } from '@/components/ui/hero-highlight';
 import { ROUTES } from '@/config/routes';
 import type { ProjectSurvey } from '@/features/projects/actions/get-project';
 import { PhaseSurveyCard } from '@/features/projects/components/phase-survey-card';
-import type { PhaseConfig } from '@/features/projects/config/contexts';
 import { getSurveyDetailUrl } from '@/features/surveys/lib/survey-urls';
 import Link from '@/i18n/link';
-import type { MessageKey } from '@/i18n/types';
 
 interface PhaseSectionProps {
-  phase: PhaseConfig | null;
+  phase: null;
   surveys: ProjectSurvey[];
   projectId: string;
   sectionTitle?: string;
@@ -23,7 +21,6 @@ interface PhaseSectionProps {
 }
 
 export function PhaseSection({
-  phase,
   surveys,
   projectId,
   sectionTitle,
@@ -31,8 +28,8 @@ export function PhaseSection({
   isSearching,
 }: PhaseSectionProps) {
   const t = useTranslations();
-  const Icon = phase?.icon ?? List;
-  const title = phase ? t(phase.labelKey as MessageKey) : (sectionTitle ?? '');
+  const Icon = List;
+  const title = sectionTitle ?? '';
 
   const countLabel =
     isSearching && totalCount !== undefined
@@ -48,13 +45,7 @@ export function PhaseSection({
 
         {!isSearching && (
           <Button variant="default" size="sm" className="ml-auto" asChild>
-            <Link
-              href={
-                phase
-                  ? `${ROUTES.dashboard.researchNew}?projectId=${projectId}&phase=${phase.value}`
-                  : `${ROUTES.dashboard.researchNew}?projectId=${projectId}`
-              }
-            >
+            <Link href={`${ROUTES.dashboard.researchNew}?projectId=${projectId}`}>
               <Plus className="size-4" aria-hidden />
               {t('projects.detail.createSurvey')}
             </Link>
