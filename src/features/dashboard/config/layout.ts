@@ -72,7 +72,7 @@ export const DASHBOARD_FOOTER_HEIGHT_CLASS = 'h-12';
 
 // ── Content area ────────────────────────────────────────────────────
 
-export const DASHBOARD_CONTENT_MAX_WIDTH = 'max-w-7xl';
+export const DASHBOARD_CONTENT_MAX_WIDTH = 'container';
 export const DASHBOARD_PAGE_BODY_GAP = 'mb-8';
 export const DASHBOARD_PAGE_BODY_GAP_TOP = 'mt-8';
 
@@ -101,11 +101,19 @@ function isFullWidthPath(pathname: string): boolean {
   );
 }
 
-/** Routes rendered at narrow content width (settings). */
+/** Routes rendered at narrow content width (settings, new project form, new survey form). */
 function isNarrowPath(pathname: string): boolean {
   const path = pathWithoutLocale(pathname);
 
   if (path === ROUTES.common.settings || path.startsWith(ROUTES.common.settings + '/')) {
+    return true;
+  }
+
+  if (path === ROUTES.dashboard.projectNew) {
+    return true;
+  }
+
+  if (path === ROUTES.dashboard.researchNew) {
     return true;
   }
 

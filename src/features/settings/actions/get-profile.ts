@@ -29,6 +29,7 @@ export interface ProfileData {
   emailChangeConfirmStatus: number;
   identities: { provider: string; email: string | undefined; identityId: string }[];
   socialLinks: SocialLink[];
+  pinnedProjectId: string | null;
   memberSince: string;
   roleOptions: LookupValue[];
   socialLinkOptions: LookupValue[];
@@ -73,6 +74,7 @@ export const getProfile = cache(async (): Promise<ProfileData | null> => {
     pendingEmail: pendingRow?.new_email ?? null,
     emailChangeConfirmStatus: pendingRow?.confirm_status ?? 0,
     socialLinks: (Array.isArray(profile?.social_links) ? profile.social_links : []) as SocialLink[],
+    pinnedProjectId: profile?.pinned_project_id ?? null,
     memberSince: user.createdAt,
     identities: user.identities.map((identity) => ({
       provider: identity.provider,

@@ -193,6 +193,55 @@
         "description": "Create a research project to organize your surveys and track your validation progress.",
         "cta": "Create project"
       }
+    },
+    "bento": {
+      "greeting": "Welcome back, {name}",
+      "period": {
+        "all": "All"
+      },
+      "kpi": {
+        "totalResponses": "Total Responses",
+        "activeSurveys": "Active Surveys",
+        "avgCompletion": "Avg Completion",
+        "responsesPerDay": "~{avg}/day avg",
+        "acrossProjects": "{count, plural, one {across # project} other {across # projects}}",
+        "lastNDays": "last {count} days",
+        "allTime": "all time"
+      },
+      "recentActivity": {
+        "title": "Recent Activity",
+        "empty": "No recent activity",
+        "type": {
+          "response": "New response",
+          "survey_completed": "Survey completed",
+          "survey_activated": "Survey activated"
+        }
+      },
+      "charts": {
+        "responses": "Responses",
+        "responsesOverTime": "Responses Over Time",
+        "completionRate": "Completion Rate",
+        "noData": "No data"
+      },
+      "projects": {
+        "title": "Your Projects",
+        "viewAll": "View all",
+        "surveys": "{count, plural, one {# survey} other {# surveys}}",
+        "responses": "{count, plural, one {# resp} other {# resp}}",
+        "empty": "No projects yet",
+        "emptyCta": "Create project",
+        "noProjectsToPin": "No projects to pin."
+      },
+      "pinned": {
+        "title": "Pinned Project",
+        "unpin": "Unpin",
+        "empty": "No project is pinned.",
+        "emptyHint": "Pin a project from the list on the right to feature it here.",
+        "surveys": "Surveys",
+        "responses": "{count} responses",
+        "responsesShort": "{count} resp",
+        "surveys_count": "{count} surveys"
+      }
     }
   },
   "surveys": {
