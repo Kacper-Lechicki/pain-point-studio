@@ -21,6 +21,7 @@ import type { SurveyStatus } from '@/features/surveys/types';
 
 interface SurveyStatsHeaderProps {
   title: string;
+  description: string | null;
   status: SurveyStatus;
   surveyId: string;
   isActive: boolean;
@@ -46,6 +47,7 @@ interface MenuItem {
 
 export function SurveyStatsHeader({
   title,
+  description,
   status,
   surveyId,
   isActive,
@@ -115,13 +117,17 @@ export function SurveyStatsHeader({
     <>
       <div className="flex min-w-0 flex-wrap items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
-          <h1 className="text-foreground min-w-0 truncate text-3xl leading-tight font-bold">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <SurveyStatusBadge status={status} />
+          </div>
+
+          <h1 className="text-foreground mt-1 min-w-0 truncate text-3xl leading-tight font-bold">
             {title}
           </h1>
 
-          <div className="mt-2 flex flex-wrap items-center gap-1.5">
-            <SurveyStatusBadge status={status} />
-          </div>
+          {description && (
+            <p className="text-muted-foreground mt-2 text-sm leading-relaxed">{description}</p>
+          )}
         </div>
 
         <div className="flex shrink-0 items-center gap-1">

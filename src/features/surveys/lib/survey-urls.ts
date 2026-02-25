@@ -13,5 +13,5 @@ export function getSurveyStatsUrl(id: string) {
 }
 
 export function getSurveyDetailUrl(id: string) {
-  return `${ROUTES.dashboard.research}/${id}`;
+  return `${ROUTES.dashboard.researchStats}/${id}`;
 }

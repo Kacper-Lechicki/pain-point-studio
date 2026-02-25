@@ -68,7 +68,6 @@ const USER = { id: 'user-123', email: 'test@example.com' };
 
 const VALID_INPUT: z.infer<typeof createInsightSchema> = {
   projectId: PROJECT_ID,
-  phase: 'problem_discovery',
   type: 'strength',
   content: 'Most users confirmed the problem exists',
 };
@@ -93,18 +92,6 @@ describe('Project Actions – Create Insight', () => {
     expect(result).toEqual({ success: true, data: { insightId: INSIGHT_ID } });
     expect(mockFrom).toHaveBeenCalledWith('projects');
     expect(mockFrom).toHaveBeenCalledWith('project_insights');
-  });
-
-  it('should set phase to null when not provided', async () => {
-    const projectChain = chain({ data: { id: PROJECT_ID } });
-    const insightChain = chain({ data: { id: INSIGHT_ID } });
-
-    mockFrom.mockReturnValueOnce(projectChain).mockReturnValueOnce(insightChain);
-
-    const { createInsight } = await import('./create-insight');
-    await createInsight({ ...VALID_INPUT, phase: undefined });
-
-    expect(insightChain.insert).toHaveBeenCalledWith(expect.objectContaining({ phase: null }));
   });
 
   it('should return error when project not found (ownership fail)', async () => {
@@ -139,6 +126,21 @@ describe('Project Actions – Create Insight', () => {
     const result = await createInsight(VALID_INPUT);
 
     expect(result).toHaveProperty('error', 'projects.errors.unexpected');
+  });
+
+  it('should create insight with opportunity type', async () => {
+    const projectChain = chain({ data: { id: PROJECT_ID } });
+    const insightChain = chain({ data: { id: INSIGHT_ID } });
+
+    mockFrom.mockReturnValueOnce(projectChain).mockReturnValueOnce(insightChain);
+
+    const { createInsight } = await import('./create-insight');
+    const result = await createInsight({ ...VALID_INPUT, type: 'opportunity' });
+
+    expect(result).toEqual({ success: true, data: { insightId: INSIGHT_ID } });
+    expect(insightChain.insert).toHaveBeenCalledWith(
+      expect.objectContaining({ type: 'opportunity' })
+    );
   });
 
   it('should return validation error for invalid data', async () => {

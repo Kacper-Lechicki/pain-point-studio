@@ -71,57 +71,8 @@ describe('Survey Actions – Assign Survey to Project', () => {
     mockGetUser.mockResolvedValue({ data: { user: USER } });
   });
 
-  it('should assign survey to idea_validation project with research phase', async () => {
-    const projectChain = chain({ data: { id: PROJECT_ID, context: 'idea_validation' } });
-    const updateChain = chain({ data: { id: SURVEY_ID } });
-
-    mockFrom.mockReturnValueOnce(projectChain).mockReturnValueOnce(updateChain);
-
-    const { assignSurveyToProject } = await import('./assign-survey-to-project');
-
-    const result = await assignSurveyToProject({
-      surveyId: SURVEY_ID,
-      projectId: PROJECT_ID,
-      researchPhase: 'problem_discovery',
-    });
-
-    expect(result).toEqual({ success: true });
-    expect(mockFrom).toHaveBeenCalledWith('projects');
-    expect(mockFrom).toHaveBeenCalledWith('surveys');
-
-    expect(updateChain.update).toHaveBeenCalledWith(
-      expect.objectContaining({
-        project_id: PROJECT_ID,
-        research_phase: 'problem_discovery',
-      })
-    );
-  });
-
-  it('should assign survey to idea_validation project without research phase', async () => {
-    const projectChain = chain({ data: { id: PROJECT_ID, context: 'idea_validation' } });
-    const updateChain = chain({ data: { id: SURVEY_ID } });
-
-    mockFrom.mockReturnValueOnce(projectChain).mockReturnValueOnce(updateChain);
-
-    const { assignSurveyToProject } = await import('./assign-survey-to-project');
-
-    const result = await assignSurveyToProject({
-      surveyId: SURVEY_ID,
-      projectId: PROJECT_ID,
-    });
-
-    expect(result).toEqual({ success: true });
-
-    expect(updateChain.update).toHaveBeenCalledWith(
-      expect.objectContaining({
-        project_id: PROJECT_ID,
-        research_phase: null,
-      })
-    );
-  });
-
-  it('should assign survey to custom project without research phase', async () => {
-    const projectChain = chain({ data: { id: PROJECT_ID, context: 'custom' } });
+  it('should assign survey to project', async () => {
+    const projectChain = chain({ data: { id: PROJECT_ID } });
     const updateChain = chain({ data: { id: SURVEY_ID } });
 
     mockFrom.mockReturnValueOnce(projectChain).mockReturnValueOnce(updateChain);
@@ -140,7 +91,6 @@ describe('Survey Actions – Assign Survey to Project', () => {
     expect(updateChain.update).toHaveBeenCalledWith(
       expect.objectContaining({
         project_id: PROJECT_ID,
-        research_phase: null,
       })
     );
   });
@@ -164,7 +114,6 @@ describe('Survey Actions – Assign Survey to Project', () => {
     expect(updateChain.update).toHaveBeenCalledWith(
       expect.objectContaining({
         project_id: null,
-        research_phase: null,
       })
     );
   });
@@ -187,26 +136,8 @@ describe('Survey Actions – Assign Survey to Project', () => {
     expect(mockFrom).toHaveBeenCalledWith('projects');
   });
 
-  it('should return error when research phase is set on non-idea_validation project', async () => {
-    const projectChain = chain({ data: { id: PROJECT_ID, context: 'custom' } });
-
-    mockFrom.mockReturnValueOnce(projectChain);
-
-    const { assignSurveyToProject } = await import('./assign-survey-to-project');
-
-    const result = await assignSurveyToProject({
-      surveyId: SURVEY_ID,
-      projectId: PROJECT_ID,
-      researchPhase: 'problem_discovery',
-    });
-
-    expect(result).toHaveProperty('error', 'surveys.errors.unexpected');
-    expect(result).not.toHaveProperty('success');
-    expect(mockFrom).toHaveBeenCalledTimes(1);
-  });
-
   it('should return error when survey update fails with error', async () => {
-    const projectChain = chain({ data: { id: PROJECT_ID, context: 'idea_validation' } });
+    const projectChain = chain({ data: { id: PROJECT_ID } });
     const updateChain = chain({ data: null, error: { message: 'Update failed' } });
 
     mockFrom.mockReturnValueOnce(projectChain).mockReturnValueOnce(updateChain);
@@ -216,7 +147,6 @@ describe('Survey Actions – Assign Survey to Project', () => {
     const result = await assignSurveyToProject({
       surveyId: SURVEY_ID,
       projectId: PROJECT_ID,
-      researchPhase: 'solution_validation',
     });
 
     expect(result).toHaveProperty('error', 'surveys.errors.unexpected');
@@ -224,7 +154,7 @@ describe('Survey Actions – Assign Survey to Project', () => {
   });
 
   it('should return error when survey update returns null row', async () => {
-    const projectChain = chain({ data: { id: PROJECT_ID, context: 'idea_validation' } });
+    const projectChain = chain({ data: { id: PROJECT_ID } });
     const updateChain = chain({ data: null, error: null });
 
     mockFrom.mockReturnValueOnce(projectChain).mockReturnValueOnce(updateChain);

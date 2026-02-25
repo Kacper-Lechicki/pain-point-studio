@@ -41,8 +41,6 @@ export function ProjectsListPage({ projects }: ProjectsListPageProps) {
     setSearchQuery,
     statusFilter,
     setStatusFilter,
-    contextFilter,
-    setContextFilter,
     sortBy,
     sortDir,
     setSortDir,
@@ -53,7 +51,6 @@ export function ProjectsListPage({ projects }: ProjectsListPageProps) {
     pagination,
     isFiltered,
     statusCounts,
-    contextCounts,
     kpiStatuses,
   } = useProjectListState(localProjects);
 
@@ -84,8 +81,6 @@ export function ProjectsListPage({ projects }: ProjectsListPageProps) {
       <ProjectListToolbar
         statusFilter={statusFilter}
         onStatusFilterChange={setStatusFilter}
-        contextFilter={contextFilter}
-        onContextFilterChange={setContextFilter}
         searchQuery={searchQuery}
         onSearchQueryChange={setSearchQuery}
         sortBy={sortBy}
@@ -93,7 +88,6 @@ export function ProjectsListPage({ projects }: ProjectsListPageProps) {
         onSortByChange={handleSortByChange}
         onSortDirChange={setSortDir}
         statusCounts={statusCounts}
-        contextCounts={contextCounts}
       />
 
       {filteredProjects.length === 0 ? (
@@ -117,7 +111,6 @@ export function ProjectsListPage({ projects }: ProjectsListPageProps) {
                 onClick={() => {
                   setSearchQuery('');
                   setStatusFilter([]);
-                  setContextFilter([]);
                 }}
               >
                 {t('projects.list.clearFilters')}

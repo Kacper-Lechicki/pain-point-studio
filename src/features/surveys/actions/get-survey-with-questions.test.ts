@@ -182,7 +182,7 @@ describe('getSurveyWithQuestions', () => {
     expect(mockFrom).toHaveBeenCalledWith('survey_questions');
 
     expect(surveyChain.select).toHaveBeenCalledWith(
-      'id, title, description, visibility, starts_at, ends_at, max_respondents, status, project_id, research_phase'
+      'id, title, description, visibility, starts_at, ends_at, max_respondents, status, project_id'
     );
 
     expect(surveyChain.eq).toHaveBeenCalledWith('id', SURVEY_ID);

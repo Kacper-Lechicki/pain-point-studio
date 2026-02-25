@@ -25,7 +25,6 @@ export const createInsight = withProtectedAction<typeof createInsightSchema, { i
         .from('project_insights')
         .insert({
           project_id: data.projectId,
-          phase: data.phase ?? null,
           type: data.type,
           content: data.content,
         })

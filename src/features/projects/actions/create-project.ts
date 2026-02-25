@@ -17,7 +17,6 @@ export const createProject = withProtectedAction<typeof createProjectSchema, { p
           user_id: user.id,
           name: data.name,
           description: data.description || null,
-          context: data.context,
         })
         .select('id')
         .single();

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { INSIGHT_TYPES, PROJECT_CONTEXTS, RESEARCH_PHASES } from './project';
+import { INSIGHT_TYPES } from './project';
 
 // ── Project schemas ─────────────────────────────────────────────────
 
@@ -17,7 +17,6 @@ export const createProjectSchema = z.object({
     .max(500, 'projects.errors.descriptionTooLong')
     .optional()
     .or(z.literal('')),
-  context: z.enum(PROJECT_CONTEXTS, { message: 'projects.errors.fieldRequired' }),
 });
 
 export type CreateProjectInput = z.infer<typeof createProjectSchema>;
@@ -45,7 +44,6 @@ export type UpdateProjectInput = z.infer<typeof updateProjectSchema>;
 /** Schema for creating a new manual insight/note. */
 export const createInsightSchema = z.object({
   projectId: z.uuid(),
-  phase: z.enum(RESEARCH_PHASES).nullable().optional(),
   type: z.enum(INSIGHT_TYPES),
   content: z
     .string()

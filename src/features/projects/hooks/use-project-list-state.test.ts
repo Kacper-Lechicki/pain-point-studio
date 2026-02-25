@@ -4,9 +4,6 @@ import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
-import type { PhaseStatus } from '@/features/projects/lib/phase-status';
-import type { ResearchPhase } from '@/features/projects/types';
-import { RESEARCH_PHASES } from '@/features/projects/types';
 
 import { useProjectListState } from './use-project-list-state';
 
@@ -17,8 +14,7 @@ vi.mock('next-intl', () => ({
 }));
 
 vi.mock('@/features/projects/lib/sort-helpers', () => ({
-  getDefaultSortDir: (key: string) =>
-    ['name', 'status', 'context'].includes(key) ? 'asc' : 'desc',
+  getDefaultSortDir: (key: string) => (['name', 'status'].includes(key) ? 'asc' : 'desc'),
   getProjectComparator:
     (sortBy: string, sortDir: string) => (a: ProjectWithMetrics, b: ProjectWithMetrics) => {
       if (sortBy === 'name') {
@@ -46,17 +42,11 @@ vi.mock('@/hooks/common/use-session-state', async () => {
 
 // ── Helpers ──────────────────────────────────────────────────────────
 
-function makeProject(
-  id: string,
-  name: string,
-  context = 'idea_validation',
-  status = 'active'
-): ProjectWithMetrics {
+function makeProject(id: string, name: string, status = 'active'): ProjectWithMetrics {
   return {
     id,
     name,
     description: `Description for ${name}`,
-    context,
     status,
     user_id: 'user-1',
     archived_at: null,
@@ -64,28 +54,21 @@ function makeProject(
     updated_at: '2025-01-15T00:00:00Z',
     surveyCount: 3,
     responseCount: 10,
-    validationProgress: null,
-    phaseStatuses:
-      context === 'idea_validation'
-        ? (Object.fromEntries(
-            RESEARCH_PHASES.map((p) => [p, 'not_started' as PhaseStatus])
-          ) as Record<ResearchPhase, PhaseStatus>)
-        : null,
   };
 }
 
 const PROJECTS: ProjectWithMetrics[] = [
-  makeProject('1', 'Charlie Project', 'idea_validation'),
-  makeProject('2', 'Alpha Project', 'custom'),
-  makeProject('3', 'Bravo Project', 'idea_validation'),
-  makeProject('4', 'Delta Project', 'custom'),
-  makeProject('5', 'Echo Project', 'idea_validation'),
-  makeProject('6', 'Foxtrot Project', 'idea_validation'),
-  makeProject('7', 'Golf Project', 'custom'),
-  makeProject('8', 'Hotel Project', 'idea_validation'),
-  makeProject('9', 'India Project', 'custom'),
-  makeProject('10', 'Juliet Project', 'idea_validation'),
-  makeProject('11', 'Kilo Project', 'custom'),
+  makeProject('1', 'Charlie Project'),
+  makeProject('2', 'Alpha Project'),
+  makeProject('3', 'Bravo Project'),
+  makeProject('4', 'Delta Project'),
+  makeProject('5', 'Echo Project'),
+  makeProject('6', 'Foxtrot Project'),
+  makeProject('7', 'Golf Project'),
+  makeProject('8', 'Hotel Project'),
+  makeProject('9', 'India Project'),
+  makeProject('10', 'Juliet Project'),
+  makeProject('11', 'Kilo Project'),
 ];
 
 // ── Tests ────────────────────────────────────────────────────────────
@@ -127,9 +110,9 @@ describe('useProjectListState', () => {
 
   it('should filter by status', () => {
     const projects = [
-      makeProject('1', 'Active One', 'custom', 'active'),
-      makeProject('2', 'Archived One', 'custom', 'archived'),
-      makeProject('3', 'Active Two', 'custom', 'active'),
+      makeProject('1', 'Active One', 'active'),
+      makeProject('2', 'Archived One', 'archived'),
+      makeProject('3', 'Active Two', 'active'),
     ];
 
     const { result } = renderHook(() => useProjectListState(projects));
@@ -140,36 +123,6 @@ describe('useProjectListState', () => {
 
     expect(result.current.filteredProjects).toHaveLength(1);
     expect(result.current.filteredProjects[0]!.name).toBe('Archived One');
-  });
-
-  it('should filter by context', () => {
-    const { result } = renderHook(() => useProjectListState(PROJECTS));
-
-    act(() => {
-      result.current.setContextFilter(['custom']);
-    });
-
-    expect(result.current.filteredProjects).toHaveLength(5);
-    expect(result.current.filteredProjects.every((p) => p.context === 'custom')).toBe(true);
-  });
-
-  it('should combine status and context filters', () => {
-    const projects = [
-      makeProject('1', 'A', 'custom', 'active'),
-      makeProject('2', 'B', 'idea_validation', 'active'),
-      makeProject('3', 'C', 'custom', 'archived'),
-      makeProject('4', 'D', 'idea_validation', 'archived'),
-    ];
-
-    const { result } = renderHook(() => useProjectListState(projects));
-
-    act(() => {
-      result.current.setStatusFilter(['active']);
-      result.current.setContextFilter(['custom']);
-    });
-
-    expect(result.current.filteredProjects).toHaveLength(1);
-    expect(result.current.filteredProjects[0]!.name).toBe('A');
   });
 
   it('should reset page to 1 when search query changes', () => {
@@ -204,20 +157,6 @@ describe('useProjectListState', () => {
     expect(result.current.pagination.page).toBe(1);
   });
 
-  it('should reset page to 1 when context filter changes', () => {
-    const { result } = renderHook(() => useProjectListState(PROJECTS));
-
-    act(() => {
-      result.current.pagination.goToPage(2);
-    });
-
-    act(() => {
-      result.current.setContextFilter(['custom']);
-    });
-
-    expect(result.current.pagination.page).toBe(1);
-  });
-
   it('should reset page to 1 when sort changes via handleSortByChange', () => {
     const { result } = renderHook(() => useProjectListState(PROJECTS));
 
@@ -237,7 +176,7 @@ describe('useProjectListState', () => {
   it('should paginate projects correctly', () => {
     const { result } = renderHook(() => useProjectListState(PROJECTS));
 
-    // Default perPage=10, 11 projects → 2 pages
+    // Default perPage=10, 11 projects -> 2 pages
     expect(result.current.paginatedProjects).toHaveLength(10);
     expect(result.current.pagination.totalPages).toBe(2);
     expect(result.current.pagination.totalItems).toBe(11);
@@ -277,7 +216,7 @@ describe('useProjectListState', () => {
       result.current.pagination.goToPage(2);
     });
 
-    // Searching narrows to 1 result → totalPages=1 → page clamped to 1
+    // Searching narrows to 1 result -> totalPages=1 -> page clamped to 1
     act(() => {
       result.current.setSearchQuery('Alpha');
     });
@@ -336,16 +275,6 @@ describe('useProjectListState', () => {
 
     act(() => {
       result.current.setStatusFilter(['active']);
-    });
-
-    expect(result.current.isFiltered).toBe(true);
-  });
-
-  it('should report isFiltered when context filter is active', () => {
-    const { result } = renderHook(() => useProjectListState(PROJECTS));
-
-    act(() => {
-      result.current.setContextFilter(['custom']);
     });
 
     expect(result.current.isFiltered).toBe(true);

@@ -11,12 +11,16 @@ const ACCENT_ICON: Record<string, string> = {
   pink: 'text-[var(--chart-pink)]',
   cyan: 'text-[var(--chart-cyan)]',
   violet: 'text-[var(--chart-violet)]',
+  emerald: 'text-emerald-500',
+  rose: 'text-rose-500',
 };
 
 const ACCENT_BORDER: Record<string, string> = {
   pink: 'border-l-[var(--chart-pink)]',
   cyan: 'border-l-[var(--chart-cyan)]',
   violet: 'border-l-[var(--chart-violet)]',
+  emerald: 'border-l-emerald-500',
+  rose: 'border-l-rose-500',
 };
 
 const SIGNAL_BASE = 'inline-flex items-center gap-1 text-[11px] font-medium tabular-nums';
@@ -30,7 +34,7 @@ interface KpiCardProps {
   showZeroWhenNoData?: boolean;
   subtitle?: string;
   icon: LucideIcon;
-  accent?: 'pink' | 'cyan' | 'violet';
+  accent?: 'pink' | 'cyan' | 'violet' | 'emerald' | 'rose';
   className?: string;
 }
 

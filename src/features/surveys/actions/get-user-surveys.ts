@@ -42,12 +42,8 @@ export interface UserSurvey {
   avgQuestionCompletion: number | null;
   /** Linked project ID, or null if standalone. */
   projectId: string | null;
-  /** Research phase within the project, or null. */
-  researchPhase: string | null;
   /** Project name (denormalized for display), or null. */
   projectName: string | null;
-  /** Project context ('idea_validation' | 'custom'), or null. */
-  projectContext: string | null;
 }
 
 const userSurveySchema = z.object({
@@ -73,9 +69,7 @@ const userSurveySchema = z.object({
   avgCompletionSeconds: z.number().nullable(),
   avgQuestionCompletion: z.number().nullable(),
   projectId: z.string().nullable().optional().default(null),
-  researchPhase: z.string().nullable().optional().default(null),
   projectName: z.string().nullable().optional().default(null),
-  projectContext: z.string().nullable().optional().default(null),
 });
 
 const userSurveysRpcSchema = z.array(userSurveySchema);

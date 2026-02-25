@@ -10,22 +10,12 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import {
   PROJECT_DESCRIPTION_MAX_LENGTH,
   PROJECT_NAME_MAX_LENGTH,
 } from '@/features/projects/config';
-import { PROJECT_CONTEXTS_CONFIG } from '@/features/projects/config/contexts';
-import { PROJECT_CONTEXTS } from '@/features/projects/types';
 import type { CreateProjectInput } from '@/features/projects/types';
-import type { MessageKey } from '@/i18n/types';
 
 interface ProjectFormFieldsProps {
   form: UseFormReturn<CreateProjectInput>;
@@ -93,35 +83,6 @@ export function ProjectFormFields({ form }: ProjectFormFieldsProps) {
                 })}
               </span>
             </div>
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="context"
-        render={({ field, fieldState }) => (
-          <FormItem>
-            <FormLabel>{t('projects.create.context')}</FormLabel>
-            <FormDescription>{t('projects.create.contextHelper')}</FormDescription>
-
-            <FormControl>
-              <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger className="w-full" aria-invalid={!!fieldState.error}>
-                  <SelectValue placeholder={t('projects.create.contextPlaceholder')} />
-                </SelectTrigger>
-
-                <SelectContent>
-                  {PROJECT_CONTEXTS.map((ctx) => (
-                    <SelectItem key={ctx} value={ctx}>
-                      {t(PROJECT_CONTEXTS_CONFIG[ctx].labelKey as MessageKey)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </FormControl>
-
-            <FormMessage />
           </FormItem>
         )}
       />

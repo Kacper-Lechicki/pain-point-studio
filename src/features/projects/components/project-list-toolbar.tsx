@@ -4,21 +4,11 @@ import { useTranslations } from 'next-intl';
 
 import type { FilterGroup } from '@/components/ui/list-toolbar';
 import { ListToolbar } from '@/components/ui/list-toolbar';
-import { PROJECT_CONTEXTS_CONFIG } from '@/features/projects/config/contexts';
-import { PROJECT_CONTEXTS } from '@/features/projects/types';
 import type { MessageKey } from '@/i18n/types';
 import { sortOptionsAlphabetically } from '@/lib/common/sort-options';
 
 export type ProjectStatusFilter = 'active' | 'archived';
-export type ProjectSortBy =
-  | 'updated'
-  | 'created'
-  | 'name'
-  | 'surveys'
-  | 'responses'
-  | 'status'
-  | 'context'
-  | 'progress';
+export type ProjectSortBy = 'updated' | 'created' | 'name' | 'surveys' | 'responses' | 'status';
 
 const STATUS_OPTIONS: ProjectStatusFilter[] = ['active', 'archived'];
 
@@ -27,8 +17,6 @@ const SORT_OPTIONS: ProjectSortBy[] = ['name', 'surveys', 'responses', 'updated'
 interface ProjectListToolbarProps {
   statusFilter: ProjectStatusFilter[];
   onStatusFilterChange: (filter: ProjectStatusFilter[]) => void;
-  contextFilter: string[];
-  onContextFilterChange: (contexts: string[]) => void;
   searchQuery: string;
   onSearchQueryChange: (query: string) => void;
   sortBy: ProjectSortBy;
@@ -36,14 +24,11 @@ interface ProjectListToolbarProps {
   onSortByChange: (sort: ProjectSortBy) => void;
   onSortDirChange: (dir: 'asc' | 'desc') => void;
   statusCounts: Record<string, number>;
-  contextCounts: Record<string, number>;
 }
 
 export function ProjectListToolbar({
   statusFilter,
   onStatusFilterChange,
-  contextFilter,
-  onContextFilterChange,
   searchQuery,
   onSearchQueryChange,
   sortBy,
@@ -51,7 +36,6 @@ export function ProjectListToolbar({
   onSortByChange,
   onSortDirChange,
   statusCounts,
-  contextCounts,
 }: ProjectListToolbarProps) {
   const t = useTranslations();
 
@@ -68,24 +52,7 @@ export function ProjectListToolbar({
     onChange: onStatusFilterChange as (selected: string[]) => void,
   };
 
-  const contextOptions = sortOptionsAlphabetically(
-    PROJECT_CONTEXTS.filter((ctx) => (contextCounts[ctx] ?? 0) > 0).map((ctx) => ({
-      value: ctx,
-      label: t(PROJECT_CONTEXTS_CONFIG[ctx].labelKey as MessageKey),
-      count: contextCounts[ctx] ?? 0,
-    }))
-  );
-
   const filterGroups: FilterGroup[] = [statusGroup];
-
-  if (contextOptions.length > 0) {
-    filterGroups.push({
-      label: t('projects.list.filters.contextSection'),
-      options: contextOptions,
-      selected: contextFilter,
-      onChange: onContextFilterChange,
-    });
-  }
 
   const sortOptions = sortOptionsAlphabetically(
     SORT_OPTIONS.map((v) => ({

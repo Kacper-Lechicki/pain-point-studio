@@ -156,25 +156,23 @@ ON CONFLICT DO NOTHING;
 -- Projects
 -- ============================================================
 
--- Alice's project: Fitness Tracker App (idea_validation)
-INSERT INTO public.projects (id, user_id, name, description, context, status)
+-- Alice's project: Fitness Tracker App
+INSERT INTO public.projects (id, user_id, name, description, status)
 VALUES (
   'b1b2c3d4-0001-4000-8000-000000000001',
   'a1b2c3d4-0001-4000-8000-000000000001',
   'Fitness Tracker App',
   'Validating demand for a unified fitness tracking app combining workouts, nutrition, and progress analytics.',
-  'idea_validation',
   'active'
 ) ON CONFLICT (id) DO NOTHING;
 
--- Bob's project: API Testing Tool (custom, no surveys)
-INSERT INTO public.projects (id, user_id, name, description, context, status)
+-- Bob's project: API Testing Tool (no surveys)
+INSERT INTO public.projects (id, user_id, name, description, status)
 VALUES (
   'b1b2c3d4-0002-4000-8000-000000000002',
   'a1b2c3d4-0002-4000-8000-000000000002',
   'API Testing Tool',
   'Exploring the market for developer-focused API testing solutions.',
-  'custom',
   'active'
 ) ON CONFLICT (id) DO NOTHING;
 
@@ -183,7 +181,7 @@ VALUES (
 -- ============================================================
 
 -- Survey 1: Problem Discovery (completed, 8 responses)
-INSERT INTO public.surveys (id, user_id, title, description, visibility, status, slug, starts_at, ends_at, completed_at, view_count, project_id, research_phase)
+INSERT INTO public.surveys (id, user_id, title, description, visibility, status, slug, starts_at, ends_at, completed_at, view_count, project_id)
 VALUES (
   'c1b2c3d4-0001-4000-8000-000000000001',
   'a1b2c3d4-0001-4000-8000-000000000001',
@@ -196,12 +194,11 @@ VALUES (
   now() - interval '10 days',
   now() - interval '10 days',
   42,
-  'b1b2c3d4-0001-4000-8000-000000000001',
-  'problem_discovery'
+  'b1b2c3d4-0001-4000-8000-000000000001'
 ) ON CONFLICT (id) DO NOTHING;
 
--- Survey 2: Solution Validation (active, 7 responses)
-INSERT INTO public.surveys (id, user_id, title, description, visibility, status, slug, starts_at, view_count, project_id, research_phase)
+-- Survey 2: Feature Preferences (active, 7 responses)
+INSERT INTO public.surveys (id, user_id, title, description, visibility, status, slug, starts_at, view_count, project_id)
 VALUES (
   'c1b2c3d4-0002-4000-8000-000000000002',
   'a1b2c3d4-0001-4000-8000-000000000001',
@@ -212,8 +209,7 @@ VALUES (
   'fitness-features',
   now() - interval '5 days',
   23,
-  'b1b2c3d4-0001-4000-8000-000000000001',
-  'solution_validation'
+  'b1b2c3d4-0001-4000-8000-000000000001'
 ) ON CONFLICT (id) DO NOTHING;
 
 -- ============================================================
@@ -367,18 +363,18 @@ ON CONFLICT (id) DO NOTHING;
 -- ============================================================
 -- Project Insights (4 manual insights for Alice's project)
 -- ============================================================
-INSERT INTO public.project_insights (id, project_id, phase, type, content) VALUES
+INSERT INTO public.project_insights (id, project_id, type, content) VALUES
   ('71b2c3d4-0001-4000-8000-000000000001', 'b1b2c3d4-0001-4000-8000-000000000001',
-   'problem_discovery', 'strength',
+   'strength',
    '75% of respondents actively track fitness — confirms existing habit and market demand.'),
   ('71b2c3d4-0002-4000-8000-000000000002', 'b1b2c3d4-0001-4000-8000-000000000001',
-   'problem_discovery', 'threat',
-   'Current solutions score just 2.25/5 satisfaction, but low scores might indicate apathy rather than desire for new tools.'),
+   'opportunity',
+   'Current solutions score just 2.25/5 satisfaction — major gap in the market for a better experience.'),
   ('71b2c3d4-0003-4000-8000-000000000003', 'b1b2c3d4-0001-4000-8000-000000000001',
-   'solution_validation', 'strength',
+   'strength',
    '86% would use a combined workout + nutrition app — strong signal for the unified approach.'),
   ('71b2c3d4-0004-4000-8000-000000000004', 'b1b2c3d4-0001-4000-8000-000000000001',
-   NULL, 'decision',
+   'decision',
    'No clear pricing preference emerged — need to run a dedicated pricing experiment before committing to a model.')
 ON CONFLICT (id) DO NOTHING;
 

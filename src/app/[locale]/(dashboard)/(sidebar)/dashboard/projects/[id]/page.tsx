@@ -31,7 +31,6 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
         <ProjectDashboardPage
           project={data.project}
           surveys={data.surveys}
-          surveysByPhase={data.surveysByPhase}
           signalsData={signalsData}
           insights={insights}
         />

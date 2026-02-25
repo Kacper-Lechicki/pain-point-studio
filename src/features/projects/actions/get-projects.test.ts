@@ -63,7 +63,6 @@ function makeProject(overrides: Record<string, unknown> = {}) {
     user_id: USER.id,
     name: 'Test Project',
     description: null,
-    context: 'idea_validation',
     status: 'active',
     archived_at: null,
     created_at: new Date().toISOString(),
@@ -116,14 +115,12 @@ describe('getProjects', () => {
         {
           id: 's1',
           project_id: 'proj-1',
-          research_phase: 'problem_discovery',
           status: 'completed',
           survey_responses: [{ count: 10 }],
         },
         {
           id: 's2',
           project_id: 'proj-1',
-          research_phase: 'solution_validation',
           status: 'draft',
           survey_responses: [{ count: 3 }],
         },
@@ -146,24 +143,6 @@ describe('getProjects', () => {
       id: 'proj-1',
       surveyCount: 2,
       responseCount: 13,
-      validationProgress: 0.25,
     });
-  });
-
-  it('should return null validationProgress for custom projects', async () => {
-    const project = makeProject({ id: 'proj-1', context: 'custom' });
-
-    mockFrom.mockImplementation((table: string) => {
-      if (table === 'surveys') {
-        return chain({ data: [] });
-      }
-
-      return chain({ data: [project] });
-    });
-
-    const { getProjects } = await import('./get-projects');
-    const result = await getProjects();
-
-    expect(result?.[0]?.validationProgress).toBeNull();
   });
 });

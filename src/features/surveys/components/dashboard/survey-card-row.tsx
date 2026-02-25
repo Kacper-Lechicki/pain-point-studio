@@ -82,12 +82,7 @@ export function SurveyCardRow({
         </p>
 
         {survey.projectId && (
-          <SurveyProjectBadge
-            projectId={survey.projectId}
-            projectName={survey.projectName}
-            projectContext={survey.projectContext}
-            researchPhase={survey.researchPhase}
-          />
+          <SurveyProjectBadge projectId={survey.projectId} projectName={survey.projectName} />
         )}
 
         <div

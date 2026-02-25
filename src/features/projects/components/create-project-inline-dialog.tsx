@@ -25,7 +25,7 @@ import type { MessageKey } from '@/i18n/types';
 interface CreateProjectInlineDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onCreated: (project: { id: string; name: string; context: string }) => void;
+  onCreated: (project: { id: string; name: string }) => void;
 }
 
 export function CreateProjectInlineDialog({
@@ -55,7 +55,6 @@ export function CreateProjectInlineDialog({
       onCreated({
         id: result.data.projectId,
         name: data.name,
-        context: data.context,
       });
       onOpenChange(false);
       form.reset();

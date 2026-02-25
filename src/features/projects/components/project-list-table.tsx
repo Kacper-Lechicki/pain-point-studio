@@ -58,15 +58,6 @@ export function ProjectListTable({
             />
 
             <SortableTableHeader
-              sortKey="context"
-              currentSortKey={sortBy}
-              sortDir={sortDir}
-              onSort={onSortByColumn}
-              label={t('projects.list.table.context')}
-              className="border-border/30 border-l"
-            />
-
-            <SortableTableHeader
               sortKey="surveys"
               currentSortKey={sortBy}
               sortDir={sortDir}
@@ -82,15 +73,6 @@ export function ProjectListTable({
               onSort={onSortByColumn}
               label={t('projects.list.table.responses')}
               className="border-border/30 border-l"
-            />
-
-            <SortableTableHeader
-              sortKey="progress"
-              currentSortKey={sortBy}
-              sortDir={sortDir}
-              onSort={onSortByColumn}
-              label={t('projects.list.table.progress')}
-              className="border-border/30 hidden border-l lg:table-cell"
             />
 
             <SortableTableHeader

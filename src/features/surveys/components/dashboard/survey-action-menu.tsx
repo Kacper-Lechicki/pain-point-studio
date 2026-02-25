@@ -78,11 +78,11 @@ export function SurveyActionMenuContent({
       });
     }
 
-    if (!isDraft && !isArchived) {
+    if (!isDraft && !isArchived && !onDetails) {
       items.push({
         kind: 'link',
-        key: 'viewResults',
-        label: t('surveys.dashboard.actions.viewResults'),
+        key: 'viewAnalytics',
+        label: t('surveys.dashboard.actions.viewAnalytics'),
         icon: BarChart3,
         href: getSurveyStatsUrl(surveyId),
       });

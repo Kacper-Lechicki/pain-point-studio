@@ -76,9 +76,7 @@ function makeSurvey(overrides: Partial<UserSurvey> = {}): UserSurvey {
     avgCompletionSeconds: 120,
     avgQuestionCompletion: 0.95,
     projectId: null,
-    researchPhase: null,
     projectName: null,
-    projectContext: null,
     ...overrides,
   };
 }

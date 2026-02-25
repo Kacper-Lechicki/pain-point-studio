@@ -13,11 +13,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
 import { ProjectStatusBadge } from '@/features/projects/components/project-status-badge';
-import { ValidationProgressDots } from '@/features/projects/components/validation-progress-dots';
-import { PROJECT_CONTEXTS_CONFIG } from '@/features/projects/config/contexts';
 import { isProjectArchived } from '@/features/projects/lib/project-helpers';
-import type { ProjectContext, ProjectStatus } from '@/features/projects/types';
-import type { MessageKey } from '@/i18n/types';
+import type { ProjectStatus } from '@/features/projects/types';
 import { cn } from '@/lib/common/utils';
 
 interface ProjectCardRowProps {
@@ -42,7 +39,6 @@ export function ProjectCardRow({
   const t = useTranslations();
   const format = useFormatter();
   const isArchived = isProjectArchived(project);
-  const contextConfig = PROJECT_CONTEXTS_CONFIG[project.context as ProjectContext];
   const updatedAtLabel = format.relativeTime(new Date(project.updated_at), now);
 
   return (
@@ -115,8 +111,6 @@ export function ProjectCardRow({
 
       <div className="text-muted-foreground grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
         <div className="flex flex-col gap-0.5">
-          <span>{t(contextConfig.labelKey as MessageKey)}</span>
-
           <span className="text-foreground font-medium">
             {t('projects.list.card.surveys', { count: project.surveyCount })}
           </span>
@@ -124,11 +118,6 @@ export function ProjectCardRow({
 
         <div className="flex flex-col gap-0.5">
           <span>{t('projects.list.card.responses', { count: project.responseCount })}</span>
-          {project.phaseStatuses ? (
-            <ValidationProgressDots phaseStatuses={project.phaseStatuses} />
-          ) : (
-            <span className="text-foreground font-medium">—</span>
-          )}
         </div>
 
         <div className="flex flex-col gap-0.5">

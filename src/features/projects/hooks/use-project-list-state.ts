@@ -7,7 +7,6 @@ import type {
   ProjectSortBy,
   ProjectStatusFilter,
 } from '@/features/projects/components/project-list-toolbar';
-import { PROJECT_CONTEXTS_CONFIG } from '@/features/projects/config/contexts';
 import { getDefaultSortDir, getProjectComparator } from '@/features/projects/lib/sort-helpers';
 import { useListState } from '@/hooks/common/use-list-state';
 import { useSessionState } from '@/hooks/common/use-session-state';
@@ -24,21 +23,15 @@ export function useProjectListState(projects: ProjectWithMetrics[]) {
     []
   );
 
-  const [contextFilter, setContextFilterRaw] = useSessionState<string[]>(`${STORAGE_KEY}:ctx`, []);
-
   const preFilter = useCallback(
     (p: ProjectWithMetrics) => {
       if (statusFilter.length > 0 && !statusFilter.includes(p.status as ProjectStatusFilter)) {
         return false;
       }
 
-      if (contextFilter.length > 0 && !contextFilter.includes(p.context)) {
-        return false;
-      }
-
       return true;
     },
-    [statusFilter, contextFilter]
+    [statusFilter]
   );
 
   // ── Delegate to generic list state ─────────────────────────────────
@@ -75,15 +68,7 @@ export function useProjectListState(projects: ProjectWithMetrics[]) {
     [setStatusFilterRaw, resetPage]
   );
 
-  const setContextFilter = useCallback(
-    (v: string[]) => {
-      setContextFilterRaw(v);
-      resetPage();
-    },
-    [setContextFilterRaw, resetPage]
-  );
-
-  const isFiltered = statusFilter.length > 0 || contextFilter.length > 0;
+  const isFiltered = statusFilter.length > 0;
 
   // ── Derived counts for KPI badges and toolbar ───────────────────────
   const statusCounts = useMemo(() => {
@@ -98,22 +83,6 @@ export function useProjectListState(projects: ProjectWithMetrics[]) {
     return counts;
   }, [projects]);
 
-  const contextCounts = useMemo(() => {
-    const counts: Record<string, number> = {};
-
-    for (const key of Object.keys(PROJECT_CONTEXTS_CONFIG)) {
-      counts[key] = 0;
-    }
-
-    for (const p of projects) {
-      if (statusFilter.length === 0 || statusFilter.includes(p.status as ProjectStatusFilter)) {
-        counts[p.context] = (counts[p.context] ?? 0) + 1;
-      }
-    }
-
-    return counts;
-  }, [projects, statusFilter]);
-
   const kpiStatuses = useMemo(() => {
     const order: ProjectStatusFilter[] = ['active', 'archived'];
 
@@ -127,8 +96,6 @@ export function useProjectListState(projects: ProjectWithMetrics[]) {
     setSearchQuery,
     statusFilter,
     setStatusFilter,
-    contextFilter,
-    setContextFilter,
     sortBy,
     sortDir,
     setSortDir,
@@ -139,7 +106,6 @@ export function useProjectListState(projects: ProjectWithMetrics[]) {
     pagination,
     isFiltered,
     statusCounts,
-    contextCounts,
     kpiStatuses,
   };
 }

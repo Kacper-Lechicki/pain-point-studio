@@ -22,7 +22,6 @@ export interface SurveyBuilderData {
     maxRespondents: number | null;
     status: SurveyStatus;
     projectId: string | null;
-    researchPhase: string | null;
   };
   questions: MappedQuestion[];
 }
@@ -42,7 +41,7 @@ export const getSurveyWithQuestions = cache(
     const { data: survey } = (await supabase
       .from('surveys')
       .select(
-        'id, title, description, visibility, starts_at, ends_at, max_respondents, status, project_id, research_phase'
+        'id, title, description, visibility, starts_at, ends_at, max_respondents, status, project_id'
       )
       .eq('id', surveyId)
       .eq('user_id', user.id)
@@ -57,7 +56,6 @@ export const getSurveyWithQuestions = cache(
         max_respondents: number | null;
         status: string;
         project_id: string | null;
-        research_phase: string | null;
       } | null;
     };
 
@@ -82,7 +80,6 @@ export const getSurveyWithQuestions = cache(
         maxRespondents: survey.max_respondents,
         status: survey.status as SurveyStatus,
         projectId: survey.project_id,
-        researchPhase: survey.research_phase,
       },
       questions: (questions ?? []).map(mapQuestionRow),
     };

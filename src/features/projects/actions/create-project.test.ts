@@ -65,7 +65,6 @@ function chain(result: { data?: unknown; error?: unknown } = {}) {
 const VALID_INPUT: z.infer<typeof createProjectSchema> = {
   name: 'My Project',
   description: 'A test project',
-  context: 'idea_validation',
 };
 
 const USER = { id: 'user-123', email: 'test@example.com' };
@@ -94,7 +93,6 @@ describe('Project Actions – Create Project', () => {
         user_id: USER.id,
         name: VALID_INPUT.name,
         description: VALID_INPUT.description,
-        context: VALID_INPUT.context,
       })
     );
   });
