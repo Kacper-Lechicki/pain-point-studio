@@ -76,6 +76,7 @@ const SurveyMetadataForm = ({
       description: defaultValues?.description ?? '',
       visibility: defaultValues?.visibility ?? SURVEY_VISIBILITY_VALUES[0],
       projectId: defaultValues?.projectId ?? null,
+      researchPhase: defaultValues?.researchPhase ?? null,
     },
   });
 

@@ -2,6 +2,7 @@
 
 import { cache } from 'react';
 
+import type { ResearchPhase } from '@/features/projects/types';
 import type { MappedQuestion } from '@/features/surveys/lib/map-question-row';
 import { mapQuestionRow } from '@/features/surveys/lib/map-question-row';
 import {
@@ -22,6 +23,7 @@ export interface SurveyBuilderData {
     maxRespondents: number | null;
     status: SurveyStatus;
     projectId: string | null;
+    researchPhase: ResearchPhase | null;
   };
   questions: MappedQuestion[];
 }
@@ -41,7 +43,7 @@ export const getSurveyWithQuestions = cache(
     const { data: survey } = (await supabase
       .from('surveys')
       .select(
-        'id, title, description, visibility, starts_at, ends_at, max_respondents, status, project_id'
+        'id, title, description, visibility, starts_at, ends_at, max_respondents, status, project_id, research_phase'
       )
       .eq('id', surveyId)
       .eq('user_id', user.id)
@@ -56,6 +58,7 @@ export const getSurveyWithQuestions = cache(
         max_respondents: number | null;
         status: string;
         project_id: string | null;
+        research_phase: string | null;
       } | null;
     };
 
@@ -80,6 +83,7 @@ export const getSurveyWithQuestions = cache(
         maxRespondents: survey.max_respondents,
         status: survey.status as SurveyStatus,
         projectId: survey.project_id,
+        researchPhase: survey.research_phase as ResearchPhase | null,
       },
       questions: (questions ?? []).map(mapQuestionRow),
     };

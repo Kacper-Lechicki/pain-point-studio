@@ -12,6 +12,11 @@ export const PROJECT_STATUSES = ['active', 'archived'] as const;
 
 export type ProjectStatus = (typeof PROJECT_STATUSES)[number];
 
+/** All research phases as a const tuple (source of truth, matching DB CHECK constraints). */
+export const RESEARCH_PHASES = ['idea', 'research', 'validation', 'decision'] as const;
+
+export type ResearchPhase = (typeof RESEARCH_PHASES)[number];
+
 // ── Finding types (auto-generated from survey data) ─────────────────
 
 /** Source of the auto-finding — which analysis produced it. */

@@ -8,11 +8,15 @@ import { HeroHighlight } from '@/components/ui/hero-highlight';
 import { ROUTES } from '@/config/routes';
 import type { ProjectSurvey } from '@/features/projects/actions/get-project';
 import { PhaseSurveyCard } from '@/features/projects/components/phase-survey-card';
+import { PHASE_CONFIG } from '@/features/projects/config/phases';
+import type { ResearchPhase } from '@/features/projects/types';
 import { getSurveyDetailUrl } from '@/features/surveys/lib/survey-urls';
 import Link from '@/i18n/link';
+import type { MessageKey } from '@/i18n/types';
+import { cn } from '@/lib/common/utils';
 
 interface PhaseSectionProps {
-  phase: null;
+  phase: ResearchPhase | null;
   surveys: ProjectSurvey[];
   projectId: string;
   sectionTitle?: string;
@@ -21,6 +25,7 @@ interface PhaseSectionProps {
 }
 
 export function PhaseSection({
+  phase,
   surveys,
   projectId,
   sectionTitle,
@@ -28,8 +33,13 @@ export function PhaseSection({
   isSearching,
 }: PhaseSectionProps) {
   const t = useTranslations();
-  const Icon = List;
-  const title = sectionTitle ?? '';
+
+  const phaseConfig = phase ? PHASE_CONFIG[phase] : null;
+  const Icon = phaseConfig?.icon ?? List;
+  const title = phaseConfig ? t(phaseConfig.labelKey as MessageKey) : (sectionTitle ?? '');
+  const iconClass = phaseConfig
+    ? cn('size-5 shrink-0', phaseConfig.colors.icon)
+    : 'text-muted-foreground size-5 shrink-0';
 
   const countLabel =
     isSearching && totalCount !== undefined
@@ -39,7 +49,7 @@ export function PhaseSection({
   return (
     <section className="flex flex-col gap-3">
       <div className="flex items-center gap-2">
-        <Icon className="text-muted-foreground size-5 shrink-0" aria-hidden />
+        <Icon className={iconClass} aria-hidden />
         <h2 className="text-foreground text-base font-semibold">{title}</h2>
         <span className="text-muted-foreground text-sm">{countLabel}</span>
 

@@ -74,6 +74,7 @@ export type Database = {
           content: string;
           created_at: string;
           id: string;
+          phase: string | null;
           project_id: string;
           type: string;
           updated_at: string;
@@ -82,6 +83,7 @@ export type Database = {
           content: string;
           created_at?: string;
           id?: string;
+          phase?: string | null;
           project_id: string;
           type: string;
           updated_at?: string;
@@ -90,6 +92,7 @@ export type Database = {
           content?: string;
           created_at?: string;
           id?: string;
+          phase?: string | null;
           project_id?: string;
           type?: string;
           updated_at?: string;
@@ -288,6 +291,7 @@ export type Database = {
           max_respondents: number | null;
           previous_status: Database['public']['Enums']['survey_status'] | null;
           project_id: string | null;
+          research_phase: string | null;
           slug: string | null;
           starts_at: string | null;
           status: Database['public']['Enums']['survey_status'];
@@ -308,6 +312,7 @@ export type Database = {
           max_respondents?: number | null;
           previous_status?: Database['public']['Enums']['survey_status'] | null;
           project_id?: string | null;
+          research_phase?: string | null;
           slug?: string | null;
           starts_at?: string | null;
           status?: Database['public']['Enums']['survey_status'];
@@ -328,6 +333,7 @@ export type Database = {
           max_respondents?: number | null;
           previous_status?: Database['public']['Enums']['survey_status'] | null;
           project_id?: string | null;
+          research_phase?: string | null;
           slug?: string | null;
           starts_at?: string | null;
           status?: Database['public']['Enums']['survey_status'];

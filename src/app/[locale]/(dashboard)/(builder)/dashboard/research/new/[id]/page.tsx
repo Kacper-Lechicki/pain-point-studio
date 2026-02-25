@@ -32,6 +32,7 @@ export default async function SurveyBuilderRoute({ params }: Props) {
           description: data.survey.description,
           visibility: data.survey.visibility,
           projectId: data.survey.projectId,
+          researchPhase: data.survey.researchPhase,
         }}
         projectOptions={formData.projectOptions}
         initialQuestions={data.questions.map((q) => ({

@@ -48,6 +48,7 @@ const SURVEYS: UserSurvey[] = [
     avgQuestionCompletion: null,
     projectId: null,
     projectName: null,
+    researchPhase: null,
   },
   {
     id: 'survey-2',
@@ -73,6 +74,7 @@ const SURVEYS: UserSurvey[] = [
     avgQuestionCompletion: null,
     projectId: null,
     projectName: null,
+    researchPhase: null,
   },
 ];
 

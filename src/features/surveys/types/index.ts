@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { RESEARCH_PHASES } from '@/features/projects/types';
 import {
   QUESTIONS_MAX,
   QUESTION_DESCRIPTION_MAX_LENGTH,
@@ -64,6 +65,7 @@ export const surveyMetadataSchema = z.object({
     .max(SURVEY_DESCRIPTION_MAX_LENGTH, 'surveys.errors.descriptionTooLong'),
   visibility: z.enum(SURVEY_VISIBILITY_VALUES),
   projectId: z.uuid().nullable().optional(),
+  researchPhase: z.enum(RESEARCH_PHASES).nullable().optional(),
 });
 
 export type SurveyMetadataSchema = z.infer<typeof surveyMetadataSchema>;

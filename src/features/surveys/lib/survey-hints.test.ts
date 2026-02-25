@@ -34,6 +34,7 @@ function makeSurvey(overrides: Partial<UserSurvey> = {}): UserSurvey {
     avgQuestionCompletion: null,
     projectId: null,
     projectName: null,
+    researchPhase: null,
     ...overrides,
   };
 }
