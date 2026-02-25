@@ -171,7 +171,7 @@ describe('withProtectedAction', () => {
 
     const result = await protectedAction({ name: 'John' });
 
-    expect(result.error).toBe('settings.errors.unexpected');
+    expect(result.error).toBe('common.errors.unexpected');
     expect(actionFn).not.toHaveBeenCalled();
   });
 
@@ -192,7 +192,7 @@ describe('withProtectedAction', () => {
 
     const result = await protectedAction({ name: 'John' });
 
-    expect(result.error).toBe('settings.errors.unexpected');
+    expect(result.error).toBe('common.errors.unexpected');
     expect(actionFn).not.toHaveBeenCalled();
   });
 

@@ -2,33 +2,34 @@
 
 import { revalidatePath } from 'next/cache';
 
-import { createClient } from '@/lib/supabase/server';
+import { z } from 'zod';
+
+import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
+import { withProtectedAction } from '@/lib/common/with-protected-action';
+
+const setPinnedProjectSchema = z.object({
+  projectId: z.string().uuid().nullable(),
+});
 
 /**
  * Pin or unpin a project on the dashboard.
- * Pass `null` to unpin the currently pinned project.
+ * Pass `{ projectId: null }` to unpin the currently pinned project.
  */
-export async function setPinnedProject(projectId: string | null): Promise<{ success: boolean }> {
-  const supabase = await createClient();
+export const setPinnedProject = withProtectedAction('set-pinned-project', {
+  schema: setPinnedProjectSchema,
+  rateLimit: RATE_LIMITS.crud,
+  action: async ({ data, user, supabase }) => {
+    const { error } = await supabase
+      .from('profiles')
+      .update({ pinned_project_id: data.projectId })
+      .eq('id', user.id);
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    if (error) {
+      return { error: 'common.errors.unexpected' };
+    }
 
-  if (!user) {
-    return { success: false };
-  }
+    revalidatePath('/dashboard');
 
-  const { error } = await supabase
-    .from('profiles')
-    .update({ pinned_project_id: projectId })
-    .eq('id', user.id);
-
-  if (error) {
-    return { success: false };
-  }
-
-  revalidatePath('/dashboard');
-
-  return { success: true };
-}
+    return { success: true };
+  },
+});
