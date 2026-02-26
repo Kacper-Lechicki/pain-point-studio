@@ -9,13 +9,19 @@ import { useTranslations } from 'next-intl';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { ProjectSurvey } from '@/features/projects/actions/get-project';
 import { ProjectInsightsTab } from '@/features/projects/components/project-insights-tab';
+import { ProjectNotesTab } from '@/features/projects/components/project-notes-tab';
 import { ProjectOverviewTab } from '@/features/projects/components/project-overview-tab';
 import { ProjectSurveysTab } from '@/features/projects/components/project-surveys-tab';
-import type { Finding, Project, ProjectInsight } from '@/features/projects/types';
+import type {
+  Finding,
+  Project,
+  ProjectInsight,
+  ProjectOverviewStats,
+} from '@/features/projects/types';
 
-type TabValue = 'overview' | 'surveys' | 'insights';
+type TabValue = 'overview' | 'surveys' | 'insights' | 'notes';
 
-const VALID_TABS: TabValue[] = ['overview', 'surveys', 'insights'];
+const VALID_TABS: TabValue[] = ['overview', 'surveys', 'insights', 'notes'];
 
 interface ProjectDetailTabsProps {
   project: Project;
@@ -23,6 +29,7 @@ interface ProjectDetailTabsProps {
   allFindings: Finding[];
   insights: ProjectInsight[];
   scorecardInsights: ProjectInsight[];
+  overviewStats: ProjectOverviewStats;
   onInsightCreated: (insight: ProjectInsight) => void;
   onInsightUpdated: (insight: ProjectInsight) => void;
   onInsightDeleted: (insightId: string) => void;
@@ -33,7 +40,7 @@ export function ProjectDetailTabs({
   surveys,
   allFindings,
   insights,
-  scorecardInsights,
+  overviewStats,
   onInsightCreated,
   onInsightUpdated,
   onInsightDeleted,
@@ -70,7 +77,7 @@ export function ProjectDetailTabs({
       <TabsList variant="line">
         <TabsTrigger value="overview">{t('projects.detail.tabs.overview')}</TabsTrigger>
         <TabsTrigger value="surveys">
-          {t('projects.detail.tabs.surveys')}
+          {t('projects.detail.tabs.research')}
           {surveys.length > 0 && (
             <span className="text-muted-foreground ml-1 text-xs tabular-nums">
               ({surveys.length})
@@ -85,18 +92,11 @@ export function ProjectDetailTabs({
             </span>
           )}
         </TabsTrigger>
+        <TabsTrigger value="notes">{t('projects.detail.tabs.notes')}</TabsTrigger>
       </TabsList>
 
       <TabsContent value="overview">
-        <ProjectOverviewTab
-          project={project}
-          surveys={surveys}
-          scorecardInsights={scorecardInsights}
-          onInsightCreated={onInsightCreated}
-          onInsightUpdated={onInsightUpdated}
-          onInsightDeleted={onInsightDeleted}
-          onNavigateToSurveys={() => handleTabChange('surveys')}
-        />
+        <ProjectOverviewTab project={project} overviewStats={overviewStats} />
       </TabsContent>
 
       <TabsContent value="surveys">
@@ -112,6 +112,10 @@ export function ProjectDetailTabs({
           onInsightUpdated={onInsightUpdated}
           onInsightDeleted={onInsightDeleted}
         />
+      </TabsContent>
+
+      <TabsContent value="notes">
+        <ProjectNotesTab />
       </TabsContent>
     </Tabs>
   );

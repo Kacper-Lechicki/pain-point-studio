@@ -386,6 +386,10 @@ export type Database = {
         }[];
       };
       get_profile_statistics: { Args: { p_user_id: string }; Returns: Json };
+      get_project_detail_stats: {
+        Args: { p_project_id: string; p_user_id: string };
+        Returns: Json;
+      };
       get_project_signals_data: {
         Args: { p_project_id: string; p_user_id: string };
         Returns: Json;

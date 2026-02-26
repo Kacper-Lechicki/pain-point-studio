@@ -9,17 +9,18 @@ import type { ProjectSurvey } from '@/features/projects/actions/get-project';
 import type { SurveySignalData } from '@/features/projects/actions/get-project-signals-data';
 import { EditProjectDialog } from '@/features/projects/components/edit-project-dialog';
 import { ProjectDetailHeader } from '@/features/projects/components/project-detail-header';
-import { ProjectDetailKpi } from '@/features/projects/components/project-detail-kpi';
 import { ProjectDetailTabs } from '@/features/projects/components/project-detail-tabs';
 import { useProjectDashboardActions } from '@/features/projects/hooks/use-project-dashboard-actions';
+import { deriveProjectPhase } from '@/features/projects/lib/project-helpers';
 import { generateFindings } from '@/features/projects/lib/signals';
-import type { Project, ProjectInsight } from '@/features/projects/types';
+import type { Project, ProjectInsight, ProjectOverviewStats } from '@/features/projects/types';
 
 interface ProjectDashboardPageProps {
   project: Project;
   surveys: ProjectSurvey[];
   signalsData: SurveySignalData[];
   insights: ProjectInsight[];
+  overviewStats: ProjectOverviewStats;
 }
 
 export function ProjectDashboardPage({
@@ -27,6 +28,7 @@ export function ProjectDashboardPage({
   surveys,
   signalsData,
   insights: initialInsights,
+  overviewStats,
 }: ProjectDashboardPageProps) {
   const [insights, setInsights] = useState(initialInsights);
 
@@ -43,10 +45,7 @@ export function ProjectDashboardPage({
 
   useBreadcrumbSegment(project.id, project.name);
 
-  const totalResponses = useMemo(
-    () => surveys.reduce((sum, s) => sum + s.responseCount, 0),
-    [surveys]
-  );
+  const phase = useMemo(() => deriveProjectPhase(surveys), [surveys]);
 
   const allFindings = useMemo(() => generateFindings(signalsData), [signalsData]);
 
@@ -68,20 +67,20 @@ export function ProjectDashboardPage({
     <main className="flex min-w-0 flex-col">
       <ProjectDetailHeader
         project={project}
+        phase={phase}
         onEdit={() => setEditOpen(true)}
         onArchive={() => setConfirmAction('archive')}
         onDelete={() => setConfirmAction('delete')}
       />
 
       <div className={`${DASHBOARD_PAGE_BODY_GAP_TOP} flex flex-col gap-6`}>
-        <ProjectDetailKpi surveys={surveys} totalResponses={totalResponses} insights={insights} />
-
         <ProjectDetailTabs
           project={project}
           surveys={surveys}
           allFindings={allFindings}
           insights={insights}
           scorecardInsights={scorecardInsights}
+          overviewStats={overviewStats}
           onInsightCreated={handleInsightCreated}
           onInsightUpdated={handleInsightUpdated}
           onInsightDeleted={handleInsightDeleted}

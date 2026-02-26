@@ -887,7 +887,9 @@
       "tabs": {
         "overview": "Overview",
         "surveys": "Surveys",
-        "insights": "Insights"
+        "research": "Research",
+        "insights": "Insights",
+        "notes": "Notes"
       },
       "kpi": {
         "surveys": "Surveys",
@@ -896,6 +898,41 @@
         "insights": "Insights",
         "completion": "Completion",
         "completionSubtitle": "{completed} of {total} completed"
+      },
+      "metrics": {
+        "sectionLabel": "Overview Metrics",
+        "totalSurveys": "Total Surveys",
+        "activeSurveys": "Active Surveys",
+        "totalResponses": "Total Responses",
+        "avgCompletion": "Avg Completion",
+        "avgTime": "Avg Time",
+        "lastResponse": "Last Response"
+      },
+      "charts": {
+        "responseTimeline": "Response Timeline",
+        "responses": "Responses",
+        "surveyStatus": "Survey Status",
+        "draft": "Draft",
+        "active": "Active",
+        "completedStatus": "Completed",
+        "completionRate": "Completion Rate",
+        "completed": "Completed",
+        "inProgress": "In Progress",
+        "abandoned": "Abandoned",
+        "noData": "No data available"
+      },
+      "recentActivity": {
+        "title": "Recent Activity",
+        "empty": "No recent activity",
+        "type": {
+          "response": "New response",
+          "survey_completed": "Survey completed",
+          "survey_activated": "Survey activated"
+        }
+      },
+      "notes": {
+        "placeholder": "Notes",
+        "comingSoon": "Rich text notes for your project are coming soon."
       },
       "quickActions": {
         "title": "Quick Actions",
@@ -906,8 +943,8 @@
         "meta": "{surveys, plural, one {# survey} other {# surveys}} · {responses, plural, one {# response} other {# responses}}"
       },
       "empty": {
-        "title": "Start your research journey",
-        "description": "Create your first survey to begin collecting data and validating your assumptions.",
+        "title": "No data yet",
+        "description": "Create your first survey to start seeing analytics and insights here.",
         "noSurveys": "No surveys yet",
         "noSurveysDescription": "Create a survey to start collecting responses from your target audience.",
         "noInsights": "Signals will appear automatically as you collect survey responses. You can also add manual notes.",
