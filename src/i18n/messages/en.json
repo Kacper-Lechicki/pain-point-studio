@@ -195,7 +195,7 @@
       }
     },
     "bento": {
-      "greeting": "Welcome back, {name}",
+      "greeting": "Welcome, {name}",
       "period": {
         "all": "All"
       },
@@ -220,8 +220,17 @@
       "charts": {
         "responses": "Responses",
         "responsesOverTime": "Responses Over Time",
-        "completionRate": "Completion Rate",
-        "noData": "No data"
+        "completionOverTime": "Completed over time",
+        "inProgressOverTime": "In progress over time",
+        "surveyEntriesOverTime": "Survey entries over time",
+        "completionRate": "Survey completion rate",
+        "surveyCompletionRate": "Survey completion rate",
+        "noData": "No data for this period",
+        "completion": {
+          "completed": "Completed",
+          "inProgress": "In progress",
+          "abandoned": "Abandoned"
+        }
       },
       "projects": {
         "title": "Your Projects",
@@ -235,6 +244,7 @@
       },
       "pinned": {
         "title": "Pinned Project",
+        "pin": "Pin",
         "unpin": "Unpin",
         "empty": "No project is pinned.",
         "emptyHint": "Pin a project from the list on the right to feature it here.",
@@ -398,6 +408,7 @@
     },
     "stats": {
       "title": "Survey Results",
+      "contextBadge": "Survey",
       "overview": "Overview",
       "metricsLabel": "Key metrics",
       "totalResponses": "Total responses",
@@ -425,6 +436,8 @@
       "noResponses": "No responses yet",
       "noResponsesDescription": "Share the survey link to start collecting feedback.",
       "questionBreakdown": "Results by question",
+      "responsesOverTime": "Responses over time",
+      "completionRate": "Survey completion rate",
       "responses": "responses",
       "responsesCount": "{count, plural, =0 {No responses} one {1 response} other {# responses}}",
       "chartResponses": "Responses",
@@ -453,7 +466,7 @@
       "recentResponses": "Recent Responses",
       "viewAnalytics": "View Analytics",
       "avgCompletionTime": "Avg. time",
-      "responseTimeline": "Response timeline",
+      "responseTimeline": "Responses over time",
       "liveIndicator": "Live",
       "insightTopChoice": "Most selected: {option} ({pct}%)",
       "insightTiedChoices": "Tied: {options} ({pct}% each)",
@@ -465,6 +478,11 @@
       "refresh": "Refresh data",
       "moreActions": "More actions",
       "deviceBreakdown": "Device breakdown",
+      "charts": {
+        "completed": "Completed",
+        "inProgress": "In progress",
+        "abandoned": "Abandoned"
+      },
       "deviceDesktop": "Desktop",
       "deviceMobile": "Mobile",
       "deviceTablet": "Tablet",
@@ -796,6 +814,7 @@
         "created": "Date created",
         "name": "Name",
         "surveys": "Surveys",
+        "activeSurveys": "Active",
         "responses": "Responses",
         "asc": "Ascending",
         "desc": "Descending"
@@ -805,12 +824,14 @@
         "status": "Status",
         "context": "Context",
         "surveys": "Surveys",
+        "activeSurveys": "Active",
         "responses": "Responses",
         "progress": "Progress",
         "updated": "Updated"
       },
       "card": {
         "surveys": "{count, plural, one {# survey} other {# surveys}}",
+        "activeSurveys": "{count} active",
         "responses": "{count, plural, one {# response} other {# responses}}",
         "progress": "{percent}% validated",
         "updated": "Updated"
@@ -915,6 +936,9 @@
       "sheetTitle": "Project details",
       "openInFullPage": "Open in full page",
       "detailsLabel": "Details",
+      "created": "Created",
+      "updated": "Last edited",
+      "archivedAt": "Archived at",
       "surveysLabel": "Surveys",
       "actionsLabel": "Actions",
       "context": "Context",
@@ -927,6 +951,7 @@
       "completedSurveys": "Completed",
       "draftSurveys": "Drafts",
       "archivedBanner": "This project is archived.",
+      "contextBadge": "Project",
       "tabs": {
         "overview": "Overview",
         "surveys": "Surveys",
@@ -943,7 +968,7 @@
         "completionSubtitle": "{completed} of {total} completed"
       },
       "metrics": {
-        "sectionLabel": "Overview Metrics",
+        "sectionLabel": "Metrics",
         "totalSurveys": "Total Surveys",
         "activeSurveys": "Active Surveys",
         "totalResponses": "Total Responses",
@@ -952,13 +977,13 @@
         "lastResponse": "Last Response"
       },
       "charts": {
-        "responseTimeline": "Response Timeline",
+        "responseTimeline": "Responses over time",
         "responses": "Responses",
         "surveyStatus": "Survey Status",
         "draft": "Draft",
         "active": "Active",
         "completedStatus": "Completed",
-        "completionRate": "Completion Rate",
+        "completionRate": "Survey completion rate",
         "completed": "Completed",
         "inProgress": "In Progress",
         "abandoned": "Abandoned",
@@ -1136,6 +1161,7 @@
     "allProjects": "All projects",
     "newProject": "New project",
     "research": "Research",
+    "standaloneResearch": "Standalone research",
     "surveys": "Surveys",
     "allSurveys": "All surveys",
     "newSurvey": "New survey",
@@ -1145,7 +1171,8 @@
     "unpinSidebar": "Unpin sidebar",
     "back": "Back",
     "dynamicHeading": "Dynamic",
-    "profilePreview": "Profile"
+    "profilePreview": "Profile",
+    "askAi": "Ask AI"
   },
   "breadcrumbs": {
     "dashboard": "Dashboard",
@@ -1369,10 +1396,10 @@
       "submit": "Continue"
     },
     "nav": {
-      "profile": "Profile",
-      "email": "Email",
-      "password": "Password",
-      "connectedAccounts": "Accounts",
+      "profile": "Profile Information",
+      "email": "Email Address",
+      "password": "Change Password",
+      "connectedAccounts": "Connected Accounts",
       "dangerZone": "Danger Zone",
       "label": "Settings section"
     },

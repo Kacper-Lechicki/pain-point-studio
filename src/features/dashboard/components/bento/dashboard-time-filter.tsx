@@ -24,10 +24,10 @@ export function DashboardTimeFilter({ currentPeriod }: DashboardTimeFilterProps)
           href={`?period=${period}`}
           scroll={false}
           className={cn(
-            'rounded-full px-3 py-1.5 text-xs font-medium transition-colors',
+            'rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
             currentPeriod === period
-              ? 'bg-primary text-primary-foreground shadow-sm'
-              : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'
+              ? 'bg-primary text-primary-foreground border-transparent shadow-sm'
+              : 'text-muted-foreground hover:border-foreground/30 hover:text-foreground border-transparent hover:border-dashed'
           )}
         >
           {LABELS[period]}

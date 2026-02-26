@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
+import { CompletionBarChart } from '@/components/charts/completion-bar-chart';
 import { SectionLabel } from '@/components/ui/metric-display';
 import type { DeviceTimelinePoint } from '@/features/surveys/actions/get-survey-stats';
 import { DeviceBreakdownChart } from '@/features/surveys/components/stats/device-breakdown-chart';
@@ -10,16 +11,41 @@ import { ResponseTimelineChart } from '@/features/surveys/components/stats/respo
 interface SurveyStatsChartsProps {
   responseTimeline: number[];
   deviceTimeline: DeviceTimelinePoint[];
+  /** Aggregate: completed, in progress, abandoned (for donut) */
+  completionBreakdown?: { completed: number; inProgress: number; abandoned: number };
 }
 
-export function SurveyStatsCharts({ responseTimeline, deviceTimeline }: SurveyStatsChartsProps) {
+export function SurveyStatsCharts({
+  responseTimeline,
+  deviceTimeline,
+  completionBreakdown = { completed: 0, inProgress: 0, abandoned: 0 },
+}: SurveyStatsChartsProps) {
   const t = useTranslations('surveys.stats');
 
   return (
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-      <div>
-        <SectionLabel>{t('responseTimeline')}</SectionLabel>
-        <ResponseTimelineChart data={responseTimeline} className="h-48 w-full" />
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="flex min-h-48 flex-col">
+          <SectionLabel>{t('responsesOverTime')}</SectionLabel>
+          <div className="min-h-48 flex-1">
+            <ResponseTimelineChart data={responseTimeline} className="h-full min-h-48" />
+          </div>
+        </div>
+
+        <div className="flex min-h-48 flex-col">
+          <SectionLabel>{t('completionRate')}</SectionLabel>
+          <div className="flex min-h-48 flex-1 flex-col justify-start">
+            <CompletionBarChart
+              data={completionBreakdown}
+              labels={{
+                completed: t('charts.completed'),
+                inProgress: t('charts.inProgress'),
+                abandoned: t('charts.abandoned'),
+              }}
+              noDataMessage={t('noChartData')}
+            />
+          </div>
+        </div>
       </div>
 
       <div>

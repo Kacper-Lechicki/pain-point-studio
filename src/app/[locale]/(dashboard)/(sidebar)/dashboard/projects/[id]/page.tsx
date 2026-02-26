@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 
 import { PageTransition } from '@/components/ui/page-transition';
+import { DashboardPageBack } from '@/features/dashboard/components/layout/dashboard-page-back';
 import { getProject } from '@/features/projects/actions/get-project';
 import { getProjectInsights } from '@/features/projects/actions/get-project-insights';
 import { getProjectOverviewStats } from '@/features/projects/actions/get-project-overview-stats';
@@ -25,26 +26,31 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
   }
 
   return (
-    <PageTransition>
-      <ProjectDashboardPage
-        project={data.project}
-        surveys={projectSurveys ?? []}
-        insights={insights}
-        overviewStats={
-          overviewStats ?? {
-            totalSurveys: 0,
-            activeSurveys: 0,
-            totalResponses: 0,
-            avgCompletion: 0,
-            avgTimeSeconds: null,
-            lastResponseAt: null,
-            responsesTimeline: [],
-            surveyStatusDistribution: {},
-            completionBreakdown: { completed: 0, inProgress: 0, abandoned: 0 },
-            recentActivity: [],
+    <>
+      <DashboardPageBack />
+
+      <PageTransition>
+        <ProjectDashboardPage
+          project={data.project}
+          surveys={projectSurveys ?? []}
+          insights={insights}
+          overviewStats={
+            overviewStats ?? {
+              totalSurveys: 0,
+              activeSurveys: 0,
+              totalResponses: 0,
+              avgCompletion: 0,
+              avgTimeSeconds: null,
+              lastResponseAt: null,
+              responsesTimeline: [],
+              completionTimeline: [],
+              surveyStatusDistribution: {},
+              completionBreakdown: { completed: 0, inProgress: 0, abandoned: 0 },
+              recentActivity: [],
+            }
           }
-        }
-      />
-    </PageTransition>
+        />
+      </PageTransition>
+    </>
   );
 }

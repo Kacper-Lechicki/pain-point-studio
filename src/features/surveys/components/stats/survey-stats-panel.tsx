@@ -144,14 +144,22 @@ export const SurveyStatsPanel = ({ stats, survey }: SurveyStatsPanelProps) => {
           wide
         />
 
+        {survey && <SurveyStatsDetailInfo survey={survey} />}
+
         {stats.completedResponses > 0 && (
           <SurveyStatsCharts
             responseTimeline={stats.responseTimeline}
             deviceTimeline={stats.deviceTimeline}
+            completionBreakdown={{
+              completed: stats.completedResponses,
+              inProgress: stats.inProgressResponses,
+              abandoned: Math.max(
+                0,
+                stats.totalResponses - stats.completedResponses - stats.inProgressResponses
+              ),
+            }}
           />
         )}
-
-        {survey && <SurveyStatsDetailInfo survey={survey} />}
 
         {stats.completedResponses === 0 ? (
           <EmptyState

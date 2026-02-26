@@ -21,6 +21,7 @@ interface SidebarItemProps {
   activePrefix?: string | undefined;
   isExpanded: boolean;
   hasSubNav?: boolean | undefined;
+  showChevron?: boolean | undefined;
   disabled?: boolean | undefined;
 }
 
@@ -31,6 +32,7 @@ export function SidebarItem({
   activePrefix,
   isExpanded,
   hasSubNav,
+  showChevron,
   disabled,
 }: SidebarItemProps) {
   const pathname = usePathname();
@@ -65,7 +67,7 @@ export function SidebarItem({
         {label}
       </span>
 
-      {isExpanded && hasSubNav && (
+      {isExpanded && (hasSubNav || showChevron) && (
         <ChevronRight className="size-4 shrink-0 opacity-50" aria-hidden />
       )}
     </>

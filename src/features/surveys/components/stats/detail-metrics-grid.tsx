@@ -1,4 +1,13 @@
-import { Clock, Eye, ListChecks, MousePointerClick, Percent, Timer, Users } from 'lucide-react';
+import {
+  Clock,
+  Clock3,
+  Eye,
+  ListChecks,
+  MousePointerClick,
+  Percent,
+  Timer,
+  Users,
+} from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { SectionLabel } from '@/components/ui/metric-display';
@@ -37,7 +46,7 @@ export function DetailMetricsGrid({
   const t = useTranslations();
 
   return (
-    <>
+    <div>
       <SectionLabel>{t('surveys.dashboard.detailPanel.metricsLabel')}</SectionLabel>
       <div className={cn('grid grid-cols-2 gap-2', wide && 'sm:grid-cols-3 lg:grid-cols-4')}>
         <div className="border-border/50 rounded-md border px-3 py-2.5">
@@ -132,15 +141,16 @@ export function DetailMetricsGrid({
         </div>
 
         <div className="border-border/50 rounded-md border px-3 py-2.5">
-          <div className="text-foreground text-sm leading-none font-semibold">
+          <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
             {lastResponseLabel ?? '—'}
           </div>
 
-          <div className="text-muted-foreground mt-1.5 text-[11px]">
+          <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
+            <Clock3 className="mt-0.5 size-3 shrink-0" aria-hidden />
             {t('surveys.dashboard.detailPanel.lastResponse')}
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

@@ -2,9 +2,7 @@
 
 import { useState } from 'react';
 
-import { XIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Dialog as DialogPrimitive } from 'radix-ui';
 
 import { Badge } from '@/components/ui/badge';
 import {
@@ -69,7 +67,7 @@ export function StatusBadge({
       </button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-xs" showCloseButton={false}>
+        <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="sr-only">{label}</DialogTitle>
 
@@ -80,19 +78,6 @@ export function StatusBadge({
               </DialogDescription>
             </div>
           </DialogHeader>
-
-          <DialogPrimitive.Close
-            className={cn(
-              'inline-flex items-center justify-center rounded-md transition-all outline-none disabled:pointer-events-none',
-              'text-muted-foreground border border-transparent',
-              'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',
-              'md:hover:border-foreground/30 md:hover:text-foreground md:hover:border-dashed',
-              "absolute top-4 right-4 size-6 [&_svg:not([class*='size-'])]:size-3"
-            )}
-          >
-            <XIcon className="size-4" aria-hidden />
-            <span className="sr-only">Close</span>
-          </DialogPrimitive.Close>
         </DialogContent>
       </Dialog>
     </>

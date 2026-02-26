@@ -17,6 +17,7 @@ function makeProject(overrides: Partial<ProjectWithMetrics> = {}): ProjectWithMe
     updated_at: '2025-01-02T00:00:00Z',
     notes: null,
     surveyCount: 0,
+    activeSurveyCount: 0,
     responseCount: 0,
     ...overrides,
   };
@@ -62,6 +63,7 @@ describe('getProjectComparator', () => {
     name: 'Alpha',
     status: 'active',
     surveyCount: 3,
+    activeSurveyCount: 1,
     responseCount: 10,
     created_at: '2025-01-01T00:00:00Z',
     updated_at: '2025-01-10T00:00:00Z',
@@ -72,6 +74,7 @@ describe('getProjectComparator', () => {
     name: 'Beta',
     status: 'archived',
     surveyCount: 5,
+    activeSurveyCount: 2,
     responseCount: 20,
     created_at: '2025-02-01T00:00:00Z',
     updated_at: '2025-02-10T00:00:00Z',

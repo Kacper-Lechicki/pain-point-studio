@@ -55,10 +55,6 @@ export function ProjectListKpi({ statusCounts, kpiStatuses }: ProjectListKpiProp
           </span>
         ))}
       </div>
-
-      <span className="text-muted-foreground hidden items-center gap-1 text-[11px] md:flex">
-        {t('projects.list.clickHint')}
-      </span>
     </div>
   );
 }

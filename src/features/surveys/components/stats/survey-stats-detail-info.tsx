@@ -27,6 +27,8 @@ export function SurveyStatsDetailInfo({ survey }: SurveyStatsDetailInfoProps) {
         showActiveDetails={showActiveDetails}
         formatDate={formatDate}
       />
+
+      <Separator />
     </>
   );
 }

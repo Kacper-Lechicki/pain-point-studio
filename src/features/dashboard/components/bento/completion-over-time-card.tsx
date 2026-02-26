@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 
-import { LineChart as LineChartIcon } from 'lucide-react';
+import { TrendingUp } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts';
 
@@ -18,53 +18,54 @@ import {
   BENTO_EMPTY_STATE_MIN_H,
 } from '@/features/dashboard/components/bento/bento-styles';
 import { useElementSize } from '@/features/dashboard/hooks/use-element-size';
-import type { TimelinePoint } from '@/features/dashboard/types/dashboard-stats';
+import type { CompletionTimelinePoint } from '@/features/projects/types';
 import { cn } from '@/lib/common/utils';
 
 const CHART_MARGIN = { left: 0, right: 4, top: 4, bottom: 4 };
 
-interface ResponsesChartProps {
-  data: TimelinePoint[];
+function formatDateLabel(dateStr: string): string {
+  const [y, m, d] = dateStr.substring(0, 10).split('-');
+  const date = new Date(Number(y), Number(m) - 1, Number(d));
+
+  return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+}
+
+interface CompletionOverTimeCardProps {
+  data: CompletionTimelinePoint[];
   className?: string;
 }
 
-export const ResponsesChart = ({ data, className }: ResponsesChartProps) => {
+export function CompletionOverTimeCard({ data, className }: CompletionOverTimeCardProps) {
   const t = useTranslations('dashboard.bento');
   const [chartContainerRef, { width: chartWidth, height: chartHeight }] =
     useElementSize<HTMLDivElement>();
 
   const chartConfig = {
-    responses: {
-      label: t('charts.responses'),
-      color: 'var(--chart-cyan)',
+    formEntries: {
+      label: t('charts.surveyEntriesOverTime'),
+      color: 'var(--chart-violet)',
     },
   } satisfies ChartConfig;
 
   const chartData = useMemo(
     () =>
-      data.map((point) => {
-        const dateStr = point.date.substring(0, 10);
-        const [y, m, d] = dateStr.split('-');
-        const date = new Date(Number(y), Number(m) - 1, Number(d));
-
-        return {
-          date: date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
-          responses: point.count,
-        };
-      }),
+      data.map((point) => ({
+        date: formatDateLabel(point.date),
+        formEntries: point.completed + point.inProgress + point.abandoned,
+      })),
     [data]
   );
 
-  const hasData = data.some((point) => point.count > 0);
+  const hasData = data.some((p) => p.completed > 0 || p.inProgress > 0 || p.abandoned > 0);
 
   return (
-    <Card className={cn(BENTO_CARD_CLASS, 'flex h-full min-w-0 flex-col')}>
+    <Card className={cn(BENTO_CARD_CLASS, 'flex h-full min-w-0 flex-col', className)}>
       <CardContent className="flex min-h-0 flex-1 flex-col gap-2 p-4">
         <div className="flex shrink-0 items-center justify-between gap-2">
           <p className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
-            {t('charts.responsesOverTime')}
+            {t('charts.surveyEntriesOverTime')}
           </p>
-          <LineChartIcon className="text-chart-cyan size-4 shrink-0" />
+          <TrendingUp className="text-chart-violet size-4 shrink-0" aria-hidden />
         </div>
 
         {!hasData ? (
@@ -74,7 +75,7 @@ export const ResponsesChart = ({ data, className }: ResponsesChartProps) => {
               BENTO_EMPTY_STATE_MIN_H
             )}
           >
-            <LineChartIcon className="text-muted-foreground/50 size-8 shrink-0" aria-hidden />
+            <TrendingUp className="text-muted-foreground/50 size-8 shrink-0" aria-hidden />
             <p className="text-muted-foreground text-sm">{t('charts.noData')}</p>
           </div>
         ) : (
@@ -110,9 +111,9 @@ export const ResponsesChart = ({ data, className }: ResponsesChartProps) => {
                   />
                   <ChartTooltip content={<ChartTooltipContent />} />
                   <Line
-                    dataKey="responses"
+                    dataKey="formEntries"
                     type="linear"
-                    stroke="var(--color-responses)"
+                    stroke="var(--color-formEntries)"
                     strokeWidth={2}
                     dot={false}
                     activeDot={{ r: 4 }}
@@ -125,4 +126,4 @@ export const ResponsesChart = ({ data, className }: ResponsesChartProps) => {
       </CardContent>
     </Card>
   );
-};
+}

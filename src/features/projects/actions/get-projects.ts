@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/server';
 
 export interface ProjectWithMetrics extends Project {
   surveyCount: number;
+  activeSurveyCount: number;
   responseCount: number;
 }
 
@@ -48,6 +49,7 @@ export const getProjects = cache(async (): Promise<ProjectWithMetrics[] | null> 
     string,
     {
       surveyCount: number;
+      activeSurveyCount: number;
       responseCount: number;
     }
   >();
@@ -55,6 +57,7 @@ export const getProjects = cache(async (): Promise<ProjectWithMetrics[] | null> 
   for (const id of projectIds) {
     metricsMap.set(id, {
       surveyCount: 0,
+      activeSurveyCount: 0,
       responseCount: 0,
     });
   }
@@ -75,6 +78,10 @@ export const getProjects = cache(async (): Promise<ProjectWithMetrics[] | null> 
 
       metrics.surveyCount++;
 
+      if (survey.status === 'active') {
+        metrics.activeSurveyCount++;
+      }
+
       const respCount =
         Array.isArray(survey.survey_responses) && survey.survey_responses.length > 0
           ? (survey.survey_responses[0] as { count: number }).count
@@ -90,6 +97,7 @@ export const getProjects = cache(async (): Promise<ProjectWithMetrics[] | null> 
     return {
       ...project,
       surveyCount: metrics.surveyCount,
+      activeSurveyCount: metrics.activeSurveyCount,
       responseCount: metrics.responseCount,
     };
   });

@@ -26,15 +26,17 @@ export function getDashboardBackConfig(pathname: string | null): DashboardBackCo
     return null;
   }
 
-  if (pathname.startsWith(ROUTES.dashboard.researchStats + '/')) {
+  const path = pathWithoutLocale(pathname);
+
+  if (path.startsWith(ROUTES.dashboard.researchStats + '/')) {
     return { fallbackHref: ROUTES.dashboard.projects };
   }
 
-  if (/^\/dashboard\/projects\/[^/]+$/.test(pathname) && pathname !== ROUTES.dashboard.projectNew) {
+  if (/^\/dashboard\/projects\/[^/]+$/.test(path) && path !== ROUTES.dashboard.projectNew) {
     return { fallbackHref: ROUTES.dashboard.projects };
   }
 
-  if (pathname === ROUTES.profile.preview) {
+  if (path === ROUTES.profile.preview) {
     return { fallbackHref: ROUTES.settings.profile };
   }
 
@@ -43,9 +45,9 @@ export function getDashboardBackConfig(pathname: string | null): DashboardBackCo
 
 // ── Sidebar / panel widths ──────────────────────────────────────────
 // Single source of truth. Actual pixel values live in CSS vars (globals.css):
-//   --sidebar-width-collapsed: 48px
-//   --sidebar-width-expanded:  224px
-//   --sidebar-sub-panel-width: 224px
+//   --sidebar-width-collapsed: 40px
+//   --sidebar-width-expanded:  236px
+//   --sidebar-sub-panel-width: 236px
 
 /** Left offset for main content and page footer (so they start where sidebars end). */
 export function getDashboardContentMarginLeft(isPinned: boolean, hasSubPanel: boolean): string {
@@ -66,6 +68,9 @@ export const BUILDER_PANEL_WIDTH_CLASS = 'min-w-72 max-w-72';
 /** Height shared by dashboard page footer and sidebar footer (lock). */
 export const DASHBOARD_FOOTER_HEIGHT_CLASS = 'h-12';
 
+/** Vertical gap between main content and dashboard footer. */
+export const DASHBOARD_FOOTER_GAP_TOP_CLASS = 'mt-10';
+
 // ── Content area ────────────────────────────────────────────────────
 
 export const DASHBOARD_CONTENT_MAX_WIDTH = 'container';
@@ -85,13 +90,6 @@ function pathWithoutLocale(pathname: string): string {
   return pathname;
 }
 
-/** Routes rendered at full content width (project list). */
-function isFullWidthPath(pathname: string): boolean {
-  const path = pathWithoutLocale(pathname);
-
-  return path === ROUTES.dashboard.projects;
-}
-
 /** Routes rendered at narrow content width (settings, new project form). */
 function isNarrowPath(pathname: string): boolean {
   const path = pathWithoutLocale(pathname);
@@ -108,8 +106,8 @@ function isNarrowPath(pathname: string): boolean {
 }
 
 /**
- * Content width per route: full (list views, archive), content (default), narrow (forms/settings).
- * Used by DashboardContent to wrap children in DashboardContentArea with the right max-width.
+ * Content width per route: narrow (forms/settings), content (all other pages).
+ * All non-narrow pages share the same max-width for consistent layout.
  */
 export function getDashboardContentMaxWidth(pathname: string | null): DashboardContentWidth {
   if (!pathname) {
@@ -118,10 +116,6 @@ export function getDashboardContentMaxWidth(pathname: string | null): DashboardC
 
   if (isNarrowPath(pathname)) {
     return 'narrow';
-  }
-
-  if (isFullWidthPath(pathname)) {
-    return 'full';
   }
 
   return 'content';

@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
-import { Info, KeyRound, LinkIcon, Unlink } from 'lucide-react';
+import { Info, KeyRound, Link2, Link as LinkIcon, Unlink } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -71,6 +71,7 @@ const ConnectedAccounts = ({ identities, hasPassword }: ConnectedAccountsProps) 
   return (
     <section className="space-y-8">
       <SettingsSectionHeader
+        icon={Link2}
         title={t('settings.connectedAccounts.title')}
         description={t('settings.connectedAccounts.description')}
       />

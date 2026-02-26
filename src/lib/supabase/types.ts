@@ -405,6 +405,10 @@ export type Database = {
         Args: { p_survey_id: string };
         Returns: number;
       };
+      get_survey_completion_timeline: {
+        Args: { p_survey_id: string; p_user_id: string };
+        Returns: Json;
+      };
       get_survey_stats_data: {
         Args: { p_survey_id: string; p_user_id: string };
         Returns: Json;

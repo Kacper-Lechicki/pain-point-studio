@@ -12,6 +12,13 @@ const timelinePointSchema = z.object({
   count: z.number(),
 });
 
+const completionTimelinePointSchema = z.object({
+  date: z.string(),
+  completed: z.number(),
+  inProgress: z.number(),
+  abandoned: z.number(),
+});
+
 const activityItemSchema = z.object({
   type: z.enum(['response', 'survey_completed', 'survey_activated']),
   title: z.string(),
@@ -27,6 +34,7 @@ const projectOverviewStatsSchema = z.object({
   avgTimeSeconds: z.number().nullable(),
   lastResponseAt: z.string().nullable(),
   responsesTimeline: z.array(timelinePointSchema),
+  completionTimeline: z.array(completionTimelinePointSchema).default([]),
   surveyStatusDistribution: z.record(z.string(), z.number()),
   completionBreakdown: z.object({
     completed: z.number(),

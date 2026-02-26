@@ -20,6 +20,9 @@ export function getProjectComparator(
       return (a, b) => mul * a.status.localeCompare(b.status) || a.name.localeCompare(b.name);
     case 'surveys':
       return (a, b) => mul * (a.surveyCount - b.surveyCount) || a.name.localeCompare(b.name);
+    case 'activeSurveys':
+      return (a, b) =>
+        mul * (a.activeSurveyCount - b.activeSurveyCount) || a.name.localeCompare(b.name);
     case 'responses':
       return (a, b) => mul * (a.responseCount - b.responseCount) || a.name.localeCompare(b.name);
 

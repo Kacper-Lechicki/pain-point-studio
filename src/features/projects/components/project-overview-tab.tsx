@@ -3,13 +3,15 @@
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { CompletionBarChart } from '@/components/charts/completion-bar-chart';
 import { Button } from '@/components/ui/button';
 import { HeroHighlight } from '@/components/ui/hero-highlight';
-import { OverviewCompletionRing } from '@/features/projects/components/overview-completion-ring';
+import { SectionLabel } from '@/components/ui/metric-display';
+import { Separator } from '@/components/ui/separator';
 import { OverviewMetrics } from '@/features/projects/components/overview-metrics';
 import { OverviewRecentActivity } from '@/features/projects/components/overview-recent-activity';
 import { OverviewResponseTimeline } from '@/features/projects/components/overview-response-timeline';
-import { OverviewSurveyStatusChart } from '@/features/projects/components/overview-survey-status-chart';
+import { ProjectDetailInfo } from '@/features/projects/components/project-detail-info';
 import { isProjectArchived } from '@/features/projects/lib/project-helpers';
 import { getProjectDetailUrl } from '@/features/projects/lib/project-urls';
 import type { Project, ProjectOverviewStats } from '@/features/projects/types';
@@ -30,15 +32,25 @@ export function ProjectOverviewTab({ project, overviewStats }: ProjectOverviewTa
     <div className="flex flex-col gap-6">
       <OverviewMetrics stats={overviewStats} />
 
+      <Separator />
+
+      <ProjectDetailInfo project={project} />
+
+      <Separator />
+
       {hasData ? (
         <>
-          <div className="grid gap-4 lg:grid-cols-2">
-            <OverviewResponseTimeline data={overviewStats.responsesTimeline} />
-            <OverviewSurveyStatusChart data={overviewStats.surveyStatusDistribution} />
+          <OverviewResponseTimeline data={overviewStats.responsesTimeline} />
+
+          <div>
+            <SectionLabel>{t('projects.detail.charts.completionRate')}</SectionLabel>
+            <CompletionBarChart
+              data={overviewStats.completionBreakdown}
+              noDataMessage={t('projects.detail.charts.noData')}
+            />
           </div>
 
-          <div className="grid gap-4 lg:grid-cols-2">
-            <OverviewCompletionRing data={overviewStats.completionBreakdown} />
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <OverviewRecentActivity items={overviewStats.recentActivity} />
           </div>
         </>

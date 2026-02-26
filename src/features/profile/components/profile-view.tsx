@@ -1,6 +1,6 @@
 'use client';
 
-import { BarChart3, FolderOpen } from 'lucide-react';
+import { BarChart3, CircleUserRound, FolderOpen } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Separator } from '@/components/ui/separator';
@@ -21,7 +21,10 @@ const ProfileView = ({ profile, isPreview = false }: ProfileViewProps) => {
     <div className="space-y-8">
       {isPreview && (
         <div className="space-y-1">
-          <h1 className="text-xl font-bold tracking-tight">{t('preview.title')}</h1>
+          <h1 className="flex items-center gap-2 text-xl font-bold tracking-tight">
+            <CircleUserRound className="text-muted-foreground size-5 shrink-0" aria-hidden />
+            {t('preview.title')}
+          </h1>
           <p className="text-muted-foreground text-xs">{t('preview.description')}</p>
         </div>
       )}

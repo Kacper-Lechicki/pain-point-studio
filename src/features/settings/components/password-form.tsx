@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Info } from 'lucide-react';
+import { Info, KeyRound } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useForm, useWatch } from 'react-hook-form';
 
@@ -79,6 +79,7 @@ const PasswordForm = ({ hasPassword }: PasswordFormProps) => {
   return (
     <section className="space-y-8">
       <SettingsSectionHeader
+        icon={KeyRound}
         title={t('settings.password.title')}
         description={
           hasPassword

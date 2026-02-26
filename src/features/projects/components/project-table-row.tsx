@@ -2,7 +2,7 @@
 
 import type React from 'react';
 
-import { Archive, MoreHorizontal, Pencil, Trash2, Undo2 } from 'lucide-react';
+import { MoreHorizontal, Trash2 } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
@@ -10,38 +10,23 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { TableCell, TableRow } from '@/components/ui/table';
 import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
 import { ProjectStatusBadge } from '@/features/projects/components/project-status-badge';
-import { isProjectArchived } from '@/features/projects/lib/project-helpers';
 import type { ProjectStatus } from '@/features/projects/types';
-import { cn } from '@/lib/common/utils';
 
 interface ProjectTableRowProps {
   project: ProjectWithMetrics;
-  isSelected: boolean;
   now: Date;
   onSelect: (projectId: string) => void;
-  onEdit: (project: ProjectWithMetrics) => void;
-  onArchive: (project: ProjectWithMetrics) => void;
   onDelete: (project: ProjectWithMetrics) => void;
 }
 
-export function ProjectTableRow({
-  project,
-  isSelected,
-  now,
-  onSelect,
-  onEdit,
-  onArchive,
-  onDelete,
-}: ProjectTableRowProps) {
+export function ProjectTableRow({ project, now, onSelect, onDelete }: ProjectTableRowProps) {
   const t = useTranslations();
   const format = useFormatter();
-  const isArchived = isProjectArchived(project);
   const updatedAtLabel = format.relativeTime(new Date(project.updated_at), now);
 
   const tableRowInteraction = {
@@ -60,43 +45,48 @@ export function ProjectTableRow({
         onSelect(project.id);
       }
     },
-    'aria-pressed': isSelected,
     'aria-label': project.name,
   };
 
   return (
     <TableRow
-      className={cn(
-        'even:bg-muted/80 h-14 cursor-pointer transition-all',
-        isSelected && 'bg-muted/60 even:bg-muted/60'
-      )}
+      className="even:bg-muted/80 h-14 cursor-pointer transition-all"
       {...tableRowInteraction}
     >
-      <TableCell className="min-w-0 overflow-hidden py-2.5">
-        <span className="text-foreground block truncate text-sm font-semibold">{project.name}</span>
-
-        {project.description && (
-          <p className="text-muted-foreground mt-0.5 truncate text-[11px]">{project.description}</p>
-        )}
+      <TableCell className="max-w-0 min-w-0 overflow-hidden px-4 py-3 align-top">
+        <div className="min-w-0 overflow-hidden">
+          <span className="text-foreground block truncate text-sm font-semibold">
+            {project.name}
+          </span>
+          {project.description && (
+            <p className="text-muted-foreground mt-0.5 truncate text-[11px]">
+              {project.description}
+            </p>
+          )}
+        </div>
       </TableCell>
 
-      <TableCell className="border-border/30 min-w-0 border-l text-center">
+      <TableCell className="border-border/30 min-w-0 border-l px-4 py-3 text-center">
         <ProjectStatusBadge status={project.status as ProjectStatus} />
       </TableCell>
 
-      <TableCell className="text-muted-foreground border-border/30 min-w-0 truncate border-l text-xs tabular-nums">
+      <TableCell className="text-muted-foreground border-border/30 min-w-0 border-l px-5 py-3 text-xs tabular-nums">
         {project.surveyCount}
       </TableCell>
 
-      <TableCell className="text-muted-foreground border-border/30 min-w-0 truncate border-l text-xs tabular-nums">
+      <TableCell className="text-muted-foreground border-border/30 min-w-0 border-l px-5 py-3 text-xs tabular-nums">
+        {project.activeSurveyCount}
+      </TableCell>
+
+      <TableCell className="text-muted-foreground border-border/30 min-w-0 border-l px-5 py-3 text-xs tabular-nums">
         {project.responseCount}
       </TableCell>
 
-      <TableCell className="text-muted-foreground border-border/30 hidden min-w-0 truncate border-l pr-4 pl-3 text-xs xl:table-cell">
+      <TableCell className="text-muted-foreground border-border/30 hidden min-w-0 truncate border-l px-4 py-3 text-xs xl:table-cell">
         {updatedAtLabel}
       </TableCell>
 
-      <TableCell className="w-10 p-0" onClick={(e) => e.stopPropagation()}>
+      <TableCell className="w-12 shrink-0 px-2 py-3" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-center">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -112,22 +102,6 @@ export function ProjectTableRow({
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => onEdit(project)}>
-                <Pencil className="size-4" aria-hidden />
-                {t('projects.list.actions.edit')}
-              </DropdownMenuItem>
-
-              <DropdownMenuSeparator />
-
-              <DropdownMenuItem onClick={() => onArchive(project)}>
-                {isArchived ? (
-                  <Undo2 className="size-4" aria-hidden />
-                ) : (
-                  <Archive className="size-4" aria-hidden />
-                )}
-                {t(isArchived ? 'projects.list.actions.restore' : 'projects.list.actions.archive')}
-              </DropdownMenuItem>
-
               <DropdownMenuItem variant="destructive" onClick={() => onDelete(project)}>
                 <Trash2 className="size-4" aria-hidden />
                 {t('projects.list.actions.delete')}

@@ -54,6 +54,7 @@ function makeProject(id: string, name: string, status = 'active'): ProjectWithMe
     updated_at: '2025-01-15T00:00:00Z',
     notes: null,
     surveyCount: 3,
+    activeSurveyCount: 1,
     responseCount: 10,
   };
 }

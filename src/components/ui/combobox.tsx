@@ -20,6 +20,8 @@ interface ComboboxProps {
   placeholder?: string;
   searchPlaceholder?: string;
   emptyMessage?: string;
+  /** Optional leading content (e.g. icon) rendered before the label in trigger and list options. */
+  optionLeading?: (option: ComboboxOption) => React.ReactNode;
   className?: string;
   'aria-label'?: string;
   'aria-invalid'?: boolean;
@@ -33,6 +35,7 @@ function Combobox({
   placeholder = 'Select...',
   searchPlaceholder = 'Search...',
   emptyMessage = 'No results found.',
+  optionLeading,
   className,
   'aria-label': ariaLabel,
   'aria-invalid': ariaInvalid,
@@ -42,7 +45,8 @@ function Combobox({
   const [search, setSearch] = React.useState('');
   const inputRef = React.useRef<HTMLInputElement>(null);
   const listboxId = React.useId();
-  const selectedLabel = options.find((o) => o.value === value)?.label;
+  const selectedOption = options.find((o) => o.value === value);
+  const selectedLabel = selectedOption?.label;
 
   const filtered = search
     ? options.filter((o) => o.label.toLowerCase().includes(search.toLowerCase()))
@@ -80,8 +84,11 @@ function Combobox({
             className
           )}
         >
-          <span className={cn('truncate', !selectedLabel && 'text-muted-foreground')}>
-            {selectedLabel ?? placeholder}
+          <span className="flex min-w-0 flex-1 items-center gap-2">
+            {selectedOption && optionLeading ? optionLeading(selectedOption) : null}
+            <span className={cn('truncate', !selectedLabel && 'text-muted-foreground')}>
+              {selectedLabel ?? placeholder}
+            </span>
           </span>
 
           <ChevronDownIcon className="size-4 shrink-0 opacity-50" />
@@ -133,7 +140,8 @@ function Combobox({
                   onClick={() => select(option.value)}
                   className="focus-visible:border-foreground/30 focus-visible:text-foreground hover:border-foreground/30 hover:text-foreground relative flex min-h-10 w-full cursor-pointer items-center gap-2 rounded-lg border border-transparent py-1.5 pr-8 pl-2 text-sm outline-hidden transition-colors select-none hover:border-dashed focus-visible:border-dashed md:min-h-9"
                 >
-                  {option.label}
+                  {optionLeading ? optionLeading(option) : null}
+                  <span className="flex-1 truncate text-left">{option.label}</span>
                   {isSelected && (
                     <span className="absolute right-2 flex size-3.5 items-center justify-center">
                       <CheckIcon className="size-4" />

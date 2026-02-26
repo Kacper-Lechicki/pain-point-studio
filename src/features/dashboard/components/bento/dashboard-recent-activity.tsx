@@ -6,7 +6,10 @@ import type { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Card } from '@/components/ui/card';
-import { BENTO_CARD_CLASS } from '@/features/dashboard/components/bento/bento-styles';
+import {
+  BENTO_CARD_CLASS,
+  BENTO_EMPTY_STATE_MIN_H,
+} from '@/features/dashboard/components/bento/bento-styles';
 import type { ActivityItem } from '@/features/dashboard/types/dashboard-stats';
 import { cn } from '@/lib/common/utils';
 
@@ -26,8 +29,8 @@ export function DashboardRecentActivity({ items }: DashboardRecentActivityProps)
 
   return (
     <Card className={cn('border-l-chart-pink h-full border-l-4', BENTO_CARD_CLASS)}>
-      <div className="p-4">
-        <div className="flex items-center justify-between gap-2">
+      <div className="flex h-full flex-col gap-2 p-4">
+        <div className="flex shrink-0 items-center justify-between gap-2">
           <p className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
             {t('recentActivity.title')}
           </p>
@@ -35,11 +38,17 @@ export function DashboardRecentActivity({ items }: DashboardRecentActivityProps)
         </div>
 
         {visibleItems.length === 0 ? (
-          <p className="text-muted-foreground mt-3 text-center text-xs">
-            {t('recentActivity.empty')}
-          </p>
+          <div
+            className={cn(
+              'flex flex-1 flex-col items-center justify-center gap-2 text-center',
+              BENTO_EMPTY_STATE_MIN_H
+            )}
+          >
+            <Activity className="text-muted-foreground/50 size-8 shrink-0" aria-hidden />
+            <p className="text-muted-foreground text-sm">{t('recentActivity.empty')}</p>
+          </div>
         ) : (
-          <div className="mt-2">
+          <div className="min-w-0 flex-1">
             {visibleItems.map((item, index) => {
               const Icon = ACTIVITY_ICONS[item.type];
               const relativeTime = formatDistanceToNow(new Date(item.timestamp), {
@@ -49,9 +58,9 @@ export function DashboardRecentActivity({ items }: DashboardRecentActivityProps)
               return (
                 <div key={`${item.surveyId}-${index}`} className="flex items-center gap-2.5 py-1.5">
                   <div className="bg-muted/80 shrink-0 rounded-lg p-1.5">
-                    <Icon className="text-muted-foreground size-3.5" />
+                    <Icon className="text-chart-pink size-3.5" />
                   </div>
-                  <span className="text-muted-foreground min-w-0 truncate text-xs">
+                  <span className="text-muted-foreground min-w-0 flex-1 truncate text-xs">
                     <span className="text-foreground font-medium">{item.title}</span>
                     {' \u00b7 '}
                     {t(`recentActivity.type.${item.type}`)}

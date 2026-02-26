@@ -23,6 +23,7 @@ const DangerZone = ({ userEmail, activeSurveyCount, responseCount }: DangerZoneP
     <>
       <section className="space-y-8">
         <SettingsSectionHeader
+          icon={Trash2}
           title={t('title')}
           description={t('description')}
           variant="destructive"

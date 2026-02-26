@@ -76,7 +76,7 @@ export function ProjectDetailTabs({
           <TabsTrigger value="surveys">
             {t('projects.detail.tabs.research')}
             {surveys.length > 0 && (
-              <span className="text-muted-foreground ml-1 text-xs tabular-nums">
+              <span className="text-muted-foreground ml-0.5 text-xs tabular-nums">
                 ({surveys.length})
               </span>
             )}
@@ -84,7 +84,7 @@ export function ProjectDetailTabs({
           <TabsTrigger value="insights">
             {t('projects.detail.tabs.insights')}
             {insights.length > 0 && (
-              <span className="text-muted-foreground ml-1 text-xs tabular-nums">
+              <span className="text-muted-foreground ml-0.5 text-xs tabular-nums">
                 ({insights.length})
               </span>
             )}
@@ -92,11 +92,11 @@ export function ProjectDetailTabs({
           <TabsTrigger value="notes">{t('projects.detail.tabs.notes')}</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview">
+        <TabsContent value="overview" className="pt-5">
           <ProjectOverviewTab project={project} overviewStats={overviewStats} />
         </TabsContent>
 
-        <TabsContent value="surveys">
+        <TabsContent value="surveys" className="pt-5">
           <ProjectSurveysTab
             project={project}
             surveys={surveys}
@@ -104,7 +104,7 @@ export function ProjectDetailTabs({
           />
         </TabsContent>
 
-        <TabsContent value="insights">
+        <TabsContent value="insights" className="pt-5">
           <ProjectInsightsTab
             projectId={project.id}
             insights={insights}
@@ -114,7 +114,7 @@ export function ProjectDetailTabs({
           />
         </TabsContent>
 
-        <TabsContent value="notes">
+        <TabsContent value="notes" className="pt-5">
           <ProjectNotesTab project={project} />
         </TabsContent>
       </Tabs>

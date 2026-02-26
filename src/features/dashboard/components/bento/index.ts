@@ -1,5 +1,5 @@
-export { CompletionChart } from './completion-chart';
 export { DashboardBento } from './dashboard-bento';
+export { DashboardCompletionCard } from './dashboard-completion-card';
 export { DashboardBentoSkeleton } from './dashboard-bento-skeleton';
 export { DashboardGreeting } from './dashboard-greeting';
 export { DashboardKpiCards } from './dashboard-kpi-cards';

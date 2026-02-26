@@ -18,8 +18,8 @@ export default async function ProjectsPage() {
 
   return (
     <PageTransition>
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
+      <div className="flex flex-row flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
           <h1 className="flex items-center gap-2 text-3xl font-bold">
             <FolderKanban className="size-7 shrink-0" aria-hidden />
             {t('projects.title')}
@@ -29,7 +29,7 @@ export default async function ProjectsPage() {
         </div>
 
         {hasProjects && (
-          <Button asChild className="w-full sm:w-auto">
+          <Button asChild className="shrink-0">
             <Link href={ROUTES.dashboard.projectNew}>
               <Plus className="size-4" aria-hidden />
               {t('projects.createProject')}

@@ -8,34 +8,28 @@ import { ProjectTableRow } from '@/features/projects/components/project-table-ro
 
 interface ProjectListTableProps {
   projects: ProjectWithMetrics[];
-  selectedId: string | null;
   sortBy: ProjectSortBy;
   sortDir: 'asc' | 'desc';
   now: Date;
   onSortByColumn: (key: ProjectSortBy) => void;
   onSelect: (projectId: string) => void;
-  onEdit: (project: ProjectWithMetrics) => void;
-  onArchive: (project: ProjectWithMetrics) => void;
   onDelete: (project: ProjectWithMetrics) => void;
 }
 
 export function ProjectListTable({
   projects,
-  selectedId,
   sortBy,
   sortDir,
   now,
   onSortByColumn,
   onSelect,
-  onEdit,
-  onArchive,
   onDelete,
 }: ProjectListTableProps) {
   const t = useTranslations();
 
   return (
-    <div className="border-border/50 overflow-hidden rounded-lg border">
-      <Table className="table-fixed">
+    <div className="border-border/50 min-w-0 overflow-auto rounded-lg border">
+      <Table className="w-full table-fixed">
         <TableHeader>
           <TableRow className="bg-muted/30 hover:bg-muted/30">
             <SortableTableHeader
@@ -44,7 +38,7 @@ export function ProjectListTable({
               sortDir={sortDir}
               onSort={onSortByColumn}
               label={t('projects.list.table.name')}
-              className="w-[30%]"
+              className="w-[42%] min-w-0 px-4 py-3"
             />
 
             <SortableTableHeader
@@ -53,7 +47,7 @@ export function ProjectListTable({
               sortDir={sortDir}
               onSort={onSortByColumn}
               label={t('projects.list.table.status')}
-              className="border-border/30 border-l"
+              className="border-border/30 w-[11%] min-w-0 border-l px-4 py-3"
               centered
             />
 
@@ -63,7 +57,16 @@ export function ProjectListTable({
               sortDir={sortDir}
               onSort={onSortByColumn}
               label={t('projects.list.table.surveys')}
-              className="border-border/30 border-l"
+              className="border-border/30 w-[11%] min-w-0 border-l px-5 py-3"
+            />
+
+            <SortableTableHeader
+              sortKey="activeSurveys"
+              currentSortKey={sortBy}
+              sortDir={sortDir}
+              onSort={onSortByColumn}
+              label={t('projects.list.table.activeSurveys')}
+              className="border-border/30 w-[11%] min-w-0 border-l px-5 py-3"
             />
 
             <SortableTableHeader
@@ -72,7 +75,7 @@ export function ProjectListTable({
               sortDir={sortDir}
               onSort={onSortByColumn}
               label={t('projects.list.table.responses')}
-              className="border-border/30 border-l"
+              className="border-border/30 w-[12%] min-w-0 border-l px-5 py-3"
             />
 
             <SortableTableHeader
@@ -81,10 +84,10 @@ export function ProjectListTable({
               sortDir={sortDir}
               onSort={onSortByColumn}
               label={t('projects.list.table.updated')}
-              className="border-border/30 hidden border-l xl:table-cell"
+              className="border-border/30 hidden w-[9%] min-w-0 border-l px-4 py-3 xl:table-cell"
             />
 
-            <TableHead className="w-10" aria-hidden />
+            <TableHead className="w-[4%] min-w-12 shrink-0 px-2 py-3" aria-hidden />
           </TableRow>
         </TableHeader>
 
@@ -93,11 +96,8 @@ export function ProjectListTable({
             <ProjectTableRow
               key={project.id}
               project={project}
-              isSelected={selectedId === project.id}
               now={now}
               onSelect={onSelect}
-              onEdit={onEdit}
-              onArchive={onArchive}
               onDelete={onDelete}
             />
           ))}

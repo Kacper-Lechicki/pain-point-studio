@@ -1,42 +1,20 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-
-import { Archive, ArrowLeft, EllipsisVertical, Pencil, RotateCcw, Trash2 } from 'lucide-react';
+import { Archive, EllipsisVertical, RotateCcw, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ROUTES } from '@/config/routes';
 import { ProjectPhaseBadge } from '@/features/projects/components/project-phase-badge';
 import { ProjectStatusBadge } from '@/features/projects/components/project-status-badge';
 import { isProjectArchived } from '@/features/projects/lib/project-helpers';
 import type { Project, ProjectStatus, ResearchPhase } from '@/features/projects/types';
-import { useRouter } from '@/i18n/routing';
-
-const NAV_DEPTH_KEY = '__nav_depth';
-
-function canGoBack(): boolean {
-  if (typeof window === 'undefined') {
-    return false;
-  }
-
-  if ('navigation' in window) {
-    return Boolean((window.navigation as { canGoBack?: boolean }).canGoBack);
-  }
-
-  try {
-    return (Number(sessionStorage.getItem(NAV_DEPTH_KEY)) || 0) > 0;
-  } catch {
-    return false;
-  }
-}
 
 interface ProjectDetailHeaderProps {
   project: Project;
@@ -49,28 +27,11 @@ interface ProjectDetailHeaderProps {
 export function ProjectDetailHeader({
   project,
   phase,
-  onEdit,
   onArchive,
   onDelete,
 }: ProjectDetailHeaderProps) {
   const t = useTranslations();
-  const router = useRouter();
   const isArchived = isProjectArchived(project);
-  const [goBack, setGoBack] = useState(false);
-
-  useEffect(() => {
-    const raf = requestAnimationFrame(() => setGoBack(canGoBack()));
-
-    return () => cancelAnimationFrame(raf);
-  }, []);
-
-  const handleBack = () => {
-    if (goBack) {
-      router.back();
-    } else {
-      router.push(ROUTES.dashboard.projects);
-    }
-  };
 
   return (
     <div className="flex flex-col gap-2">
@@ -87,69 +48,48 @@ export function ProjectDetailHeader({
         </div>
       )}
 
-      <div className="flex items-center gap-3">
-        <button
-          type="button"
-          onClick={handleBack}
-          className="text-muted-foreground md:hover:text-foreground -ml-1 inline-flex size-9 shrink-0 touch-manipulation items-center justify-center rounded-md transition-colors"
-          aria-label={t('common.goBack')}
-        >
-          <ArrowLeft className="size-5 md:size-4" aria-hidden />
-        </button>
+      <div className="flex min-w-0 flex-wrap items-start justify-between gap-4">
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <Badge variant="secondary" className="text-[11px]">
+              {t('projects.detail.contextBadge')}
+            </Badge>
+            <ProjectStatusBadge status={project.status as ProjectStatus} />
+            {phase && <ProjectPhaseBadge phase={phase} />}
+          </div>
 
-        <h1 className="text-foreground min-w-0 truncate text-xl leading-tight font-bold md:text-2xl">
-          {project.name}
-        </h1>
+          <h1 className="text-foreground mt-1 min-w-0 truncate text-3xl leading-tight font-bold">
+            {project.name}
+          </h1>
 
-        <div className="flex shrink-0 items-center gap-1.5">
-          <ProjectStatusBadge status={project.status as ProjectStatus} />
-          {phase && <ProjectPhaseBadge phase={phase} />}
+          {project.description && (
+            <p className="text-muted-foreground mt-2 text-sm leading-relaxed">
+              {project.description}
+            </p>
+          )}
         </div>
 
-        <div className="ml-auto flex shrink-0 items-center">
+        <div className="flex shrink-0 items-center gap-1">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                size="icon-md"
+                size="icon-xs"
+                className="text-muted-foreground"
                 aria-label={t('projects.list.actions.moreActions')}
               >
-                <EllipsisVertical className="size-4" />
+                <EllipsisVertical className="size-4" aria-hidden />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {!isArchived && (
-                <DropdownMenuItem onClick={onEdit}>
-                  <Pencil />
-                  {t('projects.list.actions.edit')}
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuItem
-                {...(!isArchived && { variant: 'warning' as const })}
-                onClick={onArchive}
-              >
-                {isArchived ? <RotateCcw /> : <Archive />}
-                {t(`projects.list.actions.${isArchived ? 'restore' : 'archive'}`)}
+              <DropdownMenuItem variant="destructive" onClick={onDelete}>
+                <Trash2 />
+                {t('projects.list.actions.delete')}
               </DropdownMenuItem>
-              {isArchived && (
-                <>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem variant="destructive" onClick={onDelete}>
-                    <Trash2 />
-                    {t('projects.list.actions.delete')}
-                  </DropdownMenuItem>
-                </>
-              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       </div>
-
-      {project.description && (
-        <p className="text-muted-foreground line-clamp-2 pl-9 text-sm leading-relaxed md:pl-8">
-          {project.description}
-        </p>
-      )}
     </div>
   );
 }

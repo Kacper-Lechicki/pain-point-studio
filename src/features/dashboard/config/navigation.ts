@@ -1,4 +1,4 @@
-import { FolderKanban, Home, type LucideIcon, Plus } from 'lucide-react';
+import { FlaskConical, FolderKanban, Home, type LucideIcon, Plus, Sparkles } from 'lucide-react';
 
 import type { AppRoute } from '@/config/routes';
 import { ROUTES } from '@/config/routes';
@@ -47,6 +47,8 @@ export interface NavItem {
    */
   activePrefix?: string | undefined;
   subNav?: SubNavConfig | undefined;
+  /** Show chevron when expanded (e.g. for items that will have sub-nav later). */
+  showChevron?: boolean | undefined;
   disabled?: boolean | undefined;
 }
 
@@ -84,10 +86,24 @@ export const SIDEBAR_NAV: NavGroup[] = [
           ],
         },
       },
+      {
+        labelKey: 'sidebar.standaloneResearch',
+        icon: FlaskConical,
+        href: ROUTES.common.dashboard,
+        showChevron: true,
+        disabled: true,
+      },
+      {
+        labelKey: 'sidebar.askAi',
+        icon: Sparkles,
+        href: ROUTES.common.dashboard,
+        disabled: true,
+      },
     ],
   },
 ];
 
+export { PROFILE_NAV_ITEM as SIDEBAR_PROFILE_ITEM } from './navigation-settings';
 export { USER_SETTINGS_NAV_ITEM as SIDEBAR_BOTTOM_ITEM } from './navigation-settings';
 
 // ── Re-exports for backward compatibility ─────────────────────────────

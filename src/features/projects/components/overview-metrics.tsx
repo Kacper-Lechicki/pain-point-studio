@@ -4,6 +4,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { Activity, Clock3, FileText, Percent, Timer, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { SectionLabel } from '@/components/ui/metric-display';
 import { OverviewMetricCard } from '@/features/projects/components/overview-metric-card';
 import type { ProjectOverviewStats } from '@/features/projects/types';
 
@@ -38,12 +39,9 @@ export function OverviewMetrics({ stats }: OverviewMetricsProps) {
   const t = useTranslations('projects.detail.metrics');
 
   return (
-    <div className="flex flex-col gap-2">
-      <p className="text-muted-foreground text-[11px] font-medium tracking-wider uppercase">
-        {t('sectionLabel')}
-      </p>
-
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+    <div>
+      <SectionLabel>{t('sectionLabel')}</SectionLabel>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
         <OverviewMetricCard
           value={String(stats.totalSurveys)}
           label={t('totalSurveys')}

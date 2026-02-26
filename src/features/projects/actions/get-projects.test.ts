@@ -142,6 +142,7 @@ describe('getProjects', () => {
     expect(result?.[0]).toMatchObject({
       id: 'proj-1',
       surveyCount: 2,
+      activeSurveyCount: 0,
       responseCount: 13,
     });
   });

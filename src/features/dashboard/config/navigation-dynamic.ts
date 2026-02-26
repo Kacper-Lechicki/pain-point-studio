@@ -1,4 +1,4 @@
-import { CircleUserRound, FolderKanban, type LucideIcon } from 'lucide-react';
+import { FolderKanban, type LucideIcon } from 'lucide-react';
 
 import type { AppRoute } from '@/config/routes';
 import { ROUTES } from '@/config/routes';
@@ -40,6 +40,4 @@ export interface DynamicSidebarItem {
  * Routes that are not part of the static sidebar but should still
  * show a highlighted item when the user is on them.
  */
-export const DYNAMIC_SIDEBAR_ITEMS: DynamicSidebarItem[] = [
-  { path: ROUTES.profile.preview, labelKey: 'sidebar.profilePreview', icon: CircleUserRound },
-];
+export const DYNAMIC_SIDEBAR_ITEMS: DynamicSidebarItem[] = [];

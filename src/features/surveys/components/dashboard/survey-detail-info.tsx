@@ -35,7 +35,7 @@ export function SurveyDetailInfo({
   const { isCompleted, isCancelled, isArchived } = flags;
 
   return (
-    <>
+    <div>
       <SectionLabel>{t('surveys.dashboard.detailPanel.detailsLabel')}</SectionLabel>
 
       <div className="space-y-2">
@@ -125,6 +125,6 @@ export function SurveyDetailInfo({
           value={formatDate(survey.updatedAt)}
         />
       </div>
-    </>
+    </div>
   );
 }

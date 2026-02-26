@@ -6,6 +6,7 @@ import { Ban, CheckCircle2, Download, MoreHorizontal, Share2 } from 'lucide-reac
 import type { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -118,6 +119,9 @@ export function SurveyStatsHeader({
       <div className="flex min-w-0 flex-wrap items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-1.5">
+            <Badge variant="secondary" className="text-[11px]">
+              {t('surveys.stats.contextBadge')}
+            </Badge>
             <SurveyStatusBadge status={status} />
           </div>
 

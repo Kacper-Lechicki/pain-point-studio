@@ -7,7 +7,7 @@ import { SidebarItem } from '@/features/dashboard/components/layout/sidebar-item
 import { SidebarNavList } from '@/features/dashboard/components/layout/sidebar-nav-list';
 import { useSidebar } from '@/features/dashboard/components/layout/sidebar-provider';
 import { DASHBOARD_FOOTER_HEIGHT_CLASS } from '@/features/dashboard/config/layout';
-import { SIDEBAR_BOTTOM_ITEM } from '@/features/dashboard/config/navigation';
+import { SIDEBAR_BOTTOM_ITEM, SIDEBAR_PROFILE_ITEM } from '@/features/dashboard/config/navigation';
 import { cn } from '@/lib/common/utils';
 
 export function Sidebar() {
@@ -38,7 +38,12 @@ export function Sidebar() {
       >
         <SidebarNavList isExpanded={isExpanded} />
 
-        <div className={cn('mt-auto pt-4', !isExpanded && 'flex flex-col items-center')}>
+        <div className={cn('mt-auto flex flex-col gap-1.5 pt-4', !isExpanded && 'items-center')}>
+          <SidebarItem
+            {...SIDEBAR_PROFILE_ITEM}
+            isExpanded={isExpanded}
+            hasSubNav={!!SIDEBAR_PROFILE_ITEM.subNav}
+          />
           <SidebarItem
             {...SIDEBAR_BOTTOM_ITEM}
             isExpanded={isExpanded}

@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { getCopyrightText } from '@/config/brand';
 import { useSidebar } from '@/features/dashboard/components/layout/sidebar-provider';
 import {
+  DASHBOARD_FOOTER_GAP_TOP_CLASS,
   DASHBOARD_FOOTER_HEIGHT_CLASS,
   getDashboardContentMarginLeft,
   isBuilderPath,
@@ -26,6 +27,7 @@ export function DashboardFooter() {
     <footer
       className={cn(
         DASHBOARD_FOOTER_HEIGHT_CLASS,
+        DASHBOARD_FOOTER_GAP_TOP_CLASS,
         'border-border bg-background flex shrink-0 items-center justify-center border-t px-4 transition-[margin-left] duration-200 ease-in-out sm:px-6 lg:px-8'
       )}
       style={marginLeft != null ? { marginLeft } : undefined}

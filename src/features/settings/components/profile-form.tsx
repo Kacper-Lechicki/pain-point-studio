@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Eye } from 'lucide-react';
+import { CircleUserRound, Eye } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useFieldArray, useForm } from 'react-hook-form';
 
@@ -84,6 +84,7 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
   return (
     <section className="space-y-8">
       <SettingsSectionHeader
+        icon={CircleUserRound}
         title={t('settings.profile.title')}
         description={t('settings.profile.description')}
         action={

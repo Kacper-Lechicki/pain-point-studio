@@ -35,6 +35,7 @@ const PROJECTS: ProjectWithMetrics[] = [
     updated_at: '2025-01-02T00:00:00Z',
     notes: null,
     surveyCount: 2,
+    activeSurveyCount: 1,
     responseCount: 10,
   },
 ];

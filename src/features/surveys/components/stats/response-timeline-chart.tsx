@@ -3,7 +3,7 @@
 import { useMemo } from 'react';
 
 import { useTranslations } from 'next-intl';
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts';
 
 import {
   type ChartConfig,
@@ -12,6 +12,15 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 
+const CHART_CONFIG = {
+  responses: {
+    label: 'Responses',
+    color: 'var(--chart-cyan)',
+  },
+} satisfies ChartConfig;
+
+const CHART_MARGIN = { left: 0, right: 4, top: 4, bottom: 4 };
+
 interface ResponseTimelineChartProps {
   data: number[];
   className?: string;
@@ -19,13 +28,6 @@ interface ResponseTimelineChartProps {
 
 export const ResponseTimelineChart = ({ data, className }: ResponseTimelineChartProps) => {
   const t = useTranslations('surveys.stats');
-
-  const chartConfig = {
-    responses: {
-      label: t('chartResponses'),
-      color: 'var(--chart-emerald)',
-    },
-  } satisfies ChartConfig;
 
   const chartData = useMemo(() => {
     const today = new Date();
@@ -44,48 +46,44 @@ export const ResponseTimelineChart = ({ data, className }: ResponseTimelineChart
   const hasData = data.some((v) => v > 0);
 
   if (!hasData) {
-    return null;
+    return (
+      <div className="text-muted-foreground flex h-48 w-full items-center justify-center text-sm">
+        {t('noChartData')}
+      </div>
+    );
   }
 
   return (
-    <ChartContainer config={chartConfig} className={className ?? 'h-40 w-full'}>
-      <AreaChart data={chartData} margin={{ left: 0, right: 12, top: 4, bottom: 0 }}>
-        <defs>
-          <linearGradient id="fillResponses" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="var(--color-responses)" stopOpacity={0.25} />
-            <stop offset="95%" stopColor="var(--color-responses)" stopOpacity={0} />
-          </linearGradient>
-        </defs>
-
+    <ChartContainer config={CHART_CONFIG} className={className ?? 'h-48 w-full'}>
+      <LineChart data={chartData} margin={CHART_MARGIN}>
         <CartesianGrid vertical={false} strokeDasharray="3 3" className="stroke-border/40" />
-
         <XAxis
           dataKey="date"
           tickLine={false}
           axisLine={false}
           tick={{ fontSize: 11 }}
           interval="preserveStartEnd"
-          minTickGap={40}
+          minTickGap={32}
+          dy={2}
         />
-
         <YAxis
           allowDecimals={false}
           tickLine={false}
           axisLine={false}
-          width={28}
+          width={36}
           tick={{ fontSize: 11 }}
+          tickMargin={2}
         />
-
         <ChartTooltip content={<ChartTooltipContent />} />
-
-        <Area
+        <Line
           dataKey="responses"
-          type="monotone"
-          fill="url(#fillResponses)"
+          type="linear"
           stroke="var(--color-responses)"
           strokeWidth={2}
+          dot={false}
+          activeDot={{ r: 4 }}
         />
-      </AreaChart>
+      </LineChart>
     </ChartContainer>
   );
 };

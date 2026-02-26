@@ -8,11 +8,25 @@ import type { MessageKey } from '@/i18n/types';
 import { sortOptionsAlphabetically } from '@/lib/common/sort-options';
 
 export type ProjectStatusFilter = 'active' | 'archived';
-export type ProjectSortBy = 'updated' | 'created' | 'name' | 'surveys' | 'responses' | 'status';
+export type ProjectSortBy =
+  | 'updated'
+  | 'created'
+  | 'name'
+  | 'surveys'
+  | 'activeSurveys'
+  | 'responses'
+  | 'status';
 
 const STATUS_OPTIONS: ProjectStatusFilter[] = ['active', 'archived'];
 
-const SORT_OPTIONS: ProjectSortBy[] = ['name', 'surveys', 'responses', 'updated', 'created'];
+const SORT_OPTIONS: ProjectSortBy[] = [
+  'name',
+  'surveys',
+  'activeSurveys',
+  'responses',
+  'updated',
+  'created',
+];
 
 interface ProjectListToolbarProps {
   statusFilter: ProjectStatusFilter[];

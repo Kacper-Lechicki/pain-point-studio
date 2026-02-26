@@ -1,5 +1,12 @@
 import type { ActivityItem, TimelinePoint } from '@/features/dashboard/types/dashboard-stats';
 
+export interface CompletionTimelinePoint {
+  date: string;
+  completed: number;
+  inProgress: number;
+  abandoned: number;
+}
+
 export interface ProjectOverviewStats {
   totalSurveys: number;
   activeSurveys: number;
@@ -8,6 +15,7 @@ export interface ProjectOverviewStats {
   avgTimeSeconds: number | null;
   lastResponseAt: string | null;
   responsesTimeline: TimelinePoint[];
+  completionTimeline: CompletionTimelinePoint[];
   surveyStatusDistribution: Record<string, number>;
   completionBreakdown: {
     completed: number;

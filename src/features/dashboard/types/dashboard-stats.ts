@@ -1,11 +1,8 @@
+import type { CompletionTimelinePoint } from '@/features/projects/types';
+
 export interface TimelinePoint {
   date: string;
   count: number;
-}
-
-export interface CompletionPoint {
-  date: string;
-  rate: number;
 }
 
 export interface ActivityItem {
@@ -23,6 +20,6 @@ export interface DashboardStats {
   avgCompletionRate: number;
   prevAvgCompletionRate: number | null;
   responsesTimeline: TimelinePoint[];
-  completionTimeline: CompletionPoint[];
+  completionTimeline: CompletionTimelinePoint[];
   recentActivity: ActivityItem[];
 }

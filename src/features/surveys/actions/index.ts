@@ -4,6 +4,7 @@ export { duplicateSurvey } from './duplicate-survey';
 export { exportSurveyCSV, exportSurveyJSON } from './export-survey';
 export { getSurveyFormData } from './get-survey-form-data';
 export type { ProjectOption, SurveyFormData } from './get-survey-form-data';
+export { getSurveyCompletionTimeline } from './get-survey-completion-timeline';
 export { getSurveyStats } from './get-survey-stats';
 export type { QuestionStats, SurveyStats } from './get-survey-stats';
 export { getSurveyWithQuestions } from './get-survey-with-questions';

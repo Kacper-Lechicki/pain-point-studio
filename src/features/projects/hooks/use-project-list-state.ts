@@ -53,6 +53,7 @@ export function useProjectListState(projects: ProjectWithMetrics[]) {
     items: projects,
     storageKey: STORAGE_KEY,
     defaultSortBy: 'updated',
+    layoutBreakpoint: 'lg',
     getDefaultSortDir,
     preFilter,
     searchFn,
