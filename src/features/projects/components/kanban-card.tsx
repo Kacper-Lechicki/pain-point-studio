@@ -2,30 +2,33 @@
 
 import { useCallback, useRef, useState } from 'react';
 
-import { Pencil, Trash2 } from 'lucide-react';
+import { GripVertical, Pencil, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Textarea } from '@/components/ui/textarea';
 import { deleteInsight } from '@/features/projects/actions/delete-insight';
 import { updateInsight } from '@/features/projects/actions/update-insight';
 import { INSIGHT_CONTENT_MAX_LENGTH } from '@/features/projects/config';
-import { INSIGHT_COLORS, INSIGHT_ICONS } from '@/features/projects/config/insight-colors';
-import type { InsightType, ProjectInsight } from '@/features/projects/types';
+import type { ProjectInsight } from '@/features/projects/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import type { MessageKey } from '@/i18n/types';
-import { cn } from '@/lib/common/utils';
 
-interface InsightItemProps {
+interface KanbanCardProps {
   insight: ProjectInsight;
   onUpdated: (insight: ProjectInsight) => void;
   onDeleted: (insightId: string) => void;
 }
 
-export function InsightItem({ insight, onUpdated, onDeleted }: InsightItemProps) {
+export function KanbanCard({ insight, onUpdated, onDeleted }: KanbanCardProps) {
   const t = useTranslations();
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(insight.content);
@@ -39,10 +42,6 @@ export function InsightItem({ insight, onUpdated, onDeleted }: InsightItemProps)
   const deleteAction = useFormAction({
     unexpectedErrorMessage: 'projects.errors.unexpected' as MessageKey,
   });
-
-  const type = insight.type as InsightType;
-  const Icon = INSIGHT_ICONS[type];
-  const colors = INSIGHT_COLORS[type];
 
   const handleStartEdit = useCallback(() => {
     setEditContent(insight.content);
@@ -103,14 +102,13 @@ export function InsightItem({ insight, onUpdated, onDeleted }: InsightItemProps)
 
   if (isEditing) {
     return (
-      <div className={cn('flex flex-col gap-2 rounded-md px-3 py-2', colors.bg)}>
+      <div className="bg-card flex flex-col gap-2 rounded border p-2">
         <Textarea
           ref={textareaRef}
           value={editContent}
           onChange={(e) => setEditContent(e.target.value)}
           maxLength={INSIGHT_CONTENT_MAX_LENGTH}
           size="sm"
-          className="bg-background"
           onKeyDown={(e) => {
             if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
               void handleSaveEdit();
@@ -141,39 +139,41 @@ export function InsightItem({ insight, onUpdated, onDeleted }: InsightItemProps)
 
   return (
     <>
-      <div className={cn('group flex items-start gap-2 rounded-md px-3 py-2', colors.bg)}>
-        <Icon className={cn('mt-0.5 size-3.5 shrink-0', colors.icon)} aria-hidden />
+      <div className="bg-card group flex items-center gap-2 rounded border px-2.5 py-2">
+        <GripVertical className="text-muted-foreground size-3 shrink-0" aria-hidden />
 
-        <span className={cn('flex-1 text-xs leading-relaxed', colors.text)}>{insight.content}</span>
+        <span className="text-foreground min-w-0 flex-1 text-[13px] leading-snug">
+          {insight.content}
+        </span>
 
-        <div className="flex shrink-0 items-center gap-0.5">
-          <Button
-            variant="ghost"
-            size="icon-xs"
-            className="opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
-            onClick={handleStartEdit}
-            aria-label={t('projects.scorecard.editNote' as MessageKey)}
-          >
-            <Pencil className="size-3" />
-          </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
+            >
+              <span className="sr-only">Actions</span>
+              <svg className="size-3.5" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+                <circle cx="8" cy="3" r="1.5" />
+                <circle cx="8" cy="8" r="1.5" />
+                <circle cx="8" cy="13" r="1.5" />
+              </svg>
+            </Button>
+          </DropdownMenuTrigger>
 
-          <Button
-            variant="ghost"
-            size="icon-xs"
-            className="opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
-            onClick={() => setConfirmDeleteOpen(true)}
-            aria-label={t('projects.scorecard.deleteNote' as MessageKey)}
-          >
-            <Trash2 className="size-3" />
-          </Button>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={handleStartEdit}>
+              <Pencil className="size-3.5" />
+              {t('projects.scorecard.editNote' as MessageKey)}
+            </DropdownMenuItem>
 
-          <Badge
-            variant="outline"
-            className="mt-0.5 border-current/20 px-1.5 py-0 text-[10px] font-normal opacity-60"
-          >
-            {t('projects.scorecard.noteBadge' as MessageKey)}
-          </Badge>
-        </div>
+            <DropdownMenuItem variant="destructive" onClick={() => setConfirmDeleteOpen(true)}>
+              <Trash2 className="size-3.5" />
+              {t('projects.scorecard.deleteNote' as MessageKey)}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <ConfirmDialog

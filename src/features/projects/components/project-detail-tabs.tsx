@@ -12,12 +12,7 @@ import { ProjectInsightsTab } from '@/features/projects/components/project-insig
 import { ProjectNotesTab } from '@/features/projects/components/project-notes-tab';
 import { ProjectOverviewTab } from '@/features/projects/components/project-overview-tab';
 import { ProjectSurveysTab } from '@/features/projects/components/project-surveys-tab';
-import type {
-  Finding,
-  Project,
-  ProjectInsight,
-  ProjectOverviewStats,
-} from '@/features/projects/types';
+import type { Project, ProjectInsight, ProjectOverviewStats } from '@/features/projects/types';
 
 type TabValue = 'overview' | 'surveys' | 'insights' | 'notes';
 
@@ -26,9 +21,7 @@ const VALID_TABS: TabValue[] = ['overview', 'surveys', 'insights', 'notes'];
 interface ProjectDetailTabsProps {
   project: Project;
   surveys: ProjectSurvey[];
-  allFindings: Finding[];
   insights: ProjectInsight[];
-  scorecardInsights: ProjectInsight[];
   overviewStats: ProjectOverviewStats;
   onInsightCreated: (insight: ProjectInsight) => void;
   onInsightUpdated: (insight: ProjectInsight) => void;
@@ -38,7 +31,6 @@ interface ProjectDetailTabsProps {
 export function ProjectDetailTabs({
   project,
   surveys,
-  allFindings,
   insights,
   overviewStats,
   onInsightCreated,
@@ -70,8 +62,6 @@ export function ProjectDetailTabs({
     [router, pathname, searchParams]
   );
 
-  const totalInsightCount = allFindings.length + insights.length;
-
   return (
     <Tabs value={activeTab} onValueChange={handleTabChange}>
       <TabsList variant="line">
@@ -86,9 +76,9 @@ export function ProjectDetailTabs({
         </TabsTrigger>
         <TabsTrigger value="insights">
           {t('projects.detail.tabs.insights')}
-          {totalInsightCount > 0 && (
+          {insights.length > 0 && (
             <span className="text-muted-foreground ml-1 text-xs tabular-nums">
-              ({totalInsightCount})
+              ({insights.length})
             </span>
           )}
         </TabsTrigger>
@@ -106,7 +96,6 @@ export function ProjectDetailTabs({
       <TabsContent value="insights">
         <ProjectInsightsTab
           projectId={project.id}
-          allFindings={allFindings}
           insights={insights}
           onInsightCreated={onInsightCreated}
           onInsightUpdated={onInsightUpdated}

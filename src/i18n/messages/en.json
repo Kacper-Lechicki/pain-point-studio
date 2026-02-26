@@ -1031,7 +1031,7 @@
       "strengths": "Strengths",
       "opportunities": "Opportunities",
       "threats": "Threats",
-      "decisions": "Decisions & Next Steps",
+      "decisions": "Decisions",
       "emptyStrengths": "No strengths identified yet.",
       "emptyOpportunities": "No opportunities identified yet.",
       "emptyThreats": "No threats identified yet.",
@@ -1039,17 +1039,26 @@
       "addNote": "Add note",
       "noteBadge": "note",
       "contentPlaceholder": "Write your observation or decision...",
-      "createSuccess": "Note added.",
-      "updateSuccess": "Note updated.",
-      "deleteSuccess": "Note deleted.",
+      "createSuccess": "Insight added.",
+      "updateSuccess": "Insight updated.",
+      "deleteSuccess": "Insight deleted.",
       "saveNote": "Save",
       "cancelNote": "Cancel",
-      "confirmDeleteTitle": "Delete note?",
-      "confirmDeleteDescription": "This note will be permanently deleted.",
+      "confirmDeleteTitle": "Delete insight?",
+      "confirmDeleteDescription": "This insight will be permanently deleted.",
       "confirmDeleteAction": "Delete",
       "selectType": "Type",
-      "editNote": "Edit note",
-      "deleteNote": "Delete note"
+      "editNote": "Edit",
+      "deleteNote": "Delete"
+    },
+    "insights": {
+      "addInsight": "Add Insight",
+      "addInsightsHere": "Add insights here",
+      "boardView": "Board view",
+      "listView": "List view",
+      "emptyTitle": "No insights yet",
+      "emptyDescription": "Capture your research findings as strengths, opportunities, threats, and decisions to build your project scorecard.",
+      "emptyCta": "Add First Insight"
     }
   },
   "respondent": {
