@@ -104,7 +104,7 @@ export function ProjectDetailTabs({
       </TabsContent>
 
       <TabsContent value="notes">
-        <ProjectNotesTab />
+        <ProjectNotesTab project={project} />
       </TabsContent>
     </Tabs>
   );

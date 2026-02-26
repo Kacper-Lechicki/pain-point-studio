@@ -749,6 +749,7 @@
       "nameTooLong": "Name must be 100 characters or fewer.",
       "descriptionTooLong": "Description must be 500 characters or fewer.",
       "contentTooLong": "Content must be 500 characters or fewer.",
+      "notesTooLong": "Notes must be 50,000 characters or fewer.",
       "unexpected": "Something went wrong. Please try again."
     },
     "title": "Projects",
@@ -973,8 +974,13 @@
         }
       },
       "notes": {
-        "placeholder": "Notes",
-        "comingSoon": "Rich text notes for your project are coming soon."
+        "placeholder": "Write your notes here... Supports Markdown formatting.",
+        "edit": "Edit",
+        "preview": "Preview",
+        "saving": "Saving...",
+        "saved": "Saved",
+        "failed": "Failed to save",
+        "emptyPreview": "Nothing to preview. Start writing in edit mode."
       },
       "quickActions": {
         "title": "Quick Actions",

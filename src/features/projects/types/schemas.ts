@@ -4,6 +4,7 @@ import {
   INSIGHT_CONTENT_MAX_LENGTH,
   PROJECT_DESCRIPTION_MAX_LENGTH,
   PROJECT_NAME_MAX_LENGTH,
+  PROJECT_NOTES_MAX_LENGTH,
 } from '@/features/projects/config';
 
 import { INSIGHT_TYPES } from './project';
@@ -44,6 +45,20 @@ export const updateProjectSchema = z.object({
 });
 
 export type UpdateProjectInput = z.infer<typeof updateProjectSchema>;
+
+// ── Notes schemas ───────────────────────────────────────────────────
+
+/** Schema for updating project notes (auto-save). */
+export const updateProjectNotesSchema = z.object({
+  projectId: z.uuid(),
+  notes: z
+    .string()
+    .max(PROJECT_NOTES_MAX_LENGTH, 'projects.errors.notesTooLong')
+    .optional()
+    .or(z.literal('')),
+});
+
+export type UpdateProjectNotesInput = z.infer<typeof updateProjectNotesSchema>;
 
 // ── Insight schemas ─────────────────────────────────────────────────
 
