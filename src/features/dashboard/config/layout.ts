@@ -3,7 +3,7 @@ import { ROUTES } from '@/config/routes';
 import { locales } from '@/i18n/constants';
 
 /** Path prefix for survey builder (edit questions). Builder uses a standalone full-screen layout. */
-export const BUILDER_PATH_PREFIX = ROUTES.dashboard.researchNew + '/';
+export const BUILDER_PATH_PREFIX = '/dashboard/research/new/';
 
 /** Check if the pathname points to the survey builder (creating/editing questions). */
 export function isBuilderPath(pathname: string | null): boolean {
@@ -27,11 +27,7 @@ export function getDashboardBackConfig(pathname: string | null): DashboardBackCo
   }
 
   if (pathname.startsWith(ROUTES.dashboard.researchStats + '/')) {
-    return { fallbackHref: ROUTES.dashboard.research };
-  }
-
-  if (/^\/dashboard\/research\/[^/]+$/.test(pathname)) {
-    return { fallbackHref: ROUTES.dashboard.research };
+    return { fallbackHref: ROUTES.dashboard.projects };
   }
 
   if (/^\/dashboard\/projects\/[^/]+$/.test(pathname) && pathname !== ROUTES.dashboard.projectNew) {
@@ -89,19 +85,14 @@ function pathWithoutLocale(pathname: string): string {
   return pathname;
 }
 
-/** Routes rendered at full content width (survey list, archive). */
+/** Routes rendered at full content width (project list). */
 function isFullWidthPath(pathname: string): boolean {
   const path = pathWithoutLocale(pathname);
 
-  return (
-    path === ROUTES.dashboard.research ||
-    path === ROUTES.dashboard.researchArchive ||
-    path.startsWith(ROUTES.dashboard.researchArchive + '/') ||
-    path === ROUTES.dashboard.projects
-  );
+  return path === ROUTES.dashboard.projects;
 }
 
-/** Routes rendered at narrow content width (settings, new project form, new survey form). */
+/** Routes rendered at narrow content width (settings, new project form). */
 function isNarrowPath(pathname: string): boolean {
   const path = pathWithoutLocale(pathname);
 
@@ -110,10 +101,6 @@ function isNarrowPath(pathname: string): boolean {
   }
 
   if (path === ROUTES.dashboard.projectNew) {
-    return true;
-  }
-
-  if (path === ROUTES.dashboard.researchNew) {
     return true;
   }
 

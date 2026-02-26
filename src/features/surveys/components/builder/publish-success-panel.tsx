@@ -12,7 +12,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { ROUTES } from '@/config/routes';
+import { getProjectDetailUrl } from '@/features/projects/lib/project-urls';
 import { SurveyShareContent } from '@/features/surveys/components/builder/survey-share-content';
 import { getSurveyStatsUrl } from '@/features/surveys/lib/survey-urls';
 import Link from '@/i18n/link';
@@ -23,6 +23,7 @@ interface PublishSuccessPanelProps {
   shareUrl: string;
   surveyId: string;
   surveyTitle: string;
+  projectId: string;
 }
 
 export function PublishSuccessPanel({
@@ -31,6 +32,7 @@ export function PublishSuccessPanel({
   shareUrl,
   surveyId,
   surveyTitle,
+  projectId,
 }: PublishSuccessPanelProps) {
   const t = useTranslations();
 
@@ -75,14 +77,14 @@ export function PublishSuccessPanel({
             </Button>
 
             <Button variant="outline" size="sm" asChild>
-              <Link href={ROUTES.dashboard.researchNew} replace>
+              <Link href={`${getProjectDetailUrl(projectId)}?tab=surveys`} replace>
                 <Plus className="size-3.5" />
                 {t('surveys.publish.createAnother')}
               </Link>
             </Button>
 
             <Button variant="ghost" size="sm" asChild>
-              <Link href={ROUTES.dashboard.research} replace>
+              <Link href={`${getProjectDetailUrl(projectId)}?tab=surveys`} replace>
                 <ClipboardList className="size-3.5" />
                 {t('surveys.publish.backToSurveys')}
               </Link>

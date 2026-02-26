@@ -1,21 +1,21 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useBreadcrumbSegment } from '@/features/dashboard/components/layout/breadcrumb-context';
 import { DASHBOARD_PAGE_BODY_GAP_TOP } from '@/features/dashboard/config/layout';
-import type { ProjectSurvey } from '@/features/projects/actions/get-project';
 import { EditProjectDialog } from '@/features/projects/components/edit-project-dialog';
 import { ProjectDetailHeader } from '@/features/projects/components/project-detail-header';
 import { ProjectDetailTabs } from '@/features/projects/components/project-detail-tabs';
 import { useProjectDashboardActions } from '@/features/projects/hooks/use-project-dashboard-actions';
 import { deriveProjectPhase } from '@/features/projects/lib/project-helpers';
 import type { Project, ProjectInsight, ProjectOverviewStats } from '@/features/projects/types';
+import type { UserSurvey } from '@/features/surveys/actions';
 
 interface ProjectDashboardPageProps {
   project: Project;
-  surveys: ProjectSurvey[];
+  surveys: UserSurvey[];
   insights: ProjectInsight[];
   overviewStats: ProjectOverviewStats;
 }
@@ -41,7 +41,7 @@ export function ProjectDashboardPage({
 
   useBreadcrumbSegment(project.id, project.name);
 
-  const phase = useMemo(() => deriveProjectPhase(surveys), [surveys]);
+  const phase = deriveProjectPhase(surveys);
 
   const handleInsightCreated = useCallback((insight: ProjectInsight) => {
     setInsights((prev) => [...prev, insight]);

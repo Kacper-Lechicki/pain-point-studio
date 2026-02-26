@@ -5,13 +5,13 @@ import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { HeroHighlight } from '@/components/ui/hero-highlight';
-import { ROUTES } from '@/config/routes';
 import { OverviewCompletionRing } from '@/features/projects/components/overview-completion-ring';
 import { OverviewMetrics } from '@/features/projects/components/overview-metrics';
 import { OverviewRecentActivity } from '@/features/projects/components/overview-recent-activity';
 import { OverviewResponseTimeline } from '@/features/projects/components/overview-response-timeline';
 import { OverviewSurveyStatusChart } from '@/features/projects/components/overview-survey-status-chart';
 import { isProjectArchived } from '@/features/projects/lib/project-helpers';
+import { getProjectDetailUrl } from '@/features/projects/lib/project-urls';
 import type { Project, ProjectOverviewStats } from '@/features/projects/types';
 import Link from '@/i18n/link';
 
@@ -56,7 +56,7 @@ export function ProjectOverviewTab({ project, overviewStats }: ProjectOverviewTa
             </p>
             {!isArchived && (
               <Button className="mt-4" asChild>
-                <Link href={`${ROUTES.dashboard.researchNew}?projectId=${project.id}`}>
+                <Link href={`${getProjectDetailUrl(project.id)}?tab=surveys`}>
                   <Plus className="size-4" aria-hidden />
                   {t('projects.detail.createSurvey')}
                 </Link>

@@ -293,7 +293,7 @@ export type Database = {
           id: string;
           max_respondents: number | null;
           previous_status: Database['public']['Enums']['survey_status'] | null;
-          project_id: string | null;
+          project_id: string;
           research_phase: string | null;
           slug: string | null;
           starts_at: string | null;
@@ -314,7 +314,7 @@ export type Database = {
           id?: string;
           max_respondents?: number | null;
           previous_status?: Database['public']['Enums']['survey_status'] | null;
-          project_id?: string | null;
+          project_id: string;
           research_phase?: string | null;
           slug?: string | null;
           starts_at?: string | null;
@@ -335,7 +335,7 @@ export type Database = {
           id?: string;
           max_respondents?: number | null;
           previous_status?: Database['public']['Enums']['survey_status'] | null;
-          project_id?: string | null;
+          project_id?: string;
           research_phase?: string | null;
           slug?: string | null;
           starts_at?: string | null;
@@ -394,6 +394,10 @@ export type Database = {
         Returns: Json;
       };
       get_project_signals_data: {
+        Args: { p_project_id: string; p_user_id: string };
+        Returns: Json;
+      };
+      get_project_surveys_with_counts: {
         Args: { p_project_id: string; p_user_id: string };
         Returns: Json;
       };

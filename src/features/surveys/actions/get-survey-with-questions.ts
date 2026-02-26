@@ -22,7 +22,7 @@ export interface SurveyBuilderData {
     endsAt: string | null;
     maxRespondents: number | null;
     status: SurveyStatus;
-    projectId: string | null;
+    projectId: string;
     researchPhase: ResearchPhase | null;
   };
   questions: MappedQuestion[];
@@ -57,7 +57,7 @@ export const getSurveyWithQuestions = cache(
         ends_at: string | null;
         max_respondents: number | null;
         status: string;
-        project_id: string | null;
+        project_id: string;
         research_phase: string | null;
       } | null;
     };

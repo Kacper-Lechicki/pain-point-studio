@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 import { useLocale } from 'next-intl';
 
-import { ROUTES } from '@/config/routes';
+import { getProjectDetailUrl } from '@/features/projects/lib/project-urls';
 import type { ProjectOption } from '@/features/surveys/actions';
 import { BuilderCenter } from '@/features/surveys/components/builder/builder-center';
 import { BuilderMetadataPanel } from '@/features/surveys/components/builder/builder-metadata-panel';
@@ -24,6 +24,7 @@ interface QuestionBuilderPageProps {
   surveyId: string;
   surveyTitle: string;
   surveyStatus: SurveyStatus;
+  projectId: string;
   surveyMetadata: Omit<SurveyMetadataSchema, 'title'>;
   projectOptions: ProjectOption[];
   initialQuestions: QuestionSchema[];
@@ -33,6 +34,7 @@ export function QuestionBuilderPage({
   surveyId,
   surveyTitle,
   surveyStatus,
+  projectId,
   surveyMetadata,
   projectOptions,
   initialQuestions,
@@ -81,6 +83,7 @@ export function QuestionBuilderPage({
           surveyId={surveyId}
           surveyTitle={surveyTitle}
           surveyStatus={surveyStatus}
+          projectId={projectId}
           isDesktop={isDesktop}
           onToggleSidebar={() => setSidebarOpen(true)}
           onToggleSettings={openSettingsPanel}
@@ -117,10 +120,11 @@ export function QuestionBuilderPage({
           {isPublished && (
             <PublishSuccessPanel
               open
-              onClose={() => router.replace(ROUTES.dashboard.research)}
+              onClose={() => router.replace(`${getProjectDetailUrl(projectId)}?tab=surveys`)}
               shareUrl={getSurveyShareUrl(locale, publishedSlug)}
               surveyId={surveyId}
               surveyTitle={surveyTitle}
+              projectId={projectId}
             />
           )}
         </div>

@@ -1,10 +1,4 @@
-import {
-  BarChart3,
-  CircleUserRound,
-  ClipboardList,
-  FolderKanban,
-  type LucideIcon,
-} from 'lucide-react';
+import { CircleUserRound, FolderKanban, type LucideIcon } from 'lucide-react';
 
 import type { AppRoute } from '@/config/routes';
 import { ROUTES } from '@/config/routes';
@@ -24,14 +18,6 @@ export interface DynamicRouteTab {
 }
 
 export const DYNAMIC_ROUTE_TABS: Record<string, DynamicRouteTab[]> = {
-  [ROUTES.dashboard.research]: [
-    { prefix: ROUTES.dashboard.researchStats, icon: BarChart3 },
-    {
-      prefix: ROUTES.dashboard.research,
-      icon: ClipboardList,
-      excludeSegments: ['new', 'archive'],
-    },
-  ],
   [ROUTES.dashboard.projects]: [
     {
       prefix: ROUTES.dashboard.projects,

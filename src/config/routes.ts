@@ -24,11 +24,10 @@ export const ROUTES = {
     dangerZone: '/settings/danger-zone' as AppRoute,
   },
   dashboard: {
-    research: '/dashboard/research' as AppRoute,
-    researchNew: '/dashboard/research/new' as AppRoute,
-    researchArchive: '/dashboard/research/archive' as AppRoute,
     /** Base path for dynamic stats routes — not an AppRoute. Use `getSurveyStatsUrl(id)`. */
     researchStats: '/dashboard/research/stats',
+    /** Base path for builder routes — not an AppRoute. Use `getSurveyEditUrl(id)`. */
+    researchNew: '/dashboard/research/new',
     projects: '/dashboard/projects' as AppRoute,
     projectNew: '/dashboard/projects/new' as AppRoute,
   },
@@ -49,7 +48,6 @@ export const ROUTES = {
  */
 export const SIBLING_GROUPS: readonly (readonly AppRoute[])[] = [
   [ROUTES.auth.signIn, ROUTES.auth.signUp, ROUTES.auth.forgotPassword],
-  [ROUTES.dashboard.research, ROUTES.dashboard.researchArchive, ROUTES.dashboard.researchNew],
   [ROUTES.dashboard.projects, ROUTES.dashboard.projectNew],
 ];
 

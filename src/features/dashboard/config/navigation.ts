@@ -1,12 +1,4 @@
-import {
-  Archive,
-  ClipboardList,
-  FolderKanban,
-  Home,
-  Lightbulb,
-  type LucideIcon,
-  Plus,
-} from 'lucide-react';
+import { FolderKanban, Home, type LucideIcon, Plus } from 'lucide-react';
 
 import type { AppRoute } from '@/config/routes';
 import { ROUTES } from '@/config/routes';
@@ -86,35 +78,6 @@ export const SIDEBAR_NAV: NavGroup[] = [
                   labelKey: 'sidebar.newProject',
                   icon: Plus,
                   href: ROUTES.dashboard.projectNew,
-                },
-              ],
-            },
-          ],
-        },
-      },
-      {
-        labelKey: 'sidebar.research',
-        icon: Lightbulb,
-        href: ROUTES.dashboard.research,
-        subNav: {
-          titleKey: 'sidebar.research',
-          groups: [
-            {
-              items: [
-                {
-                  labelKey: 'sidebar.allSurveys',
-                  icon: ClipboardList,
-                  href: ROUTES.dashboard.research,
-                },
-                {
-                  labelKey: 'sidebar.newSurvey',
-                  icon: Plus,
-                  href: ROUTES.dashboard.researchNew,
-                },
-                {
-                  labelKey: 'sidebar.archive',
-                  icon: Archive,
-                  href: ROUTES.dashboard.researchArchive,
                 },
               ],
             },

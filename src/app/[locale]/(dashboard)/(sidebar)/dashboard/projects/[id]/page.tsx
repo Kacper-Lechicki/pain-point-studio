@@ -5,6 +5,7 @@ import { getProject } from '@/features/projects/actions/get-project';
 import { getProjectInsights } from '@/features/projects/actions/get-project-insights';
 import { getProjectOverviewStats } from '@/features/projects/actions/get-project-overview-stats';
 import { ProjectDashboardPage } from '@/features/projects/components/project-dashboard-page';
+import { getProjectSurveys } from '@/features/surveys/actions';
 
 interface ProjectDetailPageProps {
   params: Promise<{ id: string }>;
@@ -12,10 +13,11 @@ interface ProjectDetailPageProps {
 
 export default async function ProjectDetailPage({ params }: ProjectDetailPageProps) {
   const { id } = await params;
-  const [data, insights, overviewStats] = await Promise.all([
+  const [data, insights, overviewStats, projectSurveys] = await Promise.all([
     getProject(id),
     getProjectInsights(id),
     getProjectOverviewStats(id),
+    getProjectSurveys(id),
   ]);
 
   if (!data) {
@@ -26,7 +28,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
     <PageTransition>
       <ProjectDashboardPage
         project={data.project}
-        surveys={data.surveys}
+        surveys={projectSurveys ?? []}
         insights={insights}
         overviewStats={
           overviewStats ?? {

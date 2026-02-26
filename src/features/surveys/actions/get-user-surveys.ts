@@ -40,10 +40,10 @@ export interface UserSurvey {
   avgCompletionSeconds: number | null;
   /** Average question completion percentage across completed responses, or null. */
   avgQuestionCompletion: number | null;
-  /** Linked project ID, or null if standalone. */
-  projectId: string | null;
-  /** Project name (denormalized for display), or null. */
-  projectName: string | null;
+  /** Linked project ID (every survey must belong to a project). */
+  projectId: string;
+  /** Project name (denormalized for display). */
+  projectName: string;
   /** Research phase, or null if not assigned. */
   researchPhase: string | null;
 }
@@ -70,8 +70,8 @@ const userSurveySchema = z.object({
   updatedAt: z.string(),
   avgCompletionSeconds: z.number().nullable(),
   avgQuestionCompletion: z.number().nullable(),
-  projectId: z.string().nullable().optional().default(null),
-  projectName: z.string().nullable().optional().default(null),
+  projectId: z.string(),
+  projectName: z.string(),
   researchPhase: z.string().nullable().optional().default(null),
 });
 

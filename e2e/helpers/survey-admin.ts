@@ -7,6 +7,7 @@ type QuestionType = 'open_text' | 'short_text' | 'multiple_choice' | 'rating_sca
 
 interface CreateSurveyOptions {
   userId: string;
+  projectId: string;
   title?: string;
   description?: string;
   status?: SurveyStatus;
@@ -40,6 +41,29 @@ export function generateSlug(): string {
 // ── CRUD ─────────────────────────────────────────────────────────
 
 /**
+ * Inserts a project directly via the admin client (bypasses RLS).
+ * Returns the project id.
+ */
+export async function createProjectViaDb(
+  userId: string,
+  name = 'E2E Test Project'
+): Promise<string> {
+  const admin = getAdminClient();
+
+  const { data, error } = await admin
+    .from('projects')
+    .insert({ user_id: userId, name, status: 'active' })
+    .select('id')
+    .single();
+
+  if (error || !data) {
+    throw new Error(`[e2e] Failed to create project: ${error?.message ?? 'no data returned'}`);
+  }
+
+  return data.id;
+}
+
+/**
  * Inserts a survey directly via the admin client (bypasses RLS).
  * Returns the survey id.
  */
@@ -50,6 +74,7 @@ export async function createSurveyViaDb(options: CreateSurveyOptions): Promise<s
     .from('surveys')
     .insert({
       user_id: options.userId,
+      project_id: options.projectId,
       title: options.title ?? `E2E Survey ${Date.now()}`,
       description: options.description ?? 'E2E test survey',
       visibility: 'private',
@@ -119,7 +144,7 @@ export async function updateSurveyViaDb(
  */
 export async function createSurveyWithQuestions(
   userId: string,
-  surveyOverrides?: Partial<Omit<CreateSurveyOptions, 'userId'>>,
+  surveyOverrides: Partial<Omit<CreateSurveyOptions, 'userId'>> & { projectId: string },
   questionCount = 1
 ): Promise<{ surveyId: string; questionIds: string[] }> {
   const isActive = surveyOverrides?.status === 'active';

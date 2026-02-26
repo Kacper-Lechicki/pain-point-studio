@@ -32,6 +32,10 @@ interface SurveyMetadataFormProps {
   surveyId?: string;
   mode?: 'create' | 'edit';
   onSaved?: () => void;
+  /** Called after a successful "Save Draft" instead of navigating to the research page. */
+  onCreated?: (() => void) | undefined;
+  /** Hide project combobox and research phase (used when creating from project context). */
+  hideProjectField?: boolean | undefined;
   renderFooter?: (props: {
     handleSave: () => void;
     isLoading: boolean;
@@ -45,6 +49,8 @@ const SurveyMetadataForm = ({
   surveyId,
   mode = 'create',
   onSaved,
+  onCreated,
+  hideProjectField,
   renderFooter,
 }: SurveyMetadataFormProps) => {
   const t = useTranslations();
@@ -59,8 +65,10 @@ const SurveyMetadataForm = ({
     onSuccess: () => {
       if (mode === 'edit') {
         onSaved?.();
+      } else if (onCreated) {
+        onCreated();
       } else {
-        router.push(ROUTES.dashboard.research);
+        router.push(ROUTES.dashboard.projects);
       }
     },
   });
@@ -108,7 +116,13 @@ const SurveyMetadataForm = ({
     }
   }
 
-  const formFields = <SurveyMetadataFields form={form} projectOptions={projectOptions} />;
+  const formFields = (
+    <SurveyMetadataFields
+      form={form}
+      projectOptions={projectOptions}
+      hideProjectField={hideProjectField}
+    />
+  );
 
   if (renderFooter) {
     return (

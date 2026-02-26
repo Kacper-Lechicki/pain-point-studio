@@ -27,9 +27,13 @@ import { SurveyListToolbar, type SurveySortBy } from './survey-list-toolbar';
 
 interface SurveyListProps {
   initialSurveys: UserSurvey[];
+  /** When set, the list runs in project context (hides project filter, shows archived status). */
+  projectId?: string | undefined;
+  /** Callback to open the "create survey" dialog (rendered by the parent). */
+  onCreateSurvey?: (() => void) | undefined;
 }
 
-export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
+export const SurveyList = ({ initialSurveys, projectId }: SurveyListProps) => {
   const t = useTranslations();
   const { isRefreshing, refresh, lastSyncedAt, markSynced } = useRefresh();
   const [surveys, setSurveys] = useState(initialSurveys);
@@ -41,6 +45,8 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
   const hasActiveSurveys = surveys.some((s) => s.status === 'active');
   const { isConnected: isRealtimeConnected } = useRealtimeSurveyList(markSynced, hasActiveSurveys);
 
+  const isProjectContext = !!projectId;
+
   const {
     statusFilter,
     setStatusFilter,
@@ -51,7 +57,7 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
     projectOptions,
     kpiStatuses,
     isFiltered,
-  } = useSurveyListFilters(surveys);
+  } = useSurveyListFilters(surveys, { projectContext: isProjectContext });
 
   const {
     now,
@@ -68,7 +74,7 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
     pagination,
   } = useSurveyListState<SurveySortBy>({
     surveys,
-    storageKey: 'surveyList',
+    storageKey: projectId ? `surveyList:${projectId}` : 'surveyList',
     defaultSortBy: 'updated',
     preFilter,
     customComparator: SURVEY_LIST_COMPARATOR,
@@ -78,11 +84,13 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
     useSurveySelection(surveys);
 
   const handleStatusChange = (surveyId: string, action: string) => {
+    // In project context, archived surveys stay visible — don't deselect on archive.
+    const deselectStatuses = isProjectContext ? [] : ['archived'];
     const { shouldDeselect, updatedSurveys } = applyOptimisticStatusChange(
       surveys,
       surveyId,
       action,
-      ['archived']
+      deselectStatuses
     );
 
     if (shouldDeselect && selectedId === surveyId) {
@@ -117,6 +125,7 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
         onSortByChange={handleSortByChange}
         onSortDirChange={setSortDir}
         statusCounts={statusCounts}
+        hideProjectFilter={isProjectContext}
       />
 
       {filteredSurveys.length === 0 ? (

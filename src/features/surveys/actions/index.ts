@@ -8,6 +8,7 @@ export { getSurveyStats } from './get-survey-stats';
 export type { QuestionStats, SurveyStats } from './get-survey-stats';
 export { getSurveyWithQuestions } from './get-survey-with-questions';
 export type { SurveyBuilderData } from './get-survey-with-questions';
+export { getProjectSurveys } from './get-project-surveys';
 export { getUserSurveys } from './get-user-surveys';
 export type { UserSurvey } from './get-user-surveys';
 export { publishSurvey } from './publish-survey';

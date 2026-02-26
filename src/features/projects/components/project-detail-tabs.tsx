@@ -1,18 +1,19 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { useTranslations } from 'next-intl';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import type { ProjectSurvey } from '@/features/projects/actions/get-project';
 import { ProjectInsightsTab } from '@/features/projects/components/project-insights-tab';
 import { ProjectNotesTab } from '@/features/projects/components/project-notes-tab';
 import { ProjectOverviewTab } from '@/features/projects/components/project-overview-tab';
 import { ProjectSurveysTab } from '@/features/projects/components/project-surveys-tab';
 import type { Project, ProjectInsight, ProjectOverviewStats } from '@/features/projects/types';
+import type { UserSurvey } from '@/features/surveys/actions';
+import { CreateSurveyDialog } from '@/features/surveys/components/builder/create-survey-dialog';
 
 type TabValue = 'overview' | 'surveys' | 'insights' | 'notes';
 
@@ -20,7 +21,7 @@ const VALID_TABS: TabValue[] = ['overview', 'surveys', 'insights', 'notes'];
 
 interface ProjectDetailTabsProps {
   project: Project;
-  surveys: ProjectSurvey[];
+  surveys: UserSurvey[];
   insights: ProjectInsight[];
   overviewStats: ProjectOverviewStats;
   onInsightCreated: (insight: ProjectInsight) => void;
@@ -41,6 +42,7 @@ export function ProjectDetailTabs({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [createSurveyOpen, setCreateSurveyOpen] = useState(false);
 
   const rawTab = searchParams.get('tab');
   const activeTab: TabValue =
@@ -62,50 +64,66 @@ export function ProjectDetailTabs({
     [router, pathname, searchParams]
   );
 
+  const handleCreateSurvey = useCallback(() => {
+    setCreateSurveyOpen(true);
+  }, []);
+
   return (
-    <Tabs value={activeTab} onValueChange={handleTabChange}>
-      <TabsList variant="line">
-        <TabsTrigger value="overview">{t('projects.detail.tabs.overview')}</TabsTrigger>
-        <TabsTrigger value="surveys">
-          {t('projects.detail.tabs.research')}
-          {surveys.length > 0 && (
-            <span className="text-muted-foreground ml-1 text-xs tabular-nums">
-              ({surveys.length})
-            </span>
-          )}
-        </TabsTrigger>
-        <TabsTrigger value="insights">
-          {t('projects.detail.tabs.insights')}
-          {insights.length > 0 && (
-            <span className="text-muted-foreground ml-1 text-xs tabular-nums">
-              ({insights.length})
-            </span>
-          )}
-        </TabsTrigger>
-        <TabsTrigger value="notes">{t('projects.detail.tabs.notes')}</TabsTrigger>
-      </TabsList>
+    <>
+      <Tabs value={activeTab} onValueChange={handleTabChange}>
+        <TabsList variant="line">
+          <TabsTrigger value="overview">{t('projects.detail.tabs.overview')}</TabsTrigger>
+          <TabsTrigger value="surveys">
+            {t('projects.detail.tabs.research')}
+            {surveys.length > 0 && (
+              <span className="text-muted-foreground ml-1 text-xs tabular-nums">
+                ({surveys.length})
+              </span>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="insights">
+            {t('projects.detail.tabs.insights')}
+            {insights.length > 0 && (
+              <span className="text-muted-foreground ml-1 text-xs tabular-nums">
+                ({insights.length})
+              </span>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="notes">{t('projects.detail.tabs.notes')}</TabsTrigger>
+        </TabsList>
 
-      <TabsContent value="overview">
-        <ProjectOverviewTab project={project} overviewStats={overviewStats} />
-      </TabsContent>
+        <TabsContent value="overview">
+          <ProjectOverviewTab project={project} overviewStats={overviewStats} />
+        </TabsContent>
 
-      <TabsContent value="surveys">
-        <ProjectSurveysTab project={project} surveys={surveys} />
-      </TabsContent>
+        <TabsContent value="surveys">
+          <ProjectSurveysTab
+            project={project}
+            surveys={surveys}
+            onCreateSurvey={handleCreateSurvey}
+          />
+        </TabsContent>
 
-      <TabsContent value="insights">
-        <ProjectInsightsTab
-          projectId={project.id}
-          insights={insights}
-          onInsightCreated={onInsightCreated}
-          onInsightUpdated={onInsightUpdated}
-          onInsightDeleted={onInsightDeleted}
-        />
-      </TabsContent>
+        <TabsContent value="insights">
+          <ProjectInsightsTab
+            projectId={project.id}
+            insights={insights}
+            onInsightCreated={onInsightCreated}
+            onInsightUpdated={onInsightUpdated}
+            onInsightDeleted={onInsightDeleted}
+          />
+        </TabsContent>
 
-      <TabsContent value="notes">
-        <ProjectNotesTab project={project} />
-      </TabsContent>
-    </Tabs>
+        <TabsContent value="notes">
+          <ProjectNotesTab project={project} />
+        </TabsContent>
+      </Tabs>
+
+      <CreateSurveyDialog
+        open={createSurveyOpen}
+        onOpenChange={setCreateSurveyOpen}
+        projectId={project.id}
+      />
+    </>
   );
 }
