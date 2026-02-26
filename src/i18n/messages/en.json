@@ -868,6 +868,48 @@
       "restoreSuccess": "Project restored.",
       "deleteSuccess": "Project deleted.",
       "searchPlaceholder": "Search surveys...",
+      "research": {
+        "kpi": {
+          "total": "Total",
+          "active": "Active",
+          "completed": "Completed",
+          "draft": "Draft",
+          "cancelled": "Cancelled"
+        },
+        "toolbar": {
+          "filter": "Filter",
+          "sort": "Sort",
+          "newSurvey": "New Survey"
+        },
+        "table": {
+          "title": "Title",
+          "status": "Status",
+          "responses": "Responses",
+          "questions": "Questions",
+          "actions": "Actions"
+        },
+        "sort": {
+          "newest": "Newest first",
+          "oldest": "Oldest first",
+          "mostResponses": "Most responses",
+          "titleAz": "Title A–Z"
+        },
+        "filter": {
+          "allStatuses": "All statuses"
+        },
+        "pagination": {
+          "showing": "Showing {from}–{to} of {total} surveys",
+          "previous": "Previous",
+          "next": "Next"
+        },
+        "actions": {
+          "viewResults": "View results",
+          "share": "Copy share link",
+          "edit": "Edit survey",
+          "linkCopied": "Survey link copied to clipboard."
+        },
+        "noResponses": "—"
+      },
       "noMatchingSurveys": "No matching surveys.",
       "sheetTitle": "Project details",
       "openInFullPage": "Open in full page",

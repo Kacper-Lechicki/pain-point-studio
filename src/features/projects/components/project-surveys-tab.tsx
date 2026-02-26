@@ -7,12 +7,17 @@ import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { HeroHighlight } from '@/components/ui/hero-highlight';
-import { SearchInput } from '@/components/ui/search-input';
 import { ROUTES } from '@/config/routes';
 import type { ProjectSurvey } from '@/features/projects/actions/get-project';
-import { PhaseSection } from '@/features/projects/components/phase-section';
+import { SurveyDataTable } from '@/features/projects/components/survey-data-table';
+import { SurveyKpiBar } from '@/features/projects/components/survey-kpi-bar';
+import {
+  type SortKey,
+  SurveyTableToolbar,
+} from '@/features/projects/components/survey-table-toolbar';
 import { isProjectArchived } from '@/features/projects/lib/project-helpers';
-import { type Project, RESEARCH_PHASES, type ResearchPhase } from '@/features/projects/types';
+import type { Project } from '@/features/projects/types';
+import type { SurveyStatus } from '@/features/surveys/types';
 import Link from '@/i18n/link';
 
 interface ProjectSurveysTabProps {
@@ -20,68 +25,62 @@ interface ProjectSurveysTabProps {
   surveys: ProjectSurvey[];
 }
 
+// ── Sort helpers ────────────────────────────────────────────────────
+
+function sortSurveys(surveys: ProjectSurvey[], key: SortKey): ProjectSurvey[] {
+  const sorted = [...surveys];
+
+  switch (key) {
+    case 'newest':
+      return sorted.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    case 'oldest':
+      return sorted.sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+    case 'mostResponses':
+      return sorted.sort((a, b) => b.responseCount - a.responseCount);
+    case 'titleAz':
+      return sorted.sort((a, b) => a.title.localeCompare(b.title));
+    default:
+      return sorted;
+  }
+}
+
 export function ProjectSurveysTab({ project, surveys }: ProjectSurveysTabProps) {
   const t = useTranslations();
-  const [searchQuery, setSearchQuery] = useState('');
   const isArchived = isProjectArchived(project);
 
-  const isSearching = searchQuery.trim().length > 0;
+  const [search, setSearch] = useState('');
+  const [sort, setSort] = useState<SortKey>('newest');
+  const [statusFilter, setStatusFilter] = useState<SurveyStatus | null>(null);
 
-  const filteredSurveys = useMemo(() => {
-    if (!isSearching) {
-      return surveys;
+  const filteredAndSorted = useMemo(() => {
+    let result = surveys;
+
+    // Status filter
+    if (statusFilter) {
+      result = result.filter((s) => s.status === statusFilter);
     }
 
-    const q = searchQuery.trim().toLowerCase();
+    // Search filter
+    const q = search.trim().toLowerCase();
 
-    return surveys.filter((s) => s.title.toLowerCase().includes(q));
-  }, [surveys, searchQuery, isSearching]);
-
-  const groupedSurveys = useMemo(() => {
-    const groups: Record<ResearchPhase | 'unassigned', ProjectSurvey[]> = {
-      idea: [],
-      research: [],
-      validation: [],
-      decision: [],
-      unassigned: [],
-    };
-
-    for (const survey of filteredSurveys) {
-      const phase = survey.researchPhase as ResearchPhase | null;
-
-      if (phase && RESEARCH_PHASES.includes(phase)) {
-        groups[phase].push(survey);
-      } else {
-        groups.unassigned.push(survey);
-      }
+    if (q) {
+      result = result.filter(
+        (s) =>
+          s.title.toLowerCase().includes(q) ||
+          (s.description && s.description.toLowerCase().includes(q))
+      );
     }
 
-    return groups;
-  }, [filteredSurveys]);
+    // Sort
+    return sortSurveys(result, sort);
+  }, [surveys, statusFilter, search, sort]);
 
-  /** Total surveys per group (before search filter) — used for "X of Y" labels. */
-  const totalCounts = useMemo(() => {
-    const counts: Record<ResearchPhase | 'unassigned', number> = {
-      idea: 0,
-      research: 0,
-      validation: 0,
-      decision: 0,
-      unassigned: 0,
-    };
+  const handleStatusChange = () => {
+    // The page will revalidate via Next.js server action revalidation.
+    // No local state update needed since surveys come from server props.
+  };
 
-    for (const survey of surveys) {
-      const phase = survey.researchPhase as ResearchPhase | null;
-
-      if (phase && RESEARCH_PHASES.includes(phase)) {
-        counts[phase]++;
-      } else {
-        counts.unassigned++;
-      }
-    }
-
-    return counts;
-  }, [surveys]);
-
+  // Empty state — no surveys at all
   if (surveys.length === 0) {
     return (
       <HeroHighlight
@@ -110,47 +109,20 @@ export function ProjectSurveysTab({ project, surveys }: ProjectSurveysTabProps) 
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-center gap-2">
-        <SearchInput
-          value={searchQuery}
-          onChange={setSearchQuery}
-          placeholder={t('projects.detail.searchPlaceholder')}
-          className="basis-full sm:max-w-sm sm:flex-1 sm:basis-auto"
-        />
-      </div>
+      <SurveyKpiBar surveys={surveys} />
 
-      <div className="flex flex-col gap-8">
-        {RESEARCH_PHASES.map((phase) => {
-          const phaseSurveys = groupedSurveys[phase];
+      <SurveyTableToolbar
+        projectId={project.id}
+        isArchived={isArchived}
+        search={search}
+        onSearchChange={setSearch}
+        sort={sort}
+        onSortChange={setSort}
+        statusFilter={statusFilter}
+        onStatusFilterChange={setStatusFilter}
+      />
 
-          if (isSearching && phaseSurveys.length === 0) {
-            return null;
-          }
-
-          return (
-            <PhaseSection
-              key={phase}
-              phase={phase}
-              surveys={phaseSurveys}
-              projectId={project.id}
-              totalCount={totalCounts[phase]}
-              isSearching={isSearching}
-            />
-          );
-        })}
-
-        {/* Unassigned surveys (no phase) */}
-        {(!isSearching || groupedSurveys.unassigned.length > 0) && (
-          <PhaseSection
-            phase={null}
-            surveys={groupedSurveys.unassigned}
-            projectId={project.id}
-            totalCount={totalCounts.unassigned}
-            isSearching={isSearching}
-            sectionTitle={t('projects.phases.unassigned')}
-          />
-        )}
-      </div>
+      <SurveyDataTable surveys={filteredAndSorted} onStatusChange={handleStatusChange} />
     </div>
   );
 }
