@@ -2,8 +2,13 @@
 
 import { useCallback, useState } from 'react';
 
+import { ChevronLeft } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { ROUTES } from '@/config/routes';
 import { useBreadcrumbSegment } from '@/features/dashboard/components/layout/breadcrumb-context';
+import { useSubPanelLinks } from '@/features/dashboard/components/layout/sub-panel-items-context';
 import { DASHBOARD_PAGE_BODY_GAP_TOP } from '@/features/dashboard/config/layout';
 import { EditProjectDialog } from '@/features/projects/components/edit-project-dialog';
 import { ProjectDetailHeader } from '@/features/projects/components/project-detail-header';
@@ -39,7 +44,17 @@ export function ProjectDashboardPage({
     confirmDialogProps,
   } = useProjectDashboardActions({ initialProject });
 
+  const t = useTranslations();
+
   useBreadcrumbSegment(project.id, project.name);
+
+  useSubPanelLinks([
+    {
+      label: t('common.backToProjects'),
+      href: ROUTES.dashboard.projects,
+      icon: ChevronLeft,
+    },
+  ]);
 
   const phase = deriveProjectPhase(surveys);
 

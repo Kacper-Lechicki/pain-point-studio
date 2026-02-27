@@ -30,11 +30,7 @@ export function OverviewRecentActivity({ items }: OverviewRecentActivityProps) {
           {t('empty')}
         </div>
       ) : (
-        <div className="relative mt-1 pl-5">
-          <div
-            className="border-border/50 absolute top-2 bottom-2 left-3.5 w-px border-l"
-            aria-hidden
-          />
+        <div className="mt-1 space-y-0">
           {visibleItems.map((item, index) => {
             const Icon = ACTIVITY_ICONS[item.type];
             const relativeTime = formatDistanceToNow(new Date(item.timestamp), {
@@ -42,11 +38,8 @@ export function OverviewRecentActivity({ items }: OverviewRecentActivityProps) {
             }).replace(/^about /i, '');
 
             return (
-              <div
-                key={`${item.surveyId}-${index}`}
-                className="relative flex items-center gap-2.5 py-1.5"
-              >
-                <div className="bg-muted/80 absolute -left-5 shrink-0 rounded-lg p-1.5">
+              <div key={`${item.surveyId}-${index}`} className="flex items-center gap-2.5 py-1.5">
+                <div className="bg-muted/80 shrink-0 rounded-lg p-1.5">
                   <Icon className="text-muted-foreground size-3.5" />
                 </div>
                 <span className="text-muted-foreground min-w-0 flex-1 truncate text-xs">

@@ -23,32 +23,30 @@ export function SurveyStatsCharts({
   const t = useTranslations('surveys.stats');
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <div className="flex min-h-48 flex-col">
-          <SectionLabel>{t('responsesOverTime')}</SectionLabel>
-          <div className="min-h-48 flex-1">
-            <ResponseTimelineChart data={responseTimeline} className="h-full min-h-48" />
-          </div>
-        </div>
-
-        <div className="flex min-h-48 flex-col">
-          <SectionLabel>{t('completionRate')}</SectionLabel>
-          <div className="flex min-h-48 flex-1 flex-col justify-start">
-            <CompletionBarChart
-              data={completionBreakdown}
-              labels={{
-                completed: t('charts.completed'),
-                inProgress: t('charts.inProgress'),
-                abandoned: t('charts.abandoned'),
-              }}
-              noDataMessage={t('noChartData')}
-            />
-          </div>
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="flex min-h-48 flex-col lg:col-span-2">
+        <SectionLabel>{t('responsesOverTime')}</SectionLabel>
+        <div className="min-h-48 flex-1">
+          <ResponseTimelineChart data={responseTimeline} className="h-full min-h-48" />
         </div>
       </div>
 
-      <div>
+      <div className="flex min-h-48 flex-col">
+        <SectionLabel>{t('completionRate')}</SectionLabel>
+        <div className="flex min-h-48 flex-1 flex-col justify-start">
+          <CompletionBarChart
+            data={completionBreakdown}
+            labels={{
+              completed: t('charts.completed'),
+              inProgress: t('charts.inProgress'),
+              abandoned: t('charts.abandoned'),
+            }}
+            noDataMessage={t('noChartData')}
+          />
+        </div>
+      </div>
+
+      <div className="lg:col-span-3">
         <div className="mb-2 flex items-center justify-between">
           <p className="text-muted-foreground text-[11px] font-medium tracking-wider uppercase">
             {t('deviceBreakdown')}

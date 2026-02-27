@@ -75,14 +75,10 @@ export function ProjectTableRow({ project, now, onSelect, onDelete }: ProjectTab
       </TableCell>
 
       <TableCell className="text-muted-foreground border-border/30 min-w-0 border-l px-5 py-3 text-xs tabular-nums">
-        {project.activeSurveyCount}
-      </TableCell>
-
-      <TableCell className="text-muted-foreground border-border/30 min-w-0 border-l px-5 py-3 text-xs tabular-nums">
         {project.responseCount}
       </TableCell>
 
-      <TableCell className="text-muted-foreground border-border/30 hidden min-w-0 truncate border-l px-4 py-3 text-xs xl:table-cell">
+      <TableCell className="text-muted-foreground border-border/30 hidden min-w-0 truncate border-l px-4 py-3 text-xs md:table-cell">
         {updatedAtLabel}
       </TableCell>
 

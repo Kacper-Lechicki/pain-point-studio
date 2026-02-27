@@ -1,4 +1,3 @@
-import type { AppRoute } from '@/config/routes';
 import { ROUTES } from '@/config/routes';
 import { locales } from '@/i18n/constants';
 
@@ -11,36 +10,6 @@ export function isBuilderPath(pathname: string | null): boolean {
     pathname?.startsWith(BUILDER_PATH_PREFIX) === true &&
     pathname.length > BUILDER_PATH_PREFIX.length
   );
-}
-
-export interface DashboardBackConfig {
-  fallbackHref: AppRoute;
-}
-
-/**
- * Central config: which dashboard (and related) pages show a back button in the top-left.
- * Back button is rendered at the same vertical height as the first sidebar item.
- */
-export function getDashboardBackConfig(pathname: string | null): DashboardBackConfig | null {
-  if (!pathname) {
-    return null;
-  }
-
-  const path = pathWithoutLocale(pathname);
-
-  if (path.startsWith(ROUTES.dashboard.researchStats + '/')) {
-    return { fallbackHref: ROUTES.dashboard.projects };
-  }
-
-  if (/^\/dashboard\/projects\/[^/]+$/.test(path) && path !== ROUTES.dashboard.projectNew) {
-    return { fallbackHref: ROUTES.dashboard.projects };
-  }
-
-  if (path === ROUTES.profile.preview) {
-    return { fallbackHref: ROUTES.settings.profile };
-  }
-
-  return null;
 }
 
 // ── Sidebar / panel widths ──────────────────────────────────────────

@@ -91,12 +91,15 @@ export function SurveyCardRow({
             (row.isArchived || archivedLayout) && !row.isDraft && 'grid-cols-3'
           )}
         >
-          <div className="flex flex-col gap-0.5">
-            <span>{row.t('surveys.dashboard.table.questions')}</span>
-            <span className="text-foreground font-medium tabular-nums">{survey.questionCount}</span>
-          </div>
           {row.isDraft ? (
             <>
+              <div className="flex flex-col gap-0.5">
+                <span>{row.t('surveys.dashboard.table.questions')}</span>
+                <span className="text-foreground font-medium tabular-nums">
+                  {survey.questionCount}
+                </span>
+              </div>
+
               <div className="flex flex-col gap-0.5">
                 <span>{row.t('surveys.dashboard.table.responses')}</span>
                 <span className="text-foreground font-medium tabular-nums">—</span>
@@ -111,6 +114,15 @@ export function SurveyCardRow({
             </>
           ) : row.isArchived || archivedLayout ? (
             <>
+              <div className="flex flex-col gap-0.5">
+                <span>{row.t('surveys.dashboard.table.completion')}</span>
+                <span className="text-foreground font-medium tabular-nums">
+                  {survey.avgQuestionCompletion != null
+                    ? `${Math.round(survey.avgQuestionCompletion)}%`
+                    : '—'}
+                </span>
+              </div>
+
               <div className="flex flex-col gap-0.5">
                 <span>{row.t('surveys.dashboard.table.archivedAt')}</span>
                 <span className="text-foreground font-medium">{row.archivedAtLabel ?? '—'}</span>
@@ -128,6 +140,15 @@ export function SurveyCardRow({
             </>
           ) : (
             <>
+              <div className="flex flex-col gap-0.5">
+                <span>{row.t('surveys.dashboard.table.completion')}</span>
+                <span className="text-foreground font-medium tabular-nums">
+                  {survey.avgQuestionCompletion != null
+                    ? `${Math.round(survey.avgQuestionCompletion)}%`
+                    : '—'}
+                </span>
+              </div>
+
               <div className="flex flex-col gap-0.5">
                 <span>{row.t('surveys.dashboard.table.responses')}</span>
 

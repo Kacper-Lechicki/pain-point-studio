@@ -1,18 +1,8 @@
-import {
-  Clock,
-  Clock3,
-  Eye,
-  ListChecks,
-  MousePointerClick,
-  Percent,
-  Timer,
-  Users,
-} from 'lucide-react';
+import { Eye, ListChecks, MousePointerClick, Percent, Timer, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { SectionLabel } from '@/components/ui/metric-display';
 import { formatCompletionTime } from '@/features/surveys/lib/calculations';
-import { cn } from '@/lib/common/utils';
 
 interface DetailMetricsGridProps {
   viewCount: number;
@@ -22,10 +12,7 @@ interface DetailMetricsGridProps {
   submissionRate: number | null;
   avgQuestionCompletion: number | null;
   avgCompletionSeconds: number | null;
-  lastResponseLabel: string | null;
   respondentProgress: number | null;
-  isActive: boolean;
-  wide?: boolean;
 }
 
 export function DetailMetricsGrid({
@@ -36,19 +23,15 @@ export function DetailMetricsGrid({
   submissionRate,
   avgQuestionCompletion,
   avgCompletionSeconds,
-  lastResponseLabel,
   respondentProgress,
-  isActive,
-  wide = false,
 }: DetailMetricsGridProps) {
-  const inProgressCount = responseCount - completedCount;
   const completionTimeLabel = formatCompletionTime(avgCompletionSeconds);
   const t = useTranslations();
 
   return (
     <div>
       <SectionLabel>{t('surveys.dashboard.detailPanel.metricsLabel')}</SectionLabel>
-      <div className={cn('grid grid-cols-2 gap-2', wide && 'sm:grid-cols-3 lg:grid-cols-4')}>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         <div className="border-border/50 rounded-md border px-3 py-2.5">
           <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
             {viewCount}
@@ -67,7 +50,7 @@ export function DetailMetricsGrid({
 
           <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
             <MousePointerClick className="mt-0.5 size-3 shrink-0" aria-hidden />
-            {t('surveys.dashboard.detailPanel.participants')}
+            {t('surveys.dashboard.detailPanel.started')}
           </div>
         </div>
 
@@ -93,19 +76,6 @@ export function DetailMetricsGrid({
             </div>
           )}
         </div>
-
-        {isActive && (
-          <div className="border-border/50 rounded-md border px-3 py-2.5">
-            <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
-              {inProgressCount}
-            </div>
-
-            <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
-              <Clock className="mt-0.5 size-3 shrink-0" aria-hidden />
-              {t('surveys.dashboard.detailPanel.inProgress')}
-            </div>
-          </div>
-        )}
 
         <div className="border-border/50 rounded-md border px-3 py-2.5">
           <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
@@ -137,17 +107,6 @@ export function DetailMetricsGrid({
           <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
             <Timer className="mt-0.5 size-3 shrink-0" aria-hidden />
             {t('surveys.dashboard.detailPanel.avgCompletionTime')}
-          </div>
-        </div>
-
-        <div className="border-border/50 rounded-md border px-3 py-2.5">
-          <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
-            {lastResponseLabel ?? '—'}
-          </div>
-
-          <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
-            <Clock3 className="mt-0.5 size-3 shrink-0" aria-hidden />
-            {t('surveys.dashboard.detailPanel.lastResponse')}
           </div>
         </div>
       </div>

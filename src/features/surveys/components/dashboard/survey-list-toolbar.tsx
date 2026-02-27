@@ -13,7 +13,7 @@ export type SurveySortBy =
   | 'responses'
   | 'title'
   | 'status'
-  | 'questions'
+  | 'completion'
   | 'lastResponse'
   | 'activity';
 
@@ -57,7 +57,7 @@ const STATUS_OPTIONS_WITH_ARCHIVED: SurveyStatusFilter[] = [
 const SORT_OPTIONS: SurveySortBy[] = [
   'title',
   'status',
-  'questions',
+  'completion',
   'responses',
   'lastResponse',
   'activity',

@@ -38,7 +38,7 @@ export function ProjectListTable({
               sortDir={sortDir}
               onSort={onSortByColumn}
               label={t('projects.list.table.name')}
-              className="w-[42%] min-w-0 px-4 py-3"
+              className="w-[38%] min-w-0 px-4 py-3"
             />
 
             <SortableTableHeader
@@ -47,7 +47,7 @@ export function ProjectListTable({
               sortDir={sortDir}
               onSort={onSortByColumn}
               label={t('projects.list.table.status')}
-              className="border-border/30 w-[11%] min-w-0 border-l px-4 py-3"
+              className="border-border/30 w-[12%] min-w-0 border-l px-4 py-3"
               centered
             />
 
@@ -57,16 +57,7 @@ export function ProjectListTable({
               sortDir={sortDir}
               onSort={onSortByColumn}
               label={t('projects.list.table.surveys')}
-              className="border-border/30 w-[11%] min-w-0 border-l px-5 py-3"
-            />
-
-            <SortableTableHeader
-              sortKey="activeSurveys"
-              currentSortKey={sortBy}
-              sortDir={sortDir}
-              onSort={onSortByColumn}
-              label={t('projects.list.table.activeSurveys')}
-              className="border-border/30 w-[11%] min-w-0 border-l px-5 py-3"
+              className="border-border/30 w-[12%] min-w-0 border-l px-5 py-3"
             />
 
             <SortableTableHeader
@@ -75,7 +66,7 @@ export function ProjectListTable({
               sortDir={sortDir}
               onSort={onSortByColumn}
               label={t('projects.list.table.responses')}
-              className="border-border/30 w-[12%] min-w-0 border-l px-5 py-3"
+              className="border-border/30 w-[14%] min-w-0 border-l px-5 py-3"
             />
 
             <SortableTableHeader
@@ -84,7 +75,7 @@ export function ProjectListTable({
               sortDir={sortDir}
               onSort={onSortByColumn}
               label={t('projects.list.table.updated')}
-              className="border-border/30 hidden w-[9%] min-w-0 border-l px-4 py-3 xl:table-cell"
+              className="border-border/30 hidden w-[12%] min-w-0 border-l px-4 py-3 md:table-cell"
             />
 
             <TableHead className="w-[4%] min-w-12 shrink-0 px-2 py-3" aria-hidden />

@@ -46,6 +46,12 @@ export interface NavItem {
    * section (e.g. `/settings/*`) should highlight as active.
    */
   activePrefix?: string | undefined;
+  /**
+   * Extra path prefixes that should also activate this nav item.
+   * Used when conceptually related routes live under different URL paths
+   * (e.g. survey stats under `/dashboard/research/stats` still belong to Projects).
+   */
+  additionalPrefixes?: readonly string[] | undefined;
   subNav?: SubNavConfig | undefined;
   /** Show chevron when expanded (e.g. for items that will have sub-nav later). */
   showChevron?: boolean | undefined;
@@ -66,6 +72,7 @@ export const SIDEBAR_NAV: NavGroup[] = [
         labelKey: 'sidebar.projects',
         icon: FolderKanban,
         href: ROUTES.dashboard.projects,
+        additionalPrefixes: [ROUTES.dashboard.researchStats],
         subNav: {
           titleKey: 'sidebar.projects',
           groups: [

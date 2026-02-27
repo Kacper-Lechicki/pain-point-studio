@@ -14,6 +14,7 @@ import {
   BENTO_ROW4_CARD_MIN_H,
 } from '@/features/dashboard/components/bento/bento-styles';
 import type { ProjectDetail, ProjectSurvey } from '@/features/projects/actions/get-project';
+import { getSurveyStatsUrl } from '@/features/surveys/lib/survey-urls';
 import Link from '@/i18n/link';
 import { cn } from '@/lib/common/utils';
 
@@ -147,7 +148,9 @@ function SurveyRow({ survey }: { survey: ProjectSurvey }) {
       <span className={cn('size-1.5 shrink-0 rounded-full', dotColor)} aria-hidden />
 
       {/* Title */}
-      <span className="min-w-0 flex-1 truncate">{survey.title}</span>
+      <Link href={getSurveyStatsUrl(survey.id)} className="min-w-0 flex-1 truncate hover:underline">
+        {survey.title}
+      </Link>
 
       {/* Response count */}
       <span className="text-muted-foreground shrink-0 tabular-nums">

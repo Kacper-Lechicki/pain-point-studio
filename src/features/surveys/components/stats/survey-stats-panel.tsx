@@ -2,8 +2,8 @@
 
 import { useMemo, useState, useTransition } from 'react';
 
-import { Inbox, Link2 } from 'lucide-react';
-import { useFormatter, useNow, useTranslations } from 'next-intl';
+import { ChevronLeft, Inbox, Link2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,8 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { SectionLabel } from '@/components/ui/metric-display';
 import { Separator } from '@/components/ui/separator';
 import { useBreadcrumbSegment } from '@/features/dashboard/components/layout/breadcrumb-context';
+import { useSubPanelLinks } from '@/features/dashboard/components/layout/sub-panel-items-context';
+import { getProjectDetailUrl } from '@/features/projects/lib/project-urls';
 import { cancelSurvey, completeSurvey } from '@/features/surveys/actions';
 import type { QuestionStats, SurveyStats } from '@/features/surveys/actions/get-survey-stats';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
@@ -21,7 +23,6 @@ import { QuestionStatsCard } from '@/features/surveys/components/stats/question-
 import { SurveyStatsCharts } from '@/features/surveys/components/stats/survey-stats-charts';
 import { SurveyStatsDetailInfo } from '@/features/surveys/components/stats/survey-stats-detail-info';
 import { SurveyStatsHeader } from '@/features/surveys/components/stats/survey-stats-header';
-import { NOW_UPDATE_INTERVAL_MS } from '@/features/surveys/config';
 import { deriveSurveyFlags } from '@/features/surveys/config/survey-status';
 import { useRealtimeResponses, useSurveyCardActions } from '@/features/surveys/hooks';
 import {
@@ -39,11 +40,21 @@ interface SurveyStatsPanelProps {
 
 export const SurveyStatsPanel = ({ stats, survey }: SurveyStatsPanelProps) => {
   const t = useTranslations();
-  const format = useFormatter();
-  const now = useNow({ updateInterval: NOW_UPDATE_INTERVAL_MS });
   const { isRefreshing, refresh, lastSyncedAt, markSynced } = useRefresh();
 
   useBreadcrumbSegment(stats.survey.id, stats.survey.title);
+
+  useSubPanelLinks(
+    survey
+      ? [
+          {
+            label: t('common.backToProject'),
+            href: getProjectDetailUrl(survey.projectId),
+            icon: ChevronLeft,
+          },
+        ]
+      : []
+  );
 
   const initialIsActive = deriveSurveyFlags(stats.survey.status).isActive;
 
@@ -79,9 +90,6 @@ export const SurveyStatsPanel = ({ stats, survey }: SurveyStatsPanelProps) => {
       ),
     [stats.questions, stats.completedResponses]
   );
-
-  const lastResponseLabel =
-    stats.lastResponseAt != null ? format.relativeTime(new Date(stats.lastResponseAt), now) : null;
 
   const handleCompleteSurvey = () => {
     startTransition(async () => {
@@ -138,13 +146,8 @@ export const SurveyStatsPanel = ({ stats, survey }: SurveyStatsPanelProps) => {
           submissionRate={submissionRate}
           avgQuestionCompletion={avgQuestionCompletion}
           avgCompletionSeconds={stats.avgCompletionSeconds}
-          lastResponseLabel={lastResponseLabel}
           respondentProgress={respondentProgress}
-          isActive={isActive}
-          wide
         />
-
-        {survey && <SurveyStatsDetailInfo survey={survey} />}
 
         {stats.completedResponses > 0 && (
           <SurveyStatsCharts
@@ -160,6 +163,8 @@ export const SurveyStatsPanel = ({ stats, survey }: SurveyStatsPanelProps) => {
             }}
           />
         )}
+
+        {survey && <SurveyStatsDetailInfo survey={survey} />}
 
         {stats.completedResponses === 0 ? (
           <EmptyState

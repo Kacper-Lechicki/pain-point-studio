@@ -34,6 +34,16 @@ export function getSurveyComparator(
         mul * (a.questionCount - b.questionCount) ||
         new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
 
+    case 'completion':
+      return (a, b) => {
+        const aVal = a.avgQuestionCompletion ?? -1;
+        const bVal = b.avgQuestionCompletion ?? -1;
+
+        return (
+          mul * (aVal - bVal) || new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        );
+      };
+
     default:
       return undefined;
   }

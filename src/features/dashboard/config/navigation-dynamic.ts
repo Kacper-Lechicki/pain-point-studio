@@ -1,4 +1,4 @@
-import { FolderKanban, type LucideIcon } from 'lucide-react';
+import { FlaskConical, FolderKanban, type LucideIcon } from 'lucide-react';
 
 import type { AppRoute } from '@/config/routes';
 import { ROUTES } from '@/config/routes';
@@ -15,6 +15,8 @@ export interface DynamicRouteTab {
    * matching known static child routes like `new`, `archive`, etc.
    */
   excludeSegments?: readonly string[] | undefined;
+  /** Sub-panel title override when this dynamic route is active. Falls back to parent nav item's titleKey. */
+  titleKey?: MessageKey | undefined;
 }
 
 export const DYNAMIC_ROUTE_TABS: Record<string, DynamicRouteTab[]> = {
@@ -23,6 +25,12 @@ export const DYNAMIC_ROUTE_TABS: Record<string, DynamicRouteTab[]> = {
       prefix: ROUTES.dashboard.projects,
       icon: FolderKanban,
       excludeSegments: ['new'],
+      titleKey: 'sidebar.projectDetails',
+    },
+    {
+      prefix: ROUTES.dashboard.researchStats,
+      icon: FlaskConical,
+      titleKey: 'sidebar.surveyDetails',
     },
   ],
 };

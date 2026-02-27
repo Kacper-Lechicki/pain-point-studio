@@ -126,7 +126,11 @@ export function SurveyTableRow({
             </TableCell>
 
             <TableCell className="text-muted-foreground border-border/30 hidden min-w-0 truncate border-l text-xs tabular-nums lg:table-cell">
-              {survey.questionCount}
+              {row.isDraft
+                ? '—'
+                : survey.avgQuestionCompletion != null
+                  ? `${Math.round(survey.avgQuestionCompletion)}%`
+                  : '—'}
             </TableCell>
 
             <TableCell className="text-muted-foreground border-border/30 hidden min-w-0 truncate border-l pr-4 pl-3 text-xs xl:table-cell">

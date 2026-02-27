@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 
+import { PageTransition } from '@/components/ui/page-transition';
 import { getPublicSurvey, recordView } from '@/features/surveys/actions/respondent';
 import { SurveyClosed } from '@/features/surveys/components/respondent/survey-closed';
 import { SurveyLanding } from '@/features/surveys/components/respondent/survey-landing';
@@ -17,10 +18,18 @@ export default async function SurveyRespondPage({ params }: SurveyRespondPagePro
   }
 
   if (!survey.isAcceptingResponses) {
-    return <SurveyClosed reason={survey.closedReason ?? 'completed'} title={survey.title} />;
+    return (
+      <PageTransition>
+        <SurveyClosed reason={survey.closedReason ?? 'completed'} title={survey.title} />
+      </PageTransition>
+    );
   }
 
   void recordView(survey.id);
 
-  return <SurveyLanding survey={survey} slug={slug} />;
+  return (
+    <PageTransition>
+      <SurveyLanding survey={survey} slug={slug} />
+    </PageTransition>
+  );
 }

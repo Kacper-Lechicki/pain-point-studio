@@ -15,9 +15,8 @@ export function DashboardBentoSkeleton() {
       </div>
 
       {/* Charts + Activity */}
-      {Array.from({ length: 3 }).map((_, i) => (
-        <div key={i} className="bg-muted h-[15rem] animate-pulse rounded-2xl" />
-      ))}
+      <div className="bg-muted h-[15rem] animate-pulse rounded-2xl lg:col-span-2" />
+      <div className="bg-muted h-[15rem] animate-pulse rounded-2xl" />
 
       {/* Pinned + Projects */}
       <div className="bg-muted h-40 animate-pulse rounded-2xl lg:col-span-2" />

@@ -4,6 +4,7 @@ import { AuthToast } from '@/features/auth/components/common/auth-toast';
 import { BreadcrumbProvider } from '@/features/dashboard/components/layout/breadcrumb-context';
 import { DashboardLayoutChrome } from '@/features/dashboard/components/layout/dashboard-layout-chrome';
 import { SidebarProvider } from '@/features/dashboard/components/layout/sidebar-provider';
+import { SubPanelItemsProvider } from '@/features/dashboard/components/layout/sub-panel-items-context';
 import { getProfile } from '@/features/settings/actions';
 import { UnsavedChangesProvider } from '@/hooks/unsaved-changes-context';
 
@@ -14,11 +15,13 @@ const DashboardLayout = async ({ children }: { children: ReactNode }) => {
     <UnsavedChangesProvider>
       <SidebarProvider>
         <BreadcrumbProvider>
-          <DashboardLayoutChrome profile={profile}>{children}</DashboardLayoutChrome>
+          <SubPanelItemsProvider>
+            <DashboardLayoutChrome profile={profile}>{children}</DashboardLayoutChrome>
 
-          <Suspense>
-            <AuthToast />
-          </Suspense>
+            <Suspense>
+              <AuthToast />
+            </Suspense>
+          </SubPanelItemsProvider>
         </BreadcrumbProvider>
       </SidebarProvider>
     </UnsavedChangesProvider>

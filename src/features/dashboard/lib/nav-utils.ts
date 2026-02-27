@@ -131,10 +131,18 @@ export function resolveDynamicLabel(
 
 // ── Active nav item matching ────────────────────────────────────────
 
-function matchesNavItem(pathname: string, item: NavItem): boolean {
+export function matchesNavItem(pathname: string, item: NavItem): boolean {
   const prefix = item.activePrefix ?? item.href;
 
-  return pathname === prefix || pathname.startsWith(prefix + '/');
+  if (pathname === prefix || pathname.startsWith(prefix + '/')) {
+    return true;
+  }
+
+  if (item.additionalPrefixes) {
+    return item.additionalPrefixes.some((p) => pathname === p || pathname.startsWith(p + '/'));
+  }
+
+  return false;
 }
 
 /**

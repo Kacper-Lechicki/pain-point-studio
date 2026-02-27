@@ -1,20 +1,14 @@
-'use client';
-
 import { BackButton } from '@/components/ui/back-button';
-import { getDashboardBackConfig } from '@/features/dashboard/config/layout';
-import { usePathname } from '@/i18n/routing';
 
-export function DashboardPageBack() {
-  const pathname = usePathname();
-  const config = getDashboardBackConfig(pathname ?? null);
+interface DashboardPageBackProps {
+  href: string;
+  label: string;
+}
 
-  if (config == null) {
-    return null;
-  }
-
+export function DashboardPageBack({ href, label }: DashboardPageBackProps) {
   return (
     <div className="mb-2 flex h-9 items-center">
-      <BackButton fallbackHref={config.fallbackHref} className="h-9 pl-0" />
+      <BackButton href={href} label={label} className="h-9 pl-0" />
     </div>
   );
 }

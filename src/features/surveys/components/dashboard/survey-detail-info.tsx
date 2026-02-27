@@ -1,12 +1,4 @@
-import {
-  Archive,
-  Calendar,
-  CalendarClock,
-  CalendarX2,
-  Clock,
-  FolderKanban,
-  Users,
-} from 'lucide-react';
+import { Archive, CalendarClock, CalendarX2, FolderKanban, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { MetricRow, SectionLabel } from '@/components/ui/metric-display';
@@ -112,18 +104,6 @@ export function SurveyDetailInfo({
             labelKey="surveys.dashboard.detailPanel.autoDeletes"
           />
         )}
-
-        <MetricRow
-          icon={Calendar}
-          label={t('surveys.dashboard.detailPanel.created')}
-          value={formatDate(survey.createdAt)}
-        />
-
-        <MetricRow
-          icon={Clock}
-          label={t('surveys.dashboard.detailPanel.updated')}
-          value={formatDate(survey.updatedAt)}
-        />
       </div>
     </div>
   );

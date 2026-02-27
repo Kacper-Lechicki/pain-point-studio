@@ -36,7 +36,7 @@ export const ResponsesChart = ({ data, className }: ResponsesChartProps) => {
   const chartConfig = {
     responses: {
       label: t('charts.responses'),
-      color: 'var(--chart-cyan)',
+      color: 'var(--chart-violet)',
     },
   } satisfies ChartConfig;
 
@@ -64,7 +64,7 @@ export const ResponsesChart = ({ data, className }: ResponsesChartProps) => {
           <p className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
             {t('charts.responsesOverTime')}
           </p>
-          <LineChartIcon className="text-chart-cyan size-4 shrink-0" />
+          <LineChartIcon className="text-chart-violet size-4 shrink-0" />
         </div>
 
         {!hasData ? (

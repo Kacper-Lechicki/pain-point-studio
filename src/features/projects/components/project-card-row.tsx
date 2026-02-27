@@ -76,19 +76,14 @@ export function ProjectCardRow({ project, now, onSelect, onDelete }: ProjectCard
         </p>
       </div>
 
-      <div className="text-muted-foreground grid min-w-0 grid-cols-2 gap-x-4 gap-y-2 text-xs">
+      <div className="text-muted-foreground mt-auto grid min-w-0 grid-cols-3 gap-x-4 text-xs">
         <div className="flex flex-col gap-0.5">
-          <span className="text-foreground font-medium tabular-nums">
-            {t('projects.list.card.surveys', { count: project.surveyCount })}
-          </span>
+          <span>{t('projects.list.table.surveys')}</span>
+          <span className="text-foreground font-medium tabular-nums">{project.surveyCount}</span>
         </div>
         <div className="flex flex-col gap-0.5">
-          <span className="text-foreground tabular-nums">
-            {t('projects.list.card.activeSurveys', { count: project.activeSurveyCount })}
-          </span>
-        </div>
-        <div className="flex flex-col gap-0.5">
-          <span>{t('projects.list.card.responses', { count: project.responseCount })}</span>
+          <span>{t('projects.list.table.responses')}</span>
+          <span className="text-foreground font-medium tabular-nums">{project.responseCount}</span>
         </div>
         <div className="flex flex-col gap-0.5">
           <span>{t('projects.list.card.updated')}</span>

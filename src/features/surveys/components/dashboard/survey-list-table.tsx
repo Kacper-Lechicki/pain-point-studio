@@ -63,11 +63,11 @@ export function SurveyListTable({
             />
 
             <SortableTableHeader
-              sortKey="questions"
+              sortKey="completion"
               currentSortKey={sortBy}
               sortDir={sortDir}
               onSort={onSortByColumn}
-              label={t('surveys.dashboard.table.questions')}
+              label={t('surveys.dashboard.table.completion')}
               className="border-border/30 hidden border-l lg:table-cell"
             />
 

@@ -11,7 +11,6 @@ import { Separator } from '@/components/ui/separator';
 import { OverviewMetrics } from '@/features/projects/components/overview-metrics';
 import { OverviewRecentActivity } from '@/features/projects/components/overview-recent-activity';
 import { OverviewResponseTimeline } from '@/features/projects/components/overview-response-timeline';
-import { ProjectDetailInfo } from '@/features/projects/components/project-detail-info';
 import { isProjectArchived } from '@/features/projects/lib/project-helpers';
 import { getProjectDetailUrl } from '@/features/projects/lib/project-urls';
 import type { Project, ProjectOverviewStats } from '@/features/projects/types';
@@ -34,13 +33,11 @@ export function ProjectOverviewTab({ project, overviewStats }: ProjectOverviewTa
 
       <Separator />
 
-      <ProjectDetailInfo project={project} />
-
-      <Separator />
-
       {hasData ? (
-        <>
-          <OverviewResponseTimeline data={overviewStats.responsesTimeline} />
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <div className="lg:col-span-2">
+            <OverviewResponseTimeline data={overviewStats.responsesTimeline} />
+          </div>
 
           <div>
             <SectionLabel>{t('projects.detail.charts.completionRate')}</SectionLabel>
@@ -50,10 +47,10 @@ export function ProjectOverviewTab({ project, overviewStats }: ProjectOverviewTa
             />
           </div>
 
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="lg:col-span-3">
             <OverviewRecentActivity items={overviewStats.recentActivity} />
           </div>
-        </>
+        </div>
       ) : (
         <HeroHighlight
           showDotsOnMobile={false}

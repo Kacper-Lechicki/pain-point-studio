@@ -1,7 +1,7 @@
 'use client';
 
 import { formatDistanceToNow } from 'date-fns';
-import { Activity, Clock3, FileText, Percent, Timer, Users } from 'lucide-react';
+import { Clock3, Percent, Timer, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { SectionLabel } from '@/components/ui/metric-display';
@@ -41,17 +41,7 @@ export function OverviewMetrics({ stats }: OverviewMetricsProps) {
   return (
     <div>
       <SectionLabel>{t('sectionLabel')}</SectionLabel>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
-        <OverviewMetricCard
-          value={String(stats.totalSurveys)}
-          label={t('totalSurveys')}
-          icon={FileText}
-        />
-        <OverviewMetricCard
-          value={String(stats.activeSurveys)}
-          label={t('activeSurveys')}
-          icon={Activity}
-        />
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         <OverviewMetricCard
           value={String(stats.totalResponses)}
           label={t('totalResponses')}
