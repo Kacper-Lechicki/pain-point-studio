@@ -771,9 +771,8 @@
     "errors": {
       "fieldRequired": "This field is required.",
       "nameTooLong": "Name must be 100 characters or fewer.",
-      "descriptionTooLong": "Description must be 500 characters or fewer.",
+      "summaryTooLong": "Summary must be 280 characters or fewer.",
       "contentTooLong": "Content must be 500 characters or fewer.",
-      "notesTooLong": "Notes must be 50,000 characters or fewer.",
       "unexpected": "Something went wrong. Please try again."
     },
     "title": "Projects",
@@ -790,10 +789,10 @@
       "name": "Project Name",
       "namePlaceholder": "e.g., AI Writing Assistant",
       "nameCounter": "{count}/{max}",
-      "descriptionLabel": "Description",
-      "descriptionHelper": "A brief summary of what you're researching or validating.",
-      "descriptionPlaceholder": "Describe your project idea or research goal...",
-      "descriptionCounter": "{count}/{max}",
+      "summaryLabel": "Summary",
+      "summaryHelper": "A brief one-liner for what you're researching.",
+      "summaryPlaceholder": "e.g., Validating demand for an AI writing assistant...",
+      "summaryCounter": "{count}/{max}",
       "submit": "Create Project",
       "success": "Project created successfully."
     },
@@ -822,6 +821,8 @@
         "surveys": "Surveys",
         "activeSurveys": "Active",
         "responses": "Responses",
+        "status": "Status",
+        "activity": "Recent activity",
         "asc": "Ascending",
         "desc": "Descending"
       },
@@ -833,14 +834,24 @@
         "activeSurveys": "Active",
         "responses": "Responses",
         "progress": "Progress",
-        "updated": "Updated"
+        "updated": "Updated",
+        "activity": "Activity"
       },
       "card": {
         "surveys": "{count, plural, one {# survey} other {# surveys}}",
         "activeSurveys": "{count} active",
         "responses": "{count, plural, one {# response} other {# responses}}",
         "progress": "{percent}% validated",
-        "updated": "Updated"
+        "updated": "Updated",
+        "activity": "Activity"
+      },
+      "smartStatus": {
+        "survey_ending_soon": "Ending in {count}h",
+        "no_active_surveys": "No active surveys",
+        "has_drafts": "{count, plural, one {# draft survey} other {# draft surveys}}",
+        "collecting_responses": "Collecting responses",
+        "no_surveys": "No surveys yet",
+        "all_complete": "All complete"
       },
       "actions": {
         "moreActions": "More actions",
@@ -958,6 +969,20 @@
       "draftSurveys": "Drafts",
       "archivedBanner": "This project is archived.",
       "contextBadge": "Project",
+      "changeImage": "Change image",
+      "removeImage": "Remove image",
+      "removeImageConfirmTitle": "Remove project image?",
+      "removeImageConfirmDescription": "The image will be permanently deleted.",
+      "imageUploadFailed": "Failed to upload image. Please try again.",
+      "imageInvalidType": "Only JPEG, PNG, and WebP images are supported.",
+      "imageTooLarge": "Image must be under 2 MB.",
+      "about": {
+        "title": "About",
+        "placeholder": "Describe what this project is about…",
+        "saving": "Saving…",
+        "saved": "Saved",
+        "failed": "Failed to save"
+      },
       "tabs": {
         "overview": "Overview",
         "surveys": "Surveys",
@@ -1005,13 +1030,10 @@
         }
       },
       "notes": {
-        "placeholder": "Write your notes here... Supports Markdown formatting.",
-        "edit": "Edit",
-        "preview": "Preview",
+        "placeholder": "Write your project notes here...",
         "saving": "Saving...",
         "saved": "Saved",
-        "failed": "Failed to save",
-        "emptyPreview": "Nothing to preview. Start writing in edit mode."
+        "failed": "Failed to save"
       },
       "quickActions": {
         "title": "Quick Actions",
@@ -1037,13 +1059,13 @@
       "validated": "Validated"
     },
     "phases": {
-      "idea": "Idea",
+      "idea": "Problem Discovery",
       "ideaDescription": "Defining the problem and hypothesis",
-      "research": "Research",
+      "research": "Solution Validation",
       "researchDescription": "Gathering data through surveys",
-      "validation": "Validation",
+      "validation": "Market Validation",
       "validationDescription": "Confirming findings with additional research",
-      "decision": "Decision",
+      "decision": "Launch Readiness",
       "decisionDescription": "Making go/no-go decisions based on evidence",
       "label": "Research Phase",
       "placeholder": "Select a phase...",
@@ -1095,7 +1117,106 @@
       "listView": "List view",
       "emptyTitle": "No insights yet",
       "emptyDescription": "Capture your research findings as strengths, opportunities, threats, and decisions to build your project scorecard.",
-      "emptyCta": "Add First Insight"
+      "emptyCta": "Add First Insight",
+      "types": {
+        "strength": "Strength",
+        "opportunity": "Opportunity",
+        "threat": "Threat",
+        "decision": "Decision"
+      }
+    },
+    "verdict": {
+      "confidence": "{current} of {target} responses collected",
+      "noData": {
+        "label": "No Data",
+        "summary": "Start collecting responses to see how your idea stacks up."
+      },
+      "exploring": {
+        "label": "Exploring",
+        "summary": "Early data is coming in — keep collecting responses to strengthen your confidence."
+      },
+      "exploringLow": {
+        "summary": "You have some responses but not enough signals yet. Keep going!"
+      },
+      "promising": {
+        "label": "Promising",
+        "summary": "The data looks positive so far. Your idea is showing signs of product-market fit."
+      },
+      "needsAttention": {
+        "label": "Needs Attention",
+        "summary": "Some concerning signals have appeared. Review your findings to understand the risks."
+      },
+      "validated": {
+        "label": "Validated",
+        "summary": "Strong evidence supports this idea. The data consistently points to real demand."
+      },
+      "invalidated": {
+        "label": "Invalidated",
+        "summary": "The data suggests this idea may not have enough demand. Consider pivoting."
+      },
+      "moreData": {
+        "summary": "Collecting more responses will help paint a clearer picture."
+      }
+    },
+    "overview": {
+      "responses": "Responses",
+      "surveys": "Surveys",
+      "completion": "Completion",
+      "completionSub": "{completed} of {total} completed",
+      "active": "active",
+      "draft": "draft",
+      "completed": "completed",
+      "last7d": "7d",
+      "responseTrend": "Response Trend",
+      "noResponses": "No responses yet",
+      "surveyBreakdown": "Survey Progress",
+      "createFirstSurvey": "Create your first survey to start collecting data",
+      "recentActivity": "Recent Activity",
+      "noActivity": "No activity yet — publish a survey to get started",
+      "activityType": {
+        "response": "New response",
+        "survey_completed": "Survey completed",
+        "survey_activated": "Survey published"
+      }
+    },
+    "journey": {
+      "sectionLabel": "Research Journey",
+      "aggregate": "{current} of {target} target responses"
+    },
+    "keyFindings": {
+      "sectionLabel": "Key Findings",
+      "empty": "No findings yet. Collect survey responses or add insights to see key findings here.",
+      "viewAll": "View all insights",
+      "autoBadge": "auto",
+      "yesNo": "{percent}% said yes to \"{question}\"",
+      "rating": "Avg {avg}/{max} for \"{question}\"",
+      "multipleChoice": "{percent}% chose \"{option}\" for \"{question}\"",
+      "completionRate": "{percent}% completion for \"{survey}\""
+    },
+    "nextStep": {
+      "action": "Go",
+      "createSurvey": "Create your first survey to start collecting data.",
+      "activateSurvey": "You have draft surveys ready. Activate one to start collecting responses.",
+      "shareSurvey": "Share your active survey to get more responses and strengthen your data.",
+      "reviewFindings": "You have enough responses to review. Check your findings and add insights.",
+      "makeDecision": "You have solid data and insights. Time to make a go/no-go decision.",
+      "continue": "Keep collecting responses to build even stronger confidence."
+    },
+    "compactStats": {
+      "responses": "responses",
+      "activeSurveys": "active surveys",
+      "lastResponse": "Last response",
+      "never": "never"
+    },
+    "activityFeed": {
+      "sectionLabel": "Recent Activity",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "newResponses": "{count, plural, one {# new response} other {# new responses}}"
+    },
+    "edit": {
+      "targetResponses": "Target Responses",
+      "targetResponsesHelper": "How many responses do you want to collect before making a decision?"
     }
   },
   "respondent": {
@@ -1179,7 +1300,9 @@
     "projectDetails": "Project Details",
     "surveyDetails": "Survey Details",
     "profilePreview": "Profile",
-    "askAi": "Ask AI"
+    "askAi": "Ask AI",
+    "giveFeedback": "Give Feedback",
+    "shareFeedback": "Share Feedback"
   },
   "breadcrumbs": {
     "dashboard": "Dashboard",

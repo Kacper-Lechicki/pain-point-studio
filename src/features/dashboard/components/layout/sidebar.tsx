@@ -7,7 +7,11 @@ import { SidebarItem } from '@/features/dashboard/components/layout/sidebar-item
 import { SidebarNavList } from '@/features/dashboard/components/layout/sidebar-nav-list';
 import { useSidebar } from '@/features/dashboard/components/layout/sidebar-provider';
 import { DASHBOARD_FOOTER_HEIGHT_CLASS } from '@/features/dashboard/config/layout';
-import { SIDEBAR_BOTTOM_ITEM, SIDEBAR_PROFILE_ITEM } from '@/features/dashboard/config/navigation';
+import {
+  SIDEBAR_BOTTOM_ITEM,
+  SIDEBAR_GIVE_FEEDBACK_ITEM,
+  SIDEBAR_PROFILE_ITEM,
+} from '@/features/dashboard/config/navigation';
 import { cn } from '@/lib/common/utils';
 
 export function Sidebar() {
@@ -48,6 +52,11 @@ export function Sidebar() {
             {...SIDEBAR_BOTTOM_ITEM}
             isExpanded={isExpanded}
             hasSubNav={!!SIDEBAR_BOTTOM_ITEM.subNav}
+          />
+          <SidebarItem
+            {...SIDEBAR_GIVE_FEEDBACK_ITEM}
+            isExpanded={isExpanded}
+            hasSubNav={!!SIDEBAR_GIVE_FEEDBACK_ITEM.subNav}
           />
         </div>
       </nav>

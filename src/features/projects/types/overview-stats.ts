@@ -7,6 +7,18 @@ export interface CompletionTimelinePoint {
   abandoned: number;
 }
 
+export interface SurveyStatusDistribution {
+  draft: number;
+  active: number;
+  completed: number;
+}
+
+export interface CompletionBreakdown {
+  completed: number;
+  inProgress: number;
+  abandoned: number;
+}
+
 export interface ProjectOverviewStats {
   totalSurveys: number;
   activeSurveys: number;
@@ -14,13 +26,8 @@ export interface ProjectOverviewStats {
   avgCompletion: number;
   avgTimeSeconds: number | null;
   lastResponseAt: string | null;
-  responsesTimeline: TimelinePoint[];
-  completionTimeline: CompletionTimelinePoint[];
-  surveyStatusDistribution: Record<string, number>;
-  completionBreakdown: {
-    completed: number;
-    inProgress: number;
-    abandoned: number;
-  };
   recentActivity: ActivityItem[];
+  responsesTimeline: TimelinePoint[];
+  surveyStatusDistribution: SurveyStatusDistribution;
+  completionBreakdown: CompletionBreakdown;
 }

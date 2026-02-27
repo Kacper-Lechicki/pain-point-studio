@@ -7,13 +7,18 @@ import { PageTransition } from '@/components/ui/page-transition';
 import { ROUTES } from '@/config';
 import { DASHBOARD_PAGE_BODY_GAP_TOP } from '@/features/dashboard/config/layout';
 import { getProjects } from '@/features/projects/actions/get-projects';
+import { getProjectsListExtras } from '@/features/projects/actions/get-projects-list-extras';
 import { ProjectsListPage } from '@/features/projects/components/projects-list-page';
 import Link from '@/i18n/link';
 
 export const dynamic = 'force-dynamic';
 
 export default async function ProjectsPage() {
-  const [projects, t] = await Promise.all([getProjects(), getTranslations()]);
+  const [projects, extras, t] = await Promise.all([
+    getProjects(),
+    getProjectsListExtras(),
+    getTranslations(),
+  ]);
   const hasProjects = (projects ?? []).length > 0;
 
   return (
@@ -40,7 +45,7 @@ export default async function ProjectsPage() {
 
       <div className={DASHBOARD_PAGE_BODY_GAP_TOP}>
         {hasProjects ? (
-          <ProjectsListPage projects={projects!} />
+          <ProjectsListPage projects={projects!} extras={extras} />
         ) : (
           <EmptyState
             icon={FolderKanban}

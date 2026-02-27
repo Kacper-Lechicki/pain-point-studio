@@ -2,9 +2,8 @@ import { z } from 'zod';
 
 import {
   INSIGHT_CONTENT_MAX_LENGTH,
-  PROJECT_DESCRIPTION_MAX_LENGTH,
   PROJECT_NAME_MAX_LENGTH,
-  PROJECT_NOTES_MAX_LENGTH,
+  PROJECT_SUMMARY_MAX_LENGTH,
 } from '@/features/projects/config';
 
 import { INSIGHT_TYPES } from './project';
@@ -18,10 +17,10 @@ export const createProjectSchema = z.object({
     .trim()
     .min(1, 'projects.errors.fieldRequired')
     .max(PROJECT_NAME_MAX_LENGTH, 'projects.errors.nameTooLong'),
-  description: z
+  summary: z
     .string()
     .trim()
-    .max(PROJECT_DESCRIPTION_MAX_LENGTH, 'projects.errors.descriptionTooLong')
+    .max(PROJECT_SUMMARY_MAX_LENGTH, 'projects.errors.summaryTooLong')
     .optional()
     .or(z.literal('')),
 });
@@ -36,26 +35,39 @@ export const updateProjectSchema = z.object({
     .trim()
     .min(1, 'projects.errors.fieldRequired')
     .max(PROJECT_NAME_MAX_LENGTH, 'projects.errors.nameTooLong'),
-  description: z
+  summary: z
     .string()
     .trim()
-    .max(PROJECT_DESCRIPTION_MAX_LENGTH, 'projects.errors.descriptionTooLong')
+    .max(PROJECT_SUMMARY_MAX_LENGTH, 'projects.errors.summaryTooLong')
     .optional()
     .or(z.literal('')),
+  targetResponses: z.number().int().min(1).max(10000).optional(),
 });
 
 export type UpdateProjectInput = z.infer<typeof updateProjectSchema>;
 
+/** Schema for updating the rich description (auto-save). */
+export const updateProjectDescriptionSchema = z.object({
+  projectId: z.uuid(),
+  description: z.any().nullable(),
+});
+
+export type UpdateProjectDescriptionInput = z.infer<typeof updateProjectDescriptionSchema>;
+
+/** Schema for updating the project image URL. */
+export const updateProjectImageSchema = z.object({
+  projectId: z.uuid(),
+  imageUrl: z.string().url().or(z.literal('')),
+});
+
+export type UpdateProjectImageInput = z.infer<typeof updateProjectImageSchema>;
+
 // ── Notes schemas ───────────────────────────────────────────────────
 
-/** Schema for updating project notes (auto-save). */
+/** Schema for updating project notes — Tiptap JSON (auto-save). */
 export const updateProjectNotesSchema = z.object({
   projectId: z.uuid(),
-  notes: z
-    .string()
-    .max(PROJECT_NOTES_MAX_LENGTH, 'projects.errors.notesTooLong')
-    .optional()
-    .or(z.literal('')),
+  notes: z.any().nullable(),
 });
 
 export type UpdateProjectNotesInput = z.infer<typeof updateProjectNotesSchema>;

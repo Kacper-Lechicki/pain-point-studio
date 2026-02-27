@@ -13,7 +13,7 @@ export const updateProjectNotes = withProtectedAction<typeof updateProjectNotesS
       const { data: row, error } = await supabase
         .from('projects')
         .update({
-          notes: data.notes || null,
+          notes_json: data.notes ?? null,
         })
         .eq('id', data.projectId)
         .eq('user_id', user.id)

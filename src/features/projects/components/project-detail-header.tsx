@@ -11,6 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { ProjectImageUpload } from '@/features/projects/components/project-image-upload';
 import { ProjectPhaseBadge } from '@/features/projects/components/project-phase-badge';
 import { ProjectStatusBadge } from '@/features/projects/components/project-status-badge';
 import { isProjectArchived } from '@/features/projects/lib/project-helpers';
@@ -18,17 +19,21 @@ import type { Project, ProjectStatus, ResearchPhase } from '@/features/projects/
 
 interface ProjectDetailHeaderProps {
   project: Project;
+  userId: string;
   phase: ResearchPhase | null;
   onEdit: () => void;
   onArchive: () => void;
   onDelete: () => void;
+  onImageChange: (url: string | null) => void;
 }
 
 export function ProjectDetailHeader({
   project,
+  userId,
   phase,
   onArchive,
   onDelete,
+  onImageChange,
 }: ProjectDetailHeaderProps) {
   const t = useTranslations();
   const isArchived = isProjectArchived(project);
@@ -49,24 +54,38 @@ export function ProjectDetailHeader({
       )}
 
       <div className="flex min-w-0 flex-wrap items-start justify-between gap-4">
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <Badge variant="secondary" className="text-[11px]">
-              {t('projects.detail.contextBadge')}
-            </Badge>
-            <ProjectStatusBadge status={project.status as ProjectStatus} />
-            {phase && <ProjectPhaseBadge phase={phase} />}
-          </div>
-
-          <h1 className="text-foreground mt-1 min-w-0 truncate text-3xl leading-tight font-bold">
-            {project.name}
-          </h1>
-
-          {project.description && (
-            <p className="text-muted-foreground mt-2 text-sm leading-relaxed">
-              {project.description}
-            </p>
+        <div className="flex min-w-0 flex-1 items-start gap-3">
+          {!isArchived && (
+            <div className="mt-1 flex shrink-0 items-center gap-1">
+              <ProjectImageUpload
+                projectId={project.id}
+                userId={userId}
+                imageUrl={project.image_url}
+                projectName={project.name}
+                onImageChange={onImageChange}
+              />
+            </div>
           )}
+
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-1.5">
+              <Badge variant="secondary" className="text-[11px]">
+                {t('projects.detail.contextBadge')}
+              </Badge>
+              <ProjectStatusBadge status={project.status as ProjectStatus} />
+              {phase && <ProjectPhaseBadge phase={phase} />}
+            </div>
+
+            <h1 className="text-foreground mt-1 min-w-0 truncate text-3xl leading-tight font-bold">
+              {project.name}
+            </h1>
+
+            {project.summary && (
+              <p className="text-muted-foreground mt-2 text-sm leading-relaxed">
+                {project.summary}
+              </p>
+            )}
+          </div>
         </div>
 
         <div className="flex shrink-0 items-center gap-1">

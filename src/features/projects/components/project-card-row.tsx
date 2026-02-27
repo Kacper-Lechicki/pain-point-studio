@@ -1,7 +1,7 @@
 'use client';
 
 import { MoreHorizontal, Trash2 } from 'lucide-react';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -11,20 +11,21 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
+import type { ProjectListExtras } from '@/features/projects/actions/get-projects-list-extras';
+import { ActivitySparkline } from '@/features/projects/components/activity-sparkline';
+import { ProjectAvatar } from '@/features/projects/components/project-avatar';
 import { ProjectStatusBadge } from '@/features/projects/components/project-status-badge';
 import type { ProjectStatus } from '@/features/projects/types';
 
 interface ProjectCardRowProps {
   project: ProjectWithMetrics;
-  now: Date;
+  extras?: ProjectListExtras | undefined;
   onSelect: (projectId: string) => void;
   onDelete: (project: ProjectWithMetrics) => void;
 }
 
-export function ProjectCardRow({ project, now, onSelect, onDelete }: ProjectCardRowProps) {
+export function ProjectCardRow({ project, extras, onSelect, onDelete }: ProjectCardRowProps) {
   const t = useTranslations();
-  const format = useFormatter();
-  const updatedAtLabel = format.relativeTime(new Date(project.updated_at), now);
 
   return (
     <div
@@ -41,10 +42,12 @@ export function ProjectCardRow({ project, now, onSelect, onDelete }: ProjectCard
       aria-label={project.name}
     >
       <div className="flex min-w-0 items-start justify-between gap-2">
-        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1">
-          <span className="text-foreground truncate text-sm font-semibold">{project.name}</span>
-
-          <ProjectStatusBadge status={project.status as ProjectStatus} />
+        <div className="flex min-w-0 flex-1 items-start gap-2">
+          <ProjectAvatar imageUrl={project.image_url} name={project.name} size={32} />
+          <div className="flex min-w-0 flex-col items-start gap-1">
+            <ProjectStatusBadge status={project.status as ProjectStatus} />
+            <span className="text-foreground truncate text-sm font-semibold">{project.name}</span>
+          </div>
         </div>
 
         <div className="shrink-0" onClick={(e) => e.stopPropagation()}>
@@ -72,7 +75,7 @@ export function ProjectCardRow({ project, now, onSelect, onDelete }: ProjectCard
 
       <div className="min-w-0">
         <p className="text-muted-foreground -mt-1 line-clamp-2 text-xs leading-relaxed wrap-break-word">
-          {project.description || '\u00A0'}
+          {project.summary || '\u00A0'}
         </p>
       </div>
 
@@ -85,9 +88,9 @@ export function ProjectCardRow({ project, now, onSelect, onDelete }: ProjectCard
           <span>{t('projects.list.table.responses')}</span>
           <span className="text-foreground font-medium tabular-nums">{project.responseCount}</span>
         </div>
-        <div className="flex flex-col gap-0.5">
-          <span>{t('projects.list.card.updated')}</span>
-          <span className="text-foreground font-medium">{updatedAtLabel}</span>
+        <div className="flex min-w-0 flex-col gap-0.5">
+          <span>{t('projects.list.card.activity')}</span>
+          <ActivitySparkline data={extras?.sparkline ?? []} width={80} height={24} fillWidth />
         </div>
       </div>
     </div>

@@ -3,6 +3,7 @@
 import { useCallback, useMemo } from 'react';
 
 import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
+import type { ProjectsListExtrasMap } from '@/features/projects/actions/get-projects-list-extras';
 import type {
   ProjectSortBy,
   ProjectStatusFilter,
@@ -14,9 +15,12 @@ import { useSessionState } from '@/hooks/common/use-session-state';
 const STORAGE_KEY = 'projectList';
 
 const searchFn = (p: ProjectWithMetrics, q: string) =>
-  p.name.toLowerCase().includes(q) || (p.description ?? '').toLowerCase().includes(q);
+  p.name.toLowerCase().includes(q) || (p.summary ?? '').toLowerCase().includes(q);
 
-export function useProjectListState(projects: ProjectWithMetrics[]) {
+export function useProjectListState(
+  projects: ProjectWithMetrics[],
+  extras?: ProjectsListExtrasMap | null
+) {
   // ── Project-specific filters (not part of the generic hook) ────────
   const [statusFilter, setStatusFilterRaw] = useSessionState<ProjectStatusFilter[]>(
     `${STORAGE_KEY}:status`,
@@ -32,6 +36,13 @@ export function useProjectListState(projects: ProjectWithMetrics[]) {
       return true;
     },
     [statusFilter]
+  );
+
+  // ── Comparator that captures extras context ───────────────────────
+  const comparator = useCallback(
+    (sortBy: ProjectSortBy, sortDir: 'asc' | 'desc') =>
+      getProjectComparator(sortBy, sortDir, extras),
+    [extras]
   );
 
   // ── Delegate to generic list state ─────────────────────────────────
@@ -57,7 +68,7 @@ export function useProjectListState(projects: ProjectWithMetrics[]) {
     getDefaultSortDir,
     preFilter,
     searchFn,
-    comparator: getProjectComparator,
+    comparator,
   });
 
   // ── Page-resetting wrappers for domain filters ─────────────────────

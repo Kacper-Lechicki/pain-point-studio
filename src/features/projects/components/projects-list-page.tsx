@@ -12,6 +12,7 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ListPagination } from '@/components/ui/list-pagination';
 import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
+import type { ProjectsListExtrasMap } from '@/features/projects/actions/get-projects-list-extras';
 import { ProjectCardRow } from '@/features/projects/components/project-card-row';
 import { ProjectListKpi } from '@/features/projects/components/project-list-kpi';
 import { ProjectListTable } from '@/features/projects/components/project-list-table';
@@ -24,9 +25,10 @@ import { EditProjectDialog } from './edit-project-dialog';
 
 interface ProjectsListPageProps {
   projects: ProjectWithMetrics[];
+  extras?: ProjectsListExtrasMap | null | undefined;
 }
 
-export function ProjectsListPage({ projects }: ProjectsListPageProps) {
+export function ProjectsListPage({ projects, extras }: ProjectsListPageProps) {
   const t = useTranslations();
   const router = useRouter();
 
@@ -37,7 +39,6 @@ export function ProjectsListPage({ projects }: ProjectsListPageProps) {
   }, [projects]);
 
   const {
-    now,
     isMd,
     searchQuery,
     setSearchQuery,
@@ -54,7 +55,7 @@ export function ProjectsListPage({ projects }: ProjectsListPageProps) {
     isFiltered,
     statusCounts,
     kpiStatuses,
-  } = useProjectListState(localProjects);
+  } = useProjectListState(localProjects, extras);
 
   const {
     editProject,
@@ -125,9 +126,9 @@ export function ProjectsListPage({ projects }: ProjectsListPageProps) {
       ) : isMd ? (
         <ProjectListTable
           projects={paginatedProjects}
+          extras={extras}
           sortBy={sortBy}
           sortDir={sortDir}
-          now={now}
           onSortByColumn={handleSortByColumn}
           onSelect={handleSelect}
           onDelete={(p) => setConfirmAction({ type: 'delete', project: p })}
@@ -138,7 +139,7 @@ export function ProjectsListPage({ projects }: ProjectsListPageProps) {
             <ProjectCardRow
               key={project.id}
               project={project}
-              now={now}
+              extras={extras?.[project.id]}
               onSelect={handleSelect}
               onDelete={(p) => setConfirmAction({ type: 'delete', project: p })}
             />

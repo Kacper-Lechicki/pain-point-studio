@@ -64,7 +64,7 @@ function chain(result: { data?: unknown; error?: unknown } = {}) {
 
 const VALID_INPUT: z.infer<typeof createProjectSchema> = {
   name: 'My Project',
-  description: 'A test project',
+  summary: 'A test project',
 };
 
 const USER = { id: 'user-123', email: 'test@example.com' };
@@ -92,23 +92,23 @@ describe('Project Actions – Create Project', () => {
       expect.objectContaining({
         user_id: USER.id,
         name: VALID_INPUT.name,
-        description: VALID_INPUT.description,
+        summary: VALID_INPUT.summary,
       })
     );
   });
 
-  it('should convert empty description to null', async () => {
+  it('should convert empty summary to null', async () => {
     const insertChain = chain({ data: { id: 'new-project-id' } });
 
     mockFrom.mockReturnValue(insertChain);
 
     const { createProject } = await import('./create-project');
 
-    await createProject({ ...VALID_INPUT, description: '' });
+    await createProject({ ...VALID_INPUT, summary: '' });
 
     expect(insertChain.insert).toHaveBeenCalledWith(
       expect.objectContaining({
-        description: null,
+        summary: null,
       })
     );
   });

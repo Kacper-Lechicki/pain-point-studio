@@ -30,7 +30,7 @@ export function CreateProjectForm() {
     resolver: zodResolver(createProjectSchema),
     defaultValues: {
       name: '',
-      description: '',
+      summary: '',
     },
   });
 

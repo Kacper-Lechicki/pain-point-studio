@@ -11,6 +11,7 @@ import { useBreadcrumbSegment } from '@/features/dashboard/components/layout/bre
 import { useSubPanelLinks } from '@/features/dashboard/components/layout/sub-panel-items-context';
 import { DASHBOARD_PAGE_BODY_GAP_TOP } from '@/features/dashboard/config/layout';
 import { EditProjectDialog } from '@/features/projects/components/edit-project-dialog';
+import { ProjectAboutSection } from '@/features/projects/components/project-about-section';
 import { ProjectDetailHeader } from '@/features/projects/components/project-detail-header';
 import { ProjectDetailTabs } from '@/features/projects/components/project-detail-tabs';
 import { useProjectDashboardActions } from '@/features/projects/hooks/use-project-dashboard-actions';
@@ -40,6 +41,7 @@ export function ProjectDashboardPage({
     confirmAction,
     setConfirmAction,
     handleEditSuccess,
+    handleImageChange,
     handleConfirm,
     confirmDialogProps,
   } = useProjectDashboardActions({ initialProject });
@@ -74,13 +76,16 @@ export function ProjectDashboardPage({
     <main className="flex min-w-0 flex-col">
       <ProjectDetailHeader
         project={project}
+        userId={project.user_id}
         phase={phase}
         onEdit={() => setEditOpen(true)}
         onArchive={() => setConfirmAction('archive')}
         onDelete={() => setConfirmAction('delete')}
+        onImageChange={handleImageChange}
       />
 
       <div className={`${DASHBOARD_PAGE_BODY_GAP_TOP} flex flex-col gap-6`}>
+        <ProjectAboutSection project={project} />
         <ProjectDetailTabs
           project={project}
           surveys={surveys}

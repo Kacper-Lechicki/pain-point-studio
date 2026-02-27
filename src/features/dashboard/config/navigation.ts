@@ -112,6 +112,7 @@ export const SIDEBAR_NAV: NavGroup[] = [
 
 export { PROFILE_NAV_ITEM as SIDEBAR_PROFILE_ITEM } from './navigation-settings';
 export { USER_SETTINGS_NAV_ITEM as SIDEBAR_BOTTOM_ITEM } from './navigation-settings';
+export { GIVE_FEEDBACK_NAV_ITEM as SIDEBAR_GIVE_FEEDBACK_ITEM } from './navigation-settings';
 
 // ── Re-exports for backward compatibility ─────────────────────────────
 // NOTE: findActiveNavItem is in lib/nav-utils.ts (not re-exported to avoid circular deps)

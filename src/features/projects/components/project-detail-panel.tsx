@@ -102,9 +102,9 @@ export function ProjectDetailPanel({
         </Button>
       </div>
 
-      {project.description && (
+      {project.summary && (
         <p className="text-muted-foreground mt-2.5 line-clamp-3 text-xs leading-relaxed">
-          {project.description}
+          {project.summary}
         </p>
       )}
 

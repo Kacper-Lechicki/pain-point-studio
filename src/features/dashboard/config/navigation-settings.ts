@@ -1,4 +1,12 @@
-import { CircleUserRound, KeyRound, Link2, Mail, Settings, Trash2 } from 'lucide-react';
+import {
+  CircleUserRound,
+  KeyRound,
+  Link2,
+  Mail,
+  MessageSquareShare,
+  Settings,
+  Trash2,
+} from 'lucide-react';
 
 import { ROUTES } from '@/config/routes';
 
@@ -37,4 +45,12 @@ export const USER_SETTINGS_NAV_ITEM: NavItem = {
     titleKey: 'settings.title',
     groups: [{ items: USER_SETTINGS_SUB_NAV_ITEMS }],
   },
+};
+
+/** Disabled "Share Feedback" item shown in the sidebar below Settings. */
+export const GIVE_FEEDBACK_NAV_ITEM: NavItem = {
+  labelKey: 'sidebar.shareFeedback',
+  icon: MessageSquareShare,
+  href: ROUTES.settings.profile,
+  disabled: true,
 };

@@ -12,7 +12,8 @@ export const updateProject = withProtectedAction<typeof updateProjectSchema>('up
       .from('projects')
       .update({
         name: data.name,
-        description: data.description || null,
+        summary: data.summary || null,
+        ...(data.targetResponses != null && { target_responses: data.targetResponses }),
       })
       .eq('id', data.projectId)
       .eq('user_id', user.id)

@@ -80,7 +80,7 @@ describe('Project Actions – Update Project', () => {
     const result = await updateProject({
       projectId: PROJECT_ID,
       name: 'Updated Name',
-      description: 'Updated desc',
+      summary: 'Updated desc',
     });
 
     expect(result).toEqual({ success: true });
@@ -89,12 +89,12 @@ describe('Project Actions – Update Project', () => {
     expect(updateChain.update).toHaveBeenCalledWith(
       expect.objectContaining({
         name: 'Updated Name',
-        description: 'Updated desc',
+        summary: 'Updated desc',
       })
     );
   });
 
-  it('should convert empty description to null', async () => {
+  it('should convert empty summary to null', async () => {
     const updateChain = chain({ data: { id: PROJECT_ID } });
 
     mockFrom.mockReturnValue(updateChain);
@@ -104,12 +104,12 @@ describe('Project Actions – Update Project', () => {
     await updateProject({
       projectId: PROJECT_ID,
       name: 'Name',
-      description: '',
+      summary: '',
     });
 
     expect(updateChain.update).toHaveBeenCalledWith(
       expect.objectContaining({
-        description: null,
+        summary: null,
       })
     );
   });

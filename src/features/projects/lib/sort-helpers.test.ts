@@ -2,6 +2,7 @@
 import { describe, expect, it } from 'vitest';
 
 import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
+import type { ProjectsListExtrasMap } from '@/features/projects/actions/get-projects-list-extras';
 
 import { getDefaultSortDir, getProjectComparator } from './sort-helpers';
 
@@ -9,13 +10,16 @@ function makeProject(overrides: Partial<ProjectWithMetrics> = {}): ProjectWithMe
   return {
     id: '1',
     name: 'Test',
+    summary: null,
     description: null,
+    image_url: null,
     status: 'active',
     user_id: 'user-1',
+    target_responses: 0,
     archived_at: null,
     created_at: '2025-01-01T00:00:00Z',
     updated_at: '2025-01-02T00:00:00Z',
-    notes: null,
+    notes_json: null,
     surveyCount: 0,
     activeSurveyCount: 0,
     responseCount: 0,
@@ -48,6 +52,10 @@ describe('getDefaultSortDir', () => {
 
   it('should return "desc" for responses', () => {
     expect(getDefaultSortDir('responses')).toBe('desc');
+  });
+
+  it('should return "desc" for activity', () => {
+    expect(getDefaultSortDir('activity')).toBe('desc');
   });
 
   it('should return "desc" for unknown keys', () => {
@@ -90,7 +98,8 @@ describe('getProjectComparator', () => {
     expect(cmp(a, b)).toBeGreaterThan(0);
   });
 
-  it('should sort by status ascending with name tiebreaker', () => {
+  it('should sort by status ascending', () => {
+    // 'active' < 'archived' alphabetically
     const cmp = getProjectComparator('status', 'asc');
     expect(cmp(a, b)).toBeLessThan(0);
   });
@@ -105,6 +114,48 @@ describe('getProjectComparator', () => {
     const p2 = makeProject({ name: 'Apple', status: 'active' });
     const cmp = getProjectComparator('status', 'asc');
     expect(cmp(p1, p2)).toBeGreaterThan(0);
+  });
+
+  it('should sort by activity ascending (sparkline total)', () => {
+    const extras: ProjectsListExtrasMap = {
+      a: {
+        draftCount: 0,
+        activeCount: 0,
+        completedCount: 0,
+        nearestEndsAt: null,
+        sparkline: [{ date: '2025-01-01', count: 2 }],
+      },
+      b: {
+        draftCount: 0,
+        activeCount: 0,
+        completedCount: 0,
+        nearestEndsAt: null,
+        sparkline: [{ date: '2025-01-01', count: 10 }],
+      },
+    };
+    const cmp = getProjectComparator('activity', 'asc', extras);
+    expect(cmp(a, b)).toBeLessThan(0);
+  });
+
+  it('should sort by activity descending', () => {
+    const extras: ProjectsListExtrasMap = {
+      a: {
+        draftCount: 0,
+        activeCount: 0,
+        completedCount: 0,
+        nearestEndsAt: null,
+        sparkline: [{ date: '2025-01-01', count: 2 }],
+      },
+      b: {
+        draftCount: 0,
+        activeCount: 0,
+        completedCount: 0,
+        nearestEndsAt: null,
+        sparkline: [{ date: '2025-01-01', count: 10 }],
+      },
+    };
+    const cmp = getProjectComparator('activity', 'desc', extras);
+    expect(cmp(a, b)).toBeGreaterThan(0);
   });
 
   it('should sort by surveys ascending', () => {

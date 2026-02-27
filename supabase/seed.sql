@@ -157,7 +157,7 @@ ON CONFLICT DO NOTHING;
 -- ============================================================
 
 -- Alice's project: Fitness Tracker App
-INSERT INTO public.projects (id, user_id, name, description, status)
+INSERT INTO public.projects (id, user_id, name, summary, status)
 VALUES (
   'b1b2c3d4-0001-4000-8000-000000000001',
   'a1b2c3d4-0001-4000-8000-000000000001',
@@ -167,7 +167,7 @@ VALUES (
 ) ON CONFLICT (id) DO NOTHING;
 
 -- Bob's project: API Testing Tool (no surveys)
-INSERT INTO public.projects (id, user_id, name, description, status)
+INSERT INTO public.projects (id, user_id, name, summary, status)
 VALUES (
   'b1b2c3d4-0002-4000-8000-000000000002',
   'a1b2c3d4-0002-4000-8000-000000000002',

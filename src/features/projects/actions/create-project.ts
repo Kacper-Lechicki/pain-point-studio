@@ -16,7 +16,7 @@ export const createProject = withProtectedAction<typeof createProjectSchema, { p
         .insert({
           user_id: user.id,
           name: data.name,
-          description: data.description || null,
+          summary: data.summary || null,
         })
         .select('id')
         .single();

@@ -29,10 +29,7 @@ import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
 import { updateProject } from '@/features/projects/actions/update-project';
-import {
-  PROJECT_DESCRIPTION_MAX_LENGTH,
-  PROJECT_NAME_MAX_LENGTH,
-} from '@/features/projects/config';
+import { PROJECT_NAME_MAX_LENGTH, PROJECT_SUMMARY_MAX_LENGTH } from '@/features/projects/config';
 import { type UpdateProjectInput, updateProjectSchema } from '@/features/projects/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import type { MessageKey } from '@/i18n/types';
@@ -40,14 +37,19 @@ import type { MessageKey } from '@/i18n/types';
 export interface EditableProject {
   id: string;
   name: string;
-  description: string | null;
+  summary: string | null;
+  target_responses: number;
 }
 
 interface EditProjectDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   project: EditableProject;
-  onSuccess: (data: { name: string; description: string | undefined }) => void;
+  onSuccess: (data: {
+    name: string;
+    summary: string | undefined;
+    targetResponses: number | undefined;
+  }) => void;
 }
 
 export function EditProjectDialog({
@@ -68,7 +70,8 @@ export function EditProjectDialog({
     defaultValues: {
       projectId: project.id,
       name: project.name,
-      description: project.description ?? '',
+      summary: project.summary ?? '',
+      targetResponses: project.target_responses,
     },
   });
 
@@ -76,7 +79,8 @@ export function EditProjectDialog({
     form.reset({
       projectId: project.id,
       name: project.name,
-      description: project.description ?? '',
+      summary: project.summary ?? '',
+      targetResponses: project.target_responses,
     });
   }, [project, form]);
 
@@ -84,7 +88,11 @@ export function EditProjectDialog({
     const result = await action.execute(updateProject, data);
 
     if (result && !result.error) {
-      onSuccess({ name: data.name, description: data.description });
+      onSuccess({
+        name: data.name,
+        summary: data.summary,
+        targetResponses: data.targetResponses,
+      });
       onOpenChange(false);
     }
   }
@@ -130,18 +138,18 @@ export function EditProjectDialog({
 
             <FormField
               control={form.control}
-              name="description"
+              name="summary"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('projects.create.descriptionLabel')}</FormLabel>
-                  <FormDescription>{t('projects.create.descriptionHelper')}</FormDescription>
+                  <FormLabel>{t('projects.create.summaryLabel')}</FormLabel>
+                  <FormDescription>{t('projects.create.summaryHelper')}</FormDescription>
 
                   <FormControl>
                     <Textarea
-                      placeholder={t('projects.create.descriptionPlaceholder')}
+                      placeholder={t('projects.create.summaryPlaceholder')}
                       className="min-h-[120px] resize-none"
                       rows={5}
-                      maxLength={PROJECT_DESCRIPTION_MAX_LENGTH}
+                      maxLength={PROJECT_SUMMARY_MAX_LENGTH}
                       {...field}
                     />
                   </FormControl>
@@ -150,12 +158,37 @@ export function EditProjectDialog({
                     <FormMessage />
 
                     <span className="text-muted-foreground ml-auto shrink-0 text-xs">
-                      {t('projects.create.descriptionCounter', {
+                      {t('projects.create.summaryCounter', {
                         count: (field.value ?? '').length,
-                        max: PROJECT_DESCRIPTION_MAX_LENGTH,
+                        max: PROJECT_SUMMARY_MAX_LENGTH,
                       })}
                     </span>
                   </div>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="targetResponses"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('projects.edit.targetResponses' as MessageKey)}</FormLabel>
+                  <FormDescription>
+                    {t('projects.edit.targetResponsesHelper' as MessageKey)}
+                  </FormDescription>
+
+                  <FormControl>
+                    <Input
+                      type="number"
+                      min={1}
+                      max={10000}
+                      {...field}
+                      onChange={(e) => field.onChange(e.target.valueAsNumber || undefined)}
+                    />
+                  </FormControl>
+
+                  <FormMessage />
                 </FormItem>
               )}
             />

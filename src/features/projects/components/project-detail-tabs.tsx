@@ -93,7 +93,12 @@ export function ProjectDetailTabs({
         </TabsList>
 
         <TabsContent value="overview" className="pt-5">
-          <ProjectOverviewTab project={project} overviewStats={overviewStats} />
+          <ProjectOverviewTab
+            project={project}
+            surveys={surveys}
+            insights={insights}
+            overviewStats={overviewStats}
+          />
         </TabsContent>
 
         <TabsContent value="surveys" className="pt-5">

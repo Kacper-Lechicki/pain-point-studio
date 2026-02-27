@@ -111,33 +111,42 @@ export type Database = {
         Row: {
           archived_at: string | null;
           created_at: string;
-          description: string | null;
+          description: Json | null;
           id: string;
+          image_url: string | null;
           name: string;
-          notes: string | null;
+          notes_json: Json | null;
           status: string;
+          summary: string | null;
+          target_responses: number;
           updated_at: string;
           user_id: string;
         };
         Insert: {
           archived_at?: string | null;
           created_at?: string;
-          description?: string | null;
+          description?: Json | null;
           id?: string;
+          image_url?: string | null;
           name: string;
-          notes?: string | null;
+          notes_json?: Json | null;
           status?: string;
+          summary?: string | null;
+          target_responses?: number;
           updated_at?: string;
           user_id: string;
         };
         Update: {
           archived_at?: string | null;
           created_at?: string;
-          description?: string | null;
+          description?: Json | null;
           id?: string;
+          image_url?: string | null;
           name?: string;
-          notes?: string | null;
+          notes_json?: Json | null;
           status?: string;
+          summary?: string | null;
+          target_responses?: number;
           updated_at?: string;
           user_id?: string;
         };
@@ -401,13 +410,14 @@ export type Database = {
         Args: { p_project_id: string; p_user_id: string };
         Returns: Json;
       };
-      get_survey_response_count: {
-        Args: { p_survey_id: string };
-        Returns: number;
-      };
+      get_projects_list_extras: { Args: { p_user_id: string }; Returns: Json };
       get_survey_completion_timeline: {
         Args: { p_survey_id: string; p_user_id: string };
         Returns: Json;
+      };
+      get_survey_response_count: {
+        Args: { p_survey_id: string };
+        Returns: number;
       };
       get_survey_stats_data: {
         Args: { p_survey_id: string; p_user_id: string };

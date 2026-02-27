@@ -46,11 +46,10 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
               avgCompletion: 0,
               avgTimeSeconds: null,
               lastResponseAt: null,
-              responsesTimeline: [],
-              completionTimeline: [],
-              surveyStatusDistribution: {},
-              completionBreakdown: { completed: 0, inProgress: 0, abandoned: 0 },
               recentActivity: [],
+              responsesTimeline: [],
+              surveyStatusDistribution: { draft: 0, active: 0, completed: 0 },
+              completionBreakdown: { completed: 0, inProgress: 0, abandoned: 0 },
             }
           }
         />

@@ -3,7 +3,7 @@
 import type React from 'react';
 
 import { MoreHorizontal, Trash2 } from 'lucide-react';
-import { useFormatter, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -14,20 +14,21 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { TableCell, TableRow } from '@/components/ui/table';
 import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
+import type { ProjectListExtras } from '@/features/projects/actions/get-projects-list-extras';
+import { ActivitySparkline } from '@/features/projects/components/activity-sparkline';
+import { ProjectAvatar } from '@/features/projects/components/project-avatar';
 import { ProjectStatusBadge } from '@/features/projects/components/project-status-badge';
 import type { ProjectStatus } from '@/features/projects/types';
 
 interface ProjectTableRowProps {
   project: ProjectWithMetrics;
-  now: Date;
+  extras?: ProjectListExtras | undefined;
   onSelect: (projectId: string) => void;
   onDelete: (project: ProjectWithMetrics) => void;
 }
 
-export function ProjectTableRow({ project, now, onSelect, onDelete }: ProjectTableRowProps) {
+export function ProjectTableRow({ project, extras, onSelect, onDelete }: ProjectTableRowProps) {
   const t = useTranslations();
-  const format = useFormatter();
-  const updatedAtLabel = format.relativeTime(new Date(project.updated_at), now);
 
   const tableRowInteraction = {
     onClick: () => {
@@ -54,15 +55,16 @@ export function ProjectTableRow({ project, now, onSelect, onDelete }: ProjectTab
       {...tableRowInteraction}
     >
       <TableCell className="max-w-0 min-w-0 overflow-hidden px-4 py-3 align-top">
-        <div className="min-w-0 overflow-hidden">
-          <span className="text-foreground block truncate text-sm font-semibold">
-            {project.name}
-          </span>
-          {project.description && (
-            <p className="text-muted-foreground mt-0.5 truncate text-[11px]">
-              {project.description}
-            </p>
-          )}
+        <div className="flex min-w-0 items-center gap-2.5 overflow-hidden">
+          <ProjectAvatar imageUrl={project.image_url} name={project.name} size={32} />
+          <div className="min-w-0 overflow-hidden">
+            <span className="text-foreground block truncate text-sm font-semibold">
+              {project.name}
+            </span>
+            {project.summary && (
+              <p className="text-muted-foreground mt-0.5 truncate text-[11px]">{project.summary}</p>
+            )}
+          </div>
         </div>
       </TableCell>
 
@@ -78,11 +80,13 @@ export function ProjectTableRow({ project, now, onSelect, onDelete }: ProjectTab
         {project.responseCount}
       </TableCell>
 
-      <TableCell className="text-muted-foreground border-border/30 hidden min-w-0 truncate border-l px-4 py-3 text-xs md:table-cell">
-        {updatedAtLabel}
+      <TableCell className="text-muted-foreground border-border/30 hidden min-w-0 border-l px-3 py-3 md:table-cell">
+        <div className="w-full">
+          <ActivitySparkline data={extras?.sparkline ?? []} fillWidth className="h-7 w-full" />
+        </div>
       </TableCell>
 
-      <TableCell className="w-12 shrink-0 px-2 py-3" onClick={(e) => e.stopPropagation()}>
+      <TableCell className="w-12 shrink-0 py-3" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-center">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

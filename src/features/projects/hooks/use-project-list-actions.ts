@@ -45,7 +45,7 @@ export function useProjectListActions({
     unexpectedErrorMessage: 'projects.errors.unexpected' as MessageKey,
   });
 
-  const handleEditSuccess = (data: { name: string; description: string | undefined }) => {
+  const handleEditSuccess = (data: { name: string; summary: string | undefined }) => {
     if (!editProject) {
       return;
     }
@@ -56,7 +56,7 @@ export function useProjectListActions({
           ? {
               ...p,
               name: data.name,
-              description: data.description ?? null,
+              summary: data.summary ?? null,
               updated_at: new Date().toISOString(),
             }
           : p

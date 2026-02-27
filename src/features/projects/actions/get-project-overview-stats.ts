@@ -7,23 +7,28 @@ import { z } from 'zod';
 import type { ProjectOverviewStats } from '@/features/projects/types';
 import { createClient } from '@/lib/supabase/server';
 
-const timelinePointSchema = z.object({
-  date: z.string(),
-  count: z.number(),
-});
-
-const completionTimelinePointSchema = z.object({
-  date: z.string(),
-  completed: z.number(),
-  inProgress: z.number(),
-  abandoned: z.number(),
-});
-
 const activityItemSchema = z.object({
   type: z.enum(['response', 'survey_completed', 'survey_activated']),
   title: z.string(),
   timestamp: z.string(),
   surveyId: z.string(),
+});
+
+const timelinePointSchema = z.object({
+  date: z.string(),
+  count: z.number(),
+});
+
+const surveyStatusDistributionSchema = z.object({
+  draft: z.number(),
+  active: z.number(),
+  completed: z.number(),
+});
+
+const completionBreakdownSchema = z.object({
+  completed: z.number(),
+  inProgress: z.number(),
+  abandoned: z.number(),
 });
 
 const projectOverviewStatsSchema = z.object({
@@ -33,15 +38,10 @@ const projectOverviewStatsSchema = z.object({
   avgCompletion: z.number(),
   avgTimeSeconds: z.number().nullable(),
   lastResponseAt: z.string().nullable(),
-  responsesTimeline: z.array(timelinePointSchema),
-  completionTimeline: z.array(completionTimelinePointSchema).default([]),
-  surveyStatusDistribution: z.record(z.string(), z.number()),
-  completionBreakdown: z.object({
-    completed: z.number(),
-    inProgress: z.number(),
-    abandoned: z.number(),
-  }),
   recentActivity: z.array(activityItemSchema),
+  responsesTimeline: z.array(timelinePointSchema),
+  surveyStatusDistribution: surveyStatusDistributionSchema,
+  completionBreakdown: completionBreakdownSchema,
 });
 
 /**
