@@ -28,7 +28,7 @@ export function ProjectCardRow({ project, now, onSelect, onDelete }: ProjectCard
 
   return (
     <div
-      className="border-border/50 flex min-w-0 cursor-pointer flex-col gap-3 rounded-lg border p-3 transition-all"
+      className="border-border/50 bg-card flex min-w-0 cursor-pointer flex-col gap-3 rounded-lg border p-3 transition-all"
       onClick={() => onSelect(project.id)}
       role="button"
       tabIndex={0}

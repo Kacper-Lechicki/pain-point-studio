@@ -72,8 +72,8 @@ export function SurveyTableRow({
     <>
       <TableRow
         className={cn(
-          'even:bg-muted/80 h-14 cursor-pointer transition-all',
-          isSelected && 'bg-muted/60 even:bg-muted/60'
+          'even:bg-muted/30 h-14 cursor-pointer transition-all',
+          isSelected && 'bg-muted/40 even:bg-muted/40'
         )}
         {...tableRowInteraction}
       >

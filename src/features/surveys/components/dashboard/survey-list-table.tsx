@@ -30,10 +30,10 @@ export function SurveyListTable({
   const t = useTranslations();
 
   return (
-    <div className="border-border/50 overflow-hidden rounded-lg border">
+    <div className="border-border/50 bg-card overflow-hidden rounded-lg border">
       <Table className="table-fixed">
         <TableHeader>
-          <TableRow className="bg-muted/30 hover:bg-muted/30">
+          <TableRow className="bg-muted/60 hover:bg-muted/60">
             <SortableTableHeader
               sortKey="title"
               currentSortKey={sortBy}

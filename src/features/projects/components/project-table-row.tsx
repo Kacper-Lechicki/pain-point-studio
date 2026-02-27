@@ -50,7 +50,7 @@ export function ProjectTableRow({ project, now, onSelect, onDelete }: ProjectTab
 
   return (
     <TableRow
-      className="even:bg-muted/80 h-14 cursor-pointer transition-all"
+      className="even:bg-muted/30 h-14 cursor-pointer transition-all"
       {...tableRowInteraction}
     >
       <TableCell className="max-w-0 min-w-0 overflow-hidden px-4 py-3 align-top">

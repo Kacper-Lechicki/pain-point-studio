@@ -23,6 +23,14 @@ const ACCENT_BORDER: Record<string, string> = {
   rose: 'border-l-rose-500',
 };
 
+const ACCENT_BG: Record<string, string> = {
+  pink: 'bg-[#fdf2f5] dark:bg-[#1a1015]',
+  cyan: 'bg-[#f0f9fb] dark:bg-[#0f181a]',
+  violet: 'bg-[#f5f3ff] dark:bg-[#131020]',
+  emerald: 'bg-[#f0fdf4] dark:bg-[#0f1a13]',
+  rose: 'bg-[#fff1f2] dark:bg-[#1a1012]',
+};
+
 const SIGNAL_BASE = 'inline-flex items-center gap-1 text-[11px] font-medium tabular-nums';
 
 interface KpiCardProps {
@@ -63,6 +71,7 @@ export function KpiCard({
         BENTO_CARD_CLASS,
         accent && 'border-l-4',
         accent && ACCENT_BORDER[accent],
+        accent && ACCENT_BG[accent],
         className
       )}
     >

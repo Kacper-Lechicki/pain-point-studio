@@ -46,7 +46,7 @@ export function DetailPanelMetrics({
     <>
       <SectionLabel>{t('surveys.dashboard.detailPanel.metricsLabel')}</SectionLabel>
       <div className="grid grid-cols-2 gap-2">
-        <div className="border-border/50 rounded-md border px-3 py-2.5">
+        <div className="border-border/50 bg-card rounded-md border px-3 py-2.5">
           <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
             {responseCount}
           </div>
@@ -57,7 +57,7 @@ export function DetailPanelMetrics({
           </div>
         </div>
 
-        <div className="border-border/50 rounded-md border px-3 py-2.5">
+        <div className="border-border/50 bg-card rounded-md border px-3 py-2.5">
           <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
             {avgQuestionCompletion != null ? `${Math.round(avgQuestionCompletion)}%` : '—'}
           </div>
@@ -68,7 +68,7 @@ export function DetailPanelMetrics({
           </div>
         </div>
 
-        <div className="border-border/50 rounded-md border px-3 py-2.5">
+        <div className="border-border/50 bg-card rounded-md border px-3 py-2.5">
           <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
             {completedCount}
             {maxRespondents != null && (
@@ -91,7 +91,7 @@ export function DetailPanelMetrics({
           )}
         </div>
 
-        <div className="border-border/50 rounded-md border px-3 py-2.5">
+        <div className="border-border/50 bg-card rounded-md border px-3 py-2.5">
           <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
             {formatTime(avgCompletionSeconds)}
           </div>

@@ -32,7 +32,7 @@ export function DetailMetricsGrid({
     <div>
       <SectionLabel>{t('surveys.dashboard.detailPanel.metricsLabel')}</SectionLabel>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-        <div className="border-border/50 rounded-md border px-3 py-2.5">
+        <div className="border-border/50 bg-card rounded-md border px-3 py-2.5">
           <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
             {viewCount}
           </div>
@@ -43,7 +43,7 @@ export function DetailMetricsGrid({
           </div>
         </div>
 
-        <div className="border-border/50 rounded-md border px-3 py-2.5">
+        <div className="border-border/50 bg-card rounded-md border px-3 py-2.5">
           <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
             {responseCount}
           </div>
@@ -54,7 +54,7 @@ export function DetailMetricsGrid({
           </div>
         </div>
 
-        <div className="border-border/50 rounded-md border px-3 py-2.5">
+        <div className="border-border/50 bg-card rounded-md border px-3 py-2.5">
           <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
             {completedCount}
             {maxRespondents != null && (
@@ -77,7 +77,7 @@ export function DetailMetricsGrid({
           )}
         </div>
 
-        <div className="border-border/50 rounded-md border px-3 py-2.5">
+        <div className="border-border/50 bg-card rounded-md border px-3 py-2.5">
           <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
             {submissionRate != null ? `${submissionRate}%` : '—'}
           </div>
@@ -88,7 +88,7 @@ export function DetailMetricsGrid({
           </div>
         </div>
 
-        <div className="border-border/50 rounded-md border px-3 py-2.5">
+        <div className="border-border/50 bg-card rounded-md border px-3 py-2.5">
           <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
             {avgQuestionCompletion != null ? `${avgQuestionCompletion}%` : '—'}
           </div>
@@ -99,7 +99,7 @@ export function DetailMetricsGrid({
           </div>
         </div>
 
-        <div className="border-border/50 rounded-md border px-3 py-2.5">
+        <div className="border-border/50 bg-card rounded-md border px-3 py-2.5">
           <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
             {completionTimeLabel ?? '—'}
           </div>

@@ -48,7 +48,7 @@ export function SurveyCardRow({
     <>
       <div
         className={cn(
-          'border-border/50 flex min-w-0 flex-col gap-3 rounded-lg border p-3 transition-all',
+          'border-border/50 bg-card flex min-w-0 flex-col gap-3 rounded-lg border p-3 transition-all',
           isSelected && 'ring-ring/20 border-ring/40 bg-muted/50 ring-2'
         )}
       >

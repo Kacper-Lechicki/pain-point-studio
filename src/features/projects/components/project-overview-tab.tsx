@@ -39,15 +39,15 @@ export function ProjectOverviewTab({ project, overviewStats }: ProjectOverviewTa
             <OverviewResponseTimeline data={overviewStats.responsesTimeline} />
           </div>
 
-          <div>
-            <SectionLabel>{t('projects.detail.charts.completionRate')}</SectionLabel>
-            <CompletionBarChart
-              data={overviewStats.completionBreakdown}
-              noDataMessage={t('projects.detail.charts.noData')}
-            />
-          </div>
+          <div className="flex flex-col gap-6">
+            <div>
+              <SectionLabel>{t('projects.detail.charts.completionRate')}</SectionLabel>
+              <CompletionBarChart
+                data={overviewStats.completionBreakdown}
+                noDataMessage={t('projects.detail.charts.noData')}
+              />
+            </div>
 
-          <div className="lg:col-span-3">
             <OverviewRecentActivity items={overviewStats.recentActivity} />
           </div>
         </div>

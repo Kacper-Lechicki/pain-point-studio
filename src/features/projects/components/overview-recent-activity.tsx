@@ -7,6 +7,8 @@ import { useTranslations } from 'next-intl';
 
 import { SectionLabel } from '@/components/ui/metric-display';
 import type { ActivityItem } from '@/features/dashboard/types/dashboard-stats';
+import { getSurveyStatsUrl } from '@/features/surveys/lib/survey-urls';
+import Link from '@/i18n/link';
 
 const ACTIVITY_ICONS: Record<ActivityItem['type'], LucideIcon> = {
   response: MessageSquare,
@@ -38,17 +40,23 @@ export function OverviewRecentActivity({ items }: OverviewRecentActivityProps) {
             }).replace(/^about /i, '');
 
             return (
-              <div key={`${item.surveyId}-${index}`} className="flex items-center gap-2.5 py-1.5">
+              <Link
+                key={`${item.surveyId}-${index}`}
+                href={getSurveyStatsUrl(item.surveyId)}
+                className="group flex items-center gap-2.5 py-1.5"
+              >
                 <div className="bg-muted/80 shrink-0 rounded-lg p-1.5">
                   <Icon className="text-muted-foreground size-3.5" />
                 </div>
                 <span className="text-muted-foreground min-w-0 flex-1 truncate text-xs">
-                  <span className="text-foreground font-medium">{item.title}</span>
+                  <span className="text-foreground font-medium group-hover:underline">
+                    {item.title}
+                  </span>
                   {' \u00b7 '}
                   {t(`type.${item.type}`)}
                 </span>
                 <span className="text-muted-foreground/60 shrink-0 text-xs">{relativeTime}</span>
-              </div>
+              </Link>
             );
           })}
         </div>

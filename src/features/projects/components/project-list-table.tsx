@@ -28,10 +28,10 @@ export function ProjectListTable({
   const t = useTranslations();
 
   return (
-    <div className="border-border/50 min-w-0 overflow-auto rounded-lg border">
+    <div className="border-border/50 bg-card min-w-0 overflow-auto rounded-lg border">
       <Table className="w-full table-fixed">
         <TableHeader>
-          <TableRow className="bg-muted/30 hover:bg-muted/30">
+          <TableRow className="bg-muted/60 hover:bg-muted/60">
             <SortableTableHeader
               sortKey="name"
               currentSortKey={sortBy}
