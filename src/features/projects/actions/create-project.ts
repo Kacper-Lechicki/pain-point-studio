@@ -1,5 +1,6 @@
 'use server';
 
+import { isTiptapEmpty } from '@/components/shared/rich-editor/utils';
 import { createProjectSchema } from '@/features/projects/types';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
@@ -17,6 +18,8 @@ export const createProject = withProtectedAction<typeof createProjectSchema, { p
           user_id: user.id,
           name: data.name,
           summary: data.summary || null,
+          description:
+            data.description && !isTiptapEmpty(data.description) ? data.description : null,
         })
         .select('id')
         .single();

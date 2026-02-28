@@ -92,6 +92,7 @@ export function ProjectNotesTab({ project }: ProjectNotesTabProps) {
         onChange={handleChange}
         placeholder={t('placeholder')}
         editable={!archived}
+        showHint={!archived}
       />
     </div>
   );

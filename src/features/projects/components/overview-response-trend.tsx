@@ -2,9 +2,9 @@
 
 import { useMemo, useState } from 'react';
 
-import { BarChart3 } from 'lucide-react';
+import { LineChart as LineChartIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts';
 
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -65,36 +65,41 @@ export function OverviewResponseTrend({ timeline }: OverviewResponseTrendProps) 
 
   return (
     <Card className="gap-0 py-0 shadow-none">
-      <CardContent className="flex min-h-0 flex-col gap-2 p-4">
+      <CardContent className="flex min-h-0 min-w-0 flex-col gap-2 p-4">
         {/* Header */}
         <div className="flex shrink-0 items-center justify-between gap-2">
           <p className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
             {t('projects.overview.responseTrend' as MessageKey)}
           </p>
 
-          <div className="flex items-center gap-0.5 rounded-md border p-0.5">
-            {RANGES.map((r) => (
-              <button
-                key={r.value}
-                type="button"
-                onClick={() => setRange(r.value)}
-                className={cn(
-                  'rounded px-2 py-0.5 text-xs font-medium transition-colors',
-                  range === r.value
-                    ? 'bg-foreground/10 text-foreground'
-                    : 'text-muted-foreground hover:text-foreground'
-                )}
-              >
-                {r.value}
-              </button>
-            ))}
+          <div className="flex items-center gap-4">
+            {/* Mini time range control (matches dashboard pill style) */}
+            <div className="border-border/50 bg-card flex items-center gap-0.5 rounded-full border p-0.5 shadow-sm">
+              {RANGES.map((r) => (
+                <button
+                  key={r.value}
+                  type="button"
+                  onClick={() => setRange(r.value)}
+                  className={cn(
+                    'rounded-full border px-1.5 py-0.5 text-[10px] leading-none font-medium transition-colors',
+                    range === r.value
+                      ? 'bg-primary text-primary-foreground border-transparent shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground border-transparent'
+                  )}
+                >
+                  {r.value}
+                </button>
+              ))}
+            </div>
+
+            <LineChartIcon className="text-chart-violet size-3.5 shrink-0" />
           </div>
         </div>
 
         {/* Chart */}
         {!hasData ? (
           <div className="flex h-[200px] flex-col items-center justify-center gap-2 text-center">
-            <BarChart3 className="text-muted-foreground/50 size-8 shrink-0" aria-hidden />
+            <LineChartIcon className="text-muted-foreground/50 size-8 shrink-0" aria-hidden />
             <p className="text-muted-foreground text-sm">
               {t('projects.overview.noResponses' as MessageKey)}
             </p>
@@ -107,7 +112,7 @@ export function OverviewResponseTrend({ timeline }: OverviewResponseTrendProps) 
                 dimensions={{ width: chartWidth, height: chartHeight }}
                 className="text-xs"
               >
-                <BarChart data={chartData} margin={CHART_MARGIN}>
+                <LineChart data={chartData} margin={CHART_MARGIN}>
                   <CartesianGrid
                     vertical={false}
                     strokeDasharray="3 3"
@@ -131,8 +136,15 @@ export function OverviewResponseTrend({ timeline }: OverviewResponseTrendProps) 
                     tickMargin={2}
                   />
                   <ChartTooltip content={<ChartTooltipContent />} />
-                  <Bar dataKey="responses" fill="var(--color-responses)" radius={[3, 3, 0, 0]} />
-                </BarChart>
+                  <Line
+                    dataKey="responses"
+                    type="linear"
+                    stroke="var(--color-responses)"
+                    strokeWidth={2}
+                    dot={false}
+                    activeDot={{ r: 4 }}
+                  />
+                </LineChart>
               </ChartContainer>
             )}
           </div>

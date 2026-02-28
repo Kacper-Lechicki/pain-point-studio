@@ -154,6 +154,7 @@ export function MobileNav() {
                 onNavigate={() => setMobileOpen(false)}
                 breadcrumbSegments={breadcrumb?.segments}
                 subPanelLinks={subPanelItems?.links}
+                subPanelBottomLinks={subPanelItems?.bottomLinks}
               />
             </motion.div>
           )}

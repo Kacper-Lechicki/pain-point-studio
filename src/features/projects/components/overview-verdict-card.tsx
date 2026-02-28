@@ -6,10 +6,10 @@ import { ArrowRight, ClipboardList, Lightbulb, Rocket, Send, Share2 } from 'luci
 import type { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { StatusBadge } from '@/components/ui/status-badge';
 import { VERDICT_STATUS_CONFIG, type VerdictResult } from '@/features/projects/config/verdict';
 import {
   type NextStepAction,
@@ -94,9 +94,13 @@ export function OverviewVerdictCard({
 
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <Badge variant="outline" className={config.colors.badge}>
-                {t(config.labelKey as MessageKey)}
-              </Badge>
+              <StatusBadge
+                labelKey={config.labelKey}
+                descriptionKey={config.descriptionKey}
+                ariaLabelKey={config.ariaLabelKey}
+                variant="outline"
+                badgeClassName={config.colors.badge}
+              />
             </div>
 
             <p className={`mt-1.5 text-sm ${config.colors.text}`}>

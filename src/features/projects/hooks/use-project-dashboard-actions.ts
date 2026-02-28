@@ -39,7 +39,7 @@ export function useProjectDashboardActions({ initialProject }: UseProjectDashboa
   });
 
   const handleEditSuccess = useCallback(
-    (data: { name: string; summary: string | undefined; targetResponses: number | undefined }) => {
+    (data: { name: string; summary: string | undefined; targetResponses?: number | undefined }) => {
       setProject((prev) => ({
         ...prev,
         name: data.name,

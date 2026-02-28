@@ -6,7 +6,6 @@ import { Ban, CheckCircle2, Download, MoreHorizontal, Share2 } from 'lucide-reac
 import type { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -16,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { RefreshRealtimeButton } from '@/components/ui/refresh-realtime-button';
+import { StatusBadge } from '@/components/ui/status-badge';
 import { SurveyStatusBadge } from '@/features/surveys/components/dashboard/survey-status-badge';
 import { ExportDialog } from '@/features/surveys/components/stats/export-dialog';
 import type { SurveyStatus } from '@/features/surveys/types';
@@ -119,9 +119,12 @@ export function SurveyStatsHeader({
       <div className="flex min-w-0 flex-wrap items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-1.5">
-            <Badge variant="secondary" className="text-[11px]">
-              {t('surveys.stats.contextBadge')}
-            </Badge>
+            <StatusBadge
+              labelKey="surveys.stats.contextBadge"
+              descriptionKey="surveys.stats.contextBadgeDescription"
+              ariaLabelKey="surveys.stats.contextBadgeAriaLabel"
+              variant="secondary"
+            />
             <SurveyStatusBadge status={status} />
           </div>
 

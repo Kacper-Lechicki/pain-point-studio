@@ -70,11 +70,14 @@ function ChartContainer({
       >
         <ChartStyle id={chartId} config={config} />
 
-        <RechartsPrimitive.ResponsiveContainer
-          {...(dimensions && { width: dimensions.width, height: dimensions.height })}
-        >
-          {children}
-        </RechartsPrimitive.ResponsiveContainer>
+        {dimensions ? (
+          React.cloneElement(children as React.ReactElement<{ width: number; height: number }>, {
+            width: dimensions.width,
+            height: dimensions.height,
+          })
+        ) : (
+          <RechartsPrimitive.ResponsiveContainer>{children}</RechartsPrimitive.ResponsiveContainer>
+        )}
       </div>
     </ChartContext.Provider>
   );

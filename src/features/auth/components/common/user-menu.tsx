@@ -51,7 +51,15 @@ const UserMenu = () => {
   }
 
   const avatarUrl = (user.userMetadata?.avatar_url as string) || undefined;
-  const initials = user.email?.slice(0, 2).toUpperCase() ?? '??';
+  const fullName = (user.userMetadata?.full_name as string) || undefined;
+  const initials = fullName
+    ? fullName
+        .split(' ')
+        .map((n) => n[0])
+        .join('')
+        .slice(0, 2)
+        .toUpperCase()
+    : (user.email?.slice(0, 2).toUpperCase() ?? '??');
 
   const handleSignOut = async () => {
     setIsSigningOut(true);

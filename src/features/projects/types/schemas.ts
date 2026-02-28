@@ -23,6 +23,8 @@ export const createProjectSchema = z.object({
     .max(PROJECT_SUMMARY_MAX_LENGTH, 'projects.errors.summaryTooLong')
     .optional()
     .or(z.literal('')),
+  /** Tiptap JSONContent from the rich editor (optional). */
+  description: z.any().optional(),
 });
 
 export type CreateProjectInput = z.infer<typeof createProjectSchema>;

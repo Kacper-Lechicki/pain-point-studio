@@ -30,6 +30,8 @@ export interface RichEditorProps {
   className?: string;
   /** Auto-focus on mount */
   autoFocus?: boolean;
+  /** Show a helper hint below the editor (e.g. "Type / for commands") */
+  showHint?: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -43,6 +45,7 @@ export function RichEditor({
   editable = true,
   className,
   autoFocus = false,
+  showHint = false,
 }: RichEditorProps) {
   const [imagePrompt, setImagePrompt] = useState<{ top: number; left: number } | null>(null);
   const editorRef = useRef<ReturnType<typeof useEditor>>(null);
@@ -131,6 +134,13 @@ export function RichEditor({
       {editable && <BubbleToolbar editor={editor} />}
 
       <EditorContent editor={editor} className="px-4 py-3" />
+
+      {editable && showHint && (
+        <p className="text-muted-foreground border-input/50 border-t px-4 py-1.5 text-xs">
+          Type <kbd className="bg-muted rounded px-1 py-0.5 font-mono text-[10px]">/</kbd> for
+          commands · Supports Markdown
+        </p>
+      )}
 
       {imagePrompt && (
         <ImageUrlPrompt

@@ -26,6 +26,8 @@ export interface VerdictResult {
 
 export interface VerdictStatusConfig {
   labelKey: string;
+  descriptionKey: string;
+  ariaLabelKey: string;
   icon: LucideIcon;
   colors: {
     bg: string;
@@ -40,6 +42,8 @@ export interface VerdictStatusConfig {
 export const VERDICT_STATUS_CONFIG: Record<VerdictStatus, VerdictStatusConfig> = {
   'no-data': {
     labelKey: 'projects.verdict.noData.label',
+    descriptionKey: 'projects.verdict.noData.description',
+    ariaLabelKey: 'projects.verdict.ariaLabel',
     icon: CircleDashed,
     colors: {
       bg: 'bg-muted/40',
@@ -52,6 +56,8 @@ export const VERDICT_STATUS_CONFIG: Record<VerdictStatus, VerdictStatusConfig> =
   },
   exploring: {
     labelKey: 'projects.verdict.exploring.label',
+    descriptionKey: 'projects.verdict.exploring.description',
+    ariaLabelKey: 'projects.verdict.ariaLabel',
     icon: Compass,
     colors: {
       bg: 'bg-sky-50 dark:bg-sky-950/30',
@@ -64,6 +70,8 @@ export const VERDICT_STATUS_CONFIG: Record<VerdictStatus, VerdictStatusConfig> =
   },
   promising: {
     labelKey: 'projects.verdict.promising.label',
+    descriptionKey: 'projects.verdict.promising.description',
+    ariaLabelKey: 'projects.verdict.ariaLabel',
     icon: TrendingUp,
     colors: {
       bg: 'bg-emerald-50 dark:bg-emerald-950/30',
@@ -76,6 +84,8 @@ export const VERDICT_STATUS_CONFIG: Record<VerdictStatus, VerdictStatusConfig> =
   },
   'needs-attention': {
     labelKey: 'projects.verdict.needsAttention.label',
+    descriptionKey: 'projects.verdict.needsAttention.description',
+    ariaLabelKey: 'projects.verdict.ariaLabel',
     icon: AlertTriangle,
     colors: {
       bg: 'bg-amber-50 dark:bg-amber-950/30',
@@ -88,6 +98,8 @@ export const VERDICT_STATUS_CONFIG: Record<VerdictStatus, VerdictStatusConfig> =
   },
   validated: {
     labelKey: 'projects.verdict.validated.label',
+    descriptionKey: 'projects.verdict.validated.description',
+    ariaLabelKey: 'projects.verdict.ariaLabel',
     icon: Rocket,
     colors: {
       bg: 'bg-emerald-50 dark:bg-emerald-950/30',
@@ -100,6 +112,8 @@ export const VERDICT_STATUS_CONFIG: Record<VerdictStatus, VerdictStatusConfig> =
   },
   invalidated: {
     labelKey: 'projects.verdict.invalidated.label',
+    descriptionKey: 'projects.verdict.invalidated.description',
+    ariaLabelKey: 'projects.verdict.ariaLabel',
     icon: ThumbsDown,
     colors: {
       bg: 'bg-red-50 dark:bg-red-950/30',

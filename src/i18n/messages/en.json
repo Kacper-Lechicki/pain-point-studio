@@ -412,6 +412,8 @@
     "stats": {
       "title": "Survey Results",
       "contextBadge": "Survey",
+      "contextBadgeDescription": "A survey collects responses from your target audience through structured questions. Each survey belongs to a project and helps gather data to validate or invalidate your assumptions.",
+      "contextBadgeAriaLabel": "{status} context badge",
       "overview": "Overview",
       "metricsLabel": "Key metrics",
       "totalResponses": "Total responses",
@@ -773,6 +775,7 @@
       "nameTooLong": "Name must be 100 characters or fewer.",
       "summaryTooLong": "Summary must be 280 characters or fewer.",
       "contentTooLong": "Content must be 500 characters or fewer.",
+      "descriptionTooLong": "Description must be 1000 characters or fewer.",
       "unexpected": "Something went wrong. Please try again."
     },
     "title": "Projects",
@@ -794,7 +797,41 @@
       "summaryPlaceholder": "e.g., Validating demand for an AI writing assistant...",
       "summaryCounter": "{count}/{max}",
       "submit": "Create Project",
-      "success": "Project created successfully."
+      "success": "Project created successfully.",
+      "stepIndicator": "Step {current} of {total}",
+      "steps": {
+        "name": {
+          "title": "What's your project called?",
+          "hint": "Choose a clear, descriptive name that captures the core idea you're exploring. You can always change it later."
+        },
+        "summary": {
+          "title": "Summarize your project",
+          "hint": "Write a brief one-liner that explains what you're researching or validating. Think of it as an elevator pitch."
+        },
+        "description": {
+          "title": "Tell us more about your project",
+          "hint": "Add more context about the problem you're solving, your target audience, or what success looks like. This helps you stay focused as you research.",
+          "label": "Description",
+          "placeholder": "e.g., We're exploring whether freelance designers need a better way to manage client feedback...",
+          "counter": "{count}/{max}"
+        },
+        "confirm": {
+          "title": "Review and create",
+          "hint": "Here's what your project will look like. You can go back to make changes, or create it now."
+        },
+        "image": {
+          "title": "Add a project image",
+          "hint": "Upload a logo or image to help you quickly identify this project. You can always add or change it later.",
+          "successMessage": "Your project has been created!",
+          "skipLabel": "Skip for now",
+          "doneLabel": "Go to project"
+        }
+      },
+      "navigation": {
+        "next": "Continue",
+        "back": "Back",
+        "createProject": "Create Project"
+      }
     },
     "list": {
       "summary": {
@@ -846,12 +883,21 @@
         "activity": "Activity"
       },
       "smartStatus": {
+        "ariaLabel": "Project status: {status}",
         "survey_ending_soon": "Ending in {count}h",
         "no_active_surveys": "No active surveys",
         "has_drafts": "{count, plural, one {# draft survey} other {# draft surveys}}",
         "collecting_responses": "Collecting responses",
         "no_surveys": "No surveys yet",
-        "all_complete": "All complete"
+        "all_complete": "All complete",
+        "description": {
+          "survey_ending_soon": "One of your surveys is about to end soon. Check its progress and decide whether to extend or complete it.",
+          "no_active_surveys": "None of your surveys are currently collecting responses. Activate a draft or create a new survey to continue gathering data.",
+          "has_drafts": "You have draft surveys that haven't been published yet. Review and activate them to start collecting responses.",
+          "collecting_responses": "Your surveys are live and actively collecting responses from participants.",
+          "no_surveys": "This project doesn't have any surveys yet. Create your first survey to start collecting data.",
+          "all_complete": "All surveys in this project have finished collecting responses. Review your findings to draw conclusions."
+        }
       },
       "actions": {
         "moreActions": "More actions",
@@ -969,19 +1015,36 @@
       "draftSurveys": "Drafts",
       "archivedBanner": "This project is archived.",
       "contextBadge": "Project",
+      "contextBadgeDescription": "A project groups related surveys and insights around a single problem or idea you want to validate. It tracks your research progress from initial hypothesis through data collection to a final verdict.",
+      "contextBadgeAriaLabel": "{status} context badge",
+      "settings": "Project Settings",
+      "editName": "Edit project name",
+      "editSummary": "Edit project summary",
       "changeImage": "Change image",
       "removeImage": "Remove image",
       "removeImageConfirmTitle": "Remove project image?",
       "removeImageConfirmDescription": "The image will be permanently deleted.",
       "imageUploadFailed": "Failed to upload image. Please try again.",
       "imageInvalidType": "Only JPEG, PNG, and WebP images are supported.",
-      "imageTooLarge": "Image must be under 2 MB.",
+      "imageTooLarge": "Image must be under 5 MB.",
+      "meta": {
+        "created": "Created",
+        "updated": "Updated",
+        "lastResponse": "Last response",
+        "noResponses": "No responses yet"
+      },
       "about": {
         "title": "About",
         "placeholder": "Describe what this project is about…",
         "saving": "Saving…",
         "saved": "Saved",
-        "failed": "Failed to save"
+        "failed": "Failed to save",
+        "showMore": "Show more",
+        "showLess": "Show less",
+        "edit": "Edit",
+        "saveChanges": "Save changes",
+        "cancel": "Cancel",
+        "editingMode": "Editing…"
       },
       "tabs": {
         "overview": "Overview",
@@ -1059,14 +1122,15 @@
       "validated": "Validated"
     },
     "phases": {
+      "ariaLabel": "Research phase: {status}",
       "idea": "Problem Discovery",
-      "ideaDescription": "Defining the problem and hypothesis",
+      "ideaDescription": "Defining the problem and hypothesis. Focus on understanding your target audience's pain points before jumping to solutions.",
       "research": "Solution Validation",
-      "researchDescription": "Gathering data through surveys",
+      "researchDescription": "Gathering data through surveys. Create surveys to test your hypothesis and collect evidence from potential users.",
       "validation": "Market Validation",
-      "validationDescription": "Confirming findings with additional research",
+      "validationDescription": "Confirming findings with additional research. Cross-validate your earlier findings with a broader audience to build confidence.",
       "decision": "Launch Readiness",
-      "decisionDescription": "Making go/no-go decisions based on evidence",
+      "decisionDescription": "Making go/no-go decisions based on evidence. Review all collected data to decide whether to proceed, pivot, or stop.",
       "label": "Research Phase",
       "placeholder": "Select a phase...",
       "noPhase": "No phase",
@@ -1127,32 +1191,39 @@
     },
     "verdict": {
       "confidence": "{current} of {target} responses collected",
+      "ariaLabel": "Verdict status: {status}",
       "noData": {
         "label": "No Data",
-        "summary": "Start collecting responses to see how your idea stacks up."
+        "summary": "Start collecting responses to see how your idea stacks up.",
+        "description": "No responses have been collected yet. Once data starts coming in, the system will analyze it and provide a verdict on your idea's viability."
       },
       "exploring": {
         "label": "Exploring",
-        "summary": "Early data is coming in — keep collecting responses to strengthen your confidence."
+        "summary": "Early data is coming in — keep collecting responses to strengthen your confidence.",
+        "description": "Early responses are being analyzed. The data is still inconclusive — keep collecting responses to build a stronger signal."
       },
       "exploringLow": {
         "summary": "You have some responses but not enough signals yet. Keep going!"
       },
       "promising": {
         "label": "Promising",
-        "summary": "The data looks positive so far. Your idea is showing signs of product-market fit."
+        "summary": "The data looks positive so far. Your idea is showing signs of product-market fit.",
+        "description": "Collected responses indicate positive interest in your idea. The data is trending towards validation, but more responses will strengthen confidence."
       },
       "needsAttention": {
         "label": "Needs Attention",
-        "summary": "Some concerning signals have appeared. Review your findings to understand the risks."
+        "summary": "Some concerning signals have appeared. Review your findings to understand the risks.",
+        "description": "The data reveals mixed or negative signals. Review your survey findings and consider adjusting your approach or hypothesis."
       },
       "validated": {
         "label": "Validated",
-        "summary": "Strong evidence supports this idea. The data consistently points to real demand."
+        "summary": "Strong evidence supports this idea. The data consistently points to real demand.",
+        "description": "Strong, consistent evidence from responses supports your idea. The data indicates real demand and product-market fit potential."
       },
       "invalidated": {
         "label": "Invalidated",
-        "summary": "The data suggests this idea may not have enough demand. Consider pivoting."
+        "summary": "The data suggests this idea may not have enough demand. Consider pivoting.",
+        "description": "The collected data consistently indicates insufficient demand or interest. Consider pivoting your approach or exploring a different problem space."
       },
       "moreData": {
         "summary": "Collecting more responses will help paint a clearer picture."
@@ -1161,13 +1232,13 @@
     "overview": {
       "responses": "Responses",
       "surveys": "Surveys",
-      "completion": "Completion",
+      "completion": "Response Completion",
       "completionSub": "{completed} of {total} completed",
       "active": "active",
       "draft": "draft",
       "completed": "completed",
       "last7d": "7d",
-      "responseTrend": "Response Trend",
+      "responseTrend": "Responses Over Time",
       "noResponses": "No responses yet",
       "surveyBreakdown": "Survey Progress",
       "createFirstSurvey": "Create your first survey to start collecting data",

@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from 'react';
 
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, Settings } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
@@ -10,8 +10,8 @@ import { ROUTES } from '@/config/routes';
 import { useBreadcrumbSegment } from '@/features/dashboard/components/layout/breadcrumb-context';
 import { useSubPanelLinks } from '@/features/dashboard/components/layout/sub-panel-items-context';
 import { DASHBOARD_PAGE_BODY_GAP_TOP } from '@/features/dashboard/config/layout';
+import type { ProjectOwner } from '@/features/projects/actions/get-project';
 import { EditProjectDialog } from '@/features/projects/components/edit-project-dialog';
-import { ProjectAboutSection } from '@/features/projects/components/project-about-section';
 import { ProjectDetailHeader } from '@/features/projects/components/project-detail-header';
 import { ProjectDetailTabs } from '@/features/projects/components/project-detail-tabs';
 import { useProjectDashboardActions } from '@/features/projects/hooks/use-project-dashboard-actions';
@@ -21,6 +21,7 @@ import type { UserSurvey } from '@/features/surveys/actions';
 
 interface ProjectDashboardPageProps {
   project: Project;
+  owner: ProjectOwner | null;
   surveys: UserSurvey[];
   insights: ProjectInsight[];
   overviewStats: ProjectOverviewStats;
@@ -28,6 +29,7 @@ interface ProjectDashboardPageProps {
 
 export function ProjectDashboardPage({
   project: initialProject,
+  owner,
   surveys,
   insights: initialInsights,
   overviewStats,
@@ -50,13 +52,23 @@ export function ProjectDashboardPage({
 
   useBreadcrumbSegment(project.id, project.name);
 
-  useSubPanelLinks([
-    {
-      label: t('common.backToProjects'),
-      href: ROUTES.dashboard.projects,
-      icon: ChevronLeft,
-    },
-  ]);
+  useSubPanelLinks(
+    [
+      {
+        label: t('common.backToProjects'),
+        href: ROUTES.dashboard.projects,
+        icon: ChevronLeft,
+      },
+    ],
+    [
+      {
+        label: t('projects.detail.settings'),
+        href: '#',
+        icon: Settings,
+        disabled: true,
+      },
+    ]
+  );
 
   const phase = deriveProjectPhase(surveys);
 
@@ -77,15 +89,17 @@ export function ProjectDashboardPage({
       <ProjectDetailHeader
         project={project}
         userId={project.user_id}
+        owner={owner}
         phase={phase}
         onEdit={() => setEditOpen(true)}
         onArchive={() => setConfirmAction('archive')}
         onDelete={() => setConfirmAction('delete')}
+        lastResponseAt={overviewStats.lastResponseAt}
         onImageChange={handleImageChange}
+        onEditSuccess={handleEditSuccess}
       />
 
-      <div className={`${DASHBOARD_PAGE_BODY_GAP_TOP} flex flex-col gap-6`}>
-        <ProjectAboutSection project={project} />
+      <div className={`${DASHBOARD_PAGE_BODY_GAP_TOP} flex min-w-0 flex-col gap-6`}>
         <ProjectDetailTabs
           project={project}
           surveys={surveys}

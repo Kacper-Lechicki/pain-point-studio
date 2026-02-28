@@ -36,6 +36,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
       <PageTransition>
         <ProjectDashboardPage
           project={data.project}
+          owner={data.owner}
           surveys={projectSurveys ?? []}
           insights={insights}
           overviewStats={

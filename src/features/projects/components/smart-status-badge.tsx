@@ -2,10 +2,9 @@
 
 import { useTranslations } from 'next-intl';
 
-import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/ui/status-badge';
 import type { SmartStatus, SmartStatusType } from '@/features/projects/lib/smart-status';
 import type { MessageKey } from '@/i18n/types';
-import { cn } from '@/lib/common/utils';
 
 const STATUS_STYLES: Record<SmartStatusType, string> = {
   survey_ending_soon: 'border-amber-500/25 bg-amber-500/15 text-amber-700 dark:text-amber-400',
@@ -17,6 +16,9 @@ const STATUS_STYLES: Record<SmartStatusType, string> = {
   all_complete: 'border-border bg-muted/50 text-muted-foreground',
 };
 
+/** Smart status types whose i18n label requires ICU params. */
+const NEEDS_PARAMS = new Set<SmartStatusType>(['survey_ending_soon', 'has_drafts']);
+
 interface SmartStatusBadgeProps {
   status: SmartStatus;
   className?: string | undefined;
@@ -25,15 +27,20 @@ interface SmartStatusBadgeProps {
 export function SmartStatusBadge({ status, className }: SmartStatusBadgeProps) {
   const t = useTranslations();
 
-  const key = `projects.list.smartStatus.${status.type}` as MessageKey;
-  const label = status.meta != null ? t(key, { count: status.meta }) : t(key);
+  const labelKey = `projects.list.smartStatus.${status.type}` as MessageKey;
+  const descriptionKey = `projects.list.smartStatus.description.${status.type}` as MessageKey;
+  const label = status.meta != null ? t(labelKey, { count: status.meta }) : t(labelKey);
 
   return (
-    <Badge
+    <StatusBadge
+      labelKey={labelKey}
+      descriptionKey={descriptionKey}
+      ariaLabelKey="projects.list.smartStatus.ariaLabel"
       variant="outline"
-      className={cn('text-[11px] whitespace-nowrap', STATUS_STYLES[status.type], className)}
-    >
-      {label}
-    </Badge>
+      badgeClassName={`whitespace-nowrap ${STATUS_STYLES[status.type]}`}
+      labelOverride={label}
+      dialogLabel={NEEDS_PARAMS.has(status.type) ? label : undefined}
+      className={className}
+    />
   );
 }

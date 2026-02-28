@@ -1,9 +1,23 @@
 'use client';
 
-import { Archive, EllipsisVertical, RotateCcw, Trash2 } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
+import { formatDistanceToNow } from 'date-fns';
+import {
+  Activity,
+  Archive,
+  Calendar,
+  Check,
+  EllipsisVertical,
+  Pencil,
+  RefreshCw,
+  RotateCcw,
+  Trash2,
+  X,
+} from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -11,32 +25,171 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { StatusBadge } from '@/components/ui/status-badge';
+import { Textarea } from '@/components/ui/textarea';
+import type { ProjectOwner } from '@/features/projects/actions/get-project';
+import { updateProject } from '@/features/projects/actions/update-project';
 import { ProjectImageUpload } from '@/features/projects/components/project-image-upload';
 import { ProjectPhaseBadge } from '@/features/projects/components/project-phase-badge';
 import { ProjectStatusBadge } from '@/features/projects/components/project-status-badge';
+import { PROJECT_NAME_MAX_LENGTH, PROJECT_SUMMARY_MAX_LENGTH } from '@/features/projects/config';
 import { isProjectArchived } from '@/features/projects/lib/project-helpers';
 import type { Project, ProjectStatus, ResearchPhase } from '@/features/projects/types';
+import { cn } from '@/lib/common/utils';
+
+type EditingField = 'name' | 'summary' | null;
+type SaveStatus = 'idle' | 'saving' | 'saved' | 'failed';
+
+export type ProjectDetailHeaderEditSuccess = {
+  name: string;
+  summary: string | undefined;
+  targetResponses?: number;
+};
 
 interface ProjectDetailHeaderProps {
   project: Project;
   userId: string;
+  owner?: ProjectOwner | null;
   phase: ResearchPhase | null;
+  lastResponseAt?: string | null;
   onEdit: () => void;
   onArchive: () => void;
   onDelete: () => void;
   onImageChange: (url: string | null) => void;
+  /** When provided, name and summary show edit pens and support inline editing. */
+  onEditSuccess?: (data: ProjectDetailHeaderEditSuccess) => void;
 }
 
 export function ProjectDetailHeader({
   project,
   userId,
+  owner,
   phase,
   onArchive,
   onDelete,
   onImageChange,
+  lastResponseAt,
+  onEditSuccess,
 }: ProjectDetailHeaderProps) {
   const t = useTranslations();
   const isArchived = isProjectArchived(project);
+  const canEditInline = !isArchived && !!onEditSuccess;
+
+  const [editingField, setEditingField] = useState<EditingField>(null);
+  const [nameDraft, setNameDraft] = useState(project.name);
+  const [summaryDraft, setSummaryDraft] = useState(project.summary ?? '');
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
+  const nameInputRef = useRef<HTMLInputElement>(null);
+  const summaryInputRef = useRef<HTMLTextAreaElement>(null);
+
+  const startEditingName = useCallback(() => {
+    setNameDraft(project.name);
+    setEditingField('name');
+  }, [project.name]);
+
+  const startEditingSummary = useCallback(() => {
+    setSummaryDraft(project.summary ?? '');
+    setEditingField('summary');
+  }, [project.summary]);
+
+  useEffect(() => {
+    if (editingField === 'name') {
+      nameInputRef.current?.focus();
+      nameInputRef.current?.select();
+    } else if (editingField === 'summary') {
+      summaryInputRef.current?.focus();
+      summaryInputRef.current?.select();
+    }
+  }, [editingField]);
+
+  const saveName = useCallback(async () => {
+    const trimmed = nameDraft.trim();
+
+    if (!trimmed || trimmed === project.name) {
+      setEditingField(null);
+
+      return;
+    }
+
+    setSaveStatus('saving');
+    const result = await updateProject({
+      projectId: project.id,
+      name: trimmed,
+      summary: project.summary ?? '',
+    });
+
+    if (result?.error) {
+      setSaveStatus('failed');
+
+      return;
+    }
+
+    setSaveStatus('saved');
+    setEditingField(null);
+    onEditSuccess?.({
+      name: trimmed,
+      summary: project.summary ?? undefined,
+      targetResponses: project.target_responses,
+    });
+    setTimeout(() => setSaveStatus('idle'), 2000);
+  }, [
+    project.id,
+    project.name,
+    project.summary,
+    project.target_responses,
+    nameDraft,
+    onEditSuccess,
+  ]);
+
+  const saveSummary = useCallback(async () => {
+    const trimmed = summaryDraft.trim();
+
+    if (trimmed === (project.summary ?? '')) {
+      setEditingField(null);
+
+      return;
+    }
+
+    setSaveStatus('saving');
+    const result = await updateProject({
+      projectId: project.id,
+      name: project.name,
+      summary: trimmed || undefined,
+    });
+
+    if (result?.error) {
+      setSaveStatus('failed');
+
+      return;
+    }
+
+    setSaveStatus('saved');
+    setEditingField(null);
+    onEditSuccess?.({
+      name: project.name,
+      summary: trimmed || undefined,
+      targetResponses: project.target_responses,
+    });
+    setTimeout(() => setSaveStatus('idle'), 2000);
+  }, [
+    project.id,
+    project.name,
+    project.summary,
+    project.target_responses,
+    summaryDraft,
+    onEditSuccess,
+  ]);
+
+  const cancelEdit = useCallback(() => {
+    setNameDraft(project.name);
+    setSummaryDraft(project.summary ?? '');
+    setEditingField(null);
+    setSaveStatus('idle');
+  }, [project.name, project.summary]);
+
+  const isEditingName = editingField === 'name';
+  const isEditingSummary = editingField === 'summary';
 
   return (
     <div className="flex flex-col gap-2">
@@ -69,22 +222,209 @@ export function ProjectDetailHeader({
 
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-1.5">
-              <Badge variant="secondary" className="text-[11px]">
-                {t('projects.detail.contextBadge')}
-              </Badge>
+              <StatusBadge
+                labelKey="projects.detail.contextBadge"
+                descriptionKey="projects.detail.contextBadgeDescription"
+                ariaLabelKey="projects.detail.contextBadgeAriaLabel"
+                variant="secondary"
+              />
               <ProjectStatusBadge status={project.status as ProjectStatus} />
               {phase && <ProjectPhaseBadge phase={phase} />}
             </div>
 
-            <h1 className="text-foreground mt-1 min-w-0 truncate text-3xl leading-tight font-bold">
-              {project.name}
-            </h1>
+            <div className="text-foreground mt-1 min-w-0">
+              {isEditingName ? (
+                <div className="flex min-w-0 flex-col gap-2">
+                  <Input
+                    ref={nameInputRef}
+                    value={nameDraft}
+                    onChange={(e) => setNameDraft(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        void saveName();
+                      }
 
-            {project.summary && (
-              <p className="text-muted-foreground mt-2 text-sm leading-relaxed">
-                {project.summary}
-              </p>
+                      if (e.key === 'Escape') {
+                        cancelEdit();
+                      }
+                    }}
+                    maxLength={PROJECT_NAME_MAX_LENGTH}
+                    className="text-foreground h-auto min-w-0 truncate py-1 text-3xl leading-tight font-bold"
+                  />
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-muted-foreground text-xs tabular-nums">
+                      {nameDraft.length}/{PROJECT_NAME_MAX_LENGTH}
+                    </span>
+                    {saveStatus === 'saving' && (
+                      <span className="text-muted-foreground text-xs">
+                        {t('projects.detail.about.saving')}
+                      </span>
+                    )}
+                    {saveStatus === 'failed' && (
+                      <span className="text-destructive text-xs">
+                        {t('projects.detail.about.failed')}
+                      </span>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="icon-xs"
+                      onClick={cancelEdit}
+                      aria-label={t('projects.detail.about.cancel')}
+                    >
+                      <X className="size-3.5" />
+                    </Button>
+                    <Button
+                      size="icon-xs"
+                      onClick={() => void saveName()}
+                      disabled={saveStatus === 'saving'}
+                    >
+                      <Check className="size-3.5" />
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="inline-flex max-w-full min-w-0 items-center gap-1.5">
+                  <h1 className="text-foreground min-w-0 truncate text-3xl leading-tight font-bold">
+                    {project.name}
+                  </h1>
+                  {canEditInline && (
+                    <Button
+                      variant="ghost"
+                      size="icon-xs"
+                      className="text-muted-foreground shrink-0"
+                      onClick={startEditingName}
+                      aria-label={t('projects.detail.editName')}
+                    >
+                      <Pencil className="size-3.5" />
+                    </Button>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {isEditingSummary ? (
+              <div className="mt-2 flex flex-col gap-2">
+                <Textarea
+                  ref={summaryInputRef}
+                  value={summaryDraft}
+                  onChange={(e) => setSummaryDraft(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Escape') {
+                      cancelEdit();
+                    }
+                  }}
+                  maxLength={PROJECT_SUMMARY_MAX_LENGTH}
+                  placeholder={t('projects.create.summaryPlaceholder')}
+                  className="text-muted-foreground min-h-[80px] min-w-0 resize-none text-sm leading-relaxed"
+                  rows={3}
+                />
+                <div className="flex items-center gap-1.5">
+                  <span className="text-muted-foreground text-xs tabular-nums">
+                    {summaryDraft.length}/{PROJECT_SUMMARY_MAX_LENGTH}
+                  </span>
+                  {saveStatus === 'saving' && (
+                    <span className="text-muted-foreground text-xs">
+                      {t('projects.detail.about.saving')}
+                    </span>
+                  )}
+                  {saveStatus === 'failed' && (
+                    <span className="text-destructive text-xs">
+                      {t('projects.detail.about.failed')}
+                    </span>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="icon-xs"
+                    onClick={cancelEdit}
+                    aria-label={t('projects.detail.about.cancel')}
+                  >
+                    <X className="size-3.5" />
+                  </Button>
+                  <Button
+                    size="icon-xs"
+                    onClick={() => void saveSummary()}
+                    disabled={saveStatus === 'saving'}
+                  >
+                    <Check className="size-3.5" />
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              (project.summary || canEditInline) && (
+                <p className="text-muted-foreground mt-2 text-sm leading-relaxed">
+                  <span className={cn(!project.summary && 'italic')}>
+                    {project.summary || t('projects.create.summaryPlaceholder')}
+                  </span>
+                  {canEditInline && (
+                    <Button
+                      variant="ghost"
+                      size="icon-xs"
+                      className="text-muted-foreground ml-1.5 inline-flex shrink-0 align-middle"
+                      onClick={startEditingSummary}
+                      aria-label={t('projects.detail.editSummary')}
+                    >
+                      <Pencil className="size-3.5" />
+                    </Button>
+                  )}
+                </p>
+              )
             )}
+
+            <dl className="text-foreground mt-3 flex flex-col gap-1 text-xs">
+              <div className="flex items-center gap-1.5">
+                <dt className="flex items-center gap-1.5">
+                  <RefreshCw className="size-3" aria-hidden />
+                  {t('projects.detail.meta.updated')}
+                </dt>
+                <dd className="text-muted-foreground">
+                  {formatDistanceToNow(new Date(project.updated_at), {
+                    addSuffix: true,
+                  }).replace(/^about /i, '')}
+                </dd>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <dt className="flex items-center gap-1.5">
+                  <Activity className="size-3" aria-hidden />
+                  {t('projects.detail.meta.lastResponse')}
+                </dt>
+                <dd className="text-muted-foreground">
+                  {lastResponseAt
+                    ? formatDistanceToNow(new Date(lastResponseAt), {
+                        addSuffix: true,
+                      }).replace(/^about /i, '')
+                    : t('projects.detail.meta.noResponses')}
+                </dd>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <dt className="flex items-center gap-1.5">
+                  <Calendar className="size-3" aria-hidden />
+                  {t('projects.detail.meta.created')}
+                </dt>
+                <dd className="text-muted-foreground">
+                  {new Date(project.created_at).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                  })}
+                </dd>
+              </div>
+              {owner && (
+                <div className="mt-2.5 flex items-center gap-1.5">
+                  <Avatar size="sm">
+                    {owner.avatarUrl && <AvatarImage src={owner.avatarUrl} alt={owner.fullName} />}
+                    <AvatarFallback>
+                      {owner.fullName
+                        .split(' ')
+                        .map((n) => n[0])
+                        .join('')
+                        .slice(0, 2)
+                        .toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span>{owner.fullName}</span>
+                </div>
+              )}
+            </dl>
           </div>
         </div>
 

@@ -25,12 +25,12 @@ function Tabs({
 }
 
 const tabsListVariants = cva(
-  'rounded-lg p-[3px] group-data-[orientation=horizontal]/tabs:h-9 data-[variant=line]:rounded-none group/tabs-list text-muted-foreground inline-flex w-fit items-center justify-center group-data-[orientation=vertical]/tabs:h-fit group-data-[orientation=vertical]/tabs:flex-col',
+  'rounded-lg p-[3px] group-data-[orientation=horizontal]/tabs:h-9 data-[variant=line]:rounded-none group/tabs-list text-muted-foreground inline-flex items-center justify-center group-data-[orientation=vertical]/tabs:h-fit group-data-[orientation=vertical]/tabs:flex-col',
   {
     variants: {
       variant: {
-        default: 'bg-muted',
-        line: 'gap-1 w-full justify-start border-border/50 border-b bg-transparent',
+        default: 'w-fit bg-muted',
+        line: 'w-full min-w-0 justify-start gap-1 bg-transparent **:data-[slot=tabs-trigger]:flex-none overflow-x-auto overflow-y-hidden overscroll-x-contain [-webkit-overflow-scrolling:touch]',
       },
     },
     defaultVariants: {
@@ -44,7 +44,7 @@ function TabsList({
   variant = 'default',
   ...props
 }: React.ComponentProps<typeof TabsPrimitive.List> & VariantProps<typeof tabsListVariants>) {
-  return (
+  const list = (
     <TabsPrimitive.List
       data-slot="tabs-list"
       data-variant={variant}
@@ -52,6 +52,12 @@ function TabsList({
       {...props}
     />
   );
+
+  if (variant === 'line') {
+    return <div className="border-border/50 w-full min-w-0 border-b">{list}</div>;
+  }
+
+  return list;
 }
 
 function TabsTrigger({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Trigger>) {

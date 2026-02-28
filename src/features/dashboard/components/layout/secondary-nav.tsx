@@ -91,17 +91,28 @@ export function SecondaryNav({ titleKey, groups, parentHref }: SecondaryNavProps
     <>
       {isDynamicActive && subPanelItems && subPanelItems.links.length > 0 && (
         <div className="flex flex-col gap-1.5 px-2 pt-4">
-          {subPanelItems.links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              data-state="inactive"
-              className={SIDEBAR_NAV_ITEM_CLASSES}
-            >
-              <link.icon className="size-4 shrink-0" aria-hidden />
-              <span className="truncate">{link.label}</span>
-            </Link>
-          ))}
+          {subPanelItems.links.map((link) =>
+            link.disabled ? (
+              <span
+                key={link.href}
+                data-state="inactive"
+                className={cn(SIDEBAR_NAV_ITEM_CLASSES, 'pointer-events-none opacity-50')}
+              >
+                <link.icon className="size-4 shrink-0" aria-hidden />
+                <span className="truncate">{link.label}</span>
+              </span>
+            ) : (
+              <Link
+                key={link.href}
+                href={link.href}
+                data-state="inactive"
+                className={SIDEBAR_NAV_ITEM_CLASSES}
+              >
+                <link.icon className="size-4 shrink-0" aria-hidden />
+                <span className="truncate">{link.label}</span>
+              </Link>
+            )
+          )}
         </div>
       )}
 
@@ -109,7 +120,7 @@ export function SecondaryNav({ titleKey, groups, parentHref }: SecondaryNavProps
         className={cn('shrink-0', isDynamicActive && subPanelItems?.links.length ? 'pt-2' : 'pt-4')}
       >
         <div className="flex min-h-8 items-center px-3">
-          <h2 className="text-sidebar-foreground decoration-sidebar-border text-sm font-semibold underline underline-offset-4">
+          <h2 className="text-sidebar-foreground decoration-sidebar-foreground/35 text-sm font-semibold underline underline-offset-4">
             {t(resolvedTitleKey)}
           </h2>
         </div>
@@ -117,14 +128,36 @@ export function SecondaryNav({ titleKey, groups, parentHref }: SecondaryNavProps
 
       <nav className="flex flex-1 flex-col gap-1.5 overflow-y-auto px-2 pt-1.5 pb-3">
         {isDynamicActive ? (
-          <>
-            <div className="flex flex-col gap-1.5">
-              <Link href={pathname} data-state="active" className={SIDEBAR_NAV_ITEM_CLASSES}>
-                <dynamicTab.icon className="size-4 shrink-0" aria-hidden />
-                <span className="truncate">{dynamicLabel}</span>
-              </Link>
-            </div>
-          </>
+          <div className="flex flex-col gap-1.5">
+            <Link href={pathname} data-state="active" className={SIDEBAR_NAV_ITEM_CLASSES}>
+              <dynamicTab.icon className="size-4 shrink-0" aria-hidden />
+              <span className="truncate">{dynamicLabel}</span>
+            </Link>
+            {subPanelItems &&
+              subPanelItems.bottomLinks.length > 0 &&
+              subPanelItems.bottomLinks.map((link) =>
+                link.disabled ? (
+                  <span
+                    key={link.href + link.label}
+                    data-state="inactive"
+                    className={cn(SIDEBAR_NAV_ITEM_CLASSES, 'pointer-events-none opacity-50')}
+                  >
+                    <link.icon className="size-4 shrink-0" aria-hidden />
+                    <span className="truncate">{link.label}</span>
+                  </span>
+                ) : (
+                  <Link
+                    key={link.href + link.label}
+                    href={link.href}
+                    data-state="inactive"
+                    className={SIDEBAR_NAV_ITEM_CLASSES}
+                  >
+                    <link.icon className="size-4 shrink-0" aria-hidden />
+                    <span className="truncate">{link.label}</span>
+                  </Link>
+                )
+              )}
+          </div>
         ) : (
           groups.map((group, gi) => (
             <div key={gi}>

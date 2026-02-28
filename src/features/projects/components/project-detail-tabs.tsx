@@ -76,17 +76,23 @@ export function ProjectDetailTabs({
           <TabsTrigger value="surveys">
             {t('projects.detail.tabs.research')}
             {surveys.length > 0 && (
-              <span className="text-muted-foreground ml-0.5 text-xs tabular-nums">
-                ({surveys.length})
-              </span>
+              <>
+                {' '}
+                <span className="text-muted-foreground text-xs tabular-nums">
+                  ({surveys.length})
+                </span>
+              </>
             )}
           </TabsTrigger>
           <TabsTrigger value="insights">
             {t('projects.detail.tabs.insights')}
             {insights.length > 0 && (
-              <span className="text-muted-foreground ml-0.5 text-xs tabular-nums">
-                ({insights.length})
-              </span>
+              <>
+                {' '}
+                <span className="text-muted-foreground text-xs tabular-nums">
+                  ({insights.length})
+                </span>
+              </>
             )}
           </TabsTrigger>
           <TabsTrigger value="notes">{t('projects.detail.tabs.notes')}</TabsTrigger>
