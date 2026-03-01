@@ -5,8 +5,8 @@ import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
-import { ROUTES } from '@/config/routes';
 import { UserMenu } from '@/features/auth/components/common/user-menu';
+import { getProjectDetailUrl } from '@/features/projects/lib/project-urls';
 import { saveSurveyQuestions } from '@/features/surveys/actions';
 import { SaveStatusIndicator } from '@/features/surveys/components/builder/save-status-indicator';
 import { deriveSurveyFlags } from '@/features/surveys/config/survey-status';
@@ -21,6 +21,7 @@ interface BuilderTopBarProps {
   surveyId: string;
   surveyTitle: string;
   surveyStatus: SurveyStatus;
+  projectId: string;
   isDesktop: boolean;
   onToggleSidebar?: () => void;
   onToggleSettings?: () => void;
@@ -32,6 +33,7 @@ export function BuilderTopBar({
   surveyId,
   surveyTitle,
   surveyStatus,
+  projectId,
   isDesktop,
   onToggleSidebar,
   onToggleSettings,
@@ -68,6 +70,7 @@ export function BuilderTopBar({
   }
 
   const isLoading = saveAction.isLoading;
+  const projectSurveysUrl = `${getProjectDetailUrl(projectId)}?tab=surveys`;
 
   return (
     <>
@@ -75,7 +78,7 @@ export function BuilderTopBar({
         <div className="border-border flex h-12 shrink-0 items-center gap-4 border-b pr-0 pl-4">
           <div className="flex min-w-0 items-center gap-1.5">
             <Link
-              href={ROUTES.dashboard.research}
+              href={projectSurveysUrl}
               className="text-muted-foreground hover:text-foreground flex shrink-0 items-center gap-1.5 text-sm transition-colors"
               aria-label={t('surveys.builder.backToSurveys')}
             >
@@ -127,7 +130,7 @@ export function BuilderTopBar({
         <div className="border-border shrink-0 border-b">
           <div className="flex min-h-11 items-center gap-1.5 px-3 py-2">
             <Link
-              href={ROUTES.dashboard.research}
+              href={projectSurveysUrl}
               className="text-muted-foreground hover:text-foreground flex shrink-0 items-center gap-1.5 text-xs transition-colors"
               aria-label={t('surveys.builder.backToSurveys')}
             >

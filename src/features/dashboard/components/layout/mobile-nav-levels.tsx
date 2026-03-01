@@ -1,5 +1,6 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
+import type { SubPanelLink } from '@/features/dashboard/components/layout/sub-panel-items-context';
 import {
   SIDEBAR_NAV_ACTIVE,
   SIDEBAR_NAV_INACTIVE,
@@ -11,13 +12,16 @@ import {
   DYNAMIC_SIDEBAR_ITEMS,
   type NavItem,
   SIDEBAR_BOTTOM_ITEM,
+  SIDEBAR_GIVE_FEEDBACK_ITEM,
   SIDEBAR_NAV,
+  SIDEBAR_PROFILE_ITEM,
 } from '@/features/dashboard/config/navigation';
 import {
   collectSearchParamKeys,
   findDynamicTab,
   getSubItemHref,
   isSubItemActive,
+  matchesNavItem,
   resolveDynamicLabel,
 } from '@/features/dashboard/lib/nav-utils';
 import { Link } from '@/i18n/routing';
@@ -52,85 +56,78 @@ export function SubNavItems({
 
   return (
     <nav className="flex flex-1 flex-col gap-2 p-2 pb-8" onClick={onNavigate}>
-      {groups.map((group, gi) => (
-        <div key={gi}>
-          {group.headingKey && (
-            <div
-              className={cn(
-                'text-muted-foreground mb-1 px-3 text-xs font-semibold tracking-wider uppercase',
-                gi === 0 ? 'mt-0' : 'mt-6'
-              )}
-            >
-              {t(group.headingKey)}
+      {isDynamicActive ? (
+        <div className="flex flex-col gap-2">
+          <Link href={pathname} className={cn(SIDEBAR_NAV_ITEM_BASE, SIDEBAR_NAV_ACTIVE)}>
+            <dynamicTab.icon className="size-4 shrink-0" aria-hidden />
+            <span className="truncate">{dynamicLabel}</span>
+          </Link>
+        </div>
+      ) : (
+        groups.map((group, gi) => (
+          <div key={gi}>
+            {group.headingKey && (
+              <div
+                className={cn(
+                  'text-muted-foreground mb-1 px-3 text-xs font-semibold tracking-wider uppercase',
+                  gi === 0 ? 'mt-0' : 'mt-6'
+                )}
+              >
+                {t(group.headingKey)}
+              </div>
+            )}
+
+            <div className="flex flex-col gap-2">
+              {group.items.map((subItem) => {
+                const href = getSubItemHref(subItem);
+
+                if (subItem.disabled) {
+                  return (
+                    <span
+                      key={href}
+                      data-state="inactive"
+                      className={cn(
+                        SIDEBAR_NAV_ITEM_BASE,
+                        SIDEBAR_NAV_INACTIVE,
+                        'pointer-events-none opacity-50'
+                      )}
+                    >
+                      <subItem.icon className="size-4 shrink-0" aria-hidden />
+                      <span className="truncate">{t(subItem.labelKey)}</span>
+                    </span>
+                  );
+                }
+
+                const isActive =
+                  clientState && currentSearchParams
+                    ? isSubItemActive(subItem, pathname, hash, currentSearchParams, searchParamKeys)
+                    : false;
+
+                const stateClasses = isActive ? SIDEBAR_NAV_ACTIVE : SIDEBAR_NAV_INACTIVE;
+
+                if (subItem.hash) {
+                  return (
+                    <a
+                      key={href}
+                      href={`#${subItem.hash}`}
+                      className={cn(SIDEBAR_NAV_ITEM_BASE, stateClasses)}
+                    >
+                      <subItem.icon className="size-4 shrink-0" aria-hidden />
+                      <span className="truncate">{t(subItem.labelKey)}</span>
+                    </a>
+                  );
+                }
+
+                return (
+                  <Link key={href} href={href} className={cn(SIDEBAR_NAV_ITEM_BASE, stateClasses)}>
+                    <subItem.icon className="size-4 shrink-0" aria-hidden />
+                    <span className="truncate">{t(subItem.labelKey)}</span>
+                  </Link>
+                );
+              })}
             </div>
-          )}
-
-          <div className="flex flex-col gap-2">
-            {group.items.map((subItem) => {
-              const href = getSubItemHref(subItem);
-
-              if (subItem.disabled) {
-                return (
-                  <span
-                    key={href}
-                    data-state="inactive"
-                    className={cn(
-                      SIDEBAR_NAV_ITEM_BASE,
-                      SIDEBAR_NAV_INACTIVE,
-                      'pointer-events-none opacity-50'
-                    )}
-                  >
-                    <subItem.icon className="size-4 shrink-0" aria-hidden />
-                    <span className="truncate">{t(subItem.labelKey)}</span>
-                  </span>
-                );
-              }
-
-              const isActive = isDynamicActive
-                ? false
-                : clientState && currentSearchParams
-                  ? isSubItemActive(subItem, pathname, hash, currentSearchParams, searchParamKeys)
-                  : false;
-
-              const stateClasses = isActive ? SIDEBAR_NAV_ACTIVE : SIDEBAR_NAV_INACTIVE;
-
-              if (subItem.hash) {
-                return (
-                  <a
-                    key={href}
-                    href={`#${subItem.hash}`}
-                    className={cn(SIDEBAR_NAV_ITEM_BASE, stateClasses)}
-                  >
-                    <subItem.icon className="size-4 shrink-0" aria-hidden />
-                    <span className="truncate">{t(subItem.labelKey)}</span>
-                  </a>
-                );
-              }
-
-              return (
-                <Link key={href} href={href} className={cn(SIDEBAR_NAV_ITEM_BASE, stateClasses)}>
-                  <subItem.icon className="size-4 shrink-0" aria-hidden />
-                  <span className="truncate">{t(subItem.labelKey)}</span>
-                </Link>
-              );
-            })}
           </div>
-        </div>
-      ))}
-
-      {isDynamicActive && dynamicTab && dynamicLabel && (
-        <div>
-          <div className="text-muted-foreground mt-6 mb-1 px-3 text-xs font-semibold tracking-wider uppercase">
-            {t('sidebar.dynamicHeading' as MessageKey)}
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <Link href={pathname} className={cn(SIDEBAR_NAV_ITEM_BASE, SIDEBAR_NAV_ACTIVE)}>
-              <dynamicTab.icon className="size-4 shrink-0" aria-hidden />
-              <span className="truncate">{dynamicLabel}</span>
-            </Link>
-          </div>
-        </div>
+        ))
       )}
     </nav>
   );
@@ -153,7 +150,7 @@ export function MobileNavMainLevel({ pathname, t, onItemClick, onClose }: Mobile
               if (item.disabled) {
                 return (
                   <span
-                    key={item.href}
+                    key={item.labelKey}
                     data-state="inactive"
                     className={cn(SIDEBAR_NAV_ITEM_CLASSES, 'pointer-events-none opacity-50')}
                   >
@@ -163,11 +160,9 @@ export function MobileNavMainLevel({ pathname, t, onItemClick, onClose }: Mobile
                 );
               }
 
-              const matchPath = item.activePrefix ?? item.href;
-
               const isActive = item.subNav
-                ? pathname === matchPath || pathname.startsWith(matchPath + '/')
-                : pathname === matchPath;
+                ? matchesNavItem(pathname, item)
+                : pathname === (item.activePrefix ?? item.href);
 
               if (item.subNav) {
                 return (
@@ -203,10 +198,6 @@ export function MobileNavMainLevel({ pathname, t, onItemClick, onClose }: Mobile
 
         {DYNAMIC_SIDEBAR_ITEMS.some((di) => pathname === di.path) && (
           <div className="mt-2 flex flex-col gap-2">
-            <div className="text-muted-foreground mt-4 mb-1 px-3 text-xs font-semibold tracking-wider uppercase">
-              {t('sidebar.dynamicHeading' as Parameters<typeof t>[0])}
-            </div>
-
             {DYNAMIC_SIDEBAR_ITEMS.filter((di) => pathname === di.path).map((di) => (
               <Link
                 key={di.path}
@@ -223,47 +214,54 @@ export function MobileNavMainLevel({ pathname, t, onItemClick, onClose }: Mobile
         )}
       </nav>
 
-      <div className="px-2 pb-6">
-        {(() => {
-          if (SIDEBAR_BOTTOM_ITEM.disabled) {
+      <div className="mt-auto flex flex-col gap-2 px-2 pt-4 pb-6">
+        {[SIDEBAR_PROFILE_ITEM, SIDEBAR_BOTTOM_ITEM, SIDEBAR_GIVE_FEEDBACK_ITEM].map((item) => {
+          if (item.disabled) {
             return (
               <span
+                key={item.labelKey}
                 data-state="inactive"
                 className={cn(SIDEBAR_NAV_ITEM_CLASSES, 'pointer-events-none opacity-50')}
               >
-                <SIDEBAR_BOTTOM_ITEM.icon className="size-4 shrink-0" aria-hidden />
-                <span className="truncate">{t(SIDEBAR_BOTTOM_ITEM.labelKey)}</span>
+                <item.icon className="size-4 shrink-0" aria-hidden />
+                <span className="truncate">{t(item.labelKey)}</span>
               </span>
             );
           }
 
-          const isBottomActive =
-            pathname === SIDEBAR_BOTTOM_ITEM.href ||
-            pathname.startsWith(SIDEBAR_BOTTOM_ITEM.href + '/');
+          const isActive =
+            pathname === (item.activePrefix ?? item.href) ||
+            (item.activePrefix != null && pathname.startsWith(item.activePrefix + '/'));
 
-          return SIDEBAR_BOTTOM_ITEM.subNav ? (
-            <button
-              type="button"
-              data-state={isBottomActive ? 'active' : 'inactive'}
-              className={SIDEBAR_NAV_ITEM_CLASSES}
-              onClick={() => onItemClick(SIDEBAR_BOTTOM_ITEM)}
-            >
-              <SIDEBAR_BOTTOM_ITEM.icon className="size-4 shrink-0" aria-hidden />
-              <span className="truncate">{t(SIDEBAR_BOTTOM_ITEM.labelKey)}</span>
-              <ChevronRight className="ml-auto size-4 opacity-50" />
-            </button>
-          ) : (
+          if (item.subNav) {
+            return (
+              <button
+                key={item.labelKey}
+                type="button"
+                data-state={isActive ? 'active' : 'inactive'}
+                className={SIDEBAR_NAV_ITEM_CLASSES}
+                onClick={() => onItemClick(item)}
+              >
+                <item.icon className="size-4 shrink-0" aria-hidden />
+                <span className="truncate">{t(item.labelKey)}</span>
+                <ChevronRight className="ml-auto size-4 opacity-50" />
+              </button>
+            );
+          }
+
+          return (
             <Link
-              href={SIDEBAR_BOTTOM_ITEM.href}
-              data-state={isBottomActive ? 'active' : 'inactive'}
+              key={item.labelKey}
+              href={item.href}
+              data-state={isActive ? 'active' : 'inactive'}
               className={SIDEBAR_NAV_ITEM_CLASSES}
               onClick={() => onClose()}
             >
-              <SIDEBAR_BOTTOM_ITEM.icon className="size-4 shrink-0" aria-hidden />
-              <span className="truncate">{t(SIDEBAR_BOTTOM_ITEM.labelKey)}</span>
+              <item.icon className="size-4 shrink-0" aria-hidden />
+              <span className="truncate">{t(item.labelKey)}</span>
             </Link>
           );
-        })()}
+        })}
       </div>
     </>
   );
@@ -277,6 +275,37 @@ interface MobileNavSubLevelProps {
   onBack: () => void;
   onNavigate: () => void;
   breadcrumbSegments?: Record<string, string> | undefined;
+  subPanelLinks?: SubPanelLink[] | undefined;
+  subPanelBottomLinks?: SubPanelLink[] | undefined;
+}
+
+function MobileSubNavSkeleton() {
+  return (
+    <>
+      {/* Back link skeleton */}
+      <div className="px-2 pt-4">
+        <div className="flex min-h-8 items-center gap-2 px-2.5">
+          <div className="bg-muted size-4 shrink-0 animate-pulse rounded" />
+          <div className="bg-muted h-3.5 w-24 animate-pulse rounded" />
+        </div>
+      </div>
+
+      {/* Title skeleton */}
+      <div className="shrink-0 pt-2">
+        <div className="flex h-9 items-center px-5">
+          <div className="bg-muted h-3.5 w-28 animate-pulse rounded" />
+        </div>
+      </div>
+
+      {/* Nav item skeleton */}
+      <div className="flex flex-col gap-2 p-2">
+        <div className="flex min-h-8 items-center gap-2 px-2.5">
+          <div className="bg-muted size-4 shrink-0 animate-pulse rounded" />
+          <div className="bg-muted h-3.5 w-32 animate-pulse rounded" />
+        </div>
+      </div>
+    </>
+  );
 }
 
 export function MobileNavSubLevel({
@@ -287,25 +316,70 @@ export function MobileNavSubLevel({
   onBack,
   onNavigate,
   breadcrumbSegments,
+  subPanelLinks,
+  subPanelBottomLinks,
 }: MobileNavSubLevelProps) {
+  const parentHref = selectedItem.activePrefix ?? selectedItem.href;
+  const dynamicTab = findDynamicTab(parentHref, pathname);
+  const dynamicLabel = resolveDynamicLabel(dynamicTab, pathname, breadcrumbSegments);
+
+  // Dynamic route detected but data not yet ready — show skeleton
+  const isDynamicPending =
+    dynamicTab != null && (dynamicLabel == null || !subPanelLinks || subPanelLinks.length === 0);
+
+  if (isDynamicPending) {
+    return <MobileSubNavSkeleton />;
+  }
+
+  const isDynamicActive = dynamicTab != null && dynamicLabel != null;
+  const resolvedTitleKey =
+    isDynamicActive && dynamicTab.titleKey ? dynamicTab.titleKey : selectedItem.subNav!.titleKey;
+
   return (
     <>
       <div className="px-2 pt-4">
-        <button
-          type="button"
-          onClick={onBack}
-          data-state="inactive"
-          className={SIDEBAR_NAV_ITEM_CLASSES}
-        >
-          <ChevronLeft className="size-4 shrink-0" aria-hidden />
-          <span className="truncate">{t('sidebar.back')}</span>
-        </button>
+        {isDynamicActive && subPanelLinks && subPanelLinks.length > 0 ? (
+          <div className="flex flex-col gap-2">
+            {subPanelLinks.map((link) =>
+              link.disabled ? (
+                <span
+                  key={link.href}
+                  data-state="inactive"
+                  className={cn(SIDEBAR_NAV_ITEM_CLASSES, 'pointer-events-none opacity-50')}
+                >
+                  <link.icon className="size-4 shrink-0" aria-hidden />
+                  <span className="truncate">{link.label}</span>
+                </span>
+              ) : (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  data-state="inactive"
+                  className={SIDEBAR_NAV_ITEM_CLASSES}
+                >
+                  <link.icon className="size-4 shrink-0" aria-hidden />
+                  <span className="truncate">{link.label}</span>
+                </Link>
+              )
+            )}
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={onBack}
+            data-state="inactive"
+            className={SIDEBAR_NAV_ITEM_CLASSES}
+          >
+            <ChevronLeft className="size-4 shrink-0" aria-hidden />
+            <span className="truncate">{t('sidebar.back')}</span>
+          </button>
+        )}
       </div>
 
       <div className="shrink-0 pt-2">
         <div className="flex h-9 items-center px-5">
-          <h3 className="decoration-border text-sm font-semibold underline underline-offset-4">
-            {t(selectedItem.subNav!.titleKey)}
+          <h3 className="decoration-muted-foreground/50 text-sm font-semibold underline underline-offset-4">
+            {t(resolvedTitleKey)}
           </h3>
         </div>
       </div>
@@ -316,9 +390,37 @@ export function MobileNavSubLevel({
         clientState={clientState}
         t={t}
         onNavigate={onNavigate}
-        parentHref={selectedItem.activePrefix ?? selectedItem.href}
+        parentHref={parentHref}
         breadcrumbSegments={breadcrumbSegments}
       />
+
+      {isDynamicActive && subPanelBottomLinks && subPanelBottomLinks.length > 0 && (
+        <div className="flex flex-col gap-2 px-2">
+          {subPanelBottomLinks.map((link) =>
+            link.disabled ? (
+              <span
+                key={link.href + link.label}
+                data-state="inactive"
+                className={cn(SIDEBAR_NAV_ITEM_CLASSES, 'pointer-events-none opacity-50')}
+              >
+                <link.icon className="size-4 shrink-0" aria-hidden />
+                <span className="truncate">{link.label}</span>
+              </span>
+            ) : (
+              <Link
+                key={link.href + link.label}
+                href={link.href}
+                data-state="inactive"
+                className={SIDEBAR_NAV_ITEM_CLASSES}
+                onClick={onNavigate}
+              >
+                <link.icon className="size-4 shrink-0" aria-hidden />
+                <span className="truncate">{link.label}</span>
+              </Link>
+            )
+          )}
+        </div>
+      )}
     </>
   );
 }

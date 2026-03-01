@@ -50,6 +50,9 @@
     "settings": "Settings",
     "profile": "Profile",
     "goBack": "Go Back",
+    "backToProjects": "All Projects",
+    "backToProject": "Project Details",
+    "backToSettings": "Settings",
     "loading": "Loading...",
     "dataRefreshed": "Data refreshed",
     "search": "Search...",
@@ -195,14 +198,14 @@
       }
     },
     "bento": {
-      "greeting": "Welcome back, {name}",
+      "greeting": "Welcome, {name}",
       "period": {
         "all": "All"
       },
       "kpi": {
         "totalResponses": "Total Responses",
         "activeSurveys": "Active Surveys",
-        "avgCompletion": "Avg Completion",
+        "avgCompletion": "Avg questions completion",
         "responsesPerDay": "~{avg}/day avg",
         "acrossProjects": "{count, plural, one {across # project} other {across # projects}}",
         "lastNDays": "last {count} days",
@@ -220,8 +223,17 @@
       "charts": {
         "responses": "Responses",
         "responsesOverTime": "Responses Over Time",
-        "completionRate": "Completion Rate",
-        "noData": "No data"
+        "completionOverTime": "Completed over time",
+        "inProgressOverTime": "In progress over time",
+        "surveyEntriesOverTime": "Survey entries over time",
+        "completionRate": "Survey completion rate",
+        "surveyCompletionRate": "Survey completion rate",
+        "noData": "No data for this period",
+        "completion": {
+          "completed": "Completed",
+          "inProgress": "In progress",
+          "abandoned": "Abandoned"
+        }
       },
       "projects": {
         "title": "Your Projects",
@@ -235,6 +247,7 @@
       },
       "pinned": {
         "title": "Pinned Project",
+        "pin": "Pin",
         "unpin": "Unpin",
         "empty": "No project is pinned.",
         "emptyHint": "Pin a project from the list on the right to feature it here.",
@@ -274,7 +287,28 @@
       "noProject": "None (standalone)",
       "saveDraft": "Save Draft",
       "next": "Next",
-      "draftSaved": "Survey draft saved."
+      "draftSaved": "Survey draft saved.",
+      "steps": {
+        "title": {
+          "title": "What's your survey called?",
+          "hint": "Give your survey a clear, descriptive name so you can easily find it later."
+        },
+        "description": {
+          "title": "Describe your survey",
+          "hint": "Explain what this survey is about and what you want to learn from respondents."
+        },
+        "confirm": {
+          "title": "Review and create",
+          "hint": "Check the details below and create your survey. You can always edit them later."
+        }
+      },
+      "stepIndicator": "Step {current} of {total}",
+      "navigation": {
+        "next": "Next",
+        "back": "Back",
+        "createSurvey": "Create Survey"
+      },
+      "success": "Survey created."
     },
     "errors": {
       "fieldRequired": "This field is required.",
@@ -398,6 +432,9 @@
     },
     "stats": {
       "title": "Survey Results",
+      "contextBadge": "Survey",
+      "contextBadgeDescription": "A survey collects responses from your target audience through structured questions. Each survey belongs to a project and helps gather data to validate or invalidate your assumptions.",
+      "contextBadgeAriaLabel": "{status} context badge",
       "overview": "Overview",
       "metricsLabel": "Key metrics",
       "totalResponses": "Total responses",
@@ -425,6 +462,8 @@
       "noResponses": "No responses yet",
       "noResponsesDescription": "Share the survey link to start collecting feedback.",
       "questionBreakdown": "Results by question",
+      "responsesOverTime": "Responses over time",
+      "completionRate": "Survey completion rate",
       "responses": "responses",
       "responsesCount": "{count, plural, =0 {No responses} one {1 response} other {# responses}}",
       "chartResponses": "Responses",
@@ -453,7 +492,7 @@
       "recentResponses": "Recent Responses",
       "viewAnalytics": "View Analytics",
       "avgCompletionTime": "Avg. time",
-      "responseTimeline": "Response timeline",
+      "responseTimeline": "Responses over time",
       "liveIndicator": "Live",
       "insightTopChoice": "Most selected: {option} ({pct}%)",
       "insightTiedChoices": "Tied: {options} ({pct}% each)",
@@ -465,6 +504,11 @@
       "refresh": "Refresh data",
       "moreActions": "More actions",
       "deviceBreakdown": "Device breakdown",
+      "charts": {
+        "completed": "Completed",
+        "inProgress": "In progress",
+        "abandoned": "Abandoned"
+      },
       "deviceDesktop": "Desktop",
       "deviceMobile": "Mobile",
       "deviceTablet": "Tablet",
@@ -549,6 +593,7 @@
         "title": "Alphabetical",
         "status": "Status",
         "questions": "Questions",
+        "completion": "Completion",
         "lastResponse": "Last response",
         "activity": "Activity"
       },
@@ -603,6 +648,7 @@
         "responses": "Responses",
         "views": "Views",
         "participants": "Participants",
+        "started": "Started",
         "inProgress": "In progress",
         "submissionRate": "Submission rate",
         "avgQuestionCompletion": "Avg. question completion",
@@ -676,6 +722,7 @@
         "title": "Title",
         "status": "Status",
         "questions": "Questions",
+        "completion": "Completion",
         "responses": "Responses",
         "lastResponse": "Last response",
         "lastEdited": "Last edited",
@@ -692,6 +739,7 @@
       },
       "clearFilters": "Clear filters",
       "clickHint": "Click row for details",
+      "responseUsageLabel": "responses",
       "refresh": "Refresh",
       "emptyFilter": {
         "title": "No surveys match your filters",
@@ -747,8 +795,10 @@
     "errors": {
       "fieldRequired": "This field is required.",
       "nameTooLong": "Name must be 100 characters or fewer.",
-      "descriptionTooLong": "Description must be 500 characters or fewer.",
+      "summaryTooLong": "Summary must be 280 characters or fewer.",
       "contentTooLong": "Content must be 500 characters or fewer.",
+      "descriptionTooLong": "Description must be 1000 characters or fewer.",
+      "nameAlreadyExists": "You already have a project with this name.",
       "unexpected": "Something went wrong. Please try again."
     },
     "title": "Projects",
@@ -765,12 +815,46 @@
       "name": "Project Name",
       "namePlaceholder": "e.g., AI Writing Assistant",
       "nameCounter": "{count}/{max}",
-      "descriptionLabel": "Description",
-      "descriptionHelper": "A brief summary of what you're researching or validating.",
-      "descriptionPlaceholder": "Describe your project idea or research goal...",
-      "descriptionCounter": "{count}/{max}",
+      "summaryLabel": "Summary",
+      "summaryHelper": "A brief one-liner for what you're researching.",
+      "summaryPlaceholder": "e.g., Validating demand for an AI writing assistant...",
+      "summaryCounter": "{count}/{max}",
       "submit": "Create Project",
-      "success": "Project created successfully."
+      "success": "Project created successfully.",
+      "stepIndicator": "Step {current} of {total}",
+      "steps": {
+        "name": {
+          "title": "What's your project called?",
+          "hint": "Choose a clear, descriptive name that captures the core idea you're exploring. You can always change it later."
+        },
+        "summary": {
+          "title": "Summarize your project",
+          "hint": "Write a brief one-liner that explains what you're researching or validating. Think of it as an elevator pitch."
+        },
+        "description": {
+          "title": "Tell us more about your project",
+          "hint": "Add more context about the problem you're solving, your target audience, or what success looks like. This helps you stay focused as you research.",
+          "label": "Description",
+          "placeholder": "e.g., We're exploring whether freelance designers need a better way to manage client feedback...",
+          "counter": "{count}/{max}"
+        },
+        "confirm": {
+          "title": "Review and create",
+          "hint": "Here's what your project will look like. You can go back to make changes, or create it now."
+        },
+        "image": {
+          "title": "Add a project image",
+          "hint": "Upload a logo or image to help you quickly identify this project. You can always add or change it later.",
+          "successMessage": "Your project has been created!",
+          "skipLabel": "Skip for now",
+          "doneLabel": "Go to project"
+        }
+      },
+      "navigation": {
+        "next": "Continue",
+        "back": "Back",
+        "createProject": "Create Project"
+      }
     },
     "list": {
       "summary": {
@@ -795,7 +879,10 @@
         "created": "Date created",
         "name": "Name",
         "surveys": "Surveys",
+        "activeSurveys": "Active",
         "responses": "Responses",
+        "status": "Status",
+        "activity": "Recent activity",
         "asc": "Ascending",
         "desc": "Descending"
       },
@@ -804,15 +891,36 @@
         "status": "Status",
         "context": "Context",
         "surveys": "Surveys",
+        "activeSurveys": "Active",
         "responses": "Responses",
         "progress": "Progress",
-        "updated": "Updated"
+        "updated": "Updated",
+        "activity": "Activity"
       },
       "card": {
         "surveys": "{count, plural, one {# survey} other {# surveys}}",
+        "activeSurveys": "{count} active",
         "responses": "{count, plural, one {# response} other {# responses}}",
         "progress": "{percent}% validated",
-        "updated": "Updated"
+        "updated": "Updated",
+        "activity": "Activity"
+      },
+      "smartStatus": {
+        "ariaLabel": "Project status: {status}",
+        "survey_ending_soon": "Ending in {count}h",
+        "no_active_surveys": "No active surveys",
+        "has_drafts": "{count, plural, one {# draft survey} other {# draft surveys}}",
+        "collecting_responses": "Collecting responses",
+        "no_surveys": "No surveys yet",
+        "all_complete": "All complete",
+        "description": {
+          "survey_ending_soon": "One of your surveys is about to end soon. Check its progress and decide whether to extend or complete it.",
+          "no_active_surveys": "None of your surveys are currently collecting responses. Activate a draft or create a new survey to continue gathering data.",
+          "has_drafts": "You have draft surveys that haven't been published yet. Review and activate them to start collecting responses.",
+          "collecting_responses": "Your surveys are live and actively collecting responses from participants.",
+          "no_surveys": "This project doesn't have any surveys yet. Create your first survey to start collecting data.",
+          "all_complete": "All surveys in this project have finished collecting responses. Review your findings to draw conclusions."
+        }
       },
       "actions": {
         "moreActions": "More actions",
@@ -868,10 +976,55 @@
       "restoreSuccess": "Project restored.",
       "deleteSuccess": "Project deleted.",
       "searchPlaceholder": "Search surveys...",
+      "research": {
+        "kpi": {
+          "total": "Total",
+          "active": "Active",
+          "completed": "Completed",
+          "draft": "Draft",
+          "cancelled": "Cancelled"
+        },
+        "toolbar": {
+          "filter": "Filter",
+          "sort": "Sort",
+          "newSurvey": "New Survey"
+        },
+        "table": {
+          "title": "Title",
+          "status": "Status",
+          "responses": "Responses",
+          "questions": "Questions",
+          "actions": "Actions"
+        },
+        "sort": {
+          "newest": "Newest first",
+          "oldest": "Oldest first",
+          "mostResponses": "Most responses",
+          "titleAz": "Title A–Z"
+        },
+        "filter": {
+          "allStatuses": "All statuses"
+        },
+        "pagination": {
+          "showing": "Showing {from}–{to} of {total} surveys",
+          "previous": "Previous",
+          "next": "Next"
+        },
+        "actions": {
+          "viewResults": "View results",
+          "share": "Copy share link",
+          "edit": "Edit survey",
+          "linkCopied": "Survey link copied to clipboard."
+        },
+        "noResponses": "—"
+      },
       "noMatchingSurveys": "No matching surveys.",
       "sheetTitle": "Project details",
       "openInFullPage": "Open in full page",
       "detailsLabel": "Details",
+      "created": "Created",
+      "updated": "Last edited",
+      "archivedAt": "Archived at",
       "surveysLabel": "Surveys",
       "actionsLabel": "Actions",
       "context": "Context",
@@ -884,10 +1037,44 @@
       "completedSurveys": "Completed",
       "draftSurveys": "Drafts",
       "archivedBanner": "This project is archived.",
+      "contextBadge": "Project",
+      "contextBadgeDescription": "A project groups related surveys and insights around a single problem or idea you want to validate. It tracks your research progress from initial hypothesis through data collection to a final verdict.",
+      "contextBadgeAriaLabel": "{status} context badge",
+      "settings": "Project Settings",
+      "editName": "Edit project name",
+      "editSummary": "Edit project summary",
+      "changeImage": "Change image",
+      "removeImage": "Remove image",
+      "removeImageConfirmTitle": "Remove project image?",
+      "removeImageConfirmDescription": "The image will be permanently deleted.",
+      "imageUploadFailed": "Failed to upload image. Please try again.",
+      "imageInvalidType": "Only JPEG, PNG, and WebP images are supported.",
+      "imageTooLarge": "Image must be under 5 MB.",
+      "meta": {
+        "created": "Created",
+        "updated": "Updated",
+        "lastResponse": "Last response",
+        "noResponses": "No responses yet"
+      },
+      "about": {
+        "title": "About",
+        "placeholder": "Describe what this project is about…",
+        "saving": "Saving…",
+        "saved": "Saved",
+        "failed": "Failed to save",
+        "showMore": "Show more",
+        "showLess": "Show less",
+        "edit": "Edit",
+        "saveChanges": "Save changes",
+        "cancel": "Cancel",
+        "editingMode": "Editing…"
+      },
       "tabs": {
         "overview": "Overview",
         "surveys": "Surveys",
-        "insights": "Insights"
+        "research": "Research",
+        "insights": "Insights",
+        "notes": "Notes"
       },
       "kpi": {
         "surveys": "Surveys",
@@ -896,6 +1083,74 @@
         "insights": "Insights",
         "completion": "Completion",
         "completionSubtitle": "{completed} of {total} completed"
+      },
+      "metrics": {
+        "sectionLabel": "Metrics",
+        "totalSurveys": "Total Surveys",
+        "activeSurveys": "Active Surveys",
+        "totalResponses": "Total Responses",
+        "avgCompletion": "Avg Completion",
+        "avgTime": "Avg Time",
+        "lastResponse": "Last Response"
+      },
+      "charts": {
+        "responseTimeline": "Responses over time",
+        "responses": "Responses",
+        "surveyStatus": "Survey Status",
+        "draft": "Draft",
+        "active": "Active",
+        "completedStatus": "Completed",
+        "completionRate": "Survey completion rate",
+        "completed": "Completed",
+        "inProgress": "In Progress",
+        "abandoned": "Abandoned",
+        "noData": "No data available"
+      },
+      "recentActivity": {
+        "title": "Recent Activity",
+        "empty": "No recent activity",
+        "type": {
+          "response": "New response",
+          "survey_completed": "Survey completed",
+          "survey_activated": "Survey activated"
+        }
+      },
+      "notes": {
+        "placeholder": "Write your project notes here...",
+        "saving": "Saving...",
+        "saved": "Saved",
+        "notSaved": "Not saved",
+        "failed": "Failed to save",
+        "newNotePlaceholder": "Note title...",
+        "pinned": "Pinned",
+        "folders": "Folders",
+        "unfiled": "Notes",
+        "trash": "Trash",
+        "newFolder": "New folder",
+        "folderNamePlaceholder": "Folder name...",
+        "selectNote": "Select a note",
+        "selectNoteDescription": "Choose a note from the sidebar to start editing.",
+        "pin": "Pin",
+        "unpin": "Unpin",
+        "duplicate": "Duplicate",
+        "moveToFolder": "Move to folder",
+        "removeFromFolder": "Remove from folder",
+        "delete": "Move to trash",
+        "restore": "Restore",
+        "permanentlyDelete": "Delete permanently",
+        "emptyTrash": "Empty trash",
+        "renameFolder": "Rename",
+        "deleteFolder": "Delete folder",
+        "confirmDeleteFolder": "Delete folder?",
+        "confirmDeleteFolderDescription": "Notes in this folder will be moved to Unfiled.",
+        "confirmPermanentDelete": "Delete permanently?",
+        "confirmPermanentDeleteDescription": "This note will be permanently deleted and cannot be recovered.",
+        "confirmEmptyTrash": "Empty trash?",
+        "confirmEmptyTrashDescription": "All notes in trash will be permanently deleted.",
+        "untitled": "Untitled",
+        "copyPrefix": "Copy of",
+        "searchPlaceholder": "Search notes...",
+        "back": "Back to notes"
       },
       "quickActions": {
         "title": "Quick Actions",
@@ -906,8 +1161,8 @@
         "meta": "{surveys, plural, one {# survey} other {# surveys}} · {responses, plural, one {# response} other {# responses}}"
       },
       "empty": {
-        "title": "Start your research journey",
-        "description": "Create your first survey to begin collecting data and validating your assumptions.",
+        "title": "No data yet",
+        "description": "Create your first survey to start seeing analytics and insights here.",
         "noSurveys": "No surveys yet",
         "noSurveysDescription": "Create a survey to start collecting responses from your target audience.",
         "noInsights": "Signals will appear automatically as you collect survey responses. You can also add manual notes.",
@@ -921,14 +1176,15 @@
       "validated": "Validated"
     },
     "phases": {
-      "idea": "Idea",
-      "ideaDescription": "Defining the problem and hypothesis",
-      "research": "Research",
-      "researchDescription": "Gathering data through surveys",
-      "validation": "Validation",
-      "validationDescription": "Confirming findings with additional research",
-      "decision": "Decision",
-      "decisionDescription": "Making go/no-go decisions based on evidence",
+      "ariaLabel": "Research phase: {status}",
+      "idea": "Problem Discovery",
+      "ideaDescription": "Defining the problem and hypothesis. Focus on understanding your target audience's pain points before jumping to solutions.",
+      "research": "Solution Validation",
+      "researchDescription": "Gathering data through surveys. Create surveys to test your hypothesis and collect evidence from potential users.",
+      "validation": "Market Validation",
+      "validationDescription": "Confirming findings with additional research. Cross-validate your earlier findings with a broader audience to build confidence.",
+      "decision": "Launch Readiness",
+      "decisionDescription": "Making go/no-go decisions based on evidence. Review all collected data to decide whether to proceed, pivot, or stop.",
       "label": "Research Phase",
       "placeholder": "Select a phase...",
       "noPhase": "No phase",
@@ -952,7 +1208,7 @@
       "strengths": "Strengths",
       "opportunities": "Opportunities",
       "threats": "Threats",
-      "decisions": "Decisions & Next Steps",
+      "decisions": "Decisions",
       "emptyStrengths": "No strengths identified yet.",
       "emptyOpportunities": "No opportunities identified yet.",
       "emptyThreats": "No threats identified yet.",
@@ -960,17 +1216,132 @@
       "addNote": "Add note",
       "noteBadge": "note",
       "contentPlaceholder": "Write your observation or decision...",
-      "createSuccess": "Note added.",
-      "updateSuccess": "Note updated.",
-      "deleteSuccess": "Note deleted.",
+      "createSuccess": "Insight added.",
+      "updateSuccess": "Insight updated.",
+      "deleteSuccess": "Insight deleted.",
       "saveNote": "Save",
       "cancelNote": "Cancel",
-      "confirmDeleteTitle": "Delete note?",
-      "confirmDeleteDescription": "This note will be permanently deleted.",
+      "confirmDeleteTitle": "Delete insight?",
+      "confirmDeleteDescription": "This insight will be permanently deleted.",
       "confirmDeleteAction": "Delete",
       "selectType": "Type",
-      "editNote": "Edit note",
-      "deleteNote": "Delete note"
+      "editNote": "Edit",
+      "deleteNote": "Delete"
+    },
+    "insights": {
+      "addInsight": "Add Insight",
+      "addInsightsHere": "Add insights here",
+      "movedTo": "Moved to {type}",
+      "moveTo": "Move to",
+      "emptyTitle": "No insights yet",
+      "emptyDescription": "Capture your research findings as strengths, opportunities, threats, and decisions to build your project scorecard.",
+      "emptyCta": "Add First Insight",
+      "types": {
+        "strength": "Strength",
+        "opportunity": "Opportunity",
+        "threat": "Threat",
+        "decision": "Decision"
+      }
+    },
+    "verdict": {
+      "confidence": "{current} of {target} responses collected",
+      "ariaLabel": "Verdict status: {status}",
+      "noData": {
+        "label": "No Data",
+        "summary": "Start collecting responses to see how your idea stacks up.",
+        "description": "No responses have been collected yet. Once data starts coming in, the system will analyze it and provide a verdict on your idea's viability."
+      },
+      "exploring": {
+        "label": "Exploring",
+        "summary": "Early data is coming in — keep collecting responses to strengthen your confidence.",
+        "description": "Early responses are being analyzed. The data is still inconclusive — keep collecting responses to build a stronger signal."
+      },
+      "exploringLow": {
+        "summary": "You have some responses but not enough signals yet. Keep going!"
+      },
+      "promising": {
+        "label": "Promising",
+        "summary": "The data looks positive so far. Your idea is showing signs of product-market fit.",
+        "description": "Collected responses indicate positive interest in your idea. The data is trending towards validation, but more responses will strengthen confidence."
+      },
+      "needsAttention": {
+        "label": "Needs Attention",
+        "summary": "Some concerning signals have appeared. Review your findings to understand the risks.",
+        "description": "The data reveals mixed or negative signals. Review your survey findings and consider adjusting your approach or hypothesis."
+      },
+      "validated": {
+        "label": "Validated",
+        "summary": "Strong evidence supports this idea. The data consistently points to real demand.",
+        "description": "Strong, consistent evidence from responses supports your idea. The data indicates real demand and product-market fit potential."
+      },
+      "invalidated": {
+        "label": "Invalidated",
+        "summary": "The data suggests this idea may not have enough demand. Consider pivoting.",
+        "description": "The collected data consistently indicates insufficient demand or interest. Consider pivoting your approach or exploring a different problem space."
+      },
+      "moreData": {
+        "summary": "Collecting more responses will help paint a clearer picture."
+      }
+    },
+    "overview": {
+      "responses": "Responses",
+      "surveys": "Surveys",
+      "completion": "Questions Completion",
+      "completionSub": "{completed} of {total} completed",
+      "active": "active",
+      "draft": "draft",
+      "completed": "completed",
+      "last7d": "7d",
+      "responseTrend": "Responses Over Time",
+      "noResponses": "No responses yet",
+      "surveyBreakdown": "Survey Progress",
+      "createFirstSurvey": "Create your first survey to start collecting data",
+      "recentActivity": "Recent Activity",
+      "noActivity": "No activity yet — publish a survey to get started",
+      "activityType": {
+        "response": "New response",
+        "survey_completed": "Survey completed",
+        "survey_activated": "Survey published"
+      }
+    },
+    "journey": {
+      "sectionLabel": "Research Journey",
+      "aggregate": "{current} of {target} target responses"
+    },
+    "keyFindings": {
+      "sectionLabel": "Key Findings",
+      "empty": "No findings yet. Collect survey responses or add insights to see key findings here.",
+      "viewAll": "View all insights",
+      "autoBadge": "auto",
+      "yesNo": "{percent}% said yes to \"{question}\"",
+      "rating": "Avg {avg}/{max} for \"{question}\"",
+      "multipleChoice": "{percent}% chose \"{option}\" for \"{question}\"",
+      "completionRate": "{percent}% completion for \"{survey}\""
+    },
+    "nextStep": {
+      "action": "Go",
+      "createSurvey": "Create your first survey to start collecting data.",
+      "activateSurvey": "You have draft surveys ready. Activate one to start collecting responses.",
+      "shareSurvey": "Share your active survey to get more responses and strengthen your data.",
+      "reviewFindings": "You have enough responses to review. Check your findings and add insights.",
+      "makeDecision": "You have solid data and insights. Time to make a go/no-go decision.",
+      "continue": "Keep collecting responses to build even stronger confidence."
+    },
+    "compactStats": {
+      "responses": "responses",
+      "activeSurveys": "active surveys",
+      "lastResponse": "Last response",
+      "never": "never"
+    },
+    "activityFeed": {
+      "sectionLabel": "Recent Activity",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "newResponses": "{count, plural, one {# new response} other {# new responses}}"
+    },
+    "edit": {
+      "targetResponses": "Target Responses",
+      "targetResponsesHelper": "How many responses do you want to collect before making a decision?"
     }
   },
   "respondent": {
@@ -1042,6 +1413,7 @@
     "allProjects": "All projects",
     "newProject": "New project",
     "research": "Research",
+    "standaloneResearch": "Standalone research",
     "surveys": "Surveys",
     "allSurveys": "All surveys",
     "newSurvey": "New survey",
@@ -1050,8 +1422,12 @@
     "pinSidebar": "Pin sidebar",
     "unpinSidebar": "Unpin sidebar",
     "back": "Back",
-    "dynamicHeading": "Dynamic",
-    "profilePreview": "Profile"
+    "projectDetails": "Project Details",
+    "surveyDetails": "Survey Details",
+    "profilePreview": "Profile",
+    "askAi": "Ask AI",
+    "giveFeedback": "Give Feedback",
+    "shareFeedback": "Share Feedback"
   },
   "breadcrumbs": {
     "dashboard": "Dashboard",
@@ -1275,10 +1651,10 @@
       "submit": "Continue"
     },
     "nav": {
-      "profile": "Profile",
-      "email": "Email",
-      "password": "Password",
-      "connectedAccounts": "Accounts",
+      "profile": "Profile Information",
+      "email": "Email Address",
+      "password": "Change Password",
+      "connectedAccounts": "Connected Accounts",
       "dangerZone": "Danger Zone",
       "label": "Settings section"
     },

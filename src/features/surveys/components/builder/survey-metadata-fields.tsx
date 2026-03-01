@@ -15,36 +15,28 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { CreateProjectInlineDialog } from '@/features/projects/components/create-project-inline-dialog';
-import { PHASE_CONFIG } from '@/features/projects/config/phases';
-import { RESEARCH_PHASES } from '@/features/projects/types';
 import type { ProjectOption } from '@/features/surveys/actions';
 import { SURVEY_DESCRIPTION_MAX_LENGTH, SURVEY_TITLE_MAX_LENGTH } from '@/features/surveys/config';
 import type { SurveyMetadataSchema } from '@/features/surveys/types';
-import type { MessageKey } from '@/i18n/types';
-import { cn } from '@/lib/common/utils';
 
 /** Sentinel value for "no project" in combobox. */
 const NO_PROJECT_VALUE = '__none__';
 
-/** Sentinel value for "no phase" in select. */
-const NO_PHASE_VALUE = '__no_phase__';
-
 interface SurveyMetadataFieldsProps {
   form: UseFormReturn<SurveyMetadataSchema>;
   projectOptions: ProjectOption[];
+  /** Hide the project combobox and "Create Project" link (used in project context). */
+  hideProjectField?: boolean | undefined;
 }
 
-export function SurveyMetadataFields({ form, projectOptions }: SurveyMetadataFieldsProps) {
+export function SurveyMetadataFields({
+  form,
+  projectOptions,
+  hideProjectField,
+}: SurveyMetadataFieldsProps) {
   const t = useTranslations();
   const [localProjectOptions, setLocalProjectOptions] = useState<ProjectOption[]>(projectOptions);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -60,7 +52,6 @@ export function SurveyMetadataFields({ form, projectOptions }: SurveyMetadataFie
     (value: string) => {
       if (value === NO_PROJECT_VALUE) {
         form.setValue('projectId', null, { shouldDirty: true });
-        form.setValue('researchPhase', null, { shouldDirty: true });
 
         return;
       }
@@ -167,88 +158,49 @@ export function SurveyMetadataFields({ form, projectOptions }: SurveyMetadataFie
         )}
       />
 
-      <FormField
-        control={form.control}
-        name="projectId"
-        render={({ fieldState }) => (
-          <FormItem>
-            <FormLabel>{t('surveys.create.project')}</FormLabel>
-            <FormDescription>{t('surveys.create.projectHelper')}</FormDescription>
+      {!hideProjectField && (
+        <>
+          <FormField
+            control={form.control}
+            name="projectId"
+            render={({ fieldState }) => (
+              <FormItem>
+                <FormLabel>{t('surveys.create.project')}</FormLabel>
+                <FormDescription>{t('surveys.create.projectHelper')}</FormDescription>
 
-            <FormControl>
-              <Combobox
-                options={comboboxOptions}
-                value={selectedProjectId ?? NO_PROJECT_VALUE}
-                onValueChange={handleProjectChange}
-                placeholder={t('surveys.create.projectPlaceholder')}
-                searchPlaceholder={t('common.search')}
-                emptyMessage={t('common.noResults')}
-                aria-label={t('surveys.create.project')}
-                aria-invalid={!!fieldState.error}
-              />
-            </FormControl>
+                <FormControl>
+                  <Combobox
+                    options={comboboxOptions}
+                    value={selectedProjectId ?? NO_PROJECT_VALUE}
+                    onValueChange={handleProjectChange}
+                    placeholder={t('surveys.create.projectPlaceholder')}
+                    searchPlaceholder={t('common.search')}
+                    emptyMessage={t('common.noResults')}
+                    aria-label={t('surveys.create.project')}
+                    aria-invalid={!!fieldState.error}
+                  />
+                </FormControl>
 
-            <button
-              type="button"
-              onClick={() => setCreateDialogOpen(true)}
-              className="text-muted-foreground hover:text-foreground text-sm underline underline-offset-2 transition-colors"
-            >
-              {t('surveys.create.newProject')}
-            </button>
-
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      {selectedProjectId && (
-        <FormField
-          control={form.control}
-          name="researchPhase"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('projects.phases.label')}</FormLabel>
-
-              <FormControl>
-                <Select
-                  value={field.value ?? NO_PHASE_VALUE}
-                  onValueChange={(v) => field.onChange(v === NO_PHASE_VALUE ? null : v)}
+                <button
+                  type="button"
+                  onClick={() => setCreateDialogOpen(true)}
+                  className="text-muted-foreground hover:text-foreground text-sm underline underline-offset-2 transition-colors"
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder={t('projects.phases.placeholder')} />
-                  </SelectTrigger>
+                  {t('surveys.create.newProject')}
+                </button>
 
-                  <SelectContent>
-                    <SelectItem value={NO_PHASE_VALUE}>{t('projects.phases.noPhase')}</SelectItem>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-                    {RESEARCH_PHASES.map((phase) => {
-                      const config = PHASE_CONFIG[phase];
-                      const PhaseIcon = config.icon;
-
-                      return (
-                        <SelectItem key={phase} value={phase}>
-                          <span className="flex items-center gap-2">
-                            <PhaseIcon className={cn('size-4', config.colors.icon)} />
-                            {t(config.labelKey as MessageKey)}
-                          </span>
-                        </SelectItem>
-                      );
-                    })}
-                  </SelectContent>
-                </Select>
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <CreateProjectInlineDialog
+            open={createDialogOpen}
+            onOpenChange={setCreateDialogOpen}
+            onCreated={handleProjectCreated}
+          />
+        </>
       )}
-
-      <CreateProjectInlineDialog
-        open={createDialogOpen}
-        onOpenChange={setCreateDialogOpen}
-        onCreated={handleProjectCreated}
-      />
     </>
   );
 }

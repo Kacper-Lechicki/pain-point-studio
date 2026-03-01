@@ -59,6 +59,9 @@ function chain(result: { data?: unknown; error?: unknown } = {}) {
   });
 }
 
+/** Chain that resolves the duplicate-check SELECT with no match. */
+const noDuplicateChain = () => chain({ data: null });
+
 const PROJECT_ID = '00000000-0000-4000-8000-000000000001';
 const USER = { id: 'user-123', email: 'test@example.com' };
 
@@ -73,14 +76,14 @@ describe('Project Actions – Update Project', () => {
   it('should update project and return success', async () => {
     const updateChain = chain({ data: { id: PROJECT_ID } });
 
-    mockFrom.mockReturnValue(updateChain);
+    mockFrom.mockReturnValueOnce(noDuplicateChain()).mockReturnValueOnce(updateChain);
 
     const { updateProject } = await import('./update-project');
 
     const result = await updateProject({
       projectId: PROJECT_ID,
       name: 'Updated Name',
-      description: 'Updated desc',
+      summary: 'Updated desc',
     });
 
     expect(result).toEqual({ success: true });
@@ -89,39 +92,37 @@ describe('Project Actions – Update Project', () => {
     expect(updateChain.update).toHaveBeenCalledWith(
       expect.objectContaining({
         name: 'Updated Name',
-        description: 'Updated desc',
+        summary: 'Updated desc',
       })
     );
   });
 
-  it('should convert empty description to null', async () => {
-    const updateChain = chain({ data: { id: PROJECT_ID } });
-
-    mockFrom.mockReturnValue(updateChain);
+  it('should return error when another project has the same name', async () => {
+    mockFrom.mockReturnValueOnce(chain({ data: { id: 'other-project-id' } }));
 
     const { updateProject } = await import('./update-project');
 
-    await updateProject({
+    const result = await updateProject({
       projectId: PROJECT_ID,
-      name: 'Name',
-      description: '',
+      name: 'Existing Name',
+      summary: 'Some summary',
     });
 
-    expect(updateChain.update).toHaveBeenCalledWith(
-      expect.objectContaining({
-        description: null,
-      })
-    );
+    expect(result).toHaveProperty('error', 'projects.errors.nameAlreadyExists');
+    expect(mockFrom).toHaveBeenCalledTimes(1);
   });
 
   it('should return error when no matching row', async () => {
-    mockFrom.mockReturnValue(chain({ data: null, error: null }));
+    mockFrom
+      .mockReturnValueOnce(noDuplicateChain())
+      .mockReturnValueOnce(chain({ data: null, error: null }));
 
     const { updateProject } = await import('./update-project');
 
     const result = await updateProject({
       projectId: PROJECT_ID,
       name: 'Name',
+      summary: 'Some summary',
     });
 
     expect(result).toHaveProperty('error', 'projects.errors.unexpected');
@@ -133,6 +134,19 @@ describe('Project Actions – Update Project', () => {
     const result = await updateProject({
       projectId: 'not-a-uuid',
       name: '',
+    });
+
+    expect(result.error).toBeDefined();
+    expect(mockFrom).not.toHaveBeenCalled();
+  });
+
+  it('should return validation error for missing summary', async () => {
+    const { updateProject } = await import('./update-project');
+
+    const result = await updateProject({
+      projectId: PROJECT_ID,
+      name: 'Name',
+      summary: '',
     });
 
     expect(result.error).toBeDefined();

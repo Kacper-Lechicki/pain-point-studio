@@ -13,15 +13,20 @@ export const createSurveyDraft = withProtectedAction<
   rateLimit: RATE_LIMITS.bulkCreate,
   action: async ({ data, user, supabase }) => {
     if (data.surveyId) {
+      const updatePayload: Record<string, unknown> = {
+        title: data.title,
+        description: data.description,
+        visibility: data.visibility,
+        research_phase: data.researchPhase ?? null,
+      };
+
+      if (data.projectId) {
+        updatePayload.project_id = data.projectId;
+      }
+
       const { data: row, error } = await supabase
         .from('surveys')
-        .update({
-          title: data.title,
-          description: data.description,
-          visibility: data.visibility,
-          project_id: data.projectId ?? null,
-          research_phase: data.researchPhase ?? null,
-        })
+        .update(updatePayload)
         .eq('id', data.surveyId)
         .eq('user_id', user.id)
         .eq('status', 'draft')
@@ -39,6 +44,10 @@ export const createSurveyDraft = withProtectedAction<
       return { success: true, data: { surveyId: row.id } };
     }
 
+    if (!data.projectId) {
+      return { error: 'surveys.errors.unexpected' };
+    }
+
     const { data: survey, error } = await supabase
       .from('surveys')
       .insert({
@@ -47,7 +56,7 @@ export const createSurveyDraft = withProtectedAction<
         description: data.description,
         visibility: data.visibility,
         status: 'draft',
-        project_id: data.projectId ?? null,
+        project_id: data.projectId,
         research_phase: data.researchPhase ?? null,
       })
       .select('id')

@@ -62,7 +62,9 @@ function makeProject(overrides: Record<string, unknown> = {}) {
     id: crypto.randomUUID(),
     user_id: USER.id,
     name: 'Test Project',
+    summary: null,
     description: null,
+    image_url: null,
     status: 'active',
     archived_at: null,
     created_at: new Date().toISOString(),
@@ -142,6 +144,7 @@ describe('getProjects', () => {
     expect(result?.[0]).toMatchObject({
       id: 'proj-1',
       surveyCount: 2,
+      activeSurveyCount: 0,
       responseCount: 13,
     });
   });

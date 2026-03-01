@@ -30,15 +30,6 @@ export const PATHNAMES = {
   '/profile/preview': {
     en: '/profile/preview',
   },
-  '/dashboard/research': {
-    en: '/dashboard/research',
-  },
-  '/dashboard/research/new': {
-    en: '/dashboard/research/new',
-  },
-  '/dashboard/research/archive': {
-    en: '/dashboard/research/archive',
-  },
   '/dashboard/projects': {
     en: '/dashboard/projects',
   },

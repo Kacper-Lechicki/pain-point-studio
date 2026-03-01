@@ -1,5 +1,7 @@
 import { redirect } from 'next/navigation';
 
+import { getTranslations } from 'next-intl/server';
+
 import { PageTransition } from '@/components/ui/page-transition';
 import { ROUTES } from '@/config';
 import { DashboardPageBack } from '@/features/dashboard/components/layout/dashboard-page-back';
@@ -8,7 +10,7 @@ import type { ProfilePreviewData } from '@/features/profile/types';
 import { getProfile } from '@/features/settings/actions';
 
 export default async function ProfilePreviewRoute() {
-  const profile = await getProfile();
+  const [profile, t] = await Promise.all([getProfile(), getTranslations()]);
 
   if (!profile) {
     redirect(ROUTES.auth.signIn);
@@ -27,7 +29,7 @@ export default async function ProfilePreviewRoute() {
 
   return (
     <>
-      <DashboardPageBack />
+      <DashboardPageBack href={ROUTES.settings.profile} label={t('common.backToSettings')} />
 
       <PageTransition>
         <ProfileView profile={previewData} isPreview />

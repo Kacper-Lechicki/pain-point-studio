@@ -1,7 +1,8 @@
+import { MousePointerClick } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { ProjectStatusFilter } from '@/features/projects/components/project-list-toolbar';
-import { PROJECT_STATUS_CONFIG } from '@/features/projects/config/status';
+import { KPI_COLOR_ALL, PROJECT_STATUS_CONFIG } from '@/features/projects/config/status';
 import type { MessageKey } from '@/i18n/types';
 import { cn } from '@/lib/common/utils';
 
@@ -17,48 +18,42 @@ export function ProjectListKpi({ statusCounts, kpiStatuses }: ProjectListKpiProp
     return null;
   }
 
+  const total = Object.values(statusCounts).reduce((sum, n) => sum + n, 0);
+
   return (
-    <div className="flex min-w-0 flex-wrap items-center justify-between gap-x-4 gap-y-1">
-      <div className="text-muted-foreground flex min-w-0 flex-wrap items-center gap-x-3 text-xs">
-        <span>
-          <span className="text-foreground text-base font-semibold tabular-nums">
-            {Object.values(statusCounts).reduce((sum, n) => sum + n, 0)}
-          </span>
-
-          <span className="ml-1">{t('projects.list.summary.totalLabel')}</span>
+    <section className="flex min-w-0 flex-col gap-3">
+      <div className="flex min-w-0 flex-wrap gap-2">
+        <span
+          className={cn(
+            'border-border/60 bg-muted/40 inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs tabular-nums',
+            KPI_COLOR_ALL
+          )}
+        >
+          <span className="font-semibold">{total}</span>
+          <span className="text-muted-foreground">{t('projects.list.summary.totalLabel')}</span>
         </span>
-
-        <span className="text-border" aria-hidden>
-          /
-        </span>
-
-        {kpiStatuses.map((status, i) => (
-          <span key={status} className="flex shrink-0 items-center gap-x-3">
-            {i > 0 && (
-              <span className="text-border" aria-hidden>
-                /
-              </span>
+        {kpiStatuses.map((status) => (
+          <span
+            key={status}
+            className={cn(
+              'border-border/60 bg-muted/40 inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs tabular-nums',
+              PROJECT_STATUS_CONFIG[status as keyof typeof PROJECT_STATUS_CONFIG]?.kpiColor
             )}
-
-            <span>
-              <span
-                className={cn(
-                  'text-base font-semibold tabular-nums',
-                  PROJECT_STATUS_CONFIG[status as keyof typeof PROJECT_STATUS_CONFIG]?.kpiColor
-                )}
-              >
-                {statusCounts[status] ?? 0}
-              </span>
-
-              <span className="ml-1">{t(`projects.list.status.${status}` as MessageKey)}</span>
+          >
+            <span className="font-semibold">{statusCounts[status] ?? 0}</span>
+            <span className="text-muted-foreground">
+              {t(`projects.list.status.${status}` as MessageKey)}
             </span>
           </span>
         ))}
       </div>
 
-      <span className="text-muted-foreground hidden items-center gap-1 text-[11px] md:flex">
-        {t('projects.list.clickHint')}
-      </span>
-    </div>
+      <div className="flex min-w-0 flex-wrap items-center justify-between gap-2">
+        <span className="text-muted-foreground flex items-center gap-1.5 text-[11px]" aria-hidden>
+          <MousePointerClick className="size-3 shrink-0" />
+          {t('projects.list.clickHint')}
+        </span>
+      </div>
+    </section>
   );
 }

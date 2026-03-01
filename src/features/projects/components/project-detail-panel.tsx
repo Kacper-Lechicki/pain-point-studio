@@ -10,7 +10,6 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { MetricRow, SectionLabel } from '@/components/ui/metric-display';
 import { SearchInput } from '@/components/ui/search-input';
 import { Separator } from '@/components/ui/separator';
-import { ROUTES } from '@/config/routes';
 import type { ProjectDetail } from '@/features/projects/actions/get-project';
 import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
 import { ProjectActionButtons } from '@/features/projects/components/project-action-buttons';
@@ -103,9 +102,9 @@ export function ProjectDetailPanel({
         </Button>
       </div>
 
-      {project.description && (
+      {project.summary && (
         <p className="text-muted-foreground mt-2.5 line-clamp-3 text-xs leading-relaxed">
-          {project.description}
+          {project.summary}
         </p>
       )}
 
@@ -167,7 +166,7 @@ export function ProjectDetailPanel({
           description={t('projects.detail.noSurveysDescription')}
           action={
             <Button variant="default" size="sm" className="h-7 text-xs" asChild>
-              <Link href={ROUTES.dashboard.researchNew}>
+              <Link href={`${getProjectDetailUrl(project.id)}?tab=surveys`}>
                 <Plus className="size-3.5" aria-hidden />
                 {t('projects.detail.createSurvey')}
               </Link>

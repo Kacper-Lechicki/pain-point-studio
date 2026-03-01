@@ -24,8 +24,8 @@ export function DashboardProjectCard({ project }: DashboardProjectCardProps) {
       <div className="min-w-0">
         <span className="text-foreground block truncate text-sm font-semibold">{project.name}</span>
 
-        {project.description && (
-          <p className="text-muted-foreground mt-0.5 line-clamp-1 text-xs">{project.description}</p>
+        {project.summary && (
+          <p className="text-muted-foreground mt-0.5 line-clamp-1 text-xs">{project.summary}</p>
         )}
       </div>
 

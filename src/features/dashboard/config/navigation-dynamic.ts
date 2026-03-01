@@ -1,10 +1,4 @@
-import {
-  BarChart3,
-  CircleUserRound,
-  ClipboardList,
-  FolderKanban,
-  type LucideIcon,
-} from 'lucide-react';
+import { FlaskConical, FolderKanban, type LucideIcon } from 'lucide-react';
 
 import type { AppRoute } from '@/config/routes';
 import { ROUTES } from '@/config/routes';
@@ -21,22 +15,22 @@ export interface DynamicRouteTab {
    * matching known static child routes like `new`, `archive`, etc.
    */
   excludeSegments?: readonly string[] | undefined;
+  /** Sub-panel title override when this dynamic route is active. Falls back to parent nav item's titleKey. */
+  titleKey?: MessageKey | undefined;
 }
 
 export const DYNAMIC_ROUTE_TABS: Record<string, DynamicRouteTab[]> = {
-  [ROUTES.dashboard.research]: [
-    { prefix: ROUTES.dashboard.researchStats, icon: BarChart3 },
-    {
-      prefix: ROUTES.dashboard.research,
-      icon: ClipboardList,
-      excludeSegments: ['new', 'archive'],
-    },
-  ],
   [ROUTES.dashboard.projects]: [
     {
       prefix: ROUTES.dashboard.projects,
       icon: FolderKanban,
       excludeSegments: ['new'],
+      titleKey: 'sidebar.projectDetails',
+    },
+    {
+      prefix: ROUTES.dashboard.researchStats,
+      icon: FlaskConical,
+      titleKey: 'sidebar.surveyDetails',
     },
   ],
 };
@@ -54,6 +48,4 @@ export interface DynamicSidebarItem {
  * Routes that are not part of the static sidebar but should still
  * show a highlighted item when the user is on them.
  */
-export const DYNAMIC_SIDEBAR_ITEMS: DynamicSidebarItem[] = [
-  { path: ROUTES.profile.preview, labelKey: 'sidebar.profilePreview', icon: CircleUserRound },
-];
+export const DYNAMIC_SIDEBAR_ITEMS: DynamicSidebarItem[] = [];

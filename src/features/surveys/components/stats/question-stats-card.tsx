@@ -37,9 +37,9 @@ export const QuestionStatsCard = ({ question, index }: QuestionStatsCardProps) =
   const renderChart = () => {
     switch (question.type) {
       case 'open_text':
-        return <TextAnswersList answers={question.answers} questionText={question.text} />;
+        return <TextAnswersList answers={question.answers} />;
       case 'short_text':
-        return <ShortTextChart answers={question.answers} questionText={question.text} />;
+        return <ShortTextChart answers={question.answers} />;
       case 'multiple_choice':
         return <ChoiceDistributionChart answers={question.answers} />;
       case 'rating_scale':
@@ -52,8 +52,8 @@ export const QuestionStatsCard = ({ question, index }: QuestionStatsCardProps) =
   };
 
   return (
-    <div className="border-border rounded-lg border border-dashed px-4 py-3 sm:px-5 sm:py-4">
-      <p className="text-foreground text-xs leading-snug font-medium sm:text-sm">
+    <div className="border-border/70 bg-card rounded-lg border px-4 py-3 shadow-sm sm:px-5 sm:py-4">
+      <p className="text-foreground text-sm leading-snug font-semibold sm:text-base">
         <span className="text-muted-foreground tabular-nums">{index + 1}. </span>
         {question.text || '—'}
       </p>
@@ -75,9 +75,9 @@ export const QuestionStatsCard = ({ question, index }: QuestionStatsCardProps) =
       <div className="mt-3">{renderChart()}</div>
 
       {insight && (
-        <div className="mt-3 flex items-start gap-2 rounded-md border border-dashed border-amber-500/40 px-3 py-2">
+        <div className="mt-6 flex items-start gap-2 rounded-md border border-l-4 border-amber-200 border-l-amber-500 bg-amber-50 px-3 py-2.5 dark:border-amber-800/40 dark:border-l-amber-500 dark:bg-amber-950/20">
           <Lightbulb className="mt-0.5 size-3.5 shrink-0 text-amber-500" aria-hidden />
-          <p className="text-muted-foreground text-xs leading-relaxed font-semibold">{insight}</p>
+          <p className="text-foreground/80 text-xs leading-relaxed font-medium">{insight}</p>
         </div>
       )}
     </div>

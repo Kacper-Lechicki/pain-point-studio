@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
+import { useRouter } from 'next/navigation';
+
 import { FolderKanban } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -10,23 +12,25 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ListPagination } from '@/components/ui/list-pagination';
 import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
+import type { ProjectsListExtrasMap } from '@/features/projects/actions/get-projects-list-extras';
 import { ProjectCardRow } from '@/features/projects/components/project-card-row';
-import { ProjectDetailSheet } from '@/features/projects/components/project-detail-sheet';
 import { ProjectListKpi } from '@/features/projects/components/project-list-kpi';
 import { ProjectListTable } from '@/features/projects/components/project-list-table';
 import { ProjectListToolbar } from '@/features/projects/components/project-list-toolbar';
 import { useProjectListActions } from '@/features/projects/hooks/use-project-list-actions';
 import { useProjectListState } from '@/features/projects/hooks/use-project-list-state';
-import { useProjectSelection } from '@/features/projects/hooks/use-project-selection';
+import { getProjectDetailUrl } from '@/features/projects/lib/project-urls';
 
 import { EditProjectDialog } from './edit-project-dialog';
 
 interface ProjectsListPageProps {
   projects: ProjectWithMetrics[];
+  extras?: ProjectsListExtrasMap | null | undefined;
 }
 
-export function ProjectsListPage({ projects }: ProjectsListPageProps) {
+export function ProjectsListPage({ projects, extras }: ProjectsListPageProps) {
   const t = useTranslations();
+  const router = useRouter();
 
   const [localProjects, setLocalProjects] = useState(projects);
 
@@ -35,7 +39,6 @@ export function ProjectsListPage({ projects }: ProjectsListPageProps) {
   }, [projects]);
 
   const {
-    now,
     isMd,
     searchQuery,
     setSearchQuery,
@@ -52,10 +55,7 @@ export function ProjectsListPage({ projects }: ProjectsListPageProps) {
     isFiltered,
     statusCounts,
     kpiStatuses,
-  } = useProjectListState(localProjects);
-
-  const { selectedId, selectedProject, projectDetail, showSheet, setSelected } =
-    useProjectSelection(localProjects);
+  } = useProjectListState(localProjects, extras);
 
   const {
     editProject,
@@ -65,13 +65,18 @@ export function ProjectsListPage({ projects }: ProjectsListPageProps) {
     handleEditSuccess,
     handleConfirm,
     confirmDialogProps,
-  } = useProjectListActions({ localProjects, setLocalProjects, selectedId, setSelected });
+  } = useProjectListActions({
+    localProjects,
+    setLocalProjects,
+    selectedId: null,
+    setSelected: () => {},
+  });
 
   const handleSelect = useCallback(
     (projectId: string) => {
-      setSelected(selectedId === projectId ? null : projectId);
+      router.push(getProjectDetailUrl(projectId));
     },
-    [setSelected, selectedId]
+    [router]
   );
 
   return (
@@ -121,14 +126,11 @@ export function ProjectsListPage({ projects }: ProjectsListPageProps) {
       ) : isMd ? (
         <ProjectListTable
           projects={paginatedProjects}
-          selectedId={selectedId}
+          extras={extras}
           sortBy={sortBy}
           sortDir={sortDir}
-          now={now}
           onSortByColumn={handleSortByColumn}
           onSelect={handleSelect}
-          onEdit={setEditProject}
-          onArchive={(p) => setConfirmAction({ type: 'archive', project: p })}
           onDelete={(p) => setConfirmAction({ type: 'delete', project: p })}
         />
       ) : (
@@ -137,11 +139,8 @@ export function ProjectsListPage({ projects }: ProjectsListPageProps) {
             <ProjectCardRow
               key={project.id}
               project={project}
-              isSelected={selectedId === project.id}
-              now={now}
+              extras={extras?.[project.id]}
               onSelect={handleSelect}
-              onEdit={setEditProject}
-              onArchive={(p) => setConfirmAction({ type: 'archive', project: p })}
               onDelete={(p) => setConfirmAction({ type: 'delete', project: p })}
             />
           ))}
@@ -193,29 +192,6 @@ export function ProjectsListPage({ projects }: ProjectsListPageProps) {
           variant={confirmDialogProps.variant}
         />
       )}
-
-      <ProjectDetailSheet
-        open={showSheet}
-        onClose={() => setSelected(null)}
-        project={selectedProject}
-        projectDetail={projectDetail}
-        onEdit={() => {
-          if (selectedProject) {
-            setEditProject(selectedProject);
-          }
-        }}
-        onArchive={() => {
-          if (selectedProject) {
-            setConfirmAction({ type: 'archive', project: selectedProject });
-          }
-        }}
-        onDelete={() => {
-          if (selectedProject) {
-            setConfirmAction({ type: 'delete', project: selectedProject });
-          }
-        }}
-        detailsLabel={t('projects.detail.sheetTitle')}
-      />
     </div>
   );
 }

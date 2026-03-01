@@ -11,7 +11,7 @@ import { createClient } from '@/lib/supabase/server';
 export interface OverviewProject {
   id: string;
   name: string;
-  description: string | null;
+  summary: string | null;
   status: string;
   updatedAt: string;
   surveyCount: number;
@@ -27,7 +27,7 @@ export interface DashboardOverview {
 const overviewProjectSchema = z.object({
   id: z.string(),
   name: z.string(),
-  description: z.string().nullable(),
+  summary: z.string().nullable(),
   status: z.string(),
   updatedAt: z.string(),
   surveyCount: z.number(),

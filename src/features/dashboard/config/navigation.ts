@@ -1,12 +1,4 @@
-import {
-  Archive,
-  ClipboardList,
-  FolderKanban,
-  Home,
-  Lightbulb,
-  type LucideIcon,
-  Plus,
-} from 'lucide-react';
+import { FlaskConical, FolderKanban, Home, type LucideIcon, Plus, Sparkles } from 'lucide-react';
 
 import type { AppRoute } from '@/config/routes';
 import { ROUTES } from '@/config/routes';
@@ -54,7 +46,15 @@ export interface NavItem {
    * section (e.g. `/settings/*`) should highlight as active.
    */
   activePrefix?: string | undefined;
+  /**
+   * Extra path prefixes that should also activate this nav item.
+   * Used when conceptually related routes live under different URL paths
+   * (e.g. survey stats under `/dashboard/research/stats` still belong to Projects).
+   */
+  additionalPrefixes?: readonly string[] | undefined;
   subNav?: SubNavConfig | undefined;
+  /** Show chevron when expanded (e.g. for items that will have sub-nav later). */
+  showChevron?: boolean | undefined;
   disabled?: boolean | undefined;
 }
 
@@ -72,6 +72,7 @@ export const SIDEBAR_NAV: NavGroup[] = [
         labelKey: 'sidebar.projects',
         icon: FolderKanban,
         href: ROUTES.dashboard.projects,
+        additionalPrefixes: [ROUTES.dashboard.researchStats],
         subNav: {
           titleKey: 'sidebar.projects',
           groups: [
@@ -93,39 +94,25 @@ export const SIDEBAR_NAV: NavGroup[] = [
         },
       },
       {
-        labelKey: 'sidebar.research',
-        icon: Lightbulb,
-        href: ROUTES.dashboard.research,
-        subNav: {
-          titleKey: 'sidebar.research',
-          groups: [
-            {
-              items: [
-                {
-                  labelKey: 'sidebar.allSurveys',
-                  icon: ClipboardList,
-                  href: ROUTES.dashboard.research,
-                },
-                {
-                  labelKey: 'sidebar.newSurvey',
-                  icon: Plus,
-                  href: ROUTES.dashboard.researchNew,
-                },
-                {
-                  labelKey: 'sidebar.archive',
-                  icon: Archive,
-                  href: ROUTES.dashboard.researchArchive,
-                },
-              ],
-            },
-          ],
-        },
+        labelKey: 'sidebar.standaloneResearch',
+        icon: FlaskConical,
+        href: ROUTES.common.dashboard,
+        showChevron: true,
+        disabled: true,
+      },
+      {
+        labelKey: 'sidebar.askAi',
+        icon: Sparkles,
+        href: ROUTES.common.dashboard,
+        disabled: true,
       },
     ],
   },
 ];
 
+export { PROFILE_NAV_ITEM as SIDEBAR_PROFILE_ITEM } from './navigation-settings';
 export { USER_SETTINGS_NAV_ITEM as SIDEBAR_BOTTOM_ITEM } from './navigation-settings';
+export { GIVE_FEEDBACK_NAV_ITEM as SIDEBAR_GIVE_FEEDBACK_ITEM } from './navigation-settings';
 
 // ── Re-exports for backward compatibility ─────────────────────────────
 // NOTE: findActiveNavItem is in lib/nav-utils.ts (not re-exported to avoid circular deps)

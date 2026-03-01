@@ -122,11 +122,12 @@ export function SurveyDetailPanel({
 
           <DetailPanelMetrics
             surveyId={survey.id}
-            viewCount={survey.viewCount}
             responseCount={survey.responseCount}
             completedCount={survey.completedCount}
             maxRespondents={survey.maxRespondents}
             respondentProgress={respondentProgress}
+            avgQuestionCompletion={survey.avgQuestionCompletion}
+            avgCompletionSeconds={survey.avgCompletionSeconds}
           />
         </>
       )}

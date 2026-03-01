@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { RefreshRealtimeButton } from '@/components/ui/refresh-realtime-button';
+import { StatusBadge } from '@/components/ui/status-badge';
 import { SurveyStatusBadge } from '@/features/surveys/components/dashboard/survey-status-badge';
 import { ExportDialog } from '@/features/surveys/components/stats/export-dialog';
 import type { SurveyStatus } from '@/features/surveys/types';
@@ -115,71 +116,79 @@ export function SurveyStatsHeader({
 
   return (
     <>
-      <div className="flex min-w-0 flex-wrap items-start justify-between gap-4">
-        <div className="min-w-0 flex-1">
+      <div className="min-w-0">
+        {/* Badges + actions on one row */}
+        <div className="flex items-center justify-between gap-2">
           <div className="flex flex-wrap items-center gap-1.5">
+            <StatusBadge
+              labelKey="surveys.stats.contextBadge"
+              descriptionKey="surveys.stats.contextBadgeDescription"
+              ariaLabelKey="surveys.stats.contextBadgeAriaLabel"
+              variant="secondary"
+            />
             <SurveyStatusBadge status={status} />
           </div>
 
-          <h1 className="text-foreground mt-1 min-w-0 truncate text-3xl leading-tight font-bold">
-            {title}
-          </h1>
+          <div className="flex shrink-0 items-center gap-1">
+            {isActive && (
+              <RefreshRealtimeButton
+                isRefreshing={isRefreshing}
+                isRealtimeConnected={isRealtimeConnected}
+                lastSyncedAt={lastSyncedAt}
+                onRefresh={onRefresh}
+                ariaLabel={t('surveys.stats.refresh')}
+              />
+            )}
 
-          {description && (
-            <p className="text-muted-foreground mt-2 text-sm leading-relaxed">{description}</p>
-          )}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
+                  className="text-muted-foreground"
+                  aria-label={t('surveys.stats.moreActions')}
+                >
+                  <MoreHorizontal className="size-4" aria-hidden />
+                </Button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent align="end">
+                {primaryItems.map((item) => (
+                  <DropdownMenuItem key={item.key} onClick={item.onClick}>
+                    <item.icon className="size-4" aria-hidden />
+                    {item.label}
+                  </DropdownMenuItem>
+                ))}
+
+                {statusActions.length > 0 && (
+                  <>
+                    <DropdownMenuSeparator />
+
+                    {statusActions.map((item) => (
+                      <DropdownMenuItem
+                        key={item.key}
+                        {...(item.variant ? { variant: item.variant } : {})}
+                        onClick={item.onClick}
+                      >
+                        <item.icon className="size-4" aria-hidden />
+                        {item.label}
+                      </DropdownMenuItem>
+                    ))}
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
 
-        <div className="flex shrink-0 items-center gap-1">
-          {isActive && (
-            <RefreshRealtimeButton
-              isRefreshing={isRefreshing}
-              isRealtimeConnected={isRealtimeConnected}
-              lastSyncedAt={lastSyncedAt}
-              onRefresh={onRefresh}
-              ariaLabel={t('surveys.stats.refresh')}
-            />
-          )}
+        {/* Title + description — full width */}
+        <h1 className="text-foreground mt-1 text-2xl leading-tight font-bold sm:text-3xl">
+          {title}
+        </h1>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon-xs"
-                className="text-muted-foreground"
-                aria-label={t('surveys.stats.moreActions')}
-              >
-                <MoreHorizontal className="size-4" aria-hidden />
-              </Button>
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent align="end">
-              {primaryItems.map((item) => (
-                <DropdownMenuItem key={item.key} onClick={item.onClick}>
-                  <item.icon className="size-4" aria-hidden />
-                  {item.label}
-                </DropdownMenuItem>
-              ))}
-
-              {statusActions.length > 0 && (
-                <>
-                  <DropdownMenuSeparator />
-
-                  {statusActions.map((item) => (
-                    <DropdownMenuItem
-                      key={item.key}
-                      {...(item.variant ? { variant: item.variant } : {})}
-                      onClick={item.onClick}
-                    >
-                      <item.icon className="size-4" aria-hidden />
-                      {item.label}
-                    </DropdownMenuItem>
-                  ))}
-                </>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+        {description && (
+          <p className="text-muted-foreground mt-2 text-sm leading-relaxed">{description}</p>
+        )}
       </div>
 
       <ExportDialog

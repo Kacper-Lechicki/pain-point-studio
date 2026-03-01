@@ -23,6 +23,10 @@ interface InsightInlineFormProps {
   type?: InsightType;
   /** Whether to show a type selector (for phase-level forms). */
   showTypeSelector?: boolean;
+  /** When true, form is always visible (no toggle button). */
+  alwaysOpen?: boolean;
+  /** Called when user cancels (useful when form is in a dialog). */
+  onCancel?: () => void;
   onCreated: (insight: ProjectInsight) => void;
 }
 
@@ -30,10 +34,12 @@ export function InsightInlineForm({
   projectId,
   type: fixedType,
   showTypeSelector = false,
+  alwaysOpen = false,
+  onCancel,
   onCreated,
 }: InsightInlineFormProps) {
   const t = useTranslations();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(alwaysOpen);
   const [content, setContent] = useState('');
   const [selectedType, setSelectedType] = useState<InsightType>(fixedType ?? 'strength');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -58,9 +64,13 @@ export function InsightInlineForm({
   }, [fixedType]);
 
   const handleCancel = useCallback(() => {
-    setIsOpen(false);
+    if (!alwaysOpen) {
+      setIsOpen(false);
+    }
+
     setContent('');
-  }, []);
+    onCancel?.();
+  }, [alwaysOpen, onCancel]);
 
   const handleSubmit = useCallback(async () => {
     const trimmed = content.trim();
@@ -82,6 +92,7 @@ export function InsightInlineForm({
         type: activeType,
         content: trimmed,
         phase: null,
+        sort_order: 0,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
@@ -89,11 +100,16 @@ export function InsightInlineForm({
       onCreated(newInsight);
       toast.success(t('projects.scorecard.createSuccess' as MessageKey));
       setContent('');
-      setIsOpen(false);
-    }
-  }, [content, action, projectId, activeType, onCreated, t]);
 
-  if (!isOpen) {
+      if (alwaysOpen) {
+        onCancel?.();
+      } else {
+        setIsOpen(false);
+      }
+    }
+  }, [content, action, projectId, activeType, onCreated, t, alwaysOpen, onCancel]);
+
+  if (!isOpen && !alwaysOpen) {
     return (
       <Button variant="ghost" size="sm" className="self-start" onClick={handleOpen}>
         <Plus className="size-3.5" aria-hidden />

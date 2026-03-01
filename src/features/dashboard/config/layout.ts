@@ -1,9 +1,8 @@
-import type { AppRoute } from '@/config/routes';
 import { ROUTES } from '@/config/routes';
 import { locales } from '@/i18n/constants';
 
 /** Path prefix for survey builder (edit questions). Builder uses a standalone full-screen layout. */
-export const BUILDER_PATH_PREFIX = ROUTES.dashboard.researchNew + '/';
+export const BUILDER_PATH_PREFIX = '/dashboard/research/new/';
 
 /** Check if the pathname points to the survey builder (creating/editing questions). */
 export function isBuilderPath(pathname: string | null): boolean {
@@ -13,43 +12,11 @@ export function isBuilderPath(pathname: string | null): boolean {
   );
 }
 
-export interface DashboardBackConfig {
-  fallbackHref: AppRoute;
-}
-
-/**
- * Central config: which dashboard (and related) pages show a back button in the top-left.
- * Back button is rendered at the same vertical height as the first sidebar item.
- */
-export function getDashboardBackConfig(pathname: string | null): DashboardBackConfig | null {
-  if (!pathname) {
-    return null;
-  }
-
-  if (pathname.startsWith(ROUTES.dashboard.researchStats + '/')) {
-    return { fallbackHref: ROUTES.dashboard.research };
-  }
-
-  if (/^\/dashboard\/research\/[^/]+$/.test(pathname)) {
-    return { fallbackHref: ROUTES.dashboard.research };
-  }
-
-  if (/^\/dashboard\/projects\/[^/]+$/.test(pathname) && pathname !== ROUTES.dashboard.projectNew) {
-    return { fallbackHref: ROUTES.dashboard.projects };
-  }
-
-  if (pathname === ROUTES.profile.preview) {
-    return { fallbackHref: ROUTES.settings.profile };
-  }
-
-  return null;
-}
-
 // ── Sidebar / panel widths ──────────────────────────────────────────
 // Single source of truth. Actual pixel values live in CSS vars (globals.css):
-//   --sidebar-width-collapsed: 48px
-//   --sidebar-width-expanded:  224px
-//   --sidebar-sub-panel-width: 224px
+//   --sidebar-width-collapsed: 40px
+//   --sidebar-width-expanded:  236px
+//   --sidebar-sub-panel-width: 236px
 
 /** Left offset for main content and page footer (so they start where sidebars end). */
 export function getDashboardContentMarginLeft(isPinned: boolean, hasSubPanel: boolean): string {
@@ -70,6 +37,9 @@ export const BUILDER_PANEL_WIDTH_CLASS = 'min-w-72 max-w-72';
 /** Height shared by dashboard page footer and sidebar footer (lock). */
 export const DASHBOARD_FOOTER_HEIGHT_CLASS = 'h-12';
 
+/** Vertical gap between main content and dashboard footer. */
+export const DASHBOARD_FOOTER_GAP_TOP_CLASS = 'mt-10';
+
 // ── Content area ────────────────────────────────────────────────────
 
 export const DASHBOARD_CONTENT_MAX_WIDTH = 'container';
@@ -89,19 +59,7 @@ function pathWithoutLocale(pathname: string): string {
   return pathname;
 }
 
-/** Routes rendered at full content width (survey list, archive). */
-function isFullWidthPath(pathname: string): boolean {
-  const path = pathWithoutLocale(pathname);
-
-  return (
-    path === ROUTES.dashboard.research ||
-    path === ROUTES.dashboard.researchArchive ||
-    path.startsWith(ROUTES.dashboard.researchArchive + '/') ||
-    path === ROUTES.dashboard.projects
-  );
-}
-
-/** Routes rendered at narrow content width (settings, new project form, new survey form). */
+/** Routes rendered at narrow content width (settings, new project form). */
 function isNarrowPath(pathname: string): boolean {
   const path = pathWithoutLocale(pathname);
 
@@ -113,7 +71,7 @@ function isNarrowPath(pathname: string): boolean {
     return true;
   }
 
-  if (path === ROUTES.dashboard.researchNew) {
+  if (path.endsWith('/new-survey')) {
     return true;
   }
 
@@ -121,8 +79,8 @@ function isNarrowPath(pathname: string): boolean {
 }
 
 /**
- * Content width per route: full (list views, archive), content (default), narrow (forms/settings).
- * Used by DashboardContent to wrap children in DashboardContentArea with the right max-width.
+ * Content width per route: narrow (forms/settings), content (all other pages).
+ * All non-narrow pages share the same max-width for consistent layout.
  */
 export function getDashboardContentMaxWidth(pathname: string | null): DashboardContentWidth {
   if (!pathname) {
@@ -131,10 +89,6 @@ export function getDashboardContentMaxWidth(pathname: string | null): DashboardC
 
   if (isNarrowPath(pathname)) {
     return 'narrow';
-  }
-
-  if (isFullWidthPath(pathname)) {
-    return 'full';
   }
 
   return 'content';

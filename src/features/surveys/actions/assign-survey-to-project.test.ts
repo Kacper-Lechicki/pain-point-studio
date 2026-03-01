@@ -95,29 +95,6 @@ describe('Survey Actions – Assign Survey to Project', () => {
     );
   });
 
-  it('should unassign survey when projectId is null', async () => {
-    const updateChain = chain({ data: { id: SURVEY_ID } });
-
-    mockFrom.mockReturnValue(updateChain);
-
-    const { assignSurveyToProject } = await import('./assign-survey-to-project');
-
-    const result = await assignSurveyToProject({
-      surveyId: SURVEY_ID,
-      projectId: null,
-    });
-
-    expect(result).toEqual({ success: true });
-    expect(mockFrom).toHaveBeenCalledTimes(1);
-    expect(mockFrom).toHaveBeenCalledWith('surveys');
-
-    expect(updateChain.update).toHaveBeenCalledWith(
-      expect.objectContaining({
-        project_id: null,
-      })
-    );
-  });
-
   it('should return error when project is not found or not owned by user', async () => {
     const projectChain = chain({ data: null });
 
@@ -176,7 +153,7 @@ describe('Survey Actions – Assign Survey to Project', () => {
     const result = await assignSurveyToProject({
       surveyId: 'not-a-uuid',
       projectId: null,
-    } as Parameters<typeof assignSurveyToProject>[0]);
+    } as unknown as Parameters<typeof assignSurveyToProject>[0]);
 
     expect(result.error).toBeDefined();
     expect(mockFrom).not.toHaveBeenCalled();

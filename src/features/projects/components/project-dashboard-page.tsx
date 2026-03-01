@@ -1,34 +1,58 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
+
+import { ChevronLeft, Plus, Settings } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { ROUTES } from '@/config/routes';
 import { useBreadcrumbSegment } from '@/features/dashboard/components/layout/breadcrumb-context';
+import { useSubPanelLinks } from '@/features/dashboard/components/layout/sub-panel-items-context';
 import { DASHBOARD_PAGE_BODY_GAP_TOP } from '@/features/dashboard/config/layout';
-import type { ProjectSurvey } from '@/features/projects/actions/get-project';
-import type { SurveySignalData } from '@/features/projects/actions/get-project-signals-data';
+import type { ProjectOwner } from '@/features/projects/actions/get-project';
 import { EditProjectDialog } from '@/features/projects/components/edit-project-dialog';
 import { ProjectDetailHeader } from '@/features/projects/components/project-detail-header';
-import { ProjectDetailKpi } from '@/features/projects/components/project-detail-kpi';
 import { ProjectDetailTabs } from '@/features/projects/components/project-detail-tabs';
 import { useProjectDashboardActions } from '@/features/projects/hooks/use-project-dashboard-actions';
-import { generateFindings } from '@/features/projects/lib/signals';
-import type { Project, ProjectInsight } from '@/features/projects/types';
+import { isProjectArchived } from '@/features/projects/lib/project-helpers';
+import type {
+  Project,
+  ProjectInsight,
+  ProjectNoteFolder,
+  ProjectNoteMeta,
+  ProjectOverviewStats,
+} from '@/features/projects/types';
+import type { UserSurvey } from '@/features/surveys/actions';
+import { getCreateSurveyUrl } from '@/features/surveys/lib/survey-urls';
+import { useRefresh } from '@/hooks/common/use-refresh';
+
+import { useRealtimeProject } from '../hooks/use-realtime-project';
 
 interface ProjectDashboardPageProps {
   project: Project;
-  surveys: ProjectSurvey[];
-  signalsData: SurveySignalData[];
+  owner: ProjectOwner | null;
+  surveys: UserSurvey[];
   insights: ProjectInsight[];
+  notesMeta: ProjectNoteMeta[];
+  noteFolders: ProjectNoteFolder[];
+  overviewStats: ProjectOverviewStats;
 }
 
 export function ProjectDashboardPage({
   project: initialProject,
+  owner,
   surveys,
-  signalsData,
   insights: initialInsights,
+  notesMeta,
+  noteFolders,
+  overviewStats,
 }: ProjectDashboardPageProps) {
   const [insights, setInsights] = useState(initialInsights);
+
+  const { isRefreshing, refresh, lastSyncedAt, markSynced } = useRefresh();
+  const hasActiveSurveys = surveys.some((s) => s.status === 'active');
+  const { isConnected: isRealtimeConnected } = useRealtimeProject(markSynced, hasActiveSurveys);
 
   const {
     project,
@@ -37,20 +61,43 @@ export function ProjectDashboardPage({
     confirmAction,
     setConfirmAction,
     handleEditSuccess,
+    handleImageChange,
     handleConfirm,
     confirmDialogProps,
   } = useProjectDashboardActions({ initialProject });
 
+  const t = useTranslations();
+
   useBreadcrumbSegment(project.id, project.name);
 
-  const totalResponses = useMemo(
-    () => surveys.reduce((sum, s) => sum + s.responseCount, 0),
-    [surveys]
+  const isArchived = isProjectArchived(project);
+
+  useSubPanelLinks(
+    [
+      {
+        label: t('common.backToProjects'),
+        href: ROUTES.dashboard.projects,
+        icon: ChevronLeft,
+      },
+    ],
+    [
+      ...(!isArchived
+        ? [
+            {
+              label: t('projects.detail.createSurvey'),
+              href: getCreateSurveyUrl(project.id),
+              icon: Plus,
+            },
+          ]
+        : []),
+      {
+        label: t('projects.detail.settings'),
+        href: '#',
+        icon: Settings,
+        disabled: true,
+      },
+    ]
   );
-
-  const allFindings = useMemo(() => generateFindings(signalsData), [signalsData]);
-
-  const scorecardInsights = useMemo(() => insights, [insights]);
 
   const handleInsightCreated = useCallback((insight: ProjectInsight) => {
     setInsights((prev) => [...prev, insight]);
@@ -64,27 +111,41 @@ export function ProjectDashboardPage({
     setInsights((prev) => prev.filter((i) => i.id !== insightId));
   }, []);
 
+  const handleInsightsChanged = useCallback((newInsights: ProjectInsight[]) => {
+    setInsights(newInsights);
+  }, []);
+
   return (
     <main className="flex min-w-0 flex-col">
       <ProjectDetailHeader
         project={project}
+        userId={project.user_id}
+        owner={owner}
         onEdit={() => setEditOpen(true)}
         onArchive={() => setConfirmAction('archive')}
         onDelete={() => setConfirmAction('delete')}
+        lastResponseAt={overviewStats.lastResponseAt}
+        onImageChange={handleImageChange}
+        onEditSuccess={handleEditSuccess}
+        isRefreshing={isRefreshing}
+        isRealtimeConnected={isRealtimeConnected}
+        lastSyncedAt={lastSyncedAt}
+        onRefresh={refresh}
+        hasActiveSurveys={hasActiveSurveys}
       />
 
-      <div className={`${DASHBOARD_PAGE_BODY_GAP_TOP} flex flex-col gap-6`}>
-        <ProjectDetailKpi surveys={surveys} totalResponses={totalResponses} insights={insights} />
-
+      <div className={`${DASHBOARD_PAGE_BODY_GAP_TOP} flex min-w-0 flex-col gap-6`}>
         <ProjectDetailTabs
           project={project}
           surveys={surveys}
-          allFindings={allFindings}
           insights={insights}
-          scorecardInsights={scorecardInsights}
+          notesMeta={notesMeta}
+          noteFolders={noteFolders}
+          overviewStats={overviewStats}
           onInsightCreated={handleInsightCreated}
           onInsightUpdated={handleInsightUpdated}
           onInsightDeleted={handleInsightDeleted}
+          onInsightsChanged={handleInsightsChanged}
         />
       </div>
 

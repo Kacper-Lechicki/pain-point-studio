@@ -77,6 +77,7 @@ const EmailForm = ({ currentEmail, pendingEmail, emailChangeConfirmStatus }: Ema
   return (
     <section className="space-y-8">
       <SettingsSectionHeader
+        icon={Mail}
         title={t('settings.email.title')}
         description={t('settings.email.description')}
       />

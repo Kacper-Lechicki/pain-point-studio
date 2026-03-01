@@ -22,9 +22,9 @@ const buttonVariants = cva(
           'border bg-background shadow-xs md:hover:bg-accent md:hover:text-foreground dark:bg-input/30 dark:border-input dark:md:hover:bg-input/50',
         secondary: 'bg-secondary text-secondary-foreground md:hover:bg-secondary/80',
         ghost:
-          'border border-transparent md:hover:border-dashed md:hover:border-foreground/30 md:hover:text-foreground',
+          'border border-dashed border-transparent md:hover:border-foreground/30 md:hover:text-foreground focus-visible:border-transparent',
         ghostDestructive:
-          'text-destructive border border-transparent md:hover:border-dashed md:hover:border-destructive/30',
+          'text-destructive border border-dashed border-transparent md:hover:border-destructive/30 focus-visible:border-transparent',
         link: 'text-primary underline-offset-4 md:hover:underline',
       },
       size: {

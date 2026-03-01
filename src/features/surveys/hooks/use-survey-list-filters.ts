@@ -13,6 +13,12 @@ import { useSessionState } from '@/hooks/common/use-session-state';
 // ── Module-level constants ──────────────────────────────────────────
 
 const PRE_FILTER = (s: UserSurvey) => !deriveSurveyFlags(s.status).isArchived;
+const PRE_FILTER_PROJECT = () => true;
+
+interface UseSurveyListFiltersOptions {
+  /** When true, archived surveys are included and project filter is hidden. */
+  projectContext?: boolean;
+}
 
 export const SURVEY_LIST_COMPARATOR = (sortBy: SurveySortBy, sortDir: 'asc' | 'desc') => {
   const mul = sortDir === 'asc' ? 1 : -1;
@@ -43,7 +49,9 @@ export const SURVEY_LIST_COMPARATOR = (sortBy: SurveySortBy, sortDir: 'asc' | 'd
 
 // ── Hook ────────────────────────────────────────────────────────────
 
-export function useSurveyListFilters(surveys: UserSurvey[]) {
+export function useSurveyListFilters(surveys: UserSurvey[], options?: UseSurveyListFiltersOptions) {
+  const isProjectCtx = options?.projectContext ?? false;
+
   const [statusFilter, setStatusFilter] = useSessionState<SurveyStatusFilter[]>(
     'surveyList:status',
     []
@@ -51,9 +59,11 @@ export function useSurveyListFilters(surveys: UserSurvey[]) {
 
   const [projectFilter, setProjectFilterRaw] = useSessionState<string[]>('surveyList:project', []);
 
+  const basePreFilter = isProjectCtx ? PRE_FILTER_PROJECT : PRE_FILTER;
+
   const preFilter = useCallback(
     (s: UserSurvey) => {
-      if (!PRE_FILTER(s)) {
+      if (!basePreFilter(s)) {
         return false;
       }
 
@@ -61,7 +71,7 @@ export function useSurveyListFilters(surveys: UserSurvey[]) {
         return false;
       }
 
-      if (projectFilter.length > 0) {
+      if (!isProjectCtx && projectFilter.length > 0) {
         const hasNone = projectFilter.includes(NO_PROJECT_FILTER_ID);
         const projectIds = projectFilter.filter((id) => id !== NO_PROJECT_FILTER_ID);
 
@@ -74,19 +84,20 @@ export function useSurveyListFilters(surveys: UserSurvey[]) {
 
       return true;
     },
-    [statusFilter, projectFilter]
+    [statusFilter, projectFilter, basePreFilter, isProjectCtx]
   );
 
   const statusCounts = useMemo(() => {
-    const counts: Record<string, number> = {
-      active: 0,
-      draft: 0,
-      completed: 0,
-      cancelled: 0,
-    };
+    const counts: Record<string, number> = isProjectCtx
+      ? { active: 0, draft: 0, completed: 0, cancelled: 0, archived: 0 }
+      : { active: 0, draft: 0, completed: 0, cancelled: 0 };
 
     for (const s of surveys) {
-      if (!deriveSurveyFlags(s.status).isArchived && s.status in counts) {
+      if (!isProjectCtx && deriveSurveyFlags(s.status).isArchived) {
+        continue;
+      }
+
+      if (s.status in counts) {
         const current = counts[s.status];
 
         if (current !== undefined) {
@@ -96,9 +107,13 @@ export function useSurveyListFilters(surveys: UserSurvey[]) {
     }
 
     return counts;
-  }, [surveys]);
+  }, [surveys, isProjectCtx]);
 
   const projectOptions = useMemo(() => {
+    if (isProjectCtx) {
+      return [];
+    }
+
     const map = new Map<string, { name: string; count: number }>();
     let noProjectCount = 0;
 
@@ -135,7 +150,7 @@ export function useSurveyListFilters(surveys: UserSurvey[]) {
     }
 
     return options;
-  }, [surveys, statusFilter]);
+  }, [surveys, statusFilter, isProjectCtx]);
 
   const setProjectFilter = useCallback(
     (ids: string[]) => {
@@ -145,12 +160,14 @@ export function useSurveyListFilters(surveys: UserSurvey[]) {
   );
 
   const kpiStatuses = useMemo(() => {
-    const order: SurveyStatusFilter[] = ['active', 'draft', 'completed', 'cancelled'];
+    const order: SurveyStatusFilter[] = isProjectCtx
+      ? ['active', 'draft', 'completed', 'cancelled', 'archived']
+      : ['active', 'draft', 'completed', 'cancelled'];
 
     return order.filter((s) => (statusCounts[s] ?? 0) > 0);
-  }, [statusCounts]);
+  }, [statusCounts, isProjectCtx]);
 
-  const isFiltered = statusFilter.length > 0 || projectFilter.length > 0;
+  const isFiltered = statusFilter.length > 0 || (!isProjectCtx && projectFilter.length > 0);
 
   return {
     statusFilter,

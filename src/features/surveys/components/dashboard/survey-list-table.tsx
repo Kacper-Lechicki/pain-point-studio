@@ -15,6 +15,8 @@ interface SurveyListTableProps {
   onSortByColumn: (key: SurveySortBy) => void;
   onSelect: (surveyId: string) => void;
   onStatusChange: (surveyId: string, action: string) => void;
+  /** When true, uses project-consistent columns: Title (44%), Status, Responses, Last Response, Activity. */
+  isProjectContext?: boolean | undefined;
 }
 
 export function SurveyListTable({
@@ -26,21 +28,22 @@ export function SurveyListTable({
   onSortByColumn,
   onSelect,
   onStatusChange,
+  isProjectContext,
 }: SurveyListTableProps) {
   const t = useTranslations();
 
   return (
-    <div className="border-border/50 overflow-hidden rounded-lg border">
+    <div className="border-border/50 bg-card overflow-hidden rounded-lg border">
       <Table className="table-fixed">
         <TableHeader>
-          <TableRow className="bg-muted/30 hover:bg-muted/30">
+          <TableRow className="bg-muted/60 hover:bg-muted/60">
             <SortableTableHeader
               sortKey="title"
               currentSortKey={sortBy}
               sortDir={sortDir}
               onSort={onSortByColumn}
               label={t('surveys.dashboard.table.title')}
-              className="w-[30%]"
+              className={isProjectContext ? 'w-[44%]' : 'w-[30%]'}
             />
 
             <SortableTableHeader
@@ -49,7 +52,9 @@ export function SurveyListTable({
               sortDir={sortDir}
               onSort={onSortByColumn}
               label={t('surveys.dashboard.table.status')}
-              className="border-border/30 border-l"
+              className={
+                isProjectContext ? 'border-border/30 w-[14%] border-l' : 'border-border/30 border-l'
+              }
               centered
             />
 
@@ -59,17 +64,21 @@ export function SurveyListTable({
               sortDir={sortDir}
               onSort={onSortByColumn}
               label={t('surveys.dashboard.table.responses')}
-              className="border-border/30 border-l"
+              className={
+                isProjectContext ? 'border-border/30 w-[14%] border-l' : 'border-border/30 border-l'
+              }
             />
 
-            <SortableTableHeader
-              sortKey="questions"
-              currentSortKey={sortBy}
-              sortDir={sortDir}
-              onSort={onSortByColumn}
-              label={t('surveys.dashboard.table.questions')}
-              className="border-border/30 hidden border-l lg:table-cell"
-            />
+            {!isProjectContext && (
+              <SortableTableHeader
+                sortKey="completion"
+                currentSortKey={sortBy}
+                sortDir={sortDir}
+                onSort={onSortByColumn}
+                label={t('surveys.dashboard.table.completion')}
+                className="border-border/30 hidden border-l lg:table-cell"
+              />
+            )}
 
             <SortableTableHeader
               sortKey="lastResponse"
@@ -77,7 +86,11 @@ export function SurveyListTable({
               sortDir={sortDir}
               onSort={onSortByColumn}
               label={t('surveys.dashboard.table.lastResponse')}
-              className="border-border/30 hidden border-l xl:table-cell"
+              className={
+                isProjectContext
+                  ? 'border-border/30 hidden w-[14%] border-l lg:table-cell'
+                  : 'border-border/30 hidden border-l xl:table-cell'
+              }
             />
 
             <SortableTableHeader
@@ -86,11 +99,15 @@ export function SurveyListTable({
               sortDir={sortDir}
               onSort={onSortByColumn}
               label={t('surveys.dashboard.table.activity')}
-              className="border-border/30 hidden border-l 2xl:table-cell"
+              className={
+                isProjectContext
+                  ? 'border-border/30 hidden w-[14%] border-l xl:table-cell'
+                  : 'border-border/30 hidden border-l 2xl:table-cell'
+              }
               centered
             />
 
-            <TableHead className="w-10" aria-hidden />
+            <TableHead className={isProjectContext ? 'w-12' : 'w-10'} aria-hidden />
           </TableRow>
         </TableHeader>
 
@@ -104,6 +121,7 @@ export function SurveyListTable({
               onSelect={onSelect}
               onStatusChange={onStatusChange}
               variant="table"
+              isProjectContext={isProjectContext}
             />
           ))}
         </TableBody>

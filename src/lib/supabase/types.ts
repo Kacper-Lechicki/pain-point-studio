@@ -76,6 +76,7 @@ export type Database = {
           id: string;
           phase: string | null;
           project_id: string;
+          sort_order: number;
           type: string;
           updated_at: string;
         };
@@ -85,6 +86,7 @@ export type Database = {
           id?: string;
           phase?: string | null;
           project_id: string;
+          sort_order?: number;
           type: string;
           updated_at?: string;
         };
@@ -94,6 +96,7 @@ export type Database = {
           id?: string;
           phase?: string | null;
           project_id?: string;
+          sort_order?: number;
           type?: string;
           updated_at?: string;
         };
@@ -107,34 +110,138 @@ export type Database = {
           },
         ];
       };
+      project_note_folders: {
+        Row: {
+          created_at: string;
+          id: string;
+          name: string;
+          project_id: string;
+          sort_order: number;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          name: string;
+          project_id: string;
+          sort_order?: number;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          name?: string;
+          project_id?: string;
+          sort_order?: number;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'project_note_folders_project_id_fkey';
+            columns: ['project_id'];
+            isOneToOne: false;
+            referencedRelation: 'projects';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      project_notes: {
+        Row: {
+          content_json: Json | null;
+          created_at: string;
+          deleted_at: string | null;
+          folder_id: string | null;
+          id: string;
+          is_pinned: boolean;
+          project_id: string;
+          sort_order: number;
+          title: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          content_json?: Json | null;
+          created_at?: string;
+          deleted_at?: string | null;
+          folder_id?: string | null;
+          id?: string;
+          is_pinned?: boolean;
+          project_id: string;
+          sort_order?: number;
+          title?: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          content_json?: Json | null;
+          created_at?: string;
+          deleted_at?: string | null;
+          folder_id?: string | null;
+          id?: string;
+          is_pinned?: boolean;
+          project_id?: string;
+          sort_order?: number;
+          title?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'project_notes_folder_id_fkey';
+            columns: ['folder_id'];
+            isOneToOne: false;
+            referencedRelation: 'project_note_folders';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'project_notes_project_id_fkey';
+            columns: ['project_id'];
+            isOneToOne: false;
+            referencedRelation: 'projects';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       projects: {
         Row: {
           archived_at: string | null;
           created_at: string;
-          description: string | null;
+          description: Json | null;
           id: string;
+          image_url: string | null;
           name: string;
           status: string;
+          summary: string | null;
+          target_responses: number;
           updated_at: string;
           user_id: string;
         };
         Insert: {
           archived_at?: string | null;
           created_at?: string;
-          description?: string | null;
+          description?: Json | null;
           id?: string;
+          image_url?: string | null;
           name: string;
           status?: string;
+          summary?: string | null;
+          target_responses?: number;
           updated_at?: string;
           user_id: string;
         };
         Update: {
           archived_at?: string | null;
           created_at?: string;
-          description?: string | null;
+          description?: Json | null;
           id?: string;
+          image_url?: string | null;
           name?: string;
           status?: string;
+          summary?: string | null;
+          target_responses?: number;
           updated_at?: string;
           user_id?: string;
         };
@@ -290,7 +397,7 @@ export type Database = {
           id: string;
           max_respondents: number | null;
           previous_status: Database['public']['Enums']['survey_status'] | null;
-          project_id: string | null;
+          project_id: string;
           research_phase: string | null;
           slug: string | null;
           starts_at: string | null;
@@ -311,7 +418,7 @@ export type Database = {
           id?: string;
           max_respondents?: number | null;
           previous_status?: Database['public']['Enums']['survey_status'] | null;
-          project_id?: string | null;
+          project_id: string;
           research_phase?: string | null;
           slug?: string | null;
           starts_at?: string | null;
@@ -332,7 +439,7 @@ export type Database = {
           id?: string;
           max_respondents?: number | null;
           previous_status?: Database['public']['Enums']['survey_status'] | null;
-          project_id?: string | null;
+          project_id?: string;
           research_phase?: string | null;
           slug?: string | null;
           starts_at?: string | null;
@@ -386,8 +493,21 @@ export type Database = {
         }[];
       };
       get_profile_statistics: { Args: { p_user_id: string }; Returns: Json };
+      get_project_detail_stats: {
+        Args: { p_project_id: string; p_user_id: string };
+        Returns: Json;
+      };
       get_project_signals_data: {
         Args: { p_project_id: string; p_user_id: string };
+        Returns: Json;
+      };
+      get_project_surveys_with_counts: {
+        Args: { p_project_id: string; p_user_id: string };
+        Returns: Json;
+      };
+      get_projects_list_extras: { Args: { p_user_id: string }; Returns: Json };
+      get_survey_completion_timeline: {
+        Args: { p_survey_id: string; p_user_id: string };
         Returns: Json;
       };
       get_survey_response_count: {

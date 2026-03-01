@@ -9,8 +9,12 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import type { OverviewProject } from '@/features/dashboard/actions/get-dashboard-overview';
 import { setPinnedProject } from '@/features/dashboard/actions/set-pinned-project';
-import { BENTO_CARD_CLASS } from '@/features/dashboard/components/bento/bento-styles';
+import {
+  BENTO_CARD_CLASS,
+  BENTO_ROW4_CARD_MIN_H,
+} from '@/features/dashboard/components/bento/bento-styles';
 import type { ProjectDetail, ProjectSurvey } from '@/features/projects/actions/get-project';
+import { getSurveyStatsUrl } from '@/features/surveys/lib/survey-urls';
 import Link from '@/i18n/link';
 import { cn } from '@/lib/common/utils';
 
@@ -60,20 +64,26 @@ export function PinnedProjectCard({ project, overviewProject }: PinnedProjectCar
   }
 
   return (
-    <Card className={cn(BENTO_CARD_CLASS, 'border-border/50')}>
-      <div className="flex items-center justify-between gap-2 px-4 pt-4">
+    <Card
+      className={cn(
+        BENTO_CARD_CLASS,
+        BENTO_ROW4_CARD_MIN_H,
+        'border-border/50 flex h-full flex-col'
+      )}
+    >
+      <div className="flex shrink-0 items-center justify-between gap-2 px-4 pt-4">
         <p className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
           {t('pinned.title')}
         </p>
         <Pin className="text-chart-violet size-4 shrink-0 fill-current" />
       </div>
       {/* ── Project header ───────────────────────────────────────────── */}
-      <div className="flex items-center gap-2.5 px-4 pt-2">
+      <div className="flex shrink-0 items-center gap-2.5 px-4 pt-2">
         <Pin className="text-muted-foreground size-3.5 shrink-0 fill-current" />
 
         <Link
           href={`/dashboard/projects/${project.project.id}`}
-          className="min-w-0 flex-1 truncate text-base font-semibold hover:underline"
+          className="min-w-0 shrink truncate text-base font-semibold hover:underline"
         >
           {project.project.name}
         </Link>
@@ -91,7 +101,7 @@ export function PinnedProjectCard({ project, overviewProject }: PinnedProjectCar
       </div>
 
       {/* ── Metrics row ─────────────────────────────────────────────── */}
-      <div className="flex items-center gap-2.5 px-4 pt-1.5">
+      <div className="flex shrink-0 items-center gap-2.5 px-4 pt-1.5">
         <span className="text-muted-foreground text-xs">
           {t('pinned.responses', { count: totalResponses })}
         </span>
@@ -109,21 +119,19 @@ export function PinnedProjectCard({ project, overviewProject }: PinnedProjectCar
         </span>
       </div>
 
-      {/* ── Surveys list ────────────────────────────────────────────── */}
-      {visibleSurveys.length > 0 && (
-        <div className="px-4 pt-2 pb-4">
-          <p className="text-muted-foreground mb-2 text-xs font-medium">{t('pinned.surveys')}</p>
-
-          <ul className="space-y-1.5">
-            {visibleSurveys.map((survey) => (
-              <SurveyRow key={survey.id} survey={survey} />
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {/* Empty state — no surveys yet */}
-      {visibleSurveys.length === 0 && <div className="pb-4" />}
+      {/* ── Surveys list (only what fits, pushed to bottom) ───────────── */}
+      <div className="flex min-h-0 flex-1 flex-col justify-end overflow-hidden px-4 pt-2 pb-4">
+        {visibleSurveys.length > 0 && (
+          <>
+            <p className="text-muted-foreground mb-2 text-xs font-medium">{t('pinned.surveys')}</p>
+            <ul className="space-y-1.5 overflow-hidden">
+              {visibleSurveys.map((survey) => (
+                <SurveyRow key={survey.id} survey={survey} />
+              ))}
+            </ul>
+          </>
+        )}
+      </div>
     </Card>
   );
 }
@@ -140,7 +148,9 @@ function SurveyRow({ survey }: { survey: ProjectSurvey }) {
       <span className={cn('size-1.5 shrink-0 rounded-full', dotColor)} aria-hidden />
 
       {/* Title */}
-      <span className="min-w-0 flex-1 truncate">{survey.title}</span>
+      <Link href={getSurveyStatsUrl(survey.id)} className="min-w-0 flex-1 truncate hover:underline">
+        {survey.title}
+      </Link>
 
       {/* Response count */}
       <span className="text-muted-foreground shrink-0 tabular-nums">

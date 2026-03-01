@@ -1,6 +1,7 @@
 import dynamic from 'next/dynamic';
 
 import Hero from '@/app/[locale]/(marketing)/_components/hero';
+import { PageTransition } from '@/components/ui/page-transition';
 import { routing } from '@/i18n/routing';
 
 const Cta = dynamic(() => import('@/app/[locale]/(marketing)/_components/cta'), {
@@ -34,7 +35,7 @@ export function generateStaticParams() {
 
 const HomePage = async () => {
   return (
-    <>
+    <PageTransition>
       <Hero />
       <Problems />
       <HowItWorks />
@@ -42,7 +43,7 @@ const HomePage = async () => {
       <Developers />
       <FeaturesGrid />
       <Cta />
-    </>
+    </PageTransition>
   );
 };
 

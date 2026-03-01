@@ -1,4 +1,4 @@
-import { BarChart3, Eye, Loader, MousePointerClick, Users } from 'lucide-react';
+import { BarChart3, MousePointerClick, Percent, Timer, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
@@ -6,53 +6,69 @@ import { SectionLabel } from '@/components/ui/metric-display';
 import { getSurveyStatsUrl } from '@/features/surveys/lib/survey-urls';
 import Link from '@/i18n/link';
 
+function formatTime(totalSeconds: number | null): string {
+  if (totalSeconds == null) {
+    return '—';
+  }
+
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = Math.round(totalSeconds % 60);
+
+  if (minutes === 0) {
+    return `${seconds}s`;
+  }
+
+  return `${minutes}m ${seconds}s`;
+}
+
 interface DetailPanelMetricsProps {
   surveyId: string;
-  viewCount: number;
   responseCount: number;
   completedCount: number;
   maxRespondents: number | null;
   respondentProgress: number | null;
+  avgQuestionCompletion: number | null;
+  avgCompletionSeconds: number | null;
 }
 
 export function DetailPanelMetrics({
   surveyId,
-  viewCount,
   responseCount,
   completedCount,
   maxRespondents,
   respondentProgress,
+  avgQuestionCompletion,
+  avgCompletionSeconds,
 }: DetailPanelMetricsProps) {
   const t = useTranslations();
-  const inProgressCount = responseCount - completedCount;
 
   return (
     <>
       <SectionLabel>{t('surveys.dashboard.detailPanel.metricsLabel')}</SectionLabel>
       <div className="grid grid-cols-2 gap-2">
-        <div className="border-border/50 rounded-md border px-3 py-2.5">
-          <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
-            {viewCount}
-          </div>
-
-          <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
-            <Eye className="mt-0.5 size-3 shrink-0" aria-hidden />
-            {t('surveys.dashboard.detailPanel.views')}
-          </div>
-        </div>
-
-        <div className="border-border/50 rounded-md border px-3 py-2.5">
+        <div className="border-border/50 bg-card rounded-md border px-3 py-2.5">
           <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
             {responseCount}
           </div>
 
           <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
             <MousePointerClick className="mt-0.5 size-3 shrink-0" aria-hidden />
-            {t('surveys.dashboard.detailPanel.participants')}
+            {t('surveys.dashboard.detailPanel.started')}
           </div>
         </div>
 
-        <div className="border-border/50 rounded-md border px-3 py-2.5">
+        <div className="border-border/50 bg-card rounded-md border px-3 py-2.5">
+          <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
+            {avgQuestionCompletion != null ? `${Math.round(avgQuestionCompletion)}%` : '—'}
+          </div>
+
+          <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
+            <Percent className="mt-0.5 size-3 shrink-0" aria-hidden />
+            {t('surveys.dashboard.detailPanel.avgQuestionCompletion')}
+          </div>
+        </div>
+
+        <div className="border-border/50 bg-card rounded-md border px-3 py-2.5">
           <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
             {completedCount}
             {maxRespondents != null && (
@@ -75,14 +91,14 @@ export function DetailPanelMetrics({
           )}
         </div>
 
-        <div className="border-border/50 rounded-md border px-3 py-2.5">
+        <div className="border-border/50 bg-card rounded-md border px-3 py-2.5">
           <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
-            {inProgressCount}
+            {formatTime(avgCompletionSeconds)}
           </div>
 
           <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
-            <Loader className="mt-0.5 size-3 shrink-0" aria-hidden />
-            {t('surveys.dashboard.detailPanel.inProgress')}
+            <Timer className="mt-0.5 size-3 shrink-0" aria-hidden />
+            {t('surveys.dashboard.detailPanel.avgCompletionTime')}
           </div>
         </div>
       </div>

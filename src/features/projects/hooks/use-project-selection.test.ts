@@ -27,13 +27,17 @@ const PROJECTS: ProjectWithMetrics[] = [
   {
     id: 'proj-1',
     name: 'Project One',
+    summary: null,
     description: null,
+    image_url: null,
     status: 'active',
     user_id: 'user-1',
+    target_responses: 0,
     archived_at: null,
     created_at: '2025-01-01T00:00:00Z',
     updated_at: '2025-01-02T00:00:00Z',
     surveyCount: 2,
+    activeSurveyCount: 1,
     responseCount: 10,
   },
 ];

@@ -2,7 +2,6 @@ import type { OverviewProject } from '@/features/dashboard/actions/get-dashboard
 import type { DashboardStats } from '@/features/dashboard/types/dashboard-stats';
 import type { ProjectDetail } from '@/features/projects/actions/get-project';
 
-import { CompletionChart } from './completion-chart';
 import { DashboardGreeting } from './dashboard-greeting';
 import { DashboardKpiCards } from './dashboard-kpi-cards';
 import { DashboardProjectsList } from './dashboard-projects-list';
@@ -53,12 +52,13 @@ export function DashboardBento({
         <DashboardKpiCards stats={stats} projectCount={projects.length} periodDays={periodDays} />
       </div>
 
-      {/* ── Row 3: Charts + Activity ─────────────────────────── */}
-      <ResponsesChart data={stats?.responsesTimeline ?? []} />
-      <CompletionChart data={stats?.completionTimeline ?? []} />
+      {/* ── Row 3: Responses over time (2 cols) | Recent activity ─────────── */}
+      <div className="h-full min-h-0 lg:col-span-2">
+        <ResponsesChart data={stats?.responsesTimeline ?? []} />
+      </div>
       <DashboardRecentActivity items={stats?.recentActivity ?? []} />
 
-      {/* ── Row 4: Pinned Project + Projects List ────────────── */}
+      {/* ── Row 4: Pinned Project + Projects List ────────────────────────────────────────────────── */}
       <div className="lg:col-span-2">
         {hasPinned ? (
           <PinnedProjectCard project={pinnedProject} overviewProject={matchingOverviewProject} />

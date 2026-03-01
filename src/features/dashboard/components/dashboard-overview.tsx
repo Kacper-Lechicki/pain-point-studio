@@ -1,6 +1,6 @@
 'use client';
 
-import { ClipboardList, FolderKanban, Home, Plus } from 'lucide-react';
+import { FolderKanban, Home, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
@@ -37,21 +37,12 @@ export function DashboardOverview({ data }: DashboardOverviewProps) {
           <p className="text-muted-foreground mt-1 text-sm">{t('dashboard.overview.subtitle')}</p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <Button variant="outline" asChild className="w-full sm:w-auto">
-            <Link href={ROUTES.dashboard.researchNew}>
-              <ClipboardList className="size-4" aria-hidden />
-              {t('dashboard.overview.quickSurvey')}
-            </Link>
-          </Button>
-
-          <Button asChild className="w-full sm:w-auto">
-            <Link href={ROUTES.dashboard.projectNew}>
-              <Plus className="size-4" aria-hidden />
-              {t('dashboard.overview.newProject')}
-            </Link>
-          </Button>
-        </div>
+        <Button asChild className="w-full sm:w-auto">
+          <Link href={ROUTES.dashboard.projectNew}>
+            <Plus className="size-4" aria-hidden />
+            {t('dashboard.overview.newProject')}
+          </Link>
+        </Button>
       </div>
 
       {/* Body */}

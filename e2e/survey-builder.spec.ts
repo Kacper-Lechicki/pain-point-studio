@@ -7,7 +7,7 @@ import { makeApiSignIn, scopedEmail } from './helpers/auth';
 import { ROUTES, url } from './helpers/routes';
 import { E2E_PASSWORD, sel as sharedSel } from './helpers/selectors';
 import { deleteUserByEmail, ensureUser } from './helpers/supabase-admin';
-import { createSurveyWithQuestions } from './helpers/survey-admin';
+import { createProjectViaDb, createSurveyWithQuestions } from './helpers/survey-admin';
 
 const sel = {
   ...sharedSel,
@@ -72,8 +72,9 @@ test.describe('Survey Builder – Question Editing', () => {
     signIn = makeApiSignIn(email, E2E_PASSWORD);
 
     const userId = await ensureUser(email, E2E_PASSWORD);
+    const projectId = await createProjectViaDb(userId, 'E2E Builder Editing');
 
-    const result = await createSurveyWithQuestions(userId, {}, 1);
+    const result = await createSurveyWithQuestions(userId, { projectId }, 1);
     surveyId = result.surveyId;
   });
 
@@ -167,8 +168,9 @@ test.describe('Survey Builder – Metadata Editing', () => {
     email = scopedEmail('e2e-builder-metadata', testInfo.project.name);
     signIn = makeApiSignIn(email, E2E_PASSWORD);
     const userId = await ensureUser(email, E2E_PASSWORD);
+    const projectId = await createProjectViaDb(userId, 'E2E Builder Metadata');
 
-    const result = await createSurveyWithQuestions(userId, {}, 1);
+    const result = await createSurveyWithQuestions(userId, { projectId }, 1);
     surveyId = result.surveyId;
   });
 
@@ -220,8 +222,9 @@ test.describe('Survey Builder – Publish Flow', () => {
     email = scopedEmail('e2e-builder-publish', testInfo.project.name);
     signIn = makeApiSignIn(email, E2E_PASSWORD);
     const userId = await ensureUser(email, E2E_PASSWORD);
+    const projectId = await createProjectViaDb(userId, 'E2E Builder Publish');
 
-    const result = await createSurveyWithQuestions(userId, {}, 1);
+    const result = await createSurveyWithQuestions(userId, { projectId }, 1);
     surveyId = result.surveyId;
   });
 

@@ -46,13 +46,17 @@ function makeProject(id: string, name: string, status = 'active'): ProjectWithMe
   return {
     id,
     name,
-    description: `Description for ${name}`,
+    summary: `Description for ${name}`,
+    description: null,
+    image_url: null,
     status,
     user_id: 'user-1',
+    target_responses: 0,
     archived_at: null,
     created_at: '2025-01-01T00:00:00Z',
     updated_at: '2025-01-15T00:00:00Z',
     surveyCount: 3,
+    activeSurveyCount: 1,
     responseCount: 10,
   };
 }
@@ -97,7 +101,7 @@ describe('useProjectListState', () => {
     expect(result.current.filteredProjects[0]!.name).toBe('Alpha Project');
   });
 
-  it('should filter projects by search query matching description', () => {
+  it('should filter projects by search query matching summary', () => {
     const { result } = renderHook(() => useProjectListState(PROJECTS));
 
     act(() => {

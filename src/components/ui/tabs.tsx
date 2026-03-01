@@ -3,6 +3,7 @@
 import * as React from 'react';
 
 import { type VariantProps, cva } from 'class-variance-authority';
+import { motion } from 'motion/react';
 import { Tabs as TabsPrimitive } from 'radix-ui';
 
 import { cn } from '@/lib/common/utils';
@@ -24,12 +25,12 @@ function Tabs({
 }
 
 const tabsListVariants = cva(
-  'rounded-lg p-[3px] group-data-[orientation=horizontal]/tabs:h-9 data-[variant=line]:rounded-none group/tabs-list text-muted-foreground inline-flex w-fit items-center justify-center group-data-[orientation=vertical]/tabs:h-fit group-data-[orientation=vertical]/tabs:flex-col',
+  'rounded-lg p-[3px] group-data-[orientation=horizontal]/tabs:h-9 data-[variant=line]:rounded-none group/tabs-list text-muted-foreground inline-flex items-center justify-center group-data-[orientation=vertical]/tabs:h-fit group-data-[orientation=vertical]/tabs:flex-col',
   {
     variants: {
       variant: {
-        default: 'bg-muted',
-        line: 'gap-1 bg-transparent',
+        default: 'w-fit bg-muted',
+        line: 'w-full min-w-0 justify-start gap-1 bg-transparent **:data-[slot=tabs-trigger]:flex-none overflow-x-auto overflow-y-hidden overscroll-x-contain [-webkit-overflow-scrolling:touch]',
       },
     },
     defaultVariants: {
@@ -43,7 +44,7 @@ function TabsList({
   variant = 'default',
   ...props
 }: React.ComponentProps<typeof TabsPrimitive.List> & VariantProps<typeof tabsListVariants>) {
-  return (
+  const list = (
     <TabsPrimitive.List
       data-slot="tabs-list"
       data-variant={variant}
@@ -51,6 +52,12 @@ function TabsList({
       {...props}
     />
   );
+
+  if (variant === 'line') {
+    return <div className="border-border/50 w-full min-w-0 border-b">{list}</div>;
+  }
+
+  return list;
 }
 
 function TabsTrigger({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Trigger>) {
@@ -69,13 +76,25 @@ function TabsTrigger({ className, ...props }: React.ComponentProps<typeof TabsPr
   );
 }
 
-function TabsContent({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.Content>) {
+function TabsContent({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<typeof TabsPrimitive.Content>) {
   return (
     <TabsPrimitive.Content
       data-slot="tabs-content"
       className={cn('flex-1 outline-none', className)}
       {...props}
-    />
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+      >
+        {children}
+      </motion.div>
+    </TabsPrimitive.Content>
   );
 }
 

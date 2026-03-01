@@ -8,16 +8,24 @@ import { createClient } from '@/lib/supabase/server';
 export interface ProjectSurvey {
   id: string;
   title: string;
+  description: string | null;
   status: string;
   responseCount: number;
   completedCount: number;
+  questionCount: number;
   createdAt: string;
   researchPhase: string | null;
+}
+
+export interface ProjectOwner {
+  fullName: string;
+  avatarUrl: string;
 }
 
 export interface ProjectDetail {
   project: Project;
   surveys: ProjectSurvey[];
+  owner: ProjectOwner | null;
 }
 
 export const getProject = cache(async (projectId: string): Promise<ProjectDetail | null> => {
@@ -41,11 +49,20 @@ export const getProject = cache(async (projectId: string): Promise<ProjectDetail
     return null;
   }
 
-  const { data: rawSurveys } = await supabase
-    .from('surveys')
-    .select('id, title, status, created_at, research_phase, survey_responses(count)')
-    .eq('project_id', projectId)
-    .order('created_at', { ascending: false });
+  const [{ data: rawSurveys }, { data: profile }] = await Promise.all([
+    supabase
+      .from('surveys')
+      .select(
+        'id, title, description, status, created_at, research_phase, survey_responses(count), survey_questions(count)'
+      )
+      .eq('project_id', projectId)
+      .order('created_at', { ascending: false }),
+    supabase
+      .from('profiles')
+      .select('full_name, avatar_url')
+      .eq('id', project.user_id)
+      .maybeSingle(),
+  ]);
 
   const surveys: ProjectSurvey[] = (rawSurveys ?? []).map((s) => {
     const respCount =
@@ -53,16 +70,27 @@ export const getProject = cache(async (projectId: string): Promise<ProjectDetail
         ? (s.survey_responses[0] as { count: number }).count
         : 0;
 
+    const qCount =
+      Array.isArray(s.survey_questions) && s.survey_questions.length > 0
+        ? (s.survey_questions[0] as { count: number }).count
+        : 0;
+
     return {
       id: s.id,
       title: s.title,
+      description: s.description,
       status: s.status,
       responseCount: respCount,
       completedCount: respCount,
+      questionCount: qCount,
       createdAt: s.created_at,
       researchPhase: s.research_phase,
     };
   });
 
-  return { project, surveys };
+  const owner: ProjectOwner | null = profile
+    ? { fullName: profile.full_name, avatarUrl: profile.avatar_url }
+    : null;
+
+  return { project, surveys, owner };
 });

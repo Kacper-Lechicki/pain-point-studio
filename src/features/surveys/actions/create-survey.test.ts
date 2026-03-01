@@ -67,6 +67,7 @@ const VALID_INPUT = {
   description: 'A test survey',
   visibility: 'public' as const,
   action: 'saveDraft' as const,
+  projectId: '00000000-0000-4000-8000-000000000099',
 };
 
 const USER = { id: 'user-123', email: 'test@example.com' };
@@ -97,6 +98,7 @@ describe('Survey Actions – Create Survey Draft', () => {
         description: VALID_INPUT.description,
         visibility: VALID_INPUT.visibility,
         status: 'draft',
+        project_id: VALID_INPUT.projectId,
       })
     );
   });

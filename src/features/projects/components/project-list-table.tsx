@@ -3,48 +3,43 @@ import { useTranslations } from 'next-intl';
 import { SortableTableHeader } from '@/components/ui/sortable-table-header';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
+import type { ProjectsListExtrasMap } from '@/features/projects/actions/get-projects-list-extras';
 import type { ProjectSortBy } from '@/features/projects/components/project-list-toolbar';
 import { ProjectTableRow } from '@/features/projects/components/project-table-row';
 
 interface ProjectListTableProps {
   projects: ProjectWithMetrics[];
-  selectedId: string | null;
+  extras?: ProjectsListExtrasMap | null | undefined;
   sortBy: ProjectSortBy;
   sortDir: 'asc' | 'desc';
-  now: Date;
   onSortByColumn: (key: ProjectSortBy) => void;
   onSelect: (projectId: string) => void;
-  onEdit: (project: ProjectWithMetrics) => void;
-  onArchive: (project: ProjectWithMetrics) => void;
   onDelete: (project: ProjectWithMetrics) => void;
 }
 
 export function ProjectListTable({
   projects,
-  selectedId,
+  extras,
   sortBy,
   sortDir,
-  now,
   onSortByColumn,
   onSelect,
-  onEdit,
-  onArchive,
   onDelete,
 }: ProjectListTableProps) {
   const t = useTranslations();
 
   return (
-    <div className="border-border/50 overflow-hidden rounded-lg border">
-      <Table className="table-fixed">
+    <div className="border-border/50 bg-card min-w-0 overflow-auto rounded-lg border">
+      <Table className="w-full table-fixed">
         <TableHeader>
-          <TableRow className="bg-muted/30 hover:bg-muted/30">
+          <TableRow className="bg-muted/60 hover:bg-muted/60">
             <SortableTableHeader
               sortKey="name"
               currentSortKey={sortBy}
               sortDir={sortDir}
               onSort={onSortByColumn}
               label={t('projects.list.table.name')}
-              className="w-[30%]"
+              className="w-[44%] min-w-0 px-4 py-3"
             />
 
             <SortableTableHeader
@@ -53,8 +48,8 @@ export function ProjectListTable({
               sortDir={sortDir}
               onSort={onSortByColumn}
               label={t('projects.list.table.status')}
-              className="border-border/30 border-l"
               centered
+              className="border-border/30 w-[14%] min-w-0 shrink-0 border-l px-4 py-3"
             />
 
             <SortableTableHeader
@@ -63,7 +58,7 @@ export function ProjectListTable({
               sortDir={sortDir}
               onSort={onSortByColumn}
               label={t('projects.list.table.surveys')}
-              className="border-border/30 border-l"
+              className="border-border/30 w-[14%] min-w-0 shrink-0 border-l px-5 py-3"
             />
 
             <SortableTableHeader
@@ -72,19 +67,20 @@ export function ProjectListTable({
               sortDir={sortDir}
               onSort={onSortByColumn}
               label={t('projects.list.table.responses')}
-              className="border-border/30 border-l"
+              className="border-border/30 w-[14%] min-w-0 shrink-0 border-l px-5 py-3"
             />
 
             <SortableTableHeader
-              sortKey="updated"
+              sortKey="activity"
               currentSortKey={sortBy}
               sortDir={sortDir}
               onSort={onSortByColumn}
-              label={t('projects.list.table.updated')}
-              className="border-border/30 hidden border-l xl:table-cell"
+              label={t('projects.list.table.activity')}
+              centered
+              className="border-border/30 hidden w-[14%] min-w-0 shrink-0 border-l px-4 py-3 md:table-cell"
             />
 
-            <TableHead className="w-10" aria-hidden />
+            <TableHead className="w-12 shrink-0 py-3" aria-hidden />
           </TableRow>
         </TableHeader>
 
@@ -93,11 +89,8 @@ export function ProjectListTable({
             <ProjectTableRow
               key={project.id}
               project={project}
-              isSelected={selectedId === project.id}
-              now={now}
+              extras={extras?.[project.id]}
               onSelect={onSelect}
-              onEdit={onEdit}
-              onArchive={onArchive}
               onDelete={onDelete}
             />
           ))}

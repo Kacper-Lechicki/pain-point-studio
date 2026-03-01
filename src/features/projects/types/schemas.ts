@@ -2,8 +2,8 @@ import { z } from 'zod';
 
 import {
   INSIGHT_CONTENT_MAX_LENGTH,
-  PROJECT_DESCRIPTION_MAX_LENGTH,
   PROJECT_NAME_MAX_LENGTH,
+  PROJECT_SUMMARY_MAX_LENGTH,
 } from '@/features/projects/config';
 
 import { INSIGHT_TYPES } from './project';
@@ -17,12 +17,13 @@ export const createProjectSchema = z.object({
     .trim()
     .min(1, 'projects.errors.fieldRequired')
     .max(PROJECT_NAME_MAX_LENGTH, 'projects.errors.nameTooLong'),
-  description: z
+  summary: z
     .string()
     .trim()
-    .max(PROJECT_DESCRIPTION_MAX_LENGTH, 'projects.errors.descriptionTooLong')
-    .optional()
-    .or(z.literal('')),
+    .min(1, 'projects.errors.fieldRequired')
+    .max(PROJECT_SUMMARY_MAX_LENGTH, 'projects.errors.summaryTooLong'),
+  /** Tiptap JSONContent from the rich editor (optional). */
+  description: z.any().optional(),
 });
 
 export type CreateProjectInput = z.infer<typeof createProjectSchema>;
@@ -35,15 +36,32 @@ export const updateProjectSchema = z.object({
     .trim()
     .min(1, 'projects.errors.fieldRequired')
     .max(PROJECT_NAME_MAX_LENGTH, 'projects.errors.nameTooLong'),
-  description: z
+  summary: z
     .string()
     .trim()
-    .max(PROJECT_DESCRIPTION_MAX_LENGTH, 'projects.errors.descriptionTooLong')
-    .optional()
-    .or(z.literal('')),
+    .min(1, 'projects.errors.fieldRequired')
+    .max(PROJECT_SUMMARY_MAX_LENGTH, 'projects.errors.summaryTooLong')
+    .optional(),
+  targetResponses: z.number().int().min(1).max(10000).optional(),
 });
 
 export type UpdateProjectInput = z.infer<typeof updateProjectSchema>;
+
+/** Schema for updating the rich description (auto-save). */
+export const updateProjectDescriptionSchema = z.object({
+  projectId: z.uuid(),
+  description: z.any().nullable(),
+});
+
+export type UpdateProjectDescriptionInput = z.infer<typeof updateProjectDescriptionSchema>;
+
+/** Schema for updating the project image URL. */
+export const updateProjectImageSchema = z.object({
+  projectId: z.uuid(),
+  imageUrl: z.string().url().or(z.literal('')),
+});
+
+export type UpdateProjectImageInput = z.infer<typeof updateProjectImageSchema>;
 
 // ── Insight schemas ─────────────────────────────────────────────────
 
@@ -73,3 +91,22 @@ export const updateInsightSchema = z.object({
 });
 
 export type UpdateInsightInput = z.infer<typeof updateInsightSchema>;
+
+/** Schema for reordering insights within a column. */
+export const reorderInsightsSchema = z.object({
+  insightIds: z.array(z.uuid()),
+});
+
+export type ReorderInsightsInput = z.infer<typeof reorderInsightsSchema>;
+
+/** Schema for moving an insight to a different column (type change + reorder). */
+export const moveInsightSchema = z.object({
+  insightId: z.uuid(),
+  newType: z.enum(INSIGHT_TYPES),
+  /** Ordered IDs of all insights in the TARGET column after the move. */
+  targetColumnInsightIds: z.array(z.uuid()),
+  /** Ordered IDs of all insights remaining in the SOURCE column after removal. */
+  sourceColumnInsightIds: z.array(z.uuid()),
+});
+
+export type MoveInsightInput = z.infer<typeof moveInsightSchema>;

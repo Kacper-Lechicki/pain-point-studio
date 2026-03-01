@@ -24,6 +24,8 @@ interface UseListStateOptions<TItem, TSortBy extends string> {
   defaultPerPage?: PerPage | undefined;
   /** Interval in ms for useNow. Defaults to 60_000. */
   nowUpdateInterval?: number | undefined;
+  /** Breakpoint above which table layout is used (below = cards). Defaults to 'md'. Use 'lg' to show cards one breakpoint earlier. */
+  layoutBreakpoint?: 'md' | 'lg' | undefined;
 
   /**
    * Returns the default sort direction for a given sort key.
@@ -75,13 +77,14 @@ export function useListState<TItem, TSortBy extends string>({
   defaultSortDir,
   defaultPerPage = 10,
   nowUpdateInterval = 60_000,
+  layoutBreakpoint = 'md',
   getDefaultSortDir,
   preFilter,
   searchFn,
   comparator,
 }: UseListStateOptions<TItem, TSortBy>): UseListStateReturn<TItem, TSortBy> {
   const now = useNow({ updateInterval: nowUpdateInterval });
-  const isMd = useBreakpoint('md');
+  const isMd = useBreakpoint(layoutBreakpoint);
   const resolvedDefaultDir = defaultSortDir ?? getDefaultSortDir(defaultSortBy);
 
   // ── Persisted state ────────────────────────────────────────────────

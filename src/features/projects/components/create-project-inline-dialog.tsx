@@ -44,7 +44,7 @@ export function CreateProjectInlineDialog({
     resolver: zodResolver(createProjectSchema),
     defaultValues: {
       name: '',
-      description: '',
+      summary: '',
     },
   });
 

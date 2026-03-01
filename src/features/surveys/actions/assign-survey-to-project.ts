@@ -7,7 +7,7 @@ import { withProtectedAction } from '@/lib/common/with-protected-action';
 
 const assignSurveyToProjectSchema = z.object({
   surveyId: z.uuid(),
-  projectId: z.uuid().nullable(),
+  projectId: z.uuid(),
 });
 
 export const assignSurveyToProject = withProtectedAction<typeof assignSurveyToProjectSchema, void>(

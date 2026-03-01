@@ -93,7 +93,7 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
     <>
       <div
         className={cn(
-          'bg-card group relative min-w-0 rounded-xl border p-4 shadow-sm transition-[box-shadow,border-color] sm:p-5',
+          'bg-card group relative min-w-0 rounded-lg border p-4 shadow-sm transition-[box-shadow,border-color] sm:p-5',
           'hover:border-border/80 hover:shadow-md',
           isArchived && 'opacity-50'
         )}

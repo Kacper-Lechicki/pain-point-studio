@@ -1,19 +1,21 @@
 'use client';
 
+import type { ReactNode } from 'react';
+
 import { useTranslations } from 'next-intl';
 
 import type { FilterGroup, FilterOption } from '@/components/ui/list-toolbar';
 import { ListToolbar } from '@/components/ui/list-toolbar';
 import { sortOptionsAlphabetically } from '@/lib/common/sort-options';
 
-export type SurveyStatusFilter = 'active' | 'draft' | 'completed' | 'cancelled';
+export type SurveyStatusFilter = 'active' | 'draft' | 'completed' | 'cancelled' | 'archived';
 export type SurveySortBy =
   | 'updated'
   | 'created'
   | 'responses'
   | 'title'
   | 'status'
-  | 'questions'
+  | 'completion'
   | 'lastResponse'
   | 'activity';
 
@@ -41,14 +43,25 @@ interface SurveyListToolbarProps {
   onSortByChange: (sort: SurveySortBy) => void;
   onSortDirChange: (dir: SurveySortDir) => void;
   statusCounts: Record<string, number>;
+  /** Hide the project filter group (used in project context where all surveys belong to one project). */
+  hideProjectFilter?: boolean;
+  /** Extra content rendered after the sort dropdown (e.g. action buttons). */
+  actions?: ReactNode | undefined;
 }
 
 const STATUS_OPTIONS: SurveyStatusFilter[] = ['active', 'draft', 'completed', 'cancelled'];
+const STATUS_OPTIONS_WITH_ARCHIVED: SurveyStatusFilter[] = [
+  'active',
+  'draft',
+  'completed',
+  'cancelled',
+  'archived',
+];
 
 const SORT_OPTIONS: SurveySortBy[] = [
   'title',
   'status',
-  'questions',
+  'completion',
   'responses',
   'lastResponse',
   'activity',
@@ -69,13 +82,17 @@ export const SurveyListToolbar = ({
   onSortByChange,
   onSortDirChange,
   statusCounts,
+  hideProjectFilter,
+  actions,
 }: SurveyListToolbarProps) => {
   const t = useTranslations();
+
+  const effectiveStatusOptions = hideProjectFilter ? STATUS_OPTIONS_WITH_ARCHIVED : STATUS_OPTIONS;
 
   const statusGroup: FilterGroup = {
     label: t('surveys.dashboard.filters.statusSection'),
     options: sortOptionsAlphabetically(
-      STATUS_OPTIONS.map((s) => ({
+      effectiveStatusOptions.map((s) => ({
         value: s,
         label: t(`surveys.dashboard.filters.${s}`),
         count: statusCounts[s] ?? 0,
@@ -85,33 +102,35 @@ export const SurveyListToolbar = ({
     onChange: onStatusFilterChange as (selected: string[]) => void,
   };
 
-  // Build project filter options: named projects + "No project" sentinel
-  const noProjectCount = projectOptions.find((p) => p.id === NO_PROJECT_FILTER_ID)?.count ?? 0;
-
-  const projectFilterOptions: FilterOption[] = sortOptionsAlphabetically(
-    projectOptions
-      .filter((p) => p.id !== NO_PROJECT_FILTER_ID)
-      .map((p) => ({ value: p.id, label: p.name, count: p.count }))
-  );
-
-  if (noProjectCount > 0) {
-    projectFilterOptions.push({
-      value: NO_PROJECT_FILTER_ID,
-      label: t('surveys.dashboard.filters.noProject'),
-      count: noProjectCount,
-      labelClassName: 'text-muted-foreground italic',
-    });
-  }
-
   const filterGroups: FilterGroup[] = [statusGroup];
 
-  if (projectFilterOptions.length > 0) {
-    filterGroups.push({
-      label: t('surveys.dashboard.filters.projectSection'),
-      options: projectFilterOptions,
-      selected: projectFilter,
-      onChange: onProjectFilterChange,
-    });
+  if (!hideProjectFilter) {
+    // Build project filter options: named projects + "No project" sentinel
+    const noProjectCount = projectOptions.find((p) => p.id === NO_PROJECT_FILTER_ID)?.count ?? 0;
+
+    const projectFilterOptions: FilterOption[] = sortOptionsAlphabetically(
+      projectOptions
+        .filter((p) => p.id !== NO_PROJECT_FILTER_ID)
+        .map((p) => ({ value: p.id, label: p.name, count: p.count }))
+    );
+
+    if (noProjectCount > 0) {
+      projectFilterOptions.push({
+        value: NO_PROJECT_FILTER_ID,
+        label: t('surveys.dashboard.filters.noProject'),
+        count: noProjectCount,
+        labelClassName: 'text-muted-foreground italic',
+      });
+    }
+
+    if (projectFilterOptions.length > 0) {
+      filterGroups.push({
+        label: t('surveys.dashboard.filters.projectSection'),
+        options: projectFilterOptions,
+        selected: projectFilter,
+        onChange: onProjectFilterChange,
+      });
+    }
   }
 
   const sortOptions = sortOptionsAlphabetically(
@@ -136,6 +155,7 @@ export const SurveyListToolbar = ({
         desc: t('surveys.dashboard.sort.desc'),
       }}
       sortLabel={t(`surveys.dashboard.sort.${sortBy}`)}
+      actions={actions}
     />
   );
 };

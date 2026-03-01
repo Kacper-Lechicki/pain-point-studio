@@ -19,8 +19,10 @@ interface SidebarItemProps {
   icon: LucideIcon;
   href: AppRoute;
   activePrefix?: string | undefined;
+  additionalPrefixes?: readonly string[] | undefined;
   isExpanded: boolean;
   hasSubNav?: boolean | undefined;
+  showChevron?: boolean | undefined;
   disabled?: boolean | undefined;
 }
 
@@ -29,17 +31,23 @@ export function SidebarItem({
   icon: Icon,
   href,
   activePrefix,
+  additionalPrefixes,
   isExpanded,
   hasSubNav,
+  showChevron,
   disabled,
 }: SidebarItemProps) {
   const pathname = usePathname();
   const t = useTranslations();
   const matchPath = activePrefix ?? href;
 
-  const isActive = hasSubNav
+  let isActive = hasSubNav
     ? pathname === matchPath || pathname.startsWith(matchPath + '/')
     : pathname === matchPath;
+
+  if (!isActive && hasSubNav && additionalPrefixes) {
+    isActive = additionalPrefixes.some((p) => pathname === p || pathname.startsWith(p + '/'));
+  }
 
   const label = t(labelKey);
 
@@ -65,7 +73,7 @@ export function SidebarItem({
         {label}
       </span>
 
-      {isExpanded && hasSubNav && (
+      {isExpanded && (hasSubNav || showChevron) && (
         <ChevronRight className="size-4 shrink-0 opacity-50" aria-hidden />
       )}
     </>

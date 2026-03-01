@@ -1,11 +1,19 @@
+import { redirect } from 'next/navigation';
+
 import { getTranslations } from 'next-intl/server';
 
 import { PageTransition } from '@/components/ui/page-transition';
+import { ROUTES } from '@/config/routes';
+import { getAuthUser } from '@/features/auth/actions/get-user';
 import { DASHBOARD_PAGE_BODY_GAP } from '@/features/dashboard/config/layout';
-import { CreateProjectForm } from '@/features/projects/components/create-project-form';
+import { CreateProjectWizard } from '@/features/projects/components/create-project-wizard';
 
 export default async function NewProjectPage() {
-  const t = await getTranslations();
+  const [t, user] = await Promise.all([getTranslations(), getAuthUser()]);
+
+  if (!user) {
+    redirect(ROUTES.auth.signIn);
+  }
 
   return (
     <PageTransition>
@@ -14,7 +22,7 @@ export default async function NewProjectPage() {
         <p className="text-muted-foreground mt-1 text-sm">{t('projects.create.pageDescription')}</p>
       </div>
 
-      <CreateProjectForm />
+      <CreateProjectWizard userId={user.id} />
     </PageTransition>
   );
 }

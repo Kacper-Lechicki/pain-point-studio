@@ -1,146 +1,149 @@
-import { Clock, Eye, ListChecks, MousePointerClick, Percent, Timer, Users } from 'lucide-react';
+import { Eye, Percent, Timer, Users } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { SectionLabel } from '@/components/ui/metric-display';
+import { BENTO_CARD_CLASS } from '@/features/dashboard/components/bento/bento-styles';
 import { formatCompletionTime } from '@/features/surveys/lib/calculations';
 import { cn } from '@/lib/common/utils';
+
+// ── Helpers ─────────────────────────────────────────────────────────
+
+function getCompletionColor(pct: number) {
+  if (pct >= 70) {
+    return {
+      bar: 'bg-emerald-500',
+      text: 'text-emerald-600 dark:text-emerald-400',
+      border: 'border-l-emerald-500',
+    };
+  }
+
+  if (pct >= 40) {
+    return {
+      bar: 'bg-amber-500',
+      text: 'text-amber-600 dark:text-amber-400',
+      border: 'border-l-amber-500',
+    };
+  }
+
+  return {
+    bar: 'bg-rose-500',
+    text: 'text-rose-600 dark:text-rose-400',
+    border: 'border-l-rose-500',
+  };
+}
+
+// ── Component ───────────────────────────────────────────────────────
 
 interface DetailMetricsGridProps {
   viewCount: number;
   completedCount: number;
-  responseCount: number;
   maxRespondents: number | null;
   submissionRate: number | null;
-  avgQuestionCompletion: number | null;
   avgCompletionSeconds: number | null;
-  lastResponseLabel: string | null;
   respondentProgress: number | null;
-  isActive: boolean;
-  wide?: boolean;
+}
+
+function KpiCard({
+  icon: Icon,
+  label,
+  value,
+  accentBorder,
+  valueClassName,
+  children,
+}: {
+  icon: LucideIcon;
+  label: string;
+  value: React.ReactNode;
+  accentBorder: string;
+  valueClassName?: string | undefined;
+  children?: React.ReactNode;
+}) {
+  return (
+    <div className={cn(BENTO_CARD_CLASS, 'border-l-2 p-4', accentBorder)}>
+      <div className="flex items-center justify-between">
+        <p className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
+          {label}
+        </p>
+        <Icon className="text-muted-foreground/50 size-4 shrink-0" aria-hidden />
+      </div>
+
+      <div
+        className={cn(
+          'text-foreground mt-2 text-2xl leading-none font-bold tracking-tight tabular-nums',
+          valueClassName
+        )}
+      >
+        {value}
+      </div>
+
+      {children}
+    </div>
+  );
 }
 
 export function DetailMetricsGrid({
   viewCount,
   completedCount,
-  responseCount,
   maxRespondents,
   submissionRate,
-  avgQuestionCompletion,
   avgCompletionSeconds,
-  lastResponseLabel,
   respondentProgress,
-  isActive,
-  wide = false,
 }: DetailMetricsGridProps) {
-  const inProgressCount = responseCount - completedCount;
   const completionTimeLabel = formatCompletionTime(avgCompletionSeconds);
   const t = useTranslations();
 
+  const rateColors = submissionRate != null ? getCompletionColor(submissionRate) : null;
+
   return (
-    <>
-      <SectionLabel>{t('surveys.dashboard.detailPanel.metricsLabel')}</SectionLabel>
-      <div className={cn('grid grid-cols-2 gap-2', wide && 'sm:grid-cols-3 lg:grid-cols-4')}>
-        <div className="border-border/50 rounded-md border px-3 py-2.5">
-          <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
-            {viewCount}
-          </div>
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      {/* Views */}
+      <KpiCard
+        icon={Eye}
+        label={t('surveys.dashboard.detailPanel.views')}
+        value={viewCount}
+        accentBorder="border-l-[var(--chart-violet)]"
+      />
 
-          <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
-            <Eye className="mt-0.5 size-3 shrink-0" aria-hidden />
-            {t('surveys.dashboard.detailPanel.views')}
-          </div>
-        </div>
-
-        <div className="border-border/50 rounded-md border px-3 py-2.5">
-          <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
-            {responseCount}
-          </div>
-
-          <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
-            <MousePointerClick className="mt-0.5 size-3 shrink-0" aria-hidden />
-            {t('surveys.dashboard.detailPanel.participants')}
-          </div>
-        </div>
-
-        <div className="border-border/50 rounded-md border px-3 py-2.5">
-          <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
+      {/* Responses */}
+      <KpiCard
+        icon={Users}
+        label={t('surveys.dashboard.detailPanel.responses')}
+        value={
+          <>
             {completedCount}
             {maxRespondents != null && (
-              <span className="text-muted-foreground text-xs font-normal"> / {maxRespondents}</span>
+              <span className="text-muted-foreground text-sm font-normal"> / {maxRespondents}</span>
             )}
-          </div>
-
-          <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
-            <Users className="mt-0.5 size-3 shrink-0" aria-hidden />
-            {t('surveys.dashboard.detailPanel.responses')}
-          </div>
-
-          {respondentProgress != null && (
-            <div className="bg-muted mt-2 h-1 w-full overflow-hidden rounded-full">
-              <div
-                className="h-full rounded-full bg-emerald-500 transition-all"
-                style={{ width: `${respondentProgress}%` }}
-              />
-            </div>
-          )}
-        </div>
-
-        {isActive && (
-          <div className="border-border/50 rounded-md border px-3 py-2.5">
-            <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
-              {inProgressCount}
-            </div>
-
-            <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
-              <Clock className="mt-0.5 size-3 shrink-0" aria-hidden />
-              {t('surveys.dashboard.detailPanel.inProgress')}
-            </div>
+          </>
+        }
+        accentBorder="border-l-[var(--chart-cyan)]"
+      >
+        {respondentProgress != null && (
+          <div className="bg-muted mt-2.5 h-1.5 w-full overflow-hidden rounded-full">
+            <div
+              className="h-full rounded-full bg-emerald-500 transition-all"
+              style={{ width: `${respondentProgress}%` }}
+            />
           </div>
         )}
+      </KpiCard>
 
-        <div className="border-border/50 rounded-md border px-3 py-2.5">
-          <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
-            {submissionRate != null ? `${submissionRate}%` : '—'}
-          </div>
+      {/* Submission Rate */}
+      <KpiCard
+        icon={Percent}
+        label={t('surveys.dashboard.detailPanel.submissionRate')}
+        value={submissionRate != null ? `${submissionRate}%` : '—'}
+        accentBorder={rateColors?.border ?? 'border-l-border'}
+        valueClassName={rateColors?.text}
+      />
 
-          <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
-            <Percent className="mt-0.5 size-3 shrink-0" aria-hidden />
-            {t('surveys.dashboard.detailPanel.submissionRate')}
-          </div>
-        </div>
-
-        <div className="border-border/50 rounded-md border px-3 py-2.5">
-          <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
-            {avgQuestionCompletion != null ? `${avgQuestionCompletion}%` : '—'}
-          </div>
-
-          <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
-            <ListChecks className="mt-0.5 size-3 shrink-0" aria-hidden />
-            {t('surveys.dashboard.detailPanel.avgQuestionCompletion')}
-          </div>
-        </div>
-
-        <div className="border-border/50 rounded-md border px-3 py-2.5">
-          <div className="text-foreground text-lg leading-none font-semibold tabular-nums">
-            {completionTimeLabel ?? '—'}
-          </div>
-
-          <div className="text-muted-foreground mt-1.5 flex items-start gap-1 text-[11px]">
-            <Timer className="mt-0.5 size-3 shrink-0" aria-hidden />
-            {t('surveys.dashboard.detailPanel.avgCompletionTime')}
-          </div>
-        </div>
-
-        <div className="border-border/50 rounded-md border px-3 py-2.5">
-          <div className="text-foreground text-sm leading-none font-semibold">
-            {lastResponseLabel ?? '—'}
-          </div>
-
-          <div className="text-muted-foreground mt-1.5 text-[11px]">
-            {t('surveys.dashboard.detailPanel.lastResponse')}
-          </div>
-        </div>
-      </div>
-    </>
+      {/* Avg Completion Time */}
+      <KpiCard
+        icon={Timer}
+        label={t('surveys.dashboard.detailPanel.avgCompletionTime')}
+        value={completionTimeLabel ?? '—'}
+        accentBorder="border-l-emerald-500"
+      />
+    </div>
   );
 }

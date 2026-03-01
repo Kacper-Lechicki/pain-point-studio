@@ -44,12 +44,6 @@ export function RefreshRealtimeButton({
 
   return (
     <div className="flex items-center gap-1.5">
-      {elapsed && (
-        <span className="text-muted-foreground hidden text-[11px] tabular-nums sm:inline">
-          {elapsed}
-        </span>
-      )}
-
       <div className="relative">
         <Button
           variant="ghost"
@@ -70,6 +64,12 @@ export function RefreshRealtimeButton({
           aria-hidden
         />
       </div>
+
+      {elapsed && (
+        <span className="text-muted-foreground hidden text-[11px] tabular-nums sm:inline">
+          {elapsed}
+        </span>
+      )}
     </div>
   );
 }

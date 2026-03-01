@@ -18,6 +18,8 @@ interface UseSurveyListStateOptions<TSortKey extends string> {
   defaultSortBy: TSortKey;
   defaultSortDir?: SortDir;
   defaultPerPage?: PerPage;
+  /** Breakpoint above which table layout is used (below = cards). Defaults to 'md'. */
+  layoutBreakpoint?: 'md' | 'lg' | undefined;
   /** Pre-filters surveys before search/sort (e.g. exclude archived). */
   preFilter?: (survey: UserSurvey) => boolean;
   /** List-specific comparator for sort keys not handled by `getSurveyComparator`. */
@@ -36,6 +38,7 @@ export function useSurveyListState<TSortKey extends string>({
   defaultSortBy,
   defaultSortDir,
   defaultPerPage = 10,
+  layoutBreakpoint,
   preFilter,
   customComparator,
 }: UseSurveyListStateOptions<TSortKey>) {
@@ -73,6 +76,7 @@ export function useSurveyListState<TSortKey extends string>({
     defaultSortDir,
     defaultPerPage,
     nowUpdateInterval: NOW_UPDATE_INTERVAL_MS,
+    layoutBreakpoint,
     getDefaultSortDir,
     preFilter,
     searchFn,

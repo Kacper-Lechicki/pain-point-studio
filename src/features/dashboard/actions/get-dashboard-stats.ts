@@ -14,9 +14,11 @@ const timelinePointSchema = z.object({
   count: z.number(),
 });
 
-const completionPointSchema = z.object({
+const completionTimelinePointSchema = z.object({
   date: z.string(),
-  rate: z.number(),
+  completed: z.number(),
+  inProgress: z.number(),
+  abandoned: z.number(),
 });
 
 const activityItemSchema = z.object({
@@ -34,7 +36,7 @@ const dashboardStatsSchema = z.object({
   avgCompletionRate: z.number(),
   prevAvgCompletionRate: z.number().nullable(),
   responsesTimeline: z.array(timelinePointSchema),
-  completionTimeline: z.array(completionPointSchema),
+  completionTimeline: z.array(completionTimelinePointSchema).default([]),
   recentActivity: z.array(activityItemSchema),
 });
 

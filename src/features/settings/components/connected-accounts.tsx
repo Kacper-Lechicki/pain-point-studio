@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
-import { Info, KeyRound, LinkIcon, Unlink } from 'lucide-react';
+import { Info, KeyRound, Link2, Link as LinkIcon, Unlink } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -71,12 +71,13 @@ const ConnectedAccounts = ({ identities, hasPassword }: ConnectedAccountsProps) 
   return (
     <section className="space-y-8">
       <SettingsSectionHeader
+        icon={Link2}
         title={t('settings.connectedAccounts.title')}
         description={t('settings.connectedAccounts.description')}
       />
 
       <div className="space-y-3">
-        <div className="bg-muted/30 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-xl border p-4">
+        <div className="bg-muted/30 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-lg border p-4">
           <div className="flex min-w-0 items-center gap-3">
             <KeyRound className="size-5 shrink-0" aria-hidden="true" />
 
@@ -113,7 +114,7 @@ const ConnectedAccounts = ({ identities, hasPassword }: ConnectedAccountsProps) 
           return (
             <div
               key={providerConfig.id}
-              className="bg-muted/30 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-xl border p-4"
+              className="bg-muted/30 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-lg border p-4"
             >
               <div className="flex min-w-0 items-center gap-3">
                 <Icon className="size-5 shrink-0" aria-hidden="true" />

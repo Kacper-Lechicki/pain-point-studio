@@ -12,6 +12,7 @@ import {
   MobileNavSubLevel,
 } from '@/features/dashboard/components/layout/mobile-nav-levels';
 import { useSidebar } from '@/features/dashboard/components/layout/sidebar-provider';
+import { useSubPanelItems } from '@/features/dashboard/components/layout/sub-panel-items-context';
 import type { NavItem } from '@/features/dashboard/config/navigation';
 import { getHash } from '@/features/dashboard/hooks/use-hash-sync';
 import { findActiveNavItem } from '@/features/dashboard/lib/nav-utils';
@@ -24,6 +25,7 @@ export function MobileNav() {
   const pathname = usePathname();
   const t = useTranslations();
   const breadcrumb = useBreadcrumbContext();
+  const subPanelItems = useSubPanelItems();
 
   const [activeLevel, setActiveLevel] = useState<'main' | 'sub'>('main');
   const [selectedItem, setSelectedItem] = useState<NavItem | null>(null);
@@ -151,6 +153,8 @@ export function MobileNav() {
                 onBack={handleBack}
                 onNavigate={() => setMobileOpen(false)}
                 breadcrumbSegments={breadcrumb?.segments}
+                subPanelLinks={subPanelItems?.links}
+                subPanelBottomLinks={subPanelItems?.bottomLinks}
               />
             </motion.div>
           )}

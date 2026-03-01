@@ -8,7 +8,12 @@ import { scopedEmail } from './helpers/auth';
 import { url } from './helpers/routes';
 import { E2E_PASSWORD } from './helpers/selectors';
 import { deleteUserByEmail, ensureUser } from './helpers/supabase-admin';
-import { createSurveyWithQuestions, generateSlug, updateSurveyViaDb } from './helpers/survey-admin';
+import {
+  createProjectViaDb,
+  createSurveyWithQuestions,
+  generateSlug,
+  updateSurveyViaDb,
+} from './helpers/survey-admin';
 
 // ─────────────────────────────────────────────────────────────────
 // Respondent – Full Flow
@@ -19,10 +24,11 @@ test.describe('Respondent – Full Flow', () => {
   test.beforeAll(async ({}, testInfo) => {
     const email = scopedEmail('e2e-respondent-flow', testInfo.project.name);
     const userId = await ensureUser(email, E2E_PASSWORD);
+    const projectId = await createProjectViaDb(userId, 'E2E Respondent Flow');
 
     slug = generateSlug();
 
-    await createSurveyWithQuestions(userId, { status: 'active', slug }, 2);
+    await createSurveyWithQuestions(userId, { status: 'active', slug, projectId }, 2);
   });
 
   test.afterAll(async ({}, testInfo) => {
@@ -88,13 +94,14 @@ test.describe('Respondent – Closed Survey', () => {
   test.beforeAll(async ({}, testInfo) => {
     const email = scopedEmail('e2e-respondent-closed', testInfo.project.name);
     const userId = await ensureUser(email, E2E_PASSWORD);
+    const projectId = await createProjectViaDb(userId, 'E2E Respondent Closed');
 
     // Create an active survey, then mark as completed
     completedSlug = generateSlug();
 
     const { surveyId } = await createSurveyWithQuestions(
       userId,
-      { status: 'active', slug: completedSlug },
+      { status: 'active', slug: completedSlug, projectId },
       1
     );
 

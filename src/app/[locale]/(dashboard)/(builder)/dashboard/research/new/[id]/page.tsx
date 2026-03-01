@@ -1,9 +1,9 @@
 import { notFound, redirect } from 'next/navigation';
 
 import { PageTransition } from '@/components/ui/page-transition';
-import { ROUTES } from '@/config';
 import { getSurveyFormData, getSurveyWithQuestions } from '@/features/surveys/actions';
 import { QuestionBuilderPage } from '@/features/surveys/components/builder/question-builder-page';
+import { getSurveyStatsUrl } from '@/features/surveys/lib/survey-urls';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -19,7 +19,7 @@ export default async function SurveyBuilderRoute({ params }: Props) {
   }
 
   if (data.survey.status !== 'draft') {
-    redirect(`${ROUTES.dashboard.research}/${id}`);
+    redirect(getSurveyStatsUrl(id));
   }
 
   return (
@@ -28,6 +28,7 @@ export default async function SurveyBuilderRoute({ params }: Props) {
         surveyId={data.survey.id}
         surveyTitle={data.survey.title}
         surveyStatus={data.survey.status}
+        projectId={data.survey.projectId}
         surveyMetadata={{
           description: data.survey.description,
           visibility: data.survey.visibility,

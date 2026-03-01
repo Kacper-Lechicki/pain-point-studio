@@ -8,11 +8,24 @@ export const updateProject = withProtectedAction<typeof updateProjectSchema>('up
   schema: updateProjectSchema,
   rateLimit: RATE_LIMITS.crud,
   action: async ({ data, user, supabase }) => {
+    const { data: existing } = await supabase
+      .from('projects')
+      .select('id')
+      .eq('user_id', user.id)
+      .ilike('name', data.name)
+      .neq('id', data.projectId)
+      .maybeSingle();
+
+    if (existing) {
+      return { error: 'projects.errors.nameAlreadyExists' };
+    }
+
     const { data: row, error } = await supabase
       .from('projects')
       .update({
         name: data.name,
-        description: data.description || null,
+        summary: data.summary || null,
+        ...(data.targetResponses != null && { target_responses: data.targetResponses }),
       })
       .eq('id', data.projectId)
       .eq('user_id', user.id)

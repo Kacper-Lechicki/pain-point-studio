@@ -13,6 +13,8 @@ interface SurveyListRowProps {
   onStatusChange: (surveyId: string, action: string) => void;
   variant?: 'table' | 'card';
   archivedLayout?: boolean;
+  /** When true, hides project badge, simplifies actions, and adjusts columns. */
+  isProjectContext?: boolean | undefined;
 }
 
 export function SurveyListRow({
@@ -23,6 +25,7 @@ export function SurveyListRow({
   onStatusChange,
   variant = 'table',
   archivedLayout = false,
+  isProjectContext,
 }: SurveyListRowProps) {
   const row = useSurveyRow(survey, now, onStatusChange);
 
@@ -34,6 +37,7 @@ export function SurveyListRow({
         onSelect={onSelect}
         row={row}
         archivedLayout={archivedLayout}
+        isProjectContext={isProjectContext}
       />
     );
   }
@@ -45,6 +49,7 @@ export function SurveyListRow({
       onSelect={onSelect}
       row={row}
       archivedLayout={archivedLayout}
+      isProjectContext={isProjectContext}
     />
   );
 }

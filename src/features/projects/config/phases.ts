@@ -6,6 +6,7 @@ import type { ResearchPhase } from '@/features/projects/types';
 export interface PhaseConfig {
   labelKey: string;
   descriptionKey: string;
+  ariaLabelKey: string;
   icon: LucideIcon;
   colors: {
     bg: string;
@@ -20,6 +21,7 @@ export const PHASE_CONFIG: Record<ResearchPhase, PhaseConfig> = {
   idea: {
     labelKey: 'projects.phases.idea',
     descriptionKey: 'projects.phases.ideaDescription',
+    ariaLabelKey: 'projects.phases.ariaLabel',
     icon: Lightbulb,
     colors: {
       bg: 'bg-amber-50 dark:bg-amber-950/30',
@@ -31,6 +33,7 @@ export const PHASE_CONFIG: Record<ResearchPhase, PhaseConfig> = {
   research: {
     labelKey: 'projects.phases.research',
     descriptionKey: 'projects.phases.researchDescription',
+    ariaLabelKey: 'projects.phases.ariaLabel',
     icon: Search,
     colors: {
       bg: 'bg-sky-50 dark:bg-sky-950/30',
@@ -42,6 +45,7 @@ export const PHASE_CONFIG: Record<ResearchPhase, PhaseConfig> = {
   validation: {
     labelKey: 'projects.phases.validation',
     descriptionKey: 'projects.phases.validationDescription',
+    ariaLabelKey: 'projects.phases.ariaLabel',
     icon: FlaskConical,
     colors: {
       bg: 'bg-violet-50 dark:bg-violet-950/30',
@@ -53,6 +57,7 @@ export const PHASE_CONFIG: Record<ResearchPhase, PhaseConfig> = {
   decision: {
     labelKey: 'projects.phases.decision',
     descriptionKey: 'projects.phases.decisionDescription',
+    ariaLabelKey: 'projects.phases.ariaLabel',
     icon: Scale,
     colors: {
       bg: 'bg-emerald-50 dark:bg-emerald-950/30',

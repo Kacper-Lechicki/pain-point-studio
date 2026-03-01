@@ -1,6 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+
+import { useRouter } from 'next/navigation';
 
 import { ClipboardList } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -21,16 +23,32 @@ import {
 import { useSurveyListState } from '@/features/surveys/hooks/use-survey-list-state';
 import { useSurveySelection } from '@/features/surveys/hooks/use-survey-selection';
 import { applyOptimisticStatusChange } from '@/features/surveys/lib/status-change-handler';
+import { getSurveyDetailUrl } from '@/features/surveys/lib/survey-urls';
 import { useRefresh } from '@/hooks/common/use-refresh';
 
 import { SurveyListToolbar, type SurveySortBy } from './survey-list-toolbar';
 
 interface SurveyListProps {
   initialSurveys: UserSurvey[];
+  /** When set, the list runs in project context (hides project filter, shows archived status). */
+  projectId?: string | undefined;
+  /** Callback to open the "create survey" dialog (rendered by the parent). */
+  onCreateSurvey?: (() => void) | undefined;
+  /** Total responses across all surveys in this project (project context only). */
+  totalResponses?: number | undefined;
+  /** Project-level target responses cap (project context only). */
+  targetResponses?: number | undefined;
 }
 
-export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
+export const SurveyList = ({
+  initialSurveys,
+  projectId,
+  onCreateSurvey,
+  totalResponses,
+  targetResponses,
+}: SurveyListProps) => {
   const t = useTranslations();
+  const router = useRouter();
   const { isRefreshing, refresh, lastSyncedAt, markSynced } = useRefresh();
   const [surveys, setSurveys] = useState(initialSurveys);
 
@@ -38,8 +56,14 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
     setSurveys(initialSurveys);
   }, [initialSurveys]);
 
+  const isProjectContext = !!projectId;
+
   const hasActiveSurveys = surveys.some((s) => s.status === 'active');
-  const { isConnected: isRealtimeConnected } = useRealtimeSurveyList(markSynced, hasActiveSurveys);
+  // In project context, realtime is managed at the project level — skip here to avoid double subscriptions.
+  const { isConnected: isRealtimeConnected } = useRealtimeSurveyList(
+    markSynced,
+    hasActiveSurveys && !isProjectContext
+  );
 
   const {
     statusFilter,
@@ -51,7 +75,7 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
     projectOptions,
     kpiStatuses,
     isFiltered,
-  } = useSurveyListFilters(surveys);
+  } = useSurveyListFilters(surveys, { projectContext: isProjectContext });
 
   const {
     now,
@@ -68,8 +92,9 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
     pagination,
   } = useSurveyListState<SurveySortBy>({
     surveys,
-    storageKey: 'surveyList',
+    storageKey: projectId ? `surveyList:${projectId}` : 'surveyList',
     defaultSortBy: 'updated',
+    layoutBreakpoint: isProjectContext ? 'lg' : undefined,
     preFilter,
     customComparator: SURVEY_LIST_COMPARATOR,
   });
@@ -77,12 +102,22 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
   const { selectedId, selectedSurvey, questions, showSheet, setSelected } =
     useSurveySelection(surveys);
 
+  // In project context, clicking a row navigates to the survey detail page.
+  const handleNavigate = useCallback(
+    (surveyId: string) => router.push(getSurveyDetailUrl(surveyId)),
+    [router]
+  );
+
+  const onSelect = isProjectContext ? handleNavigate : setSelected;
+
   const handleStatusChange = (surveyId: string, action: string) => {
+    // In project context, archived surveys stay visible — don't deselect on archive.
+    const deselectStatuses = isProjectContext ? [] : ['archived'];
     const { shouldDeselect, updatedSurveys } = applyOptimisticStatusChange(
       surveys,
       surveyId,
       action,
-      ['archived']
+      deselectStatuses
     );
 
     if (shouldDeselect && selectedId === surveyId) {
@@ -102,6 +137,10 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
         isRealtimeConnected={isRealtimeConnected}
         lastSyncedAt={lastSyncedAt}
         onRefresh={refresh}
+        isProjectContext={isProjectContext}
+        totalResponses={totalResponses}
+        targetResponses={targetResponses}
+        onCreateSurvey={onCreateSurvey}
       />
 
       <SurveyListToolbar
@@ -117,6 +156,7 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
         onSortByChange={handleSortByChange}
         onSortDirChange={setSortDir}
         statusCounts={statusCounts}
+        hideProjectFilter={isProjectContext}
       />
 
       {filteredSurveys.length === 0 ? (
@@ -151,13 +191,14 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
       ) : isMd ? (
         <SurveyListTable
           surveys={paginatedSurveys}
-          selectedId={selectedId}
+          selectedId={isProjectContext ? null : selectedId}
           sortBy={sortBy}
           sortDir={sortDir}
           now={now}
           onSortByColumn={handleSortByColumn}
-          onSelect={setSelected}
+          onSelect={onSelect}
           onStatusChange={handleStatusChange}
+          isProjectContext={isProjectContext}
         />
       ) : (
         <div className="flex min-w-0 flex-col gap-2" role="list">
@@ -166,10 +207,11 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
               key={survey.id}
               survey={survey}
               now={now}
-              isSelected={selectedId === survey.id}
-              onSelect={setSelected}
+              isSelected={!isProjectContext && selectedId === survey.id}
+              onSelect={onSelect}
               onStatusChange={handleStatusChange}
               variant="card"
+              isProjectContext={isProjectContext}
             />
           ))}
         </div>
@@ -192,15 +234,17 @@ export const SurveyList = ({ initialSurveys }: SurveyListProps) => {
         />
       )}
 
-      <SurveyDetailSheet
-        open={showSheet}
-        onClose={() => setSelected(null)}
-        survey={selectedSurvey}
-        questions={questions}
-        now={now}
-        onStatusChange={handleStatusChange}
-        detailsLabel={t('surveys.dashboard.detailPanel.detailsLabel')}
-      />
+      {!isProjectContext && (
+        <SurveyDetailSheet
+          open={showSheet}
+          onClose={() => setSelected(null)}
+          survey={selectedSurvey}
+          questions={questions}
+          now={now}
+          onStatusChange={handleStatusChange}
+          detailsLabel={t('surveys.dashboard.detailPanel.detailsLabel')}
+        />
+      )}
     </div>
   );
 };

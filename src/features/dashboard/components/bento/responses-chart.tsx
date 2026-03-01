@@ -2,9 +2,9 @@
 
 import { useMemo } from 'react';
 
-import { BarChart2 } from 'lucide-react';
+import { LineChart as LineChartIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts';
 
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -13,10 +13,15 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { BENTO_CARD_CLASS } from '@/features/dashboard/components/bento/bento-styles';
+import {
+  BENTO_CARD_CLASS,
+  BENTO_EMPTY_STATE_MIN_H,
+} from '@/features/dashboard/components/bento/bento-styles';
 import { useElementSize } from '@/features/dashboard/hooks/use-element-size';
 import type { TimelinePoint } from '@/features/dashboard/types/dashboard-stats';
 import { cn } from '@/lib/common/utils';
+
+const CHART_MARGIN = { left: 0, right: 4, top: 4, bottom: 4 };
 
 interface ResponsesChartProps {
   data: TimelinePoint[];
@@ -31,7 +36,7 @@ export const ResponsesChart = ({ data, className }: ResponsesChartProps) => {
   const chartConfig = {
     responses: {
       label: t('charts.responses'),
-      color: 'var(--chart-cyan)',
+      color: 'var(--chart-violet)',
     },
   } satisfies ChartConfig;
 
@@ -54,50 +59,47 @@ export const ResponsesChart = ({ data, className }: ResponsesChartProps) => {
 
   return (
     <Card className={cn(BENTO_CARD_CLASS, 'flex h-full min-w-0 flex-col')}>
-      <CardContent className="flex min-h-0 flex-1 flex-col gap-2 px-4 pt-4 pb-0">
+      <CardContent className="flex min-h-0 flex-1 flex-col gap-2 p-4">
         <div className="flex shrink-0 items-center justify-between gap-2">
           <p className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
             {t('charts.responsesOverTime')}
           </p>
-          <BarChart2 className="text-chart-cyan size-4 shrink-0" />
+          <LineChartIcon className="text-chart-violet size-4 shrink-0" />
         </div>
 
         {!hasData ? (
-          <div className="text-muted-foreground flex min-h-52 flex-1 items-center justify-center text-sm">
-            {t('charts.noData')}
+          <div
+            className={cn(
+              'flex flex-1 flex-col items-center justify-center gap-2 text-center',
+              BENTO_EMPTY_STATE_MIN_H
+            )}
+          >
+            <LineChartIcon className="text-muted-foreground/50 size-8 shrink-0" aria-hidden />
+            <p className="text-muted-foreground text-sm">{t('charts.noData')}</p>
           </div>
         ) : (
-          <div ref={chartContainerRef} className="min-h-52 min-w-0 flex-1">
+          <div ref={chartContainerRef} className={cn('min-w-0 flex-1', BENTO_EMPTY_STATE_MIN_H)}>
             {chartWidth > 0 && chartHeight > 0 && (
               <ChartContainer
                 config={chartConfig}
                 dimensions={{ width: chartWidth, height: chartHeight }}
                 className={cn('text-xs', className)}
               >
-                <AreaChart data={chartData} margin={{ left: 0, right: 4, top: 4, bottom: 4 }}>
-                  <defs>
-                    <linearGradient id="fillResponses" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="var(--color-responses)" stopOpacity={0.15} />
-                      <stop offset="95%" stopColor="var(--color-responses)" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-
+                <LineChart data={chartData} margin={CHART_MARGIN}>
                   <CartesianGrid
                     vertical={false}
                     strokeDasharray="3 3"
                     className="stroke-border/40"
                   />
-
                   <XAxis
                     dataKey="date"
                     tickLine={false}
                     axisLine={false}
                     tick={{ fontSize: 11 }}
                     interval="preserveStartEnd"
-                    minTickGap={40}
+                    minTickGap={32}
                     dy={2}
                   />
-
                   <YAxis
                     allowDecimals={false}
                     tickLine={false}
@@ -106,19 +108,16 @@ export const ResponsesChart = ({ data, className }: ResponsesChartProps) => {
                     tick={{ fontSize: 11 }}
                     tickMargin={2}
                   />
-
                   <ChartTooltip content={<ChartTooltipContent />} />
-
-                  <Area
+                  <Line
                     dataKey="responses"
                     type="linear"
-                    fill="url(#fillResponses)"
                     stroke="var(--color-responses)"
                     strokeWidth={2}
                     dot={false}
-                    activeDot={{ r: 4, stroke: 'var(--background)', strokeWidth: 2 }}
+                    activeDot={{ r: 4 }}
                   />
-                </AreaChart>
+                </LineChart>
               </ChartContainer>
             )}
           </div>

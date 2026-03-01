@@ -39,16 +39,25 @@ export function useProjectDashboardActions({ initialProject }: UseProjectDashboa
   });
 
   const handleEditSuccess = useCallback(
-    (data: { name: string; description: string | undefined }) => {
+    (data: { name: string; summary: string | undefined; targetResponses?: number | undefined }) => {
       setProject((prev) => ({
         ...prev,
         name: data.name,
-        description: data.description ?? null,
+        summary: data.summary ?? null,
+        ...(data.targetResponses != null && { target_responses: data.targetResponses }),
         updated_at: new Date().toISOString(),
       }));
     },
     []
   );
+
+  const handleImageChange = useCallback((url: string | null) => {
+    setProject((prev) => ({
+      ...prev,
+      image_url: url,
+      updated_at: new Date().toISOString(),
+    }));
+  }, []);
 
   const handleConfirm = useCallback(async () => {
     if (!confirmAction) {
@@ -107,6 +116,7 @@ export function useProjectDashboardActions({ initialProject }: UseProjectDashboa
     confirmAction,
     setConfirmAction,
     handleEditSuccess,
+    handleImageChange,
     handleConfirm,
     confirmDialogProps,
   };

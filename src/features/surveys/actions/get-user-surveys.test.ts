@@ -50,8 +50,8 @@ function makeSurveyRow(overrides: Record<string, unknown> = {}) {
     updatedAt: new Date().toISOString(),
     avgCompletionSeconds: null,
     avgQuestionCompletion: null,
-    projectId: null,
-    projectName: null,
+    projectId: 'project-1',
+    projectName: 'Test Project',
     ...overrides,
   };
 }
