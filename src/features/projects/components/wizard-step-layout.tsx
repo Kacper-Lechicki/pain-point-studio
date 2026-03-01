@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { cn } from '@/lib/common/utils';
 
-const TOTAL_STEPS = 4;
+const DEFAULT_TOTAL_STEPS = 4;
 
 interface WizardStepLayoutProps {
   stepNumber: number;
@@ -17,22 +17,26 @@ interface WizardStepLayoutProps {
   onNext: () => void;
   onBack?: (() => void) | undefined;
   nextLabel?: string | undefined;
+  backLabel?: string | undefined;
+  stepIndicatorLabel?: string | undefined;
   isLoading?: boolean | undefined;
   isNextDisabled?: boolean | undefined;
   /** When true the next button becomes type="submit" (for the final form step). */
   isSubmit?: boolean | undefined;
+  /** Total number of steps in the wizard (default: 4). */
+  totalSteps?: number | undefined;
 }
 
-function StepIndicator({ current }: { current: number }) {
+function StepIndicator({ current, total }: { current: number; total: number }) {
   return (
     <div
       className="flex items-center gap-1.5"
       role="progressbar"
       aria-valuenow={current}
       aria-valuemin={1}
-      aria-valuemax={TOTAL_STEPS}
+      aria-valuemax={total}
     >
-      {Array.from({ length: TOTAL_STEPS }, (_, i) => {
+      {Array.from({ length: total }, (_, i) => {
         const step = i + 1;
         const isCompleted = step < current;
         const isCurrent = step === current;
@@ -61,9 +65,12 @@ export function WizardStepLayout({
   onNext,
   onBack,
   nextLabel,
+  backLabel,
+  stepIndicatorLabel,
   isLoading = false,
   isNextDisabled = false,
   isSubmit = false,
+  totalSteps = DEFAULT_TOTAL_STEPS,
 }: WizardStepLayoutProps) {
   const t = useTranslations('projects.create');
 
@@ -72,9 +79,9 @@ export function WizardStepLayout({
       {/* Header */}
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-3">
-          <StepIndicator current={stepNumber} />
+          <StepIndicator current={stepNumber} total={totalSteps} />
           <span className="text-muted-foreground text-xs">
-            {t('stepIndicator', { current: stepNumber, total: TOTAL_STEPS })}
+            {stepIndicatorLabel ?? t('stepIndicator', { current: stepNumber, total: totalSteps })}
           </span>
         </div>
 
@@ -98,7 +105,7 @@ export function WizardStepLayout({
             className="mr-auto"
           >
             <ArrowLeft className="size-4" aria-hidden />
-            {t('navigation.back')}
+            {backLabel ?? t('navigation.back')}
           </Button>
         )}
 

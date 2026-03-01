@@ -88,23 +88,38 @@ test.describe('Surveys – Creation Flow', () => {
     // Surveys tab should be visible
     await expect(page.getByRole('tab', { name: 'Research' })).toBeVisible({ timeout: 15_000 });
 
-    // Open create survey dialog via "New Survey" button
+    // Open create survey wizard via "New Survey" button (navigates to /projects/[id]/new-survey)
     await page
       .getByRole('button', { name: /create.*survey|new.*survey/i })
       .first()
       .click();
     await expect(page.locator(sel.titleInput)).toBeVisible({ timeout: 15_000 });
 
+    // Step 1: Fill title → Continue
     await expect(async () => {
       await page.locator(sel.titleInput).fill(SURVEY_TITLE);
       await expect(page.locator(sel.titleInput)).toHaveValue(SURVEY_TITLE);
+    }).toPass({ timeout: 10_000 });
+
+    await page.getByRole('button', { name: 'Continue', exact: true }).click();
+
+    // Step 2: Fill description → Continue
+    await expect(page.locator(sel.descriptionInput)).toBeVisible({ timeout: 10_000 });
+
+    await expect(async () => {
       await page.locator(sel.descriptionInput).fill('E2E test survey description');
-
       await expect(page.locator(sel.descriptionInput)).toHaveValue('E2E test survey description');
+    }).toPass({ timeout: 10_000 });
 
-      await page.getByRole('button', { name: 'Next', exact: true }).click();
-      await expect(page).toHaveURL(/\/dashboard\/research\/new\/[0-9a-f-]+/);
-    }).toPass({ timeout: 30_000 });
+    await page.getByRole('button', { name: 'Continue', exact: true }).click();
+
+    // Step 3: Review → Create Survey (submit)
+    await expect(page.getByRole('button', { name: 'Create Survey' })).toBeVisible({
+      timeout: 10_000,
+    });
+    await page.getByRole('button', { name: 'Create Survey' }).click();
+
+    await expect(page).toHaveURL(/\/dashboard\/research\/new\/[0-9a-f-]+/, { timeout: 30_000 });
 
     await page.goto(projectSurveysUrl(projectId));
 

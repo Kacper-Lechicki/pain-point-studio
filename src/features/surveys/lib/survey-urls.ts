@@ -1,5 +1,9 @@
 import { ROUTES } from '@/config/routes';
 
+export function getCreateSurveyUrl(projectId: string) {
+  return `${ROUTES.dashboard.projects}/${projectId}/new-survey`;
+}
+
 export function getSurveyEditUrl(id: string) {
   return `${ROUTES.dashboard.researchNew}/${id}`;
 }

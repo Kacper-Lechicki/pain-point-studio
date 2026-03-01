@@ -86,7 +86,11 @@ export function ProjectCardRow({ project, extras, onSelect, onDelete }: ProjectC
         </div>
         <div className="flex flex-col gap-0.5">
           <span>{t('projects.list.table.responses')}</span>
-          <span className="text-foreground font-medium tabular-nums">{project.responseCount}</span>
+          <span className="text-foreground font-medium tabular-nums">
+            {project.target_responses
+              ? `${project.responseCount}/${project.target_responses}`
+              : project.responseCount}
+          </span>
         </div>
         <div className="flex min-w-0 flex-col gap-0.5">
           <span>{t('projects.list.card.activity')}</span>

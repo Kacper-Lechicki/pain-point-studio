@@ -26,6 +26,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
+import { RefreshRealtimeButton } from '@/components/ui/refresh-realtime-button';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { Textarea } from '@/components/ui/textarea';
 import type { ProjectOwner } from '@/features/projects/actions/get-project';
@@ -59,6 +60,12 @@ interface ProjectDetailHeaderProps {
   onImageChange: (url: string | null) => void;
   /** When provided, name and summary show edit pens and support inline editing. */
   onEditSuccess?: (data: ProjectDetailHeaderEditSuccess) => void;
+  /** Realtime refresh state — shown next to the actions dropdown. */
+  isRefreshing?: boolean | undefined;
+  isRealtimeConnected?: boolean | undefined;
+  lastSyncedAt?: number | undefined;
+  onRefresh?: (() => void) | undefined;
+  hasActiveSurveys?: boolean | undefined;
 }
 
 export function ProjectDetailHeader({
@@ -71,6 +78,11 @@ export function ProjectDetailHeader({
   onImageChange,
   lastResponseAt,
   onEditSuccess,
+  isRefreshing,
+  isRealtimeConnected,
+  lastSyncedAt,
+  onRefresh,
+  hasActiveSurveys,
 }: ProjectDetailHeaderProps) {
   const t = useTranslations();
   const isArchived = isProjectArchived(project);
@@ -155,7 +167,7 @@ export function ProjectDetailHeader({
     const result = await updateProject({
       projectId: project.id,
       name: project.name,
-      summary: trimmed || undefined,
+      ...(trimmed ? { summary: trimmed } : {}),
     });
 
     if (result?.error) {
@@ -428,7 +440,17 @@ export function ProjectDetailHeader({
           </div>
         </div>
 
-        <div className="flex shrink-0 items-center gap-1">
+        <div className="flex shrink-0 items-center gap-2">
+          {hasActiveSurveys && onRefresh && (
+            <RefreshRealtimeButton
+              isRefreshing={isRefreshing ?? false}
+              isRealtimeConnected={isRealtimeConnected ?? false}
+              lastSyncedAt={lastSyncedAt}
+              onRefresh={onRefresh}
+              ariaLabel={t('surveys.dashboard.refresh')}
+            />
+          )}
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button

@@ -1,5 +1,7 @@
 'use client';
 
+import type { ReactNode } from 'react';
+
 import { useTranslations } from 'next-intl';
 
 import type { FilterGroup, FilterOption } from '@/components/ui/list-toolbar';
@@ -43,6 +45,8 @@ interface SurveyListToolbarProps {
   statusCounts: Record<string, number>;
   /** Hide the project filter group (used in project context where all surveys belong to one project). */
   hideProjectFilter?: boolean;
+  /** Extra content rendered after the sort dropdown (e.g. action buttons). */
+  actions?: ReactNode | undefined;
 }
 
 const STATUS_OPTIONS: SurveyStatusFilter[] = ['active', 'draft', 'completed', 'cancelled'];
@@ -79,6 +83,7 @@ export const SurveyListToolbar = ({
   onSortDirChange,
   statusCounts,
   hideProjectFilter,
+  actions,
 }: SurveyListToolbarProps) => {
   const t = useTranslations();
 
@@ -150,6 +155,7 @@ export const SurveyListToolbar = ({
         desc: t('surveys.dashboard.sort.desc'),
       }}
       sortLabel={t(`surveys.dashboard.sort.${sortBy}`)}
+      actions={actions}
     />
   );
 };

@@ -31,7 +31,7 @@ interface SurveyActionMenuContentProps {
   onShare: () => void;
   onExport?: (() => void) | undefined;
   handleActionClick: (action: SurveyAction) => void;
-  onDetails?: () => void;
+  onDetails?: (() => void) | undefined;
   detailsLabelKey?: 'quickPreview' | 'details';
 }
 

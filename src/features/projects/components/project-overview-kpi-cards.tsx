@@ -29,9 +29,13 @@ function getCompletionColor(pct: number) {
 
 interface ProjectOverviewKpiCardsProps {
   overviewStats: ProjectOverviewStats;
+  targetResponses?: number | null | undefined;
 }
 
-export function ProjectOverviewKpiCards({ overviewStats }: ProjectOverviewKpiCardsProps) {
+export function ProjectOverviewKpiCards({
+  overviewStats,
+  targetResponses,
+}: ProjectOverviewKpiCardsProps) {
   const t = useTranslations();
 
   const dist = overviewStats.surveyStatusDistribution;
@@ -73,7 +77,12 @@ export function ProjectOverviewKpiCards({ overviewStats }: ProjectOverviewKpiCar
         <div className="flex items-center gap-3">
           <MessageSquare className="text-muted-foreground/60 size-4 shrink-0" aria-hidden />
           <span className="text-sm">
-            <span className="font-bold tabular-nums">{overviewStats.totalResponses}</span>{' '}
+            <span className="font-bold tabular-nums">{overviewStats.totalResponses}</span>
+            {targetResponses != null && targetResponses > 0 && (
+              <span className="text-muted-foreground font-bold tabular-nums">
+                /{targetResponses}
+              </span>
+            )}{' '}
             <span className="text-muted-foreground">
               {t('projects.overview.responses' as MessageKey).toLowerCase()}
             </span>

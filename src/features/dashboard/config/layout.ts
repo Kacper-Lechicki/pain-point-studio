@@ -71,6 +71,10 @@ function isNarrowPath(pathname: string): boolean {
     return true;
   }
 
+  if (path.endsWith('/new-survey')) {
+    return true;
+  }
+
   return false;
 }
 

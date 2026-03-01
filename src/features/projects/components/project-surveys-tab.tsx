@@ -19,6 +19,8 @@ interface ProjectSurveysTabProps {
 export function ProjectSurveysTab({ project, surveys, onCreateSurvey }: ProjectSurveysTabProps) {
   const t = useTranslations();
   const isArchived = isProjectArchived(project);
+  const totalResponses = surveys.reduce((sum, s) => sum + s.completedCount, 0);
+  const effectiveCreateSurvey = !isArchived ? onCreateSurvey : undefined;
 
   if (surveys.length === 0) {
     return (
@@ -33,8 +35,8 @@ export function ProjectSurveysTab({ project, surveys, onCreateSurvey }: ProjectS
           <p className="text-muted-foreground mt-1 max-w-sm text-sm">
             {t('projects.detail.empty.noSurveysDescription')}
           </p>
-          {!isArchived && onCreateSurvey && (
-            <Button className="mt-4" onClick={onCreateSurvey}>
+          {effectiveCreateSurvey && (
+            <Button className="mt-4" onClick={effectiveCreateSurvey}>
               <Plus className="size-4" aria-hidden />
               {t('projects.detail.createSurvey')}
             </Button>
@@ -45,6 +47,12 @@ export function ProjectSurveysTab({ project, surveys, onCreateSurvey }: ProjectS
   }
 
   return (
-    <SurveyList initialSurveys={surveys} projectId={project.id} onCreateSurvey={onCreateSurvey} />
+    <SurveyList
+      initialSurveys={surveys}
+      projectId={project.id}
+      onCreateSurvey={effectiveCreateSurvey}
+      totalResponses={totalResponses}
+      targetResponses={project.target_responses}
+    />
   );
 }

@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { checkProjectNameExists } from '@/features/projects/actions/check-project-name-exists';
 import { createProject } from '@/features/projects/actions/create-project';
 import { WizardImageStep } from '@/features/projects/components/wizard-image-step';
 import { WizardStepLayout } from '@/features/projects/components/wizard-step-layout';
@@ -84,13 +85,43 @@ export function CreateProjectWizard({ userId }: CreateProjectWizardProps) {
     setStep(target);
   }, []);
 
-  const handleNextFromName = useCallback(async () => {
+  const validateNameUniqueness = useCallback(async () => {
     const valid = await form.trigger('name');
 
-    if (valid) {
+    if (!valid) {
+      return false;
+    }
+
+    const name = form.getValues('name');
+    const result = await checkProjectNameExists({ name });
+
+    if (result?.data?.exists) {
+      form.setError('name', { message: 'projects.errors.nameAlreadyExists' });
+
+      return false;
+    }
+
+    return true;
+  }, [form]);
+
+  const handleNameBlur = useCallback(
+    async (rhfBlur: () => void) => {
+      rhfBlur();
+
+      const name = form.getValues('name');
+
+      if (name.trim()) {
+        await validateNameUniqueness();
+      }
+    },
+    [form, validateNameUniqueness]
+  );
+
+  const handleNextFromName = useCallback(async () => {
+    if (await validateNameUniqueness()) {
       goTo(2, 'forward');
     }
-  }, [form, goTo]);
+  }, [validateNameUniqueness, goTo]);
 
   const handleNextFromSummary = useCallback(async () => {
     const valid = await form.trigger('summary');
@@ -181,6 +212,7 @@ export function CreateProjectWizard({ userId }: CreateProjectWizardProps) {
                           maxLength={PROJECT_NAME_MAX_LENGTH}
                           autoFocus
                           {...field}
+                          onBlur={() => handleNameBlur(field.onBlur)}
                         />
                       </FormControl>
 

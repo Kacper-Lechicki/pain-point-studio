@@ -20,9 +20,8 @@ export const createProjectSchema = z.object({
   summary: z
     .string()
     .trim()
-    .max(PROJECT_SUMMARY_MAX_LENGTH, 'projects.errors.summaryTooLong')
-    .optional()
-    .or(z.literal('')),
+    .min(1, 'projects.errors.fieldRequired')
+    .max(PROJECT_SUMMARY_MAX_LENGTH, 'projects.errors.summaryTooLong'),
   /** Tiptap JSONContent from the rich editor (optional). */
   description: z.any().optional(),
 });
@@ -40,9 +39,9 @@ export const updateProjectSchema = z.object({
   summary: z
     .string()
     .trim()
+    .min(1, 'projects.errors.fieldRequired')
     .max(PROJECT_SUMMARY_MAX_LENGTH, 'projects.errors.summaryTooLong')
-    .optional()
-    .or(z.literal('')),
+    .optional(),
   targetResponses: z.number().int().min(1).max(10000).optional(),
 });
 

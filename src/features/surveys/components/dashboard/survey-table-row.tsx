@@ -22,6 +22,8 @@ interface SurveyTableRowProps {
   onSelect: (surveyId: string) => void;
   row: ReturnType<typeof useSurveyRow>;
   archivedLayout?: boolean;
+  /** When true, hides project badge, simplifies actions, and adjusts columns. */
+  isProjectContext?: boolean | undefined;
 }
 
 export function SurveyTableRow({
@@ -30,6 +32,7 @@ export function SurveyTableRow({
   onSelect,
   row,
   archivedLayout = false,
+  isProjectContext,
 }: SurveyTableRowProps) {
   const menuContent = (
     <SurveyActionMenuContent
@@ -42,9 +45,9 @@ export function SurveyTableRow({
       }}
       availableActions={row.availableActions}
       onShare={row.handleShare}
-      onExport={row.canExport ? row.handleExport : undefined}
+      onExport={!isProjectContext && row.canExport ? row.handleExport : undefined}
       handleActionClick={row.handleActionClick}
-      onDetails={() => onSelect(survey.id)}
+      onDetails={isProjectContext ? undefined : () => onSelect(survey.id)}
     />
   );
 
@@ -64,7 +67,7 @@ export function SurveyTableRow({
         onSelect(survey.id);
       }
     },
-    'aria-pressed': isSelected,
+    ...(!isProjectContext && { 'aria-pressed': isSelected }),
     'aria-label': survey.title,
   };
 
@@ -73,7 +76,7 @@ export function SurveyTableRow({
       <TableRow
         className={cn(
           'even:bg-muted/30 h-14 cursor-pointer transition-all',
-          isSelected && 'bg-muted/40 even:bg-muted/40'
+          !isProjectContext && isSelected && 'bg-muted/40 even:bg-muted/40'
         )}
         {...tableRowInteraction}
       >
@@ -88,7 +91,7 @@ export function SurveyTableRow({
             </p>
           )}
 
-          {survey.projectId && (
+          {!isProjectContext && survey.projectId && (
             <div className="mt-1">
               <SurveyProjectBadge projectId={survey.projectId} projectName={survey.projectName} />
             </div>
@@ -125,19 +128,31 @@ export function SurveyTableRow({
                   : survey.completedCount}
             </TableCell>
 
-            <TableCell className="text-muted-foreground border-border/30 hidden min-w-0 truncate border-l text-xs tabular-nums lg:table-cell">
-              {row.isDraft
-                ? '—'
-                : survey.avgQuestionCompletion != null
-                  ? `${Math.round(survey.avgQuestionCompletion)}%`
-                  : '—'}
-            </TableCell>
+            {!isProjectContext && (
+              <TableCell className="text-muted-foreground border-border/30 hidden min-w-0 truncate border-l text-xs tabular-nums lg:table-cell">
+                {row.isDraft
+                  ? '—'
+                  : survey.avgQuestionCompletion != null
+                    ? `${Math.round(survey.avgQuestionCompletion)}%`
+                    : '—'}
+              </TableCell>
+            )}
 
-            <TableCell className="text-muted-foreground border-border/30 hidden min-w-0 truncate border-l pr-4 pl-3 text-xs xl:table-cell">
+            <TableCell
+              className={cn(
+                'text-muted-foreground border-border/30 hidden min-w-0 truncate border-l pr-4 pl-3 text-xs',
+                isProjectContext ? 'lg:table-cell' : 'xl:table-cell'
+              )}
+            >
               {row.isDraft ? '—' : (row.lastResponseLabel ?? '—')}
             </TableCell>
 
-            <TableCell className="border-border/30 hidden min-w-0 border-l text-center 2xl:table-cell">
+            <TableCell
+              className={cn(
+                'border-border/30 hidden min-w-0 border-l text-center',
+                isProjectContext ? 'xl:table-cell' : '2xl:table-cell'
+              )}
+            >
               {row.isDraft || row.isCompleted || row.isCancelled ? (
                 <span className="text-muted-foreground text-xs">—</span>
               ) : (
@@ -150,7 +165,10 @@ export function SurveyTableRow({
           </>
         )}
 
-        <TableCell className="w-10 p-0" onClick={(e) => e.stopPropagation()}>
+        <TableCell
+          className={cn('p-0', isProjectContext ? 'w-12' : 'w-10')}
+          onClick={(e) => e.stopPropagation()}
+        >
           <div className="flex items-center justify-center">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -172,7 +190,7 @@ export function SurveyTableRow({
 
       {row.confirmDialogProps && <ConfirmDialog {...row.confirmDialogProps} />}
 
-      {row.hasShareableLink && row.shareUrl && (
+      {!isProjectContext && row.hasShareableLink && row.shareUrl && (
         <SurveyShareDialog
           open={row.shareDialogOpen}
           onOpenChange={row.setShareDialogOpen}
@@ -181,7 +199,7 @@ export function SurveyTableRow({
         />
       )}
 
-      {row.canExport && (
+      {!isProjectContext && row.canExport && (
         <ExportDialog
           open={row.exportDialogOpen}
           onOpenChange={row.setExportDialogOpen}

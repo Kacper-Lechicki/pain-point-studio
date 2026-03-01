@@ -12,6 +12,17 @@ export const createProject = withProtectedAction<typeof createProjectSchema, { p
     schema: createProjectSchema,
     rateLimit: RATE_LIMITS.bulkCreate,
     action: async ({ data, user, supabase }) => {
+      const { data: existing } = await supabase
+        .from('projects')
+        .select('id')
+        .eq('user_id', user.id)
+        .ilike('name', data.name)
+        .maybeSingle();
+
+      if (existing) {
+        return { error: 'projects.errors.nameAlreadyExists' };
+      }
+
       const { data: project, error } = await supabase
         .from('projects')
         .insert({

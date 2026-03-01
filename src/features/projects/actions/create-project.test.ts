@@ -62,6 +62,9 @@ function chain(result: { data?: unknown; error?: unknown } = {}) {
   });
 }
 
+/** Chain that resolves the duplicate-check SELECT with no match. */
+const noDuplicateChain = () => chain({ data: null });
+
 const VALID_INPUT: z.infer<typeof createProjectSchema> = {
   name: 'My Project',
   summary: 'A test project',
@@ -80,7 +83,7 @@ describe('Project Actions – Create Project', () => {
   it('should create a new project and return its id', async () => {
     const insertChain = chain({ data: { id: 'new-project-id' } });
 
-    mockFrom.mockReturnValue(insertChain);
+    mockFrom.mockReturnValueOnce(noDuplicateChain()).mockReturnValueOnce(insertChain);
 
     const { createProject } = await import('./create-project');
     const result = await createProject(VALID_INPUT);
@@ -97,26 +100,20 @@ describe('Project Actions – Create Project', () => {
     );
   });
 
-  it('should convert empty summary to null', async () => {
-    const insertChain = chain({ data: { id: 'new-project-id' } });
-
-    mockFrom.mockReturnValue(insertChain);
+  it('should return error when project name already exists', async () => {
+    mockFrom.mockReturnValueOnce(chain({ data: { id: 'existing-project-id' } }));
 
     const { createProject } = await import('./create-project');
+    const result = await createProject(VALID_INPUT);
 
-    await createProject({ ...VALID_INPUT, summary: '' });
-
-    expect(insertChain.insert).toHaveBeenCalledWith(
-      expect.objectContaining({
-        summary: null,
-      })
-    );
+    expect(result).toHaveProperty('error', 'projects.errors.nameAlreadyExists');
+    expect(mockFrom).toHaveBeenCalledTimes(1);
   });
 
   it('should return error on insert failure', async () => {
     const insertChain = chain({ data: null, error: { message: 'Insert failed' } });
 
-    mockFrom.mockReturnValue(insertChain);
+    mockFrom.mockReturnValueOnce(noDuplicateChain()).mockReturnValueOnce(insertChain);
 
     const { createProject } = await import('./create-project');
     const result = await createProject(VALID_INPUT);
@@ -128,7 +125,7 @@ describe('Project Actions – Create Project', () => {
   it('should return error when insert returns null data', async () => {
     const insertChain = chain({ data: null, error: null });
 
-    mockFrom.mockReturnValue(insertChain);
+    mockFrom.mockReturnValueOnce(noDuplicateChain()).mockReturnValueOnce(insertChain);
 
     const { createProject } = await import('./create-project');
     const result = await createProject(VALID_INPUT);
@@ -136,10 +133,17 @@ describe('Project Actions – Create Project', () => {
     expect(result).toHaveProperty('error', 'projects.errors.unexpected');
   });
 
-  it('should return validation error for invalid data', async () => {
+  it('should return validation error for missing name', async () => {
     const { createProject } = await import('./create-project');
-    const invalidPayload = { name: '' } as z.infer<typeof createProjectSchema>;
-    const result = await createProject(invalidPayload);
+    const result = await createProject({ name: '', summary: 'Some summary' });
+
+    expect(result.error).toBeDefined();
+    expect(mockFrom).not.toHaveBeenCalled();
+  });
+
+  it('should return validation error for missing summary', async () => {
+    const { createProject } = await import('./create-project');
+    const result = await createProject({ name: 'My Project', summary: '' });
 
     expect(result.error).toBeDefined();
     expect(mockFrom).not.toHaveBeenCalled();

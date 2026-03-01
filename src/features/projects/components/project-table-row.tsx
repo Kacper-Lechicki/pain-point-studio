@@ -77,7 +77,9 @@ export function ProjectTableRow({ project, extras, onSelect, onDelete }: Project
       </TableCell>
 
       <TableCell className="text-muted-foreground border-border/30 min-w-0 border-l px-5 py-3 text-xs tabular-nums">
-        {project.responseCount}
+        {project.target_responses
+          ? `${project.responseCount}/${project.target_responses}`
+          : project.responseCount}
       </TableCell>
 
       <TableCell className="text-muted-foreground border-border/30 hidden min-w-0 border-l px-3 py-3 md:table-cell">

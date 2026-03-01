@@ -1,3 +1,5 @@
+import type React from 'react';
+
 import { MoreHorizontal } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -19,6 +21,8 @@ interface SurveyCardRowProps {
   onSelect: (surveyId: string) => void;
   row: ReturnType<typeof useSurveyRow>;
   archivedLayout?: boolean;
+  /** When true, hides project badge and simplifies actions. */
+  isProjectContext?: boolean | undefined;
 }
 
 export function SurveyCardRow({
@@ -27,6 +31,7 @@ export function SurveyCardRow({
   onSelect,
   row,
   archivedLayout = false,
+  isProjectContext,
 }: SurveyCardRowProps) {
   const menuContent = (
     <SurveyActionMenuContent
@@ -40,7 +45,7 @@ export function SurveyCardRow({
       availableActions={row.availableActions}
       onShare={row.handleShare}
       handleActionClick={row.handleActionClick}
-      onDetails={() => onSelect(survey.id)}
+      {...(isProjectContext ? {} : { onDetails: () => onSelect(survey.id) })}
     />
   );
 
@@ -49,8 +54,20 @@ export function SurveyCardRow({
       <div
         className={cn(
           'border-border/50 bg-card flex min-w-0 flex-col gap-3 rounded-lg border p-3 transition-all',
-          isSelected && 'ring-ring/20 border-ring/40 bg-muted/50 ring-2'
+          isProjectContext && 'cursor-pointer',
+          !isProjectContext && isSelected && 'ring-ring/20 border-ring/40 bg-muted/50 ring-2'
         )}
+        {...(isProjectContext && {
+          role: 'button',
+          tabIndex: 0,
+          onClick: () => onSelect(survey.id),
+          onKeyDown: (e: React.KeyboardEvent) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onSelect(survey.id);
+            }
+          },
+        })}
       >
         <div className="flex min-w-0 items-start justify-between gap-2">
           <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1">
@@ -58,7 +75,7 @@ export function SurveyCardRow({
             <SurveyStatusBadge status={survey.status} className="shrink-0" />
           </div>
 
-          <div className="shrink-0">
+          <div className="shrink-0" onClick={(e) => e.stopPropagation()}>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -81,7 +98,7 @@ export function SurveyCardRow({
           {survey.description || '\u00A0'}
         </p>
 
-        {survey.projectId && (
+        {!isProjectContext && survey.projectId && (
           <SurveyProjectBadge projectId={survey.projectId} projectName={survey.projectName} />
         )}
 

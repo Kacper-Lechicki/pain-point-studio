@@ -205,7 +205,7 @@
       "kpi": {
         "totalResponses": "Total Responses",
         "activeSurveys": "Active Surveys",
-        "avgCompletion": "Avg Completion",
+        "avgCompletion": "Avg questions completion",
         "responsesPerDay": "~{avg}/day avg",
         "acrossProjects": "{count, plural, one {across # project} other {across # projects}}",
         "lastNDays": "last {count} days",
@@ -287,7 +287,28 @@
       "noProject": "None (standalone)",
       "saveDraft": "Save Draft",
       "next": "Next",
-      "draftSaved": "Survey draft saved."
+      "draftSaved": "Survey draft saved.",
+      "steps": {
+        "title": {
+          "title": "What's your survey called?",
+          "hint": "Give your survey a clear, descriptive name so you can easily find it later."
+        },
+        "description": {
+          "title": "Describe your survey",
+          "hint": "Explain what this survey is about and what you want to learn from respondents."
+        },
+        "confirm": {
+          "title": "Review and create",
+          "hint": "Check the details below and create your survey. You can always edit them later."
+        }
+      },
+      "stepIndicator": "Step {current} of {total}",
+      "navigation": {
+        "next": "Next",
+        "back": "Back",
+        "createSurvey": "Create Survey"
+      },
+      "success": "Survey created."
     },
     "errors": {
       "fieldRequired": "This field is required.",
@@ -718,6 +739,7 @@
       },
       "clearFilters": "Clear filters",
       "clickHint": "Click row for details",
+      "responseUsageLabel": "responses",
       "refresh": "Refresh",
       "emptyFilter": {
         "title": "No surveys match your filters",
@@ -776,6 +798,7 @@
       "summaryTooLong": "Summary must be 280 characters or fewer.",
       "contentTooLong": "Content must be 500 characters or fewer.",
       "descriptionTooLong": "Description must be 1000 characters or fewer.",
+      "nameAlreadyExists": "You already have a project with this name.",
       "unexpected": "Something went wrong. Please try again."
     },
     "title": "Projects",
@@ -1232,7 +1255,7 @@
     "overview": {
       "responses": "Responses",
       "surveys": "Surveys",
-      "completion": "Response Completion",
+      "completion": "Questions Completion",
       "completionSub": "{completed} of {total} completed",
       "active": "active",
       "draft": "draft",

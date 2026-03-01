@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from 'react';
 
-import { ChevronLeft, Settings } from 'lucide-react';
+import { ChevronLeft, Plus, Settings } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
@@ -15,9 +15,14 @@ import { EditProjectDialog } from '@/features/projects/components/edit-project-d
 import { ProjectDetailHeader } from '@/features/projects/components/project-detail-header';
 import { ProjectDetailTabs } from '@/features/projects/components/project-detail-tabs';
 import { useProjectDashboardActions } from '@/features/projects/hooks/use-project-dashboard-actions';
+import { isProjectArchived } from '@/features/projects/lib/project-helpers';
 import { deriveProjectPhase } from '@/features/projects/lib/project-helpers';
 import type { Project, ProjectInsight, ProjectOverviewStats } from '@/features/projects/types';
 import type { UserSurvey } from '@/features/surveys/actions';
+import { getCreateSurveyUrl } from '@/features/surveys/lib/survey-urls';
+import { useRefresh } from '@/hooks/common/use-refresh';
+
+import { useRealtimeProject } from '../hooks/use-realtime-project';
 
 interface ProjectDashboardPageProps {
   project: Project;
@@ -36,6 +41,10 @@ export function ProjectDashboardPage({
 }: ProjectDashboardPageProps) {
   const [insights, setInsights] = useState(initialInsights);
 
+  const { isRefreshing, refresh, lastSyncedAt, markSynced } = useRefresh();
+  const hasActiveSurveys = surveys.some((s) => s.status === 'active');
+  const { isConnected: isRealtimeConnected } = useRealtimeProject(markSynced, hasActiveSurveys);
+
   const {
     project,
     editOpen,
@@ -52,6 +61,8 @@ export function ProjectDashboardPage({
 
   useBreadcrumbSegment(project.id, project.name);
 
+  const isArchived = isProjectArchived(project);
+
   useSubPanelLinks(
     [
       {
@@ -61,6 +72,15 @@ export function ProjectDashboardPage({
       },
     ],
     [
+      ...(!isArchived
+        ? [
+            {
+              label: t('projects.detail.createSurvey'),
+              href: getCreateSurveyUrl(project.id),
+              icon: Plus,
+            },
+          ]
+        : []),
       {
         label: t('projects.detail.settings'),
         href: '#',
@@ -97,6 +117,11 @@ export function ProjectDashboardPage({
         lastResponseAt={overviewStats.lastResponseAt}
         onImageChange={handleImageChange}
         onEditSuccess={handleEditSuccess}
+        isRefreshing={isRefreshing}
+        isRealtimeConnected={isRealtimeConnected}
+        lastSyncedAt={lastSyncedAt}
+        onRefresh={refresh}
+        hasActiveSurveys={hasActiveSurveys}
       />
 
       <div className={`${DASHBOARD_PAGE_BODY_GAP_TOP} flex min-w-0 flex-col gap-6`}>

@@ -103,7 +103,10 @@ export function ProjectOverviewTab({
           insightCount={insights.length}
           isArchived={isArchived}
         />
-        <ProjectOverviewKpiCards overviewStats={overviewStats} />
+        <ProjectOverviewKpiCards
+          overviewStats={overviewStats}
+          targetResponses={project.target_responses}
+        />
         <OverviewResponseTrend timeline={overviewStats.responsesTimeline} />
         <OverviewActivityList items={overviewStats.recentActivity} />
       </div>

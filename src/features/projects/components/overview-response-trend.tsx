@@ -20,12 +20,12 @@ import { cn } from '@/lib/common/utils';
 
 const CHART_MARGIN = { left: 0, right: 4, top: 4, bottom: 4 };
 
-type TimeRange = '7d' | '14d' | '30d';
+type TimeRange = '7d' | '30d' | '90d';
 
 const RANGES: { value: TimeRange; days: number }[] = [
   { value: '7d', days: 7 },
-  { value: '14d', days: 14 },
   { value: '30d', days: 30 },
+  { value: '90d', days: 90 },
 ];
 
 interface OverviewResponseTrendProps {
@@ -34,7 +34,7 @@ interface OverviewResponseTrendProps {
 
 export function OverviewResponseTrend({ timeline }: OverviewResponseTrendProps) {
   const t = useTranslations();
-  const [range, setRange] = useState<TimeRange>('14d');
+  const [range, setRange] = useState<TimeRange>('30d');
   const [chartContainerRef, { width: chartWidth, height: chartHeight }] =
     useElementSize<HTMLDivElement>();
 
