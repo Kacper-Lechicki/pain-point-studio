@@ -13,6 +13,7 @@ export const INSIGHT_COLORS = {
     pillBg: 'bg-green-500/[0.12]',
     pillBorder: 'border-green-500',
     pillText: 'text-green-600 dark:text-green-400',
+    stripe: 'border-l-green-500',
   },
   opportunity: {
     bg: 'bg-sky-50 dark:bg-sky-950/30',
@@ -23,6 +24,7 @@ export const INSIGHT_COLORS = {
     pillBg: 'bg-sky-500/[0.12]',
     pillBorder: 'border-sky-500',
     pillText: 'text-sky-600 dark:text-sky-400',
+    stripe: 'border-l-sky-500',
   },
   threat: {
     bg: 'bg-rose-50 dark:bg-rose-950/30',
@@ -33,6 +35,7 @@ export const INSIGHT_COLORS = {
     pillBg: 'bg-rose-500/[0.12]',
     pillBorder: 'border-rose-500',
     pillText: 'text-rose-600 dark:text-rose-400',
+    stripe: 'border-l-rose-500',
   },
   decision: {
     bg: 'bg-amber-50 dark:bg-amber-950/30',
@@ -43,6 +46,7 @@ export const INSIGHT_COLORS = {
     pillBg: 'bg-amber-500/[0.12]',
     pillBorder: 'border-amber-500',
     pillText: 'text-amber-600 dark:text-amber-400',
+    stripe: 'border-l-amber-500',
   },
 } satisfies Record<
   InsightType,
@@ -55,6 +59,7 @@ export const INSIGHT_COLORS = {
     pillBg: string;
     pillBorder: string;
     pillText: string;
+    stripe: string;
   }
 >;
 

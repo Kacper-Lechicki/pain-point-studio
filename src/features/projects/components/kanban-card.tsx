@@ -2,7 +2,7 @@
 
 import { useCallback, useRef, useState } from 'react';
 
-import { GripVertical, Pencil, Trash2 } from 'lucide-react';
+import { ArrowRightLeft, GripVertical, Pencil, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
@@ -12,23 +12,49 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Textarea } from '@/components/ui/textarea';
 import { deleteInsight } from '@/features/projects/actions/delete-insight';
 import { updateInsight } from '@/features/projects/actions/update-insight';
 import { INSIGHT_CONTENT_MAX_LENGTH } from '@/features/projects/config';
-import type { ProjectInsight } from '@/features/projects/types';
+import { INSIGHT_COLORS, INSIGHT_ICONS } from '@/features/projects/config/insight-colors';
+import type { InsightType, ProjectInsight } from '@/features/projects/types';
+import { INSIGHT_TYPES } from '@/features/projects/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import type { MessageKey } from '@/i18n/types';
+import { cn } from '@/lib/common/utils';
 
 interface KanbanCardProps {
   insight: ProjectInsight;
   onUpdated: (insight: ProjectInsight) => void;
   onDeleted: (insightId: string) => void;
+  /** Called when pointer goes down on the drag handle. */
+  onDragStart?: (e: React.PointerEvent) => void;
+  /** Whether this card is currently being dragged. */
+  isDragging?: boolean;
+  /** Hide the drag handle (e.g. on mobile). */
+  hideDragHandle?: boolean;
+  /** Show a colored left border stripe for the insight type. */
+  showStripe?: boolean;
+  /** Called when user requests moving the insight to a different type via submenu. */
+  onMoveToType?: (insightId: string, newType: InsightType) => void;
 }
 
-export function KanbanCard({ insight, onUpdated, onDeleted }: KanbanCardProps) {
+export function KanbanCard({
+  insight,
+  onUpdated,
+  onDeleted,
+  onDragStart,
+  isDragging,
+  hideDragHandle,
+  showStripe,
+  onMoveToType,
+}: KanbanCardProps) {
   const t = useTranslations();
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(insight.content);
@@ -100,9 +126,11 @@ export function KanbanCard({ insight, onUpdated, onDeleted }: KanbanCardProps) {
     }
   }, [insight, onDeleted, onUpdated, deleteAction, t]);
 
+  const colors = INSIGHT_COLORS[insight.type as InsightType];
+
   if (isEditing) {
     return (
-      <div className="bg-card flex flex-col gap-2 rounded border p-2">
+      <div className="bg-card flex flex-col gap-2 rounded-lg border p-2">
         <Textarea
           ref={textareaRef}
           value={editContent}
@@ -139,10 +167,30 @@ export function KanbanCard({ insight, onUpdated, onDeleted }: KanbanCardProps) {
 
   return (
     <>
-      <div className="bg-card group flex items-center gap-2 rounded border px-2.5 py-2">
-        <GripVertical className="text-muted-foreground size-3 shrink-0" aria-hidden />
+      <div
+        className={cn(
+          'bg-card group relative flex items-start gap-2 rounded-lg border px-3 py-2.5 shadow-sm transition-shadow hover:shadow-md',
+          showStripe && 'border-l-2',
+          showStripe && colors?.stripe,
+          isDragging && 'invisible h-0 min-h-0 overflow-hidden border-none p-0'
+        )}
+      >
+        {!hideDragHandle && (
+          <GripVertical
+            className="text-muted-foreground mt-0.5 size-3 shrink-0 cursor-grab touch-none active:cursor-grabbing"
+            aria-hidden
+            onPointerDown={(e) => {
+              if (onDragStart) {
+                e.stopPropagation();
+                e.preventDefault();
+                onDragStart(e);
+                (e.target as HTMLElement).setPointerCapture(e.pointerId);
+              }
+            }}
+          />
+        )}
 
-        <span className="text-foreground min-w-0 flex-1 text-[13px] leading-snug">
+        <span className="text-foreground min-w-0 flex-1 text-[13px] leading-relaxed">
           {insight.content}
         </span>
 
@@ -151,7 +199,7 @@ export function KanbanCard({ insight, onUpdated, onDeleted }: KanbanCardProps) {
             <Button
               variant="ghost"
               size="icon-xs"
-              className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
+              className="text-muted-foreground mt-0.5 shrink-0"
             >
               <span className="sr-only">Actions</span>
               <svg className="size-3.5" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
@@ -167,6 +215,33 @@ export function KanbanCard({ insight, onUpdated, onDeleted }: KanbanCardProps) {
               <Pencil className="size-3.5" />
               {t('projects.scorecard.editNote' as MessageKey)}
             </DropdownMenuItem>
+
+            {onMoveToType && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger>
+                    <ArrowRightLeft className="size-3.5" />
+                    {t('projects.insights.moveTo' as MessageKey)}
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuSubContent>
+                    {INSIGHT_TYPES.filter((type) => type !== insight.type).map((type) => {
+                      const Icon = INSIGHT_ICONS[type];
+                      const typeColors = INSIGHT_COLORS[type];
+
+                      return (
+                        <DropdownMenuItem key={type} onClick={() => onMoveToType(insight.id, type)}>
+                          <Icon className={cn('size-3.5', typeColors.icon)} />
+                          {t(`projects.insights.types.${type}` as MessageKey)}
+                        </DropdownMenuItem>
+                      );
+                    })}
+                  </DropdownMenuSubContent>
+                </DropdownMenuSub>
+              </>
+            )}
+
+            <DropdownMenuSeparator />
 
             <DropdownMenuItem variant="destructive" onClick={() => setConfirmDeleteOpen(true)}>
               <Trash2 className="size-3.5" />

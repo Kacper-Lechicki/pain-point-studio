@@ -20,6 +20,7 @@ export const getProjectInsights = cache(async (projectId: string): Promise<Proje
     .from('project_insights')
     .select('*')
     .eq('project_id', projectId)
+    .order('sort_order', { ascending: true })
     .order('created_at', { ascending: true });
 
   if (error || !data) {

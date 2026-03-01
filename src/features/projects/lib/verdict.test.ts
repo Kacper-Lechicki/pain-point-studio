@@ -29,6 +29,7 @@ function makeInsight(type: ProjectInsight['type']): ProjectInsight {
     type,
     content: `Test ${type} insight`,
     phase: null,
+    sort_order: 0,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };

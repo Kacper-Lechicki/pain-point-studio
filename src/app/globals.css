@@ -321,7 +321,7 @@
   }
 
   .card-interactive {
-    @apply bg-card text-card-foreground md:hover:shadow-primary/5 rounded-2xl border p-8 shadow-sm transition-all md:hover:shadow-2xl;
+    @apply bg-card text-card-foreground md:hover:shadow-primary/5 rounded-lg border p-8 shadow-sm transition-all md:hover:shadow-2xl;
   }
 
   .card-static {

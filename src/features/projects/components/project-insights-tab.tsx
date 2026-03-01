@@ -6,8 +6,15 @@ import { Lightbulb, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { HeroHighlight } from '@/components/ui/hero-highlight';
-import { InsightsToolbar } from '@/features/projects/components/insights-toolbar';
+import { InsightInlineForm } from '@/features/projects/components/insight-inline-form';
 import { KanbanBoard } from '@/features/projects/components/kanban-board';
 import type { ProjectInsight } from '@/features/projects/types';
 import type { MessageKey } from '@/i18n/types';
@@ -18,6 +25,7 @@ interface ProjectInsightsTabProps {
   onInsightCreated: (insight: ProjectInsight) => void;
   onInsightUpdated: (insight: ProjectInsight) => void;
   onInsightDeleted: (insightId: string) => void;
+  onInsightsChanged: (insights: ProjectInsight[]) => void;
 }
 
 export function ProjectInsightsTab({
@@ -26,10 +34,10 @@ export function ProjectInsightsTab({
   onInsightCreated,
   onInsightUpdated,
   onInsightDeleted,
+  onInsightsChanged,
 }: ProjectInsightsTabProps) {
   const t = useTranslations();
   const [addDialogOpen, setAddDialogOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<'board' | 'list'>('board');
 
   const handleInsightCreated = useCallback(
     (insight: ProjectInsight) => {
@@ -61,38 +69,36 @@ export function ProjectInsightsTab({
           </div>
         </HeroHighlight>
 
-        {/* Dialog only — no toolbar in empty state */}
-        <InsightsToolbar
-          projectId={projectId}
-          viewMode={viewMode}
-          onViewModeChange={setViewMode}
-          dialogOpen={addDialogOpen}
-          onDialogOpenChange={setAddDialogOpen}
-          onInsightCreated={handleInsightCreated}
-          toolbarHidden
-        />
+        <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>{t('projects.insights.addInsight' as MessageKey)}</DialogTitle>
+              <DialogDescription className="sr-only">
+                {t('projects.insights.emptyDescription' as MessageKey)}
+              </DialogDescription>
+            </DialogHeader>
+
+            <InsightInlineForm
+              projectId={projectId}
+              showTypeSelector
+              alwaysOpen
+              onCancel={() => setAddDialogOpen(false)}
+              onCreated={handleInsightCreated}
+            />
+          </DialogContent>
+        </Dialog>
       </>
     );
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <InsightsToolbar
-        projectId={projectId}
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
-        dialogOpen={addDialogOpen}
-        onDialogOpenChange={setAddDialogOpen}
-        onInsightCreated={handleInsightCreated}
-      />
-
-      <KanbanBoard
-        projectId={projectId}
-        insights={insights}
-        onInsightCreated={onInsightCreated}
-        onInsightUpdated={onInsightUpdated}
-        onInsightDeleted={onInsightDeleted}
-      />
-    </div>
+    <KanbanBoard
+      projectId={projectId}
+      insights={insights}
+      onInsightCreated={onInsightCreated}
+      onInsightUpdated={onInsightUpdated}
+      onInsightDeleted={onInsightDeleted}
+      onInsightsChanged={onInsightsChanged}
+    />
   );
 }

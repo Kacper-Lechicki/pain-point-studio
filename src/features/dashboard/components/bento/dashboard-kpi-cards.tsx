@@ -20,7 +20,7 @@ export function DashboardKpiCards({ stats, projectCount, periodDays }: Dashboard
     return (
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:gap-5">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="bg-muted h-[5.5rem] animate-pulse rounded-2xl" />
+          <div key={i} className="bg-muted h-[5.5rem] animate-pulse rounded-lg" />
         ))}
       </div>
     );

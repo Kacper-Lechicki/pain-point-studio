@@ -111,6 +111,10 @@ export function ProjectDashboardPage({
     setInsights((prev) => prev.filter((i) => i.id !== insightId));
   }, []);
 
+  const handleInsightsChanged = useCallback((newInsights: ProjectInsight[]) => {
+    setInsights(newInsights);
+  }, []);
+
   return (
     <main className="flex min-w-0 flex-col">
       <ProjectDetailHeader
@@ -141,6 +145,7 @@ export function ProjectDashboardPage({
           onInsightCreated={handleInsightCreated}
           onInsightUpdated={handleInsightUpdated}
           onInsightDeleted={handleInsightDeleted}
+          onInsightsChanged={handleInsightsChanged}
         />
       </div>
 

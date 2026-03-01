@@ -21,12 +21,25 @@ export const createInsight = withProtectedAction<typeof createInsightSchema, { i
         return { error: 'projects.errors.unexpected' };
       }
 
+      // Assign sort_order to place new insight at end of its column.
+      const { data: maxRow } = await supabase
+        .from('project_insights')
+        .select('sort_order')
+        .eq('project_id', data.projectId)
+        .eq('type', data.type)
+        .order('sort_order', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      const nextSortOrder = (maxRow?.sort_order ?? -1) + 1;
+
       const { data: insight, error } = await supabase
         .from('project_insights')
         .insert({
           project_id: data.projectId,
           type: data.type,
           content: data.content,
+          sort_order: nextSortOrder,
         })
         .select('id')
         .single();

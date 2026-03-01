@@ -15,7 +15,7 @@ const OAuthLinks = () => {
         </div>
 
         <div className="relative flex justify-center text-xs lowercase">
-          <span className="border-border/60 bg-background text-muted-foreground rounded-full border px-3 py-1">
+          <span className="border-border/60 bg-background text-muted-foreground rounded-md border px-3 py-1">
             {t('orContinueWith')}
           </span>
         </div>

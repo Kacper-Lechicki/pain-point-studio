@@ -17,14 +17,14 @@ interface DashboardTimeFilterProps {
 
 export function DashboardTimeFilter({ currentPeriod }: DashboardTimeFilterProps) {
   return (
-    <div className="border-border/50 bg-card flex items-center gap-1.5 rounded-full border p-1 shadow-sm">
+    <div className="border-border/50 bg-card flex items-center gap-1.5 rounded-md border p-1 shadow-sm">
       {PERIODS.map((period) => (
         <Link
           key={period}
           href={`?period=${period}`}
           scroll={false}
           className={cn(
-            'rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
+            'rounded-md border px-3 py-1.5 text-xs font-medium transition-colors',
             currentPeriod === period
               ? 'bg-primary text-primary-foreground border-transparent shadow-sm'
               : 'text-muted-foreground hover:border-foreground/30 hover:text-foreground border-transparent hover:border-dashed'

@@ -49,7 +49,7 @@ export function DetailQuestionsList({ questions }: DetailQuestionsListProps) {
                 </p>
 
                 <div className="mt-1.5">
-                  <span className="bg-secondary text-secondary-foreground inline-flex items-center gap-1 rounded-full border px-1.5 py-0 text-[10px] font-normal">
+                  <span className="bg-secondary text-secondary-foreground inline-flex items-center gap-1 rounded-md border px-1.5 py-0 text-[10px] font-normal">
                     <TypeIcon className="size-3" aria-hidden />
                     {typeLabel}
                   </span>

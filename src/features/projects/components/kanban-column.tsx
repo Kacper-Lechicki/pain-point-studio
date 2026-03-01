@@ -21,6 +21,13 @@ const COLUMN_LABEL_KEYS: Record<InsightType, string> = {
   decision: 'projects.scorecard.decisions',
 };
 
+/** Drop placeholder shown between cards during drag. */
+function DropPlaceholder() {
+  return (
+    <div className="border-primary/50 bg-primary/5 min-h-10 rounded-lg border border-dashed md:min-h-9" />
+  );
+}
+
 interface KanbanColumnProps {
   type: InsightType;
   insights: ProjectInsight[];
@@ -28,6 +35,22 @@ interface KanbanColumnProps {
   onInsightCreated: (insight: ProjectInsight) => void;
   onInsightUpdated: (insight: ProjectInsight) => void;
   onInsightDeleted: (insightId: string) => void;
+  /** Whether a card from another column is hovering over this column. */
+  isDropTarget?: boolean;
+  /** Whether any drag is happening on the board. */
+  isDragActive?: boolean;
+  /** Called when pointer goes down on a card's drag handle. */
+  onDragStart?: (e: React.PointerEvent, insightId: string) => void;
+  /** Returns true if this insight is currently being dragged. */
+  isDragging?: (insightId: string) => boolean;
+  /** Returns true if a drop placeholder should be shown at this index. */
+  showPlaceholderAt?: (index: number) => boolean;
+  /** Whether to show a placeholder after the last card. */
+  showPlaceholderAtEnd?: boolean;
+  /** Optional custom card renderer (e.g. for mobile cards). */
+  renderCard?: (insight: ProjectInsight) => React.ReactNode;
+  /** Called when a card requests moving to another type via submenu. */
+  onMoveToType?: (insightId: string, newType: InsightType) => void;
 }
 
 export function KanbanColumn({
@@ -37,6 +60,14 @@ export function KanbanColumn({
   onInsightCreated,
   onInsightUpdated,
   onInsightDeleted,
+  isDropTarget,
+  isDragActive,
+  onDragStart,
+  isDragging,
+  showPlaceholderAt,
+  showPlaceholderAtEnd,
+  renderCard,
+  onMoveToType,
 }: KanbanColumnProps) {
   const t = useTranslations();
   const [showForm, setShowForm] = useState(false);
@@ -59,9 +90,15 @@ export function KanbanColumn({
   }, []);
 
   return (
-    <div className="flex min-w-0 flex-1 flex-col gap-2">
+    <div
+      data-column-id={type}
+      className={cn(
+        'bg-muted/40 flex min-w-0 flex-1 flex-col gap-2.5 rounded-xl p-3 transition-colors',
+        isDropTarget && 'bg-primary/5 ring-primary/20 ring-1'
+      )}
+    >
       {/* Column header */}
-      <div className="flex items-center justify-between pb-1">
+      <div className="flex items-center justify-between px-1 pb-1">
         <div className="flex items-center gap-1.5">
           <span className={cn('size-2 rounded-full', colors.dot)} aria-hidden />
           <span
@@ -84,20 +121,35 @@ export function KanbanColumn({
       </div>
 
       {/* Card list */}
-      {insights.length > 0 ? (
-        <div className="flex flex-col gap-1.5">
-          {insights.map((insight) => (
-            <KanbanCard
-              key={insight.id}
-              insight={insight}
-              onUpdated={onInsightUpdated}
-              onDeleted={onInsightDeleted}
-            />
+      {insights.length > 0 || isDragActive ? (
+        <div className="flex flex-col gap-2">
+          {insights.map((insight, index) => (
+            <div key={insight.id}>
+              {showPlaceholderAt?.(index) && <DropPlaceholder />}
+              <div data-insight-id={insight.id}>
+                {renderCard ? (
+                  renderCard(insight)
+                ) : (
+                  <KanbanCard
+                    insight={insight}
+                    onUpdated={onInsightUpdated}
+                    onDeleted={onInsightDeleted}
+                    showStripe
+                    {...(onMoveToType && { onMoveToType })}
+                    {...(onDragStart && {
+                      onDragStart: (e: React.PointerEvent) => onDragStart(e, insight.id),
+                    })}
+                    isDragging={isDragging?.(insight.id) ?? false}
+                  />
+                )}
+              </div>
+            </div>
           ))}
+          {showPlaceholderAtEnd && <DropPlaceholder />}
         </div>
       ) : (
         !showForm && (
-          <div className="border-border flex items-center justify-center rounded-md border border-dashed py-10">
+          <div className="border-border/50 flex items-center justify-center rounded-lg border border-dashed py-10">
             <span className="text-muted-foreground text-xs">
               {t('projects.insights.addInsightsHere' as MessageKey)}
             </span>

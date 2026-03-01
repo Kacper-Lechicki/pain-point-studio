@@ -19,29 +19,20 @@ export function ProjectListKpi({ statusCounts, kpiStatuses }: ProjectListKpiProp
   }
 
   return (
-    <div className="flex min-w-0 flex-wrap items-center justify-between gap-x-4 gap-y-1">
-      <div className="text-muted-foreground flex min-w-0 flex-1 flex-wrap items-center gap-x-3 text-xs">
-        <span>
+    <div className="flex min-w-0 flex-col gap-2 md:flex-row md:items-center md:justify-between">
+      <div className="text-muted-foreground flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-xs">
+        <span className="whitespace-nowrap">
           <span className="text-foreground text-base font-semibold tabular-nums">
             {Object.values(statusCounts).reduce((sum, n) => sum + n, 0)}
           </span>
-
           <span className="ml-1">{t('projects.list.summary.totalLabel')}</span>
         </span>
-
-        <span className="text-border" aria-hidden>
-          /
-        </span>
-
-        {kpiStatuses.map((status, i) => (
-          <span key={status} className="flex shrink-0 items-center gap-x-3">
-            {i > 0 && (
-              <span className="text-border" aria-hidden>
-                /
-              </span>
-            )}
-
-            <span>
+        {kpiStatuses.map((status) => (
+          <span key={status} className="flex shrink-0 items-center gap-x-2">
+            <span className="text-border text-xs" aria-hidden>
+              /
+            </span>
+            <span className="whitespace-nowrap">
               <span
                 className={cn(
                   'text-base font-semibold tabular-nums',
@@ -50,15 +41,13 @@ export function ProjectListKpi({ statusCounts, kpiStatuses }: ProjectListKpiProp
               >
                 {statusCounts[status] ?? 0}
               </span>
-
               <span className="ml-1">{t(`projects.list.status.${status}` as MessageKey)}</span>
             </span>
           </span>
         ))}
       </div>
-
       <span
-        className="text-muted-foreground hidden items-center gap-1.5 text-[11px] md:flex"
+        className="text-muted-foreground flex shrink-0 items-center gap-1.5 text-[11px] md:self-center"
         aria-hidden
       >
         <MousePointerClick className="size-3 shrink-0" />

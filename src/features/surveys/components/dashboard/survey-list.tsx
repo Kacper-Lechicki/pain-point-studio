@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
-import { ClipboardList, MousePointerClick } from 'lucide-react';
+import { ClipboardList } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
@@ -142,16 +142,6 @@ export const SurveyList = ({
         targetResponses={targetResponses}
         onCreateSurvey={onCreateSurvey}
       />
-
-      <div className="flex justify-end">
-        <span
-          className="text-muted-foreground hidden items-center gap-1.5 text-[11px] md:flex"
-          aria-hidden
-        >
-          <MousePointerClick className="size-3 shrink-0" />
-          {t('surveys.dashboard.clickHint')}
-        </span>
-      </div>
 
       <SurveyListToolbar
         statusFilter={statusFilter}

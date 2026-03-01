@@ -74,14 +74,14 @@ export function OverviewResponseTrend({ timeline }: OverviewResponseTrendProps) 
 
           <div className="flex items-center gap-4">
             {/* Mini time range control (matches dashboard pill style) */}
-            <div className="border-border/50 bg-card flex items-center gap-0.5 rounded-full border p-0.5 shadow-sm">
+            <div className="border-border/50 bg-card flex items-center gap-0.5 rounded-md border p-0.5 shadow-sm">
               {RANGES.map((r) => (
                 <button
                   key={r.value}
                   type="button"
                   onClick={() => setRange(r.value)}
                   className={cn(
-                    'rounded-full border px-1.5 py-0.5 text-[10px] leading-none font-medium transition-colors',
+                    'rounded-md border px-1.5 py-0.5 text-[10px] leading-none font-medium transition-colors',
                     range === r.value
                       ? 'bg-primary text-primary-foreground border-transparent shadow-sm'
                       : 'text-muted-foreground hover:text-foreground border-transparent'

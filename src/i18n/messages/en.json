@@ -1231,8 +1231,8 @@
     "insights": {
       "addInsight": "Add Insight",
       "addInsightsHere": "Add insights here",
-      "boardView": "Board view",
-      "listView": "List view",
+      "movedTo": "Moved to {type}",
+      "moveTo": "Move to",
       "emptyTitle": "No insights yet",
       "emptyDescription": "Capture your research findings as strengths, opportunities, threats, and decisions to build your project scorecard.",
       "emptyCta": "Add First Insight",

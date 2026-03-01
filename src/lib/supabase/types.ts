@@ -76,6 +76,7 @@ export type Database = {
           id: string;
           phase: string | null;
           project_id: string;
+          sort_order: number;
           type: string;
           updated_at: string;
         };
@@ -85,6 +86,7 @@ export type Database = {
           id?: string;
           phase?: string | null;
           project_id: string;
+          sort_order?: number;
           type: string;
           updated_at?: string;
         };
@@ -94,6 +96,7 @@ export type Database = {
           id?: string;
           phase?: string | null;
           project_id?: string;
+          sort_order?: number;
           type?: string;
           updated_at?: string;
         };

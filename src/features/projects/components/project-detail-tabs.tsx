@@ -35,6 +35,7 @@ interface ProjectDetailTabsProps {
   onInsightCreated: (insight: ProjectInsight) => void;
   onInsightUpdated: (insight: ProjectInsight) => void;
   onInsightDeleted: (insightId: string) => void;
+  onInsightsChanged: (insights: ProjectInsight[]) => void;
 }
 
 export function ProjectDetailTabs({
@@ -47,6 +48,7 @@ export function ProjectDetailTabs({
   onInsightCreated,
   onInsightUpdated,
   onInsightDeleted,
+  onInsightsChanged,
 }: ProjectDetailTabsProps) {
   const t = useTranslations();
   const router = useRouter();
@@ -138,6 +140,7 @@ export function ProjectDetailTabs({
           onInsightCreated={onInsightCreated}
           onInsightUpdated={onInsightUpdated}
           onInsightDeleted={onInsightDeleted}
+          onInsightsChanged={onInsightsChanged}
         />
       </TabsContent>
 

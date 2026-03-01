@@ -57,10 +57,10 @@ export function NoteEditor({
     );
   }
 
-  // Loading content
+  // Loading content – same background as loaded editor to avoid flash
   if (isLoading) {
     return (
-      <div className="flex h-full min-h-[400px] items-center justify-center">
+      <div className="bg-background dark:bg-input/30 flex h-full min-h-0 flex-1 items-center justify-center rounded-md">
         <Loader2 className="text-muted-foreground size-5 animate-spin" />
       </div>
     );

@@ -82,9 +82,13 @@ describe('Project Actions – Create Insight', () => {
 
   it('should create insight and return its id', async () => {
     const projectChain = chain({ data: { id: PROJECT_ID } });
+    const sortOrderChain = chain({ data: { sort_order: 2 } });
     const insightChain = chain({ data: { id: INSIGHT_ID } });
 
-    mockFrom.mockReturnValueOnce(projectChain).mockReturnValueOnce(insightChain);
+    mockFrom
+      .mockReturnValueOnce(projectChain)
+      .mockReturnValueOnce(sortOrderChain)
+      .mockReturnValueOnce(insightChain);
 
     const { createInsight } = await import('./create-insight');
     const result = await createInsight(VALID_INPUT);
@@ -106,9 +110,13 @@ describe('Project Actions – Create Insight', () => {
 
   it('should return error on insert failure', async () => {
     const projectChain = chain({ data: { id: PROJECT_ID } });
+    const sortOrderChain = chain({ data: null });
     const insightChain = chain({ data: null, error: { message: 'Insert failed' } });
 
-    mockFrom.mockReturnValueOnce(projectChain).mockReturnValueOnce(insightChain);
+    mockFrom
+      .mockReturnValueOnce(projectChain)
+      .mockReturnValueOnce(sortOrderChain)
+      .mockReturnValueOnce(insightChain);
 
     const { createInsight } = await import('./create-insight');
     const result = await createInsight(VALID_INPUT);
@@ -118,9 +126,13 @@ describe('Project Actions – Create Insight', () => {
 
   it('should return error when insert returns null data', async () => {
     const projectChain = chain({ data: { id: PROJECT_ID } });
+    const sortOrderChain = chain({ data: null });
     const insightChain = chain({ data: null, error: null });
 
-    mockFrom.mockReturnValueOnce(projectChain).mockReturnValueOnce(insightChain);
+    mockFrom
+      .mockReturnValueOnce(projectChain)
+      .mockReturnValueOnce(sortOrderChain)
+      .mockReturnValueOnce(insightChain);
 
     const { createInsight } = await import('./create-insight');
     const result = await createInsight(VALID_INPUT);
@@ -130,9 +142,13 @@ describe('Project Actions – Create Insight', () => {
 
   it('should create insight with opportunity type', async () => {
     const projectChain = chain({ data: { id: PROJECT_ID } });
+    const sortOrderChain = chain({ data: { sort_order: 0 } });
     const insightChain = chain({ data: { id: INSIGHT_ID } });
 
-    mockFrom.mockReturnValueOnce(projectChain).mockReturnValueOnce(insightChain);
+    mockFrom
+      .mockReturnValueOnce(projectChain)
+      .mockReturnValueOnce(sortOrderChain)
+      .mockReturnValueOnce(insightChain);
 
     const { createInsight } = await import('./create-insight');
     const result = await createInsight({ ...VALID_INPUT, type: 'opportunity' });

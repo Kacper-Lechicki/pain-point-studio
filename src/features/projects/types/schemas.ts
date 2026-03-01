@@ -91,3 +91,22 @@ export const updateInsightSchema = z.object({
 });
 
 export type UpdateInsightInput = z.infer<typeof updateInsightSchema>;
+
+/** Schema for reordering insights within a column. */
+export const reorderInsightsSchema = z.object({
+  insightIds: z.array(z.uuid()),
+});
+
+export type ReorderInsightsInput = z.infer<typeof reorderInsightsSchema>;
+
+/** Schema for moving an insight to a different column (type change + reorder). */
+export const moveInsightSchema = z.object({
+  insightId: z.uuid(),
+  newType: z.enum(INSIGHT_TYPES),
+  /** Ordered IDs of all insights in the TARGET column after the move. */
+  targetColumnInsightIds: z.array(z.uuid()),
+  /** Ordered IDs of all insights remaining in the SOURCE column after removal. */
+  sourceColumnInsightIds: z.array(z.uuid()),
+});
+
+export type MoveInsightInput = z.infer<typeof moveInsightSchema>;

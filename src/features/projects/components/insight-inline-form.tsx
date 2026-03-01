@@ -92,6 +92,7 @@ export function InsightInlineForm({
         type: activeType,
         content: trimmed,
         phase: null,
+        sort_order: 0,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
