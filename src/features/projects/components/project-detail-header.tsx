@@ -216,9 +216,9 @@ export function ProjectDetailHeader({
       )}
 
       <div className="flex min-w-0 flex-wrap items-start justify-between gap-4">
-        <div className="flex min-w-0 flex-1 items-start gap-3">
+        <div className="flex min-w-0 flex-1 flex-col gap-3 md:flex-row md:items-start">
           {!isArchived && (
-            <div className="mt-1 flex shrink-0 items-center gap-1">
+            <div className="flex shrink-0 md:mt-1">
               <ProjectImageUpload
                 projectId={project.id}
                 userId={userId}
@@ -257,7 +257,7 @@ export function ProjectDetailHeader({
                       }
                     }}
                     maxLength={PROJECT_NAME_MAX_LENGTH}
-                    className="text-foreground h-auto min-w-0 truncate py-1 text-3xl leading-tight font-bold"
+                    className="text-foreground h-auto min-w-0 py-1.5 text-base"
                   />
                   <div className="flex items-center gap-1.5">
                     <span className="text-muted-foreground text-xs tabular-nums">
@@ -291,8 +291,8 @@ export function ProjectDetailHeader({
                   </div>
                 </div>
               ) : (
-                <div className="inline-flex max-w-full min-w-0 items-center gap-1.5">
-                  <h1 className="text-foreground min-w-0 truncate text-3xl leading-tight font-bold">
+                <div className="flex max-w-full min-w-0 flex-wrap items-center gap-1.5">
+                  <h1 className="text-foreground min-w-0 text-3xl leading-tight font-bold wrap-break-word">
                     {project.name}
                   </h1>
                   {canEditInline && (
@@ -323,8 +323,8 @@ export function ProjectDetailHeader({
                   }}
                   maxLength={PROJECT_SUMMARY_MAX_LENGTH}
                   placeholder={t('projects.create.summaryPlaceholder')}
-                  className="text-muted-foreground min-h-[80px] min-w-0 resize-none text-sm leading-relaxed"
-                  rows={3}
+                  className="text-muted-foreground min-h-[60px] min-w-0 resize-none text-sm leading-relaxed"
+                  rows={2}
                 />
                 <div className="flex items-center gap-1.5">
                   <span className="text-muted-foreground text-xs tabular-nums">

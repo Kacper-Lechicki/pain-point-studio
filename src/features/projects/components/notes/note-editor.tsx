@@ -67,19 +67,35 @@ export function NoteEditor({
   }
 
   return (
-    <div className="relative flex h-full flex-col">
-      {/* Mobile back button */}
-      {!isDesktop && onBack && (
-        <div className="absolute top-2 left-0 z-10">
-          <Button variant="ghost" size="icon-sm" onClick={onBack}>
-            <ArrowLeft className="size-4" />
-            <span className="sr-only">{t('back')}</span>
-          </Button>
+    <div className="bg-background dark:bg-input/30 relative flex h-full min-h-0 flex-1 flex-col rounded-md">
+      {/* Mobile header bar with back button + save status */}
+      {!isDesktop && (
+        <div className="flex shrink-0 items-center px-1 py-1.5">
+          {onBack && (
+            <Button variant="ghost" size="icon-sm" onClick={onBack}>
+              <ArrowLeft className="size-4" />
+              <span className="sr-only">{t('back')}</span>
+            </Button>
+          )}
+          <div className="flex-1" />
+          {editable && noteId && (
+            <span
+              className={cn(
+                'pr-2 text-xs transition-colors',
+                saveStatus === 'failed' ? 'text-destructive' : 'text-muted-foreground'
+              )}
+            >
+              {(saveStatus === 'idle' || saveStatus === 'saved') && t('saved')}
+              {saveStatus === 'pending' && t('notSaved')}
+              {saveStatus === 'saving' && t('saving')}
+              {saveStatus === 'failed' && t('failed')}
+            </span>
+          )}
         </div>
       )}
 
-      {/* Save status — always visible, floating top-right */}
-      {editable && noteId && (
+      {/* Desktop: save status floating top-right */}
+      {isDesktop && editable && noteId && (
         <div className="pointer-events-none absolute top-2.5 right-3 z-10">
           <span
             className={cn(
@@ -96,14 +112,15 @@ export function NoteEditor({
       )}
 
       {/* Editor — fills entire surface */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
         <RichEditor
           content={content}
           onChange={handleChange}
           placeholder={t('placeholder')}
           editable={editable}
           showHint={editable}
-          className="note-editor border-0 shadow-none ring-0 focus-within:ring-0"
+          fillHeight
+          className="note-editor h-full border-0 bg-transparent shadow-none ring-0 focus-within:ring-0 dark:bg-transparent"
         />
       </div>
     </div>

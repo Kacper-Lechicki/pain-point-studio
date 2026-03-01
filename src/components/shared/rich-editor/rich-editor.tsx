@@ -32,6 +32,8 @@ export interface RichEditorProps {
   autoFocus?: boolean;
   /** Show a helper hint below the editor (e.g. "Type / for commands") */
   showHint?: boolean;
+  /** When true, editor root uses flex column and content area grows to fill height */
+  fillHeight?: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -46,6 +48,7 @@ export function RichEditor({
   className,
   autoFocus = false,
   showHint = false,
+  fillHeight = false,
 }: RichEditorProps) {
   const [imagePrompt, setImagePrompt] = useState<{ top: number; left: number } | null>(null);
   const editorRef = useRef<ReturnType<typeof useEditor>>(null);
@@ -128,12 +131,22 @@ export function RichEditor({
         editable && 'focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]',
         !editable && 'cursor-default',
         'dark:bg-input/30',
+        fillHeight && 'rich-editor-fill flex min-h-0 flex-col',
         className
       )}
     >
       {editable && <BubbleToolbar editor={editor} />}
 
-      <EditorContent editor={editor} className="px-4 py-3" />
+      <div
+        className={cn(
+          fillHeight && 'rich-editor-content flex min-h-0 flex-1 flex-col overflow-y-auto'
+        )}
+      >
+        <EditorContent
+          editor={editor}
+          className={cn('px-4 py-3', fillHeight && 'flex min-h-0 flex-1 flex-col')}
+        />
+      </div>
 
       {editable && showHint && (
         <p className="text-muted-foreground border-input/50 border-t px-4 py-1.5 text-xs">
