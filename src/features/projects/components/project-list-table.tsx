@@ -70,9 +70,15 @@ export function ProjectListTable({
               className="border-border/30 w-[14%] min-w-0 shrink-0 border-l px-5 py-3"
             />
 
-            <TableHead className="border-border/30 text-muted-foreground hidden w-[14%] min-w-0 shrink-0 border-l px-4 py-3 text-center text-xs font-medium md:table-cell">
-              {t('projects.list.table.activity')}
-            </TableHead>
+            <SortableTableHeader
+              sortKey="activity"
+              currentSortKey={sortBy}
+              sortDir={sortDir}
+              onSort={onSortByColumn}
+              label={t('projects.list.table.activity')}
+              centered
+              className="border-border/30 hidden w-[14%] min-w-0 shrink-0 border-l px-4 py-3 md:table-cell"
+            />
 
             <TableHead className="w-12 shrink-0 py-3" aria-hidden />
           </TableRow>

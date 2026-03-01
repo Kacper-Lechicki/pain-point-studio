@@ -61,7 +61,7 @@ export function ProjectInsightsTab({
           </div>
         </HeroHighlight>
 
-        {/* Reuse toolbar's dialog for the empty state CTA */}
+        {/* Dialog only — no toolbar in empty state */}
         <InsightsToolbar
           projectId={projectId}
           viewMode={viewMode}
@@ -69,6 +69,7 @@ export function ProjectInsightsTab({
           dialogOpen={addDialogOpen}
           onDialogOpenChange={setAddDialogOpen}
           onInsightCreated={handleInsightCreated}
+          toolbarHidden
         />
       </>
     );

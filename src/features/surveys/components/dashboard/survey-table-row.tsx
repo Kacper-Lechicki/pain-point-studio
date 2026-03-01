@@ -153,14 +153,10 @@ export function SurveyTableRow({
                 isProjectContext ? 'xl:table-cell' : '2xl:table-cell'
               )}
             >
-              {row.isDraft || row.isCompleted || row.isCancelled ? (
-                <span className="text-muted-foreground text-xs">—</span>
-              ) : (
-                <Sparkline
-                  data={survey.recentActivity}
-                  className={cn('mx-auto shrink-0', row.sparklineColor)}
-                />
-              )}
+              <Sparkline
+                data={survey.recentActivity}
+                className={cn('mx-auto shrink-0', row.sparklineColor)}
+              />
             </TableCell>
           </>
         )}

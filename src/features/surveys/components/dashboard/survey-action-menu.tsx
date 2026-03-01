@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { BarChart3, Download, Eye, Pencil, Send, Share2 } from 'lucide-react';
+import { Download, Eye, Pencil, Send, Share2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -12,11 +12,7 @@ import {
 import { QUESTIONS_MIN } from '@/features/surveys/config/constraints';
 import type { SurveyAction } from '@/features/surveys/config/survey-status';
 import { SURVEY_ACTION_UI } from '@/features/surveys/config/survey-status';
-import {
-  getSurveyEditUrl,
-  getSurveyPublishUrl,
-  getSurveyStatsUrl,
-} from '@/features/surveys/lib/survey-urls';
+import { getSurveyEditUrl, getSurveyPublishUrl } from '@/features/surveys/lib/survey-urls';
 import Link from '@/i18n/link';
 
 interface SurveyActionMenuContentProps {
@@ -75,16 +71,6 @@ export function SurveyActionMenuContent({
         label: t('surveys.dashboard.actions.share'),
         icon: Share2,
         onClick: onShare,
-      });
-    }
-
-    if (!isDraft && !isArchived && !onDetails) {
-      items.push({
-        kind: 'link',
-        key: 'viewAnalytics',
-        label: t('surveys.dashboard.actions.viewAnalytics'),
-        icon: BarChart3,
-        href: getSurveyStatsUrl(surveyId),
       });
     }
 

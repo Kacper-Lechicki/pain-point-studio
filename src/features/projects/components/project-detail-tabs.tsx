@@ -11,7 +11,13 @@ import { ProjectInsightsTab } from '@/features/projects/components/project-insig
 import { ProjectNotesTab } from '@/features/projects/components/project-notes-tab';
 import { ProjectOverviewTab } from '@/features/projects/components/project-overview-tab';
 import { ProjectSurveysTab } from '@/features/projects/components/project-surveys-tab';
-import type { Project, ProjectInsight, ProjectOverviewStats } from '@/features/projects/types';
+import type {
+  Project,
+  ProjectInsight,
+  ProjectNoteFolder,
+  ProjectNoteMeta,
+  ProjectOverviewStats,
+} from '@/features/projects/types';
 import type { UserSurvey } from '@/features/surveys/actions';
 import { getCreateSurveyUrl } from '@/features/surveys/lib/survey-urls';
 
@@ -23,6 +29,8 @@ interface ProjectDetailTabsProps {
   project: Project;
   surveys: UserSurvey[];
   insights: ProjectInsight[];
+  notesMeta: ProjectNoteMeta[];
+  noteFolders: ProjectNoteFolder[];
   overviewStats: ProjectOverviewStats;
   onInsightCreated: (insight: ProjectInsight) => void;
   onInsightUpdated: (insight: ProjectInsight) => void;
@@ -33,6 +41,8 @@ export function ProjectDetailTabs({
   project,
   surveys,
   insights,
+  notesMeta,
+  noteFolders,
   overviewStats,
   onInsightCreated,
   onInsightUpdated,
@@ -91,7 +101,17 @@ export function ProjectDetailTabs({
             </>
           )}
         </TabsTrigger>
-        <TabsTrigger value="notes">{t('projects.detail.tabs.notes')}</TabsTrigger>
+        <TabsTrigger value="notes">
+          {t('projects.detail.tabs.notes')}
+          {notesMeta.filter((n) => !n.deleted_at).length > 0 && (
+            <>
+              {' '}
+              <span className="text-muted-foreground text-xs tabular-nums">
+                ({notesMeta.filter((n) => !n.deleted_at).length})
+              </span>
+            </>
+          )}
+        </TabsTrigger>
       </TabsList>
 
       <TabsContent value="overview" className="pt-5">
@@ -122,7 +142,7 @@ export function ProjectDetailTabs({
       </TabsContent>
 
       <TabsContent value="notes" className="pt-5">
-        <ProjectNotesTab project={project} />
+        <ProjectNotesTab project={project} initialNotes={notesMeta} initialFolders={noteFolders} />
       </TabsContent>
     </Tabs>
   );

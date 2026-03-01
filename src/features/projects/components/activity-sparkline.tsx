@@ -63,17 +63,24 @@ export function ActivitySparkline({
   const svgWidth = fillWidth ? '100%' : width;
 
   if (!hasData) {
+    const y = height - 1;
+
     return (
-      <svg width={svgWidth} aria-hidden {...svgProps}>
+      <svg
+        width={svgWidth}
+        aria-hidden
+        {...svgProps}
+        className={cn('text-muted-foreground', className)}
+      >
         <line
-          x1={2}
-          y1={height / 2}
-          x2={width - 2}
-          y2={height / 2}
+          x1={0}
+          y1={y}
+          x2={width}
+          y2={y}
           stroke="currentColor"
-          strokeWidth={1}
-          opacity={0.15}
-          strokeDasharray="4 3"
+          strokeWidth={1.5}
+          strokeLinecap="round"
+          vectorEffect="non-scaling-stroke"
         />
       </svg>
     );

@@ -1,4 +1,4 @@
-import { MousePointerClick, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
@@ -95,13 +95,6 @@ export function SurveyListKpi({
       </div>
 
       <div className="flex shrink-0 items-center gap-2">
-        {!isProjectContext && (
-          <span className="text-muted-foreground hidden items-center gap-1 text-[11px] md:flex">
-            <MousePointerClick className="size-3" aria-hidden />
-            {t('surveys.dashboard.clickHint')}
-          </span>
-        )}
-
         {isProjectContext && onCreateSurvey && (
           <Button size="sm" onClick={onCreateSurvey}>
             <Plus className="size-4" aria-hidden />

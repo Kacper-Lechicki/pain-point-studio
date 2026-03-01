@@ -32,11 +32,10 @@ import { Textarea } from '@/components/ui/textarea';
 import type { ProjectOwner } from '@/features/projects/actions/get-project';
 import { updateProject } from '@/features/projects/actions/update-project';
 import { ProjectImageUpload } from '@/features/projects/components/project-image-upload';
-import { ProjectPhaseBadge } from '@/features/projects/components/project-phase-badge';
 import { ProjectStatusBadge } from '@/features/projects/components/project-status-badge';
 import { PROJECT_NAME_MAX_LENGTH, PROJECT_SUMMARY_MAX_LENGTH } from '@/features/projects/config';
 import { isProjectArchived } from '@/features/projects/lib/project-helpers';
-import type { Project, ProjectStatus, ResearchPhase } from '@/features/projects/types';
+import type { Project, ProjectStatus } from '@/features/projects/types';
 import { cn } from '@/lib/common/utils';
 
 type EditingField = 'name' | 'summary' | null;
@@ -52,7 +51,6 @@ interface ProjectDetailHeaderProps {
   project: Project;
   userId: string;
   owner?: ProjectOwner | null;
-  phase: ResearchPhase | null;
   lastResponseAt?: string | null;
   onEdit: () => void;
   onArchive: () => void;
@@ -72,7 +70,6 @@ export function ProjectDetailHeader({
   project,
   userId,
   owner,
-  phase,
   onArchive,
   onDelete,
   onImageChange,
@@ -241,7 +238,6 @@ export function ProjectDetailHeader({
                 variant="secondary"
               />
               <ProjectStatusBadge status={project.status as ProjectStatus} />
-              {phase && <ProjectPhaseBadge phase={phase} />}
             </div>
 
             <div className="text-foreground mt-1 min-w-0">

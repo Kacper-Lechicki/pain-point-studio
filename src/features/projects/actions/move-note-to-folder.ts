@@ -1,21 +1,19 @@
 'use server';
 
-import { updateProjectNotesSchema } from '@/features/projects/types';
+import { moveNoteToFolderSchema } from '@/features/projects/types';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
 
-export const updateProjectNotes = withProtectedAction<typeof updateProjectNotesSchema>(
-  'update-project-notes',
+export const moveNoteToFolder = withProtectedAction<typeof moveNoteToFolderSchema>(
+  'move-note-to-folder',
   {
-    schema: updateProjectNotesSchema,
-    rateLimit: RATE_LIMITS.frequentSave,
+    schema: moveNoteToFolderSchema,
+    rateLimit: RATE_LIMITS.crud,
     action: async ({ data, user, supabase }) => {
       const { data: row, error } = await supabase
-        .from('projects')
-        .update({
-          notes_json: data.notes ?? null,
-        })
-        .eq('id', data.projectId)
+        .from('project_notes')
+        .update({ folder_id: data.folderId })
+        .eq('id', data.noteId)
         .eq('user_id', user.id)
         .select('id')
         .maybeSingle();

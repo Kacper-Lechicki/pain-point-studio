@@ -16,8 +16,13 @@ import { ProjectDetailHeader } from '@/features/projects/components/project-deta
 import { ProjectDetailTabs } from '@/features/projects/components/project-detail-tabs';
 import { useProjectDashboardActions } from '@/features/projects/hooks/use-project-dashboard-actions';
 import { isProjectArchived } from '@/features/projects/lib/project-helpers';
-import { deriveProjectPhase } from '@/features/projects/lib/project-helpers';
-import type { Project, ProjectInsight, ProjectOverviewStats } from '@/features/projects/types';
+import type {
+  Project,
+  ProjectInsight,
+  ProjectNoteFolder,
+  ProjectNoteMeta,
+  ProjectOverviewStats,
+} from '@/features/projects/types';
 import type { UserSurvey } from '@/features/surveys/actions';
 import { getCreateSurveyUrl } from '@/features/surveys/lib/survey-urls';
 import { useRefresh } from '@/hooks/common/use-refresh';
@@ -29,6 +34,8 @@ interface ProjectDashboardPageProps {
   owner: ProjectOwner | null;
   surveys: UserSurvey[];
   insights: ProjectInsight[];
+  notesMeta: ProjectNoteMeta[];
+  noteFolders: ProjectNoteFolder[];
   overviewStats: ProjectOverviewStats;
 }
 
@@ -37,6 +44,8 @@ export function ProjectDashboardPage({
   owner,
   surveys,
   insights: initialInsights,
+  notesMeta,
+  noteFolders,
   overviewStats,
 }: ProjectDashboardPageProps) {
   const [insights, setInsights] = useState(initialInsights);
@@ -90,8 +99,6 @@ export function ProjectDashboardPage({
     ]
   );
 
-  const phase = deriveProjectPhase(surveys);
-
   const handleInsightCreated = useCallback((insight: ProjectInsight) => {
     setInsights((prev) => [...prev, insight]);
   }, []);
@@ -110,7 +117,6 @@ export function ProjectDashboardPage({
         project={project}
         userId={project.user_id}
         owner={owner}
-        phase={phase}
         onEdit={() => setEditOpen(true)}
         onArchive={() => setConfirmAction('archive')}
         onDelete={() => setConfirmAction('delete')}
@@ -129,6 +135,8 @@ export function ProjectDashboardPage({
           project={project}
           surveys={surveys}
           insights={insights}
+          notesMeta={notesMeta}
+          noteFolders={noteFolders}
           overviewStats={overviewStats}
           onInsightCreated={handleInsightCreated}
           onInsightUpdated={handleInsightUpdated}

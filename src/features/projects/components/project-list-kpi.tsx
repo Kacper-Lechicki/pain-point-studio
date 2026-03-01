@@ -1,3 +1,4 @@
+import { MousePointerClick } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { ProjectStatusFilter } from '@/features/projects/components/project-list-toolbar';
@@ -19,7 +20,7 @@ export function ProjectListKpi({ statusCounts, kpiStatuses }: ProjectListKpiProp
 
   return (
     <div className="flex min-w-0 flex-wrap items-center justify-between gap-x-4 gap-y-1">
-      <div className="text-muted-foreground flex min-w-0 flex-wrap items-center gap-x-3 text-xs">
+      <div className="text-muted-foreground flex min-w-0 flex-1 flex-wrap items-center gap-x-3 text-xs">
         <span>
           <span className="text-foreground text-base font-semibold tabular-nums">
             {Object.values(statusCounts).reduce((sum, n) => sum + n, 0)}
@@ -55,6 +56,14 @@ export function ProjectListKpi({ statusCounts, kpiStatuses }: ProjectListKpiProp
           </span>
         ))}
       </div>
+
+      <span
+        className="text-muted-foreground hidden items-center gap-1.5 text-[11px] md:flex"
+        aria-hidden
+      >
+        <MousePointerClick className="size-3 shrink-0" />
+        {t('projects.list.clickHint')}
+      </span>
     </div>
   );
 }

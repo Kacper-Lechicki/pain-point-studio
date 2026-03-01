@@ -25,6 +25,8 @@ interface InsightsToolbarProps {
   dialogOpen: boolean;
   onDialogOpenChange: (open: boolean) => void;
   onInsightCreated: (insight: ProjectInsight) => void;
+  /** When true, only the Add Insight dialog is rendered (e.g. empty state). */
+  toolbarHidden?: boolean;
 }
 
 export function InsightsToolbar({
@@ -34,55 +36,58 @@ export function InsightsToolbar({
   dialogOpen,
   onDialogOpenChange,
   onInsightCreated,
+  toolbarHidden = false,
 }: InsightsToolbarProps) {
   const t = useTranslations();
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        {/* Mobile: full-width add button */}
-        <Button className="w-full md:hidden" onClick={() => onDialogOpenChange(true)}>
-          <Plus className="size-3.5" aria-hidden />
-          {t('projects.insights.addInsight' as MessageKey)}
-        </Button>
+      {!toolbarHidden && (
+        <div className="flex items-center justify-between">
+          {/* Mobile: full-width add button */}
+          <Button className="w-full md:hidden" onClick={() => onDialogOpenChange(true)}>
+            <Plus className="size-3.5" aria-hidden />
+            {t('projects.insights.addInsight' as MessageKey)}
+          </Button>
 
-        {/* Desktop: compact add button */}
-        <Button className="hidden md:inline-flex" onClick={() => onDialogOpenChange(true)}>
-          <Plus className="size-3.5" aria-hidden />
-          {t('projects.insights.addInsight' as MessageKey)}
-        </Button>
+          {/* Desktop: compact add button */}
+          <Button className="hidden md:inline-flex" onClick={() => onDialogOpenChange(true)}>
+            <Plus className="size-3.5" aria-hidden />
+            {t('projects.insights.addInsight' as MessageKey)}
+          </Button>
 
-        {/* View toggle — desktop only */}
-        <div className="hidden items-center rounded-md border p-0.5 md:flex">
-          <button
-            type="button"
-            onClick={() => onViewModeChange('board')}
-            className={cn(
-              'rounded px-2 py-1.5 transition-colors',
-              viewMode === 'board'
-                ? 'bg-primary text-primary-foreground'
-                : 'text-muted-foreground hover:text-foreground'
-            )}
-            aria-label={t('projects.insights.boardView' as MessageKey)}
-          >
-            <Columns3 className="size-3.5" />
-          </button>
+          {/* View toggle — desktop only */}
+          <div className="hidden items-center rounded-md border p-0.5 md:flex">
+            <button
+              type="button"
+              onClick={() => onViewModeChange('board')}
+              className={cn(
+                'rounded px-2 py-1.5 transition-colors',
+                viewMode === 'board'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:text-foreground'
+              )}
+              aria-label={t('projects.insights.boardView' as MessageKey)}
+            >
+              <Columns3 className="size-3.5" />
+            </button>
 
-          <button
-            type="button"
-            onClick={() => onViewModeChange('list')}
-            className={cn(
-              'rounded px-2 py-1.5 transition-colors',
-              viewMode === 'list'
-                ? 'bg-primary text-primary-foreground'
-                : 'text-muted-foreground hover:text-foreground'
-            )}
-            aria-label={t('projects.insights.listView' as MessageKey)}
-          >
-            <List className="size-3.5" />
-          </button>
+            <button
+              type="button"
+              onClick={() => onViewModeChange('list')}
+              className={cn(
+                'rounded px-2 py-1.5 transition-colors',
+                viewMode === 'list'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:text-foreground'
+              )}
+              aria-label={t('projects.insights.listView' as MessageKey)}
+            >
+              <List className="size-3.5" />
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Add Insight dialog */}
       <Dialog open={dialogOpen} onOpenChange={onDialogOpenChange}>

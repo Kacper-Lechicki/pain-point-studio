@@ -1,99 +1,93 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 import type { JSONContent } from '@tiptap/react';
-import { useTranslations } from 'next-intl';
 
-import { RichEditor } from '@/components/shared/rich-editor/rich-editor';
-import { updateProjectNotes } from '@/features/projects/actions/update-project-notes';
-import { PROJECT_NOTES_DEBOUNCE_MS } from '@/features/projects/config';
+import { NoteEditor } from '@/features/projects/components/notes/note-editor';
+import { NotesLayout } from '@/features/projects/components/notes/notes-layout';
+import { NotesSidebar } from '@/features/projects/components/notes/notes-sidebar';
+import { useNoteAutoSave } from '@/features/projects/hooks/use-note-auto-save';
+import { useNotesState } from '@/features/projects/hooks/use-notes-state';
 import { isProjectArchived } from '@/features/projects/lib/project-helpers';
-import type { Project } from '@/features/projects/types';
-
-type SaveStatus = 'idle' | 'saving' | 'saved' | 'failed';
+import type { Project, ProjectNoteFolder, ProjectNoteMeta } from '@/features/projects/types';
+import { useBreakpoint } from '@/hooks/common/use-breakpoint';
 
 interface ProjectNotesTabProps {
   project: Project;
+  initialNotes: ProjectNoteMeta[];
+  initialFolders: ProjectNoteFolder[];
 }
 
-export function ProjectNotesTab({ project }: ProjectNotesTabProps) {
-  const t = useTranslations('projects.detail.notes');
+export function ProjectNotesTab({ project, initialNotes, initialFolders }: ProjectNotesTabProps) {
   const archived = isProjectArchived(project);
+  const isDesktop = useBreakpoint('md');
+  const autoCreatedRef = useRef(false);
 
-  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
+  const state = useNotesState({
+    projectId: project.id,
+    initialNotes,
+    initialFolders,
+  });
 
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const savedFadeRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const {
+    selectedNoteId,
+    noteContent,
+    isLoadingContent,
+    activeNotes,
+    handleContentChange: handleStateContentChange,
+    handleTitleExtracted,
+    handleCreateNote,
+    setSelectedNoteId,
+  } = state;
 
-  const save = useCallback(
-    async (json: JSONContent) => {
-      setSaveStatus('saving');
+  const { saveStatus, handleContentChange: handleAutoSaveChange } = useNoteAutoSave({
+    noteId: selectedNoteId,
+    onTitleExtracted: handleTitleExtracted,
+  });
 
-      const result = await updateProjectNotes({
-        projectId: project.id,
-        notes: json,
-      });
-
-      if (result.success) {
-        setSaveStatus('saved');
-
-        if (savedFadeRef.current) {
-          clearTimeout(savedFadeRef.current);
-        }
-
-        savedFadeRef.current = setTimeout(() => setSaveStatus('idle'), 3000);
-      } else {
-        setSaveStatus('failed');
-      }
-    },
-    [project.id]
-  );
-
-  const handleChange = useCallback(
+  // Combined content change handler: update local state + trigger auto-save
+  const handleEditorChange = useCallback(
     (json: JSONContent) => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
-
-      setSaveStatus('idle');
-      timerRef.current = setTimeout(() => save(json), PROJECT_NOTES_DEBOUNCE_MS);
+      handleStateContentChange(json);
+      handleAutoSaveChange(json);
     },
-    [save]
+    [handleStateContentChange, handleAutoSaveChange]
   );
+
+  // Auto-create first note when there are none (empty state)
+  const activeNotesLength = activeNotes.length;
 
   useEffect(() => {
-    return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
+    if (!archived && activeNotesLength === 0 && !autoCreatedRef.current) {
+      autoCreatedRef.current = true;
+      void handleCreateNote();
+    }
+  }, [archived, activeNotesLength, handleCreateNote]);
 
-      if (savedFadeRef.current) {
-        clearTimeout(savedFadeRef.current);
-      }
-    };
-  }, []);
+  // On mobile, back navigates from editor to list
+  const handleBack = useCallback(() => {
+    setSelectedNoteId(null);
+  }, [setSelectedNoteId]);
+
+  const showEditor = isDesktop || !!selectedNoteId;
 
   return (
-    <div className="flex flex-col gap-3">
-      {/* Save status */}
-      {!archived && saveStatus !== 'idle' && (
-        <div className="flex justify-end text-sm">
-          <span className={saveStatus === 'failed' ? 'text-destructive' : 'text-muted-foreground'}>
-            {saveStatus === 'saving' && t('saving')}
-            {saveStatus === 'saved' && t('saved')}
-            {saveStatus === 'failed' && t('failed')}
-          </span>
-        </div>
-      )}
-
-      <RichEditor
-        content={project.notes_json as JSONContent | null}
-        onChange={handleChange}
-        placeholder={t('placeholder')}
-        editable={!archived}
-        showHint={!archived}
-      />
-    </div>
+    <NotesLayout
+      sidebar={<NotesSidebar state={state} isArchived={archived} />}
+      editor={
+        <NoteEditor
+          noteId={selectedNoteId}
+          content={noteContent}
+          isLoading={isLoadingContent}
+          saveStatus={saveStatus}
+          editable={!archived}
+          onContentChange={handleEditorChange}
+          onBack={handleBack}
+        />
+      }
+      showEditor={showEditor}
+      onBack={handleBack}
+    />
   );
 }

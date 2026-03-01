@@ -107,6 +107,101 @@ export type Database = {
           },
         ];
       };
+      project_note_folders: {
+        Row: {
+          created_at: string;
+          id: string;
+          name: string;
+          project_id: string;
+          sort_order: number;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          name: string;
+          project_id: string;
+          sort_order?: number;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          name?: string;
+          project_id?: string;
+          sort_order?: number;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'project_note_folders_project_id_fkey';
+            columns: ['project_id'];
+            isOneToOne: false;
+            referencedRelation: 'projects';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      project_notes: {
+        Row: {
+          content_json: Json | null;
+          created_at: string;
+          deleted_at: string | null;
+          folder_id: string | null;
+          id: string;
+          is_pinned: boolean;
+          project_id: string;
+          sort_order: number;
+          title: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          content_json?: Json | null;
+          created_at?: string;
+          deleted_at?: string | null;
+          folder_id?: string | null;
+          id?: string;
+          is_pinned?: boolean;
+          project_id: string;
+          sort_order?: number;
+          title?: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          content_json?: Json | null;
+          created_at?: string;
+          deleted_at?: string | null;
+          folder_id?: string | null;
+          id?: string;
+          is_pinned?: boolean;
+          project_id?: string;
+          sort_order?: number;
+          title?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'project_notes_folder_id_fkey';
+            columns: ['folder_id'];
+            isOneToOne: false;
+            referencedRelation: 'project_note_folders';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'project_notes_project_id_fkey';
+            columns: ['project_id'];
+            isOneToOne: false;
+            referencedRelation: 'projects';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       projects: {
         Row: {
           archived_at: string | null;
@@ -115,7 +210,6 @@ export type Database = {
           id: string;
           image_url: string | null;
           name: string;
-          notes_json: Json | null;
           status: string;
           summary: string | null;
           target_responses: number;
@@ -129,7 +223,6 @@ export type Database = {
           id?: string;
           image_url?: string | null;
           name: string;
-          notes_json?: Json | null;
           status?: string;
           summary?: string | null;
           target_responses?: number;
@@ -143,7 +236,6 @@ export type Database = {
           id?: string;
           image_url?: string | null;
           name?: string;
-          notes_json?: Json | null;
           status?: string;
           summary?: string | null;
           target_responses?: number;

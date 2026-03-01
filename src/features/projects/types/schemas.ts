@@ -63,16 +63,6 @@ export const updateProjectImageSchema = z.object({
 
 export type UpdateProjectImageInput = z.infer<typeof updateProjectImageSchema>;
 
-// ── Notes schemas ───────────────────────────────────────────────────
-
-/** Schema for updating project notes — Tiptap JSON (auto-save). */
-export const updateProjectNotesSchema = z.object({
-  projectId: z.uuid(),
-  notes: z.any().nullable(),
-});
-
-export type UpdateProjectNotesInput = z.infer<typeof updateProjectNotesSchema>;
-
 // ── Insight schemas ─────────────────────────────────────────────────
 
 /** Schema for creating a new manual insight/note. */

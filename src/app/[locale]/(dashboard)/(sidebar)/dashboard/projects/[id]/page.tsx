@@ -5,8 +5,10 @@ import { getTranslations } from 'next-intl/server';
 import { PageTransition } from '@/components/ui/page-transition';
 import { ROUTES } from '@/config';
 import { DashboardPageBack } from '@/features/dashboard/components/layout/dashboard-page-back';
+import { getNoteFolders } from '@/features/projects/actions/get-note-folders';
 import { getProject } from '@/features/projects/actions/get-project';
 import { getProjectInsights } from '@/features/projects/actions/get-project-insights';
+import { getProjectNotes } from '@/features/projects/actions/get-project-notes';
 import { getProjectOverviewStats } from '@/features/projects/actions/get-project-overview-stats';
 import { ProjectDashboardPage } from '@/features/projects/components/project-dashboard-page';
 import { getProjectSurveys } from '@/features/surveys/actions';
@@ -17,13 +19,16 @@ interface ProjectDetailPageProps {
 
 export default async function ProjectDetailPage({ params }: ProjectDetailPageProps) {
   const { id } = await params;
-  const [data, insights, overviewStats, projectSurveys, t] = await Promise.all([
-    getProject(id),
-    getProjectInsights(id),
-    getProjectOverviewStats(id),
-    getProjectSurveys(id),
-    getTranslations(),
-  ]);
+  const [data, insights, overviewStats, projectSurveys, notesMeta, noteFolders, t] =
+    await Promise.all([
+      getProject(id),
+      getProjectInsights(id),
+      getProjectOverviewStats(id),
+      getProjectSurveys(id),
+      getProjectNotes(id),
+      getNoteFolders(id),
+      getTranslations(),
+    ]);
 
   if (!data) {
     notFound();
@@ -39,6 +44,8 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
           owner={data.owner}
           surveys={projectSurveys ?? []}
           insights={insights}
+          notesMeta={notesMeta}
+          noteFolders={noteFolders}
           overviewStats={
             overviewStats ?? {
               totalSurveys: 0,
