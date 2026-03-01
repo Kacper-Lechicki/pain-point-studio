@@ -15,7 +15,7 @@ import {
 const CHART_CONFIG = {
   responses: {
     label: 'Responses',
-    color: 'var(--chart-cyan)',
+    color: 'var(--chart-violet)',
   },
 } satisfies ChartConfig;
 

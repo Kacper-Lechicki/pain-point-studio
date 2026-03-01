@@ -10,10 +10,9 @@ import type { ResponseItem } from '@/features/surveys/components/stats/answer-ch
 
 interface TextAnswersListProps {
   answers: QuestionAnswerData[];
-  questionText: string;
 }
 
-export const TextAnswersList = ({ answers, questionText }: TextAnswersListProps) => {
+export const TextAnswersList = ({ answers }: TextAnswersListProps) => {
   const t = useTranslations('surveys.stats');
 
   const textAnswers = useMemo<ResponseItem[]>(
@@ -31,5 +30,5 @@ export const TextAnswersList = ({ answers, questionText }: TextAnswersListProps)
     return <p className="text-muted-foreground text-xs">{t('noTextResponses')}</p>;
   }
 
-  return <InlineTextSearch responses={textAnswers} questionText={questionText} />;
+  return <InlineTextSearch responses={textAnswers} />;
 };

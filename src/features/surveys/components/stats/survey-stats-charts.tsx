@@ -3,50 +3,79 @@
 import { useTranslations } from 'next-intl';
 
 import { CompletionBarChart } from '@/components/charts/completion-bar-chart';
-import { SectionLabel } from '@/components/ui/metric-display';
+import { Card, CardContent } from '@/components/ui/card';
+import { BENTO_CARD_CLASS } from '@/features/dashboard/components/bento/bento-styles';
 import type { DeviceTimelinePoint } from '@/features/surveys/actions/get-survey-stats';
 import { DeviceBreakdownChart } from '@/features/surveys/components/stats/device-breakdown-chart';
 import { ResponseTimelineChart } from '@/features/surveys/components/stats/response-timeline-chart';
+import { cn } from '@/lib/common/utils';
 
-interface SurveyStatsChartsProps {
-  responseTimeline: number[];
-  deviceTimeline: DeviceTimelinePoint[];
-  /** Aggregate: completed, in progress, abandoned (for donut) */
-  completionBreakdown?: { completed: number; inProgress: number; abandoned: number };
+function ChartLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="text-muted-foreground mb-2 text-[11px] font-medium tracking-wider uppercase">
+      {children}
+    </p>
+  );
 }
 
-export function SurveyStatsCharts({
-  responseTimeline,
-  deviceTimeline,
-  completionBreakdown = { completed: 0, inProgress: 0, abandoned: 0 },
-}: SurveyStatsChartsProps) {
+// ── Response Timeline ────────────────────────────────────────────────
+
+interface ResponseTimelineCardProps {
+  responseTimeline: number[];
+}
+
+export function ResponseTimelineCard({ responseTimeline }: ResponseTimelineCardProps) {
   const t = useTranslations('surveys.stats');
 
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-      <div className="flex min-h-48 flex-col lg:col-span-2">
-        <SectionLabel>{t('responsesOverTime')}</SectionLabel>
-        <div className="min-h-48 flex-1">
-          <ResponseTimelineChart data={responseTimeline} className="h-full min-h-48" />
-        </div>
-      </div>
+    <Card className={cn(BENTO_CARD_CLASS)}>
+      <CardContent className="p-3">
+        <ChartLabel>{t('responsesOverTime')}</ChartLabel>
+        <ResponseTimelineChart data={responseTimeline} className="h-[180px] w-full" />
+      </CardContent>
+    </Card>
+  );
+}
 
-      <div className="flex min-h-48 flex-col">
-        <SectionLabel>{t('completionRate')}</SectionLabel>
-        <div className="flex min-h-48 flex-1 flex-col justify-start">
-          <CompletionBarChart
-            data={completionBreakdown}
-            labels={{
-              completed: t('charts.completed'),
-              inProgress: t('charts.inProgress'),
-              abandoned: t('charts.abandoned'),
-            }}
-            noDataMessage={t('noChartData')}
-          />
-        </div>
-      </div>
+// ── Completion Rate Card ─────────────────────────────────────────────
 
-      <div className="lg:col-span-3">
+interface CompletionRateCardProps {
+  completionBreakdown: { completed: number; inProgress: number; abandoned: number };
+}
+
+export function CompletionRateCard({ completionBreakdown }: CompletionRateCardProps) {
+  const t = useTranslations('surveys.stats');
+
+  return (
+    <Card className={cn(BENTO_CARD_CLASS)}>
+      <CardContent className="p-3">
+        <ChartLabel>{t('completionRate')}</ChartLabel>
+        <CompletionBarChart
+          data={completionBreakdown}
+          labels={{
+            completed: t('charts.completed'),
+            inProgress: t('charts.inProgress'),
+            abandoned: t('charts.abandoned'),
+          }}
+          noDataMessage={t('noChartData')}
+        />
+      </CardContent>
+    </Card>
+  );
+}
+
+// ── Device Breakdown Card ────────────────────────────────────────────
+
+interface DeviceBreakdownCardProps {
+  deviceTimeline: DeviceTimelinePoint[];
+}
+
+export function DeviceBreakdownCard({ deviceTimeline }: DeviceBreakdownCardProps) {
+  const t = useTranslations('surveys.stats');
+
+  return (
+    <Card className={cn(BENTO_CARD_CLASS)}>
+      <CardContent className="p-3">
         <div className="mb-2 flex items-center justify-between">
           <p className="text-muted-foreground text-[11px] font-medium tracking-wider uppercase">
             {t('deviceBreakdown')}
@@ -71,8 +100,8 @@ export function SurveyStatsCharts({
           </div>
         </div>
 
-        <DeviceBreakdownChart data={deviceTimeline} className="h-48 w-full" />
-      </div>
-    </div>
+        <DeviceBreakdownChart data={deviceTimeline} className="h-40 w-full" />
+      </CardContent>
+    </Card>
   );
 }

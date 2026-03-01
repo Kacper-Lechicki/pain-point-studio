@@ -10,7 +10,6 @@ import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { EmptyState } from '@/components/ui/empty-state';
 import { SectionLabel } from '@/components/ui/metric-display';
-import { Separator } from '@/components/ui/separator';
 import { useBreadcrumbSegment } from '@/features/dashboard/components/layout/breadcrumb-context';
 import { useSubPanelLinks } from '@/features/dashboard/components/layout/sub-panel-items-context';
 import { getProjectDetailUrl } from '@/features/projects/lib/project-urls';
@@ -20,7 +19,11 @@ import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import { SurveyShareDialog } from '@/features/surveys/components/dashboard/survey-share-dialog';
 import { DetailMetricsGrid } from '@/features/surveys/components/stats/detail-metrics-grid';
 import { QuestionStatsCard } from '@/features/surveys/components/stats/question-stats-card';
-import { SurveyStatsCharts } from '@/features/surveys/components/stats/survey-stats-charts';
+import {
+  CompletionRateCard,
+  DeviceBreakdownCard,
+  ResponseTimelineCard,
+} from '@/features/surveys/components/stats/survey-stats-charts';
 import { SurveyStatsDetailInfo } from '@/features/surveys/components/stats/survey-stats-detail-info';
 import { SurveyStatsHeader } from '@/features/surveys/components/stats/survey-stats-header';
 import { deriveSurveyFlags } from '@/features/surveys/config/survey-status';
@@ -118,81 +121,95 @@ export const SurveyStatsPanel = ({ stats, survey }: SurveyStatsPanelProps) => {
   };
 
   return (
-    <main className="flex min-w-0 flex-col" aria-label={stats.survey.title}>
-      <div className="space-y-6">
-        <SurveyStatsHeader
-          title={stats.survey.title}
-          description={survey?.description ?? null}
-          status={currentStatus}
-          surveyId={stats.survey.id}
-          isActive={isActive}
-          isRefreshing={isRefreshing}
-          isRealtimeConnected={isRealtimeConnected}
-          lastSyncedAt={lastSyncedAt}
-          onRefresh={refresh}
-          hasShareableLink={hasShareableLink}
-          onShare={handleShare}
-          canComplete={isActive}
-          canCancel={isActive}
-          onComplete={() => setShowCompleteDialog(true)}
-          onCancel={() => setShowCancelDialog(true)}
+    <main className="flex min-w-0 flex-col gap-3" aria-label={stats.survey.title}>
+      {/* 1. Header */}
+      <SurveyStatsHeader
+        title={stats.survey.title}
+        description={survey?.description ?? null}
+        status={currentStatus}
+        surveyId={stats.survey.id}
+        isActive={isActive}
+        isRefreshing={isRefreshing}
+        isRealtimeConnected={isRealtimeConnected}
+        lastSyncedAt={lastSyncedAt}
+        onRefresh={refresh}
+        hasShareableLink={hasShareableLink}
+        onShare={handleShare}
+        canComplete={isActive}
+        canCancel={isActive}
+        onComplete={() => setShowCompleteDialog(true)}
+        onCancel={() => setShowCancelDialog(true)}
+      />
+
+      {/* 2. Hero KPI Row */}
+      <DetailMetricsGrid
+        viewCount={stats.viewCount}
+        completedCount={stats.completedResponses}
+        maxRespondents={stats.survey.maxRespondents}
+        submissionRate={submissionRate}
+        avgCompletionSeconds={stats.avgCompletionSeconds}
+        respondentProgress={respondentProgress}
+      />
+
+      {/* 3. Charts + Details */}
+      {stats.completedResponses > 0 && (
+        <ResponseTimelineCard responseTimeline={stats.responseTimeline} />
+      )}
+
+      {(stats.completedResponses > 0 || survey) && (
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {survey && (
+            <SurveyStatsDetailInfo
+              survey={survey}
+              responseCount={stats.totalResponses}
+              avgQuestionCompletion={avgQuestionCompletion}
+            />
+          )}
+
+          {stats.completedResponses > 0 && (
+            <>
+              <CompletionRateCard
+                completionBreakdown={{
+                  completed: stats.completedResponses,
+                  inProgress: stats.inProgressResponses,
+                  abandoned: Math.max(
+                    0,
+                    stats.totalResponses - stats.completedResponses - stats.inProgressResponses
+                  ),
+                }}
+              />
+              <DeviceBreakdownCard deviceTimeline={stats.deviceTimeline} />
+            </>
+          )}
+        </div>
+      )}
+
+      {/* 4. Question Breakdown */}
+      {stats.completedResponses === 0 ? (
+        <EmptyState
+          icon={Inbox}
+          title={t('surveys.stats.noResponses')}
+          description={t('surveys.stats.noResponsesDescription')}
+          action={
+            shareUrl ? (
+              <Button size="sm" onClick={handleShare} className="gap-1.5">
+                <Link2 className="size-4" aria-hidden />
+                {t('surveys.stats.copySurveyLink')}
+              </Button>
+            ) : undefined
+          }
         />
+      ) : (
+        <div className="mt-12">
+          <SectionLabel>{t('surveys.stats.questionBreakdown')}</SectionLabel>
 
-        <DetailMetricsGrid
-          viewCount={stats.viewCount}
-          completedCount={stats.completedResponses}
-          responseCount={stats.totalResponses}
-          maxRespondents={stats.survey.maxRespondents}
-          submissionRate={submissionRate}
-          avgQuestionCompletion={avgQuestionCompletion}
-          avgCompletionSeconds={stats.avgCompletionSeconds}
-          respondentProgress={respondentProgress}
-        />
-
-        {stats.completedResponses > 0 && (
-          <SurveyStatsCharts
-            responseTimeline={stats.responseTimeline}
-            deviceTimeline={stats.deviceTimeline}
-            completionBreakdown={{
-              completed: stats.completedResponses,
-              inProgress: stats.inProgressResponses,
-              abandoned: Math.max(
-                0,
-                stats.totalResponses - stats.completedResponses - stats.inProgressResponses
-              ),
-            }}
-          />
-        )}
-
-        {survey && <SurveyStatsDetailInfo survey={survey} />}
-
-        {stats.completedResponses === 0 ? (
-          <EmptyState
-            icon={Inbox}
-            title={t('surveys.stats.noResponses')}
-            description={t('surveys.stats.noResponsesDescription')}
-            action={
-              shareUrl ? (
-                <Button size="sm" onClick={handleShare} className="gap-1.5">
-                  <Link2 className="size-4" aria-hidden />
-                  {t('surveys.stats.copySurveyLink')}
-                </Button>
-              ) : undefined
-            }
-          />
-        ) : (
-          <>
-            <Separator />
-            <SectionLabel>{t('surveys.stats.questionBreakdown')}</SectionLabel>
-
-            <div className="space-y-3">
-              {stats.questions.map((q: QuestionStats, i: number) => (
-                <QuestionStatsCard key={q.id} question={q} index={i} />
-              ))}
-            </div>
-          </>
-        )}
-      </div>
+          <div className="space-y-3">
+            {stats.questions.map((q: QuestionStats, i: number) => (
+              <QuestionStatsCard key={q.id} question={q} index={i} />
+            ))}
+          </div>
+        </div>
+      )}
 
       {hasShareableLink && shareUrl && (
         <SurveyShareDialog

@@ -91,8 +91,8 @@ export function KpiCard({
       )}
     >
       <div className="p-4">
-        <div className="flex items-center justify-between gap-2">
-          <p className="text-muted-foreground shrink-0 text-xs font-medium tracking-wider uppercase">
+        <div className="flex min-w-0 items-center justify-between gap-2">
+          <p className="text-muted-foreground min-w-0 truncate text-xs font-medium tracking-wider uppercase">
             {title}
           </p>
           <Icon

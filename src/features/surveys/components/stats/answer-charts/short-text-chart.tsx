@@ -10,10 +10,9 @@ import type { ResponseItem } from '@/features/surveys/components/stats/answer-ch
 
 interface ShortTextChartProps {
   answers: QuestionAnswerData[];
-  questionText: string;
 }
 
-export const ShortTextChart = ({ answers, questionText }: ShortTextChartProps) => {
+export const ShortTextChart = ({ answers }: ShortTextChartProps) => {
   const t = useTranslations('surveys.stats');
 
   const textAnswers = useMemo<ResponseItem[]>(
@@ -31,5 +30,5 @@ export const ShortTextChart = ({ answers, questionText }: ShortTextChartProps) =
     return <p className="text-muted-foreground text-xs">{t('noTextResponses')}</p>;
   }
 
-  return <InlineTextSearch responses={textAnswers} questionText={questionText} />;
+  return <InlineTextSearch responses={textAnswers} />;
 };
