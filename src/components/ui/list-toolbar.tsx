@@ -34,7 +34,7 @@ export interface FilterGroup {
   onChange: (selected: string[]) => void;
 }
 
-export interface ListToolbarProps<TSortBy extends string> {
+interface ListToolbarProps<TSortBy extends string> {
   // Search
   searchQuery: string;
   onSearchQueryChange: (query: string) => void;

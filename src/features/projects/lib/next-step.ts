@@ -10,7 +10,7 @@ export type NextStepAction =
   | 'make-decision'
   | 'continue';
 
-export interface NextStepResult {
+interface NextStepResult {
   action: NextStepAction;
   /** i18n key for the CTA description. */
   labelKey: string;

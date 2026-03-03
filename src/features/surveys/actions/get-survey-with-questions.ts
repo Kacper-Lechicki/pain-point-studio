@@ -12,7 +12,7 @@ import {
 } from '@/features/surveys/types';
 import { createClient } from '@/lib/supabase/server';
 
-export interface SurveyBuilderData {
+interface SurveyBuilderData {
   survey: {
     id: string;
     title: string;

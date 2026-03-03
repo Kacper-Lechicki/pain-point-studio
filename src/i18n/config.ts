@@ -12,7 +12,3 @@ export default createMiddleware({
   defaultLocale,
   pathnames: PATHNAMES,
 });
-
-export const config = {
-  matcher: ['/', `/(${locales.join('|')})/:path*`],
-};

@@ -9,6 +9,3 @@ export const BENTO_ROW4_CARD_MIN_H = 'min-h-[14rem]';
 
 /** Min height for empty state content so middle row and pinned empty stay aligned. */
 export const BENTO_EMPTY_STATE_MIN_H = 'min-h-52';
-
-/** Min height for chart cards in row 3 so both columns are equal on desktop (2-col grid). */
-export const BENTO_CHART_CARD_MIN_H = 'min-h-72';

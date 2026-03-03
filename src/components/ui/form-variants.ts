@@ -13,5 +13,3 @@ export const FORM_CONTROL_SIZES = {
   md: 'h-9',
   sm: 'h-8',
 } as const;
-
-export type FormControlSize = keyof typeof FORM_CONTROL_SIZES;

@@ -6,7 +6,7 @@ import type { ProjectStatus } from '@/features/projects/types';
 
 // ── Status visual config ────────────────────────────────────────────
 
-export interface StatusBadgeConfig {
+interface StatusBadgeConfig {
   variant: 'default' | 'secondary' | 'outline';
   className: string;
 }
@@ -111,7 +111,7 @@ export function getAvailableActions(status: ProjectStatus): ProjectAction[] {
 
 // ── Action UI config ────────────────────────────────────────────────
 
-export interface ProjectActionUIConfig {
+interface ProjectActionUIConfig {
   icon: LucideIcon;
   buttonClassName?: string;
   menuItemVariant?: 'destructive' | 'warning' | 'accent';

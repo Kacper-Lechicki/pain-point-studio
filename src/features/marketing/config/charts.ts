@@ -24,7 +24,7 @@ export function localizeChartConfig<T extends ChartConfig>(
 
 // ── Idea Trends (line chart) ────────────────────────────────────────
 
-export interface IdeaTrendsDataPoint {
+interface IdeaTrendsDataPoint {
   month: string;
   desktop: number;
   mobile: number;
@@ -52,7 +52,7 @@ export const IDEA_TRENDS_CONFIG = {
 
 // ── Pain Points (bar chart) ─────────────────────────────────────────
 
-export interface PainPointsDataPoint {
+interface PainPointsDataPoint {
   painPoint: string;
   intensity: number;
   fill: string;
@@ -89,7 +89,7 @@ export const PAIN_POINTS_CONFIG = {
 
 // ── Question Engagement (horizontal bar chart) ─────────────────────
 
-export interface QuestionEngagementDataPoint {
+interface QuestionEngagementDataPoint {
   activity: string;
   count: number;
   fill: string;
@@ -126,7 +126,7 @@ export const QUESTION_ENGAGEMENT_CONFIG = {
 
 // ── Responses Growth (area chart) ───────────────────────────────────
 
-export interface ResponsesGrowthDataPoint {
+interface ResponsesGrowthDataPoint {
   day: string;
   visitors: number;
 }

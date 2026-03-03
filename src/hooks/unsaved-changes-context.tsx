@@ -333,4 +333,4 @@ function useUnsavedChangesWarning(id: string, isDirty: boolean): void {
   }, [id, isDirty, register]);
 }
 
-export { UnsavedChangesProvider, useUnsavedChangesContext, useUnsavedChangesWarning };
+export { UnsavedChangesProvider, useUnsavedChangesWarning };

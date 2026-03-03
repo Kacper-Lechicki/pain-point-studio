@@ -22,7 +22,7 @@ const SOCIAL_COLORS: Record<string, string> = {
   other: 'md:hover:border-primary/30 md:hover:bg-primary/5',
 };
 
-export function getDisplayUrl(url: string): string {
+function getDisplayUrl(url: string): string {
   try {
     const parsed = new URL(url);
     const host = parsed.hostname.replace(/^www\./, '');

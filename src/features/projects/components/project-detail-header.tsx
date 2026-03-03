@@ -49,7 +49,7 @@ import { cn } from '@/lib/common/utils';
 type EditingField = 'name' | 'summary' | null;
 type SaveStatus = 'idle' | 'saving' | 'saved' | 'failed';
 
-export type ProjectDetailHeaderEditSuccess = {
+type ProjectDetailHeaderEditSuccess = {
   name: string;
   summary: string | undefined;
   targetResponses?: number;

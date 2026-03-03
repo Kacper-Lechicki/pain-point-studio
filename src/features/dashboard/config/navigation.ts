@@ -58,7 +58,7 @@ export interface NavItem {
   disabled?: boolean | undefined;
 }
 
-export interface NavGroup {
+interface NavGroup {
   items: NavItem[];
 }
 
@@ -117,6 +117,5 @@ export { GIVE_FEEDBACK_NAV_ITEM as SIDEBAR_GIVE_FEEDBACK_ITEM } from './navigati
 // ── Re-exports for backward compatibility ─────────────────────────────
 // NOTE: findActiveNavItem is in lib/nav-utils.ts (not re-exported to avoid circular deps)
 
-export { USER_SETTINGS_NAV_ITEM, USER_SETTINGS_SUB_NAV_ITEMS } from './navigation-settings';
-export type { DynamicRouteTab, DynamicSidebarItem } from './navigation-dynamic';
+export type { DynamicRouteTab } from './navigation-dynamic';
 export { DYNAMIC_ROUTE_TABS, DYNAMIC_SIDEBAR_ITEMS } from './navigation-dynamic';

@@ -99,8 +99,6 @@ export const unlinkIdentitySchema = z.object({
   provider: z.string().min(1),
 });
 
-export type UnlinkIdentitySchema = z.infer<typeof unlinkIdentitySchema>;
-
 /** Account deletion form: user must type their email to confirm. */
 export const deleteAccountSchema = z.object({
   confirmation: z.string().email('settings.errors.confirmationMismatch'),

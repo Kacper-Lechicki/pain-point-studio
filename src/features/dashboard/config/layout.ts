@@ -2,7 +2,7 @@ import { ROUTES } from '@/config/routes';
 import { locales } from '@/i18n/constants';
 
 /** Path prefix for survey builder (edit questions). Builder uses a standalone full-screen layout. */
-export const BUILDER_PATH_PREFIX = '/dashboard/research/new/';
+const BUILDER_PATH_PREFIX = '/dashboard/research/new/';
 
 /** Check if the pathname points to the survey builder (creating/editing questions). */
 export function isBuilderPath(pathname: string | null): boolean {
@@ -46,7 +46,7 @@ export const DASHBOARD_CONTENT_MAX_WIDTH = 'container';
 export const DASHBOARD_PAGE_BODY_GAP = 'mb-8';
 export const DASHBOARD_PAGE_BODY_GAP_TOP = 'mt-8';
 
-export type DashboardContentWidth = 'narrow' | 'content' | 'full';
+type DashboardContentWidth = 'narrow' | 'content' | 'full';
 
 /** Strip the leading locale segment (e.g. '/en/dashboard' → '/dashboard'). No-op if absent. */
 function pathWithoutLocale(pathname: string): string {

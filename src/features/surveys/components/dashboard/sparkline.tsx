@@ -16,7 +16,7 @@ const TREND_COLOR: Record<SparklineTrend, string> = {
   flat: 'text-muted-foreground',
 };
 
-export function getSparklineTrend(data: number[]): SparklineTrend {
+function getSparklineTrend(data: number[]): SparklineTrend {
   const total = data.reduce((s, v) => s + v, 0);
 
   if (total === 0) {

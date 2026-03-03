@@ -49,23 +49,3 @@ export const SIBLING_GROUPS: readonly (readonly AppRoute[])[] = [
   [ROUTES.auth.signIn, ROUTES.auth.signUp, ROUTES.auth.forgotPassword],
   [ROUTES.dashboard.projects, ROUTES.dashboard.projectNew],
 ];
-
-/** Ordered list of settings page section identifiers (used for tabs / scroll anchors). */
-export const SETTINGS_SECTION_VALUES = [
-  'profile',
-  'email',
-  'password',
-  'connectedAccounts',
-  'dangerZone',
-] as const;
-
-export type SettingsSectionValue = (typeof SETTINGS_SECTION_VALUES)[number];
-
-/** Maps section identifiers to URL-friendly hash fragments (camelCase → kebab-case). */
-export const SECTION_TO_HASH: Record<SettingsSectionValue, string> = {
-  profile: 'profile',
-  email: 'email',
-  password: 'password',
-  connectedAccounts: 'connected-accounts',
-  dangerZone: 'danger-zone',
-};

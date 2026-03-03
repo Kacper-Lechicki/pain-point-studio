@@ -53,15 +53,11 @@ export const updateProjectDescriptionSchema = z.object({
   description: z.any().nullable(),
 });
 
-export type UpdateProjectDescriptionInput = z.infer<typeof updateProjectDescriptionSchema>;
-
 /** Schema for updating the project image URL. */
 export const updateProjectImageSchema = z.object({
   projectId: z.uuid(),
   imageUrl: z.string().url().or(z.literal('')),
 });
-
-export type UpdateProjectImageInput = z.infer<typeof updateProjectImageSchema>;
 
 // ── Insight schemas ─────────────────────────────────────────────────
 
@@ -76,8 +72,6 @@ export const createInsightSchema = z.object({
     .max(INSIGHT_CONTENT_MAX_LENGTH, 'projects.errors.contentTooLong'),
 });
 
-export type CreateInsightInput = z.infer<typeof createInsightSchema>;
-
 /** Schema for updating an existing insight/note. */
 export const updateInsightSchema = z.object({
   insightId: z.uuid(),
@@ -90,14 +84,10 @@ export const updateInsightSchema = z.object({
     .optional(),
 });
 
-export type UpdateInsightInput = z.infer<typeof updateInsightSchema>;
-
 /** Schema for reordering insights within a column. */
 export const reorderInsightsSchema = z.object({
   insightIds: z.array(z.uuid()),
 });
-
-export type ReorderInsightsInput = z.infer<typeof reorderInsightsSchema>;
 
 /** Schema for moving an insight to a different column (type change + reorder). */
 export const moveInsightSchema = z.object({
@@ -108,5 +98,3 @@ export const moveInsightSchema = z.object({
   /** Ordered IDs of all insights remaining in the SOURCE column after removal. */
   sourceColumnInsightIds: z.array(z.uuid()),
 });
-
-export type MoveInsightInput = z.infer<typeof moveInsightSchema>;

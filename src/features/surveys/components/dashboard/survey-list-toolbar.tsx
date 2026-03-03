@@ -25,7 +25,7 @@ export type SurveySortBy =
   | 'lastResponse'
   | 'activity';
 
-export type SurveySortDir = 'asc' | 'desc';
+type SurveySortDir = 'asc' | 'desc';
 
 export interface ProjectFilterOption {
   id: string;

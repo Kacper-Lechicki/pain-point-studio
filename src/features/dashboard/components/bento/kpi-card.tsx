@@ -9,7 +9,7 @@ import { Card } from '@/components/ui/card';
 import { BENTO_CARD_CLASS } from '@/features/dashboard/components/bento/bento-styles';
 import { cn } from '@/lib/common/utils';
 
-export type KpiAccent = 'pink' | 'cyan' | 'violet' | 'emerald' | 'rose';
+type KpiAccent = 'pink' | 'cyan' | 'violet' | 'emerald' | 'rose';
 
 const ACCENT_ICON: Record<KpiAccent, string> = {
   pink: 'text-[var(--chart-pink)]',

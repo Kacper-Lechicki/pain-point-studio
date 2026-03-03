@@ -23,5 +23,3 @@ export function useProjectSelection(projects: ProjectWithMetrics[]) {
     setSelected,
   };
 }
-
-export type UseProjectSelectionReturn = ReturnType<typeof useProjectSelection>;

@@ -34,7 +34,7 @@ import { type UpdateProjectInput, updateProjectSchema } from '@/features/project
 import { useFormAction } from '@/hooks/common/use-form-action';
 import type { MessageKey } from '@/i18n/types';
 
-export interface EditableProject {
+interface EditableProject {
   id: string;
   name: string;
   summary: string | null;

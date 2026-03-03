@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { TEXT_SEARCH_MAX_KEYWORDS, TEXT_SEARCH_MIN_WORD_LENGTH } from '@/features/surveys/config';
 import { STOPWORDS } from '@/features/surveys/lib/stopwords';
 
-export interface KeywordEntry {
+interface KeywordEntry {
   word: string;
   count: number;
 }

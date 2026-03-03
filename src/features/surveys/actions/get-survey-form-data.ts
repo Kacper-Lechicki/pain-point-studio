@@ -9,7 +9,7 @@ export interface ProjectOption {
   label: string;
 }
 
-export interface SurveyFormData {
+interface SurveyFormData {
   projectOptions: ProjectOption[];
 }
 

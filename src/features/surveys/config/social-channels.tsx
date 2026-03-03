@@ -10,9 +10,9 @@ function RedditIcon({ className }: { className?: string }) {
   );
 }
 
-export type SocialChannelKey = keyof ShareUrls;
+type SocialChannelKey = keyof ShareUrls;
 
-export interface SocialChannel {
+interface SocialChannel {
   key: SocialChannelKey;
   icon: React.ElementType;
   iconClass: string;

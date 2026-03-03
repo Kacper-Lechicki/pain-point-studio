@@ -96,11 +96,6 @@ export const SURVEY_STATUS_CONFIG: Record<SurveyStatus, StatusConfig> = {
   },
 };
 
-/** Returns badge variant, className, and pulse-dot flag for a given status. */
-export function getStatusBadgeProps(status: SurveyStatus) {
-  return SURVEY_STATUS_CONFIG[status].badge;
-}
-
 // ── State machine ───────────────────────────────────────────────────
 
 interface StatusTransition {
@@ -170,7 +165,7 @@ export function deriveSurveyFlags(status: SurveyStatus): SurveyStatusFlags {
 // ── Action UI config (icons, toasts, confirmation dialogs) ──────────
 
 /** UI metadata for a survey action (icon, toast key, optional confirmation dialog). */
-export interface ActionUIConfig {
+interface ActionUIConfig {
   icon: LucideIcon;
   toastKey: string;
   /** Pre-mapped Tailwind classes for the action button in the detail panel. */
@@ -272,10 +267,3 @@ export const SURVEY_ACTION_UI: Record<SurveyAction, ActionUIConfig> = {
     },
   },
 };
-
-/** Returns the target status for a given action, or `null` for deletion. */
-export function getActionTargetStatus(action: SurveyAction): SurveyStatus | null {
-  const transition = SURVEY_TRANSITIONS[action];
-
-  return 'toStatus' in transition ? (transition.toStatus as SurveyStatus) : null;
-}

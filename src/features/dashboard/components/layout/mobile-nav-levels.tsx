@@ -38,7 +38,7 @@ interface SubNavItemsProps {
   breadcrumbSegments?: Record<string, string> | undefined;
 }
 
-export function SubNavItems({
+function SubNavItems({
   groups,
   pathname,
   clientState,

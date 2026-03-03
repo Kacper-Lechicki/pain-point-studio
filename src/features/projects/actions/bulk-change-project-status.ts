@@ -21,7 +21,7 @@ const bulkChangeProjectStatusSchema = z.object({
   action: z.enum(STATUS_ACTIONS),
 });
 
-export interface BulkResult {
+interface BulkResult {
   total: number;
   failed: number;
   failedIds: string[];

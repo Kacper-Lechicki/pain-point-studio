@@ -1,5 +1,5 @@
 /** Parsed rating scale configuration with pre-computed values array. */
-export interface RatingScaleConfig {
+interface RatingScaleConfig {
   min: number;
   max: number;
   values: number[];

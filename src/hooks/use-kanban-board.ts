@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-export interface UseKanbanBoardOptions<TColumnId extends string> {
+interface UseKanbanBoardOptions<TColumnId extends string> {
   /** Map of column IDs to arrays of item IDs in that column. */
   columns: Record<TColumnId, string[]>;
   /** All valid column IDs in display order. */
@@ -25,7 +25,7 @@ export interface UseKanbanBoardOptions<TColumnId extends string> {
   ) => void;
 }
 
-export interface UseKanbanBoardResult {
+interface UseKanbanBoardResult {
   /** Id of the item currently being dragged, or null. */
   draggedId: string | null;
   /** Column from which the item was picked up. */

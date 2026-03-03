@@ -1,7 +1,7 @@
 import { ROUTES } from '@/config';
 import type { MessageKey } from '@/i18n/types';
 
-export interface NavLink {
+interface NavLink {
   href: string;
   label: MessageKey;
   disabled?: boolean;

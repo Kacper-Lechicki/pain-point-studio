@@ -17,7 +17,7 @@ import './editor.css';
 // Types
 // ---------------------------------------------------------------------------
 
-export interface RichEditorProps {
+interface RichEditorProps {
   /** Initial content as Tiptap JSON document */
   content?: JSONContent | null;
   /** Called on every content change with Tiptap JSON */

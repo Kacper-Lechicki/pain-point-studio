@@ -18,7 +18,7 @@ export interface OverviewProject {
   responseCount: number;
 }
 
-export interface DashboardOverview {
+interface DashboardOverview {
   projects: OverviewProject[];
 }
 

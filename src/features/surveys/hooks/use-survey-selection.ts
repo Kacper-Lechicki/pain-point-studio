@@ -27,5 +27,3 @@ export function useSurveySelection(surveys: UserSurvey[]) {
     setSelected,
   };
 }
-
-export type UseSurveySelectionReturn = ReturnType<typeof useSurveySelection>;

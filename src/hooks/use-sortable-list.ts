@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-export interface UseSortableListOptions {
+interface UseSortableListOptions {
   /** Ordered list of item ids. */
   itemIds: string[];
   /** Ref to the scrollable container that wraps the list items. */
@@ -13,7 +13,7 @@ export interface UseSortableListOptions {
   onReorder: (newIds: string[]) => void;
 }
 
-export interface UseSortableListResult {
+interface UseSortableListResult {
   /** Id of the item currently being dragged, or null. */
   draggedId: string | null;
   /** Index where the item will be dropped (0..itemIds.length). */

@@ -13,7 +13,7 @@ interface UseItemSelectionOptions<TItem extends { id: string }, TDetail> {
   fetchDetail: (id: string) => Promise<TDetail | null>;
 }
 
-export interface UseItemSelectionReturn<TItem, TDetail> {
+interface UseItemSelectionReturn<TItem, TDetail> {
   selectedId: string | null;
   selectedItem: TItem | null;
   detailData: TDetail | null;

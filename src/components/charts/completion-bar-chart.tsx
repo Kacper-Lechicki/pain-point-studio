@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 
 import { cn } from '@/lib/common/utils';
 
-export interface CompletionBarChartData {
+interface CompletionBarChartData {
   completed: number;
   inProgress: number;
   abandoned: number;

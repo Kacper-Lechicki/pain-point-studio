@@ -19,7 +19,7 @@ export interface RateLimitConfig {
   includeUserAgent?: boolean;
 }
 
-export interface RateLimiter {
+interface RateLimiter {
   check(config: RateLimitConfig): Promise<{ limited: boolean }>;
 }
 
