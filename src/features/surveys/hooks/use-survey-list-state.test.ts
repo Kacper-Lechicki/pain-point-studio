@@ -70,6 +70,9 @@ function makeSurvey(id: string, title: string): UserSurvey {
     projectId: 'project-1',
     projectName: 'Test Project',
     researchPhase: null,
+    deletedAt: null,
+    preTrashStatus: null,
+    previousStatus: null,
   };
 }
 

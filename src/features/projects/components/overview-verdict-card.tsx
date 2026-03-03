@@ -84,44 +84,35 @@ export function OverviewVerdictCard({
   return (
     <Card className={`gap-0 py-0 shadow-none ${config.colors.bg} ${config.colors.border}`}>
       <CardContent className="flex min-h-0 flex-col gap-0 p-4">
-        {/* Verdict header */}
-        <div className="flex items-start gap-3">
-          <div
-            className={`flex size-9 shrink-0 items-center justify-center rounded-lg ${config.colors.icon}`}
-          >
-            <Icon className="size-5" aria-hidden />
+        {/* Verdict header: badge and icon in one row (like other overview cards) */}
+        <div className="flex shrink-0 items-start justify-between gap-2">
+          <StatusBadge
+            labelKey={config.labelKey}
+            descriptionKey={config.descriptionKey}
+            ariaLabelKey={config.ariaLabelKey}
+            variant="outline"
+            badgeClassName={config.colors.badge}
+          />
+          <Icon className={`size-4 shrink-0 ${config.colors.icon}`} aria-hidden />
+        </div>
+
+        <p className={`mt-1.5 text-sm ${config.colors.text}`}>
+          {t(verdict.summaryKey as MessageKey)}
+        </p>
+
+        <div className="mt-3 max-w-xs">
+          <div className="bg-foreground/10 h-1.5 w-full overflow-hidden rounded-full">
+            <div
+              className={`h-full rounded-full transition-all ${config.colors.bar}`}
+              style={{ width: `${percent}%` }}
+            />
           </div>
-
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2">
-              <StatusBadge
-                labelKey={config.labelKey}
-                descriptionKey={config.descriptionKey}
-                ariaLabelKey={config.ariaLabelKey}
-                variant="outline"
-                badgeClassName={config.colors.badge}
-              />
-            </div>
-
-            <p className={`mt-1.5 text-sm ${config.colors.text}`}>
-              {t(verdict.summaryKey as MessageKey)}
-            </p>
-
-            <div className="mt-3 max-w-xs">
-              <div className="bg-foreground/10 h-1.5 w-full overflow-hidden rounded-full">
-                <div
-                  className={`h-full rounded-full transition-all ${config.colors.bar}`}
-                  style={{ width: `${percent}%` }}
-                />
-              </div>
-              <p className="text-muted-foreground mt-1 text-xs tabular-nums">
-                {t('projects.verdict.confidence' as MessageKey, {
-                  current: totalResponses,
-                  target: targetResponses,
-                })}
-              </p>
-            </div>
-          </div>
+          <p className="text-muted-foreground mt-1 text-xs tabular-nums">
+            {t('projects.verdict.confidence' as MessageKey, {
+              current: totalResponses,
+              target: targetResponses,
+            })}
+          </p>
         </div>
 
         {/* Next step CTA */}

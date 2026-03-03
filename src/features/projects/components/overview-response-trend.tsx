@@ -92,7 +92,7 @@ export function OverviewResponseTrend({ timeline }: OverviewResponseTrendProps) 
               ))}
             </div>
 
-            <LineChartIcon className="text-chart-violet size-3.5 shrink-0" />
+            <LineChartIcon className="text-chart-violet size-4 shrink-0" />
           </div>
         </div>
 

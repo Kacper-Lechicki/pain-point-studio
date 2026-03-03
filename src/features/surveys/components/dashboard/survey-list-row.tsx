@@ -15,6 +15,10 @@ interface SurveyListRowProps {
   archivedLayout?: boolean;
   /** When true, hides project badge, simplifies actions, and adjusts columns. */
   isProjectContext?: boolean | undefined;
+  /** Whether this row's checkbox is checked (for bulk selection). */
+  isBulkSelected?: boolean | undefined;
+  /** Toggle bulk selection for this survey's ID. */
+  onToggleBulkSelect?: ((id: string) => void) | undefined;
 }
 
 export function SurveyListRow({
@@ -26,6 +30,8 @@ export function SurveyListRow({
   variant = 'table',
   archivedLayout = false,
   isProjectContext,
+  isBulkSelected,
+  onToggleBulkSelect,
 }: SurveyListRowProps) {
   const row = useSurveyRow(survey, now, onStatusChange);
 
@@ -38,6 +44,8 @@ export function SurveyListRow({
         row={row}
         archivedLayout={archivedLayout}
         isProjectContext={isProjectContext}
+        isBulkSelected={isBulkSelected}
+        onToggleBulkSelect={onToggleBulkSelect}
       />
     );
   }
@@ -50,6 +58,8 @@ export function SurveyListRow({
       row={row}
       archivedLayout={archivedLayout}
       isProjectContext={isProjectContext}
+      isBulkSelected={isBulkSelected}
+      onToggleBulkSelect={onToggleBulkSelect}
     />
   );
 }

@@ -76,7 +76,10 @@ describe('Project Actions – Update Project', () => {
   it('should update project and return success', async () => {
     const updateChain = chain({ data: { id: PROJECT_ID } });
 
-    mockFrom.mockReturnValueOnce(noDuplicateChain()).mockReturnValueOnce(updateChain);
+    mockFrom
+      .mockReturnValueOnce(chain({ data: { status: 'active' } }))
+      .mockReturnValueOnce(noDuplicateChain())
+      .mockReturnValueOnce(updateChain);
 
     const { updateProject } = await import('./update-project');
 
@@ -98,7 +101,9 @@ describe('Project Actions – Update Project', () => {
   });
 
   it('should return error when another project has the same name', async () => {
-    mockFrom.mockReturnValueOnce(chain({ data: { id: 'other-project-id' } }));
+    mockFrom
+      .mockReturnValueOnce(chain({ data: { status: 'active' } }))
+      .mockReturnValueOnce(chain({ data: { id: 'other-project-id' } }));
 
     const { updateProject } = await import('./update-project');
 
@@ -109,11 +114,12 @@ describe('Project Actions – Update Project', () => {
     });
 
     expect(result).toHaveProperty('error', 'projects.errors.nameAlreadyExists');
-    expect(mockFrom).toHaveBeenCalledTimes(1);
+    expect(mockFrom).toHaveBeenCalledTimes(2);
   });
 
   it('should return error when no matching row', async () => {
     mockFrom
+      .mockReturnValueOnce(chain({ data: { status: 'active' } }))
       .mockReturnValueOnce(noDuplicateChain())
       .mockReturnValueOnce(chain({ data: null, error: null }));
 

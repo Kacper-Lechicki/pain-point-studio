@@ -9,6 +9,7 @@
 -- The jobs call maintenance functions defined in the migration to handle:
 --   1. Abandoned response cleanup (mark stale in_progress → abandoned)
 --   2. Auto-complete surveys past their end date
+--   3. Purge trashed projects older than 30 days
 --
 -- WHEN TO RE-RUN:
 --   • After creating a new Supabase project
@@ -32,4 +33,18 @@ SELECT cron.schedule(
   'complete_expired_surveys',
   '*/15 * * * *',
   $$SELECT public.complete_expired_surveys()$$
+);
+
+-- Purge trashed projects older than 30 days (daily at 3 AM UTC)
+SELECT cron.schedule(
+  'purge_trashed_projects',
+  '0 3 * * *',
+  $$SELECT public.purge_trashed_projects()$$
+);
+
+-- Purge trashed surveys older than 30 days (daily at 3 AM UTC)
+SELECT cron.schedule(
+  'purge_trashed_surveys',
+  '0 3 * * *',
+  $$SELECT public.purge_trashed_surveys()$$
 );

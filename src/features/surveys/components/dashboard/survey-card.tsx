@@ -43,7 +43,7 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
     survey.slug
   );
 
-  const { isDraft, isActive, isCompleted, isCancelled, isArchived } = deriveSurveyFlags(
+  const { isDraft, isActive, isCompleted, isCancelled, isArchived, isTrashed } = deriveSurveyFlags(
     survey.status
   );
 
@@ -134,6 +134,7 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
                 flags={{
                   isDraft,
                   isArchived,
+                  isTrashed,
                   hasShareableLink,
                   questionCount: survey.questionCount,
                 }}

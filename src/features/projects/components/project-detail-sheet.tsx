@@ -10,6 +10,7 @@ import {
 import type { ProjectDetail } from '@/features/projects/actions/get-project';
 import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
 import { ProjectDetailPanel } from '@/features/projects/components/project-detail-panel';
+import type { ProjectAction } from '@/features/projects/config/status';
 
 interface ProjectDetailSheetProps {
   open: boolean;
@@ -17,8 +18,7 @@ interface ProjectDetailSheetProps {
   project: ProjectWithMetrics | null;
   projectDetail: ProjectDetail | null;
   onEdit: () => void;
-  onArchive: () => void;
-  onDelete: () => void;
+  onAction: (action: ProjectAction) => void;
   detailsLabel: string;
 }
 
@@ -28,8 +28,7 @@ export function ProjectDetailSheet({
   project,
   projectDetail,
   onEdit,
-  onArchive,
-  onDelete,
+  onAction,
   detailsLabel,
 }: ProjectDetailSheetProps) {
   return (
@@ -53,8 +52,7 @@ export function ProjectDetailSheet({
               project={project}
               projectDetail={projectDetail}
               onEdit={onEdit}
-              onArchive={onArchive}
-              onDelete={onDelete}
+              onAction={onAction}
             />
           </div>
         )}

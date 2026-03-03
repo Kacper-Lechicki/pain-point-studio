@@ -15,7 +15,7 @@ import { EditProjectDialog } from '@/features/projects/components/edit-project-d
 import { ProjectDetailHeader } from '@/features/projects/components/project-detail-header';
 import { ProjectDetailTabs } from '@/features/projects/components/project-detail-tabs';
 import { useProjectDashboardActions } from '@/features/projects/hooks/use-project-dashboard-actions';
-import { isProjectArchived } from '@/features/projects/lib/project-helpers';
+import { isProjectReadOnly } from '@/features/projects/lib/project-helpers';
 import type {
   Project,
   ProjectInsight,
@@ -70,7 +70,7 @@ export function ProjectDashboardPage({
 
   useBreadcrumbSegment(project.id, project.name);
 
-  const isArchived = isProjectArchived(project);
+  const readOnly = isProjectReadOnly(project);
 
   useSubPanelLinks(
     [
@@ -81,7 +81,7 @@ export function ProjectDashboardPage({
       },
     ],
     [
-      ...(!isArchived
+      ...(!readOnly
         ? [
             {
               label: t('projects.detail.createSurvey'),
@@ -122,8 +122,7 @@ export function ProjectDashboardPage({
         userId={project.user_id}
         owner={owner}
         onEdit={() => setEditOpen(true)}
-        onArchive={() => setConfirmAction('archive')}
-        onDelete={() => setConfirmAction('delete')}
+        onAction={setConfirmAction}
         lastResponseAt={overviewStats.lastResponseAt}
         onImageChange={handleImageChange}
         onEditSuccess={handleEditSuccess}

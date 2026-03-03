@@ -82,6 +82,18 @@ export const SURVEY_STATUS_CONFIG: Record<SurveyStatus, StatusConfig> = {
     },
     kpiColor: 'text-foreground',
   },
+  trashed: {
+    labelKey: 'surveys.dashboard.status.trashed',
+    descriptionKey: 'surveys.dashboard.statusInfo.trashed',
+    ariaLabelKey: 'surveys.dashboard.statusInfo.ariaLabel',
+    icon: Trash2,
+    badge: {
+      variant: 'outline',
+      className: 'bg-red-500/15 text-red-700 dark:text-red-400 border-red-500/25',
+      showPulseDot: false,
+    },
+    kpiColor: 'text-red-600 dark:text-red-400',
+  },
 };
 
 /** Returns badge variant, className, and pulse-dot flag for a given status. */
@@ -101,13 +113,20 @@ interface StatusTransition {
 export const SURVEY_TRANSITIONS = {
   complete: { method: 'update', toStatus: 'completed', fromStatuses: ['active'] },
   cancel: { method: 'update', toStatus: 'cancelled', fromStatuses: ['active'] },
+  reopen: { method: 'update', toStatus: 'active', fromStatuses: ['completed', 'cancelled'] },
   archive: {
     method: 'update',
     toStatus: 'archived',
     fromStatuses: ['completed', 'cancelled', 'draft'],
   },
-  restore: { method: 'update', toStatus: 'draft', fromStatuses: ['archived'] },
-  delete: { method: 'delete', fromStatuses: ['draft', 'archived'] },
+  restore: { method: 'update', toStatus: null, fromStatuses: ['archived'] },
+  trash: {
+    method: 'update',
+    toStatus: 'trashed',
+    fromStatuses: ['draft', 'active', 'completed', 'cancelled', 'archived'],
+  },
+  restoreTrash: { method: 'update', toStatus: null, fromStatuses: ['trashed'] },
+  permanentDelete: { method: 'delete', fromStatuses: ['trashed'] },
 } as const satisfies Record<string, StatusTransition>;
 
 export type SurveyAction = keyof typeof SURVEY_TRANSITIONS;
@@ -133,6 +152,7 @@ export interface SurveyStatusFlags {
   isCompleted: boolean;
   isCancelled: boolean;
   isArchived: boolean;
+  isTrashed: boolean;
 }
 
 /** Derives boolean convenience flags from a survey's current status. */
@@ -143,6 +163,7 @@ export function deriveSurveyFlags(status: SurveyStatus): SurveyStatusFlags {
     isCompleted: status === 'completed',
     isCancelled: status === 'cancelled',
     isArchived: status === 'archived',
+    isTrashed: status === 'trashed',
   };
 }
 
@@ -187,6 +208,16 @@ export const SURVEY_ACTION_UI: Record<SurveyAction, ActionUIConfig> = {
       variant: 'destructive',
     },
   },
+  reopen: {
+    icon: RotateCcw,
+    toastKey: 'toast.reopened',
+    buttonClassName: COMPACT_ACTION_COLORS.restore,
+    confirm: {
+      titleKey: 'confirm.reopenTitle',
+      descriptionKey: 'confirm.reopenDescription',
+      variant: 'default',
+    },
+  },
   archive: {
     icon: Archive,
     toastKey: 'toast.archived',
@@ -208,14 +239,35 @@ export const SURVEY_ACTION_UI: Record<SurveyAction, ActionUIConfig> = {
       variant: 'default',
     },
   },
-  delete: {
+  trash: {
     icon: Trash2,
-    toastKey: 'toast.deleted',
+    toastKey: 'toast.trashed',
     buttonClassName: COMPACT_ACTION_COLORS.destructive,
     menuItemVariant: 'destructive',
     confirm: {
-      titleKey: 'confirm.deleteTitle',
-      descriptionKey: 'confirm.deleteDescription',
+      titleKey: 'confirm.trashTitle',
+      descriptionKey: 'confirm.trashDescription',
+      variant: 'destructive',
+    },
+  },
+  restoreTrash: {
+    icon: RotateCcw,
+    toastKey: 'toast.restoredFromTrash',
+    buttonClassName: COMPACT_ACTION_COLORS.restore,
+    confirm: {
+      titleKey: 'confirm.restoreTrashTitle',
+      descriptionKey: 'confirm.restoreTrashDescription',
+      variant: 'default',
+    },
+  },
+  permanentDelete: {
+    icon: Trash2,
+    toastKey: 'toast.permanentlyDeleted',
+    buttonClassName: COMPACT_ACTION_COLORS.destructive,
+    menuItemVariant: 'destructive',
+    confirm: {
+      titleKey: 'confirm.permanentDeleteTitle',
+      descriptionKey: 'confirm.permanentDeleteDescription',
       variant: 'destructive',
     },
   },

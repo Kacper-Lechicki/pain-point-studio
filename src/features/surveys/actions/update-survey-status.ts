@@ -23,8 +23,8 @@ function createStatusAction(action: SurveyAction) {
     schema: surveyIdSchema,
     rateLimit: RATE_LIMITS.crud,
     action: async ({ data, user, supabase }) => {
-      // Delete actions
-      if (transition.method === 'delete') {
+      // ── Permanent delete (hard delete) ──────────────────────────
+      if (action === 'permanentDelete') {
         const { data: row, error } = await supabase
           .from('surveys')
           .delete()
@@ -41,20 +41,46 @@ function createStatusAction(action: SurveyAction) {
         return { success: true };
       }
 
-      // Restore: reset to a clean draft state.
-      // Clear all publication-related fields so the next publish cycle starts
-      // fresh, and delete old responses so metrics don't carry over.
-      if (action === 'restore') {
+      // ── Reopen (completed/cancelled → active) ──────────────────
+      if (action === 'reopen') {
         const { data: row, error } = await supabase
           .from('surveys')
           .update({
-            status: 'draft' as SurveyStatus,
-            slug: null,
-            starts_at: null,
-            ends_at: null,
-            max_respondents: null,
+            status: 'active' as SurveyStatus,
             completed_at: null,
             cancelled_at: null,
+          })
+          .eq('id', data.surveyId)
+          .eq('user_id', user.id)
+          .in('status', [...transition.fromStatuses])
+          .select('id')
+          .maybeSingle();
+
+        if (error || !row) {
+          return { error: 'surveys.errors.unexpected' };
+        }
+
+        return { success: true };
+      }
+
+      // ── Restore (archived → previous_status) ──────────────────
+      if (action === 'restore') {
+        const { data: current } = await supabase
+          .from('surveys')
+          .select('previous_status')
+          .eq('id', data.surveyId)
+          .eq('user_id', user.id)
+          .eq('status', 'archived')
+          .maybeSingle();
+
+        if (!current) {
+          return { error: 'surveys.errors.unexpected' };
+        }
+
+        const { data: row, error } = await supabase
+          .from('surveys')
+          .update({
+            status: (current.previous_status || 'draft') as SurveyStatus,
             archived_at: null,
             previous_status: null,
           })
@@ -68,18 +94,87 @@ function createStatusAction(action: SurveyAction) {
           return { error: 'surveys.errors.unexpected' };
         }
 
-        // Delete old responses so metrics start from zero on re-publish.
-        await supabase.from('survey_responses').delete().eq('survey_id', data.surveyId);
+        return { success: true };
+      }
+
+      // ── Trash (any → trashed) ──────────────────────────────────
+      if (action === 'trash') {
+        const { data: current } = await supabase
+          .from('surveys')
+          .select('status')
+          .eq('id', data.surveyId)
+          .eq('user_id', user.id)
+          .in('status', [...transition.fromStatuses])
+          .maybeSingle();
+
+        if (!current) {
+          return { error: 'surveys.errors.unexpected' };
+        }
+
+        const { data: row, error } = await supabase
+          .from('surveys')
+          .update({
+            status: 'trashed' as SurveyStatus,
+            deleted_at: new Date().toISOString(),
+            pre_trash_status: current.status,
+          })
+          .eq('id', data.surveyId)
+          .eq('user_id', user.id)
+          .select('id')
+          .maybeSingle();
+
+        if (error || !row) {
+          return { error: 'surveys.errors.unexpected' };
+        }
 
         return { success: true };
       }
 
-      // Standard update transitions
-      const toStatus = transition.toStatus!;
+      // ── Restore from trash (trashed → pre_trash_status) ────────
+      if (action === 'restoreTrash') {
+        const { data: current } = await supabase
+          .from('surveys')
+          .select('pre_trash_status')
+          .eq('id', data.surveyId)
+          .eq('user_id', user.id)
+          .eq('status', 'trashed')
+          .maybeSingle();
+
+        if (!current) {
+          return { error: 'surveys.errors.unexpected' };
+        }
+
+        const { data: row, error } = await supabase
+          .from('surveys')
+          .update({
+            status: (current.pre_trash_status || 'draft') as SurveyStatus,
+            deleted_at: null,
+            pre_trash_status: null,
+          })
+          .eq('id', data.surveyId)
+          .eq('user_id', user.id)
+          .eq('status', 'trashed')
+          .select('id')
+          .maybeSingle();
+
+        if (error || !row) {
+          return { error: 'surveys.errors.unexpected' };
+        }
+
+        return { success: true };
+      }
+
+      // ── Standard update transitions (complete, cancel, archive) ─
+      const toStatus = 'toStatus' in transition ? transition.toStatus : null;
+
+      if (!toStatus) {
+        return { error: 'surveys.errors.unexpected' };
+      }
+
       const updatePayload: Record<string, unknown> = { status: toStatus };
 
       // Set timestamp column for the target status
-      const tsCol = TIMESTAMP_COLUMNS[toStatus];
+      const tsCol = TIMESTAMP_COLUMNS[toStatus as SurveyStatus];
 
       if (tsCol) {
         updatePayload[tsCol] = new Date().toISOString();
@@ -87,7 +182,6 @@ function createStatusAction(action: SurveyAction) {
 
       // Archive: save current status as previous_status for restore
       if (action === 'archive') {
-        // We need to fetch current status first to save it
         const { data: current } = await supabase
           .from('surveys')
           .select('status')
@@ -128,6 +222,9 @@ function createStatusAction(action: SurveyAction) {
 
 export const completeSurvey = createStatusAction('complete');
 export const cancelSurvey = createStatusAction('cancel');
+export const reopenSurvey = createStatusAction('reopen');
 export const archiveSurvey = createStatusAction('archive');
 export const restoreSurvey = createStatusAction('restore');
-export const deleteSurveyDraft = createStatusAction('delete');
+export const trashSurvey = createStatusAction('trash');
+export const restoreTrashSurvey = createStatusAction('restoreTrash');
+export const permanentDeleteSurvey = createStatusAction('permanentDelete');

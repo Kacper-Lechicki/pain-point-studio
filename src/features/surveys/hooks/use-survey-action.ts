@@ -9,8 +9,11 @@ import {
   archiveSurvey,
   cancelSurvey,
   completeSurvey,
-  deleteSurveyDraft,
+  permanentDeleteSurvey,
+  reopenSurvey,
   restoreSurvey,
+  restoreTrashSurvey,
+  trashSurvey,
 } from '@/features/surveys/actions';
 import { SURVEY_ACTION_UI, type SurveyAction } from '@/features/surveys/config/survey-status';
 import type { ActionResult } from '@/lib/common/types';
@@ -23,16 +26,26 @@ const ACTION_FN: Record<SurveyAction, (data: { surveyId: string }) => Promise<Ac
   {
     complete: completeSurvey,
     cancel: cancelSurvey,
+    reopen: reopenSurvey,
     archive: archiveSurvey,
     restore: restoreSurvey,
-    delete: deleteSurveyDraft,
+    trash: trashSurvey,
+    restoreTrash: restoreTrashSurvey,
+    permanentDelete: permanentDeleteSurvey,
   };
 
 // ── Confirmable actions ─────────────────────────────────────────────
 
 type ConfirmableAction = Extract<
   SurveyAction,
-  'complete' | 'cancel' | 'archive' | 'restore' | 'delete'
+  | 'complete'
+  | 'cancel'
+  | 'reopen'
+  | 'archive'
+  | 'restore'
+  | 'trash'
+  | 'restoreTrash'
+  | 'permanentDelete'
 >;
 
 export function isConfirmable(action: SurveyAction): action is ConfirmableAction {

@@ -1,46 +1,40 @@
+import type { ProjectAction } from '@/features/projects/config/status';
 import type { MessageKey } from '@/i18n/types';
+
+type ConfirmVariant = 'default' | 'destructive' | 'warning' | 'accent' | 'success';
 
 export interface ProjectConfirmDialogProps {
   title: string;
   description: string;
   confirmLabel: string;
-  variant: 'default' | 'destructive';
+  variant: ConfirmVariant;
 }
 
+/** Maps each project action to its matching confirm button variant. */
+const ACTION_VARIANT: Record<ProjectAction, ConfirmVariant> = {
+  complete: 'accent',
+  archive: 'warning',
+  reopen: 'success',
+  restore: 'success',
+  trash: 'destructive',
+  restoreTrash: 'success',
+  permanentDelete: 'destructive',
+};
+
 /**
- * Shared confirm-dialog props for project archive/restore/delete actions.
+ * Shared confirm-dialog props for project status-change actions.
  * Used by both the project list page and project dashboard page.
  */
 export function getProjectConfirmDialogProps(
-  type: 'archive' | 'delete',
-  isArchived: boolean,
+  action: ProjectAction,
   t: (key: MessageKey) => string
 ): ProjectConfirmDialogProps {
-  if (type === 'archive') {
-    return {
-      title: t(
-        (isArchived
-          ? 'projects.list.confirm.restoreTitle'
-          : 'projects.list.confirm.archiveTitle') as MessageKey
-      ),
-      description: t(
-        (isArchived
-          ? 'projects.list.confirm.restoreDescription'
-          : 'projects.list.confirm.archiveDescription') as MessageKey
-      ),
-      confirmLabel: t(
-        (isArchived
-          ? 'projects.list.confirm.restoreAction'
-          : 'projects.list.confirm.archiveAction') as MessageKey
-      ),
-      variant: 'default',
-    };
-  }
+  const key = `projects.list.confirm.${action}`;
 
   return {
-    title: t('projects.list.confirm.deleteTitle' as MessageKey),
-    description: t('projects.list.confirm.deleteDescription' as MessageKey),
-    confirmLabel: t('projects.list.confirm.deleteAction' as MessageKey),
-    variant: 'destructive',
+    title: t(`${key}Title` as MessageKey),
+    description: t(`${key}Description` as MessageKey),
+    confirmLabel: t(`${key}Action` as MessageKey),
+    variant: ACTION_VARIANT[action],
   };
 }

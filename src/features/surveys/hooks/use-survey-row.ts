@@ -24,7 +24,7 @@ export function useSurveyRow(
   );
 
   const flags = deriveSurveyFlags(survey.status);
-  const { isDraft, isActive, isCompleted, isCancelled, isArchived } = flags;
+  const { isDraft, isActive, isCompleted, isCancelled, isArchived, isTrashed } = flags;
   const hasShareableLink = (isActive || isCompleted || isCancelled) && !!survey.slug;
   const canExport = !isDraft && !isArchived;
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
@@ -70,6 +70,7 @@ export function useSurveyRow(
     isCompleted,
     isCancelled,
     isArchived,
+    isTrashed,
     hasShareableLink,
     archivedAtLabel,
     sparklineColor,

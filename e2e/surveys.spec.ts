@@ -155,10 +155,10 @@ test.describe('Surveys – Status Lifecycle', () => {
     await deleteUserByEmail(e).catch(() => {});
   });
 
-  test('complete → archive → restore → delete', async ({ page }) => {
+  test('complete → archive → restore → trash', async ({ page }) => {
     await signIn(page);
     await page.goto(projectSurveysUrl(projectId));
-    await executeActionOnRow(page, surveyTitle, 'Complete survey', 'Complete survey');
+    await executeActionOnRow(page, surveyTitle, 'Complete', 'Complete');
     await expect(page.locator(sel.toast).first()).toBeVisible({ timeout: 10_000 });
 
     await page
@@ -187,8 +187,8 @@ test.describe('Surveys – Status Lifecycle', () => {
       .waitFor({ state: 'hidden', timeout: 10_000 })
       .catch(() => {});
 
-    // Delete the survey
-    await executeActionOnRow(page, surveyTitle, 'Delete', 'Delete');
+    // Trash the survey (soft delete)
+    await executeActionOnRow(page, surveyTitle, 'Move to Trash', 'Move to Trash');
     await expect(page.locator(sel.toast).first()).toBeVisible({ timeout: 10_000 });
     await expect(surveyItem(page, surveyTitle)).not.toBeVisible({ timeout: 10_000 });
   });

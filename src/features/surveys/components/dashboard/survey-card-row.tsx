@@ -3,6 +3,7 @@ import type React from 'react';
 import { MoreHorizontal } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { DropdownMenu, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
@@ -23,6 +24,10 @@ interface SurveyCardRowProps {
   archivedLayout?: boolean;
   /** When true, hides project badge and simplifies actions. */
   isProjectContext?: boolean | undefined;
+  /** Whether this row's checkbox is checked (for bulk selection). */
+  isBulkSelected?: boolean | undefined;
+  /** Toggle bulk selection for this survey's ID. */
+  onToggleBulkSelect?: ((id: string) => void) | undefined;
 }
 
 export function SurveyCardRow({
@@ -32,6 +37,8 @@ export function SurveyCardRow({
   row,
   archivedLayout = false,
   isProjectContext,
+  isBulkSelected,
+  onToggleBulkSelect,
 }: SurveyCardRowProps) {
   const menuContent = (
     <SurveyActionMenuContent
@@ -39,6 +46,7 @@ export function SurveyCardRow({
       flags={{
         isDraft: row.isDraft,
         isArchived: row.isArchived,
+        isTrashed: row.isTrashed,
         hasShareableLink: row.hasShareableLink,
         questionCount: survey.questionCount,
       }}
@@ -70,6 +78,16 @@ export function SurveyCardRow({
         })}
       >
         <div className="flex min-w-0 items-start justify-between gap-2">
+          {onToggleBulkSelect && (
+            <div className="shrink-0 pt-0.5" onClick={(e) => e.stopPropagation()}>
+              <Checkbox
+                checked={isBulkSelected ?? false}
+                onCheckedChange={() => onToggleBulkSelect(survey.id)}
+                aria-label={row.t('surveys.dashboard.bulk.selectSurvey', { name: survey.title })}
+              />
+            </div>
+          )}
+
           <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1">
             <span className="text-foreground truncate text-sm font-semibold">{survey.title}</span>
             <SurveyStatusBadge status={survey.status} className="shrink-0" />

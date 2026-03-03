@@ -34,7 +34,7 @@ export const publishSurvey = withProtectedAction<typeof publishSurveySchema, { s
       // Verify the survey exists and is a draft owned by this user
       const { data: survey } = await supabase
         .from('surveys')
-        .select('id')
+        .select('id, project_id')
         .eq('id', data.surveyId)
         .eq('user_id', user.id)
         .eq('status', 'draft')
@@ -42,6 +42,19 @@ export const publishSurvey = withProtectedAction<typeof publishSurveySchema, { s
 
       if (!survey) {
         return { error: 'surveys.errors.unexpected' };
+      }
+
+      // Verify the parent project is in a valid state for publishing
+      if (survey.project_id) {
+        const { data: project } = await supabase
+          .from('projects')
+          .select('status')
+          .eq('id', survey.project_id)
+          .maybeSingle();
+
+        if (!project || project.status === 'trashed' || project.status === 'archived') {
+          return { error: 'surveys.errors.projectNotActive' };
+        }
       }
 
       // Validate end date if provided — must be in the future.

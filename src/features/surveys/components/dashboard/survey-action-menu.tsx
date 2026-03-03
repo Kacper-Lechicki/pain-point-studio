@@ -20,6 +20,7 @@ interface SurveyActionMenuContentProps {
   flags: {
     isDraft: boolean;
     isArchived: boolean;
+    isTrashed: boolean;
     hasShareableLink: boolean;
     questionCount: number;
   };
@@ -47,11 +48,16 @@ export function SurveyActionMenuContent({
   detailsLabelKey = 'details',
 }: SurveyActionMenuContentProps) {
   const t = useTranslations();
-  const { isDraft, isArchived, hasShareableLink, questionCount } = flags;
+  const { isDraft, isArchived, isTrashed, hasShareableLink, questionCount } = flags;
   const canPublish = isDraft && questionCount >= QUESTIONS_MIN;
 
   // Build visible primary items then sort alphabetically by label
   const primaryItems = useMemo(() => {
+    // Trashed surveys: no primary actions available
+    if (isTrashed) {
+      return [];
+    }
+
     const items: PrimaryMenuItem[] = [];
 
     if (onDetails) {
@@ -111,6 +117,7 @@ export function SurveyActionMenuContent({
     detailsLabelKey,
     hasShareableLink,
     onShare,
+    isTrashed,
     isDraft,
     isArchived,
     onExport,

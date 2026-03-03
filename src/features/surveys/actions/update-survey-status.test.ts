@@ -142,12 +142,41 @@ describe('Survey status actions', () => {
     });
   });
 
-  describe('deleteSurveyDraft', () => {
+  describe('trashSurvey', () => {
+    it('should return success when select and update succeed', async () => {
+      const selectChain = chain({ data: { status: 'draft' } });
+      const updateChain = chain({ data: { id: SURVEY_ID } });
+
+      let callCount = 0;
+
+      mockFrom.mockImplementation(() => {
+        callCount++;
+
+        return callCount === 1 ? selectChain : updateChain;
+      });
+
+      const { trashSurvey } = await import('./update-survey-status');
+      const result = await trashSurvey({ surveyId: SURVEY_ID });
+
+      expect(result).toEqual({ success: true });
+    });
+
+    it('should return error when current status is not found', async () => {
+      mockFrom.mockReturnValue(chain({ data: null }));
+
+      const { trashSurvey } = await import('./update-survey-status');
+      const result = await trashSurvey({ surveyId: SURVEY_ID });
+
+      expect(result).toHaveProperty('error', 'surveys.errors.unexpected');
+    });
+  });
+
+  describe('permanentDeleteSurvey', () => {
     it('should return success when delete returns a row', async () => {
       mockFrom.mockReturnValue(chain({ data: { id: SURVEY_ID } }));
 
-      const { deleteSurveyDraft } = await import('./update-survey-status');
-      const result = await deleteSurveyDraft({ surveyId: SURVEY_ID });
+      const { permanentDeleteSurvey } = await import('./update-survey-status');
+      const result = await permanentDeleteSurvey({ surveyId: SURVEY_ID });
 
       expect(result).toEqual({ success: true });
     });
@@ -155,8 +184,8 @@ describe('Survey status actions', () => {
     it('should return error when delete returns no row', async () => {
       mockFrom.mockReturnValue(chain({ data: null }));
 
-      const { deleteSurveyDraft } = await import('./update-survey-status');
-      const result = await deleteSurveyDraft({ surveyId: SURVEY_ID });
+      const { permanentDeleteSurvey } = await import('./update-survey-status');
+      const result = await permanentDeleteSurvey({ surveyId: SURVEY_ID });
 
       expect(result).toHaveProperty('error', 'surveys.errors.unexpected');
     });

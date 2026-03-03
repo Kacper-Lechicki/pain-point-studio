@@ -2,10 +2,11 @@
 
 import type React from 'react';
 
-import { MoreHorizontal, Trash2 } from 'lucide-react';
+import { MoreHorizontal } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,17 +19,30 @@ import type { ProjectListExtras } from '@/features/projects/actions/get-projects
 import { ActivitySparkline } from '@/features/projects/components/activity-sparkline';
 import { ProjectAvatar } from '@/features/projects/components/project-avatar';
 import { ProjectStatusBadge } from '@/features/projects/components/project-status-badge';
+import type { ProjectAction } from '@/features/projects/config/status';
+import { PROJECT_ACTION_UI, getAvailableActions } from '@/features/projects/config/status';
 import type { ProjectStatus } from '@/features/projects/types';
+import type { MessageKey } from '@/i18n/types';
 
 interface ProjectTableRowProps {
   project: ProjectWithMetrics;
   extras?: ProjectListExtras | undefined;
   onSelect: (projectId: string) => void;
-  onDelete: (project: ProjectWithMetrics) => void;
+  onAction: (project: ProjectWithMetrics, action: ProjectAction) => void;
+  isSelected?: boolean | undefined;
+  onToggleSelect?: ((id: string) => void) | undefined;
 }
 
-export function ProjectTableRow({ project, extras, onSelect, onDelete }: ProjectTableRowProps) {
+export function ProjectTableRow({
+  project,
+  extras,
+  onSelect,
+  onAction,
+  isSelected,
+  onToggleSelect,
+}: ProjectTableRowProps) {
   const t = useTranslations();
+  const actions = getAvailableActions(project.status as ProjectStatus);
 
   const tableRowInteraction = {
     onClick: () => {
@@ -54,6 +68,15 @@ export function ProjectTableRow({ project, extras, onSelect, onDelete }: Project
       className="even:bg-muted/30 h-14 cursor-pointer transition-all"
       {...tableRowInteraction}
     >
+      {onToggleSelect && (
+        <TableCell className="w-10 shrink-0 px-3 py-3" onClick={(e) => e.stopPropagation()}>
+          <Checkbox
+            checked={isSelected ?? false}
+            onCheckedChange={() => onToggleSelect(project.id)}
+            aria-label={t('projects.list.bulk.selectProject', { name: project.name })}
+          />
+        </TableCell>
+      )}
       <TableCell className="max-w-0 min-w-0 overflow-hidden px-4 py-3 align-top">
         <div className="flex min-w-0 items-center gap-2.5 overflow-hidden">
           <ProjectAvatar imageUrl={project.image_url} name={project.name} size={32} />
@@ -104,10 +127,21 @@ export function ProjectTableRow({ project, extras, onSelect, onDelete }: Project
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end">
-              <DropdownMenuItem variant="destructive" onClick={() => onDelete(project)}>
-                <Trash2 className="size-4" aria-hidden />
-                {t('projects.list.actions.delete')}
-              </DropdownMenuItem>
+              {actions.map((action) => {
+                const ui = PROJECT_ACTION_UI[action];
+                const Icon = ui.icon;
+
+                return (
+                  <DropdownMenuItem
+                    key={action}
+                    {...(ui.menuItemVariant && { variant: ui.menuItemVariant })}
+                    onClick={() => onAction(project, action)}
+                  >
+                    <Icon className="size-4" aria-hidden />
+                    {t(`projects.list.actions.${action}` as MessageKey)}
+                  </DropdownMenuItem>
+                );
+              })}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

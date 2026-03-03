@@ -18,7 +18,7 @@ import {
   CompactSurveyList,
   SurveysListSkeleton,
 } from '@/features/projects/components/project-survey-list';
-import { isProjectArchived } from '@/features/projects/lib/project-helpers';
+import type { ProjectAction } from '@/features/projects/config/status';
 import { getProjectDetailUrl } from '@/features/projects/lib/project-urls';
 import type { ProjectStatus } from '@/features/projects/types';
 import Link from '@/i18n/link';
@@ -27,19 +27,16 @@ interface ProjectDetailPanelProps {
   project: ProjectWithMetrics;
   projectDetail: ProjectDetail | null;
   onEdit: () => void;
-  onArchive: () => void;
-  onDelete: () => void;
+  onAction: (action: ProjectAction) => void;
 }
 
 export function ProjectDetailPanel({
   project,
   projectDetail,
   onEdit,
-  onArchive,
-  onDelete,
+  onAction,
 }: ProjectDetailPanelProps) {
   const t = useTranslations();
-  const isArchived = isProjectArchived(project);
   const [searchQuery, setSearchQuery] = useState('');
   const isSearching = searchQuery.trim().length > 0;
   const allSurveys = projectDetail?.surveys ?? null;
@@ -136,10 +133,9 @@ export function ProjectDetailPanel({
       <Separator className="my-4" />
 
       <ProjectActionButtons
-        isArchived={isArchived}
+        status={project.status as ProjectStatus}
         onEdit={onEdit}
-        onArchive={onArchive}
-        onDelete={onDelete}
+        onAction={onAction}
       />
 
       <Separator className="my-4" />

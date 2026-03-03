@@ -208,11 +208,15 @@ export type Database = {
       projects: {
         Row: {
           archived_at: string | null;
+          completed_at: string | null;
           created_at: string;
+          deleted_at: string | null;
           description: Json | null;
           id: string;
           image_url: string | null;
           name: string;
+          pre_archive_status: string | null;
+          pre_trash_status: string | null;
           status: string;
           summary: string | null;
           target_responses: number;
@@ -221,11 +225,15 @@ export type Database = {
         };
         Insert: {
           archived_at?: string | null;
+          completed_at?: string | null;
           created_at?: string;
+          deleted_at?: string | null;
           description?: Json | null;
           id?: string;
           image_url?: string | null;
           name: string;
+          pre_archive_status?: string | null;
+          pre_trash_status?: string | null;
           status?: string;
           summary?: string | null;
           target_responses?: number;
@@ -234,11 +242,15 @@ export type Database = {
         };
         Update: {
           archived_at?: string | null;
+          completed_at?: string | null;
           created_at?: string;
+          deleted_at?: string | null;
           description?: Json | null;
           id?: string;
           image_url?: string | null;
           name?: string;
+          pre_archive_status?: string | null;
+          pre_trash_status?: string | null;
           status?: string;
           summary?: string | null;
           target_responses?: number;
@@ -392,10 +404,12 @@ export type Database = {
           cancelled_at: string | null;
           completed_at: string | null;
           created_at: string;
+          deleted_at: string | null;
           description: string;
           ends_at: string | null;
           id: string;
           max_respondents: number | null;
+          pre_trash_status: string | null;
           previous_status: Database['public']['Enums']['survey_status'] | null;
           project_id: string;
           research_phase: string | null;
@@ -413,10 +427,12 @@ export type Database = {
           cancelled_at?: string | null;
           completed_at?: string | null;
           created_at?: string;
+          deleted_at?: string | null;
           description: string;
           ends_at?: string | null;
           id?: string;
           max_respondents?: number | null;
+          pre_trash_status?: string | null;
           previous_status?: Database['public']['Enums']['survey_status'] | null;
           project_id: string;
           research_phase?: string | null;
@@ -434,10 +450,12 @@ export type Database = {
           cancelled_at?: string | null;
           completed_at?: string | null;
           created_at?: string;
+          deleted_at?: string | null;
           description?: string;
           ends_at?: string | null;
           id?: string;
           max_respondents?: number | null;
+          pre_trash_status?: string | null;
           previous_status?: Database['public']['Enums']['survey_status'] | null;
           project_id?: string;
           research_phase?: string | null;
@@ -506,6 +524,7 @@ export type Database = {
         Returns: Json;
       };
       get_projects_list_extras: { Args: { p_user_id: string }; Returns: Json };
+      get_research_journey: { Args: { p_user_id: string }; Returns: Json };
       get_survey_completion_timeline: {
         Args: { p_survey_id: string; p_user_id: string };
         Returns: Json;
@@ -524,6 +543,8 @@ export type Database = {
         Returns: Json;
       };
       has_password: { Args: never; Returns: boolean };
+      purge_trashed_projects: { Args: never; Returns: undefined };
+      purge_trashed_surveys: { Args: never; Returns: undefined };
       record_survey_view: { Args: { p_survey_id: string }; Returns: undefined };
       save_survey_questions: {
         Args: { p_questions: Json; p_survey_id: string; p_user_id: string };
@@ -553,7 +574,14 @@ export type Database = {
     };
     Enums: {
       question_type: 'open_text' | 'short_text' | 'multiple_choice' | 'rating_scale' | 'yes_no';
-      survey_status: 'draft' | 'pending' | 'active' | 'completed' | 'cancelled' | 'archived';
+      survey_status:
+        | 'draft'
+        | 'pending'
+        | 'active'
+        | 'completed'
+        | 'cancelled'
+        | 'archived'
+        | 'trashed';
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -683,7 +711,15 @@ export const Constants = {
   public: {
     Enums: {
       question_type: ['open_text', 'short_text', 'multiple_choice', 'rating_scale', 'yes_no'],
-      survey_status: ['draft', 'pending', 'active', 'completed', 'cancelled', 'archived'],
+      survey_status: [
+        'draft',
+        'pending',
+        'active',
+        'completed',
+        'cancelled',
+        'archived',
+        'trashed',
+      ],
     },
   },
 } as const;

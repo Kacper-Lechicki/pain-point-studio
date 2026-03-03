@@ -46,6 +46,12 @@ export interface UserSurvey {
   projectName: string;
   /** Research phase, or null if not assigned. */
   researchPhase: string | null;
+  /** When the survey was soft-deleted (trashed), or null. */
+  deletedAt: string | null;
+  /** The status before trashing, used to restore to the correct state. */
+  preTrashStatus: string | null;
+  /** The status before archiving, used to restore to the correct state. */
+  previousStatus: string | null;
 }
 
 const userSurveySchema = z.object({
@@ -73,6 +79,9 @@ const userSurveySchema = z.object({
   projectId: z.string(),
   projectName: z.string(),
   researchPhase: z.string().nullable().optional().default(null),
+  deletedAt: z.string().nullable().optional().default(null),
+  preTrashStatus: z.string().nullable().optional().default(null),
+  previousStatus: z.string().nullable().optional().default(null),
 });
 
 const userSurveysRpcSchema = z.array(userSurveySchema);
