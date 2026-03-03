@@ -2,6 +2,7 @@ import type React from 'react';
 
 import { Archive, Clock, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
@@ -18,6 +19,9 @@ import { ExportDialog } from '@/features/surveys/components/stats/export-dialog'
 import { TRASH_RETENTION_DAYS } from '@/features/surveys/config';
 import type { useSurveyRow } from '@/features/surveys/hooks/use-survey-row';
 import { cn } from '@/lib/common/utils';
+
+const ACTIVITY_BADGE_BASE =
+  'border-border bg-muted/90 inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-medium';
 
 interface SurveyTableRowProps {
   survey: UserSurvey;
@@ -185,14 +189,30 @@ export function SurveyTableRow({
                     descriptionValues={{
                       days: row.trashedPurgeDays ?? TRASH_RETENTION_DAYS,
                     }}
-                    className="flex shrink-0 items-center gap-1 text-[11px] font-medium text-red-700 dark:text-red-400"
+                    className="flex shrink-0"
+                    dialogBadgeLabel={
+                      <>
+                        <Trash2 className="size-3 shrink-0" aria-hidden />
+                        <span className="truncate">
+                          {row.t('surveys.dashboard.table.deletedInDaysShort', {
+                            days: row.trashedPurgeDays ?? TRASH_RETENTION_DAYS,
+                          })}
+                        </span>
+                      </>
+                    }
+                    dialogBadgeClassName={cn(ACTIVITY_BADGE_BASE, 'text-red-700 dark:text-red-400')}
                   >
-                    <Trash2 className="size-3 shrink-0" aria-hidden />
-                    <span className="truncate">
-                      {row.t('surveys.dashboard.table.deletedInDaysShort', {
-                        days: row.trashedPurgeDays ?? TRASH_RETENTION_DAYS,
-                      })}
-                    </span>
+                    <Badge
+                      variant="secondary"
+                      className={cn(ACTIVITY_BADGE_BASE, 'text-red-700 dark:text-red-400')}
+                    >
+                      <Trash2 className="size-3 shrink-0" aria-hidden />
+                      <span className="truncate">
+                        {row.t('surveys.dashboard.table.deletedInDaysShort', {
+                          days: row.trashedPurgeDays ?? TRASH_RETENTION_DAYS,
+                        })}
+                      </span>
+                    </Badge>
                   </ActivityInfoTrigger>
                 ) : row.isArchived ? (
                   row.autoDeleteDays != null ? (
@@ -200,14 +220,33 @@ export function SurveyTableRow({
                       titleKey="surveys.dashboard.activityInfo.autoDeletesTitle"
                       descriptionKey="surveys.dashboard.activityInfo.autoDeletesInDays"
                       descriptionValues={{ days: row.autoDeleteDays }}
-                      className="flex shrink-0 items-center gap-1 text-[11px] font-medium text-amber-700 dark:text-amber-400"
+                      className="flex shrink-0"
+                      dialogBadgeLabel={
+                        <>
+                          <Archive className="size-3 shrink-0" aria-hidden />
+                          <span className="truncate">
+                            {row.t('surveys.dashboard.detailPanel.inDays', {
+                              days: row.autoDeleteDays,
+                            })}
+                          </span>
+                        </>
+                      }
+                      dialogBadgeClassName={cn(
+                        ACTIVITY_BADGE_BASE,
+                        'text-amber-700 dark:text-amber-400'
+                      )}
                     >
-                      <Archive className="size-3 shrink-0" aria-hidden />
-                      <span className="truncate">
-                        {row.t('surveys.dashboard.detailPanel.inDays', {
-                          days: row.autoDeleteDays,
-                        })}
-                      </span>
+                      <Badge
+                        variant="secondary"
+                        className={cn(ACTIVITY_BADGE_BASE, 'text-amber-700 dark:text-amber-400')}
+                      >
+                        <Archive className="size-3 shrink-0" aria-hidden />
+                        <span className="truncate">
+                          {row.t('surveys.dashboard.detailPanel.inDays', {
+                            days: row.autoDeleteDays,
+                          })}
+                        </span>
+                      </Badge>
                     </ActivityInfoTrigger>
                   ) : (
                     '—'
@@ -218,14 +257,33 @@ export function SurveyTableRow({
                       titleKey="surveys.dashboard.activityInfo.linkExpiresTitle"
                       descriptionKey="surveys.dashboard.activityInfo.linkExpiresInDays"
                       descriptionValues={{ days: row.linkExpiryDays }}
-                      className="flex shrink-0 items-center gap-1 text-[11px] font-medium text-violet-700 dark:text-violet-400"
+                      className="flex shrink-0"
+                      dialogBadgeLabel={
+                        <>
+                          <Clock className="size-3 shrink-0" aria-hidden />
+                          <span className="truncate">
+                            {row.t('surveys.dashboard.table.deletedInDaysShort', {
+                              days: row.linkExpiryDays,
+                            })}
+                          </span>
+                        </>
+                      }
+                      dialogBadgeClassName={cn(
+                        ACTIVITY_BADGE_BASE,
+                        'text-violet-700 dark:text-violet-400'
+                      )}
                     >
-                      <Clock className="size-3 shrink-0" aria-hidden />
-                      <span className="truncate">
-                        {row.t('surveys.dashboard.table.deletedInDaysShort', {
-                          days: row.linkExpiryDays,
-                        })}
-                      </span>
+                      <Badge
+                        variant="secondary"
+                        className={cn(ACTIVITY_BADGE_BASE, 'text-violet-700 dark:text-violet-400')}
+                      >
+                        <Clock className="size-3 shrink-0" aria-hidden />
+                        <span className="truncate">
+                          {row.t('surveys.dashboard.table.deletedInDaysShort', {
+                            days: row.linkExpiryDays,
+                          })}
+                        </span>
+                      </Badge>
                     </ActivityInfoTrigger>
                   ) : (
                     '—'
@@ -234,10 +292,22 @@ export function SurveyTableRow({
                   <ActivityInfoTrigger
                     titleKey="surveys.dashboard.activityInfo.lastEditedTitle"
                     descriptionKey="surveys.dashboard.activityInfo.lastEditedDescription"
-                    className="text-muted-foreground flex shrink-0 items-center gap-1 text-[11px] font-medium"
+                    className="flex shrink-0"
+                    dialogBadgeLabel={
+                      <>
+                        <Pencil className="size-3 shrink-0" aria-hidden />
+                        <span className="truncate">{row.updatedAtLabel}</span>
+                      </>
+                    }
+                    dialogBadgeClassName={cn(ACTIVITY_BADGE_BASE, 'text-muted-foreground')}
                   >
-                    <Pencil className="size-3 shrink-0" aria-hidden />
-                    <span className="truncate">{row.updatedAtLabel}</span>
+                    <Badge
+                      variant="secondary"
+                      className={cn(ACTIVITY_BADGE_BASE, 'text-muted-foreground')}
+                    >
+                      <Pencil className="size-3 shrink-0" aria-hidden />
+                      <span className="truncate">{row.updatedAtLabel}</span>
+                    </Badge>
                   </ActivityInfoTrigger>
                 ) : (
                   <ActivityInfoTrigger
