@@ -21,6 +21,12 @@ const ACTIVITY_ICONS: Record<ActivityItem['type'], LucideIcon> = {
   survey_activated: Rocket,
 };
 
+const ACTIVITY_ICON_COLORS: Record<ActivityItem['type'], string> = {
+  response: 'text-chart-cyan',
+  survey_completed: 'text-chart-emerald',
+  survey_activated: 'text-chart-violet',
+};
+
 interface DashboardRecentActivityProps {
   items: ActivityItem[];
 }
@@ -53,6 +59,7 @@ export function DashboardRecentActivity({ items }: DashboardRecentActivityProps)
           <div className="min-w-0 flex-1">
             {visibleItems.map((item, index) => {
               const Icon = ACTIVITY_ICONS[item.type];
+              const iconColor = ACTIVITY_ICON_COLORS[item.type];
               const relativeTime = formatDistanceToNow(new Date(item.timestamp), {
                 addSuffix: true,
               }).replace(/^about /i, '');
@@ -64,7 +71,7 @@ export function DashboardRecentActivity({ items }: DashboardRecentActivityProps)
                   className="group flex items-center gap-2.5 py-1.5"
                 >
                   <div className="bg-muted/80 shrink-0 rounded-lg p-1.5">
-                    <Icon className="text-chart-pink size-3.5" />
+                    <Icon className={cn(iconColor, 'size-3.5')} />
                   </div>
                   <span className="text-muted-foreground min-w-0 flex-1 truncate text-xs">
                     <span className="text-foreground font-medium group-hover:underline">

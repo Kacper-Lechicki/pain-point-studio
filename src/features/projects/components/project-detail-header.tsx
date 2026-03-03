@@ -11,8 +11,8 @@ import {
   EllipsisVertical,
   Pencil,
   RefreshCw,
-  RotateCcw,
   Trash2,
+  Trophy,
   X,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -34,8 +34,16 @@ import { updateProject } from '@/features/projects/actions/update-project';
 import { ProjectImageUpload } from '@/features/projects/components/project-image-upload';
 import { ProjectStatusBadge } from '@/features/projects/components/project-status-badge';
 import { PROJECT_NAME_MAX_LENGTH, PROJECT_SUMMARY_MAX_LENGTH } from '@/features/projects/config';
-import { isProjectArchived } from '@/features/projects/lib/project-helpers';
+import type { ProjectAction } from '@/features/projects/config/status';
+import { PROJECT_ACTION_UI, getAvailableActions } from '@/features/projects/config/status';
+import {
+  isProjectArchived,
+  isProjectCompleted,
+  isProjectReadOnly,
+  isProjectTrashed,
+} from '@/features/projects/lib/project-helpers';
 import type { Project, ProjectStatus } from '@/features/projects/types';
+import type { MessageKey } from '@/i18n/types';
 import { cn } from '@/lib/common/utils';
 
 type EditingField = 'name' | 'summary' | null;
@@ -53,8 +61,7 @@ interface ProjectDetailHeaderProps {
   owner?: ProjectOwner | null;
   lastResponseAt?: string | null;
   onEdit: () => void;
-  onArchive: () => void;
-  onDelete: () => void;
+  onAction: (action: ProjectAction) => void;
   onImageChange: (url: string | null) => void;
   /** When provided, name and summary show edit pens and support inline editing. */
   onEditSuccess?: (data: ProjectDetailHeaderEditSuccess) => void;
@@ -70,8 +77,7 @@ export function ProjectDetailHeader({
   project,
   userId,
   owner,
-  onArchive,
-  onDelete,
+  onAction,
   onImageChange,
   lastResponseAt,
   onEditSuccess,
@@ -82,8 +88,9 @@ export function ProjectDetailHeader({
   hasActiveSurveys,
 }: ProjectDetailHeaderProps) {
   const t = useTranslations();
-  const isArchived = isProjectArchived(project);
-  const canEditInline = !isArchived && !!onEditSuccess;
+  const readOnly = isProjectReadOnly(project);
+  const canEditInline = !readOnly && !!onEditSuccess;
+  const actions = getAvailableActions(project.status as ProjectStatus);
 
   const [editingField, setEditingField] = useState<EditingField>(null);
   const [nameDraft, setNameDraft] = useState(project.name);
@@ -95,12 +102,12 @@ export function ProjectDetailHeader({
   const startEditingName = useCallback(() => {
     setNameDraft(project.name);
     setEditingField('name');
-  }, [project.name]);
+  }, [project.name, setNameDraft, setEditingField]);
 
   const startEditingSummary = useCallback(() => {
     setSummaryDraft(project.summary ?? '');
     setEditingField('summary');
-  }, [project.summary]);
+  }, [project.summary, setSummaryDraft, setEditingField]);
 
   useEffect(() => {
     if (editingField === 'name') {
@@ -195,22 +202,61 @@ export function ProjectDetailHeader({
     setSummaryDraft(project.summary ?? '');
     setEditingField(null);
     setSaveStatus('idle');
-  }, [project.name, project.summary]);
+  }, [
+    project.name,
+    project.summary,
+    setNameDraft,
+    setSummaryDraft,
+    setEditingField,
+    setSaveStatus,
+  ]);
 
   const isEditingName = editingField === 'name';
   const isEditingSummary = editingField === 'summary';
 
   return (
     <div className="flex flex-col gap-2">
-      {isArchived && (
+      {/* Status banners */}
+      {isProjectArchived(project) && (
         <div className="bg-muted flex items-center gap-2 rounded-lg px-3 py-2">
           <Archive className="text-muted-foreground size-4 shrink-0" aria-hidden />
           <span className="text-muted-foreground flex-1 text-sm">
             {t('projects.detail.archivedBanner')}
           </span>
-          <Button variant="outline" size="sm" onClick={onArchive}>
-            <RotateCcw className="size-3.5" aria-hidden />
+          <Button variant="outline" size="sm" onClick={() => onAction('restore')}>
             {t('projects.list.actions.restore')}
+          </Button>
+        </div>
+      )}
+
+      {isProjectCompleted(project) && (
+        <div className="flex items-center gap-2 rounded-lg bg-violet-500/10 px-3 py-2">
+          <Trophy className="size-4 shrink-0 text-violet-600 dark:text-violet-400" aria-hidden />
+          <span className="text-muted-foreground flex-1 text-sm">
+            {t('projects.detail.completedBanner')}
+          </span>
+          <Button variant="outline" size="sm" onClick={() => onAction('reopen')}>
+            {t('projects.list.actions.reopen')}
+          </Button>
+        </div>
+      )}
+
+      {isProjectTrashed(project) && (
+        <div className="flex items-center gap-2 rounded-lg bg-red-500/10 px-3 py-2">
+          <Trash2 className="size-4 shrink-0 text-red-600 dark:text-red-400" aria-hidden />
+          <span className="text-muted-foreground flex-1 text-sm">
+            {project.deleted_at
+              ? t('projects.detail.trashedBanner', {
+                  date: new Date(project.deleted_at).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                  }),
+                })
+              : t('projects.detail.trashedBanner', { date: '' })}
+          </span>
+          <Button variant="outline" size="sm" onClick={() => onAction('restoreTrash')}>
+            {t('projects.list.actions.restoreTrash')}
           </Button>
         </div>
       )}
@@ -218,7 +264,7 @@ export function ProjectDetailHeader({
       <div className="min-w-0">
         {/* Image + actions row */}
         <div className="flex items-start justify-between gap-2">
-          {!isArchived && (
+          {!readOnly && (
             <div className="shrink-0">
               <ProjectImageUpload
                 projectId={project.id}
@@ -253,10 +299,21 @@ export function ProjectDetailHeader({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem variant="destructive" onClick={onDelete}>
-                  <Trash2 />
-                  {t('projects.list.actions.delete')}
-                </DropdownMenuItem>
+                {actions.map((action) => {
+                  const ui = PROJECT_ACTION_UI[action];
+                  const Icon = ui.icon;
+
+                  return (
+                    <DropdownMenuItem
+                      key={action}
+                      {...(ui.menuItemVariant && { variant: ui.menuItemVariant })}
+                      onClick={() => onAction(action)}
+                    >
+                      <Icon className="size-4" aria-hidden />
+                      {t(`projects.list.actions.${action}` as MessageKey)}
+                    </DropdownMenuItem>
+                  );
+                })}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

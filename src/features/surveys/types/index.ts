@@ -30,7 +30,14 @@ export const QUESTION_TYPES = [
 export type QuestionType = (typeof QUESTION_TYPES)[number];
 
 /** All survey lifecycle statuses as a const tuple (source of truth). */
-export const SURVEY_STATUSES = ['draft', 'active', 'completed', 'cancelled', 'archived'] as const;
+export const SURVEY_STATUSES = [
+  'draft',
+  'active',
+  'completed',
+  'cancelled',
+  'archived',
+  'trashed',
+] as const;
 
 export type SurveyStatus = (typeof SURVEY_STATUSES)[number];
 

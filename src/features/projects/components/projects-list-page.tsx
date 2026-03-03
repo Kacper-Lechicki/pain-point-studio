@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
@@ -11,15 +11,22 @@ import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ListPagination } from '@/components/ui/list-pagination';
+import { bulkChangeProjectStatus } from '@/features/projects/actions/bulk-change-project-status';
 import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
 import type { ProjectsListExtrasMap } from '@/features/projects/actions/get-projects-list-extras';
+import { BulkActionBar } from '@/features/projects/components/bulk-action-bar';
 import { ProjectCardRow } from '@/features/projects/components/project-card-row';
 import { ProjectListKpi } from '@/features/projects/components/project-list-kpi';
 import { ProjectListTable } from '@/features/projects/components/project-list-table';
 import { ProjectListToolbar } from '@/features/projects/components/project-list-toolbar';
+import type { ProjectAction } from '@/features/projects/config/status';
+import { useProjectBulkSelection } from '@/features/projects/hooks/use-project-bulk-selection';
 import { useProjectListActions } from '@/features/projects/hooks/use-project-list-actions';
 import { useProjectListState } from '@/features/projects/hooks/use-project-list-state';
+import { getProjectConfirmDialogProps } from '@/features/projects/lib/project-confirm-props';
 import { getProjectDetailUrl } from '@/features/projects/lib/project-urls';
+import { useFormAction } from '@/hooks/common/use-form-action';
+import type { MessageKey } from '@/i18n/types';
 
 import { EditProjectDialog } from './edit-project-dialog';
 
@@ -72,6 +79,56 @@ export function ProjectsListPage({ projects, extras }: ProjectsListPageProps) {
     setSelected: () => {},
   });
 
+  const {
+    selectedIds,
+    toggleSelect,
+    selectAll,
+    clearSelection,
+    availableBulkActions,
+    selectionCount,
+  } = useProjectBulkSelection(localProjects);
+
+  // ── Bulk action handling ─────────────────────────────────────────────
+  type BulkAction = Exclude<ProjectAction, 'permanentDelete'>;
+  const [bulkConfirmAction, setBulkConfirmAction] = useState<BulkAction | null>(null);
+  const bulkAction = useFormAction({
+    unexpectedErrorMessage: 'projects.errors.unexpected' as MessageKey,
+  });
+
+  const bulkConfirmDialogProps = useMemo(() => {
+    if (!bulkConfirmAction) {
+      return null;
+    }
+
+    return getProjectConfirmDialogProps(bulkConfirmAction, t);
+  }, [bulkConfirmAction, t]);
+
+  const handleBulkConfirm = useCallback(async () => {
+    if (!bulkConfirmAction || selectedIds.size === 0) {
+      return;
+    }
+
+    setBulkConfirmAction(null);
+    const ids = [...selectedIds];
+
+    const result = await bulkAction.execute(bulkChangeProjectStatus, {
+      projectIds: ids,
+      action: bulkConfirmAction,
+    });
+
+    if (result && !result.error) {
+      const { toast } = await import('sonner');
+      toast.success(
+        t('projects.list.bulk.selected', { count: ids.length }) +
+          ' — ' +
+          t(`projects.list.actions.${bulkConfirmAction}` as MessageKey)
+      );
+      clearSelection();
+      // Trigger a revalidation by re-fetching (the server data will update on next load)
+      router.refresh();
+    }
+  }, [bulkConfirmAction, selectedIds, bulkAction, t, clearSelection, router]);
+
   const handleSelect = useCallback(
     (projectId: string) => {
       router.push(getProjectDetailUrl(projectId));
@@ -94,6 +151,17 @@ export function ProjectsListPage({ projects, extras }: ProjectsListPageProps) {
         onSortDirChange={setSortDir}
         statusCounts={statusCounts}
       />
+
+      {selectionCount > 0 && (
+        <BulkActionBar
+          count={selectionCount}
+          availableActions={availableBulkActions}
+          onAction={(action) => setBulkConfirmAction(action as BulkAction)}
+          onClear={clearSelection}
+          onSelectAll={() => selectAll(paginatedProjects)}
+          allOnPageSelected={paginatedProjects.every((p) => selectedIds.has(p.id))}
+        />
+      )}
 
       {filteredProjects.length === 0 ? (
         <EmptyState
@@ -131,7 +199,11 @@ export function ProjectsListPage({ projects, extras }: ProjectsListPageProps) {
           sortDir={sortDir}
           onSortByColumn={handleSortByColumn}
           onSelect={handleSelect}
-          onDelete={(p) => setConfirmAction({ type: 'delete', project: p })}
+          onAction={(p, action) => setConfirmAction({ action, project: p })}
+          selectedIds={selectedIds}
+          onToggleSelect={toggleSelect}
+          onSelectAll={selectAll}
+          onClearSelection={clearSelection}
         />
       ) : (
         <div className="flex min-w-0 flex-col gap-2" role="list">
@@ -141,7 +213,9 @@ export function ProjectsListPage({ projects, extras }: ProjectsListPageProps) {
               project={project}
               extras={extras?.[project.id]}
               onSelect={handleSelect}
-              onDelete={(p) => setConfirmAction({ type: 'delete', project: p })}
+              onAction={(p, action) => setConfirmAction({ action, project: p })}
+              isSelected={selectedIds.has(project.id)}
+              onToggleSelect={toggleSelect}
             />
           ))}
         </div>
@@ -190,6 +264,22 @@ export function ProjectsListPage({ projects, extras }: ProjectsListPageProps) {
           description={confirmDialogProps.description}
           confirmLabel={confirmDialogProps.confirmLabel}
           variant={confirmDialogProps.variant}
+        />
+      )}
+
+      {bulkConfirmDialogProps && (
+        <ConfirmDialog
+          open={!!bulkConfirmAction}
+          onOpenChange={(open) => {
+            if (!open) {
+              setBulkConfirmAction(null);
+            }
+          }}
+          onConfirm={handleBulkConfirm}
+          title={bulkConfirmDialogProps.title}
+          description={bulkConfirmDialogProps.description}
+          confirmLabel={bulkConfirmDialogProps.confirmLabel}
+          variant={bulkConfirmDialogProps.variant}
         />
       )}
     </div>

@@ -1,5 +1,8 @@
+import { useMemo } from 'react';
+
 import { useTranslations } from 'next-intl';
 
+import { Checkbox } from '@/components/ui/checkbox';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import { SortableTableHeader } from '@/features/surveys/components/dashboard/sortable-table-header';
@@ -17,6 +20,14 @@ interface SurveyListTableProps {
   onStatusChange: (surveyId: string, action: string) => void;
   /** When true, uses project-consistent columns: Title (44%), Status, Responses, Last Response, Activity. */
   isProjectContext?: boolean | undefined;
+  /** Set of selected survey IDs for bulk selection. */
+  selectedIds?: Set<string> | undefined;
+  /** Toggle bulk selection for a survey ID. */
+  onToggleBulkSelect?: ((id: string) => void) | undefined;
+  /** Select all surveys on the current page. */
+  onSelectAll?: ((surveys: UserSurvey[]) => void) | undefined;
+  /** Clear the bulk selection. */
+  onClearSelection?: (() => void) | undefined;
 }
 
 export function SurveyListTable({
@@ -29,14 +40,48 @@ export function SurveyListTable({
   onSelect,
   onStatusChange,
   isProjectContext,
+  selectedIds,
+  onToggleBulkSelect,
+  onSelectAll,
+  onClearSelection,
 }: SurveyListTableProps) {
   const t = useTranslations();
+
+  const allSelected = useMemo(
+    () =>
+      !!selectedIds &&
+      selectedIds.size > 0 &&
+      surveys.length > 0 &&
+      surveys.every((s) => selectedIds.has(s.id)),
+    [selectedIds, surveys]
+  );
+
+  const someSelected = useMemo(
+    () => !!selectedIds && selectedIds.size > 0 && !allSelected,
+    [selectedIds, allSelected]
+  );
 
   return (
     <div className="border-border/50 bg-card overflow-hidden rounded-lg border">
       <Table className="table-fixed">
         <TableHeader>
           <TableRow className="bg-muted/60 hover:bg-muted/60">
+            {onToggleBulkSelect && (
+              <TableHead className="w-10 shrink-0 px-3 py-3">
+                <Checkbox
+                  checked={allSelected ? true : someSelected ? 'indeterminate' : false}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      onSelectAll?.(surveys);
+                    } else {
+                      onClearSelection?.();
+                    }
+                  }}
+                  aria-label={t('surveys.dashboard.bulk.selectAll')}
+                />
+              </TableHead>
+            )}
+
             <SortableTableHeader
               sortKey="title"
               currentSortKey={sortBy}
@@ -122,6 +167,8 @@ export function SurveyListTable({
               onStatusChange={onStatusChange}
               variant="table"
               isProjectContext={isProjectContext}
+              isBulkSelected={selectedIds?.has(survey.id) ?? false}
+              onToggleBulkSelect={onToggleBulkSelect}
             />
           ))}
         </TableBody>

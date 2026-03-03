@@ -8,7 +8,7 @@ export const INSIGHT_TYPES = ['strength', 'opportunity', 'threat', 'decision'] a
 export type InsightType = (typeof INSIGHT_TYPES)[number];
 
 /** All project lifecycle statuses as a const tuple (source of truth). */
-export const PROJECT_STATUSES = ['active', 'archived'] as const;
+export const PROJECT_STATUSES = ['active', 'completed', 'archived', 'trashed'] as const;
 
 export type ProjectStatus = (typeof PROJECT_STATUSES)[number];
 

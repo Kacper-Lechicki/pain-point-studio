@@ -4,21 +4,81 @@ import { useMemo, useState } from 'react';
 
 import { useTranslations } from 'next-intl';
 
-import { archiveProject } from '@/features/projects/actions/archive-project';
-import { deleteProject } from '@/features/projects/actions/delete-project';
+import { changeProjectStatus } from '@/features/projects/actions/change-project-status';
 import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
+import { permanentDeleteProject } from '@/features/projects/actions/permanent-delete-project';
+import type { ProjectAction } from '@/features/projects/config/status';
 import {
   type ProjectConfirmDialogProps,
   getProjectConfirmDialogProps,
 } from '@/features/projects/lib/project-confirm-props';
-import { isProjectArchived } from '@/features/projects/lib/project-helpers';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import type { MessageKey } from '@/i18n/types';
 
 type ConfirmAction = {
-  type: 'archive' | 'delete';
+  action: ProjectAction;
   project: ProjectWithMetrics;
 };
+
+/** Toast message key for each project action. */
+const ACTION_SUCCESS_KEYS: Record<ProjectAction, string> = {
+  complete: 'projects.list.completeSuccess',
+  archive: 'projects.list.archiveSuccess',
+  reopen: 'projects.list.reopenSuccess',
+  restore: 'projects.list.restoreSuccess',
+  trash: 'projects.list.trashSuccess',
+  restoreTrash: 'projects.list.restoreTrashSuccess',
+  permanentDelete: 'projects.list.permanentDeleteSuccess',
+};
+
+/** Applies an optimistic status update to a project in the list. */
+function applyOptimisticListUpdate(
+  p: ProjectWithMetrics,
+  action: ProjectAction
+): ProjectWithMetrics {
+  const now = new Date().toISOString();
+
+  switch (action) {
+    case 'complete':
+      return { ...p, status: 'completed', completed_at: now, updated_at: now };
+    case 'archive':
+      return {
+        ...p,
+        status: 'archived',
+        archived_at: now,
+        pre_archive_status: p.status,
+        updated_at: now,
+      };
+    case 'reopen':
+      return { ...p, status: 'active', completed_at: null, updated_at: now };
+    case 'restore':
+      return {
+        ...p,
+        status: p.pre_archive_status || 'active',
+        archived_at: null,
+        pre_archive_status: null,
+        updated_at: now,
+      };
+    case 'trash':
+      return {
+        ...p,
+        status: 'trashed',
+        deleted_at: now,
+        pre_trash_status: p.status,
+        updated_at: now,
+      };
+    case 'restoreTrash':
+      return {
+        ...p,
+        status: p.pre_trash_status || 'active',
+        deleted_at: null,
+        pre_trash_status: null,
+        updated_at: now,
+      };
+    default:
+      return p;
+  }
+}
 
 interface UseProjectListActionsParams {
   localProjects: ProjectWithMetrics[];
@@ -37,11 +97,7 @@ export function useProjectListActions({
   const [editProject, setEditProject] = useState<ProjectWithMetrics | null>(null);
   const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(null);
 
-  const archiveAction = useFormAction({
-    unexpectedErrorMessage: 'projects.errors.unexpected' as MessageKey,
-  });
-
-  const deleteAction = useFormAction({
+  const statusAction = useFormAction({
     unexpectedErrorMessage: 'projects.errors.unexpected' as MessageKey,
   });
 
@@ -69,48 +125,10 @@ export function useProjectListActions({
       return;
     }
 
-    const { type, project } = confirmAction;
+    const { action, project } = confirmAction;
 
-    if (type === 'archive') {
-      const isArchived = isProjectArchived(project);
-      const successMsg = (
-        isArchived ? 'projects.list.restoreSuccess' : 'projects.list.archiveSuccess'
-      ) as MessageKey;
-
-      setLocalProjects((prev) =>
-        prev.map((p) =>
-          p.id === project.id
-            ? {
-                ...p,
-                status: (isArchived ? 'active' : 'archived') as ProjectWithMetrics['status'],
-                archived_at: isArchived ? null : new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-              }
-            : p
-        )
-      );
-      setConfirmAction(null);
-
-      const result = await archiveAction.execute(archiveProject, { projectId: project.id });
-
-      if (result && !result.error) {
-        const { toast } = await import('sonner');
-        toast.success(t(successMsg));
-      } else {
-        setLocalProjects((prev) =>
-          prev.map((p) =>
-            p.id === project.id
-              ? {
-                  ...p,
-                  status: project.status,
-                  archived_at: project.archived_at,
-                  updated_at: project.updated_at,
-                }
-              : p
-          )
-        );
-      }
-    } else {
+    if (action === 'permanentDelete') {
+      // Remove from list immediately
       setLocalProjects((prev) => prev.filter((p) => p.id !== project.id));
       setConfirmAction(null);
 
@@ -118,14 +136,53 @@ export function useProjectListActions({
         setSelected(null);
       }
 
-      const result = await deleteAction.execute(deleteProject, { projectId: project.id });
+      const result = await statusAction.execute(permanentDeleteProject, {
+        projectId: project.id,
+      });
 
       if (result && !result.error) {
         const { toast } = await import('sonner');
-        toast.success(t('projects.list.deleteSuccess' as MessageKey));
+        toast.success(t(ACTION_SUCCESS_KEYS.permanentDelete as MessageKey));
       } else {
+        // Revert: add back to list
         setLocalProjects((prev) => [...prev, project]);
       }
+
+      return;
+    }
+
+    // Optimistic update for status changes
+    setLocalProjects((prev) =>
+      prev.map((p) => (p.id === project.id ? applyOptimisticListUpdate(p, action) : p))
+    );
+    setConfirmAction(null);
+
+    const result = await statusAction.execute(changeProjectStatus, {
+      projectId: project.id,
+      action,
+    });
+
+    if (result && !result.error) {
+      const { toast } = await import('sonner');
+      toast.success(t(ACTION_SUCCESS_KEYS[action] as MessageKey));
+    } else {
+      // Revert on failure
+      setLocalProjects((prev) =>
+        prev.map((p) =>
+          p.id === project.id
+            ? {
+                ...p,
+                status: project.status,
+                archived_at: project.archived_at,
+                completed_at: project.completed_at,
+                deleted_at: project.deleted_at,
+                pre_trash_status: project.pre_trash_status,
+                pre_archive_status: project.pre_archive_status,
+                updated_at: project.updated_at,
+              }
+            : p
+        )
+      );
     }
   };
 
@@ -134,9 +191,7 @@ export function useProjectListActions({
       return null;
     }
 
-    const { type, project } = confirmAction;
-
-    return getProjectConfirmDialogProps(type, isProjectArchived(project), t);
+    return getProjectConfirmDialogProps(confirmAction.action, t);
   }, [confirmAction, t]);
 
   return {

@@ -6,23 +6,22 @@ import { z } from 'zod';
 
 import { createClient } from '@/lib/supabase/server';
 
-// -- Validation schema for the get_profile_statistics RPC response ---
-
-const profileStatisticsSchema = z.object({
-  totalSurveys: z.number(),
-  totalResponses: z.number(),
-  avgSubmissionRate: z.number(),
+const researchJourneySchema = z.object({
   memberSince: z.string(),
+  firstProjectAt: z.string().nullable(),
+  firstSurveyAt: z.string().nullable(),
+  firstResponseAt: z.string().nullable(),
+  totalResponses: z.number(),
 });
 
-export type ProfileStatistics = z.infer<typeof profileStatisticsSchema>;
+export type ResearchJourneyRpc = z.infer<typeof researchJourneySchema>;
 
 /**
- * Fetch profile statistics via get_profile_statistics RPC.
+ * Fetch research journey milestone data via get_research_journey RPC.
  * Returns null when unauthenticated, on RPC error, or when the response fails validation.
  * Wrapped with React `cache()` for per-request deduplication.
  */
-export const getProfileStatistics = cache(async (): Promise<ProfileStatistics | null> => {
+export const getResearchJourney = cache(async (): Promise<ResearchJourneyRpc | null> => {
   const supabase = await createClient();
 
   const {
@@ -33,7 +32,7 @@ export const getProfileStatistics = cache(async (): Promise<ProfileStatistics | 
     return null;
   }
 
-  const { data, error } = await supabase.rpc('get_profile_statistics', {
+  const { data, error } = await supabase.rpc('get_research_journey', {
     p_user_id: user.id,
   });
 
@@ -41,7 +40,7 @@ export const getProfileStatistics = cache(async (): Promise<ProfileStatistics | 
     return null;
   }
 
-  const parsed = profileStatisticsSchema.safeParse(data);
+  const parsed = researchJourneySchema.safeParse(data);
 
   if (!parsed.success) {
     return null;

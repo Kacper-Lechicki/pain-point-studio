@@ -15,7 +15,14 @@ import {
 // ── SURVEY_STATUS_CONFIG ────────────────────────────────────────────
 
 describe('SURVEY_STATUS_CONFIG', () => {
-  const statuses: SurveyStatus[] = ['draft', 'active', 'completed', 'cancelled', 'archived'];
+  const statuses: SurveyStatus[] = [
+    'draft',
+    'active',
+    'completed',
+    'cancelled',
+    'archived',
+    'trashed',
+  ];
 
   it('should have an entry for every status', () => {
     for (const status of statuses) {
@@ -62,6 +69,22 @@ describe('canTransition', () => {
     expect(canTransition('draft', 'cancel')).toBe(false);
   });
 
+  it('should allow reopening a completed survey', () => {
+    expect(canTransition('completed', 'reopen')).toBe(true);
+  });
+
+  it('should allow reopening a cancelled survey', () => {
+    expect(canTransition('cancelled', 'reopen')).toBe(true);
+  });
+
+  it('should not allow reopening a draft', () => {
+    expect(canTransition('draft', 'reopen')).toBe(false);
+  });
+
+  it('should not allow reopening an active survey', () => {
+    expect(canTransition('active', 'reopen')).toBe(false);
+  });
+
   it('should allow archiving a draft', () => {
     expect(canTransition('draft', 'archive')).toBe(true);
   });
@@ -82,49 +105,99 @@ describe('canTransition', () => {
     expect(canTransition('active', 'restore')).toBe(false);
   });
 
-  it('should allow deleting a draft', () => {
-    expect(canTransition('draft', 'delete')).toBe(true);
+  it('should allow trashing a draft', () => {
+    expect(canTransition('draft', 'trash')).toBe(true);
   });
 
-  it('should allow deleting an archived survey', () => {
-    expect(canTransition('archived', 'delete')).toBe(true);
+  it('should allow trashing an active survey', () => {
+    expect(canTransition('active', 'trash')).toBe(true);
   });
 
-  it('should not allow deleting an active survey', () => {
-    expect(canTransition('active', 'delete')).toBe(false);
+  it('should allow trashing a completed survey', () => {
+    expect(canTransition('completed', 'trash')).toBe(true);
+  });
+
+  it('should allow trashing a cancelled survey', () => {
+    expect(canTransition('cancelled', 'trash')).toBe(true);
+  });
+
+  it('should allow trashing an archived survey', () => {
+    expect(canTransition('archived', 'trash')).toBe(true);
+  });
+
+  it('should not allow trashing a trashed survey', () => {
+    expect(canTransition('trashed', 'trash')).toBe(false);
+  });
+
+  it('should allow restoring from trash for a trashed survey', () => {
+    expect(canTransition('trashed', 'restoreTrash')).toBe(true);
+  });
+
+  it('should not allow restoring from trash for an active survey', () => {
+    expect(canTransition('active', 'restoreTrash')).toBe(false);
+  });
+
+  it('should allow permanent delete for a trashed survey', () => {
+    expect(canTransition('trashed', 'permanentDelete')).toBe(true);
+  });
+
+  it('should not allow permanent delete for a draft', () => {
+    expect(canTransition('draft', 'permanentDelete')).toBe(false);
+  });
+
+  it('should not allow permanent delete for an active survey', () => {
+    expect(canTransition('active', 'permanentDelete')).toBe(false);
   });
 });
 
 // ── getAvailableActions ─────────────────────────────────────────────
 
 describe('getAvailableActions', () => {
-  it('should allow archiving or deleting a draft', () => {
+  it('should allow archiving or trashing a draft', () => {
     const actions = getAvailableActions('draft');
 
     expect(actions).toContain('archive');
-    expect(actions).toContain('delete');
+    expect(actions).toContain('trash');
     expect(actions).not.toContain('complete');
   });
 
-  it('should allow completing or cancelling an active survey', () => {
+  it('should allow completing, cancelling, or trashing an active survey', () => {
     const actions = getAvailableActions('active');
 
     expect(actions).toContain('complete');
     expect(actions).toContain('cancel');
+    expect(actions).toContain('trash');
   });
 
-  it('should allow restoring or deleting an archived survey', () => {
+  it('should allow restoring or trashing an archived survey', () => {
     const actions = getAvailableActions('archived');
 
     expect(actions).toContain('restore');
-    expect(actions).toContain('delete');
-    expect(actions).toHaveLength(2);
+    expect(actions).toContain('trash');
   });
 
-  it('should only allow archiving a completed survey', () => {
+  it('should allow reopening, archiving, or trashing a completed survey', () => {
     const actions = getAvailableActions('completed');
 
-    expect(actions).toEqual(['archive']);
+    expect(actions).toContain('reopen');
+    expect(actions).toContain('archive');
+    expect(actions).toContain('trash');
+  });
+
+  it('should allow reopening, archiving, or trashing a cancelled survey', () => {
+    const actions = getAvailableActions('cancelled');
+
+    expect(actions).toContain('reopen');
+    expect(actions).toContain('archive');
+    expect(actions).toContain('trash');
+  });
+
+  it('should allow restoreTrash or permanentDelete for a trashed survey', () => {
+    const actions = getAvailableActions('trashed');
+
+    expect(actions).toContain('restoreTrash');
+    expect(actions).toContain('permanentDelete');
+    expect(actions).toHaveLength(2);
   });
 });
 
@@ -150,6 +223,14 @@ describe('deriveSurveyFlags', () => {
 
     expect(flags.isArchived).toBe(true);
   });
+
+  it('should set isTrashed for trashed status', () => {
+    const flags = deriveSurveyFlags('trashed');
+
+    expect(flags.isTrashed).toBe(true);
+    expect(flags.isDraft).toBe(false);
+    expect(flags.isActive).toBe(false);
+  });
 });
 
 // ── SURVEY_TRANSITIONS ──────────────────────────────────────────────
@@ -162,23 +243,59 @@ describe('SURVEY_TRANSITIONS', () => {
     }
   });
 
-  it('should use method "delete" for delete', () => {
-    expect(SURVEY_TRANSITIONS.delete.method).toBe('delete');
+  it('should use method "delete" for permanentDelete', () => {
+    expect(SURVEY_TRANSITIONS.permanentDelete.method).toBe('delete');
   });
 
   it('should use method "update" for complete', () => {
     expect(SURVEY_TRANSITIONS.complete.method).toBe('update');
   });
-});
 
-describe('SURVEY_TRANSITIONS – restore always targets draft', () => {
-  it('should have restore toStatus as draft', () => {
-    expect(SURVEY_TRANSITIONS.restore.toStatus).toBe('draft');
+  it('should use method "update" for trash', () => {
+    expect(SURVEY_TRANSITIONS.trash.method).toBe('update');
   });
 
-  it('should include both draft and archived in delete fromStatuses', () => {
-    expect(SURVEY_TRANSITIONS.delete.fromStatuses).toContain('draft');
-    expect(SURVEY_TRANSITIONS.delete.fromStatuses).toContain('archived');
+  it('should use method "update" for restoreTrash', () => {
+    expect(SURVEY_TRANSITIONS.restoreTrash.method).toBe('update');
+  });
+
+  it('should use method "update" for reopen', () => {
+    expect(SURVEY_TRANSITIONS.reopen.method).toBe('update');
+  });
+});
+
+describe('SURVEY_TRANSITIONS – restore and trash targets', () => {
+  it('should have restore toStatus as null (restores to previous_status)', () => {
+    expect(SURVEY_TRANSITIONS.restore.toStatus).toBeNull();
+  });
+
+  it('should have trash toStatus as trashed', () => {
+    expect(SURVEY_TRANSITIONS.trash.toStatus).toBe('trashed');
+  });
+
+  it('should allow trashing from all non-trashed statuses', () => {
+    expect(SURVEY_TRANSITIONS.trash.fromStatuses).toContain('draft');
+    expect(SURVEY_TRANSITIONS.trash.fromStatuses).toContain('active');
+    expect(SURVEY_TRANSITIONS.trash.fromStatuses).toContain('completed');
+    expect(SURVEY_TRANSITIONS.trash.fromStatuses).toContain('cancelled');
+    expect(SURVEY_TRANSITIONS.trash.fromStatuses).toContain('archived');
+  });
+
+  it('should only allow permanent delete from trashed', () => {
+    expect(SURVEY_TRANSITIONS.permanentDelete.fromStatuses).toEqual(['trashed']);
+  });
+
+  it('should have restoreTrash toStatus as null (restores to pre_trash_status)', () => {
+    expect(SURVEY_TRANSITIONS.restoreTrash.toStatus).toBeNull();
+  });
+
+  it('should have reopen toStatus as active', () => {
+    expect(SURVEY_TRANSITIONS.reopen.toStatus).toBe('active');
+  });
+
+  it('should allow reopening from completed and cancelled', () => {
+    expect(SURVEY_TRANSITIONS.reopen.fromStatuses).toContain('completed');
+    expect(SURVEY_TRANSITIONS.reopen.fromStatuses).toContain('cancelled');
   });
 });
 
@@ -195,7 +312,30 @@ describe('SURVEY_ACTION_UI', () => {
     expect(SURVEY_ACTION_UI.restore.confirm?.variant).toBe('default');
   });
 
-  it('should have destructive confirm dialog for delete', () => {
-    expect(SURVEY_ACTION_UI.delete.confirm?.variant).toBe('destructive');
+  it('should have destructive confirm dialog for trash', () => {
+    expect(SURVEY_ACTION_UI.trash.confirm?.variant).toBe('destructive');
+  });
+
+  it('should have destructive confirm dialog for permanentDelete', () => {
+    expect(SURVEY_ACTION_UI.permanentDelete.confirm?.variant).toBe('destructive');
+  });
+
+  it('should have default confirm dialog for restoreTrash', () => {
+    expect(SURVEY_ACTION_UI.restoreTrash.confirm?.variant).toBe('default');
+  });
+
+  it('should have default confirm dialog for reopen', () => {
+    expect(SURVEY_ACTION_UI.reopen.confirm?.variant).toBe('default');
+  });
+
+  it('should not have a "delete" key', () => {
+    expect('delete' in SURVEY_ACTION_UI).toBe(false);
+  });
+
+  it('should have reopen, trash, restoreTrash, and permanentDelete keys', () => {
+    expect('reopen' in SURVEY_ACTION_UI).toBe(true);
+    expect('trash' in SURVEY_ACTION_UI).toBe(true);
+    expect('restoreTrash' in SURVEY_ACTION_UI).toBe(true);
+    expect('permanentDelete' in SURVEY_ACTION_UI).toBe(true);
   });
 });

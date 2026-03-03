@@ -9,8 +9,11 @@ vi.mock('@/features/surveys/actions', () => ({
   archiveSurvey: vi.fn(),
   cancelSurvey: vi.fn(),
   completeSurvey: vi.fn(),
-  deleteSurveyDraft: vi.fn(),
+  permanentDeleteSurvey: vi.fn(),
+  reopenSurvey: vi.fn(),
   restoreSurvey: vi.fn(),
+  restoreTrashSurvey: vi.fn(),
+  trashSurvey: vi.fn(),
 }));
 
 describe('isConfirmable', () => {
@@ -22,6 +25,10 @@ describe('isConfirmable', () => {
     expect(isConfirmable('cancel' as SurveyAction)).toBe(true);
   });
 
+  it('should return true for reopen', () => {
+    expect(isConfirmable('reopen' as SurveyAction)).toBe(true);
+  });
+
   it('should return true for archive', () => {
     expect(isConfirmable('archive' as SurveyAction)).toBe(true);
   });
@@ -30,7 +37,15 @@ describe('isConfirmable', () => {
     expect(isConfirmable('restore' as SurveyAction)).toBe(true);
   });
 
-  it('should return true for delete', () => {
-    expect(isConfirmable('delete' as SurveyAction)).toBe(true);
+  it('should return true for trash', () => {
+    expect(isConfirmable('trash' as SurveyAction)).toBe(true);
+  });
+
+  it('should return true for restoreTrash', () => {
+    expect(isConfirmable('restoreTrash' as SurveyAction)).toBe(true);
+  });
+
+  it('should return true for permanentDelete', () => {
+    expect(isConfirmable('permanentDelete' as SurveyAction)).toBe(true);
   });
 });

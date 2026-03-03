@@ -7,7 +7,7 @@ import { ListToolbar } from '@/components/ui/list-toolbar';
 import type { MessageKey } from '@/i18n/types';
 import { sortOptionsAlphabetically } from '@/lib/common/sort-options';
 
-export type ProjectStatusFilter = 'active' | 'archived';
+export type ProjectStatusFilter = 'active' | 'completed' | 'archived' | 'trashed';
 export type ProjectSortBy =
   | 'updated'
   | 'created'
@@ -17,7 +17,7 @@ export type ProjectSortBy =
   | 'status'
   | 'activity';
 
-const STATUS_OPTIONS: ProjectStatusFilter[] = ['active', 'archived'];
+const STATUS_OPTIONS: ProjectStatusFilter[] = ['active', 'completed', 'archived', 'trashed'];
 
 const SORT_OPTIONS: ProjectSortBy[] = [
   'name',

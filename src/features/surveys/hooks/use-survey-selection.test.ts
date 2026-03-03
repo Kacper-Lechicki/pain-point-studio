@@ -49,6 +49,9 @@ const SURVEYS: UserSurvey[] = [
     projectId: 'project-1',
     projectName: 'Test Project',
     researchPhase: null,
+    deletedAt: null,
+    preTrashStatus: null,
+    previousStatus: null,
   },
   {
     id: 'survey-2',
@@ -75,6 +78,9 @@ const SURVEYS: UserSurvey[] = [
     projectId: 'project-1',
     projectName: 'Test Project',
     researchPhase: null,
+    deletedAt: null,
+    preTrashStatus: null,
+    previousStatus: null,
   },
 ];
 

@@ -51,6 +51,14 @@ export function ProjectOverviewKpiCards({
   return (
     <Card className={BENTO_CARD_CLASS}>
       <div className="flex flex-col gap-3 p-4">
+        {/* Card header with icon */}
+        <div className="flex shrink-0 items-center justify-between gap-2">
+          <span className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
+            {t('projects.overview.metrics' as MessageKey)}
+          </span>
+          <ClipboardList className="text-chart-emerald size-4 shrink-0" aria-hidden />
+        </div>
+
         {/* Surveys */}
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center gap-3">

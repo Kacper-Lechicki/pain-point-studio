@@ -12,8 +12,17 @@ import { useSessionState } from '@/hooks/common/use-session-state';
 
 // ── Module-level constants ──────────────────────────────────────────
 
-const PRE_FILTER = (s: UserSurvey) => !deriveSurveyFlags(s.status).isArchived;
-const PRE_FILTER_PROJECT = () => true;
+const PRE_FILTER = (s: UserSurvey) => {
+  const flags = deriveSurveyFlags(s.status);
+
+  return !flags.isArchived && !flags.isTrashed;
+};
+
+const PRE_FILTER_PROJECT = (s: UserSurvey) => {
+  const flags = deriveSurveyFlags(s.status);
+
+  return !flags.isTrashed;
+};
 
 interface UseSurveyListFiltersOptions {
   /** When true, archived surveys are included and project filter is hidden. */
@@ -93,7 +102,9 @@ export function useSurveyListFilters(surveys: UserSurvey[], options?: UseSurveyL
       : { active: 0, draft: 0, completed: 0, cancelled: 0 };
 
     for (const s of surveys) {
-      if (!isProjectCtx && deriveSurveyFlags(s.status).isArchived) {
+      const flags = deriveSurveyFlags(s.status);
+
+      if (!isProjectCtx && (flags.isArchived || flags.isTrashed)) {
         continue;
       }
 
@@ -118,7 +129,9 @@ export function useSurveyListFilters(surveys: UserSurvey[], options?: UseSurveyL
     let noProjectCount = 0;
 
     for (const s of surveys) {
-      if (deriveSurveyFlags(s.status).isArchived) {
+      const flags = deriveSurveyFlags(s.status);
+
+      if (flags.isArchived || flags.isTrashed) {
         continue;
       }
 

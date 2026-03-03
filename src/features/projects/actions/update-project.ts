@@ -1,5 +1,6 @@
 'use server';
 
+import { isProjectReadOnly } from '@/features/projects/lib/project-helpers';
 import { updateProjectSchema } from '@/features/projects/types';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
@@ -8,6 +9,18 @@ export const updateProject = withProtectedAction<typeof updateProjectSchema>('up
   schema: updateProjectSchema,
   rateLimit: RATE_LIMITS.crud,
   action: async ({ data, user, supabase }) => {
+    // Read-only guard: reject edits to completed/archived projects
+    const { data: project } = await supabase
+      .from('projects')
+      .select('status')
+      .eq('id', data.projectId)
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    if (!project || isProjectReadOnly(project.status)) {
+      return { error: 'projects.errors.readOnly' };
+    }
+
     const { data: existing } = await supabase
       .from('projects')
       .select('id')

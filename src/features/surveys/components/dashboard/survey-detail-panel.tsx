@@ -50,7 +50,7 @@ export function SurveyDetailPanel({
   );
 
   const flags = deriveSurveyFlags(survey.status);
-  const { isDraft, isActive, isArchived } = flags;
+  const { isDraft, isActive, isArchived, isTrashed } = flags;
   const showActiveDetails = !isDraft && !isArchived;
   const hasShareableLink = (isActive || flags.isCompleted || flags.isCancelled) && !!shareUrl;
   const canExport = !isDraft && !isArchived;
@@ -90,6 +90,7 @@ export function SurveyDetailPanel({
               flags={{
                 isDraft,
                 isArchived,
+                isTrashed,
                 hasShareableLink,
                 questionCount: survey.questionCount,
               }}

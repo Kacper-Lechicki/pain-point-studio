@@ -35,6 +35,9 @@ const userSurveySchema = z.object({
   projectId: z.string(),
   projectName: z.string(),
   researchPhase: z.string().nullable().optional().default(null),
+  deletedAt: z.string().nullable().optional().default(null),
+  preTrashStatus: z.string().nullable().optional().default(null),
+  previousStatus: z.string().nullable().optional().default(null),
 });
 
 const projectSurveysRpcSchema = z.array(userSurveySchema);

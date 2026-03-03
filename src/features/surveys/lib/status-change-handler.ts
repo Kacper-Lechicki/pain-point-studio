@@ -1,11 +1,39 @@
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
-import { type SurveyAction, getActionTargetStatus } from '@/features/surveys/config/survey-status';
+import type { SurveyStatus } from '@/features/surveys/types';
 
 interface StatusChangeResult {
   /** Whether the acted-on survey should be deselected from the detail sheet. */
   shouldDeselect: boolean;
   /** Updated survey list after applying the optimistic change. */
   updatedSurveys: UserSurvey[];
+}
+
+/**
+ * Resolves the target status for an action, handling dynamic targets
+ * (restore → previousStatus, restoreTrash → preTrashStatus).
+ * Returns `null` for actions that remove the survey (permanentDelete).
+ */
+function resolveTargetStatus(action: string, survey: UserSurvey): SurveyStatus | null {
+  switch (action) {
+    case 'complete':
+      return 'completed';
+    case 'cancel':
+      return 'cancelled';
+    case 'reopen':
+      return 'active';
+    case 'archive':
+      return 'archived';
+    case 'restore':
+      return (survey.previousStatus as SurveyStatus) ?? 'draft';
+    case 'trash':
+      return 'trashed';
+    case 'restoreTrash':
+      return (survey.preTrashStatus as SurveyStatus) ?? 'draft';
+    case 'permanentDelete':
+      return null;
+    default:
+      return null;
+  }
 }
 
 /**
@@ -22,16 +50,22 @@ export function applyOptimisticStatusChange(
   /** Statuses that should trigger deselection when transitioned to (e.g. 'archived'). */
   deselectOnStatuses: readonly string[] = []
 ): StatusChangeResult {
-  const newStatus = getActionTargetStatus(action as SurveyAction);
+  const survey = surveys.find((s) => s.id === surveyId);
 
-  const shouldDeselect = newStatus === null || deselectOnStatuses.includes(newStatus);
+  if (!survey) {
+    return { shouldDeselect: false, updatedSurveys: surveys };
+  }
+
+  const newStatus = resolveTargetStatus(action, survey);
 
   if (newStatus === null) {
     return {
-      shouldDeselect,
+      shouldDeselect: true,
       updatedSurveys: surveys.filter((s) => s.id !== surveyId),
     };
   }
+
+  const shouldDeselect = deselectOnStatuses.includes(newStatus);
 
   return {
     shouldDeselect,

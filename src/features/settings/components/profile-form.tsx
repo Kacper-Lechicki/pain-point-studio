@@ -3,11 +3,11 @@
 import { useEffect, useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CircleUserRound, Eye } from 'lucide-react';
+import { CircleUserRound } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useFieldArray, useForm } from 'react-hook-form';
 
-import { Button } from '@/components/ui/button';
+import { ClipboardInput } from '@/components/ui/clipboard-input';
 import { Combobox } from '@/components/ui/combobox';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import {
@@ -22,7 +22,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { SubmitButton } from '@/components/ui/submit-button';
 import { Textarea } from '@/components/ui/textarea';
-import { ROUTES } from '@/config';
 import { ProfileData, updateProfile } from '@/features/settings/actions';
 import { AvatarUpload } from '@/features/settings/components/avatar-upload';
 import { SettingsSectionHeader } from '@/features/settings/components/settings-section-header';
@@ -31,7 +30,6 @@ import { BIO_MAX_LENGTH } from '@/features/settings/config';
 import { UpdateProfileSchema, updateProfileSchema } from '@/features/settings/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import { useUnsavedChangesWarning } from '@/hooks/unsaved-changes-context';
-import { Link } from '@/i18n/routing';
 import type { MessageKey } from '@/i18n/types';
 import { getInitials } from '@/lib/common/utils';
 
@@ -87,17 +85,22 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
         icon={CircleUserRound}
         title={t('settings.profile.title')}
         description={t('settings.profile.description')}
-        action={
-          <Button type="button" variant="outline" asChild className="shrink-0">
-            <Link href={ROUTES.profile.preview}>
-              <Eye className="size-4" />
-              {t('settings.profile.previewProfile')}
-            </Link>
-          </Button>
-        }
       />
 
       <div className="space-y-6">
+        <div className="space-y-2">
+          <label className="text-muted-foreground text-sm font-medium">
+            {t('settings.profile.accountId')}
+          </label>
+          <ClipboardInput
+            value={profile.id}
+            readOnly
+            copyLabel={t('settings.profile.copy')}
+            copiedLabel={t('settings.profile.copied')}
+            className="font-mono text-xs"
+          />
+        </div>
+
         <AvatarUpload
           userId={profile.id}
           currentUrl={avatarUrl}

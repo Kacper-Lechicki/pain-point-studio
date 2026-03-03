@@ -18,6 +18,9 @@ export {
   archiveSurvey,
   cancelSurvey,
   completeSurvey,
-  deleteSurveyDraft,
+  permanentDeleteSurvey,
+  reopenSurvey,
   restoreSurvey,
+  restoreTrashSurvey,
+  trashSurvey,
 } from './update-survey-status';

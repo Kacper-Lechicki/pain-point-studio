@@ -75,6 +75,10 @@ function isNarrowPath(pathname: string): boolean {
     return true;
   }
 
+  if (path === ROUTES.profile.preview) {
+    return true;
+  }
+
   return false;
 }
 

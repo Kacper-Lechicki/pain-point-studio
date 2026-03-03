@@ -3,6 +3,7 @@ import type React from 'react';
 import { MoreHorizontal } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { DropdownMenu, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { TableCell, TableRow } from '@/components/ui/table';
@@ -24,6 +25,10 @@ interface SurveyTableRowProps {
   archivedLayout?: boolean;
   /** When true, hides project badge, simplifies actions, and adjusts columns. */
   isProjectContext?: boolean | undefined;
+  /** Whether this row's checkbox is checked (for bulk selection). */
+  isBulkSelected?: boolean | undefined;
+  /** Toggle bulk selection for this survey's ID. */
+  onToggleBulkSelect?: ((id: string) => void) | undefined;
 }
 
 export function SurveyTableRow({
@@ -33,6 +38,8 @@ export function SurveyTableRow({
   row,
   archivedLayout = false,
   isProjectContext,
+  isBulkSelected,
+  onToggleBulkSelect,
 }: SurveyTableRowProps) {
   const menuContent = (
     <SurveyActionMenuContent
@@ -40,6 +47,7 @@ export function SurveyTableRow({
       flags={{
         isDraft: row.isDraft,
         isArchived: row.isArchived,
+        isTrashed: row.isTrashed,
         hasShareableLink: row.hasShareableLink,
         questionCount: survey.questionCount,
       }}
@@ -80,6 +88,16 @@ export function SurveyTableRow({
         )}
         {...tableRowInteraction}
       >
+        {onToggleBulkSelect && (
+          <TableCell className="w-10 shrink-0 px-3 py-3" onClick={(e) => e.stopPropagation()}>
+            <Checkbox
+              checked={isBulkSelected ?? false}
+              onCheckedChange={() => onToggleBulkSelect(survey.id)}
+              aria-label={row.t('surveys.dashboard.bulk.selectSurvey', { name: survey.title })}
+            />
+          </TableCell>
+        )}
+
         <TableCell className="min-w-0 overflow-hidden py-2.5">
           <span className="text-foreground block truncate text-sm font-semibold">
             {survey.title}

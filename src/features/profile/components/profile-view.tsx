@@ -1,11 +1,10 @@
 'use client';
 
-import { BarChart3, CircleUserRound, FolderOpen } from 'lucide-react';
+import { CircleUserRound } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Separator } from '@/components/ui/separator';
-import { EmptySection } from '@/features/profile/components/empty-section';
 import { ProfileHeader } from '@/features/profile/components/profile-header';
+import { ResearchJourney } from '@/features/profile/components/research-journey';
 import { SocialLinksList } from '@/features/profile/components/social-links-list';
 import type { ProfilePreviewData } from '@/features/profile/types';
 
@@ -31,28 +30,9 @@ const ProfileView = ({ profile, isPreview = false }: ProfileViewProps) => {
 
       <ProfileHeader profile={profile} />
 
-      {profile.socialLinks.length > 0 && (
-        <>
-          <Separator />
-          <SocialLinksList links={profile.socialLinks} />
-        </>
-      )}
+      {profile.socialLinks.length > 0 && <SocialLinksList links={profile.socialLinks} />}
 
-      <Separator />
-
-      <EmptySection
-        title={t('sections.projects.title')}
-        description={t('sections.projects.emptyDescription')}
-        icon={FolderOpen}
-      />
-
-      <Separator />
-
-      <EmptySection
-        title={t('sections.statistics.title')}
-        description={t('sections.statistics.emptyDescription')}
-        icon={BarChart3}
-      />
+      <ResearchJourney milestones={profile.journey} />
     </div>
   );
 };
