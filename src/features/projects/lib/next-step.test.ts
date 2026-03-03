@@ -1,0 +1,152 @@
+import { describe, expect, it } from 'vitest';
+
+import type { NextStepInput } from './next-step';
+import { computeNextStep } from './next-step';
+
+function makeInput(overrides: Partial<NextStepInput> = {}): NextStepInput {
+  return {
+    totalSurveys: 0,
+    activeSurveys: 0,
+    totalResponses: 0,
+    targetResponses: 100,
+    insightCount: 0,
+    currentPhase: null,
+    ...overrides,
+  };
+}
+
+describe('computeNextStep', () => {
+  it('returns create-survey when no surveys exist', () => {
+    const result = computeNextStep(makeInput({ totalSurveys: 0 }));
+
+    expect(result).toEqual({
+      action: 'create-survey',
+      labelKey: 'projects.nextStep.createSurvey',
+      tab: 'surveys',
+    });
+  });
+
+  it('returns activate-survey when surveys exist but none are active', () => {
+    const result = computeNextStep(makeInput({ totalSurveys: 2, activeSurveys: 0 }));
+
+    expect(result).toEqual({
+      action: 'activate-survey',
+      labelKey: 'projects.nextStep.activateSurvey',
+      tab: 'surveys',
+    });
+  });
+
+  it('returns share-survey when responses are below 50% of target', () => {
+    const result = computeNextStep(
+      makeInput({ totalSurveys: 1, activeSurveys: 1, totalResponses: 49, targetResponses: 100 })
+    );
+
+    expect(result).toEqual({
+      action: 'share-survey',
+      labelKey: 'projects.nextStep.shareSurvey',
+    });
+  });
+
+  it('returns share-survey at exactly 0 responses', () => {
+    const result = computeNextStep(
+      makeInput({ totalSurveys: 1, activeSurveys: 1, totalResponses: 0, targetResponses: 100 })
+    );
+
+    expect(result.action).toBe('share-survey');
+  });
+
+  it('returns review-findings when at 50% but no insights', () => {
+    const result = computeNextStep(
+      makeInput({
+        totalSurveys: 1,
+        activeSurveys: 1,
+        totalResponses: 50,
+        targetResponses: 100,
+        insightCount: 0,
+      })
+    );
+
+    expect(result).toEqual({
+      action: 'review-findings',
+      labelKey: 'projects.nextStep.reviewFindings',
+      tab: 'insights',
+    });
+  });
+
+  it('returns make-decision when responses >= 70% of target and insights >= 3', () => {
+    const result = computeNextStep(
+      makeInput({
+        totalSurveys: 1,
+        activeSurveys: 1,
+        totalResponses: 70,
+        targetResponses: 100,
+        insightCount: 3,
+      })
+    );
+
+    expect(result).toEqual({
+      action: 'make-decision',
+      labelKey: 'projects.nextStep.makeDecision',
+      tab: 'insights',
+    });
+  });
+
+  it('returns continue when responses >= 50% but insights < 3 and > 0', () => {
+    const result = computeNextStep(
+      makeInput({
+        totalSurveys: 1,
+        activeSurveys: 1,
+        totalResponses: 70,
+        targetResponses: 100,
+        insightCount: 2,
+      })
+    );
+
+    expect(result).toEqual({
+      action: 'continue',
+      labelKey: 'projects.nextStep.continue',
+    });
+  });
+
+  it('returns review-findings at exactly 70% responses but 0 insights', () => {
+    const result = computeNextStep(
+      makeInput({
+        totalSurveys: 1,
+        activeSurveys: 1,
+        totalResponses: 70,
+        targetResponses: 100,
+        insightCount: 0,
+      })
+    );
+
+    expect(result.action).toBe('review-findings');
+  });
+
+  it('returns share-survey at exactly 49% of target', () => {
+    const result = computeNextStep(
+      makeInput({
+        totalSurveys: 1,
+        activeSurveys: 1,
+        totalResponses: 49,
+        targetResponses: 100,
+        insightCount: 5,
+      })
+    );
+
+    expect(result.action).toBe('share-survey');
+  });
+
+  it('returns make-decision when well above threshold', () => {
+    const result = computeNextStep(
+      makeInput({
+        totalSurveys: 3,
+        activeSurveys: 2,
+        totalResponses: 200,
+        targetResponses: 100,
+        insightCount: 10,
+      })
+    );
+
+    expect(result.action).toBe('make-decision');
+  });
+});
