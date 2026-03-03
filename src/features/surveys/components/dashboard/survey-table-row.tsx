@@ -1,6 +1,6 @@
 import type React from 'react';
 
-import { MoreHorizontal } from 'lucide-react';
+import { Archive, Clock, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -8,12 +8,14 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { DropdownMenu, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { TableCell, TableRow } from '@/components/ui/table';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
+import { ActivityInfoTrigger } from '@/features/surveys/components/dashboard/activity-info-trigger';
 import { Sparkline } from '@/features/surveys/components/dashboard/sparkline';
 import { SurveyActionMenuContent } from '@/features/surveys/components/dashboard/survey-action-menu';
 import { SurveyProjectBadge } from '@/features/surveys/components/dashboard/survey-project-badge';
 import { SurveyShareDialog } from '@/features/surveys/components/dashboard/survey-share-dialog';
 import { SurveyStatusBadge } from '@/features/surveys/components/dashboard/survey-status-badge';
 import { ExportDialog } from '@/features/surveys/components/stats/export-dialog';
+import { TRASH_RETENTION_DAYS } from '@/features/surveys/config';
 import type { useSurveyRow } from '@/features/surveys/hooks/use-survey-row';
 import { cn } from '@/lib/common/utils';
 
@@ -135,11 +137,11 @@ export function SurveyTableRow({
         ) : (
           <>
             <TableCell className="border-border/30 min-w-0 border-l text-center">
-              <SurveyStatusBadge status={survey.status} />
+              <SurveyStatusBadge status={survey.status} deletedAt={survey.deletedAt} />
             </TableCell>
 
             <TableCell className="text-muted-foreground border-border/30 min-w-0 truncate border-l text-xs tabular-nums">
-              {row.isDraft
+              {row.isTrashed || row.isDraft
                 ? '—'
                 : survey.maxRespondents != null
                   ? `${survey.completedCount}/${survey.maxRespondents}`
@@ -148,7 +150,7 @@ export function SurveyTableRow({
 
             {!isProjectContext && (
               <TableCell className="text-muted-foreground border-border/30 hidden min-w-0 truncate border-l text-xs tabular-nums lg:table-cell">
-                {row.isDraft
+                {row.isTrashed || row.isDraft
                   ? '—'
                   : survey.avgQuestionCompletion != null
                     ? `${Math.round(survey.avgQuestionCompletion)}%`
@@ -162,19 +164,94 @@ export function SurveyTableRow({
                 isProjectContext ? 'lg:table-cell' : 'xl:table-cell'
               )}
             >
-              {row.isDraft ? '—' : (row.lastResponseLabel ?? '—')}
+              {row.isTrashed || row.isDraft
+                ? '—'
+                : row.isArchived
+                  ? (row.archivedAtLabel ?? '—')
+                  : (row.lastResponseLabel ?? '—')}
             </TableCell>
 
             <TableCell
               className={cn(
-                'border-border/30 hidden min-w-0 border-l text-center',
+                'border-border/30 hidden min-w-0 overflow-hidden border-l text-center',
                 isProjectContext ? 'xl:table-cell' : '2xl:table-cell'
               )}
             >
-              <Sparkline
-                data={survey.recentActivity}
-                className={cn('mx-auto shrink-0', row.sparklineColor)}
-              />
+              <div className="flex min-w-0 justify-center overflow-hidden">
+                {row.isTrashed ? (
+                  <ActivityInfoTrigger
+                    titleKey="surveys.dashboard.activityInfo.deletedInDaysTitle"
+                    descriptionKey="surveys.dashboard.activityInfo.deletedInDaysDescription"
+                    descriptionValues={{
+                      days: row.trashedPurgeDays ?? TRASH_RETENTION_DAYS,
+                    }}
+                    className="flex shrink-0 items-center gap-1 text-[11px] font-medium text-red-700 dark:text-red-400"
+                  >
+                    <Trash2 className="size-3 shrink-0" aria-hidden />
+                    <span className="truncate">
+                      {row.t('surveys.dashboard.table.deletedInDaysShort', {
+                        days: row.trashedPurgeDays ?? TRASH_RETENTION_DAYS,
+                      })}
+                    </span>
+                  </ActivityInfoTrigger>
+                ) : row.isArchived ? (
+                  row.autoDeleteDays != null ? (
+                    <ActivityInfoTrigger
+                      titleKey="surveys.dashboard.activityInfo.autoDeletesTitle"
+                      descriptionKey="surveys.dashboard.activityInfo.autoDeletesInDays"
+                      descriptionValues={{ days: row.autoDeleteDays }}
+                      className="flex shrink-0 items-center gap-1 text-[11px] font-medium text-amber-700 dark:text-amber-400"
+                    >
+                      <Archive className="size-3 shrink-0" aria-hidden />
+                      <span className="truncate">
+                        {row.t('surveys.dashboard.detailPanel.inDays', {
+                          days: row.autoDeleteDays,
+                        })}
+                      </span>
+                    </ActivityInfoTrigger>
+                  ) : (
+                    '—'
+                  )
+                ) : row.isCompleted || row.isCancelled ? (
+                  row.linkExpiryDays != null ? (
+                    <ActivityInfoTrigger
+                      titleKey="surveys.dashboard.activityInfo.linkExpiresTitle"
+                      descriptionKey="surveys.dashboard.activityInfo.linkExpiresInDays"
+                      descriptionValues={{ days: row.linkExpiryDays }}
+                      className="flex shrink-0 items-center gap-1 text-[11px] font-medium text-violet-700 dark:text-violet-400"
+                    >
+                      <Clock className="size-3 shrink-0" aria-hidden />
+                      <span className="truncate">
+                        {row.t('surveys.dashboard.table.deletedInDaysShort', {
+                          days: row.linkExpiryDays,
+                        })}
+                      </span>
+                    </ActivityInfoTrigger>
+                  ) : (
+                    '—'
+                  )
+                ) : row.isDraft ? (
+                  <ActivityInfoTrigger
+                    titleKey="surveys.dashboard.activityInfo.lastEditedTitle"
+                    descriptionKey="surveys.dashboard.activityInfo.lastEditedDescription"
+                    className="text-muted-foreground flex shrink-0 items-center gap-1 text-[11px] font-medium"
+                  >
+                    <Pencil className="size-3 shrink-0" aria-hidden />
+                    <span className="truncate">{row.updatedAtLabel}</span>
+                  </ActivityInfoTrigger>
+                ) : (
+                  <ActivityInfoTrigger
+                    titleKey="surveys.dashboard.activityInfo.recentActivityTitle"
+                    descriptionKey="surveys.dashboard.activityInfo.recentActivityDescription"
+                    className="flex shrink-0"
+                  >
+                    <Sparkline
+                      data={survey.recentActivity}
+                      className={cn('mx-auto shrink-0', row.sparklineColor)}
+                    />
+                  </ActivityInfoTrigger>
+                )}
+              </div>
             </TableCell>
           </>
         )}

@@ -19,9 +19,11 @@ import type { ProjectListExtras } from '@/features/projects/actions/get-projects
 import { ActivitySparkline } from '@/features/projects/components/activity-sparkline';
 import { ProjectAvatar } from '@/features/projects/components/project-avatar';
 import { ProjectStatusBadge } from '@/features/projects/components/project-status-badge';
+import { PROJECT_TRASH_RETENTION_DAYS } from '@/features/projects/config/constraints';
 import type { ProjectAction } from '@/features/projects/config/status';
 import { PROJECT_ACTION_UI, getAvailableActions } from '@/features/projects/config/status';
 import type { ProjectStatus } from '@/features/projects/types';
+import { daysUntilExpiry } from '@/features/surveys/lib/calculations';
 import type { MessageKey } from '@/i18n/types';
 
 interface ProjectTableRowProps {
@@ -96,19 +98,33 @@ export function ProjectTableRow({
       </TableCell>
 
       <TableCell className="text-muted-foreground border-border/30 min-w-0 border-l px-5 py-3 text-xs tabular-nums">
-        {project.surveyCount}
+        {project.status === 'trashed' ? '—' : project.surveyCount}
       </TableCell>
 
       <TableCell className="text-muted-foreground border-border/30 min-w-0 border-l px-5 py-3 text-xs tabular-nums">
-        {project.target_responses
-          ? `${project.responseCount}/${project.target_responses}`
-          : project.responseCount}
+        {project.status === 'trashed' ? (
+          <span className="text-destructive/90">
+            {t('projects.list.table.deletedInDays', {
+              days:
+                daysUntilExpiry(project.deleted_at ?? null, PROJECT_TRASH_RETENTION_DAYS) ??
+                PROJECT_TRASH_RETENTION_DAYS,
+            })}
+          </span>
+        ) : project.target_responses ? (
+          `${project.responseCount}/${project.target_responses}`
+        ) : (
+          project.responseCount
+        )}
       </TableCell>
 
       <TableCell className="text-muted-foreground border-border/30 hidden min-w-0 border-l px-3 py-3 md:table-cell">
-        <div className="w-full">
-          <ActivitySparkline data={extras?.sparkline ?? []} fillWidth className="h-7 w-full" />
-        </div>
+        {project.status === 'trashed' ? (
+          '—'
+        ) : (
+          <div className="w-full">
+            <ActivitySparkline data={extras?.sparkline ?? []} fillWidth className="h-7 w-full" />
+          </div>
+        )}
       </TableCell>
 
       <TableCell className="w-12 shrink-0 py-3" onClick={(e) => e.stopPropagation()}>

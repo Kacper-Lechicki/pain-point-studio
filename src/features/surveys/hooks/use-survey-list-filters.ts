@@ -12,17 +12,24 @@ import { useSessionState } from '@/hooks/common/use-session-state';
 
 // ── Module-level constants ──────────────────────────────────────────
 
-const PRE_FILTER = (s: UserSurvey) => {
-  const flags = deriveSurveyFlags(s.status);
+/** When no status filter: hide archived and trashed. When a status filter is active: allow only surveys matching the filter (including trashed/archived if selected). */
+function getBasePreFilter(
+  isProjectCtx: boolean
+): (s: UserSurvey, statusFilter: SurveyStatusFilter[]) => boolean {
+  return (s: UserSurvey, statusFilter: SurveyStatusFilter[]) => {
+    if (statusFilter.length > 0) {
+      return statusFilter.includes(s.status as SurveyStatusFilter);
+    }
 
-  return !flags.isArchived && !flags.isTrashed;
-};
+    const flags = deriveSurveyFlags(s.status);
 
-const PRE_FILTER_PROJECT = (s: UserSurvey) => {
-  const flags = deriveSurveyFlags(s.status);
+    if (isProjectCtx) {
+      return !flags.isTrashed;
+    }
 
-  return !flags.isTrashed;
-};
+    return !flags.isArchived && !flags.isTrashed;
+  };
+}
 
 interface UseSurveyListFiltersOptions {
   /** When true, archived surveys are included and project filter is hidden. */
@@ -68,15 +75,11 @@ export function useSurveyListFilters(surveys: UserSurvey[], options?: UseSurveyL
 
   const [projectFilter, setProjectFilterRaw] = useSessionState<string[]>('surveyList:project', []);
 
-  const basePreFilter = isProjectCtx ? PRE_FILTER_PROJECT : PRE_FILTER;
+  const basePreFilter = getBasePreFilter(isProjectCtx);
 
   const preFilter = useCallback(
     (s: UserSurvey) => {
-      if (!basePreFilter(s)) {
-        return false;
-      }
-
-      if (statusFilter.length > 0 && !statusFilter.includes(s.status as SurveyStatusFilter)) {
+      if (!basePreFilter(s, statusFilter)) {
         return false;
       }
 
@@ -98,13 +101,14 @@ export function useSurveyListFilters(surveys: UserSurvey[], options?: UseSurveyL
 
   const statusCounts = useMemo(() => {
     const counts: Record<string, number> = isProjectCtx
-      ? { active: 0, draft: 0, completed: 0, cancelled: 0, archived: 0 }
-      : { active: 0, draft: 0, completed: 0, cancelled: 0 };
+      ? { active: 0, draft: 0, completed: 0, cancelled: 0, archived: 0, trashed: 0 }
+      : { active: 0, draft: 0, completed: 0, cancelled: 0, trashed: 0 };
 
     for (const s of surveys) {
       const flags = deriveSurveyFlags(s.status);
 
-      if (!isProjectCtx && (flags.isArchived || flags.isTrashed)) {
+      // In dashboard (non-project), exclude only archived from counts so trashed appears in filter.
+      if (!isProjectCtx && flags.isArchived) {
         continue;
       }
 

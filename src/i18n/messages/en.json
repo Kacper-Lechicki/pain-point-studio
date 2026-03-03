@@ -756,7 +756,24 @@
         "activity": "Activity",
         "archivedAt": "Archived",
         "autoDeletes": "Auto-deletes",
-        "actions": "Actions"
+        "actions": "Actions",
+        "deletedInDays": "Permanently deleted {days, plural, one {in 1 day} other {in # days}}",
+        "deletedInDaysShort": "In {days, plural, one {1 day} other {# days}}"
+      },
+      "activityInfo": {
+        "lastEditedTitle": "Last edited",
+        "lastEditedDescription": "When this draft was last modified. Publishing or changing questions updates this time.",
+        "recentActivityTitle": "Recent activity",
+        "recentActivityDescription": "Daily response count for the last 14 days. Shows how many respondents completed the survey each day.",
+        "linkExpiresTitle": "Link expires",
+        "linkExpiresDescription": "After completion or cancellation, the survey link stays available for 14 days so respondents can see a notice. Then it expires and the survey is no longer accessible via the link.",
+        "linkExpiresInDays": "The survey link will expire in {days, plural, one {1 day} other {# days}}.",
+        "autoDeletesTitle": "Auto-deletes",
+        "autoDeletesDescription": "Archived surveys are automatically permanently deleted after the retention period. Until then you can restore them.",
+        "autoDeletesInDays": "This archived survey will be permanently deleted in {days, plural, one {1 day} other {# days}}.",
+        "deletedInDaysTitle": "In trash",
+        "deletedInDaysDescription": "This survey is in the trash and will be permanently deleted in {days} days. You can restore it from the menu before then.",
+        "ariaLabel": "Learn what this means"
       },
       "timeGroup": {
         "today": "Today",
@@ -934,7 +951,8 @@
         "responses": "Responses",
         "progress": "Progress",
         "updated": "Updated",
-        "activity": "Activity"
+        "activity": "Activity",
+        "deletedInDays": "Permanently deleted {days, plural, one {in 1 day} other {in # days}}"
       },
       "card": {
         "surveys": "{count, plural, one {# survey} other {# surveys}}",
@@ -1915,6 +1933,32 @@
         "responses_500": "500 responses",
         "responses_1000": "1K responses"
       }
+    }
+  },
+  "commandPalette": {
+    "placeholder": "Search pages, projects, surveys...",
+    "noResults": "No results found.",
+    "loading": "Loading...",
+    "groups": {
+      "quickActions": "Quick Actions",
+      "pages": "Pages",
+      "projects": "Projects",
+      "surveys": "Surveys"
+    },
+    "actions": {
+      "createProject": "Create Project",
+      "createSurvey": "Create Survey"
+    },
+    "projectPicker": {
+      "title": "Select a project",
+      "placeholder": "Search projects...",
+      "empty": "No projects found.",
+      "createFirst": "Create a project first",
+      "back": "Back"
+    },
+    "trigger": {
+      "placeholder": "Search...",
+      "shortcut": "Open search"
     }
   }
 }

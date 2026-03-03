@@ -235,7 +235,7 @@ export const SurveyList = ({
   }, [bulkConfirmAction, selectedIds, bulkAction, t, clearSelection, router]);
 
   return (
-    <div className="space-y-4">
+    <div className="w-full min-w-0 space-y-4 overflow-x-hidden">
       <SurveyListKpi
         statusCounts={statusCounts}
         kpiStatuses={kpiStatuses}
@@ -325,7 +325,7 @@ export const SurveyList = ({
           onClearSelection={clearSelection}
         />
       ) : (
-        <div className="flex min-w-0 flex-col gap-2" role="list">
+        <div className="flex min-w-0 flex-col gap-2 overflow-hidden" role="list">
           {paginatedSurveys.map((survey: UserSurvey) => (
             <SurveyListRow
               key={survey.id}

@@ -1,5 +1,8 @@
 // ── Project constraints ─────────────────────────────────────────────
 
+/** Days until trashed projects are permanently purged (must match DB cron). */
+export const PROJECT_TRASH_RETENTION_DAYS = 30;
+
 export const PROJECT_NAME_MAX_LENGTH = 100;
 export const PROJECT_SUMMARY_MAX_LENGTH = 300;
 

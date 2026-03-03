@@ -1,15 +1,17 @@
 import type React from 'react';
 
-import { MoreHorizontal } from 'lucide-react';
+import { Archive, Clock, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { DropdownMenu, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
+import { TRASH_RETENTION_DAYS } from '@/features/surveys/config';
 import type { useSurveyRow } from '@/features/surveys/hooks/use-survey-row';
 import { cn } from '@/lib/common/utils';
 
+import { ActivityInfoTrigger } from './activity-info-trigger';
 import { Sparkline } from './sparkline';
 import { SurveyActionMenuContent } from './survey-action-menu';
 import { SurveyProjectBadge } from './survey-project-badge';
@@ -61,14 +63,20 @@ export function SurveyCardRow({
     <>
       <div
         className={cn(
-          'border-border/50 bg-card flex min-w-0 flex-col gap-3 rounded-lg border p-3 transition-all',
+          'border-border/50 bg-card flex min-w-0 flex-col gap-3 overflow-hidden rounded-lg border p-3 transition-all',
           isProjectContext && 'cursor-pointer',
           !isProjectContext && isSelected && 'ring-ring/20 border-ring/40 bg-muted/50 ring-2'
         )}
         {...(isProjectContext && {
           role: 'button',
           tabIndex: 0,
-          onClick: () => onSelect(survey.id),
+          onClick: (e: React.MouseEvent) => {
+            if ((e.target as HTMLElement).closest?.('button')) {
+              return;
+            }
+
+            onSelect(survey.id);
+          },
           onKeyDown: (e: React.KeyboardEvent) => {
             if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault();
@@ -77,9 +85,9 @@ export function SurveyCardRow({
           },
         })}
       >
-        <div className="flex min-w-0 items-start justify-between gap-2">
+        <div className="flex min-w-0 items-start justify-between gap-2 overflow-hidden">
           {onToggleBulkSelect && (
-            <div className="shrink-0 pt-0.5" onClick={(e) => e.stopPropagation()}>
+            <div className="shrink-0" onClick={(e) => e.stopPropagation()}>
               <Checkbox
                 checked={isBulkSelected ?? false}
                 onCheckedChange={() => onToggleBulkSelect(survey.id)}
@@ -88,12 +96,21 @@ export function SurveyCardRow({
             </div>
           )}
 
-          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1">
-            <span className="text-foreground truncate text-sm font-semibold">{survey.title}</span>
-            <SurveyStatusBadge status={survey.status} className="shrink-0" />
+          <div className="flex max-w-full min-w-0 flex-1 flex-col items-start gap-1 overflow-hidden">
+            <span
+              className="text-foreground block w-full max-w-full min-w-0 overflow-hidden text-sm font-semibold text-ellipsis whitespace-nowrap"
+              title={survey.title}
+            >
+              {survey.title}
+            </span>
+            <SurveyStatusBadge
+              status={survey.status}
+              deletedAt={survey.deletedAt}
+              className="shrink-0"
+            />
           </div>
 
-          <div className="shrink-0" onClick={(e) => e.stopPropagation()}>
+          <div className="relative z-10 shrink-0" onClick={(e) => e.stopPropagation()}>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -112,7 +129,7 @@ export function SurveyCardRow({
           </div>
         </div>
 
-        <p className="text-muted-foreground -mt-1 line-clamp-1 min-h-4 text-xs">
+        <p className="text-muted-foreground -mt-1 line-clamp-1 min-h-4 min-w-0 overflow-hidden text-xs text-ellipsis">
           {survey.description || '\u00A0'}
         </p>
 
@@ -120,36 +137,64 @@ export function SurveyCardRow({
           <SurveyProjectBadge projectId={survey.projectId} projectName={survey.projectName} />
         )}
 
-        <div
-          className={cn(
-            'text-muted-foreground grid grid-cols-2 gap-x-4 gap-y-2 text-xs',
-            (row.isArchived || archivedLayout) && !row.isDraft && 'grid-cols-3'
-          )}
-        >
+        <div className="text-muted-foreground grid min-h-18 min-w-0 grid-cols-2 items-start gap-x-4 gap-y-2 text-xs">
           {row.isDraft ? (
             <>
-              <div className="flex flex-col gap-0.5">
+              <div className="flex min-w-0 flex-col gap-0.5">
                 <span>{row.t('surveys.dashboard.table.questions')}</span>
                 <span className="text-foreground font-medium tabular-nums">
                   {survey.questionCount}
                 </span>
               </div>
-
-              <div className="flex flex-col gap-0.5">
+              <div className="flex min-w-0 flex-col gap-0.5">
                 <span>{row.t('surveys.dashboard.table.responses')}</span>
                 <span className="text-foreground font-medium tabular-nums">—</span>
               </div>
-
-              <div className="flex flex-col gap-0.5">
+              <div className="flex min-w-0 flex-col gap-0.5">
                 <span>{row.t('surveys.dashboard.table.lastEdited')}</span>
                 <span className="text-foreground font-medium">{row.updatedAtLabel}</span>
               </div>
-
-              <div />
+              <div className="flex min-w-0 flex-col gap-0.5">
+                <span>{row.t('surveys.dashboard.table.activity')}</span>
+                <ActivityInfoTrigger
+                  titleKey="surveys.dashboard.activityInfo.lastEditedTitle"
+                  descriptionKey="surveys.dashboard.activityInfo.lastEditedDescription"
+                  className="text-muted-foreground flex min-w-0 items-start gap-1.5 text-left"
+                >
+                  <Pencil className="size-3.5 shrink-0" aria-hidden />
+                  <span className="line-clamp-2 min-w-0 overflow-hidden leading-tight font-medium text-ellipsis">
+                    {row.updatedAtLabel}
+                  </span>
+                </ActivityInfoTrigger>
+              </div>
+            </>
+          ) : row.isTrashed ? (
+            <>
+              <div className="min-w-0" />
+              <div className="min-w-0" />
+              <div className="min-w-0" />
+              <div className="flex min-w-0 flex-col gap-0.5">
+                <span>{row.t('surveys.dashboard.table.activity')}</span>
+                <ActivityInfoTrigger
+                  titleKey="surveys.dashboard.activityInfo.deletedInDaysTitle"
+                  descriptionKey="surveys.dashboard.activityInfo.deletedInDaysDescription"
+                  descriptionValues={{
+                    days: row.trashedPurgeDays ?? TRASH_RETENTION_DAYS,
+                  }}
+                  className="flex min-w-0 items-start gap-1.5 text-left text-red-600 dark:text-red-400"
+                >
+                  <Trash2 className="size-3.5 shrink-0" aria-hidden />
+                  <span className="line-clamp-2 min-w-0 overflow-hidden leading-tight font-medium wrap-break-word text-ellipsis tabular-nums">
+                    {row.t('surveys.dashboard.table.deletedInDays', {
+                      days: row.trashedPurgeDays ?? TRASH_RETENTION_DAYS,
+                    })}
+                  </span>
+                </ActivityInfoTrigger>
+              </div>
             </>
           ) : row.isArchived || archivedLayout ? (
             <>
-              <div className="flex flex-col gap-0.5">
+              <div className="flex min-w-0 flex-col gap-0.5">
                 <span>{row.t('surveys.dashboard.table.completion')}</span>
                 <span className="text-foreground font-medium tabular-nums">
                   {survey.avgQuestionCompletion != null
@@ -157,25 +202,35 @@ export function SurveyCardRow({
                     : '—'}
                 </span>
               </div>
-
-              <div className="flex flex-col gap-0.5">
+              <div className="flex min-w-0 flex-col gap-0.5">
                 <span>{row.t('surveys.dashboard.table.archivedAt')}</span>
                 <span className="text-foreground font-medium">{row.archivedAtLabel ?? '—'}</span>
               </div>
-
-              <div className="flex flex-col gap-0.5">
-                <span>{row.t('surveys.dashboard.table.autoDeletes')}</span>
-
-                <span className="text-foreground font-medium tabular-nums">
-                  {row.autoDeleteDays != null
-                    ? row.t('surveys.dashboard.detailPanel.inDays', { days: row.autoDeleteDays })
-                    : '—'}
-                </span>
+              <div className="min-w-0" />
+              <div className="flex min-w-0 flex-col gap-0.5">
+                <span>{row.t('surveys.dashboard.table.activity')}</span>
+                {row.autoDeleteDays != null ? (
+                  <ActivityInfoTrigger
+                    titleKey="surveys.dashboard.activityInfo.autoDeletesTitle"
+                    descriptionKey="surveys.dashboard.activityInfo.autoDeletesInDays"
+                    descriptionValues={{ days: row.autoDeleteDays }}
+                    className="flex min-w-0 items-start gap-1.5 text-left text-amber-700 dark:text-amber-400"
+                  >
+                    <Archive className="size-3.5 shrink-0" aria-hidden />
+                    <span className="line-clamp-2 min-w-0 overflow-hidden leading-tight font-medium text-ellipsis tabular-nums">
+                      {row.t('surveys.dashboard.detailPanel.inDays', {
+                        days: row.autoDeleteDays,
+                      })}
+                    </span>
+                  </ActivityInfoTrigger>
+                ) : (
+                  <span className="text-foreground font-medium tabular-nums">—</span>
+                )}
               </div>
             </>
           ) : (
             <>
-              <div className="flex flex-col gap-0.5">
+              <div className="flex min-w-0 flex-col gap-0.5">
                 <span>{row.t('surveys.dashboard.table.completion')}</span>
                 <span className="text-foreground font-medium tabular-nums">
                   {survey.avgQuestionCompletion != null
@@ -183,10 +238,8 @@ export function SurveyCardRow({
                     : '—'}
                 </span>
               </div>
-
-              <div className="flex flex-col gap-0.5">
+              <div className="flex min-w-0 flex-col gap-0.5">
                 <span>{row.t('surveys.dashboard.table.responses')}</span>
-
                 <span className="text-foreground font-medium tabular-nums">
                   {survey.maxRespondents != null
                     ? row.t('surveys.dashboard.card.responsesOfMax', {
@@ -196,33 +249,46 @@ export function SurveyCardRow({
                     : survey.completedCount}
                 </span>
               </div>
-
-              <div className="flex flex-col gap-0.5">
+              <div className="flex min-w-0 flex-col gap-0.5">
                 <span>{row.t('surveys.dashboard.table.lastResponse')}</span>
-
                 <span className="text-foreground font-medium tabular-nums">
                   {row.lastResponseLabel ?? '—'}
                 </span>
               </div>
-
-              {row.linkExpiryDays != null ? (
-                <div className="flex flex-col gap-0.5">
-                  <span>{row.t('surveys.dashboard.detailPanel.linkExpires')}</span>
-
-                  <span className="text-foreground font-medium tabular-nums">
-                    {row.t('surveys.dashboard.detailPanel.inDays', { days: row.linkExpiryDays })}
-                  </span>
-                </div>
-              ) : (
-                <div className="flex flex-col gap-0.5">
-                  <span>{row.t('surveys.dashboard.table.activity')}</span>
-
-                  <Sparkline
-                    data={survey.recentActivity}
-                    className={cn('shrink-0', row.sparklineColor)}
-                  />
-                </div>
-              )}
+              <div className="flex min-w-0 flex-col gap-0.5">
+                <span>{row.t('surveys.dashboard.table.activity')}</span>
+                {row.isCompleted || row.isCancelled ? (
+                  row.linkExpiryDays != null ? (
+                    <ActivityInfoTrigger
+                      titleKey="surveys.dashboard.activityInfo.linkExpiresTitle"
+                      descriptionKey="surveys.dashboard.activityInfo.linkExpiresInDays"
+                      descriptionValues={{ days: row.linkExpiryDays }}
+                      className="flex min-w-0 items-start gap-1.5 text-left text-violet-700 dark:text-violet-400"
+                    >
+                      <Clock className="size-3.5 shrink-0" aria-hidden />
+                      <span className="line-clamp-2 min-w-0 overflow-hidden leading-tight font-medium wrap-break-word text-ellipsis tabular-nums">
+                        {row.t('surveys.dashboard.detailPanel.linkExpires')}{' '}
+                        {row.t('surveys.dashboard.detailPanel.inDays', {
+                          days: row.linkExpiryDays,
+                        })}
+                      </span>
+                    </ActivityInfoTrigger>
+                  ) : (
+                    <span className="text-foreground font-medium tabular-nums">—</span>
+                  )
+                ) : (
+                  <ActivityInfoTrigger
+                    titleKey="surveys.dashboard.activityInfo.recentActivityTitle"
+                    descriptionKey="surveys.dashboard.activityInfo.recentActivityDescription"
+                    className="flex shrink-0"
+                  >
+                    <Sparkline
+                      data={survey.recentActivity}
+                      className={cn('shrink-0', row.sparklineColor)}
+                    />
+                  </ActivityInfoTrigger>
+                )}
+              </div>
             </>
           )}
         </div>
