@@ -65,10 +65,16 @@
       "backToSignIn": "Back to Sign In",
       "backToHome": "Back to Home"
     },
+    "notFound": {
+      "title": "Page not found",
+      "description": "The page you are looking for does not exist or has been moved.",
+      "backToHome": "Back to Home"
+    },
     "errors": {
       "unexpected": "Something went wrong. Please try again.",
       "rateLimitExceeded": "Too many requests. Please wait a moment and try again.",
-      "invalidData": "The submitted data is invalid. Please check your input."
+      "invalidData": "The submitted data is invalid. Please check your input.",
+      "authRequired": "Your session has expired. Please sign in again."
     },
     "pagination": {
       "showing": "Showing {start}–{end} of {total}",
@@ -146,6 +152,7 @@
     "emailConfirmed": "Email confirmed. You are now signed in",
     "emailChangeConfirmed": "Email address updated",
     "passwordUpdated": "Password updated",
+    "passwordResetReady": "You can now set your new password",
     "errors": {
       "passwordRequired": "Password is required.",
       "invalidCredentials": "Invalid email or password. Please try again.",
@@ -157,6 +164,8 @@
       "invalidEmail": "Please enter a valid email address.",
       "signupsDisabled": "Sign ups are currently disabled.",
       "linkExpired": "This link is invalid or has expired. Please request a new one.",
+      "callbackError": "Authentication failed. Please try signing in again.",
+      "profileCreationFailed": "We couldn't set up your profile. Please try signing in again.",
       "invalidData": "Please check your input and try again.",
       "unexpected": "Something went wrong. Please try again."
     },
@@ -315,7 +324,10 @@
       "titleTooLong": "Title must be 100 characters or fewer.",
       "descriptionTooLong": "Description must be 2000 characters or fewer.",
       "unexpected": "Something went wrong. Please try again.",
-      "exportTooManyResponses": "This survey has too many responses to export at once. Please contact support."
+      "conflict": "This survey was updated elsewhere. Please refresh and try again.",
+      "projectNotActive": "The parent project must be active to perform this action.",
+      "exportTooManyResponses": "This survey has too many responses to export at once. Please contact support.",
+      "bulkAllFailed": "None of the selected surveys could be updated. They may have already changed status."
     },
     "builder": {
       "backToSurveys": "Back to surveys",
@@ -702,17 +714,17 @@
       },
       "confirm": {
         "completeTitle": "Complete survey",
-        "completeDescription": "The survey will stop accepting new responses. The survey link will remain accessible for 14 days showing a completion notice, then expire. All collected responses are preserved. You can reopen the survey later to resume collecting responses, or archive it.",
+        "completeDescription": "The survey will stop accepting new responses. Respondents currently filling it out will be immediately blocked. The survey link will remain accessible for 14 days showing a completion notice, then expire. All collected responses are preserved. You can reopen the survey later to resume collecting responses, or archive it.",
         "cancelTitle": "Cancel survey",
-        "cancelDescription": "The survey will be withdrawn and stop accepting new responses. The survey link will remain accessible for 14 days showing a withdrawal notice, then expire. All collected responses are preserved. You can reopen the survey later, or archive it.",
+        "cancelDescription": "The survey will be withdrawn and stop accepting new responses. Respondents currently filling it out will be immediately blocked. The survey link will remain accessible for 14 days showing a withdrawal notice, then expire. All collected responses are preserved. You can reopen the survey later, or archive it.",
         "reopenTitle": "Reopen survey?",
         "reopenDescription": "The survey will be reopened and start accepting new responses again. All previously collected responses are preserved.",
         "archiveTitle": "Archive survey",
-        "archiveDescription": "The survey will be moved to the archive and hidden from the main list. All collected responses are preserved. You can restore it to its previous status at any time.",
+        "archiveDescription": "The survey will be moved to the archive and hidden from the main list. If the survey is active, respondents currently filling it out will be immediately blocked. All collected responses are preserved. You can restore it to its previous status at any time.",
         "restoreTitle": "Restore survey",
         "restoreDescription": "The survey will be restored to its previous status. All collected responses are preserved.",
         "trashTitle": "Move to trash?",
-        "trashDescription": "The survey will be moved to trash and permanently deleted after 30 days. All collected responses will be deleted with it. You can restore it from trash before then.",
+        "trashDescription": "The survey will be moved to trash and permanently deleted after 30 days. Respondents currently filling it out will be immediately blocked. All collected responses will be deleted with it. You can restore it from trash before then.",
         "restoreTrashTitle": "Restore from trash?",
         "restoreTrashDescription": "The survey will be restored to its previous status.",
         "permanentDeleteTitle": "Permanently delete survey?",
@@ -757,7 +769,8 @@
         "selected": "{count} selected",
         "selectAll": "Select all",
         "clearSelection": "Clear selection",
-        "selectSurvey": "Select {name}"
+        "selectSurvey": "Select {name}",
+        "partialSuccess": "{failed, plural, one {# survey could not be updated} other {# surveys could not be updated}}"
       },
       "clickHint": "Click row for details",
       "responseUsageLabel": "responses",
@@ -822,7 +835,8 @@
       "nameAlreadyExists": "You already have a project with this name.",
       "unexpected": "Something went wrong. Please try again.",
       "readOnly": "This project is read-only. Restore or reopen it to make changes.",
-      "invalidTransition": "This action is not available for the current project status."
+      "invalidTransition": "This action is not available for the current project status.",
+      "bulkAllFailed": "None of the selected projects could be updated. They may have already changed status."
     },
     "title": "Projects",
     "description": "Manage your research projects and track validation progress.",
@@ -961,10 +975,10 @@
       },
       "confirm": {
         "completeTitle": "Complete project?",
-        "completeDescription": "This project will be marked as completed. It becomes read-only — reopen it to make changes. Active surveys will continue running independently.",
+        "completeDescription": "This project will be marked as completed. It becomes read-only — reopen it to make changes. Active surveys will be automatically completed, and respondents currently filling them out will be immediately blocked.",
         "completeAction": "Complete",
         "archiveTitle": "Archive project?",
-        "archiveDescription": "This project will be moved to the archive and hidden from the default list. Active surveys will be cancelled — they will stop accepting responses. All collected responses are preserved. You can restore the project later.",
+        "archiveDescription": "This project will be moved to the archive and hidden from the default list. Active and draft surveys will be archived, and respondents currently filling them out will be immediately blocked. All collected responses are preserved. You can restore the project later.",
         "archiveAction": "Archive",
         "reopenTitle": "Reopen project?",
         "reopenDescription": "This project will be reopened for active research.",
@@ -986,7 +1000,8 @@
         "selected": "{count} selected",
         "selectAll": "Select all",
         "clearSelection": "Clear selection",
-        "selectProject": "Select {name}"
+        "selectProject": "Select {name}",
+        "partialSuccess": "{failed, plural, one {# project could not be updated} other {# projects could not be updated}}"
       },
       "edit": {
         "title": "Edit Project",
@@ -1459,15 +1474,18 @@
     "closed": {
       "title": "Survey Unavailable",
       "completed": "This survey has ended. Thank you for your interest.",
+      "notFound": "This survey could not be found. It may have been removed or the link may be incorrect.",
       "expired": "This survey has ended.",
       "maxReached": "This survey has reached its maximum number of responses.",
-      "cancelled": "This survey has been withdrawn by its creator."
+      "cancelled": "This survey has been withdrawn by its creator.",
+      "notStarted": "This survey has not started yet. Please check back later."
     },
     "errors": {
       "startFailed": "Failed to start the survey. Please try again.",
       "saveFailed": "Failed to save your answer. Please try again.",
       "submitFailed": "Failed to submit your responses. Please try again.",
-      "emptyResponse": "Please answer at least one question before submitting."
+      "emptyResponse": "Please answer at least one question before submitting.",
+      "duplicateResponse": "It looks like you've already completed this survey from this device."
     }
   },
   "sidebar": {

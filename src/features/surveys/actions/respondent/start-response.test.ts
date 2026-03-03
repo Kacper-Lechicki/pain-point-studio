@@ -18,6 +18,10 @@ vi.mock('@/lib/common/rate-limit', () => ({
   rateLimit: vi.fn().mockResolvedValue({ limited: false }),
 }));
 
+vi.mock('next/headers', () => ({
+  headers: vi.fn().mockResolvedValue(new Map()),
+}));
+
 const mockRpc = vi.fn();
 
 vi.mock('@/lib/supabase/server', () => ({

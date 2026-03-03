@@ -7,7 +7,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { ZodType, z } from 'zod';
 
 import { RateLimitConfig, rateLimit } from '@/lib/common/rate-limit';
-import { ActionResult } from '@/lib/common/types';
+import { ActionResult, ERRORS } from '@/lib/common/types';
 import { createClient } from '@/lib/supabase/server';
 import type { Database } from '@/lib/supabase/types';
 
@@ -30,17 +30,21 @@ export function withPublicAction<TSchema extends ZodType, TData = undefined>(
     const { limited } = await rateLimit({ key, ...config.rateLimit });
 
     if (limited) {
-      return { error: config.rateLimitError ?? 'common.errors.rateLimitExceeded' };
+      return { error: config.rateLimitError ?? ERRORS.rateLimitExceeded };
     }
 
     const validation = config.schema.safeParse(formData);
 
     if (!validation.success) {
-      return { error: config.validationError ?? 'common.errors.invalidData' };
+      return { error: config.validationError ?? ERRORS.invalidData };
     }
 
     const supabase = await createClient();
 
-    return config.action({ data: validation.data, supabase });
+    try {
+      return await config.action({ data: validation.data, supabase });
+    } catch {
+      return { error: ERRORS.unexpected };
+    }
   };
 }

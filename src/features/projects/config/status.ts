@@ -84,7 +84,8 @@ export const PROJECT_TRANSITIONS = {
   complete: { method: 'update', toStatus: 'completed', fromStatuses: ['active'] },
   archive: { method: 'update', toStatus: 'archived', fromStatuses: ['active', 'completed'] },
   reopen: { method: 'update', toStatus: 'active', fromStatuses: ['completed'] },
-  restore: { method: 'update', toStatus: 'active', fromStatuses: ['archived'] },
+  /** toStatus is null — the actual status comes from pre_archive_status (resolved in RPC). */
+  restore: { method: 'update', toStatus: null, fromStatuses: ['archived'] },
   trash: {
     method: 'update',
     toStatus: 'trashed',

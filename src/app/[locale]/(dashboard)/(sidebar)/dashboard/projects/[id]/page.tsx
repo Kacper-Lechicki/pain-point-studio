@@ -17,22 +17,42 @@ interface ProjectDetailPageProps {
   params: Promise<{ id: string }>;
 }
 
+const EMPTY_OVERVIEW_STATS = {
+  totalSurveys: 0,
+  activeSurveys: 0,
+  totalResponses: 0,
+  avgCompletion: 0,
+  avgTimeSeconds: null,
+  lastResponseAt: null,
+  recentActivity: [],
+  responsesTimeline: [],
+  surveyStatusDistribution: { draft: 0, active: 0, completed: 0 },
+  completionBreakdown: { completed: 0, inProgress: 0, abandoned: 0 },
+};
+
+function settled<T>(result: PromiseSettledResult<T>, fallback: T): T {
+  return result.status === 'fulfilled' ? result.value : fallback;
+}
+
 export default async function ProjectDetailPage({ params }: ProjectDetailPageProps) {
   const { id } = await params;
-  const [data, insights, overviewStats, projectSurveys, notesMeta, noteFolders, t] =
-    await Promise.all([
-      getProject(id),
+
+  // Critical queries — page can't render without these
+  const [data, t] = await Promise.all([getProject(id), getTranslations()]);
+
+  if (!data) {
+    notFound();
+  }
+
+  // Non-critical queries — page degrades gracefully on failure
+  const [insightsResult, statsResult, surveysResult, notesResult, foldersResult] =
+    await Promise.allSettled([
       getProjectInsights(id),
       getProjectOverviewStats(id),
       getProjectSurveys(id),
       getProjectNotes(id),
       getNoteFolders(id),
-      getTranslations(),
     ]);
-
-  if (!data) {
-    notFound();
-  }
 
   return (
     <>
@@ -42,24 +62,11 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
         <ProjectDashboardPage
           project={data.project}
           owner={data.owner}
-          surveys={projectSurveys ?? []}
-          insights={insights}
-          notesMeta={notesMeta}
-          noteFolders={noteFolders}
-          overviewStats={
-            overviewStats ?? {
-              totalSurveys: 0,
-              activeSurveys: 0,
-              totalResponses: 0,
-              avgCompletion: 0,
-              avgTimeSeconds: null,
-              lastResponseAt: null,
-              recentActivity: [],
-              responsesTimeline: [],
-              surveyStatusDistribution: { draft: 0, active: 0, completed: 0 },
-              completionBreakdown: { completed: 0, inProgress: 0, abandoned: 0 },
-            }
-          }
+          surveys={settled(surveysResult, []) ?? []}
+          insights={settled(insightsResult, []) ?? []}
+          notesMeta={settled(notesResult, []) ?? []}
+          noteFolders={settled(foldersResult, []) ?? []}
+          overviewStats={settled(statsResult, null) ?? EMPTY_OVERVIEW_STATS}
         />
       </PageTransition>
     </>

@@ -217,11 +217,18 @@ export const SurveyList = ({
 
     if (result && !result.error) {
       const { toast } = await import('sonner');
-      toast.success(
-        t('surveys.dashboard.bulk.selected', { count: ids.length }) +
-          ' — ' +
-          t(`surveys.dashboard.actions.${bulkConfirmAction}` as MessageKey)
-      );
+      const failed = result.data?.failed ?? 0;
+
+      if (failed > 0) {
+        toast.warning(t('surveys.dashboard.bulk.partialSuccess', { failed }));
+      } else {
+        toast.success(
+          t('surveys.dashboard.bulk.selected', { count: ids.length }) +
+            ' — ' +
+            t(`surveys.dashboard.actions.${bulkConfirmAction}` as MessageKey)
+        );
+      }
+
       clearSelection();
       router.refresh();
     }

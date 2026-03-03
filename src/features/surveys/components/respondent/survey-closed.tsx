@@ -16,6 +16,7 @@ const reasonIcons: Record<ClosedReason, typeof CheckCircle2> = {
   expired: Clock,
   max_reached: Users,
   cancelled: Ban,
+  not_started: Clock,
 };
 
 const reasonKeys: Record<ClosedReason, string> = {
@@ -23,6 +24,7 @@ const reasonKeys: Record<ClosedReason, string> = {
   expired: 'expired',
   max_reached: 'maxReached',
   cancelled: 'cancelled',
+  not_started: 'notStarted',
 };
 
 export const SurveyClosed = ({ title, reason = 'completed' }: SurveyClosedProps) => {

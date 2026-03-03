@@ -52,15 +52,17 @@ export const publishSurvey = withProtectedAction<typeof publishSurveySchema, { s
           .eq('id', survey.project_id)
           .maybeSingle();
 
-        if (!project || project.status === 'trashed' || project.status === 'archived') {
+        if (!project || project.status !== 'active') {
           return { error: 'surveys.errors.projectNotActive' };
         }
       }
 
-      // Validate end date if provided — must be in the future.
-      // DateTimePicker already emits an ISO 8601 string (UTC).
+      // Validate end date if provided — must be in the future (compare in UTC).
       if (data.endsAt) {
-        if (new Date(data.endsAt) <= new Date()) {
+        const endsAtMs = new Date(data.endsAt).getTime();
+        const nowMs = Date.now();
+
+        if (Number.isNaN(endsAtMs) || endsAtMs <= nowMs) {
           return { error: 'surveys.errors.unexpected' };
         }
       }

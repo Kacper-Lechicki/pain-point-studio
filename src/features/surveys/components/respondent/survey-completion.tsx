@@ -26,6 +26,7 @@ interface SurveyCompletionProps {
   slug: string;
   onSubmitted: () => void;
   onBack: () => void;
+  onSurveyClosed?: () => void;
 }
 
 export const SurveyCompletion = ({
@@ -35,6 +36,7 @@ export const SurveyCompletion = ({
   slug,
   onSubmitted,
   onBack,
+  onSurveyClosed,
 }: SurveyCompletionProps) => {
   const t = useTranslations();
   const tErrors = useTranslations();
@@ -61,6 +63,8 @@ export const SurveyCompletion = ({
         } catch {}
 
         onSubmitted();
+      } else if (result.error && result.error.includes('closed.')) {
+        onSurveyClosed?.();
       } else {
         toast.error(tErrors('respondent.errors.submitFailed'));
       }

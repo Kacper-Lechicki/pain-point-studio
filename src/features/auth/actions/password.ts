@@ -5,6 +5,7 @@ import { getLocale } from 'next-intl/server';
 import { getAuthCallbackUrl } from '@/features/auth/config/urls';
 import { forgotPasswordSchema, updatePasswordSchema } from '@/features/auth/types';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
+import { withProtectedAction } from '@/lib/common/with-protected-action';
 import { withPublicAction } from '@/lib/common/with-public-action';
 import { mapSupabaseError } from '@/lib/supabase/errors';
 
@@ -28,7 +29,7 @@ export const resetPassword = withPublicAction('reset-password', {
   },
 });
 
-export const updatePassword = withPublicAction('update-password', {
+export const updatePassword = withProtectedAction<typeof updatePasswordSchema>('update-password', {
   schema: updatePasswordSchema,
   rateLimit: RATE_LIMITS.sensitiveRelaxed,
   rateLimitError: 'auth.errors.rateLimitExceeded',

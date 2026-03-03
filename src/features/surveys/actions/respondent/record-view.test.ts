@@ -4,6 +4,19 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // ── Mocks ────────────────────────────────────────────────────────────
 
+vi.mock('@/lib/common/env', () => ({
+  env: {
+    NODE_ENV: 'production',
+    NEXT_PUBLIC_APP_URL: 'https://example.com',
+    NEXT_PUBLIC_SUPABASE_URL: 'http://127.0.0.1:54321',
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: 'test-anon-key',
+  },
+}));
+
+vi.mock('@/lib/common/rate-limit', () => ({
+  rateLimit: vi.fn().mockResolvedValue({ limited: false }),
+}));
+
 const mockRpc = vi.fn();
 
 vi.mock('@/lib/supabase/server', () => ({

@@ -356,9 +356,11 @@ export type Database = {
           created_at: string;
           device_type: string | null;
           feedback: string | null;
+          fingerprint: string | null;
           id: string;
           started_at: string;
           status: string;
+          submitted_after_close: boolean;
           survey_id: string;
           updated_at: string;
         };
@@ -369,9 +371,11 @@ export type Database = {
           created_at?: string;
           device_type?: string | null;
           feedback?: string | null;
+          fingerprint?: string | null;
           id?: string;
           started_at?: string;
           status?: string;
+          submitted_after_close?: boolean;
           survey_id: string;
           updated_at?: string;
         };
@@ -382,9 +386,11 @@ export type Database = {
           created_at?: string;
           device_type?: string | null;
           feedback?: string | null;
+          fingerprint?: string | null;
           id?: string;
           started_at?: string;
           status?: string;
+          submitted_after_close?: boolean;
           survey_id?: string;
           updated_at?: string;
         };
@@ -484,6 +490,10 @@ export type Database = {
     };
     Functions: {
       cancel_email_change: { Args: never; Returns: undefined };
+      change_project_status_with_cascade: {
+        Args: { p_action: string; p_project_id: string; p_user_id: string };
+        Returns: Json;
+      };
       cleanup_abandoned_responses: { Args: never; Returns: undefined };
       complete_expired_surveys: { Args: never; Returns: undefined };
       decrypt_pii: { Args: { encrypted: string }; Returns: string };
@@ -550,10 +560,19 @@ export type Database = {
         Args: { p_questions: Json; p_survey_id: string; p_user_id: string };
         Returns: undefined;
       };
-      start_survey_response: {
-        Args: { p_device_type?: string; p_survey_id: string };
-        Returns: string;
-      };
+      start_survey_response:
+        | {
+            Args: { p_device_type?: string; p_survey_id: string };
+            Returns: string;
+          }
+        | {
+            Args: {
+              p_device_type?: string;
+              p_fingerprint?: string;
+              p_survey_id: string;
+            };
+            Returns: string;
+          };
       submit_survey_response: {
         Args: {
           p_contact_email?: string;

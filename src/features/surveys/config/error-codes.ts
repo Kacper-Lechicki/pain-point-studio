@@ -5,7 +5,10 @@ const RPC_ERROR = {
   // start_survey_response
   SURVEY_NOT_FOUND: 'SURVEY_NOT_FOUND',
   SURVEY_NOT_ACTIVE: 'SURVEY_NOT_ACTIVE',
+  SURVEY_NOT_STARTED: 'SURVEY_NOT_STARTED',
+  SURVEY_EXPIRED: 'SURVEY_EXPIRED',
   MAX_RESPONDENTS_REACHED: 'MAX_RESPONDENTS_REACHED',
+  DUPLICATE_RESPONSE: 'DUPLICATE_RESPONSE',
 
   // submit_survey_response
   RESPONSE_NOT_FOUND: 'RESPONSE_NOT_FOUND',
@@ -37,11 +40,14 @@ export const PG_ERROR = {
 // Maps RPC error identifiers → i18n keys (relative to `surveys.respondent`).
 
 const RPC_ERROR_I18N: Record<string, string> = {
-  [RPC_ERROR.SURVEY_NOT_FOUND]: 'closed.completed',
+  [RPC_ERROR.SURVEY_NOT_FOUND]: 'closed.notFound',
   [RPC_ERROR.SURVEY_NOT_ACTIVE]: 'closed.completed',
+  [RPC_ERROR.SURVEY_NOT_STARTED]: 'closed.notStarted',
+  [RPC_ERROR.SURVEY_EXPIRED]: 'closed.expired',
   [RPC_ERROR.MAX_RESPONDENTS_REACHED]: 'closed.maxReached',
   [RPC_ERROR.RESPONSE_NOT_FOUND]: 'errors.startFailed',
   [RPC_ERROR.RESPONSE_ALREADY_COMPLETED]: 'errors.submitFailed',
+  [RPC_ERROR.DUPLICATE_RESPONSE]: 'errors.duplicateResponse',
 };
 
 /**

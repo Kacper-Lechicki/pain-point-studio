@@ -1,19 +1,27 @@
-'use client';
+import Link from 'next/link';
 
-import { useEffect } from 'react';
+import { ArrowLeft, FileQuestion } from 'lucide-react';
 
-import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 
-import { ROUTES } from '@/config';
+export default function NotFound() {
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-center gap-6 px-6 text-center">
+      <FileQuestion className="text-muted-foreground size-16" />
 
-const NotFound = () => {
-  const router = useRouter();
+      <div className="space-y-2">
+        <h1 className="text-2xl font-semibold">Page not found</h1>
+        <p className="text-muted-foreground max-w-md text-sm">
+          The page you are looking for does not exist or has been moved.
+        </p>
+      </div>
 
-  useEffect(() => {
-    router.replace(ROUTES.common.home);
-  }, [router]);
-
-  return null;
-};
-
-export default NotFound;
+      <Button variant="default" asChild>
+        <Link href="/">
+          <ArrowLeft className="size-4" />
+          Back to Home
+        </Link>
+      </Button>
+    </div>
+  );
+}

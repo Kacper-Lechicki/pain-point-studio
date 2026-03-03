@@ -9,6 +9,8 @@ import { useFormAction } from './use-form-action';
 
 const mockToastSuccess = vi.fn();
 const mockToastError = vi.fn();
+const mockRouterReplace = vi.fn();
+const mockRouterRefresh = vi.fn();
 
 vi.mock('sonner', () => ({
   toast: {
@@ -19,6 +21,10 @@ vi.mock('sonner', () => ({
 
 vi.mock('next-intl', () => ({
   useTranslations: () => (key: string) => key,
+}));
+
+vi.mock('@/i18n/routing', () => ({
+  useRouter: () => ({ replace: mockRouterReplace, refresh: mockRouterRefresh }),
 }));
 
 describe('useFormAction', () => {
@@ -188,6 +194,22 @@ describe('useFormAction', () => {
       await result.current.execute(action, {});
     });
 
+    expect(onError).toHaveBeenCalled();
+  });
+
+  // When action returns authRequired error: redirects to sign-in via router.
+  it('should redirect to sign-in when action returns authRequired error', async () => {
+    const action = vi.fn().mockResolvedValue({ error: 'common.errors.authRequired' });
+    const onError = vi.fn();
+    const { result } = renderHook(() => useFormAction({ onError }));
+
+    await act(async () => {
+      await result.current.execute(action, {});
+    });
+
+    expect(mockToastError).toHaveBeenCalledWith('common.errors.authRequired');
+    expect(mockRouterReplace).toHaveBeenCalledWith('/sign-in');
+    expect(mockRouterRefresh).toHaveBeenCalled();
     expect(onError).toHaveBeenCalled();
   });
 

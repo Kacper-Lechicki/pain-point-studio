@@ -7,7 +7,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { ZodType, z } from 'zod';
 
 import { RateLimitConfig, rateLimit } from '@/lib/common/rate-limit';
-import { ActionResult } from '@/lib/common/types';
+import { ActionResult, ERRORS } from '@/lib/common/types';
 import type { AppUser } from '@/lib/supabase/helpers';
 import { createClient } from '@/lib/supabase/server';
 import type { Database } from '@/lib/supabase/types';
@@ -33,13 +33,13 @@ export function withProtectedAction<TSchema extends ZodType, TData = undefined>(
     const { limited } = await rateLimit({ key, ...config.rateLimit });
 
     if (limited) {
-      return { error: config.rateLimitError ?? 'common.errors.rateLimitExceeded' };
+      return { error: config.rateLimitError ?? ERRORS.rateLimitExceeded };
     }
 
     const validation = config.schema.safeParse(formData);
 
     if (!validation.success) {
-      return { error: config.validationError ?? 'common.errors.invalidData' };
+      return { error: config.validationError ?? ERRORS.invalidData };
     }
 
     const supabase = await createClient();
@@ -49,9 +49,13 @@ export function withProtectedAction<TSchema extends ZodType, TData = undefined>(
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return { error: 'common.errors.unexpected' };
+      return { error: ERRORS.authRequired };
     }
 
-    return config.action({ data: validation.data, user: mapSupabaseUser(user), supabase });
+    try {
+      return await config.action({ data: validation.data, user: mapSupabaseUser(user), supabase });
+    } catch {
+      return { error: ERRORS.unexpected };
+    }
   };
 }

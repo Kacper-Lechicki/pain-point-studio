@@ -118,13 +118,19 @@ export function ProjectsListPage({ projects, extras }: ProjectsListPageProps) {
 
     if (result && !result.error) {
       const { toast } = await import('sonner');
-      toast.success(
-        t('projects.list.bulk.selected', { count: ids.length }) +
-          ' — ' +
-          t(`projects.list.actions.${bulkConfirmAction}` as MessageKey)
-      );
+      const failed = result.data?.failed ?? 0;
+
+      if (failed > 0) {
+        toast.warning(t('projects.list.bulk.partialSuccess', { failed }));
+      } else {
+        toast.success(
+          t('projects.list.bulk.selected', { count: ids.length }) +
+            ' — ' +
+            t(`projects.list.actions.${bulkConfirmAction}` as MessageKey)
+        );
+      }
+
       clearSelection();
-      // Trigger a revalidation by re-fetching (the server data will update on next load)
       router.refresh();
     }
   }, [bulkConfirmAction, selectedIds, bulkAction, t, clearSelection, router]);

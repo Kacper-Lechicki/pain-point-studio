@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 
 import { HeroHighlight } from '@/components/ui/hero-highlight';
+import { AuthToast } from '@/features/auth/components/common/auth-toast';
 import { Navbar } from '@/features/auth/components/layout/navbar';
 
 interface AuthGroupLayoutProps {
@@ -19,6 +20,7 @@ const AuthGroupLayout = ({ children }: AuthGroupLayoutProps) => {
         <main className="flex min-h-0 flex-1 flex-col items-center overflow-auto px-6 pt-22 pb-12 md:pt-32">
           <div className="mx-auto w-full md:max-w-[600px]">
             <div className="lg:border-border/50 lg:bg-card/80 w-full rounded-lg sm:p-4 lg:border lg:p-8 lg:shadow-xl lg:backdrop-blur-sm">
+              <AuthToast showNoScriptFallback />
               <div className="flex flex-col space-y-6">{children}</div>
             </div>
 

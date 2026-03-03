@@ -5,14 +5,18 @@ import { cache } from 'react';
 import { SURVEY_RETENTION_DAYS } from '@/features/surveys/config';
 import { mapQuestionRow } from '@/features/surveys/lib/map-question-row';
 import type { PublicSurveyData } from '@/features/surveys/types';
+import { rateLimit } from '@/lib/common/rate-limit';
+import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { createClient } from '@/lib/supabase/server';
 
-export const getPublicSurvey = cache(async (slug: string): Promise<PublicSurveyData | null> => {
+const getPublicSurveyCached = cache(async (slug: string): Promise<PublicSurveyData | null> => {
   const supabase = await createClient();
 
   const { data: survey } = await supabase
     .from('surveys')
-    .select('id, title, description, status, ends_at, max_respondents, completed_at, cancelled_at')
+    .select(
+      'id, title, description, status, starts_at, ends_at, max_respondents, completed_at, cancelled_at'
+    )
     .eq('slug', slug)
     .in('status', ['active', 'completed', 'cancelled'])
     .single();
@@ -52,8 +56,11 @@ export const getPublicSurvey = cache(async (slug: string): Promise<PublicSurveyD
     isAcceptingResponses = false;
     closedReason = 'cancelled';
   } else if (survey.status === 'active') {
-    // Active survey — check time and respondent limits
-    if (survey.ends_at && new Date(survey.ends_at) < now) {
+    // Active survey — check time limits
+    if (survey.starts_at && new Date(survey.starts_at) > now) {
+      isAcceptingResponses = false;
+      closedReason = 'not_started';
+    } else if (survey.ends_at && new Date(survey.ends_at) < now) {
       isAcceptingResponses = false;
       closedReason = 'expired';
     }
@@ -94,3 +101,13 @@ export const getPublicSurvey = cache(async (slug: string): Promise<PublicSurveyD
     questions: mappedQuestions,
   };
 });
+
+export async function getPublicSurvey(slug: string): Promise<PublicSurveyData | null> {
+  const { limited } = await rateLimit({ key: 'get-public-survey', ...RATE_LIMITS.respondentRead });
+
+  if (limited) {
+    return null;
+  }
+
+  return getPublicSurveyCached(slug);
+}
