@@ -22,17 +22,31 @@ vi.mock('@/lib/common/rate-limit', () => ({
   rateLimit: vi.fn().mockResolvedValue({ limited: false }),
 }));
 
-// Mock Supabase server client — withPublicAction calls createClient() and passes supabase to the action
+// Mock Supabase server client — withProtectedAction calls createClient(),
+// then uses supabase.auth.getUser() internally and passes supabase to the action
 const mockResetPasswordForEmail = vi.fn();
 const mockUpdateUser = vi.fn();
+const mockGetUser = vi.fn();
 
 vi.mock('@/lib/supabase/server', () => ({
   createClient: vi.fn().mockResolvedValue({
     auth: {
       resetPasswordForEmail: mockResetPasswordForEmail,
       updateUser: mockUpdateUser,
+      getUser: mockGetUser,
     },
   }),
+}));
+
+// Mock user mapper — withProtectedAction maps the raw Supabase user via mapSupabaseUser
+vi.mock('@/lib/supabase/user-mapper', () => ({
+  mapSupabaseUser: vi.fn((user: { id: string; email: string }) => ({
+    id: user.id,
+    email: user.email,
+    identities: [],
+    userMetadata: {},
+    createdAt: new Date().toISOString(),
+  })),
 }));
 
 // Mock Supabase error mapper
@@ -40,9 +54,18 @@ vi.mock('@/lib/supabase/errors', () => ({
   mapSupabaseError: vi.fn((msg: string) => `mapped:${msg}`),
 }));
 
+const mockRawUser = {
+  id: 'user-123',
+  email: 'test@example.com',
+  created_at: '2024-01-01T00:00:00Z',
+  user_metadata: {},
+  identities: [],
+};
+
 describe('Auth Actions – Password', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockGetUser.mockResolvedValue({ data: { user: mockRawUser }, error: null });
   });
 
   describe('resetPassword', () => {

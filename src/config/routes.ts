@@ -6,7 +6,6 @@ export const ROUTES = {
   auth: {
     signIn: '/sign-in' as AppRoute,
     signUp: '/sign-up' as AppRoute,
-    signOut: '/sign-out' as AppRoute,
     forgotPassword: '/forgot-password' as AppRoute,
     updatePassword: '/update-password' as AppRoute,
     callback: '/auth/callback',

@@ -13,7 +13,6 @@ const PUBLIC_ROUTES = [
   ROUTES.auth.signIn,
   ROUTES.auth.signUp,
   ROUTES.auth.forgotPassword,
-  ROUTES.auth.updatePassword,
   ROUTES.survey.respond,
 ];
 

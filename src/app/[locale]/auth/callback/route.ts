@@ -3,14 +3,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ROUTES } from '@/config';
 import { createClient } from '@/lib/supabase/server';
 
-const ALLOWED_CALLBACK_TYPES = ['signup', 'email_change'] as const;
-
-type CallbackType = (typeof ALLOWED_CALLBACK_TYPES)[number];
-
-function isValidCallbackType(value: string | null): value is CallbackType {
-  return ALLOWED_CALLBACK_TYPES.includes(value as CallbackType);
-}
-
 const SAFE_REDIRECT_PREFIXES = [
   ROUTES.common.dashboard,
   ROUTES.common.settings,
@@ -47,12 +39,22 @@ export async function GET(
   const next = requestUrl.searchParams.get('next');
   const type = requestUrl.searchParams.get('type');
 
+  let callbackErrorKey = 'callbackError';
+
   if (code) {
     const supabase = await createClient();
     const { error, data } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
       if (data?.user) {
+        // Guard against OAuth providers that don't return an email.
+        if (!data.user.email) {
+          const signInUrl = new URL(`/${locale}${ROUTES.auth.signIn}`, request.url);
+          signInUrl.searchParams.set('error', 'callbackError');
+
+          return NextResponse.redirect(signInUrl);
+        }
+
         const { data: profile } = await supabase
           .from('profiles')
           .select('*')
@@ -62,7 +64,7 @@ export async function GET(
         if (!profile) {
           // Trigger on auth.users may not have fired (e.g. Supabase cloud
           // restrictions on auth-schema triggers). Ensure a profile row exists.
-          await supabase.from('profiles').upsert(
+          const { error: upsertError } = await supabase.from('profiles').upsert(
             {
               id: data.user.id,
               full_name: (data.user.user_metadata?.full_name as string) ?? '',
@@ -70,13 +72,23 @@ export async function GET(
             },
             { onConflict: 'id' }
           );
-        } else if (
-          profile.avatar_url &&
-          profile.avatar_url !== data.user.user_metadata?.avatar_url
-        ) {
-          await supabase.auth.updateUser({
-            data: { avatar_url: profile.avatar_url },
-          });
+
+          if (upsertError) {
+            const signInUrl = new URL(`/${locale}${ROUTES.auth.signIn}`, request.url);
+            signInUrl.searchParams.set('error', 'profileCreationFailed');
+
+            return NextResponse.redirect(signInUrl);
+          }
+        } else {
+          // Sync avatar: if OAuth provider returned a newer avatar, update profile.
+          const providerAvatar = data.user.user_metadata?.avatar_url as string | undefined;
+
+          if (providerAvatar && providerAvatar !== profile.avatar_url) {
+            await supabase
+              .from('profiles')
+              .update({ avatar_url: providerAvatar })
+              .eq('id', data.user.id);
+          }
         }
       }
 
@@ -85,24 +97,36 @@ export async function GET(
 
       const redirectUrl = new URL(redirectPath, request.url);
 
-      if (redirectPath === fallbackPath || (isValidCallbackType(type) && type === 'email_change')) {
-        const toastKey =
-          type === 'signup'
-            ? 'emailConfirmed'
-            : type === 'email_change'
-              ? 'emailChangeConfirmed'
+      const toastKey =
+        type === 'signup'
+          ? 'emailConfirmed'
+          : type === 'email_change'
+            ? 'emailChangeConfirmed'
+            : type === 'recovery'
+              ? 'passwordResetReady'
               : 'signInSuccess';
 
-        redirectUrl.searchParams.set('toast', toastKey);
-      }
+      redirectUrl.searchParams.set('toast', toastKey);
 
       return NextResponse.redirect(redirectUrl);
+    }
+
+    // Map Supabase error to a specific key so the UI can show a helpful message.
+    // Prefer structured error.code over fragile string matching on error.message.
+    const EXPIRED_CODES = new Set(['otp_expired', 'flow_state_expired', 'bad_code_verifier']);
+
+    if (
+      (error.code && EXPIRED_CODES.has(error.code)) ||
+      error.message?.includes('expired') ||
+      error.message?.includes('invalid')
+    ) {
+      callbackErrorKey = 'linkExpired';
     }
   }
 
   const signInUrl = new URL(`/${locale}${ROUTES.auth.signIn}`, request.url);
 
-  signInUrl.searchParams.set('error', 'auth_callback_error');
+  signInUrl.searchParams.set('error', callbackErrorKey);
 
   return NextResponse.redirect(signInUrl);
 }

@@ -11,7 +11,7 @@ type AnswerMap = Map<string, Record<string, unknown>>;
 interface UseSurveyFlowProps {
   questions: PublicSurveyQuestion[];
   responseId: string;
-  onSaveError?: () => void;
+  onSaveError?: (errorKey?: string) => void;
 }
 
 export function useSurveyFlow({ questions, responseId, onSaveError }: UseSurveyFlowProps) {
@@ -64,7 +64,7 @@ export function useSurveyFlow({ questions, responseId, onSaveError }: UseSurveyF
         if (result?.error) {
           // Allow retry by clearing the saved ref
           lastSavedRef.current.delete(questionId);
-          onSaveError?.();
+          onSaveError?.(result.error);
         }
       });
     },

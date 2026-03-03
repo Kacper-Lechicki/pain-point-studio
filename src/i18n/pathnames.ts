@@ -42,9 +42,6 @@ export const PATHNAMES = {
   '/sign-up': {
     en: '/sign-up',
   },
-  '/sign-out': {
-    en: '/sign-out',
-  },
   '/forgot-password': {
     en: '/forgot-password',
   },

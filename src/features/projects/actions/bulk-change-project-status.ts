@@ -21,127 +21,78 @@ const bulkChangeProjectStatusSchema = z.object({
   action: z.enum(STATUS_ACTIONS),
 });
 
-function buildUpdatePayload(
-  action: (typeof STATUS_ACTIONS)[number],
-  currentStatus: string,
-  preTrashStatus: string | null,
-  preArchiveStatus: string | null
-): Record<string, unknown> {
-  const now = new Date().toISOString();
-
-  switch (action) {
-    case 'complete':
-      return { status: 'completed', completed_at: now };
-    case 'archive':
-      return { status: 'archived', archived_at: now, pre_archive_status: currentStatus };
-    case 'reopen':
-      return { status: 'active', completed_at: null };
-    case 'restore':
-      return { status: preArchiveStatus || 'active', archived_at: null, pre_archive_status: null };
-    case 'trash':
-      return { status: 'trashed', deleted_at: now, pre_trash_status: currentStatus };
-    case 'restoreTrash':
-      return {
-        status: preTrashStatus || 'active',
-        deleted_at: null,
-        pre_trash_status: null,
-      };
-  }
+export interface BulkResult {
+  total: number;
+  failed: number;
+  failedIds: string[];
 }
 
-export const bulkChangeProjectStatus = withProtectedAction<typeof bulkChangeProjectStatusSchema>(
-  'bulk-change-project-status',
-  {
-    schema: bulkChangeProjectStatusSchema,
-    rateLimit: RATE_LIMITS.crud,
-    action: async ({ data, user, supabase }) => {
-      const { data: projects } = await supabase
-        .from('projects')
-        .select('id, status, pre_trash_status, pre_archive_status')
-        .in('id', data.projectIds)
-        .eq('user_id', user.id);
+export const bulkChangeProjectStatus = withProtectedAction<
+  typeof bulkChangeProjectStatusSchema,
+  BulkResult
+>('bulk-change-project-status', {
+  schema: bulkChangeProjectStatusSchema,
+  rateLimit: RATE_LIMITS.crud,
+  action: async ({ data, user, supabase }) => {
+    // Pre-fetch all projects in one query (matches survey bulk pattern)
+    const { data: projects } = await supabase
+      .from('projects')
+      .select('id, status')
+      .in('id', data.projectIds)
+      .eq('user_id', user.id);
 
-      if (!projects || projects.length === 0) {
-        return { error: 'projects.errors.unexpected' };
+    if (!projects || projects.length === 0) {
+      return {
+        error: 'projects.errors.bulkAllFailed',
+        data: {
+          total: data.projectIds.length,
+          failed: data.projectIds.length,
+          failedIds: data.projectIds,
+        },
+      };
+    }
+
+    const total = data.projectIds.length;
+    let successCount = 0;
+    const failedIds: string[] = [];
+
+    for (const project of projects) {
+      // Pre-validate transition before calling RPC
+      if (!canTransition(project.status as ProjectStatus, data.action as ProjectAction)) {
+        failedIds.push(project.id);
+        continue;
       }
 
-      let successCount = 0;
+      const { data: result, error } = await supabase.rpc('change_project_status_with_cascade', {
+        p_project_id: project.id,
+        p_user_id: user.id,
+        p_action: data.action,
+      });
 
-      for (const project of projects) {
-        if (!canTransition(project.status as ProjectStatus, data.action as ProjectAction)) {
-          continue;
-        }
-
-        const updatePayload = buildUpdatePayload(
-          data.action,
-          project.status,
-          project.pre_trash_status,
-          project.pre_archive_status
-        );
-
-        const { error } = await supabase
-          .from('projects')
-          .update(updatePayload)
-          .eq('id', project.id)
-          .eq('user_id', user.id);
-
-        if (!error) {
-          successCount++;
-
-          // ── Cascade to surveys ────────────────────────────────────
-          const now = new Date().toISOString();
-
-          if (data.action === 'trash') {
-            const { data: surveys } = await supabase
-              .from('surveys')
-              .select('id, status')
-              .eq('project_id', project.id)
-              .neq('status', 'trashed');
-
-            if (surveys) {
-              for (const survey of surveys) {
-                await supabase
-                  .from('surveys')
-                  .update({
-                    status: 'trashed',
-                    deleted_at: now,
-                    pre_trash_status: survey.status,
-                  })
-                  .eq('id', survey.id);
-              }
-            }
-          } else if (data.action === 'restoreTrash') {
-            const { data: surveys } = await supabase
-              .from('surveys')
-              .select('id, pre_trash_status')
-              .eq('project_id', project.id)
-              .eq('status', 'trashed');
-
-            if (surveys) {
-              for (const survey of surveys) {
-                const restorePayload: Record<string, unknown> = {
-                  status: survey.pre_trash_status || 'draft',
-                  deleted_at: null,
-                  pre_trash_status: null,
-                };
-                await supabase.from('surveys').update(restorePayload).eq('id', survey.id);
-              }
-            }
-          } else if (data.action === 'archive') {
-            await supabase
-              .from('surveys')
-              .update({ status: 'cancelled', cancelled_at: now, previous_status: 'active' })
-              .eq('project_id', project.id)
-              .eq('status', 'active');
-          }
-        }
+      if (error) {
+        failedIds.push(project.id);
+        continue;
       }
 
-      if (successCount === 0) {
-        return { error: 'projects.errors.unexpected' };
-      }
+      const response = result as { error?: string; success?: boolean };
 
-      return { success: true };
-    },
-  }
-);
+      if (response.success) {
+        successCount++;
+      } else {
+        failedIds.push(project.id);
+      }
+    }
+
+    // Count projects that weren't found (not owned by user or don't exist)
+    const notFoundIds = data.projectIds.filter((id) => !projects.some((p) => p.id === id));
+    failedIds.push(...notFoundIds);
+
+    const failed = total - successCount;
+
+    if (successCount === 0) {
+      return { error: 'projects.errors.bulkAllFailed', data: { total, failed, failedIds } };
+    }
+
+    return { success: true, data: { total, failed, failedIds } };
+  },
+});

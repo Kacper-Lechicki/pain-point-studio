@@ -25,7 +25,19 @@ export const env = createEnv({
   },
 
   client: {
-    NEXT_PUBLIC_APP_URL: z.url().min(1),
+    NEXT_PUBLIC_APP_URL: z
+      .url()
+      .min(1)
+      .refine((url) => {
+        try {
+          const parsed = new URL(url);
+          const isLocalhost = parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1';
+
+          return isLocalhost || url.startsWith('https://');
+        } catch {
+          return false;
+        }
+      }, 'NEXT_PUBLIC_APP_URL must use HTTPS for non-localhost deployments'),
     NEXT_PUBLIC_SUPABASE_URL: z.url().min(1),
     NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z.string().optional(),

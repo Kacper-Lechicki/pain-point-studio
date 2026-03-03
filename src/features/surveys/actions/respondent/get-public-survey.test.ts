@@ -14,6 +14,10 @@ vi.mock('@/lib/common/env', () => ({
   },
 }));
 
+vi.mock('@/lib/common/rate-limit', () => ({
+  rateLimit: vi.fn().mockResolvedValue({ limited: false }),
+}));
+
 const mockFrom = vi.fn();
 const mockRpc = vi.fn();
 

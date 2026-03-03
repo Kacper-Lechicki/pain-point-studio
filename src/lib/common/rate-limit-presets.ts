@@ -9,6 +9,8 @@
 export interface RateLimitPreset {
   limit: number;
   windowSeconds: number;
+  /** Include user-agent in the key to differentiate users behind shared IPs. */
+  includeUserAgent?: boolean;
 }
 
 export const RATE_LIMITS = {
@@ -34,12 +36,16 @@ export const RATE_LIMITS = {
   upload: { limit: 10, windowSeconds: 60 },
   /** Profile updates */
   profileUpdate: { limit: 10, windowSeconds: 300 },
-  /** Respondent: start response */
-  respondentStart: { limit: 30, windowSeconds: 300 },
-  /** Respondent: save answer (very frequent, auto-save) */
-  respondentSave: { limit: 120, windowSeconds: 60 },
-  /** Respondent: submit response */
-  respondentSubmit: { limit: 10, windowSeconds: 300 },
+  /** Respondent: start response (includes UA to differentiate shared IPs) */
+  respondentStart: { limit: 30, windowSeconds: 300, includeUserAgent: true },
+  /** Respondent: save answer (very frequent, auto-save; includes UA) */
+  respondentSave: { limit: 120, windowSeconds: 60, includeUserAgent: true },
+  /** Respondent: submit response (includes UA) */
+  respondentSubmit: { limit: 10, windowSeconds: 300, includeUserAgent: true },
+  /** Respondent: record view (fire-and-forget, includes UA) */
+  respondentView: { limit: 30, windowSeconds: 300, includeUserAgent: true },
+  /** Respondent: read survey data (includes UA) */
+  respondentRead: { limit: 60, windowSeconds: 60, includeUserAgent: true },
   /** Sign-out */
   signOut: { limit: 10, windowSeconds: 60 },
 } as const satisfies Record<string, RateLimitPreset>;

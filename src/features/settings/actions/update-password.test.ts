@@ -175,7 +175,7 @@ describe('Settings Actions – changePassword', () => {
     const { changePassword } = await import('./update-password');
     const result = await changePassword(changeData);
 
-    expect(result.error).toBe('common.errors.unexpected');
+    expect(result.error).toBe('common.errors.authRequired');
     expect(mockUpdateUser).not.toHaveBeenCalled();
   });
 });

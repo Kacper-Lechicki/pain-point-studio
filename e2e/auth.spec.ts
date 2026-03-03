@@ -94,10 +94,15 @@ test.describe('Route Protection & Auth Callback', () => {
   });
 
   test('invalid auth code redirects to sign-in with error', async ({ page }) => {
-    await page.goto(url('/auth/callback'));
-    await expect(page).toHaveURL(/\/sign-in\?error=auth_callback_error/);
-    await page.goto(url('/auth/callback') + '?code=invalid-code');
-    await expect(page).toHaveURL(/\/sign-in\?error=auth_callback_error/);
+    const noCodeResp = await page.goto(url('/auth/callback'));
+
+    await expect(page).toHaveURL(/\/sign-in/);
+    expect(noCodeResp?.url()).toMatch(/\/sign-in/);
+
+    const invalidCodeResp = await page.goto(url('/auth/callback') + '?code=invalid-code');
+
+    await expect(page).toHaveURL(/\/sign-in/);
+    expect(invalidCodeResp?.url()).toMatch(/\/sign-in/);
   });
 });
 

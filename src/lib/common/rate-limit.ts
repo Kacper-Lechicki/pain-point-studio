@@ -15,6 +15,8 @@ export interface RateLimitConfig {
   key: string;
   limit: number;
   windowSeconds: number;
+  /** Include user-agent in the key to differentiate users behind shared IPs. */
+  includeUserAgent?: boolean;
 }
 
 export interface RateLimiter {
@@ -40,13 +42,16 @@ class InMemoryRateLimiter implements RateLimiter {
     this.cleanup();
 
     const headerStore = await headers();
-    const forwarded = headerStore.get('x-forwarded-for')?.split(',')[0]?.trim();
+    const forwarded =
+      headerStore.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+      headerStore.get('x-real-ip')?.trim();
 
     if (!forwarded) {
       return { limited: true };
     }
 
-    const storeKey = `${config.key}:${forwarded}`;
+    const ua = config.includeUserAgent ? (headerStore.get('user-agent') ?? '') : '';
+    const storeKey = ua ? `${config.key}:${forwarded}:${ua}` : `${config.key}:${forwarded}`;
     const now = Date.now();
     const entry = this.store.get(storeKey);
 

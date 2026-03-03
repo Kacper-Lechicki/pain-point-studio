@@ -1,3 +1,4 @@
+export { checkSurveyStatus } from './check-survey-status';
 export { getPublicSurvey } from './get-public-survey';
 export { recordView } from './record-view';
 export { saveAnswer } from './save-answer';

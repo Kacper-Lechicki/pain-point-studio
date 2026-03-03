@@ -1,5 +1,8 @@
 import { ReactNode, Suspense } from 'react';
 
+import { redirect } from 'next/navigation';
+
+import { ROUTES } from '@/config';
 import { AuthToast } from '@/features/auth/components/common/auth-toast';
 import { BreadcrumbProvider } from '@/features/dashboard/components/layout/breadcrumb-context';
 import { DashboardLayoutChrome } from '@/features/dashboard/components/layout/dashboard-layout-chrome';
@@ -10,6 +13,10 @@ import { UnsavedChangesProvider } from '@/hooks/unsaved-changes-context';
 
 const DashboardLayout = async ({ children }: { children: ReactNode }) => {
   const profile = await getProfile();
+
+  if (!profile) {
+    redirect(ROUTES.auth.signIn);
+  }
 
   return (
     <UnsavedChangesProvider>

@@ -1,5 +1,7 @@
 'use server';
 
+import type { SupabaseClient } from '@supabase/supabase-js';
+
 import { SURVEY_TRANSITIONS, type SurveyAction } from '@/features/surveys/config/survey-status';
 import type { SurveyStatus } from '@/features/surveys/types';
 import { surveyIdSchema } from '@/features/surveys/types';
@@ -13,6 +15,54 @@ const TIMESTAMP_COLUMNS: Partial<Record<SurveyStatus, string>> = {
   cancelled: 'cancelled_at',
   archived: 'archived_at',
 };
+
+// ── Helpers ──────────────────────────────────────────────────────────
+
+/** Verifies the survey's parent project is active. Returns an error key if not. */
+async function requireActiveProject(
+  supabase: SupabaseClient,
+  projectId: string | null
+): Promise<string | null> {
+  if (!projectId) {
+    return null;
+  }
+
+  const { data: project } = await supabase
+    .from('projects')
+    .select('status')
+    .eq('id', projectId)
+    .maybeSingle();
+
+  if (!project || project.status !== 'active') {
+    return 'surveys.errors.projectNotActive';
+  }
+
+  return null;
+}
+
+/**
+ * After a failed update (0 rows affected), re-query the survey to determine
+ * whether it's a real "not found" or a status conflict (stale client data).
+ */
+async function diagnoseUpdateFailure(
+  supabase: SupabaseClient,
+  surveyId: string,
+  userId: string
+): Promise<string> {
+  const { data: survey } = await supabase
+    .from('surveys')
+    .select('id')
+    .eq('id', surveyId)
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (!survey) {
+    return 'surveys.errors.unexpected';
+  }
+
+  // Survey exists but status didn't match → conflict (stale data)
+  return 'surveys.errors.conflict';
+}
 
 // ── Factory ─────────────────────────────────────────────────────────
 
@@ -35,7 +85,7 @@ function createStatusAction(action: SurveyAction) {
           .maybeSingle();
 
         if (error || !row) {
-          return { error: 'surveys.errors.unexpected' };
+          return { error: await diagnoseUpdateFailure(supabase, data.surveyId, user.id) };
         }
 
         return { success: true };
@@ -43,6 +93,25 @@ function createStatusAction(action: SurveyAction) {
 
       // ── Reopen (completed/cancelled → active) ──────────────────
       if (action === 'reopen') {
+        // Fetch survey to verify project is active before reactivating
+        const { data: survey } = await supabase
+          .from('surveys')
+          .select('project_id')
+          .eq('id', data.surveyId)
+          .eq('user_id', user.id)
+          .in('status', [...transition.fromStatuses])
+          .maybeSingle();
+
+        if (!survey) {
+          return { error: await diagnoseUpdateFailure(supabase, data.surveyId, user.id) };
+        }
+
+        const projectError = await requireActiveProject(supabase, survey.project_id);
+
+        if (projectError) {
+          return { error: projectError };
+        }
+
         const { data: row, error } = await supabase
           .from('surveys')
           .update({
@@ -57,7 +126,7 @@ function createStatusAction(action: SurveyAction) {
           .maybeSingle();
 
         if (error || !row) {
-          return { error: 'surveys.errors.unexpected' };
+          return { error: await diagnoseUpdateFailure(supabase, data.surveyId, user.id) };
         }
 
         return { success: true };
@@ -67,14 +136,21 @@ function createStatusAction(action: SurveyAction) {
       if (action === 'restore') {
         const { data: current } = await supabase
           .from('surveys')
-          .select('previous_status')
+          .select('previous_status, project_id')
           .eq('id', data.surveyId)
           .eq('user_id', user.id)
           .eq('status', 'archived')
           .maybeSingle();
 
         if (!current) {
-          return { error: 'surveys.errors.unexpected' };
+          return { error: await diagnoseUpdateFailure(supabase, data.surveyId, user.id) };
+        }
+
+        // Restoring to an active state requires the parent project to be active
+        const projectError = await requireActiveProject(supabase, current.project_id);
+
+        if (projectError) {
+          return { error: projectError };
         }
 
         const { data: row, error } = await supabase
@@ -91,7 +167,7 @@ function createStatusAction(action: SurveyAction) {
           .maybeSingle();
 
         if (error || !row) {
-          return { error: 'surveys.errors.unexpected' };
+          return { error: await diagnoseUpdateFailure(supabase, data.surveyId, user.id) };
         }
 
         return { success: true };
@@ -108,7 +184,7 @@ function createStatusAction(action: SurveyAction) {
           .maybeSingle();
 
         if (!current) {
-          return { error: 'surveys.errors.unexpected' };
+          return { error: await diagnoseUpdateFailure(supabase, data.surveyId, user.id) };
         }
 
         const { data: row, error } = await supabase
@@ -124,7 +200,7 @@ function createStatusAction(action: SurveyAction) {
           .maybeSingle();
 
         if (error || !row) {
-          return { error: 'surveys.errors.unexpected' };
+          return { error: await diagnoseUpdateFailure(supabase, data.surveyId, user.id) };
         }
 
         return { success: true };
@@ -134,14 +210,21 @@ function createStatusAction(action: SurveyAction) {
       if (action === 'restoreTrash') {
         const { data: current } = await supabase
           .from('surveys')
-          .select('pre_trash_status')
+          .select('pre_trash_status, project_id')
           .eq('id', data.surveyId)
           .eq('user_id', user.id)
           .eq('status', 'trashed')
           .maybeSingle();
 
         if (!current) {
-          return { error: 'surveys.errors.unexpected' };
+          return { error: await diagnoseUpdateFailure(supabase, data.surveyId, user.id) };
+        }
+
+        // Restoring from trash requires the parent project to be active
+        const projectError = await requireActiveProject(supabase, current.project_id);
+
+        if (projectError) {
+          return { error: projectError };
         }
 
         const { data: row, error } = await supabase
@@ -158,7 +241,7 @@ function createStatusAction(action: SurveyAction) {
           .maybeSingle();
 
         if (error || !row) {
-          return { error: 'surveys.errors.unexpected' };
+          return { error: await diagnoseUpdateFailure(supabase, data.surveyId, user.id) };
         }
 
         return { success: true };
@@ -191,7 +274,7 @@ function createStatusAction(action: SurveyAction) {
           .maybeSingle();
 
         if (!current) {
-          return { error: 'surveys.errors.unexpected' };
+          return { error: await diagnoseUpdateFailure(supabase, data.surveyId, user.id) };
         }
 
         updatePayload.previous_status = current.status;
@@ -212,7 +295,7 @@ function createStatusAction(action: SurveyAction) {
       const { data: row, error } = await query.select('id').maybeSingle();
 
       if (error || !row) {
-        return { error: 'surveys.errors.unexpected' };
+        return { error: await diagnoseUpdateFailure(supabase, data.surveyId, user.id) };
       }
 
       return { success: true };

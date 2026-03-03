@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { ArrowLeft, ArrowRight, SkipForward } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -8,12 +8,16 @@ import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { PageTransition } from '@/components/ui/page-transition';
+import { checkSurveyStatus } from '@/features/surveys/actions/respondent';
 import { QuestionRenderer } from '@/features/surveys/components/respondent/question-renderers';
+import { SurveyClosed } from '@/features/surveys/components/respondent/survey-closed';
 import { SurveyCompletion } from '@/features/surveys/components/respondent/survey-completion';
 import { SurveyProgress } from '@/features/surveys/components/respondent/survey-progress';
 import { SurveyThankYou } from '@/features/surveys/components/respondent/survey-thank-you';
 import { useSurveyFlow } from '@/features/surveys/hooks/use-survey-flow';
-import type { PublicSurveyData } from '@/features/surveys/types';
+import type { ClosedReason, PublicSurveyData } from '@/features/surveys/types';
+
+const POLL_INTERVAL_MS = 30_000;
 
 type FlowScreen = 'questions' | 'completion' | 'thank-you';
 
@@ -27,10 +31,39 @@ export const SurveyFlow = ({ survey, responseId, slug }: SurveyFlowProps) => {
   const t = useTranslations();
   const tErrors = useTranslations();
   const [screen, setScreen] = useState<FlowScreen>('questions');
+  const [closedReason, setClosedReason] = useState<ClosedReason | null>(null);
 
-  const handleSaveError = useCallback(() => {
-    toast.error(tErrors('respondent.errors.saveFailed'));
-  }, [tErrors]);
+  // Poll survey status every 30s to detect closure in real-time
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const status = await checkSurveyStatus(survey.id);
+
+      if (status && status !== 'active') {
+        setClosedReason(status === 'cancelled' ? 'cancelled' : 'completed');
+        clearInterval(interval);
+      }
+    }, POLL_INTERVAL_MS);
+
+    return () => clearInterval(interval);
+  }, [survey.id]);
+
+  const handleSaveError = useCallback(
+    (errorKey?: string) => {
+      // If error is a survey-closed error, show closed screen immediately
+      if (errorKey && errorKey.includes('closed.')) {
+        setClosedReason('completed');
+
+        return;
+      }
+
+      toast.error(tErrors('respondent.errors.saveFailed'));
+    },
+    [tErrors]
+  );
+
+  const handleSurveyClosed = useCallback(() => {
+    setClosedReason('completed');
+  }, []);
 
   const {
     currentIndex,
@@ -44,6 +77,11 @@ export const SurveyFlow = ({ survey, responseId, slug }: SurveyFlowProps) => {
     skip,
     goToQuestion,
   } = useSurveyFlow({ questions: survey.questions, responseId, onSaveError: handleSaveError });
+
+  // Show closed screen if survey was closed mid-flow
+  if (closedReason) {
+    return <SurveyClosed title={survey.title} reason={closedReason} />;
+  }
 
   const effectiveScreen: FlowScreen =
     screen === 'thank-you'
@@ -68,6 +106,7 @@ export const SurveyFlow = ({ survey, responseId, slug }: SurveyFlowProps) => {
           setScreen('questions');
           goToQuestion(survey.questions.length - 1);
         }}
+        onSurveyClosed={handleSurveyClosed}
       />
     );
   }
