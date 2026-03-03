@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo } from 'react';
 
+import { Folder, GripVertical } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { SearchInput } from '@/components/ui/search-input';
@@ -11,8 +12,10 @@ import { NewNoteInput } from '@/features/projects/components/notes/new-note-inpu
 import { NoteListItem } from '@/features/projects/components/notes/note-list-item';
 import { NotesSection } from '@/features/projects/components/notes/notes-section';
 import { NotesTrashSection } from '@/features/projects/components/notes/notes-trash-section';
-import { SortableFolderList } from '@/features/projects/components/notes/sortable-folder-list';
-import { SortableNoteList } from '@/features/projects/components/notes/sortable-note-list';
+import {
+  SortableList,
+  SortableNoteList,
+} from '@/features/projects/components/notes/sortable-note-list';
 import type { NotesState } from '@/features/projects/hooks/use-notes-state';
 
 interface NotesSidebarProps {
@@ -93,11 +96,15 @@ export function NotesSidebar({ state, isArchived }: NotesSidebarProps) {
           action={!isArchived ? <NewFolderInput onCreate={state.handleCreateFolder} /> : undefined}
         >
           {state.folders.length > 0 ? (
-            <SortableFolderList
-              folders={state.folders}
+            <SortableList
+              items={state.folders}
+              itemIdAttribute="data-folder-id"
               onReorder={state.handleReorderFolders}
               disabled={isArchived}
-              renderFolder={(folder, folderDragHandleProps) => (
+              placeholderClassName="border-primary/50 bg-primary/5 h-8 shrink-0 rounded-md border border-dashed"
+              ghostClassName="bg-background pointer-events-none fixed top-0 left-0 z-50 flex h-8 items-center gap-1.5 rounded-md px-2.5 shadow-lg"
+              ghostMinWidth={140}
+              renderItem={(folder, folderDragHandleProps) => (
                 <FolderGroup
                   folder={folder}
                   notes={state.getNotesByFolder(folder.id)}
@@ -112,6 +119,13 @@ export function NotesSidebar({ state, isArchived }: NotesSidebarProps) {
                   onReorderNotes={state.handleReorderNotes}
                   dragHandleProps={folderDragHandleProps}
                 />
+              )}
+              renderGhost={(folder) => (
+                <>
+                  <GripVertical className="text-muted-foreground size-3 shrink-0" />
+                  <Folder className="text-muted-foreground size-3.5 shrink-0" />
+                  <span className="min-w-0 flex-1 truncate text-sm">{folder.name}</span>
+                </>
               )}
             />
           ) : null}

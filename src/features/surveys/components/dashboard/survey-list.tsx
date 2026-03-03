@@ -7,13 +7,13 @@ import { useRouter } from 'next/navigation';
 import { ClipboardList } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { BulkActionBar, type BulkActionDescriptor } from '@/components/ui/bulk-action-bar';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ListPagination } from '@/components/ui/list-pagination';
 import { bulkChangeSurveyStatus } from '@/features/surveys/actions/bulk-change-survey-status';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
+import { SurveyBulkActionBar } from '@/features/surveys/components/dashboard/survey-bulk-action-bar';
 import { SurveyDetailSheet } from '@/features/surveys/components/dashboard/survey-detail-sheet';
 import { SurveyListKpi } from '@/features/surveys/components/dashboard/survey-list-kpi';
 import { SurveyListRow } from '@/features/surveys/components/dashboard/survey-list-row';
@@ -39,21 +39,6 @@ import { getSurveyDetailUrl } from '@/features/surveys/lib/survey-urls';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import { useRefresh } from '@/hooks/common/use-refresh';
 import type { MessageKey } from '@/i18n/types';
-
-const SURVEY_BULK_BUTTON_COLORS: Record<BulkSurveyAction, string> = {
-  complete:
-    'border-violet-500 text-violet-600 hover:bg-violet-500/10 dark:text-violet-400 dark:hover:bg-violet-500/10',
-  cancel: 'border-destructive text-destructive hover:bg-destructive/10',
-  reopen:
-    'border-emerald-500 text-emerald-600 hover:bg-emerald-500/10 dark:text-emerald-400 dark:hover:bg-emerald-500/10',
-  archive:
-    'border-amber-500 text-amber-600 hover:bg-amber-500/10 dark:text-amber-400 dark:hover:bg-amber-500/10',
-  restore:
-    'border-emerald-500 text-emerald-600 hover:bg-emerald-500/10 dark:text-emerald-400 dark:hover:bg-emerald-500/10',
-  trash: 'border-destructive text-destructive hover:bg-destructive/10',
-  restoreTrash:
-    'border-emerald-500 text-emerald-600 hover:bg-emerald-500/10 dark:text-emerald-400 dark:hover:bg-emerald-500/10',
-};
 
 interface SurveyListProps {
   initialSurveys: UserSurvey[];
@@ -180,17 +165,6 @@ export const SurveyList = ({
     };
   }, [bulkConfirmAction, t]);
 
-  const bulkActionDescriptors: BulkActionDescriptor[] = useMemo(
-    () =>
-      availableBulkActions.map((action) => ({
-        key: action,
-        icon: SURVEY_ACTION_UI[action].icon,
-        label: t(`surveys.dashboard.actions.${action}` as MessageKey),
-        colorClassName: SURVEY_BULK_BUTTON_COLORS[action],
-      })),
-    [availableBulkActions, t]
-  );
-
   const handleBulkConfirm = useCallback(async () => {
     if (!bulkConfirmAction || selectedIds.size === 0) {
       return;
@@ -256,15 +230,13 @@ export const SurveyList = ({
       />
 
       {selectionCount > 0 && (
-        <BulkActionBar
+        <SurveyBulkActionBar
           count={selectionCount}
-          actions={bulkActionDescriptors}
-          onAction={(key) => setBulkConfirmAction(key as BulkSurveyAction)}
+          availableActions={availableBulkActions}
+          onAction={setBulkConfirmAction}
           onClear={clearSelection}
           onSelectAll={() => selectAll(paginatedSurveys)}
           allOnPageSelected={paginatedSurveys.every((s) => selectedIds.has(s.id))}
-          selectAllLabel={t('surveys.dashboard.bulk.selectAll')}
-          clearSelectionLabel={t('surveys.dashboard.bulk.clearSelection')}
         />
       )}
 
