@@ -3,14 +3,16 @@ import type { LucideIcon } from 'lucide-react';
 
 import { COMPACT_ACTION_COLORS } from '@/components/ui/action-button-styles';
 import type { SurveyStatus } from '@/features/surveys/types';
+import type { StatusBadgeConfig, StatusTransition } from '@/lib/common/status-machine';
+import {
+  KPI_COLOR_ALL,
+  canTransition as genericCanTransition,
+  getAvailableActions as genericGetAvailableActions,
+} from '@/lib/common/status-machine';
+
+export { KPI_COLOR_ALL };
 
 // ── Status visual config ────────────────────────────────────────────
-
-interface StatusBadgeConfig {
-  variant: 'default' | 'secondary' | 'outline';
-  className: string;
-  showPulseDot: boolean;
-}
 
 interface StatusConfig {
   labelKey: string;
@@ -20,9 +22,6 @@ interface StatusConfig {
   badge: StatusBadgeConfig;
   kpiColor: string;
 }
-
-/** KPI text color for the "all" total (not tied to a specific status). */
-export const KPI_COLOR_ALL = 'text-foreground';
 
 /** Maps each survey status to its icon, i18n label key, and badge styling. */
 export const SURVEY_STATUS_CONFIG: Record<SurveyStatus, StatusConfig> = {
@@ -98,12 +97,6 @@ export const SURVEY_STATUS_CONFIG: Record<SurveyStatus, StatusConfig> = {
 
 // ── State machine ───────────────────────────────────────────────────
 
-interface StatusTransition {
-  method: 'update' | 'delete';
-  toStatus?: SurveyStatus | null;
-  fromStatuses: readonly SurveyStatus[];
-}
-
 /** Survey state-machine: maps action names to their target status and valid source statuses. */
 export const SURVEY_TRANSITIONS = {
   complete: { method: 'update', toStatus: 'completed', fromStatuses: ['active'] },
@@ -122,20 +115,18 @@ export const SURVEY_TRANSITIONS = {
   },
   restoreTrash: { method: 'update', toStatus: null, fromStatuses: ['trashed'] },
   permanentDelete: { method: 'delete', fromStatuses: ['trashed'] },
-} as const satisfies Record<string, StatusTransition>;
+} as const satisfies Record<string, StatusTransition<SurveyStatus>>;
 
 export type SurveyAction = keyof typeof SURVEY_TRANSITIONS;
 
 /** Checks if a given action is valid from the current status. */
 export function canTransition(from: SurveyStatus, action: SurveyAction): boolean {
-  return (SURVEY_TRANSITIONS[action].fromStatuses as readonly string[]).includes(from);
+  return genericCanTransition(from, action, SURVEY_TRANSITIONS);
 }
 
 /** Returns all valid actions that can be performed on a survey with the given status. */
 export function getAvailableActions(status: SurveyStatus): SurveyAction[] {
-  return (Object.keys(SURVEY_TRANSITIONS) as SurveyAction[]).filter((action) =>
-    canTransition(status, action)
-  );
+  return genericGetAvailableActions<SurveyStatus, SurveyAction>(status, SURVEY_TRANSITIONS);
 }
 
 // ── Derived status flags ─────────────────────────────────────────────

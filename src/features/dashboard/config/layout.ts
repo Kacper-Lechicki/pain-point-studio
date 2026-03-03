@@ -46,6 +46,9 @@ export const DASHBOARD_CONTENT_MAX_WIDTH = 'container';
 export const DASHBOARD_PAGE_BODY_GAP = 'mb-8';
 export const DASHBOARD_PAGE_BODY_GAP_TOP = 'mt-8';
 
+/** Number of items visible in dashboard bento cards (projects list, recent activity). */
+export const BENTO_VISIBLE_ITEMS = 5;
+
 type DashboardContentWidth = 'narrow' | 'content' | 'full';
 
 /** Strip the leading locale segment (e.g. '/en/dashboard' → '/dashboard'). No-op if absent. */

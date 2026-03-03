@@ -15,6 +15,7 @@ import {
   BENTO_CARD_CLASS,
   BENTO_ROW4_CARD_MIN_H,
 } from '@/features/dashboard/components/bento/bento-styles';
+import { BENTO_VISIBLE_ITEMS } from '@/features/dashboard/config/layout';
 import { getProjectDetailUrl } from '@/features/projects/lib/project-urls';
 import Link from '@/i18n/link';
 import { cn } from '@/lib/common/utils';
@@ -28,7 +29,7 @@ export function DashboardProjectsList({ projects, pinnedProjectId }: DashboardPr
   const t = useTranslations('dashboard.bento');
   const [isPending, startTransition] = useTransition();
 
-  const visibleProjects = projects.slice(0, 5);
+  const visibleProjects = projects.slice(0, BENTO_VISIBLE_ITEMS);
 
   function handleTogglePin(projectId: string) {
     startTransition(async () => {

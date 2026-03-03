@@ -18,6 +18,7 @@ import { reorderProjectNotes } from '@/features/projects/actions/reorder-project
 import { restoreProjectNote } from '@/features/projects/actions/restore-project-note';
 import { togglePinProjectNote } from '@/features/projects/actions/toggle-pin-note';
 import { updateNoteFolder } from '@/features/projects/actions/update-note-folder';
+import { NOTE_TITLE_MAX_LENGTH } from '@/features/projects/config';
 import type { ProjectNoteFolder, ProjectNoteMeta } from '@/features/projects/types';
 import { useSessionState } from '@/hooks/common/use-session-state';
 
@@ -241,7 +242,7 @@ export function useNotesState({ projectId, initialNotes, initialFolders }: UseNo
           const copy: ProjectNoteMeta = {
             ...original,
             id: result.data.noteId,
-            title: `Copy of ${original.title}`.slice(0, 200),
+            title: `Copy of ${original.title}`.slice(0, NOTE_TITLE_MAX_LENGTH),
             is_pinned: false,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),

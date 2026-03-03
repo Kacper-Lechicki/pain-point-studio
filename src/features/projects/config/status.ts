@@ -3,13 +3,16 @@ import type { LucideIcon } from 'lucide-react';
 
 import { COMPACT_ACTION_COLORS } from '@/components/ui/action-button-styles';
 import type { ProjectStatus } from '@/features/projects/types';
+import type { StatusBadgeConfig, StatusTransition } from '@/lib/common/status-machine';
+import {
+  KPI_COLOR_ALL,
+  canTransition as genericCanTransition,
+  getAvailableActions as genericGetAvailableActions,
+} from '@/lib/common/status-machine';
+
+export { KPI_COLOR_ALL };
 
 // ── Status visual config ────────────────────────────────────────────
-
-interface StatusBadgeConfig {
-  variant: 'default' | 'secondary' | 'outline';
-  className: string;
-}
 
 interface ProjectStatusConfig {
   labelKey: string;
@@ -68,16 +71,7 @@ export const PROJECT_STATUS_CONFIG: Record<ProjectStatus, ProjectStatusConfig> =
   },
 };
 
-/** KPI text color for the "all" total (not tied to a specific status). */
-export const KPI_COLOR_ALL = 'text-foreground';
-
 // ── State machine ───────────────────────────────────────────────────
-
-interface StatusTransition {
-  method: 'update' | 'delete';
-  toStatus?: ProjectStatus | null;
-  fromStatuses: readonly ProjectStatus[];
-}
 
 /** Project state-machine: maps action names to their target status and valid source statuses. */
 export const PROJECT_TRANSITIONS = {
@@ -93,20 +87,18 @@ export const PROJECT_TRANSITIONS = {
   },
   restoreTrash: { method: 'update', toStatus: null, fromStatuses: ['trashed'] },
   permanentDelete: { method: 'delete', fromStatuses: ['trashed'] },
-} as const satisfies Record<string, StatusTransition>;
+} as const satisfies Record<string, StatusTransition<ProjectStatus>>;
 
 export type ProjectAction = keyof typeof PROJECT_TRANSITIONS;
 
 /** Checks if a given action is valid from the current project status. */
 export function canTransition(from: ProjectStatus, action: ProjectAction): boolean {
-  return (PROJECT_TRANSITIONS[action].fromStatuses as readonly string[]).includes(from);
+  return genericCanTransition(from, action, PROJECT_TRANSITIONS);
 }
 
 /** Returns all valid actions for a project with the given status. */
 export function getAvailableActions(status: ProjectStatus): ProjectAction[] {
-  return (Object.keys(PROJECT_TRANSITIONS) as ProjectAction[]).filter((action) =>
-    canTransition(status, action)
-  );
+  return genericGetAvailableActions<ProjectStatus, ProjectAction>(status, PROJECT_TRANSITIONS);
 }
 
 // ── Action UI config ────────────────────────────────────────────────

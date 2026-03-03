@@ -10,6 +10,7 @@ import {
   BENTO_CARD_CLASS,
   BENTO_EMPTY_STATE_MIN_H,
 } from '@/features/dashboard/components/bento/bento-styles';
+import { BENTO_VISIBLE_ITEMS } from '@/features/dashboard/config/layout';
 import type { ActivityItem } from '@/features/dashboard/types/dashboard-stats';
 import { getSurveyStatsUrl } from '@/features/surveys/lib/survey-urls';
 import Link from '@/i18n/link';
@@ -33,7 +34,7 @@ interface DashboardRecentActivityProps {
 
 export function DashboardRecentActivity({ items }: DashboardRecentActivityProps) {
   const t = useTranslations('dashboard.bento');
-  const visibleItems = items.slice(0, 5);
+  const visibleItems = items.slice(0, BENTO_VISIBLE_ITEMS);
 
   return (
     <Card className={cn('border-l-chart-pink h-full border-l-4', BENTO_CARD_CLASS)}>

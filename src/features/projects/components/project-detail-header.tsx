@@ -33,7 +33,11 @@ import type { ProjectOwner } from '@/features/projects/actions/get-project';
 import { updateProject } from '@/features/projects/actions/update-project';
 import { ProjectImageUpload } from '@/features/projects/components/project-image-upload';
 import { ProjectStatusBadge } from '@/features/projects/components/project-status-badge';
-import { PROJECT_NAME_MAX_LENGTH, PROJECT_SUMMARY_MAX_LENGTH } from '@/features/projects/config';
+import {
+  PROJECT_NAME_MAX_LENGTH,
+  PROJECT_SUMMARY_MAX_LENGTH,
+  SAVE_STATUS_FEEDBACK_MS,
+} from '@/features/projects/config';
 import type { ProjectAction } from '@/features/projects/config/status';
 import { PROJECT_ACTION_UI, getAvailableActions } from '@/features/projects/config/status';
 import {
@@ -148,7 +152,7 @@ export function ProjectDetailHeader({
       summary: project.summary ?? undefined,
       targetResponses: project.target_responses,
     });
-    setTimeout(() => setSaveStatus('idle'), 2000);
+    setTimeout(() => setSaveStatus('idle'), SAVE_STATUS_FEEDBACK_MS);
   }, [
     project.id,
     project.name,
@@ -187,7 +191,7 @@ export function ProjectDetailHeader({
       summary: trimmed || undefined,
       targetResponses: project.target_responses,
     });
-    setTimeout(() => setSaveStatus('idle'), 2000);
+    setTimeout(() => setSaveStatus('idle'), SAVE_STATUS_FEEDBACK_MS);
   }, [
     project.id,
     project.name,

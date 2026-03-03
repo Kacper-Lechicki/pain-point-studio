@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { RESEARCH_PHASES } from '@/features/projects/types';
 import {
+  CONFIG_MAX_JSON_LENGTH,
   QUESTIONS_MAX,
   QUESTION_DESCRIPTION_MAX_LENGTH,
   QUESTION_TEXT_MAX_LENGTH,
@@ -80,9 +81,6 @@ export const createSurveyDraftSchema = surveyMetadataSchema.and(
 );
 
 // ── Question schema ─────────────────────────────────────────────────
-
-/** Max serialized config size in characters (prevents oversized JSON payloads). */
-const CONFIG_MAX_JSON_LENGTH = 2_000;
 
 /** Validates that a config object doesn't exceed a safe serialized size. */
 const configSchema = z

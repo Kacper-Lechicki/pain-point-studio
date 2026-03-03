@@ -13,6 +13,11 @@ export const TRASH_RETENTION_DAYS = 30;
 /** Maximum number of completed responses that can be exported at once. */
 export const MAX_EXPORT_RESPONSES = 10_000;
 
+// ── Question config constraints ─────────────────────────────────────
+
+/** Max serialized config size in characters (prevents oversized JSON payloads). */
+export const CONFIG_MAX_JSON_LENGTH = 2_000;
+
 // ── Question builder constraints ────────────────────────────────────
 
 export const QUESTIONS_MIN = 1;
