@@ -108,7 +108,7 @@ export function KanbanBoard({
           return { ...insight, sort_order: newIndex };
         });
 
-        onInsightsChanged?.(updated);
+        queueMicrotask(() => onInsightsChanged?.(updated));
 
         return updated;
       });
@@ -156,7 +156,7 @@ export function KanbanBoard({
           return insight;
         });
 
-        onInsightsChanged?.(updated);
+        queueMicrotask(() => onInsightsChanged?.(updated));
 
         return updated;
       });
