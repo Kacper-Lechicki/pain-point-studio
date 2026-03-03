@@ -1520,6 +1520,8 @@
     "settings": "Settings",
     "pinSidebar": "Pin sidebar",
     "unpinSidebar": "Unpin sidebar",
+    "showSubpanel": "Show secondary panel",
+    "hideSubpanel": "Hide secondary panel",
     "back": "Back",
     "projectDetails": "Project Details",
     "surveyDetails": "Survey Details",

@@ -8,6 +8,7 @@ import { MobileNav } from '@/features/dashboard/components/layout/mobile-nav';
 import { Navbar } from '@/features/dashboard/components/layout/navbar';
 import { Sidebar } from '@/features/dashboard/components/layout/sidebar';
 import { SubPanel } from '@/features/dashboard/components/layout/sub-panel';
+import { SubPanelToggle } from '@/features/dashboard/components/layout/sub-panel-toggle';
 import { isBuilderPath } from '@/features/dashboard/config/layout';
 import type { ProfileData } from '@/features/settings/actions';
 import { CompleteProfileModal } from '@/features/settings/components/complete-profile-modal';
@@ -50,6 +51,7 @@ export function DashboardLayoutChrome({ children, profile }: DashboardLayoutChro
         <div className="flex min-h-0 flex-1 overflow-hidden">
           <Sidebar />
           <SubPanel />
+          <SubPanelToggle />
           <MobileNav />
 
           <div className="flex min-h-full min-w-0 flex-1 flex-col overflow-auto">

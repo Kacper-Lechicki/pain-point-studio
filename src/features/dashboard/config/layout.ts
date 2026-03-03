@@ -18,12 +18,25 @@ export function isBuilderPath(pathname: string | null): boolean {
 //   --sidebar-width-expanded:  236px
 //   --sidebar-sub-panel-width: 236px
 
+/** Width of the sub-panel toggle strip when closed (~2/3 of collapsed main sidebar). */
+export const SUBPANEL_TOGGLE_STRIP_WIDTH = 25;
+
 /** Left offset for main content and page footer (so they start where sidebars end). */
-export function getDashboardContentMarginLeft(isPinned: boolean, hasSubPanel: boolean): string {
-  if (hasSubPanel) {
+export function getDashboardContentMarginLeft(
+  isPinned: boolean,
+  subPanelVisible: boolean,
+  hasSubPanelClosed: boolean
+): string {
+  if (subPanelVisible) {
     return isPinned
       ? 'calc(var(--sidebar-width-expanded) + var(--sidebar-sub-panel-width))'
       : 'calc(var(--sidebar-width-collapsed) + var(--sidebar-sub-panel-width))';
+  }
+
+  if (hasSubPanelClosed) {
+    return isPinned
+      ? `calc(var(--sidebar-width-expanded) + ${SUBPANEL_TOGGLE_STRIP_WIDTH}px)`
+      : `calc(var(--sidebar-width-collapsed) + ${SUBPANEL_TOGGLE_STRIP_WIDTH}px)`;
   }
 
   return isPinned ? 'var(--sidebar-width-expanded)' : 'var(--sidebar-width-collapsed)';
