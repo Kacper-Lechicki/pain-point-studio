@@ -1,11 +1,11 @@
 // @vitest-environment node
-/** Tests for deleting a project insight via the deleteInsight action. */
+/** Tests for emptying the trash via the emptyTrash action. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // ── Helpers ──────────────────────────────────────────────────────────
 
 import {
-  TEST_INSIGHT_ID as INSIGHT_ID,
+  TEST_PROJECT_ID as PROJECT_ID,
   TEST_USER as USER,
   chain,
 } from '@/test-utils/action-helpers';
@@ -38,34 +38,34 @@ vi.mock('@/lib/supabase/server', () => ({
 
 // ── Tests ────────────────────────────────────────────────────────────
 
-describe('Project Actions – Delete Insight', () => {
+describe('Project Actions – Empty Trash', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockGetUser.mockResolvedValue({ data: { user: USER } });
   });
 
-  it('should delete insight and return success', async () => {
-    mockFrom.mockReturnValue(chain({ data: { id: INSIGHT_ID } }));
+  it('should empty trash and return success', async () => {
+    mockFrom.mockReturnValue(chain());
 
-    const { deleteInsight } = await import('./delete-insight');
-    const result = await deleteInsight({ insightId: INSIGHT_ID });
+    const { emptyTrash } = await import('./empty-trash');
+    const result = await emptyTrash({ projectId: PROJECT_ID });
 
     expect(result).toEqual({ success: true });
-    expect(mockFrom).toHaveBeenCalledWith('project_insights');
+    expect(mockFrom).toHaveBeenCalledWith('project_notes');
   });
 
-  it('should return error when no matching row', async () => {
-    mockFrom.mockReturnValue(chain({ data: null }));
+  it('should return error when DB returns an error', async () => {
+    mockFrom.mockReturnValue(chain({ error: { message: 'db error' } }));
 
-    const { deleteInsight } = await import('./delete-insight');
-    const result = await deleteInsight({ insightId: INSIGHT_ID });
+    const { emptyTrash } = await import('./empty-trash');
+    const result = await emptyTrash({ projectId: PROJECT_ID });
 
     expect(result).toHaveProperty('error', 'projects.errors.unexpected');
   });
 
-  it('should return validation error for invalid insightId', async () => {
-    const { deleteInsight } = await import('./delete-insight');
-    const result = await deleteInsight({ insightId: 'not-a-uuid' });
+  it('should return validation error for invalid projectId', async () => {
+    const { emptyTrash } = await import('./empty-trash');
+    const result = await emptyTrash({ projectId: 'not-a-uuid' });
 
     expect(result.error).toBeDefined();
     expect(mockFrom).not.toHaveBeenCalled();

@@ -1,11 +1,11 @@
 // @vitest-environment node
-/** Tests for deleting a project insight via the deleteInsight action. */
+/** Tests for setPinnedProject — protected action. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // ── Helpers ──────────────────────────────────────────────────────────
 
 import {
-  TEST_INSIGHT_ID as INSIGHT_ID,
+  TEST_PROJECT_ID as PROJECT_ID,
   TEST_USER as USER,
   chain,
 } from '@/test-utils/action-helpers';
@@ -36,38 +36,52 @@ vi.mock('@/lib/supabase/server', () => ({
   }),
 }));
 
+vi.mock('next/cache', () => ({
+  revalidatePath: vi.fn(),
+}));
+
 // ── Tests ────────────────────────────────────────────────────────────
 
-describe('Project Actions – Delete Insight', () => {
+describe('Dashboard Actions – Set Pinned Project', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockGetUser.mockResolvedValue({ data: { user: USER } });
   });
 
-  it('should delete insight and return success', async () => {
-    mockFrom.mockReturnValue(chain({ data: { id: INSIGHT_ID } }));
+  it('should pin a project and return success', async () => {
+    mockFrom.mockReturnValue(chain({ data: {} }));
 
-    const { deleteInsight } = await import('./delete-insight');
-    const result = await deleteInsight({ insightId: INSIGHT_ID });
+    const { setPinnedProject } = await import('./set-pinned-project');
+    const result = await setPinnedProject({ projectId: PROJECT_ID });
 
     expect(result).toEqual({ success: true });
-    expect(mockFrom).toHaveBeenCalledWith('project_insights');
+    expect(mockFrom).toHaveBeenCalledWith('profiles');
   });
 
-  it('should return error when no matching row', async () => {
-    mockFrom.mockReturnValue(chain({ data: null }));
+  it('should unpin (null projectId) and return success', async () => {
+    mockFrom.mockReturnValue(chain({ data: {} }));
 
-    const { deleteInsight } = await import('./delete-insight');
-    const result = await deleteInsight({ insightId: INSIGHT_ID });
+    const { setPinnedProject } = await import('./set-pinned-project');
+    const result = await setPinnedProject({ projectId: null });
 
-    expect(result).toHaveProperty('error', 'projects.errors.unexpected');
+    expect(result).toEqual({ success: true });
+    expect(mockFrom).toHaveBeenCalledWith('profiles');
   });
 
-  it('should return validation error for invalid insightId', async () => {
-    const { deleteInsight } = await import('./delete-insight');
-    const result = await deleteInsight({ insightId: 'not-a-uuid' });
+  it('should return validation error for invalid projectId', async () => {
+    const { setPinnedProject } = await import('./set-pinned-project');
+    const result = await setPinnedProject({ projectId: 'not-a-uuid' });
 
     expect(result.error).toBeDefined();
     expect(mockFrom).not.toHaveBeenCalled();
+  });
+
+  it('should return error when DB update fails', async () => {
+    mockFrom.mockReturnValue(chain({ error: { message: 'DB error' } }));
+
+    const { setPinnedProject } = await import('./set-pinned-project');
+    const result = await setPinnedProject({ projectId: PROJECT_ID });
+
+    expect(result).toHaveProperty('error', 'common.errors.unexpected');
   });
 });

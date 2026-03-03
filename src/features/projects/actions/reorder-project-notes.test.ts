@@ -1,14 +1,10 @@
 // @vitest-environment node
-/** Tests for deleting a project insight via the deleteInsight action. */
+/** Tests for reordering project notes via the reorderProjectNotes action. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // ── Helpers ──────────────────────────────────────────────────────────
 
-import {
-  TEST_INSIGHT_ID as INSIGHT_ID,
-  TEST_USER as USER,
-  chain,
-} from '@/test-utils/action-helpers';
+import { TEST_NOTE_ID as NOTE_ID, TEST_USER as USER, chain } from '@/test-utils/action-helpers';
 
 // ── Mocks ────────────────────────────────────────────────────────────
 
@@ -36,36 +32,45 @@ vi.mock('@/lib/supabase/server', () => ({
   }),
 }));
 
+const NOTE_ID_2 = '00000000-0000-4000-8000-000000000021';
+const NOTE_ID_3 = '00000000-0000-4000-8000-000000000022';
+
 // ── Tests ────────────────────────────────────────────────────────────
 
-describe('Project Actions – Delete Insight', () => {
+describe('Project Actions – Reorder Project Notes', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockGetUser.mockResolvedValue({ data: { user: USER } });
   });
 
-  it('should delete insight and return success', async () => {
-    mockFrom.mockReturnValue(chain({ data: { id: INSIGHT_ID } }));
+  it('should reorder all notes and return success', async () => {
+    mockFrom.mockReturnValue(chain());
 
-    const { deleteInsight } = await import('./delete-insight');
-    const result = await deleteInsight({ insightId: INSIGHT_ID });
+    const { reorderProjectNotes } = await import('./reorder-project-notes');
+    const result = await reorderProjectNotes({
+      noteIds: [NOTE_ID, NOTE_ID_2, NOTE_ID_3],
+    });
 
     expect(result).toEqual({ success: true });
-    expect(mockFrom).toHaveBeenCalledWith('project_insights');
+    expect(mockFrom).toHaveBeenCalledTimes(3);
+    expect(mockFrom).toHaveBeenCalledWith('project_notes');
   });
 
-  it('should return error when no matching row', async () => {
-    mockFrom.mockReturnValue(chain({ data: null }));
+  it('should return error when one update fails', async () => {
+    mockFrom.mockReturnValueOnce(chain({ error: { message: 'fail' } }));
+    mockFrom.mockReturnValue(chain());
 
-    const { deleteInsight } = await import('./delete-insight');
-    const result = await deleteInsight({ insightId: INSIGHT_ID });
+    const { reorderProjectNotes } = await import('./reorder-project-notes');
+    const result = await reorderProjectNotes({
+      noteIds: [NOTE_ID, NOTE_ID_2, NOTE_ID_3],
+    });
 
     expect(result).toHaveProperty('error', 'projects.errors.unexpected');
   });
 
-  it('should return validation error for invalid insightId', async () => {
-    const { deleteInsight } = await import('./delete-insight');
-    const result = await deleteInsight({ insightId: 'not-a-uuid' });
+  it('should return validation error for invalid noteIds', async () => {
+    const { reorderProjectNotes } = await import('./reorder-project-notes');
+    const result = await reorderProjectNotes({ noteIds: ['not-uuid'] });
 
     expect(result.error).toBeDefined();
     expect(mockFrom).not.toHaveBeenCalled();

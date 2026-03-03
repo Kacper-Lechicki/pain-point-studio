@@ -1,11 +1,11 @@
 // @vitest-environment node
-/** Tests for deleting a project insight via the deleteInsight action. */
+/** Tests for checkProjectNameExists — protected action. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // ── Helpers ──────────────────────────────────────────────────────────
 
 import {
-  TEST_INSIGHT_ID as INSIGHT_ID,
+  TEST_PROJECT_ID as PROJECT_ID,
   TEST_USER as USER,
   chain,
 } from '@/test-utils/action-helpers';
@@ -38,34 +38,47 @@ vi.mock('@/lib/supabase/server', () => ({
 
 // ── Tests ────────────────────────────────────────────────────────────
 
-describe('Project Actions – Delete Insight', () => {
+describe('Project Actions – Check Project Name Exists', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockGetUser.mockResolvedValue({ data: { user: USER } });
   });
 
-  it('should delete insight and return success', async () => {
-    mockFrom.mockReturnValue(chain({ data: { id: INSIGHT_ID } }));
+  it('should return exists: true when a matching project is found', async () => {
+    mockFrom.mockReturnValue(chain({ data: { id: PROJECT_ID } }));
 
-    const { deleteInsight } = await import('./delete-insight');
-    const result = await deleteInsight({ insightId: INSIGHT_ID });
+    const { checkProjectNameExists } = await import('./check-project-name-exists');
+    const result = await checkProjectNameExists({ name: 'My Project' });
 
-    expect(result).toEqual({ success: true });
-    expect(mockFrom).toHaveBeenCalledWith('project_insights');
+    expect(result).toEqual({ success: true, data: { exists: true } });
+    expect(mockFrom).toHaveBeenCalledWith('projects');
   });
 
-  it('should return error when no matching row', async () => {
+  it('should return exists: false when no matching project is found', async () => {
     mockFrom.mockReturnValue(chain({ data: null }));
 
-    const { deleteInsight } = await import('./delete-insight');
-    const result = await deleteInsight({ insightId: INSIGHT_ID });
+    const { checkProjectNameExists } = await import('./check-project-name-exists');
+    const result = await checkProjectNameExists({ name: 'Unique Name' });
 
-    expect(result).toHaveProperty('error', 'projects.errors.unexpected');
+    expect(result).toEqual({ success: true, data: { exists: false } });
+    expect(mockFrom).toHaveBeenCalledWith('projects');
   });
 
-  it('should return validation error for invalid insightId', async () => {
-    const { deleteInsight } = await import('./delete-insight');
-    const result = await deleteInsight({ insightId: 'not-a-uuid' });
+  it('should support excludeProjectId parameter', async () => {
+    mockFrom.mockReturnValue(chain({ data: null }));
+
+    const { checkProjectNameExists } = await import('./check-project-name-exists');
+    const result = await checkProjectNameExists({
+      name: 'My Project',
+      excludeProjectId: PROJECT_ID,
+    });
+
+    expect(result).toEqual({ success: true, data: { exists: false } });
+  });
+
+  it('should return validation error for empty name', async () => {
+    const { checkProjectNameExists } = await import('./check-project-name-exists');
+    const result = await checkProjectNameExists({ name: '' });
 
     expect(result.error).toBeDefined();
     expect(mockFrom).not.toHaveBeenCalled();
