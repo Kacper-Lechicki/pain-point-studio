@@ -77,7 +77,6 @@ export function CreateProjectWizard({ userId }: CreateProjectWizardProps) {
   const hasDirtyFields = Object.keys(form.formState.dirtyFields).length > 0;
   const description = useWatch({ control: form.control, name: 'description' });
 
-  // Warn about unsaved changes until the project is created
   useUnsavedChangesWarning('create-project-wizard', hasDirtyFields && !projectId);
 
   const goTo = useCallback((target: WizardStep, dir: Direction) => {
@@ -142,7 +141,6 @@ export function CreateProjectWizard({ userId }: CreateProjectWizardProps) {
       if (result?.data?.projectId) {
         setProjectId(result.data.projectId);
         setProjectName(data.name);
-        // Stay on step 4 — the UI will swap to the post-creation view
       }
     },
     [action]
@@ -161,9 +159,6 @@ export function CreateProjectWizard({ userId }: CreateProjectWizardProps) {
     [form]
   );
 
-  // Intercept Enter on steps 1-2 to advance instead of submitting the form.
-  // Step 3 uses the rich editor which handles Enter internally.
-  // Step 4 has a submit button — Enter naturally submits the form.
   const handleFormKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if (e.key === 'Enter' && !e.shiftKey) {
@@ -336,7 +331,6 @@ export function CreateProjectWizard({ userId }: CreateProjectWizardProps) {
                 isSubmit
               >
                 <div className="flex flex-col gap-5">
-                  {/* Name */}
                   <div className="flex flex-col gap-1">
                     <span className="text-xs font-medium underline">
                       {t('projects.create.name')}
@@ -344,7 +338,6 @@ export function CreateProjectWizard({ userId }: CreateProjectWizardProps) {
                     <p className="text-sm">{form.getValues('name')}</p>
                   </div>
 
-                  {/* Summary */}
                   {form.getValues('summary') ? (
                     <div className="flex flex-col gap-1">
                       <span className="text-xs font-medium underline">
@@ -354,7 +347,6 @@ export function CreateProjectWizard({ userId }: CreateProjectWizardProps) {
                     </div>
                   ) : null}
 
-                  {/* Description */}
                   {!isTiptapEmpty(description) ? (
                     <div className="flex flex-col gap-1">
                       <span className="text-xs font-medium underline">

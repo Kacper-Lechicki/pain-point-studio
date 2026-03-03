@@ -18,6 +18,10 @@ import { SurveyDetailSheet } from '@/features/surveys/components/dashboard/surve
 import { SurveyListKpi } from '@/features/surveys/components/dashboard/survey-list-kpi';
 import { SurveyListRow } from '@/features/surveys/components/dashboard/survey-list-row';
 import { SurveyListTable } from '@/features/surveys/components/dashboard/survey-list-table';
+import {
+  SurveyListToolbar,
+  type SurveySortBy,
+} from '@/features/surveys/components/dashboard/survey-list-toolbar';
 import { SURVEY_ACTION_UI } from '@/features/surveys/config/survey-status';
 import { useRealtimeSurveyList } from '@/features/surveys/hooks/use-realtime-survey-list';
 import {
@@ -36,10 +40,6 @@ import { useFormAction } from '@/hooks/common/use-form-action';
 import { useRefresh } from '@/hooks/common/use-refresh';
 import type { MessageKey } from '@/i18n/types';
 
-import { SurveyListToolbar, type SurveySortBy } from './survey-list-toolbar';
-
-// ── Bulk action button colors ────────────────────────────────────────
-
 const SURVEY_BULK_BUTTON_COLORS: Record<BulkSurveyAction, string> = {
   complete:
     'border-violet-500 text-violet-600 hover:bg-violet-500/10 dark:text-violet-400 dark:hover:bg-violet-500/10',
@@ -55,17 +55,11 @@ const SURVEY_BULK_BUTTON_COLORS: Record<BulkSurveyAction, string> = {
     'border-emerald-500 text-emerald-600 hover:bg-emerald-500/10 dark:text-emerald-400 dark:hover:bg-emerald-500/10',
 };
 
-// ── Component ────────────────────────────────────────────────────────
-
 interface SurveyListProps {
   initialSurveys: UserSurvey[];
-  /** When set, the list runs in project context (hides project filter, shows archived status). */
   projectId?: string | undefined;
-  /** Callback to open the "create survey" dialog (rendered by the parent). */
   onCreateSurvey?: (() => void) | undefined;
-  /** Total responses across all surveys in this project (project context only). */
   totalResponses?: number | undefined;
-  /** Project-level target responses cap (project context only). */
   targetResponses?: number | undefined;
 }
 
@@ -88,7 +82,6 @@ export const SurveyList = ({
   const isProjectContext = !!projectId;
 
   const hasActiveSurveys = surveys.some((s) => s.status === 'active');
-  // In project context, realtime is managed at the project level — skip here to avoid double subscriptions.
   const { isConnected: isRealtimeConnected } = useRealtimeSurveyList(
     markSynced,
     hasActiveSurveys && !isProjectContext
@@ -131,7 +124,6 @@ export const SurveyList = ({
   const { selectedId, selectedSurvey, questions, showSheet, setSelected } =
     useSurveySelection(surveys);
 
-  // In project context, clicking a row navigates to the survey detail page.
   const handleNavigate = useCallback(
     (surveyId: string) => router.push(getSurveyDetailUrl(surveyId)),
     [router]
@@ -140,7 +132,6 @@ export const SurveyList = ({
   const onSelect = isProjectContext ? handleNavigate : setSelected;
 
   const handleStatusChange = (surveyId: string, action: string) => {
-    // In project context, archived surveys stay visible — don't deselect on archive.
     const deselectStatuses = isProjectContext ? ['trashed'] : ['archived', 'trashed'];
     const { shouldDeselect, updatedSurveys } = applyOptimisticStatusChange(
       surveys,
@@ -155,8 +146,6 @@ export const SurveyList = ({
 
     setSurveys(updatedSurveys);
   };
-
-  // ── Bulk selection ──────────────────────────────────────────────────
 
   const {
     selectedIds,

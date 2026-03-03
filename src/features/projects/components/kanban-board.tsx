@@ -18,7 +18,6 @@ import { useKanbanBoard } from '@/hooks/use-kanban-board';
 import type { MessageKey } from '@/i18n/types';
 import { cn } from '@/lib/common/utils';
 
-/** Maps insight type to its i18n key for the pill label. */
 const PILL_LABEL_KEYS: Record<InsightType, string> = {
   strength: 'projects.scorecard.strengths',
   opportunity: 'projects.scorecard.opportunities',
@@ -32,7 +31,6 @@ interface KanbanBoardProps {
   onInsightCreated: (insight: ProjectInsight) => void;
   onInsightUpdated: (insight: ProjectInsight) => void;
   onInsightDeleted: (insightId: string) => void;
-  /** Bulk update insights state in parent (for DnD reorder/move). */
   onInsightsChanged?: (insights: ProjectInsight[]) => void;
 }
 
@@ -47,17 +45,14 @@ export function KanbanBoard({
   const t = useTranslations();
   const [activeMobileType, setActiveMobileType] = useState<InsightType>('strength');
 
-  // Local state for optimistic DnD updates
   const [localInsights, setLocalInsights] = useState(insights);
 
-  // Sync from parent when props change (e.g. create/delete from outside)
   useEffect(() => {
     setLocalInsights(insights);
   }, [insights]);
 
   const boardRef = useRef<HTMLDivElement>(null);
 
-  // Group and sort insights by type
   const insightsByType = useMemo(() => {
     const grouped: Record<InsightType, ProjectInsight[]> = {
       strength: [],
@@ -74,7 +69,6 @@ export function KanbanBoard({
       }
     }
 
-    // Sort each column by sort_order
     for (const type of INSIGHT_TYPES) {
       grouped[type].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
     }
@@ -82,7 +76,6 @@ export function KanbanBoard({
     return grouped;
   }, [localInsights]);
 
-  // Build columns map (type -> insightId[]) for the hook
   const columns = useMemo(() => {
     const result: Record<InsightType, string[]> = {
       strength: [],
@@ -98,7 +91,6 @@ export function KanbanBoard({
     return result;
   }, [insightsByType]);
 
-  // Handle within-column reorder
   const handleReorder = useCallback(
     (columnId: InsightType, newIds: string[]) => {
       setLocalInsights((prev) => {
@@ -126,7 +118,6 @@ export function KanbanBoard({
     [onInsightsChanged]
   );
 
-  // Handle cross-column move
   const handleMove = useCallback(
     (
       itemId: string,
@@ -137,7 +128,6 @@ export function KanbanBoard({
     ) => {
       setLocalInsights((prev) => {
         const updated = prev.map((insight) => {
-          // The moved item: change type and assign new sort_order
           if (insight.id === itemId) {
             return {
               ...insight,
@@ -147,7 +137,6 @@ export function KanbanBoard({
             };
           }
 
-          // Re-index source column
           if (insight.type === fromColumn) {
             const idx = sourceColumnIds.indexOf(insight.id);
 
@@ -156,7 +145,6 @@ export function KanbanBoard({
             }
           }
 
-          // Re-index target column (other cards)
           if (insight.type === toColumn) {
             const idx = targetColumnIds.indexOf(insight.id);
 
@@ -210,7 +198,6 @@ export function KanbanBoard({
     onMove: handleMove,
   });
 
-  // Handle "Move to" from card dropdown (both mobile and desktop)
   const handleMoveToType = useCallback(
     (insightId: string, newType: InsightType) => {
       const insight = localInsights.find((i) => i.id === insightId);
@@ -226,18 +213,15 @@ export function KanbanBoard({
 
       handleMove(insightId, insight.type as InsightType, newType, targetColumnIds, sourceColumnIds);
 
-      // On mobile, switch to the target column
       setActiveMobileType(newType);
     },
     [localInsights, insightsByType, handleMove]
   );
 
-  // Find the dragged insight for the ghost element
   const draggedInsight = draggedId ? localInsights.find((i) => i.id === draggedId) : null;
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Mobile: filter pills */}
       <div className="flex gap-1.5 overflow-x-auto md:hidden">
         {INSIGHT_TYPES.map((type) => {
           const colors = INSIGHT_COLORS[type];
@@ -262,7 +246,6 @@ export function KanbanBoard({
         })}
       </div>
 
-      {/* Mobile: single column with "Move to" submenu */}
       <div className="md:hidden">
         <KanbanColumn
           key={activeMobileType}
@@ -287,7 +270,6 @@ export function KanbanBoard({
         />
       </div>
 
-      {/* Desktop: 4-column kanban board */}
       <div ref={boardRef} className="hidden gap-3 md:flex">
         {INSIGHT_TYPES.map((type) => (
           <KanbanColumn
@@ -309,7 +291,6 @@ export function KanbanBoard({
         ))}
       </div>
 
-      {/* Ghost element during drag */}
       {draggedId &&
         draggedInsight &&
         ghostPosition &&

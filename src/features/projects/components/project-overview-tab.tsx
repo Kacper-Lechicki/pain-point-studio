@@ -53,8 +53,6 @@ export function ProjectOverviewTab({
     [overviewStats.totalResponses, project.target_responses, insights]
   );
 
-  // ── Empty state — no surveys yet ────────────────────────────────────
-
   if (!hasSurveys) {
     return (
       <HeroHighlight
@@ -81,16 +79,12 @@ export function ProjectOverviewTab({
     );
   }
 
-  // ── Data-centric layout ───────────────────────────────────────────
-
   return (
     <div className="grid min-w-0 gap-4 lg:grid-cols-[2fr_1fr]">
-      {/* Left: About */}
       <div className="min-w-0">
         <ProjectAboutCard project={project} />
       </div>
 
-      {/* Right: Verdict → KPIs → Trend → Activity (stacked) */}
       <div className="flex min-w-0 flex-col gap-4">
         <OverviewVerdictCard
           verdict={verdict}

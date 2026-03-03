@@ -14,10 +14,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { NotesSection } from '@/features/projects/components/notes/notes-section';
 import type { ProjectNoteMeta } from '@/features/projects/types';
 import { cn } from '@/lib/common/utils';
-
-import { NotesSection } from './notes-section';
 
 interface NotesTrashSectionProps {
   notes: ProjectNoteMeta[];
@@ -106,8 +105,6 @@ export function NotesTrashSection({
     </NotesSection>
   );
 }
-
-// ── Trash note item ─────────────────────────────────────────────
 
 interface TrashNoteItemProps {
   note: ProjectNoteMeta;

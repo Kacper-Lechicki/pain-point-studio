@@ -46,7 +46,6 @@ export function ProjectNotesTab({ project, initialNotes, initialFolders }: Proje
     onTitleExtracted: handleTitleExtracted,
   });
 
-  // Combined content change handler: update local state + trigger auto-save
   const handleEditorChange = useCallback(
     (json: JSONContent) => {
       handleStateContentChange(json);
@@ -55,7 +54,6 @@ export function ProjectNotesTab({ project, initialNotes, initialFolders }: Proje
     [handleStateContentChange, handleAutoSaveChange]
   );
 
-  // Auto-create first note when there are none (empty state)
   const activeNotesLength = activeNotes.length;
 
   useEffect(() => {
@@ -65,7 +63,6 @@ export function ProjectNotesTab({ project, initialNotes, initialFolders }: Proje
     }
   }, [archived, activeNotesLength, handleCreateNote]);
 
-  // On mobile, back navigates from editor to list
   const handleBack = useCallback(() => {
     setSelectedNoteId(null);
   }, [setSelectedNoteId]);

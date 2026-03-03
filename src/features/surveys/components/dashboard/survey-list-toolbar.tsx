@@ -33,7 +33,6 @@ export interface ProjectFilterOption {
   count: number;
 }
 
-/** Sentinel value for the "No project" filter option. */
 export const NO_PROJECT_FILTER_ID = '__none__';
 
 interface SurveyListToolbarProps {
@@ -49,9 +48,7 @@ interface SurveyListToolbarProps {
   onSortByChange: (sort: SurveySortBy) => void;
   onSortDirChange: (dir: SurveySortDir) => void;
   statusCounts: Record<string, number>;
-  /** Hide the project filter group (used in project context where all surveys belong to one project). */
   hideProjectFilter?: boolean;
-  /** Extra content rendered after the sort dropdown (e.g. action buttons). */
   actions?: ReactNode | undefined;
 }
 
@@ -118,7 +115,6 @@ export const SurveyListToolbar = ({
   const filterGroups: FilterGroup[] = [statusGroup];
 
   if (!hideProjectFilter) {
-    // Build project filter options: named projects + "No project" sentinel
     const noProjectCount = projectOptions.find((p) => p.id === NO_PROJECT_FILTER_ID)?.count ?? 0;
 
     const projectFilterOptions: FilterOption[] = sortOptionsAlphabetically(

@@ -12,8 +12,6 @@ import Link from '@/i18n/link';
 import type { MessageKey } from '@/i18n/types';
 import { cn } from '@/lib/common/utils';
 
-// ── Icon mapping ────────────────────────────────────────────────────
-
 const ACTIVITY_ICONS: Record<ActivityItem['type'], LucideIcon> = {
   response: MessageSquare,
   survey_completed: CheckCircle,
@@ -25,8 +23,6 @@ const ACTIVITY_ICON_COLORS: Record<ActivityItem['type'], string> = {
   survey_completed: 'text-chart-emerald',
   survey_activated: 'text-chart-violet',
 };
-
-// ── Component ───────────────────────────────────────────────────────
 
 interface OverviewActivityListProps {
   items: ActivityItem[];

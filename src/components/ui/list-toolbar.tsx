@@ -13,39 +13,29 @@ import { Separator } from '@/components/ui/separator';
 import { SortDropdown } from '@/components/ui/sort-dropdown';
 import { cn } from '@/lib/common/utils';
 
-// ── Types ────────────────────────────────────────────────────────────
-
 export interface FilterOption {
   value: string;
   label: string;
   count?: number;
-  /** Optional class for the label text (e.g. italic for sentinel values). */
   labelClassName?: string;
 }
 
 export interface FilterGroup {
-  /** Section heading label. */
   label: string;
-  /** Checkbox options to display. */
   options: FilterOption[];
-  /** Currently selected values. */
   selected: string[];
-  /** Called when selection changes. */
   onChange: (selected: string[]) => void;
 }
 
 interface ListToolbarProps<TSortBy extends string> {
-  // Search
   searchQuery: string;
   onSearchQueryChange: (query: string) => void;
   searchPlaceholder: string;
 
-  // Filters (optional — some lists like the archive list have no filters)
   filterGroups?: FilterGroup[];
   filterLabel?: string;
   clearFiltersLabel?: string;
 
-  // Sort
   sortBy: TSortBy;
   sortDir: 'asc' | 'desc';
   onSortByChange: (sort: TSortBy) => void;
@@ -54,18 +44,13 @@ interface ListToolbarProps<TSortBy extends string> {
   sortDirLabels: { asc: string; desc: string };
   sortLabel: string;
 
-  // Extra content (e.g. action buttons)
   actions?: ReactNode;
 
   className?: string;
 }
 
-// ── Constants ────────────────────────────────────────────────────────
-
 const FILTER_ITEM_CLASS =
   'flex cursor-pointer items-center gap-2 rounded-lg border border-transparent px-2 py-1.5 text-sm outline-hidden transition-colors select-none hover:border-dashed hover:border-foreground/30 hover:text-foreground';
-
-// ── Component ────────────────────────────────────────────────────────
 
 export function ListToolbar<TSortBy extends string>({
   searchQuery,

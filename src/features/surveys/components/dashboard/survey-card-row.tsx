@@ -8,16 +8,15 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { DropdownMenu, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
+import { ActivityInfoTrigger } from '@/features/surveys/components/dashboard/activity-info-trigger';
+import { Sparkline } from '@/features/surveys/components/dashboard/sparkline';
+import { SurveyActionMenuContent } from '@/features/surveys/components/dashboard/survey-action-menu';
+import { SurveyProjectBadge } from '@/features/surveys/components/dashboard/survey-project-badge';
+import { SurveyShareDialog } from '@/features/surveys/components/dashboard/survey-share-dialog';
+import { SurveyStatusBadge } from '@/features/surveys/components/dashboard/survey-status-badge';
 import { TRASH_RETENTION_DAYS } from '@/features/surveys/config';
 import type { useSurveyRow } from '@/features/surveys/hooks/use-survey-row';
 import { cn } from '@/lib/common/utils';
-
-import { ActivityInfoTrigger } from './activity-info-trigger';
-import { Sparkline } from './sparkline';
-import { SurveyActionMenuContent } from './survey-action-menu';
-import { SurveyProjectBadge } from './survey-project-badge';
-import { SurveyShareDialog } from './survey-share-dialog';
-import { SurveyStatusBadge } from './survey-status-badge';
 
 const ACTIVITY_BADGE_BASE =
   'border-border bg-muted/90 inline-flex w-fit items-center gap-1.5 px-2 py-0.5 text-[11px] font-medium';
@@ -28,11 +27,8 @@ interface SurveyCardRowProps {
   onSelect: (surveyId: string) => void;
   row: ReturnType<typeof useSurveyRow>;
   archivedLayout?: boolean;
-  /** When true, hides project badge and simplifies actions. */
   isProjectContext?: boolean | undefined;
-  /** Whether this row's checkbox is checked (for bulk selection). */
   isBulkSelected?: boolean | undefined;
-  /** Toggle bulk selection for this survey's ID. */
   onToggleBulkSelect?: ((id: string) => void) | undefined;
 }
 

@@ -1,17 +1,14 @@
 import type { OverviewProject } from '@/features/dashboard/actions/get-dashboard-overview';
+import { DashboardGreeting } from '@/features/dashboard/components/bento/dashboard-greeting';
+import { DashboardKpiCards } from '@/features/dashboard/components/bento/dashboard-kpi-cards';
+import { DashboardProjectsList } from '@/features/dashboard/components/bento/dashboard-projects-list';
+import { DashboardRecentActivity } from '@/features/dashboard/components/bento/dashboard-recent-activity';
+import { DashboardTimeFilter } from '@/features/dashboard/components/bento/dashboard-time-filter';
+import { PinnedProjectCard } from '@/features/dashboard/components/bento/pinned-project-card';
+import { PinnedProjectEmpty } from '@/features/dashboard/components/bento/pinned-project-empty';
+import { ResponsesChart } from '@/features/dashboard/components/bento/responses-chart';
 import type { DashboardStats } from '@/features/dashboard/types/dashboard-stats';
 import type { ProjectDetail } from '@/features/projects/actions/get-project';
-
-import { DashboardGreeting } from './dashboard-greeting';
-import { DashboardKpiCards } from './dashboard-kpi-cards';
-import { DashboardProjectsList } from './dashboard-projects-list';
-import { DashboardRecentActivity } from './dashboard-recent-activity';
-import { DashboardTimeFilter } from './dashboard-time-filter';
-import { PinnedProjectCard } from './pinned-project-card';
-import { PinnedProjectEmpty } from './pinned-project-empty';
-import { ResponsesChart } from './responses-chart';
-
-// ── Props ───────────────────────────────────────────────────────────
 
 interface DashboardBentoProps {
   fullName: string;
@@ -21,8 +18,6 @@ interface DashboardBentoProps {
   pinnedProjectId: string | null;
   currentPeriod: string;
 }
-
-// ── Component ───────────────────────────────────────────────────────
 
 export function DashboardBento({
   fullName,
@@ -41,24 +36,20 @@ export function DashboardBento({
 
   return (
     <section className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-6">
-      {/* ── Row 1: Greeting + Filter ─────────────────────────── */}
       <div className="col-span-full flex flex-wrap items-center justify-between gap-3">
         <DashboardGreeting fullName={fullName} />
         <DashboardTimeFilter currentPeriod={currentPeriod} />
       </div>
 
-      {/* ── Row 2: KPI Cards ─────────────────────────────────── */}
       <div className="col-span-full">
         <DashboardKpiCards stats={stats} projectCount={projects.length} periodDays={periodDays} />
       </div>
 
-      {/* ── Row 3: Responses over time (2 cols) | Recent activity ─────────── */}
       <div className="h-full min-h-0 lg:col-span-2">
         <ResponsesChart data={stats?.responsesTimeline ?? []} />
       </div>
       <DashboardRecentActivity items={stats?.recentActivity ?? []} />
 
-      {/* ── Row 4: Pinned Project + Projects List ────────────────────────────────────────────────── */}
       <div className="lg:col-span-2">
         {hasPinned ? (
           <PinnedProjectCard project={pinnedProject} overviewProject={matchingOverviewProject} />

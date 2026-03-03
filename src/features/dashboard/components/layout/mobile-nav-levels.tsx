@@ -282,7 +282,6 @@ interface MobileNavSubLevelProps {
 function MobileSubNavSkeleton() {
   return (
     <>
-      {/* Back link skeleton */}
       <div className="px-2 pt-4">
         <div className="flex min-h-8 items-center gap-2 px-2.5">
           <div className="bg-muted size-4 shrink-0 animate-pulse rounded" />
@@ -290,14 +289,12 @@ function MobileSubNavSkeleton() {
         </div>
       </div>
 
-      {/* Title skeleton */}
       <div className="shrink-0 pt-2">
         <div className="flex h-9 items-center px-5">
           <div className="bg-muted h-3.5 w-28 animate-pulse rounded" />
         </div>
       </div>
 
-      {/* Nav item skeleton */}
       <div className="flex flex-col gap-2 p-2">
         <div className="flex min-h-8 items-center gap-2 px-2.5">
           <div className="bg-muted size-4 shrink-0 animate-pulse rounded" />
@@ -323,7 +320,6 @@ export function MobileNavSubLevel({
   const dynamicTab = findDynamicTab(parentHref, pathname);
   const dynamicLabel = resolveDynamicLabel(dynamicTab, pathname, breadcrumbSegments);
 
-  // Dynamic route detected but data not yet ready — show skeleton
   const isDynamicPending =
     dynamicTab != null && (dynamicLabel == null || !subPanelLinks || subPanelLinks.length === 0);
 

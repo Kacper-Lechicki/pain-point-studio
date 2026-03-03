@@ -5,8 +5,7 @@ import {
   PROJECT_NAME_MAX_LENGTH,
   PROJECT_SUMMARY_MAX_LENGTH,
 } from '@/features/projects/config';
-
-import { INSIGHT_TYPES } from './project';
+import { INSIGHT_TYPES } from '@/features/projects/types/project';
 
 // ── Project schemas ─────────────────────────────────────────────────
 

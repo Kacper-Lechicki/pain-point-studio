@@ -46,7 +46,6 @@ const AuthToast = ({ showNoScriptFallback = false }: { showNoScriptFallback?: bo
     window.history.replaceState(null, '', window.location.pathname);
   }, [searchParams, errorKey, t]);
 
-  // Server-rendered fallback for users without JS (error param only).
   if (showNoScriptFallback && errorKey && isValidErrorKey(errorKey)) {
     return (
       <noscript>

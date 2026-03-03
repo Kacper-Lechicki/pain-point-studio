@@ -49,7 +49,6 @@ export default async function DashboardPage({ searchParams }: Props) {
     );
   }
 
-  // Fetch pinned project details if set
   const pinnedProjectId = profile?.pinnedProjectId ?? null;
   const pinnedProject = pinnedProjectId ? await getProject(pinnedProjectId) : null;
 

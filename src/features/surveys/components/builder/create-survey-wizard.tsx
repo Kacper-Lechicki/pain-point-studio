@@ -73,7 +73,6 @@ export function CreateSurveyWizard({
   const [direction, setDirection] = useState<Direction>('forward');
   const [createdSurveyId, setCreatedSurveyId] = useState<string | null>(null);
 
-  // ── Breadcrumb + sub-panel links (sidebar) ───────────────────────
   useBreadcrumbSegment(projectId, projectName);
 
   const isArchived = isProjectArchived(projectStatus);
@@ -111,8 +110,6 @@ export function CreateSurveyWizard({
   );
 
   useSubPanelLinks(topLinks, bottomLinks);
-
-  // ── Form ──────────────────────────────────────────────────────────
 
   const action = useFormAction<{ surveyId: string }>({
     successMessage: 'surveys.create.success' as MessageKey,
@@ -172,7 +169,6 @@ export function CreateSurveyWizard({
     [action, projectId, router]
   );
 
-  // Intercept Enter on steps 1-2 to advance instead of submitting the form.
   const handleFormKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if (e.key === 'Enter' && !e.shiftKey) {
@@ -329,7 +325,6 @@ export function CreateSurveyWizard({
                 isSubmit
               >
                 <div className="flex flex-col gap-5">
-                  {/* Title */}
                   <div className="flex flex-col gap-1">
                     <span className="text-xs font-medium underline">
                       {t('surveys.create.surveyTitle')}
@@ -337,7 +332,6 @@ export function CreateSurveyWizard({
                     <p className="text-sm">{form.getValues('title')}</p>
                   </div>
 
-                  {/* Description */}
                   {form.getValues('description') ? (
                     <div className="flex flex-col gap-1">
                       <span className="text-xs font-medium underline">

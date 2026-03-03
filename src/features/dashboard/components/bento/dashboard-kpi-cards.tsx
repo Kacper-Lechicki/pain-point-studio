@@ -3,9 +3,8 @@
 import { CheckCircle, ClipboardList, MessageSquare } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { KpiCard } from '@/features/dashboard/components/bento/kpi-card';
 import type { DashboardStats } from '@/features/dashboard/types/dashboard-stats';
-
-import { KpiCard } from './kpi-card';
 
 interface DashboardKpiCardsProps {
   stats: DashboardStats | null;
@@ -28,7 +27,6 @@ export function DashboardKpiCards({ stats, projectCount, periodDays }: Dashboard
 
   const hasComparisonPeriod = periodDays === 7 || periodDays === 30 || periodDays === 90;
 
-  // % deltas: when a period is selected, always show comparison (treat missing prev as 0)
   const responsesDelta = hasComparisonPeriod
     ? (() => {
         const prev = stats.prevTotalResponses ?? 0;
@@ -65,7 +63,6 @@ export function DashboardKpiCards({ stats, projectCount, periodDays }: Dashboard
       })()
     : null;
 
-  // Subtitles — contextual secondary metrics
   const responsesPerDay = periodDays > 0 ? (stats.totalResponses / periodDays).toFixed(1) : null;
   const responsesSubtitle = responsesPerDay
     ? t('kpi.responsesPerDay', { avg: responsesPerDay })

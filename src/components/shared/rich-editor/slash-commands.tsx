@@ -30,10 +30,6 @@ import {
 import { type Root, createRoot } from 'react-dom/client';
 import tippy, { type Instance as TippyInstance } from 'tippy.js';
 
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-
 interface SlashCommandItem {
   title: string;
   description: string;
@@ -41,19 +37,11 @@ interface SlashCommandItem {
   command: (props: { editor: Editor; range: Range }) => void;
 }
 
-// ---------------------------------------------------------------------------
-// Module-level callback for image request (avoids mutating editor.storage)
-// ---------------------------------------------------------------------------
-
 let _imageRequestCallback: (() => void) | null = null;
 
 export function setImageRequestCallback(cb: (() => void) | null) {
   _imageRequestCallback = cb;
 }
-
-// ---------------------------------------------------------------------------
-// Slash command definitions
-// ---------------------------------------------------------------------------
 
 const SLASH_COMMANDS: SlashCommandItem[] = [
   {
@@ -131,10 +119,6 @@ const SLASH_COMMANDS: SlashCommandItem[] = [
   },
 ];
 
-// ---------------------------------------------------------------------------
-// Slash Command List (React component rendered inside tippy)
-// ---------------------------------------------------------------------------
-
 interface SlashCommandListRef {
   onKeyDown: (props: SuggestionKeyDownProps) => boolean;
 }
@@ -149,7 +133,6 @@ const SlashCommandList = forwardRef<SlashCommandListRef, SlashCommandListProps>(
     const [selectedIndex, setSelectedIndex] = useState(0);
     const containerRef = useRef<HTMLDivElement>(null);
 
-    // Scroll selected item into view
     useLayoutEffect(() => {
       const container = containerRef.current;
 
@@ -249,10 +232,6 @@ const SlashCommandList = forwardRef<SlashCommandListRef, SlashCommandListProps>(
 
 SlashCommandList.displayName = 'SlashCommandList';
 
-// ---------------------------------------------------------------------------
-// Suggestion render (tippy.js + React 19 createRoot)
-// ---------------------------------------------------------------------------
-
 function createSuggestionRenderer(): ReturnType<
   NonNullable<SuggestionOptions<SlashCommandItem>['render']>
 > {
@@ -334,7 +313,6 @@ function createSuggestionRenderer(): ReturnType<
       tippyInstance?.destroy();
       tippyInstance = null;
 
-      // Defer unmount to avoid React warnings about synchronous unmount
       if (reactRoot) {
         const root = reactRoot;
 
@@ -346,10 +324,6 @@ function createSuggestionRenderer(): ReturnType<
     },
   };
 }
-
-// ---------------------------------------------------------------------------
-// Tiptap Extension
-// ---------------------------------------------------------------------------
 
 export const SlashCommands = Extension.create({
   name: 'slashCommands',

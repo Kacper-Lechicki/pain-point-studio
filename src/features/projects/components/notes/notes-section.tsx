@@ -31,7 +31,6 @@ export function NotesSection({
     }
   }, [collapsible]);
 
-  // Prevent collapse when clicking the action button
   const handleActionClick = useCallback((e: MouseEvent) => {
     e.stopPropagation();
   }, []);

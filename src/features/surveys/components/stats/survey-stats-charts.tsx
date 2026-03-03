@@ -18,8 +18,6 @@ function ChartLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-// ── Response Timeline ────────────────────────────────────────────────
-
 interface ResponseTimelineCardProps {
   responseTimeline: number[];
 }
@@ -36,8 +34,6 @@ export function ResponseTimelineCard({ responseTimeline }: ResponseTimelineCardP
     </Card>
   );
 }
-
-// ── Completion Rate Card ─────────────────────────────────────────────
 
 interface CompletionRateCardProps {
   completionBreakdown: { completed: number; inProgress: number; abandoned: number };
@@ -63,8 +59,6 @@ export function CompletionRateCard({ completionBreakdown }: CompletionRateCardPr
     </Card>
   );
 }
-
-// ── Device Breakdown Card ────────────────────────────────────────────
 
 interface DeviceBreakdownCardProps {
   deviceTimeline: DeviceTimelinePoint[];

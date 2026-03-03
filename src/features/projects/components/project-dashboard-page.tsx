@@ -15,6 +15,7 @@ import { EditProjectDialog } from '@/features/projects/components/edit-project-d
 import { ProjectDetailHeader } from '@/features/projects/components/project-detail-header';
 import { ProjectDetailTabs } from '@/features/projects/components/project-detail-tabs';
 import { useProjectDashboardActions } from '@/features/projects/hooks/use-project-dashboard-actions';
+import { useRealtimeProject } from '@/features/projects/hooks/use-realtime-project';
 import { isProjectReadOnly } from '@/features/projects/lib/project-helpers';
 import type {
   Project,
@@ -26,8 +27,6 @@ import type {
 import type { UserSurvey } from '@/features/surveys/actions';
 import { getCreateSurveyUrl } from '@/features/surveys/lib/survey-urls';
 import { useRefresh } from '@/hooks/common/use-refresh';
-
-import { useRealtimeProject } from '../hooks/use-realtime-project';
 
 interface ProjectDashboardPageProps {
   project: Project;

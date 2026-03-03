@@ -33,7 +33,6 @@ export const SurveyFlow = ({ survey, responseId, slug }: SurveyFlowProps) => {
   const [screen, setScreen] = useState<FlowScreen>('questions');
   const [closedReason, setClosedReason] = useState<ClosedReason | null>(null);
 
-  // Poll survey status every 30s to detect closure in real-time
   useEffect(() => {
     const interval = setInterval(async () => {
       const status = await checkSurveyStatus(survey.id);
@@ -49,7 +48,6 @@ export const SurveyFlow = ({ survey, responseId, slug }: SurveyFlowProps) => {
 
   const handleSaveError = useCallback(
     (errorKey?: string) => {
-      // If error is a survey-closed error, show closed screen immediately
       if (errorKey && errorKey.includes('closed.')) {
         setClosedReason('completed');
 
@@ -78,7 +76,6 @@ export const SurveyFlow = ({ survey, responseId, slug }: SurveyFlowProps) => {
     goToQuestion,
   } = useSurveyFlow({ questions: survey.questions, responseId, onSaveError: handleSaveError });
 
-  // Show closed screen if survey was closed mid-flow
   if (closedReason) {
     return <SurveyClosed title={survey.title} reason={closedReason} />;
   }

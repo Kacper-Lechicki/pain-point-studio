@@ -16,7 +16,6 @@ import { cn } from '@/lib/common/utils';
 
 type SaveStatus = 'idle' | 'saving' | 'saved' | 'failed';
 
-/** Max height (px) before fade + "show more" kicks in. */
 const PREVIEW_MAX_H = 400;
 
 interface ProjectAboutCardProps {
@@ -32,7 +31,6 @@ export function ProjectAboutCard({ project }: ProjectAboutCardProps) {
   const [expanded, setExpanded] = useState(false);
   const [overflows, setOverflows] = useState(false);
 
-  // Local content state so preview reflects saves without page refresh
   const [content, setContent] = useState<JSONContent | null>(
     (project.description as JSONContent | null) ?? null
   );
@@ -41,7 +39,6 @@ export function ProjectAboutCard({ project }: ProjectAboutCardProps) {
   const draftRef = useRef<JSONContent | null>(content);
   const savedFadeRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Check if content overflows the preview max-height after render
   useEffect(() => {
     if (editing) {
       return;
@@ -181,10 +178,8 @@ export function ProjectAboutCard({ project }: ProjectAboutCardProps) {
 
   return (
     <div className="border-border/70 relative min-h-0 min-w-0 rounded-lg border border-dashed">
-      {/* Header inside the border */}
       <div className="px-4 pt-3">{header}</div>
 
-      {/* Preview content */}
       <div
         ref={contentRef}
         className={cn(
@@ -203,7 +198,6 @@ export function ProjectAboutCard({ project }: ProjectAboutCardProps) {
         )}
       </div>
 
-      {/* Fade + show more */}
       {showFade && (
         <>
           <div className="from-background/80 pointer-events-none absolute inset-x-0 bottom-6 h-24 bg-gradient-to-t to-transparent" />

@@ -5,10 +5,9 @@ import { Fragment, useRef } from 'react';
 import { Folder, GripVertical } from 'lucide-react';
 import { createPortal } from 'react-dom';
 
+import type { DragHandleProps } from '@/features/projects/components/notes/sortable-note-list';
 import type { ProjectNoteFolder } from '@/features/projects/types';
 import { useSortableList } from '@/hooks/use-sortable-list';
-
-import type { DragHandleProps } from './sortable-note-list';
 
 const FOLDER_ID_ATTR = 'data-folder-id';
 

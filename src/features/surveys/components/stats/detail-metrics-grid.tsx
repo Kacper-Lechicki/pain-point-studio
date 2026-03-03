@@ -6,8 +6,6 @@ import { BENTO_CARD_CLASS } from '@/features/dashboard/components/bento/bento-st
 import { formatCompletionTime } from '@/features/surveys/lib/calculations';
 import { cn } from '@/lib/common/utils';
 
-// ── Helpers ─────────────────────────────────────────────────────────
-
 function getCompletionColor(pct: number) {
   if (pct >= 70) {
     return {
@@ -31,8 +29,6 @@ function getCompletionColor(pct: number) {
     border: 'border-l-rose-500',
   };
 }
-
-// ── Component ───────────────────────────────────────────────────────
 
 interface DetailMetricsGridProps {
   viewCount: number;
@@ -96,7 +92,6 @@ export function DetailMetricsGrid({
 
   return (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-      {/* Views */}
       <KpiCard
         icon={Eye}
         label={t('surveys.dashboard.detailPanel.views')}
@@ -104,7 +99,6 @@ export function DetailMetricsGrid({
         accentBorder="border-l-[var(--chart-violet)]"
       />
 
-      {/* Responses */}
       <KpiCard
         icon={Users}
         label={t('surveys.dashboard.detailPanel.responses')}
@@ -128,7 +122,6 @@ export function DetailMetricsGrid({
         )}
       </KpiCard>
 
-      {/* Submission Rate */}
       <KpiCard
         icon={Percent}
         label={t('surveys.dashboard.detailPanel.submissionRate')}
@@ -137,7 +130,6 @@ export function DetailMetricsGrid({
         valueClassName={rateColors?.text}
       />
 
-      {/* Avg Completion Time */}
       <KpiCard
         icon={Timer}
         label={t('surveys.dashboard.detailPanel.avgCompletionTime')}

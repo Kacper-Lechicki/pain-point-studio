@@ -37,14 +37,12 @@ function settled<T>(result: PromiseSettledResult<T>, fallback: T): T {
 export default async function ProjectDetailPage({ params }: ProjectDetailPageProps) {
   const { id } = await params;
 
-  // Critical queries — page can't render without these
   const [data, t] = await Promise.all([getProject(id), getTranslations()]);
 
   if (!data) {
     notFound();
   }
 
-  // Non-critical queries — page degrades gracefully on failure
   const [insightsResult, statsResult, surveysResult, notesResult, foldersResult] =
     await Promise.allSettled([
       getProjectInsights(id),

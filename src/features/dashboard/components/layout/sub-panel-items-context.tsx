@@ -48,17 +48,11 @@ export function SubPanelItemsProvider({ children }: { children: ReactNode }) {
   return <SubPanelItemsContext.Provider value={value}>{children}</SubPanelItemsContext.Provider>;
 }
 
-/**
- * Register additional sub-panel links for the current page.
- * `links` appear above the title, `bottomLinks` appear below the active item.
- * Links are automatically cleared on unmount.
- */
 export function useSubPanelLinks(links: SubPanelLink[], bottomLinks?: SubPanelLink[]) {
   const ctx = useContext(SubPanelItemsContext);
   const setLinks = ctx?.setLinks;
   const setBottomLinks = ctx?.setBottomLinks;
 
-  // Stable key derived from hrefs + labels to avoid re-triggering on referential changes
   const key = links.map((l) => `${l.href}:${l.label}`).join('|');
   const bottomKey = bottomLinks?.map((l) => `${l.href}:${l.label}`).join('|') ?? '';
 

@@ -25,7 +25,6 @@ import { cn } from '@/lib/common/utils';
 function SecondaryNavSkeleton() {
   return (
     <>
-      {/* Back link skeleton */}
       <div className="flex flex-col gap-1.5 px-2 pt-4">
         <div className="flex min-h-8 items-center gap-2 px-2.5">
           <div className="bg-sidebar-foreground/10 size-4 shrink-0 animate-pulse rounded" />
@@ -33,14 +32,12 @@ function SecondaryNavSkeleton() {
         </div>
       </div>
 
-      {/* Title skeleton */}
       <div className="shrink-0 pt-2">
         <div className="flex min-h-8 items-center px-3">
           <div className="bg-sidebar-foreground/10 h-3.5 w-28 animate-pulse rounded" />
         </div>
       </div>
 
-      {/* Nav item skeleton */}
       <div className="flex flex-col gap-1.5 px-2 pt-1.5">
         <div className="flex min-h-8 items-center gap-2 px-2.5">
           <div className="bg-sidebar-foreground/10 size-4 shrink-0 animate-pulse rounded" />
@@ -50,8 +47,6 @@ function SecondaryNavSkeleton() {
     </>
   );
 }
-
-// ── Shared sub-panel link renderer ─────────────────────────────────────
 
 function SubPanelLinkItem({
   link,
@@ -89,8 +84,6 @@ function SubPanelLinkItem({
   );
 }
 
-// ── Main component ─────────────────────────────────────────────────────
-
 interface SecondaryNavProps {
   titleKey: MessageKey;
   groups: SubNavConfig['groups'];
@@ -114,8 +107,6 @@ export function SecondaryNav({ titleKey, groups, parentHref }: SecondaryNavProps
     [dynamicTab, breadcrumb, pathname]
   );
 
-  // Dynamic route detected but data not yet ready — show skeleton to prevent
-  // stale content from flashing while breadcrumbs / sub-panel links register.
   const isDynamicPending =
     dynamicTab != null &&
     (dynamicLabel == null || !subPanelItems || subPanelItems.links.length === 0);
@@ -126,16 +117,11 @@ export function SecondaryNav({ titleKey, groups, parentHref }: SecondaryNavProps
 
   const isDynamicActive = dynamicTab != null && dynamicLabel != null;
 
-  // When a bottom link's href matches the current pathname, that link is active
-  // and the dynamic tab item becomes a regular (inactive) link.
   const hasActiveBottomLink =
     isDynamicActive &&
     (subPanelItems?.bottomLinks.some((l) => !l.disabled && pathname === l.href) ?? false);
 
-  // Resolve title: dynamic tab titleKey > parent titleKey
   const resolvedTitleKey = isDynamicActive && dynamicTab.titleKey ? dynamicTab.titleKey : titleKey;
-
-  // ── Dynamic panel rendering ─────────────────────────────────────────
 
   if (isDynamicActive) {
     return (
@@ -158,7 +144,6 @@ export function SecondaryNav({ titleKey, groups, parentHref }: SecondaryNavProps
 
         <nav className="flex flex-1 flex-col gap-1.5 overflow-y-auto px-2 pt-1.5 pb-3">
           <div className="flex flex-col gap-1.5">
-            {/* Dynamic tab item (e.g. project name) */}
             <Link
               href={
                 hasActiveBottomLink
@@ -172,7 +157,6 @@ export function SecondaryNav({ titleKey, groups, parentHref }: SecondaryNavProps
               <span className="truncate">{dynamicLabel}</span>
             </Link>
 
-            {/* Bottom links — active when pathname matches */}
             {subPanelItems &&
               subPanelItems.bottomLinks.length > 0 &&
               subPanelItems.bottomLinks.map((link) => (
@@ -187,8 +171,6 @@ export function SecondaryNav({ titleKey, groups, parentHref }: SecondaryNavProps
       </>
     );
   }
-
-  // ── Static groups rendering ───────────────────────────────────────
 
   return (
     <>

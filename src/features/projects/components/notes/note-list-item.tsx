@@ -25,10 +25,9 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import type { DragHandleProps } from '@/features/projects/components/notes/sortable-note-list';
 import type { ProjectNoteFolder, ProjectNoteMeta } from '@/features/projects/types';
 import { cn } from '@/lib/common/utils';
-
-import type { DragHandleProps } from './sortable-note-list';
 
 interface NoteListItemProps {
   note: ProjectNoteMeta;

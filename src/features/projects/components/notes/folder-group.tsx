@@ -7,13 +7,12 @@ import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { FolderContextMenu } from '@/features/projects/components/notes/folder-context-menu';
+import { NoteListItem } from '@/features/projects/components/notes/note-list-item';
+import { SortableNoteList } from '@/features/projects/components/notes/sortable-note-list';
+import type { DragHandleProps } from '@/features/projects/components/notes/sortable-note-list';
 import type { ProjectNoteFolder, ProjectNoteMeta } from '@/features/projects/types';
 import { cn } from '@/lib/common/utils';
-
-import { FolderContextMenu } from './folder-context-menu';
-import { NoteListItem } from './note-list-item';
-import { SortableNoteList } from './sortable-note-list';
-import type { DragHandleProps } from './sortable-note-list';
 
 interface NoteActions {
   folders?: ProjectNoteFolder[];

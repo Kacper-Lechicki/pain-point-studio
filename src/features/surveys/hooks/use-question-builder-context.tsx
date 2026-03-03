@@ -2,13 +2,12 @@
 
 import { type ReactNode, createContext, useContext, useMemo } from 'react';
 
-import type { QuestionSchema, QuestionType } from '@/features/surveys/types';
-
 import {
   type QuestionBuilderAction,
   type QuestionBuilderState,
   useQuestionBuilder,
-} from './use-question-builder';
+} from '@/features/surveys/hooks/use-question-builder';
+import type { QuestionSchema, QuestionType } from '@/features/surveys/types';
 
 interface QuestionBuilderContextValue {
   state: QuestionBuilderState;

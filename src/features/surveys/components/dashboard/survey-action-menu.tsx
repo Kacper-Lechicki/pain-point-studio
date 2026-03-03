@@ -32,7 +32,6 @@ interface SurveyActionMenuContentProps {
   detailsLabelKey?: 'quickPreview' | 'details';
 }
 
-// ── Primary menu item definition ──────────────────────────────────────
 type PrimaryMenuItem =
   | { kind: 'button'; key: string; label: string; icon: LucideIcon; onClick: () => void }
   | { kind: 'link'; key: string; label: string; icon: LucideIcon; href: string };
@@ -51,9 +50,7 @@ export function SurveyActionMenuContent({
   const { isDraft, isArchived, isTrashed, hasShareableLink, questionCount } = flags;
   const canPublish = isDraft && questionCount >= QUESTIONS_MIN;
 
-  // Build visible primary items then sort alphabetically by label
   const primaryItems = useMemo(() => {
-    // Trashed surveys: no primary actions available
     if (isTrashed) {
       return [];
     }
@@ -125,7 +122,6 @@ export function SurveyActionMenuContent({
     surveyId,
   ]);
 
-  // Sort status-change actions alphabetically by translated label
   const sortedActions = useMemo(
     () =>
       [...availableActions].sort((a, b) =>

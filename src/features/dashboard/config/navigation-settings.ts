@@ -9,8 +9,7 @@ import {
 } from 'lucide-react';
 
 import { ROUTES } from '@/config/routes';
-
-import type { NavItem, SubNavItem } from './navigation';
+import type { NavItem, SubNavItem } from '@/features/dashboard/config/navigation';
 
 /** Profile preview link shown in the sidebar above Settings. */
 export const PROFILE_NAV_ITEM: NavItem = {

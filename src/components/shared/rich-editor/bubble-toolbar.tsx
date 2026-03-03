@@ -16,19 +16,11 @@ import {
   X,
 } from 'lucide-react';
 
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-
 type ToolbarMode = 'formatting' | 'link-input';
 
 interface BubbleToolbarProps {
   editor: Editor;
 }
-
-// ---------------------------------------------------------------------------
-// Toolbar button
-// ---------------------------------------------------------------------------
 
 function ToolbarButton({
   icon: Icon,
@@ -57,17 +49,9 @@ function ToolbarButton({
   );
 }
 
-// ---------------------------------------------------------------------------
-// Separator
-// ---------------------------------------------------------------------------
-
 function ToolbarSeparator() {
   return <div className="bg-border mx-0.5 h-4 w-px" />;
 }
-
-// ---------------------------------------------------------------------------
-// Link input
-// ---------------------------------------------------------------------------
 
 function LinkInput({ editor, onBack }: { editor: Editor; onBack: () => void }) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -75,7 +59,6 @@ function LinkInput({ editor, onBack }: { editor: Editor; onBack: () => void }) {
     return (editor.getAttributes('link').href as string) ?? '';
   });
 
-  // Focus after a frame to let the BubbleMenu position settle
   useEffect(() => {
     requestAnimationFrame(() => inputRef.current?.focus());
   }, []);
@@ -133,14 +116,9 @@ function LinkInput({ editor, onBack }: { editor: Editor; onBack: () => void }) {
   );
 }
 
-// ---------------------------------------------------------------------------
-// Bubble Toolbar
-// ---------------------------------------------------------------------------
-
 export function BubbleToolbar({ editor }: BubbleToolbarProps) {
   const [mode, setMode] = useState<ToolbarMode>('formatting');
 
-  // Reset mode when selection changes
   useEffect(() => {
     const handler = () => setMode('formatting');
 

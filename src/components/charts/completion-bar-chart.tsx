@@ -24,13 +24,11 @@ const DEFAULT_LABELS = {
 
 interface CompletionBarChartProps {
   data: CompletionBarChartData;
-  /** Optional translated labels */
   labels?: { completed: string; inProgress: string; abandoned: string };
   noDataMessage?: string;
   className?: string;
 }
 
-/** Completion breakdown in multiple-choice style: label, count (pct), horizontal bar. */
 export function CompletionBarChart({
   data,
   labels: labelsProp,

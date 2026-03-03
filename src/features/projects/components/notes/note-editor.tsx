@@ -43,7 +43,6 @@ export function NoteEditor({
     [onContentChange]
   );
 
-  // No note selected
   if (!noteId) {
     return (
       <div className="flex h-full min-h-[400px] items-center justify-center">
@@ -57,7 +56,6 @@ export function NoteEditor({
     );
   }
 
-  // Loading content – same background as loaded editor to avoid flash
   if (isLoading) {
     return (
       <div className="bg-background dark:bg-input/30 flex h-full min-h-0 flex-1 items-center justify-center rounded-md">
@@ -68,7 +66,6 @@ export function NoteEditor({
 
   return (
     <div className="bg-background dark:bg-input/30 relative flex h-full min-h-0 flex-1 flex-col rounded-md">
-      {/* Mobile header bar with back button + save status */}
       {!isDesktop && (
         <div className="flex shrink-0 items-center px-1 py-1.5">
           {onBack && (
@@ -94,7 +91,6 @@ export function NoteEditor({
         </div>
       )}
 
-      {/* Desktop: save status floating top-right */}
       {isDesktop && editable && noteId && (
         <div className="pointer-events-none absolute top-2.5 right-3 z-10">
           <span
@@ -111,7 +107,6 @@ export function NoteEditor({
         </div>
       )}
 
-      {/* Editor — fills entire surface */}
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
         <RichEditor
           content={content}
