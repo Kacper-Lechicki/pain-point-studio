@@ -1934,5 +1934,31 @@
         "responses_1000": "1K responses"
       }
     }
+  },
+  "commandPalette": {
+    "placeholder": "Search pages, projects, surveys...",
+    "noResults": "No results found.",
+    "loading": "Loading...",
+    "groups": {
+      "quickActions": "Quick Actions",
+      "pages": "Pages",
+      "projects": "Projects",
+      "surveys": "Surveys"
+    },
+    "actions": {
+      "createProject": "Create Project",
+      "createSurvey": "Create Survey"
+    },
+    "projectPicker": {
+      "title": "Select a project",
+      "placeholder": "Search projects...",
+      "empty": "No projects found.",
+      "createFirst": "Create a project first",
+      "back": "Back"
+    },
+    "trigger": {
+      "placeholder": "Search...",
+      "shortcut": "Open search"
+    }
   }
 }
