@@ -8,7 +8,13 @@ import type { FilterGroup, FilterOption } from '@/components/ui/list-toolbar';
 import { ListToolbar } from '@/components/ui/list-toolbar';
 import { sortOptionsAlphabetically } from '@/lib/common/sort-options';
 
-export type SurveyStatusFilter = 'active' | 'draft' | 'completed' | 'cancelled' | 'archived';
+export type SurveyStatusFilter =
+  | 'active'
+  | 'draft'
+  | 'completed'
+  | 'cancelled'
+  | 'archived'
+  | 'trashed';
 export type SurveySortBy =
   | 'updated'
   | 'created'
@@ -49,13 +55,20 @@ interface SurveyListToolbarProps {
   actions?: ReactNode | undefined;
 }
 
-const STATUS_OPTIONS: SurveyStatusFilter[] = ['active', 'draft', 'completed', 'cancelled'];
+const STATUS_OPTIONS: SurveyStatusFilter[] = [
+  'active',
+  'draft',
+  'completed',
+  'cancelled',
+  'trashed',
+];
 const STATUS_OPTIONS_WITH_ARCHIVED: SurveyStatusFilter[] = [
   'active',
   'draft',
   'completed',
   'cancelled',
   'archived',
+  'trashed',
 ];
 
 const SORT_OPTIONS: SurveySortBy[] = [

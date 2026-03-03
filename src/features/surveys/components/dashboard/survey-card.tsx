@@ -106,7 +106,7 @@ export const SurveyCard = ({ survey, onStatusChange, onQuickPreview }: SurveyCar
                   {survey.title}
                 </h3>
 
-                <SurveyStatusBadge status={survey.status} />
+                <SurveyStatusBadge status={survey.status} deletedAt={survey.deletedAt} />
               </div>
 
               <p className="text-muted-foreground mt-1 line-clamp-1 text-xs leading-relaxed">

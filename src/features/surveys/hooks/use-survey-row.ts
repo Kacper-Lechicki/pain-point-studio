@@ -4,7 +4,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import { getSparklineColor } from '@/features/surveys/components/dashboard/sparkline';
-import { SURVEY_RETENTION_DAYS } from '@/features/surveys/config';
+import { SURVEY_RETENTION_DAYS, TRASH_RETENTION_DAYS } from '@/features/surveys/config';
 import { deriveSurveyFlags, getAvailableActions } from '@/features/surveys/config/survey-status';
 import { useSurveyAction } from '@/features/surveys/hooks/use-survey-action';
 import { useSurveyCardActions } from '@/features/surveys/hooks/use-survey-card-actions';
@@ -49,6 +49,10 @@ export function useSurveyRow(
     ? daysUntilExpiry(survey.archivedAt, SURVEY_RETENTION_DAYS)
     : null;
 
+  const trashedPurgeDays = isTrashed
+    ? daysUntilExpiry(survey.deletedAt ?? null, TRASH_RETENTION_DAYS)
+    : null;
+
   const linkExpiryDays = (() => {
     if (isCompleted) {
       return daysUntilExpiry(survey.completedAt, SURVEY_RETENTION_DAYS);
@@ -78,6 +82,7 @@ export function useSurveyRow(
     lastResponseLabel,
     availableActions,
     autoDeleteDays,
+    trashedPurgeDays,
     linkExpiryDays,
     handleActionClick,
     confirmDialogProps,

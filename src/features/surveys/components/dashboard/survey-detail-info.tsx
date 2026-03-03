@@ -34,7 +34,7 @@ export function SurveyDetailInfo({
         <MetricRow
           icon={SURVEY_STATUS_CONFIG[survey.status].icon}
           label={t('surveys.dashboard.detailPanel.status')}
-          value={<SurveyStatusBadge status={survey.status} />}
+          value={<SurveyStatusBadge status={survey.status} deletedAt={survey.deletedAt} />}
         />
 
         {survey.projectName && survey.projectId && (

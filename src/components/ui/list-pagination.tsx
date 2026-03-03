@@ -46,8 +46,11 @@ export const ListPagination = ({
   }
 
   return (
-    <nav aria-label="Pagination" className="flex flex-wrap items-center justify-between gap-3 pt-2">
-      <p className="text-muted-foreground text-xs tabular-nums">
+    <nav
+      aria-label="Pagination"
+      className="flex min-w-0 flex-wrap items-center justify-between gap-3 pt-2"
+    >
+      <p className="text-muted-foreground min-w-0 shrink text-xs tabular-nums">
         {t('common.pagination.showing', {
           start: startIndex + 1,
           end: endIndex,

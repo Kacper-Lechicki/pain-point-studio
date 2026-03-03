@@ -28,6 +28,8 @@ interface StatusBadgeProps {
   labelOverride?: ReactNode | undefined;
   /** Custom dialog badge text. Defaults to t(labelKey). Use when labelKey requires ICU params. */
   dialogLabel?: ReactNode | undefined;
+  /** Values for the description message (e.g. { days: 30 } for trashed status). */
+  descriptionValues?: Record<string, string | number> | undefined;
 }
 
 export function StatusBadge({
@@ -40,6 +42,7 @@ export function StatusBadge({
   className,
   labelOverride,
   dialogLabel: dialogLabelProp,
+  descriptionValues,
 }: StatusBadgeProps) {
   const t = useTranslations();
   const [open, setOpen] = useState(false);
@@ -84,7 +87,7 @@ export function StatusBadge({
                 {dialogBadgeLabel}
               </Badge>
               <DialogDescription className="text-muted-foreground text-sm leading-relaxed">
-                {t(descriptionKey as MessageKey)}
+                {t(descriptionKey as MessageKey, descriptionValues ?? {})}
               </DialogDescription>
             </div>
           </DialogHeader>

@@ -1,14 +1,30 @@
+import { useMemo } from 'react';
+
 import { StatusBadge } from '@/components/ui/status-badge';
+import { TRASH_RETENTION_DAYS } from '@/features/surveys/config';
 import { SURVEY_STATUS_CONFIG } from '@/features/surveys/config/survey-status';
+import { daysUntilExpiry } from '@/features/surveys/lib/calculations';
 import type { SurveyStatus } from '@/features/surveys/types';
 
 interface SurveyStatusBadgeProps {
   status: SurveyStatus;
+  /** When status is trashed, pass deletedAt so the description can show days until purge. */
+  deletedAt?: string | null;
   className?: string;
 }
 
-export function SurveyStatusBadge({ status, className }: SurveyStatusBadgeProps) {
+export function SurveyStatusBadge({ status, deletedAt, className }: SurveyStatusBadgeProps) {
   const config = SURVEY_STATUS_CONFIG[status];
+
+  const descriptionValues = useMemo(() => {
+    if (status !== 'trashed') {
+      return undefined;
+    }
+
+    const days = daysUntilExpiry(deletedAt ?? null, TRASH_RETENTION_DAYS);
+
+    return { days: days ?? TRASH_RETENTION_DAYS };
+  }, [status, deletedAt]);
 
   return (
     <StatusBadge
@@ -19,6 +35,7 @@ export function SurveyStatusBadge({ status, className }: SurveyStatusBadgeProps)
       badgeClassName={config.badge.className}
       showPulseDot={config.badge.showPulseDot}
       className={className}
+      descriptionValues={descriptionValues}
     />
   );
 }

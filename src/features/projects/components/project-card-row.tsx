@@ -16,9 +16,11 @@ import type { ProjectListExtras } from '@/features/projects/actions/get-projects
 import { ActivitySparkline } from '@/features/projects/components/activity-sparkline';
 import { ProjectAvatar } from '@/features/projects/components/project-avatar';
 import { ProjectStatusBadge } from '@/features/projects/components/project-status-badge';
+import { PROJECT_TRASH_RETENTION_DAYS } from '@/features/projects/config/constraints';
 import type { ProjectAction } from '@/features/projects/config/status';
 import { PROJECT_ACTION_UI, getAvailableActions } from '@/features/projects/config/status';
 import type { ProjectStatus } from '@/features/projects/types';
+import { daysUntilExpiry } from '@/features/surveys/lib/calculations';
 import type { MessageKey } from '@/i18n/types';
 
 interface ProjectCardRowProps {
@@ -114,22 +116,43 @@ export function ProjectCardRow({
       </div>
 
       <div className="text-muted-foreground mt-auto grid min-w-0 grid-cols-3 gap-x-4 text-xs">
-        <div className="flex flex-col gap-0.5">
-          <span>{t('projects.list.table.surveys')}</span>
-          <span className="text-foreground font-medium tabular-nums">{project.surveyCount}</span>
-        </div>
-        <div className="flex flex-col gap-0.5">
-          <span>{t('projects.list.table.responses')}</span>
-          <span className="text-foreground font-medium tabular-nums">
-            {project.target_responses
-              ? `${project.responseCount}/${project.target_responses}`
-              : project.responseCount}
-          </span>
-        </div>
-        <div className="flex min-w-0 flex-col gap-0.5">
-          <span>{t('projects.list.card.activity')}</span>
-          <ActivitySparkline data={extras?.sparkline ?? []} width={80} height={24} fillWidth />
-        </div>
+        {project.status === 'trashed' ? (
+          <>
+            <div className="flex flex-col gap-0.5">
+              <span>{t('projects.list.table.responses')}</span>
+              <span className="text-destructive/90 font-medium tabular-nums">
+                {t('projects.list.table.deletedInDays', {
+                  days:
+                    daysUntilExpiry(project.deleted_at ?? null, PROJECT_TRASH_RETENTION_DAYS) ??
+                    PROJECT_TRASH_RETENTION_DAYS,
+                })}
+              </span>
+            </div>
+            <div />
+            <div />
+          </>
+        ) : (
+          <>
+            <div className="flex flex-col gap-0.5">
+              <span>{t('projects.list.table.surveys')}</span>
+              <span className="text-foreground font-medium tabular-nums">
+                {project.surveyCount}
+              </span>
+            </div>
+            <div className="flex flex-col gap-0.5">
+              <span>{t('projects.list.table.responses')}</span>
+              <span className="text-foreground font-medium tabular-nums">
+                {project.target_responses
+                  ? `${project.responseCount}/${project.target_responses}`
+                  : project.responseCount}
+              </span>
+            </div>
+            <div className="flex min-w-0 flex-col gap-0.5">
+              <span>{t('projects.list.card.activity')}</span>
+              <ActivitySparkline data={extras?.sparkline ?? []} width={80} height={24} fillWidth />
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

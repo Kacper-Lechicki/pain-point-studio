@@ -7,6 +7,9 @@ export const SURVEY_MAX_RESPONDENTS_MIN = 1;
 /** Retention period in days for archived/cancelled/completed surveys before permanent deletion. */
 export const SURVEY_RETENTION_DAYS = 14;
 
+/** Days until trashed surveys are permanently purged (must match DB cron). */
+export const TRASH_RETENTION_DAYS = 30;
+
 /** Maximum number of completed responses that can be exported at once. */
 export const MAX_EXPORT_RESPONSES = 10_000;
 
