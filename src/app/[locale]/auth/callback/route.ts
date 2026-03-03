@@ -113,6 +113,14 @@ export async function GET(
 
     // Map Supabase error to a specific key so the UI can show a helpful message.
     // Prefer structured error.code over fragile string matching on error.message.
+
+    // User cancelled the OAuth consent screen — redirect silently to sign-in.
+    if (error.code === 'access_denied') {
+      const signInUrl = new URL(`/${locale}${ROUTES.auth.signIn}`, request.url);
+
+      return NextResponse.redirect(signInUrl);
+    }
+
     const EXPIRED_CODES = new Set(['otp_expired', 'flow_state_expired', 'bad_code_verifier']);
 
     if (

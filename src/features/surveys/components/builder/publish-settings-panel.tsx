@@ -4,7 +4,6 @@ import { useMemo, useState } from 'react';
 
 import { Info } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { toast } from 'sonner';
 
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -78,8 +77,6 @@ export function PublishSettingsPanel({
     });
 
     if (saveResult?.error) {
-      toast.error(t('surveys.builder.errors.saveFailed' as MessageKey));
-
       return;
     }
 

@@ -16,6 +16,20 @@ const SUPABASE_ERROR_MAP: Record<string, string> = {
   'Email link is invalid or has expired': 'auth.errors.linkExpired',
   'Identity not found': 'settings.connectedAccounts.errors.identityNotFound',
   'User must have at least one identity': 'settings.connectedAccounts.errors.cannotUnlinkLast',
+
+  // Refresh token errors (expired sessions)
+  'Token has expired or is invalid': 'auth.errors.linkExpired',
+  'Invalid Refresh Token: Already Used': 'auth.errors.linkExpired',
+  'Invalid Refresh Token: Refresh Token Not Found': 'auth.errors.linkExpired',
+
+  // Weak password (Supabase password strength rules)
+  'Password is too weak': 'auth.errors.passwordTooShort',
+
+  // OAuth email missing or unverified
+  'Unverified email': 'auth.errors.emailNotConfirmed',
+
+  // Supabase API-level rate limit (distinct from GoTrue email rate limit)
+  'Request rate limit reached': 'auth.errors.rateLimitExceeded',
 };
 
 export function mapSupabaseError(supabaseMessage: string): string {
