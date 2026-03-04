@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import type { SurveyAction } from '@/features/surveys/config/survey-status';
@@ -13,7 +13,7 @@ export type BulkSurveyAction = Exclude<SurveyAction, 'permanentDelete'>;
 export function useSurveyBulkSelection(surveys: UserSurvey[]) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
-  const toggleSelect = useCallback((id: string) => {
+  function toggleSelect(id: string) {
     setSelectedIds((prev) => {
       const next = new Set(prev);
 
@@ -25,18 +25,18 @@ export function useSurveyBulkSelection(surveys: UserSurvey[]) {
 
       return next;
     });
-  }, []);
+  }
 
-  const selectAll = useCallback((filteredSurveys: UserSurvey[]) => {
+  function selectAll(filteredSurveys: UserSurvey[]) {
     setSelectedIds(new Set(filteredSurveys.map((s) => s.id)));
-  }, []);
+  }
 
-  const clearSelection = useCallback(() => {
+  function clearSelection() {
     setSelectedIds(new Set());
-  }, []);
+  }
 
   /** Actions available for ALL selected surveys (intersection). */
-  const availableBulkActions = useMemo((): BulkSurveyAction[] => {
+  const availableBulkActions: BulkSurveyAction[] = (() => {
     if (selectedIds.size === 0) {
       return [];
     }
@@ -72,7 +72,7 @@ export function useSurveyBulkSelection(surveys: UserSurvey[]) {
     commonActions.delete('permanentDelete');
 
     return [...commonActions] as BulkSurveyAction[];
-  }, [selectedIds, surveys]);
+  })();
 
   return {
     selectedIds,

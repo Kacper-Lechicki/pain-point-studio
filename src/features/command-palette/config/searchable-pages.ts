@@ -15,7 +15,7 @@ import type { AppRoute } from '@/config/routes';
 import { ROUTES } from '@/config/routes';
 import type { MessageKey } from '@/i18n/types';
 
-export interface SearchablePage {
+interface SearchablePage {
   id: string;
   labelKey: MessageKey;
   href: AppRoute;

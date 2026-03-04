@@ -6,9 +6,8 @@ import { cache } from 'react';
 // We import it indirectly to avoid coupling — the schema is inline here for the same shape.
 import { z } from 'zod';
 
+import { type UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import { createClient } from '@/lib/supabase/server';
-
-import { type UserSurvey } from './get-user-surveys';
 
 const userSurveySchema = z.object({
   id: z.string(),

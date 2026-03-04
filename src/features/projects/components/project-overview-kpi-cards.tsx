@@ -11,8 +11,6 @@ import type { SurveyStatus } from '@/features/surveys/types';
 import type { MessageKey } from '@/i18n/types';
 import { cn } from '@/lib/common/utils';
 
-// ── Helpers ─────────────────────────────────────────────────────────
-
 function getCompletionColor(pct: number) {
   if (pct >= 70) {
     return { bar: 'bg-emerald-500', text: 'text-emerald-600 dark:text-emerald-400' };
@@ -24,8 +22,6 @@ function getCompletionColor(pct: number) {
 
   return { bar: 'bg-rose-500', text: 'text-rose-600 dark:text-rose-400' };
 }
-
-// ── Component ───────────────────────────────────────────────────────
 
 interface ProjectOverviewKpiCardsProps {
   overviewStats: ProjectOverviewStats;
@@ -51,7 +47,6 @@ export function ProjectOverviewKpiCards({
   return (
     <Card className={BENTO_CARD_CLASS}>
       <div className="flex flex-col gap-3 p-4">
-        {/* Card header with icon */}
         <div className="flex shrink-0 items-center justify-between gap-2">
           <span className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
             {t('projects.overview.metrics' as MessageKey)}
@@ -59,7 +54,6 @@ export function ProjectOverviewKpiCards({
           <ClipboardList className="text-chart-emerald size-4 shrink-0" aria-hidden />
         </div>
 
-        {/* Surveys */}
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center gap-3">
             <ClipboardList className="text-muted-foreground/60 size-4 shrink-0" aria-hidden />
@@ -81,7 +75,6 @@ export function ProjectOverviewKpiCards({
           )}
         </div>
 
-        {/* Responses */}
         <div className="flex items-center gap-3">
           <MessageSquare className="text-muted-foreground/60 size-4 shrink-0" aria-hidden />
           <span className="text-sm">
@@ -97,7 +90,6 @@ export function ProjectOverviewKpiCards({
           </span>
         </div>
 
-        {/* Completion */}
         <div className="flex items-center gap-3">
           <CheckCircle className="text-muted-foreground/60 size-4 shrink-0" aria-hidden />
           <span className="text-sm">

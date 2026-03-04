@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback } from 'react';
 
 import { formatDistanceToNow } from 'date-fns';
 import {
@@ -15,6 +15,7 @@ import {
   Trophy,
   X,
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -36,6 +37,7 @@ import { ProjectStatusBadge } from '@/features/projects/components/project-statu
 import { PROJECT_NAME_MAX_LENGTH, PROJECT_SUMMARY_MAX_LENGTH } from '@/features/projects/config';
 import type { ProjectAction } from '@/features/projects/config/status';
 import { PROJECT_ACTION_UI, getAvailableActions } from '@/features/projects/config/status';
+import { useInlineEdit } from '@/features/projects/hooks/use-inline-edit';
 import {
   isProjectArchived,
   isProjectCompleted,
@@ -46,10 +48,7 @@ import type { Project, ProjectStatus } from '@/features/projects/types';
 import type { MessageKey } from '@/i18n/types';
 import { cn } from '@/lib/common/utils';
 
-type EditingField = 'name' | 'summary' | null;
-type SaveStatus = 'idle' | 'saving' | 'saved' | 'failed';
-
-export type ProjectDetailHeaderEditSuccess = {
+type ProjectDetailHeaderEditSuccess = {
   name: string;
   summary: string | undefined;
   targetResponses?: number;
@@ -73,6 +72,78 @@ interface ProjectDetailHeaderProps {
   hasActiveSurveys?: boolean | undefined;
 }
 
+/* ------------------------------------------------------------------ */
+/*  Status banner                                                      */
+/* ------------------------------------------------------------------ */
+
+function ProjectStatusBanner({
+  icon: Icon,
+  colorClass,
+  message,
+  actionLabel,
+  onAction,
+}: {
+  icon: LucideIcon;
+  colorClass: string;
+  message: string;
+  actionLabel: string;
+  onAction: () => void;
+}) {
+  return (
+    <div className={cn('flex items-center gap-2 rounded-lg px-3 py-2', colorClass)}>
+      <Icon className="size-4 shrink-0" aria-hidden />
+      <span className="text-muted-foreground flex-1 text-sm">{message}</span>
+      <Button variant="outline" size="sm" onClick={onAction}>
+        {actionLabel}
+      </Button>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Inline edit actions (counter + status + cancel/confirm)            */
+/* ------------------------------------------------------------------ */
+
+function InlineEditActions({
+  charCount,
+  maxLength,
+  saveStatus,
+  onCancel,
+  onSave,
+}: {
+  charCount: number;
+  maxLength: number;
+  saveStatus: 'idle' | 'saving' | 'saved' | 'failed';
+  onCancel: () => void;
+  onSave: () => void;
+}) {
+  const t = useTranslations();
+
+  return (
+    <div className="flex items-center gap-1.5">
+      <span className="text-muted-foreground text-xs tabular-nums">
+        {charCount}/{maxLength}
+      </span>
+      {saveStatus === 'saving' && (
+        <span className="text-muted-foreground text-xs">{t('projects.detail.about.saving')}</span>
+      )}
+      {saveStatus === 'failed' && (
+        <span className="text-destructive text-xs">{t('projects.detail.about.failed')}</span>
+      )}
+      <Button variant="ghost" size="icon-xs" onClick={onCancel} aria-label={t('common.cancel')}>
+        <X className="size-3.5" />
+      </Button>
+      <Button size="icon-xs" onClick={onSave} disabled={saveStatus === 'saving'}>
+        <Check className="size-3.5" />
+      </Button>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Main component                                                     */
+/* ------------------------------------------------------------------ */
+
 export function ProjectDetailHeader({
   project,
   userId,
@@ -92,160 +163,78 @@ export function ProjectDetailHeader({
   const canEditInline = !readOnly && !!onEditSuccess;
   const actions = getAvailableActions(project.status as ProjectStatus);
 
-  const [editingField, setEditingField] = useState<EditingField>(null);
-  const [nameDraft, setNameDraft] = useState(project.name);
-  const [summaryDraft, setSummaryDraft] = useState(project.summary ?? '');
-  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
-  const nameInputRef = useRef<HTMLInputElement>(null);
-  const summaryInputRef = useRef<HTMLTextAreaElement>(null);
+  const emitEditSuccess = useCallback(
+    (updatedName: string, updatedSummary: string | undefined) => {
+      onEditSuccess?.({
+        name: updatedName,
+        summary: updatedSummary,
+        targetResponses: project.target_responses,
+      });
+    },
+    [onEditSuccess, project.target_responses]
+  );
 
-  const startEditingName = useCallback(() => {
-    setNameDraft(project.name);
-    setEditingField('name');
-  }, [project.name, setNameDraft, setEditingField]);
+  const { inputRef: nameInputRef, ...nameEdit } = useInlineEdit<HTMLInputElement>({
+    currentValue: project.name,
+    persist: async (trimmed) => {
+      if (!trimmed) {
+        return true;
+      }
 
-  const startEditingSummary = useCallback(() => {
-    setSummaryDraft(project.summary ?? '');
-    setEditingField('summary');
-  }, [project.summary, setSummaryDraft, setEditingField]);
+      const result = await updateProject({
+        projectId: project.id,
+        name: trimmed,
+        summary: project.summary ?? '',
+      });
 
-  useEffect(() => {
-    if (editingField === 'name') {
-      nameInputRef.current?.focus();
-      nameInputRef.current?.select();
-    } else if (editingField === 'summary') {
-      summaryInputRef.current?.focus();
-      summaryInputRef.current?.select();
-    }
-  }, [editingField]);
+      return !!result?.error;
+    },
+    onSaved: (trimmed) => emitEditSuccess(trimmed, project.summary ?? undefined),
+  });
 
-  const saveName = useCallback(async () => {
-    const trimmed = nameDraft.trim();
+  const { inputRef: summaryInputRef, ...summaryEdit } = useInlineEdit<HTMLTextAreaElement>({
+    currentValue: project.summary ?? '',
+    persist: async (trimmed) => {
+      const result = await updateProject({
+        projectId: project.id,
+        name: project.name,
+        ...(trimmed ? { summary: trimmed } : {}),
+      });
 
-    if (!trimmed || trimmed === project.name) {
-      setEditingField(null);
-
-      return;
-    }
-
-    setSaveStatus('saving');
-    const result = await updateProject({
-      projectId: project.id,
-      name: trimmed,
-      summary: project.summary ?? '',
-    });
-
-    if (result?.error) {
-      setSaveStatus('failed');
-
-      return;
-    }
-
-    setSaveStatus('saved');
-    setEditingField(null);
-    onEditSuccess?.({
-      name: trimmed,
-      summary: project.summary ?? undefined,
-      targetResponses: project.target_responses,
-    });
-    setTimeout(() => setSaveStatus('idle'), 2000);
-  }, [
-    project.id,
-    project.name,
-    project.summary,
-    project.target_responses,
-    nameDraft,
-    onEditSuccess,
-  ]);
-
-  const saveSummary = useCallback(async () => {
-    const trimmed = summaryDraft.trim();
-
-    if (trimmed === (project.summary ?? '')) {
-      setEditingField(null);
-
-      return;
-    }
-
-    setSaveStatus('saving');
-    const result = await updateProject({
-      projectId: project.id,
-      name: project.name,
-      ...(trimmed ? { summary: trimmed } : {}),
-    });
-
-    if (result?.error) {
-      setSaveStatus('failed');
-
-      return;
-    }
-
-    setSaveStatus('saved');
-    setEditingField(null);
-    onEditSuccess?.({
-      name: project.name,
-      summary: trimmed || undefined,
-      targetResponses: project.target_responses,
-    });
-    setTimeout(() => setSaveStatus('idle'), 2000);
-  }, [
-    project.id,
-    project.name,
-    project.summary,
-    project.target_responses,
-    summaryDraft,
-    onEditSuccess,
-  ]);
-
-  const cancelEdit = useCallback(() => {
-    setNameDraft(project.name);
-    setSummaryDraft(project.summary ?? '');
-    setEditingField(null);
-    setSaveStatus('idle');
-  }, [
-    project.name,
-    project.summary,
-    setNameDraft,
-    setSummaryDraft,
-    setEditingField,
-    setSaveStatus,
-  ]);
-
-  const isEditingName = editingField === 'name';
-  const isEditingSummary = editingField === 'summary';
+      return !!result?.error;
+    },
+    onSaved: (trimmed) => emitEditSuccess(project.name, trimmed || undefined),
+  });
 
   return (
     <div className="flex flex-col gap-2">
       {/* Status banners */}
       {isProjectArchived(project) && (
-        <div className="bg-muted flex items-center gap-2 rounded-lg px-3 py-2">
-          <Archive className="text-muted-foreground size-4 shrink-0" aria-hidden />
-          <span className="text-muted-foreground flex-1 text-sm">
-            {t('projects.detail.archivedBanner')}
-          </span>
-          <Button variant="outline" size="sm" onClick={() => onAction('restore')}>
-            {t('projects.list.actions.restore')}
-          </Button>
-        </div>
+        <ProjectStatusBanner
+          icon={Archive}
+          colorClass="bg-muted [&>svg]:text-muted-foreground"
+          message={t('projects.detail.archivedBanner')}
+          actionLabel={t('projects.list.actions.restore')}
+          onAction={() => onAction('restore')}
+        />
       )}
 
       {isProjectCompleted(project) && (
-        <div className="flex items-center gap-2 rounded-lg bg-violet-500/10 px-3 py-2">
-          <Trophy className="size-4 shrink-0 text-violet-600 dark:text-violet-400" aria-hidden />
-          <span className="text-muted-foreground flex-1 text-sm">
-            {t('projects.detail.completedBanner')}
-          </span>
-          <Button variant="outline" size="sm" onClick={() => onAction('reopen')}>
-            {t('projects.list.actions.reopen')}
-          </Button>
-        </div>
+        <ProjectStatusBanner
+          icon={Trophy}
+          colorClass="bg-violet-500/10 [&>svg]:text-violet-600 dark:[&>svg]:text-violet-400"
+          message={t('projects.detail.completedBanner')}
+          actionLabel={t('projects.list.actions.reopen')}
+          onAction={() => onAction('reopen')}
+        />
       )}
 
       {isProjectTrashed(project) && (
-        <div className="flex items-center gap-2 rounded-lg bg-red-500/10 px-3 py-2">
-          <Trash2 className="size-4 shrink-0 text-red-600 dark:text-red-400" aria-hidden />
-          <span className="text-muted-foreground flex-1 text-sm">
-            {project.deleted_at
+        <ProjectStatusBanner
+          icon={Trash2}
+          colorClass="bg-red-500/10 [&>svg]:text-red-600 dark:[&>svg]:text-red-400"
+          message={
+            project.deleted_at
               ? t('projects.detail.trashedBanner', {
                   date: new Date(project.deleted_at).toLocaleDateString('en-US', {
                     month: 'short',
@@ -253,12 +242,11 @@ export function ProjectDetailHeader({
                     year: 'numeric',
                   }),
                 })
-              : t('projects.detail.trashedBanner', { date: '' })}
-          </span>
-          <Button variant="outline" size="sm" onClick={() => onAction('restoreTrash')}>
-            {t('projects.list.actions.restoreTrash')}
-          </Button>
-        </div>
+              : t('projects.detail.trashedBanner', { date: '' })
+          }
+          actionLabel={t('projects.list.actions.restoreTrash')}
+          onAction={() => onAction('restoreTrash')}
+        />
       )}
 
       <div className="min-w-0">
@@ -319,7 +307,7 @@ export function ProjectDetailHeader({
           </div>
         </div>
 
-        {/* Badges + title + description + meta — full width */}
+        {/* Badges + title + description + meta */}
         <div className="mt-2 flex flex-wrap items-center gap-1.5">
           <StatusBadge
             labelKey="projects.detail.contextBadge"
@@ -331,55 +319,33 @@ export function ProjectDetailHeader({
         </div>
 
         <div className="min-w-0">
+          {/* Name — inline edit */}
           <div className="text-foreground mt-1 min-w-0">
-            {isEditingName ? (
+            {nameEdit.isEditing ? (
               <div className="flex min-w-0 flex-col gap-2">
                 <Input
                   ref={nameInputRef}
-                  value={nameDraft}
-                  onChange={(e) => setNameDraft(e.target.value)}
+                  value={nameEdit.draft}
+                  onChange={(e) => nameEdit.setDraft(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
-                      void saveName();
+                      void nameEdit.save();
                     }
 
                     if (e.key === 'Escape') {
-                      cancelEdit();
+                      nameEdit.cancel();
                     }
                   }}
                   maxLength={PROJECT_NAME_MAX_LENGTH}
                   className="text-foreground h-auto min-w-0 py-1.5 text-base"
                 />
-                <div className="flex items-center gap-1.5">
-                  <span className="text-muted-foreground text-xs tabular-nums">
-                    {nameDraft.length}/{PROJECT_NAME_MAX_LENGTH}
-                  </span>
-                  {saveStatus === 'saving' && (
-                    <span className="text-muted-foreground text-xs">
-                      {t('projects.detail.about.saving')}
-                    </span>
-                  )}
-                  {saveStatus === 'failed' && (
-                    <span className="text-destructive text-xs">
-                      {t('projects.detail.about.failed')}
-                    </span>
-                  )}
-                  <Button
-                    variant="ghost"
-                    size="icon-xs"
-                    onClick={cancelEdit}
-                    aria-label={t('projects.detail.about.cancel')}
-                  >
-                    <X className="size-3.5" />
-                  </Button>
-                  <Button
-                    size="icon-xs"
-                    onClick={() => void saveName()}
-                    disabled={saveStatus === 'saving'}
-                  >
-                    <Check className="size-3.5" />
-                  </Button>
-                </div>
+                <InlineEditActions
+                  charCount={nameEdit.draft.length}
+                  maxLength={PROJECT_NAME_MAX_LENGTH}
+                  saveStatus={nameEdit.saveStatus}
+                  onCancel={nameEdit.cancel}
+                  onSave={() => void nameEdit.save()}
+                />
               </div>
             ) : (
               <div className="flex max-w-full min-w-0 flex-wrap items-center gap-1.5">
@@ -391,7 +357,7 @@ export function ProjectDetailHeader({
                     variant="ghost"
                     size="icon-xs"
                     className="text-muted-foreground shrink-0"
-                    onClick={startEditingName}
+                    onClick={nameEdit.startEditing}
                     aria-label={t('projects.detail.editName')}
                   >
                     <Pencil className="size-3.5" />
@@ -401,15 +367,16 @@ export function ProjectDetailHeader({
             )}
           </div>
 
-          {isEditingSummary ? (
+          {/* Summary — inline edit */}
+          {summaryEdit.isEditing ? (
             <div className="mt-2 flex flex-col gap-2">
               <Textarea
                 ref={summaryInputRef}
-                value={summaryDraft}
-                onChange={(e) => setSummaryDraft(e.target.value)}
+                value={summaryEdit.draft}
+                onChange={(e) => summaryEdit.setDraft(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === 'Escape') {
-                    cancelEdit();
+                    summaryEdit.cancel();
                   }
                 }}
                 maxLength={PROJECT_SUMMARY_MAX_LENGTH}
@@ -417,36 +384,13 @@ export function ProjectDetailHeader({
                 className="text-muted-foreground min-h-[60px] min-w-0 resize-none text-sm leading-relaxed"
                 rows={2}
               />
-              <div className="flex items-center gap-1.5">
-                <span className="text-muted-foreground text-xs tabular-nums">
-                  {summaryDraft.length}/{PROJECT_SUMMARY_MAX_LENGTH}
-                </span>
-                {saveStatus === 'saving' && (
-                  <span className="text-muted-foreground text-xs">
-                    {t('projects.detail.about.saving')}
-                  </span>
-                )}
-                {saveStatus === 'failed' && (
-                  <span className="text-destructive text-xs">
-                    {t('projects.detail.about.failed')}
-                  </span>
-                )}
-                <Button
-                  variant="ghost"
-                  size="icon-xs"
-                  onClick={cancelEdit}
-                  aria-label={t('projects.detail.about.cancel')}
-                >
-                  <X className="size-3.5" />
-                </Button>
-                <Button
-                  size="icon-xs"
-                  onClick={() => void saveSummary()}
-                  disabled={saveStatus === 'saving'}
-                >
-                  <Check className="size-3.5" />
-                </Button>
-              </div>
+              <InlineEditActions
+                charCount={summaryEdit.draft.length}
+                maxLength={PROJECT_SUMMARY_MAX_LENGTH}
+                saveStatus={summaryEdit.saveStatus}
+                onCancel={summaryEdit.cancel}
+                onSave={() => void summaryEdit.save()}
+              />
             </div>
           ) : (
             (project.summary || canEditInline) && (
@@ -459,7 +403,7 @@ export function ProjectDetailHeader({
                     variant="ghost"
                     size="icon-xs"
                     className="text-muted-foreground ml-1.5 inline-flex shrink-0 align-middle"
-                    onClick={startEditingSummary}
+                    onClick={summaryEdit.startEditing}
                     aria-label={t('projects.detail.editSummary')}
                   >
                     <Pencil className="size-3.5" />

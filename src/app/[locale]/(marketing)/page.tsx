@@ -4,9 +4,18 @@ import Hero from '@/app/[locale]/(marketing)/_components/hero';
 import { PageTransition } from '@/components/ui/page-transition';
 import { routing } from '@/i18n/routing';
 
-const Cta = dynamic(() => import('@/app/[locale]/(marketing)/_components/cta'), {
+const Problems = dynamic(() => import('@/app/[locale]/(marketing)/_components/problems'), {
   loading: () => null,
 });
+
+const HowItWorks = dynamic(() => import('@/app/[locale]/(marketing)/_components/how-it-works'), {
+  loading: () => null,
+});
+
+const FunctionalMinimalism = dynamic(
+  () => import('@/app/[locale]/(marketing)/_components/functional-minimalism'),
+  { loading: () => null }
+);
 
 const Developers = dynamic(() => import('@/app/[locale]/(marketing)/_components/developers'), {
   loading: () => null,
@@ -16,16 +25,7 @@ const FeaturesGrid = dynamic(() => import('@/app/[locale]/(marketing)/_component
   loading: () => null,
 });
 
-const FunctionalMinimalism = dynamic(
-  () => import('@/app/[locale]/(marketing)/_components/functional-minimalism'),
-  { loading: () => null }
-);
-
-const HowItWorks = dynamic(() => import('@/app/[locale]/(marketing)/_components/how-it-works'), {
-  loading: () => null,
-});
-
-const Problems = dynamic(() => import('@/app/[locale]/(marketing)/_components/problems'), {
+const Cta = dynamic(() => import('@/app/[locale]/(marketing)/_components/cta'), {
   loading: () => null,
 });
 

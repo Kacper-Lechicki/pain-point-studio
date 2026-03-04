@@ -520,12 +520,7 @@ export type Database = {
           id: string;
         }[];
       };
-      get_profile_statistics: { Args: { p_user_id: string }; Returns: Json };
       get_project_detail_stats: {
-        Args: { p_project_id: string; p_user_id: string };
-        Returns: Json;
-      };
-      get_project_signals_data: {
         Args: { p_project_id: string; p_user_id: string };
         Returns: Json;
       };
@@ -593,14 +588,7 @@ export type Database = {
     };
     Enums: {
       question_type: 'open_text' | 'short_text' | 'multiple_choice' | 'rating_scale' | 'yes_no';
-      survey_status:
-        | 'draft'
-        | 'pending'
-        | 'active'
-        | 'completed'
-        | 'cancelled'
-        | 'archived'
-        | 'trashed';
+      survey_status: 'draft' | 'active' | 'completed' | 'cancelled' | 'archived' | 'trashed';
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -730,15 +718,7 @@ export const Constants = {
   public: {
     Enums: {
       question_type: ['open_text', 'short_text', 'multiple_choice', 'rating_scale', 'yes_no'],
-      survey_status: [
-        'draft',
-        'pending',
-        'active',
-        'completed',
-        'cancelled',
-        'archived',
-        'trashed',
-      ],
+      survey_status: ['draft', 'active', 'completed', 'cancelled', 'archived', 'trashed'],
     },
   },
 } as const;

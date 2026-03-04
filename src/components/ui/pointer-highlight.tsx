@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 
 import { cn } from '@/lib/common/utils';
 
@@ -17,7 +17,7 @@ type PointerHighlightProps = {
   containerClassName?: string;
 };
 
-export const PointerHighlight = memo(function PointerHighlight({
+export function PointerHighlight({
   children,
   active = false,
   rectangleClassName,
@@ -98,11 +98,11 @@ export const PointerHighlight = memo(function PointerHighlight({
       )}
     </div>
   );
-});
+}
 
 type PointerProps = React.SVGProps<SVGSVGElement>;
 
-const Pointer = memo(({ ...props }: PointerProps) => {
+function Pointer({ ...props }: PointerProps) {
   return (
     <svg
       stroke="currentColor"
@@ -119,6 +119,4 @@ const Pointer = memo(({ ...props }: PointerProps) => {
       <path d="M14.082 2.182a.5.5 0 0 1 .103.557L8.528 15.467a.5.5 0 0 1-.917-.007L5.57 10.694.803 8.652a.5.5 0 0 1-.006-.916l12.728-5.657a.5.5 0 0 1 .556.103z"></path>
     </svg>
   );
-});
-
-Pointer.displayName = 'Pointer';
+}

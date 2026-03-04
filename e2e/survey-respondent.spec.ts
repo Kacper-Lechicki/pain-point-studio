@@ -39,16 +39,13 @@ test.describe('Respondent – Full Flow', () => {
   test('landing → start → answer → submit → thank you', async ({ page }) => {
     await page.goto(url(`/r/${slug}`));
 
-    // Landing page: start button visible
-    const startBtn = page.getByRole('button', { name: /start/i });
-
-    await expect(startBtn).toBeVisible({ timeout: 15_000 });
-    await startBtn.click();
+    // Landing page: start button visible — webkit can swallow clicks during hydration
+    await expect(async () => {
+      await page.getByRole('button', { name: /start/i }).click();
+      await expect(page.locator('textarea, input[type="text"]').first()).toBeVisible();
+    }).toPass({ timeout: 15_000 });
 
     // Question 1: answer and proceed
-    await expect(page.locator('textarea, input[type="text"]').first()).toBeVisible({
-      timeout: 15_000,
-    });
 
     await expect(async () => {
       const input = page.locator('textarea, input[type="text"]').first();
@@ -57,12 +54,12 @@ test.describe('Respondent – Full Flow', () => {
       await expect(input).toHaveValue('E2E answer to question 1');
     }).toPass({ timeout: 10_000 });
 
-    await page.getByRole('button', { name: 'Next', exact: true }).click();
+    await expect(async () => {
+      await page.getByRole('button', { name: 'Next', exact: true }).click();
+      await expect(page.locator('textarea, input[type="text"]').first()).toBeVisible();
+    }).toPass({ timeout: 10_000 });
 
     // Question 2: answer and finish
-    await expect(page.locator('textarea, input[type="text"]').first()).toBeVisible({
-      timeout: 10_000,
-    });
 
     await expect(async () => {
       const input = page.locator('textarea, input[type="text"]').first();
@@ -71,15 +68,18 @@ test.describe('Respondent – Full Flow', () => {
       await expect(input).toHaveValue('E2E answer to question 2');
     }).toPass({ timeout: 10_000 });
 
-    await page.getByRole('button', { name: /finish/i }).click();
+    await expect(async () => {
+      await page.getByRole('button', { name: /finish/i }).click();
+      await expect(page.getByRole('button', { name: /submit/i })).toBeVisible();
+    }).toPass({ timeout: 10_000 });
 
     // Completion screen: submit
-    await expect(page.getByRole('button', { name: /submit/i })).toBeVisible({ timeout: 10_000 });
-
-    await page.getByRole('button', { name: /submit/i }).click();
+    await expect(async () => {
+      await page.getByRole('button', { name: /submit/i }).click();
+      await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+    }).toPass({ timeout: 15_000 });
 
     // Thank you screen
-    await expect(page.getByRole('heading', { level: 1 })).toBeVisible({ timeout: 15_000 });
 
     await expect(page.getByRole('button', { name: /start/i })).not.toBeVisible();
   });

@@ -13,15 +13,24 @@ import { usePathname } from '@/i18n/routing';
 
 export function DashboardContent({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const { isPinned, hasSubPanel, isDesktop } = useSidebar();
+  const { isPinned, subPanelVisible, hasSubPanel, isDesktop } = useSidebar();
   const isBuilder = isBuilderPath(pathname ?? null);
   const maxWidth = getDashboardContentMaxWidth(pathname ?? null);
+  const hasSubPanelClosed = hasSubPanel && !subPanelVisible;
 
   return (
     <main
       className="min-h-min min-w-0 flex-1 transition-[margin-left] duration-200 ease-in-out"
       style={
-        isDesktop ? { marginLeft: getDashboardContentMarginLeft(isPinned, hasSubPanel) } : undefined
+        isDesktop
+          ? {
+              marginLeft: getDashboardContentMarginLeft(
+                isPinned,
+                subPanelVisible,
+                hasSubPanelClosed
+              ),
+            }
+          : undefined
       }
     >
       {isBuilder ? (

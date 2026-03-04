@@ -4,7 +4,7 @@
  */
 import type { User } from '@supabase/supabase-js';
 
-import type { AppUser } from './helpers';
+import type { AppUser } from '@/lib/supabase/helpers';
 
 export function mapSupabaseUser(user: User): AppUser {
   return {

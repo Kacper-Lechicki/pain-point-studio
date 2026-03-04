@@ -47,12 +47,10 @@ export function BulkActionBar({
           'md:gap-3 md:px-4'
         )}
       >
-        {/* Count badge */}
         <span className="bg-primary text-primary-foreground inline-flex h-6 shrink-0 items-center rounded-md px-2 text-xs font-semibold tabular-nums">
           {count}
         </span>
 
-        {/* Select all (mobile — table has its own header checkbox) */}
         {onSelectAll && !allOnPageSelected && (
           <Button
             variant="ghost"
@@ -67,10 +65,8 @@ export function BulkActionBar({
 
         {actions.length > 0 && (
           <>
-            {/* Separator */}
             <div className="bg-border h-5 w-px shrink-0" />
 
-            {/* Actions — horizontally scrollable on mobile */}
             <div className="flex items-center gap-1 overflow-x-auto md:gap-1.5">
               {actions.map((desc) => {
                 const Icon = desc.icon;
@@ -96,10 +92,8 @@ export function BulkActionBar({
           </>
         )}
 
-        {/* Separator */}
         <div className="bg-border h-5 w-px shrink-0" />
 
-        {/* Clear */}
         <Button
           variant="ghost"
           size="icon-xs"

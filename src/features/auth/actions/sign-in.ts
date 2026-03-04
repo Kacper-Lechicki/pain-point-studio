@@ -44,20 +44,28 @@ export const signInWithOAuth = async (provider: string): Promise<{ error: string
     return { error: 'auth.errors.rateLimitExceeded' };
   }
 
-  const supabase = await createClient();
-  const locale = await getLocale();
+  let redirectUrl: string | null = null;
 
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: parsed.data,
-    options: { redirectTo: getAuthCallbackUrl(locale) },
-  });
+  try {
+    const supabase = await createClient();
+    const locale = await getLocale();
 
-  if (error) {
-    return { error: mapSupabaseError(error.message) };
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: parsed.data,
+      options: { redirectTo: getAuthCallbackUrl(locale) },
+    });
+
+    if (error) {
+      return { error: mapSupabaseError(error.message) };
+    }
+
+    redirectUrl = data?.url ?? null;
+  } catch {
+    return { error: 'auth.errors.unexpected' };
   }
 
-  if (data?.url) {
-    redirect(data.url);
+  if (redirectUrl) {
+    redirect(redirectUrl);
   }
 
   return { error: 'auth.errors.unexpected' };

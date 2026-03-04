@@ -47,7 +47,7 @@ export const ListPagination = ({
 
   return (
     <nav
-      aria-label="Pagination"
+      aria-label={t('common.aria.pagination')}
       className="flex min-w-0 flex-wrap items-center justify-between gap-3 pt-2"
     >
       <p className="text-muted-foreground min-w-0 shrink text-xs tabular-nums">

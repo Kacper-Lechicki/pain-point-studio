@@ -1,5 +1,3 @@
-import { useMemo } from 'react';
-
 import { StatusBadge } from '@/components/ui/status-badge';
 import { TRASH_RETENTION_DAYS } from '@/features/surveys/config';
 import { SURVEY_STATUS_CONFIG } from '@/features/surveys/config/survey-status';
@@ -16,7 +14,7 @@ interface SurveyStatusBadgeProps {
 export function SurveyStatusBadge({ status, deletedAt, className }: SurveyStatusBadgeProps) {
   const config = SURVEY_STATUS_CONFIG[status];
 
-  const descriptionValues = useMemo(() => {
+  const descriptionValues = (() => {
     if (status !== 'trashed') {
       return undefined;
     }
@@ -24,7 +22,7 @@ export function SurveyStatusBadge({ status, deletedAt, className }: SurveyStatus
     const days = daysUntilExpiry(deletedAt ?? null, TRASH_RETENTION_DAYS);
 
     return { days: days ?? TRASH_RETENTION_DAYS };
-  }, [status, deletedAt]);
+  })();
 
   return (
     <StatusBadge

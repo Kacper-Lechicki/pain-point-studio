@@ -11,15 +11,11 @@ export const createProjectNoteSchema = z.object({
   folderId: z.uuid().nullable().optional(),
 });
 
-export type CreateProjectNoteInput = z.infer<typeof createProjectNoteSchema>;
-
 /** Update note content (auto-save). */
 export const updateProjectNoteSchema = z.object({
   noteId: z.uuid(),
   content: z.any().nullable(),
 });
-
-export type UpdateProjectNoteInput = z.infer<typeof updateProjectNoteSchema>;
 
 /** Soft-delete a note (move to trash). */
 export const deleteProjectNoteSchema = z.object({
@@ -65,8 +61,6 @@ export const createNoteFolderSchema = z.object({
   projectId: z.uuid(),
   name: z.string().trim().min(1).max(FOLDER_NAME_MAX_LENGTH),
 });
-
-export type CreateNoteFolderInput = z.infer<typeof createNoteFolderSchema>;
 
 /** Rename a folder. */
 export const updateNoteFolderSchema = z.object({

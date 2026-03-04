@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { ArrowRightLeft, GripVertical, Pencil, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -69,21 +69,21 @@ export function KanbanCard({
     unexpectedErrorMessage: 'projects.errors.unexpected' as MessageKey,
   });
 
-  const handleStartEdit = useCallback(() => {
+  const handleStartEdit = () => {
     setEditContent(insight.content);
     setIsEditing(true);
 
     requestAnimationFrame(() => {
       textareaRef.current?.focus();
     });
-  }, [insight.content]);
+  };
 
-  const handleCancelEdit = useCallback(() => {
+  const handleCancelEdit = () => {
     setIsEditing(false);
     setEditContent(insight.content);
-  }, [insight.content]);
+  };
 
-  const handleSaveEdit = useCallback(async () => {
+  const handleSaveEdit = async () => {
     const trimmed = editContent.trim();
 
     if (!trimmed || trimmed === insight.content) {
@@ -107,9 +107,9 @@ export function KanbanCard({
     } else {
       onUpdated(original);
     }
-  }, [editContent, insight, onUpdated, updateAction, t]);
+  };
 
-  const handleConfirmDelete = useCallback(async () => {
+  const handleConfirmDelete = async () => {
     const original = insight;
 
     setConfirmDeleteOpen(false);
@@ -124,7 +124,7 @@ export function KanbanCard({
     } else {
       onUpdated(original);
     }
-  }, [insight, onDeleted, onUpdated, deleteAction, t]);
+  };
 
   const colors = INSIGHT_COLORS[insight.type as InsightType];
 
@@ -154,11 +154,11 @@ export function KanbanCard({
             onClick={handleSaveEdit}
             disabled={updateAction.isLoading || !editContent.trim()}
           >
-            {t('projects.scorecard.saveNote' as MessageKey)}
+            {t('common.actions.save')}
           </Button>
 
           <Button variant="ghost" size="sm" onClick={handleCancelEdit}>
-            {t('projects.scorecard.cancelNote' as MessageKey)}
+            {t('common.cancel')}
           </Button>
         </div>
       </div>
@@ -213,7 +213,7 @@ export function KanbanCard({
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={handleStartEdit}>
               <Pencil className="size-3.5" />
-              {t('projects.scorecard.editNote' as MessageKey)}
+              {t('common.actions.edit')}
             </DropdownMenuItem>
 
             {onMoveToType && (
@@ -245,7 +245,7 @@ export function KanbanCard({
 
             <DropdownMenuItem variant="destructive" onClick={() => setConfirmDeleteOpen(true)}>
               <Trash2 className="size-3.5" />
-              {t('projects.scorecard.deleteNote' as MessageKey)}
+              {t('common.actions.delete')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -257,7 +257,7 @@ export function KanbanCard({
         onConfirm={handleConfirmDelete}
         title={t('projects.scorecard.confirmDeleteTitle' as MessageKey)}
         description={t('projects.scorecard.confirmDeleteDescription' as MessageKey)}
-        confirmLabel={t('projects.scorecard.confirmDeleteAction' as MessageKey)}
+        confirmLabel={t('common.actions.delete')}
         variant="destructive"
       />
     </>

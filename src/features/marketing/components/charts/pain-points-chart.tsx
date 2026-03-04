@@ -21,9 +21,7 @@ const PainPointsChart = () => {
   );
 
   const formatPainPointTick = (value: string): string => {
-    const config = chartConfig[value.toLowerCase() as keyof typeof chartConfig];
-
-    return config?.label?.split(' ')[0] ?? value;
+    return t(`marketing.charts.data.${value}` as Parameters<typeof t>[0]);
   };
 
   return (

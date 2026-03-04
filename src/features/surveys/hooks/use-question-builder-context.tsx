@@ -1,14 +1,13 @@
 'use client';
 
-import { type ReactNode, createContext, useContext, useMemo } from 'react';
-
-import type { QuestionSchema, QuestionType } from '@/features/surveys/types';
+import { type ReactNode, createContext, useContext } from 'react';
 
 import {
   type QuestionBuilderAction,
   type QuestionBuilderState,
   useQuestionBuilder,
-} from './use-question-builder';
+} from '@/features/surveys/hooks/use-question-builder';
+import type { QuestionSchema, QuestionType } from '@/features/surveys/types';
 
 interface QuestionBuilderContextValue {
   state: QuestionBuilderState;
@@ -44,46 +43,41 @@ export function QuestionBuilderProvider({
 }: QuestionBuilderProviderProps) {
   const [state, dispatch] = useQuestionBuilder(initialQuestions);
 
-  const contextValue = useMemo<QuestionBuilderContextValue>(
-    () => ({
-      state,
-      dispatch,
-      activeQuestion: state.questions.find((q) => q.id === state.activeQuestionId),
-      addQuestion: (type?: QuestionType) => {
-        dispatch(
-          type
-            ? { type: 'ADD_QUESTION', payload: { questionType: type } }
-            : { type: 'ADD_QUESTION' }
-        );
-      },
-      deleteQuestion: (id: string) => {
-        dispatch({ type: 'DELETE_QUESTION', payload: { questionId: id } });
-      },
-      selectQuestion: (id: string) => {
-        dispatch({ type: 'SELECT_QUESTION', payload: { questionId: id } });
-      },
-      updateQuestion: (id: string, updates: Partial<QuestionSchema>) => {
-        dispatch({ type: 'UPDATE_QUESTION', payload: { questionId: id, updates } });
-      },
-      changeQuestionType: (id: string, newType: QuestionType) => {
-        dispatch({ type: 'CHANGE_QUESTION_TYPE', payload: { questionId: id, newType } });
-      },
-      reorderQuestions: (questionIds: string[]) => {
-        dispatch({ type: 'REORDER_QUESTIONS', payload: { questionIds } });
-      },
-      buildQuestionsPayload: () =>
-        state.questions.map((q, i) => ({
-          id: q.id,
-          text: q.text?.trim() ?? '',
-          type: q.type,
-          required: q.required,
-          description: q.description ?? null,
-          config: q.config,
-          sortOrder: i,
-        })),
-    }),
-    [state, dispatch]
-  );
+  const contextValue: QuestionBuilderContextValue = {
+    state,
+    dispatch,
+    activeQuestion: state.questions.find((q) => q.id === state.activeQuestionId),
+    addQuestion: (type?: QuestionType) => {
+      dispatch(
+        type ? { type: 'ADD_QUESTION', payload: { questionType: type } } : { type: 'ADD_QUESTION' }
+      );
+    },
+    deleteQuestion: (id: string) => {
+      dispatch({ type: 'DELETE_QUESTION', payload: { questionId: id } });
+    },
+    selectQuestion: (id: string) => {
+      dispatch({ type: 'SELECT_QUESTION', payload: { questionId: id } });
+    },
+    updateQuestion: (id: string, updates: Partial<QuestionSchema>) => {
+      dispatch({ type: 'UPDATE_QUESTION', payload: { questionId: id, updates } });
+    },
+    changeQuestionType: (id: string, newType: QuestionType) => {
+      dispatch({ type: 'CHANGE_QUESTION_TYPE', payload: { questionId: id, newType } });
+    },
+    reorderQuestions: (questionIds: string[]) => {
+      dispatch({ type: 'REORDER_QUESTIONS', payload: { questionIds } });
+    },
+    buildQuestionsPayload: () =>
+      state.questions.map((q, i) => ({
+        id: q.id,
+        text: q.text?.trim() ?? '',
+        type: q.type,
+        required: q.required,
+        description: q.description ?? null,
+        config: q.config,
+        sortOrder: i,
+      })),
+  };
 
   return (
     <QuestionBuilderContext.Provider value={contextValue}>

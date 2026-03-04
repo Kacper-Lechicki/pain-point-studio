@@ -58,7 +58,7 @@ export interface NavItem {
   disabled?: boolean | undefined;
 }
 
-export interface NavGroup {
+interface NavGroup {
   items: NavItem[];
 }
 
@@ -110,13 +110,15 @@ export const SIDEBAR_NAV: NavGroup[] = [
   },
 ];
 
-export { PROFILE_NAV_ITEM as SIDEBAR_PROFILE_ITEM } from './navigation-settings';
-export { USER_SETTINGS_NAV_ITEM as SIDEBAR_BOTTOM_ITEM } from './navigation-settings';
-export { GIVE_FEEDBACK_NAV_ITEM as SIDEBAR_GIVE_FEEDBACK_ITEM } from './navigation-settings';
+export { PROFILE_NAV_ITEM as SIDEBAR_PROFILE_ITEM } from '@/features/dashboard/config/navigation-settings';
+export { USER_SETTINGS_NAV_ITEM as SIDEBAR_BOTTOM_ITEM } from '@/features/dashboard/config/navigation-settings';
+export { GIVE_FEEDBACK_NAV_ITEM as SIDEBAR_GIVE_FEEDBACK_ITEM } from '@/features/dashboard/config/navigation-settings';
 
 // ── Re-exports for backward compatibility ─────────────────────────────
 // NOTE: findActiveNavItem is in lib/nav-utils.ts (not re-exported to avoid circular deps)
 
-export { USER_SETTINGS_NAV_ITEM, USER_SETTINGS_SUB_NAV_ITEMS } from './navigation-settings';
-export type { DynamicRouteTab, DynamicSidebarItem } from './navigation-dynamic';
-export { DYNAMIC_ROUTE_TABS, DYNAMIC_SIDEBAR_ITEMS } from './navigation-dynamic';
+export type { DynamicRouteTab } from '@/features/dashboard/config/navigation-dynamic';
+export {
+  DYNAMIC_ROUTE_TABS,
+  DYNAMIC_SIDEBAR_ITEMS,
+} from '@/features/dashboard/config/navigation-dynamic';

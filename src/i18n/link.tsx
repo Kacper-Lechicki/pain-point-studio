@@ -1,6 +1,6 @@
 'use client';
 
-import { ComponentProps, forwardRef } from 'react';
+import { type ComponentProps, type Ref } from 'react';
 
 import { type AppRoute, SIBLING_GROUPS } from '@/config/routes';
 import { BaseLink, usePathname } from '@/i18n/navigation';
@@ -34,15 +34,13 @@ function areSiblings(current: string, target: string): boolean {
   );
 }
 
-const Link = forwardRef<HTMLAnchorElement, LinkProps>(({ replace, ...props }, ref) => {
+function Link({ replace, ref, ...props }: LinkProps & { ref?: Ref<HTMLAnchorElement> }) {
   const pathname = usePathname();
   const target = resolveHrefPathname(props.href);
   const current = pathnameOnly(pathname ?? '');
   const autoReplace = replace ?? areSiblings(current, target);
 
   return <BaseLink ref={ref} replace={autoReplace} {...(props as BaseLinkProps)} />;
-});
-
-Link.displayName = 'Link';
+}
 
 export default Link;

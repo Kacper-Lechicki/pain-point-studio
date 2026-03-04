@@ -1,6 +1,6 @@
 'use client';
 
-import { type MouseEvent, type ReactNode, useCallback, useState } from 'react';
+import { type MouseEvent, type ReactNode, useState } from 'react';
 
 import { ChevronRight } from 'lucide-react';
 
@@ -25,16 +25,15 @@ export function NotesSection({
 }: NotesSectionProps) {
   const [expanded, setExpanded] = useState(defaultExpanded);
 
-  const toggleExpanded = useCallback(() => {
+  const toggleExpanded = () => {
     if (collapsible) {
       setExpanded((prev) => !prev);
     }
-  }, [collapsible]);
+  };
 
-  // Prevent collapse when clicking the action button
-  const handleActionClick = useCallback((e: MouseEvent) => {
+  const handleActionClick = (e: MouseEvent) => {
     e.stopPropagation();
-  }, []);
+  };
 
   return (
     <div className="py-1">

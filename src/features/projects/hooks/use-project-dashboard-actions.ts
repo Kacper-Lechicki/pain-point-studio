@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import { useTranslations } from 'next-intl';
 
@@ -89,28 +89,29 @@ export function useProjectDashboardActions({ initialProject }: UseProjectDashboa
     unexpectedErrorMessage: 'projects.errors.unexpected' as MessageKey,
   });
 
-  const handleEditSuccess = useCallback(
-    (data: { name: string; summary: string | undefined; targetResponses?: number | undefined }) => {
-      setProject((prev) => ({
-        ...prev,
-        name: data.name,
-        summary: data.summary ?? null,
-        ...(data.targetResponses != null && { target_responses: data.targetResponses }),
-        updated_at: new Date().toISOString(),
-      }));
-    },
-    []
-  );
+  const handleEditSuccess = (data: {
+    name: string;
+    summary: string | undefined;
+    targetResponses?: number | undefined;
+  }) => {
+    setProject((prev) => ({
+      ...prev,
+      name: data.name,
+      summary: data.summary ?? null,
+      ...(data.targetResponses != null && { target_responses: data.targetResponses }),
+      updated_at: new Date().toISOString(),
+    }));
+  };
 
-  const handleImageChange = useCallback((url: string | null) => {
+  const handleImageChange = (url: string | null) => {
     setProject((prev) => ({
       ...prev,
       image_url: url,
       updated_at: new Date().toISOString(),
     }));
-  }, []);
+  };
 
-  const handleConfirm = useCallback(async () => {
+  const handleConfirm = async () => {
     if (!confirmAction) {
       return;
     }
@@ -147,15 +148,15 @@ export function useProjectDashboardActions({ initialProject }: UseProjectDashboa
       // Revert on failure
       setProject(initialProject);
     }
-  }, [confirmAction, project, initialProject, statusAction, t, router]);
+  };
 
-  const confirmDialogProps: ProjectConfirmDialogProps | null = useMemo(() => {
+  const confirmDialogProps: ProjectConfirmDialogProps | null = (() => {
     if (!confirmAction) {
       return null;
     }
 
     return getProjectConfirmDialogProps(confirmAction, t);
-  }, [confirmAction, t]);
+  })();
 
   return {
     project,

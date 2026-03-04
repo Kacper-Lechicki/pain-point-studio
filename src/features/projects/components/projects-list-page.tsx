@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
@@ -15,6 +15,7 @@ import { bulkChangeProjectStatus } from '@/features/projects/actions/bulk-change
 import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
 import type { ProjectsListExtrasMap } from '@/features/projects/actions/get-projects-list-extras';
 import { BulkActionBar } from '@/features/projects/components/bulk-action-bar';
+import { EditProjectDialog } from '@/features/projects/components/edit-project-dialog';
 import { ProjectCardRow } from '@/features/projects/components/project-card-row';
 import { ProjectListKpi } from '@/features/projects/components/project-list-kpi';
 import { ProjectListTable } from '@/features/projects/components/project-list-table';
@@ -27,8 +28,6 @@ import { getProjectConfirmDialogProps } from '@/features/projects/lib/project-co
 import { getProjectDetailUrl } from '@/features/projects/lib/project-urls';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import type { MessageKey } from '@/i18n/types';
-
-import { EditProjectDialog } from './edit-project-dialog';
 
 interface ProjectsListPageProps {
   projects: ProjectWithMetrics[];
@@ -88,22 +87,21 @@ export function ProjectsListPage({ projects, extras }: ProjectsListPageProps) {
     selectionCount,
   } = useProjectBulkSelection(localProjects);
 
-  // ── Bulk action handling ─────────────────────────────────────────────
   type BulkAction = Exclude<ProjectAction, 'permanentDelete'>;
   const [bulkConfirmAction, setBulkConfirmAction] = useState<BulkAction | null>(null);
   const bulkAction = useFormAction({
     unexpectedErrorMessage: 'projects.errors.unexpected' as MessageKey,
   });
 
-  const bulkConfirmDialogProps = useMemo(() => {
+  const bulkConfirmDialogProps = (() => {
     if (!bulkConfirmAction) {
       return null;
     }
 
     return getProjectConfirmDialogProps(bulkConfirmAction, t);
-  }, [bulkConfirmAction, t]);
+  })();
 
-  const handleBulkConfirm = useCallback(async () => {
+  const handleBulkConfirm = async () => {
     if (!bulkConfirmAction || selectedIds.size === 0) {
       return;
     }
@@ -133,14 +131,11 @@ export function ProjectsListPage({ projects, extras }: ProjectsListPageProps) {
       clearSelection();
       router.refresh();
     }
-  }, [bulkConfirmAction, selectedIds, bulkAction, t, clearSelection, router]);
+  };
 
-  const handleSelect = useCallback(
-    (projectId: string) => {
-      router.push(getProjectDetailUrl(projectId));
-    },
-    [router]
-  );
+  const handleSelect = (projectId: string) => {
+    router.push(getProjectDetailUrl(projectId));
+  };
 
   return (
     <div className="space-y-4">

@@ -1,10 +1,8 @@
 'use client';
 
-import { useMemo } from 'react';
-
 import { cn } from '@/lib/common/utils';
 
-export interface CompletionBarChartData {
+interface CompletionBarChartData {
   completed: number;
   inProgress: number;
   abandoned: number;
@@ -24,13 +22,11 @@ const DEFAULT_LABELS = {
 
 interface CompletionBarChartProps {
   data: CompletionBarChartData;
-  /** Optional translated labels */
   labels?: { completed: string; inProgress: string; abandoned: string };
   noDataMessage?: string;
   className?: string;
 }
 
-/** Completion breakdown in multiple-choice style: label, count (pct), horizontal bar. */
 export function CompletionBarChart({
   data,
   labels: labelsProp,
@@ -39,18 +35,14 @@ export function CompletionBarChart({
 }: CompletionBarChartProps) {
   const labels = labelsProp ?? DEFAULT_LABELS;
 
-  const { rows, total, maxCount } = useMemo(() => {
-    const rows = SEGMENTS.map(({ key }) => ({
-      key,
-      label: labels[key],
-      count: data[key],
-      color: SEGMENTS.find((s) => s.key === key)!.color,
-    }));
-    const total = data.completed + data.inProgress + data.abandoned;
-    const maxCount = Math.max(...rows.map((r) => r.count), 1);
-
-    return { rows, total, maxCount };
-  }, [data, labels]);
+  const rows = SEGMENTS.map(({ key }) => ({
+    key,
+    label: labels[key],
+    count: data[key],
+    color: SEGMENTS.find((s) => s.key === key)!.color,
+  }));
+  const total = data.completed + data.inProgress + data.abandoned;
+  const maxCount = Math.max(...rows.map((r) => r.count), 1);
 
   const hasData = total > 0;
 

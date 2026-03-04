@@ -17,10 +17,11 @@ import {
   localizeChartConfig,
 } from '@/features/marketing/config';
 
-const formatMonthTick = (value: string): string => value.slice(0, 3);
-
 const IdeaTrendsChart = () => {
   const t = useTranslations();
+
+  const formatMonthTick = (value: string): string =>
+    t(`marketing.charts.months.${value}` as Parameters<typeof t>[0]).slice(0, 3);
   const title = t('marketing.charts.ideaTrends.title');
   const description = t('marketing.charts.ideaTrends.description');
 

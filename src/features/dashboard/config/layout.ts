@@ -2,7 +2,7 @@ import { ROUTES } from '@/config/routes';
 import { locales } from '@/i18n/constants';
 
 /** Path prefix for survey builder (edit questions). Builder uses a standalone full-screen layout. */
-export const BUILDER_PATH_PREFIX = '/dashboard/research/new/';
+const BUILDER_PATH_PREFIX = '/dashboard/research/new/';
 
 /** Check if the pathname points to the survey builder (creating/editing questions). */
 export function isBuilderPath(pathname: string | null): boolean {
@@ -18,12 +18,25 @@ export function isBuilderPath(pathname: string | null): boolean {
 //   --sidebar-width-expanded:  236px
 //   --sidebar-sub-panel-width: 236px
 
+/** Width of the sub-panel toggle strip when closed (~2/3 of collapsed main sidebar). */
+export const SUBPANEL_TOGGLE_STRIP_WIDTH = 25;
+
 /** Left offset for main content and page footer (so they start where sidebars end). */
-export function getDashboardContentMarginLeft(isPinned: boolean, hasSubPanel: boolean): string {
-  if (hasSubPanel) {
+export function getDashboardContentMarginLeft(
+  isPinned: boolean,
+  subPanelVisible: boolean,
+  hasSubPanelClosed: boolean
+): string {
+  if (subPanelVisible) {
     return isPinned
       ? 'calc(var(--sidebar-width-expanded) + var(--sidebar-sub-panel-width))'
       : 'calc(var(--sidebar-width-collapsed) + var(--sidebar-sub-panel-width))';
+  }
+
+  if (hasSubPanelClosed) {
+    return isPinned
+      ? `calc(var(--sidebar-width-expanded) + ${SUBPANEL_TOGGLE_STRIP_WIDTH}px)`
+      : `calc(var(--sidebar-width-collapsed) + ${SUBPANEL_TOGGLE_STRIP_WIDTH}px)`;
   }
 
   return isPinned ? 'var(--sidebar-width-expanded)' : 'var(--sidebar-width-collapsed)';
@@ -46,7 +59,10 @@ export const DASHBOARD_CONTENT_MAX_WIDTH = 'container';
 export const DASHBOARD_PAGE_BODY_GAP = 'mb-8';
 export const DASHBOARD_PAGE_BODY_GAP_TOP = 'mt-8';
 
-export type DashboardContentWidth = 'narrow' | 'content' | 'full';
+/** Number of items visible in dashboard bento cards (projects list, recent activity). */
+export const BENTO_VISIBLE_ITEMS = 5;
+
+type DashboardContentWidth = 'narrow' | 'content' | 'full';
 
 /** Strip the leading locale segment (e.g. '/en/dashboard' → '/dashboard'). No-op if absent. */
 function pathWithoutLocale(pathname: string): string {

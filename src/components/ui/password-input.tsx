@@ -1,6 +1,7 @@
 'use client';
 
-import * as React from 'react';
+import type * as React from 'react';
+import { useState } from 'react';
 
 import { type VariantProps } from 'class-variance-authority';
 import { Eye, EyeOff } from 'lucide-react';
@@ -13,42 +14,43 @@ import { cn } from '@/lib/common/utils';
 type PasswordInputProps = Omit<React.ComponentProps<typeof Input>, 'type'> &
   VariantProps<typeof inputVariants>;
 
-const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
-  ({ className, size, ...props }, ref) => {
-    const t = useTranslations();
-    const [showPassword, setShowPassword] = React.useState(false);
-    const togglePassword = () => setShowPassword((prev) => !prev);
+function PasswordInput({
+  className,
+  size,
+  ref,
+  ...props
+}: PasswordInputProps & { ref?: React.Ref<HTMLInputElement> }) {
+  const t = useTranslations();
+  const [showPassword, setShowPassword] = useState(false);
+  const togglePassword = () => setShowPassword((prev) => !prev);
 
-    return (
-      <div className="relative">
-        <Input
-          type={showPassword ? 'text' : 'password'}
-          size={size}
-          className={cn('pr-10', className)}
-          placeholder={props.placeholder ?? t('auth.passwordPlaceholder')}
-          ref={ref}
-          {...props}
-        />
+  return (
+    <div className="relative">
+      <Input
+        type={showPassword ? 'text' : 'password'}
+        size={size}
+        className={cn('pr-10', className)}
+        placeholder={props.placeholder ?? t('auth.passwordPlaceholder')}
+        ref={ref}
+        {...props}
+      />
 
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="text-muted-foreground absolute top-0 right-0 h-full px-3 md:hover:bg-transparent"
-          onClick={togglePassword}
-          aria-label={showPassword ? t('auth.hidePassword') : t('auth.showPassword')}
-        >
-          {showPassword ? (
-            <EyeOff className="size-4" aria-hidden="true" />
-          ) : (
-            <Eye className="size-4" aria-hidden="true" />
-          )}
-        </Button>
-      </div>
-    );
-  }
-);
-
-PasswordInput.displayName = 'PasswordInput';
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        className="text-muted-foreground absolute top-0 right-0 h-full px-3 md:hover:bg-transparent"
+        onClick={togglePassword}
+        aria-label={showPassword ? t('auth.hidePassword') : t('auth.showPassword')}
+      >
+        {showPassword ? (
+          <EyeOff className="size-4" aria-hidden="true" />
+        ) : (
+          <Eye className="size-4" aria-hidden="true" />
+        )}
+      </Button>
+    </div>
+  );
+}
 
 export { PasswordInput };

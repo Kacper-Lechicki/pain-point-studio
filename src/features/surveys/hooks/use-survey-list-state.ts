@@ -1,7 +1,5 @@
 'use client';
 
-import { useCallback } from 'react';
-
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import { NOW_UPDATE_INTERVAL_MS } from '@/features/surveys/config';
 import { getDefaultSortDir, getSurveyComparator } from '@/features/surveys/lib/sort-helpers';
@@ -43,18 +41,15 @@ export function useSurveyListState<TSortKey extends string>({
   customComparator,
 }: UseSurveyListStateOptions<TSortKey>) {
   // Two-tier comparator: common sorts first, then custom
-  const comparator = useCallback(
-    (sortBy: TSortKey, sortDir: SortDir) => {
-      const common = getSurveyComparator(sortBy, sortDir);
+  const comparator = (sortBy: TSortKey, sortDir: SortDir) => {
+    const common = getSurveyComparator(sortBy, sortDir);
 
-      if (common) {
-        return common;
-      }
+    if (common) {
+      return common;
+    }
 
-      return customComparator?.(sortBy, sortDir);
-    },
-    [customComparator]
-  );
+    return customComparator?.(sortBy, sortDir);
+  };
 
   const {
     now,

@@ -18,10 +18,15 @@ const OAuthButtons = () => {
   const handleOAuthSignIn = async (provider: AuthProvider) => {
     setLoading(provider);
 
-    const result = await signInWithOAuth(provider);
+    try {
+      const result = await signInWithOAuth(provider);
 
-    if (result.error) {
-      toast.error(t(result.error as MessageKey));
+      if (result.error) {
+        toast.error(t(result.error as MessageKey));
+        setLoading(null);
+      }
+    } catch {
+      toast.error(t('auth.errors.unexpected' as MessageKey));
       setLoading(null);
     }
   };

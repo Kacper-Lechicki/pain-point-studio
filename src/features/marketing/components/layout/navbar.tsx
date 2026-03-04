@@ -103,7 +103,12 @@ const Navbar = () => {
           </div>
 
           <div className="flex lg:hidden">
-            <Button variant="ghost" size="icon" onClick={toggleMobileMenu} aria-label="Toggle menu">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleMobileMenu}
+              aria-label={t('common.aria.toggleMenu')}
+            >
               {showMobileMenu ? (
                 <X className="size-6" aria-hidden="true" />
               ) : (

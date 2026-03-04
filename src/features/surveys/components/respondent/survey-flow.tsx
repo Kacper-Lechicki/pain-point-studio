@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { ArrowLeft, ArrowRight, SkipForward } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -33,7 +33,6 @@ export const SurveyFlow = ({ survey, responseId, slug }: SurveyFlowProps) => {
   const [screen, setScreen] = useState<FlowScreen>('questions');
   const [closedReason, setClosedReason] = useState<ClosedReason | null>(null);
 
-  // Poll survey status every 30s to detect closure in real-time
   useEffect(() => {
     const interval = setInterval(async () => {
       const status = await checkSurveyStatus(survey.id);
@@ -47,23 +46,19 @@ export const SurveyFlow = ({ survey, responseId, slug }: SurveyFlowProps) => {
     return () => clearInterval(interval);
   }, [survey.id]);
 
-  const handleSaveError = useCallback(
-    (errorKey?: string) => {
-      // If error is a survey-closed error, show closed screen immediately
-      if (errorKey && errorKey.includes('closed.')) {
-        setClosedReason('completed');
+  function handleSaveError(errorKey?: string) {
+    if (errorKey && errorKey.includes('closed.')) {
+      setClosedReason('completed');
 
-        return;
-      }
+      return;
+    }
 
-      toast.error(tErrors('respondent.errors.saveFailed'));
-    },
-    [tErrors]
-  );
+    toast.error(tErrors('respondent.errors.saveFailed'));
+  }
 
-  const handleSurveyClosed = useCallback(() => {
+  function handleSurveyClosed() {
     setClosedReason('completed');
-  }, []);
+  }
 
   const {
     currentIndex,
@@ -78,7 +73,6 @@ export const SurveyFlow = ({ survey, responseId, slug }: SurveyFlowProps) => {
     goToQuestion,
   } = useSurveyFlow({ questions: survey.questions, responseId, onSaveError: handleSaveError });
 
-  // Show closed screen if survey was closed mid-flow
   if (closedReason) {
     return <SurveyClosed title={survey.title} reason={closedReason} />;
   }

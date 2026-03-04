@@ -3,16 +3,13 @@ import type { LucideIcon } from 'lucide-react';
 
 // ── Types ────────────────────────────────────────────────────────────
 
-export const VERDICT_STATUSES = [
-  'no-data',
-  'exploring',
-  'promising',
-  'needs-attention',
-  'validated',
-  'invalidated',
-] as const;
-
-export type VerdictStatus = (typeof VERDICT_STATUSES)[number];
+export type VerdictStatus =
+  | 'no-data'
+  | 'exploring'
+  | 'promising'
+  | 'needs-attention'
+  | 'validated'
+  | 'invalidated';
 
 export interface VerdictResult {
   status: VerdictStatus;
@@ -24,7 +21,7 @@ export interface VerdictResult {
 
 // ── Visual config per status ─────────────────────────────────────────
 
-export interface VerdictStatusConfig {
+interface VerdictStatusConfig {
   labelKey: string;
   descriptionKey: string;
   ariaLabelKey: string;
@@ -125,6 +122,3 @@ export const VERDICT_STATUS_CONFIG: Record<VerdictStatus, VerdictStatusConfig> =
     },
   },
 };
-
-/** Default number of recommended responses when no project override is set. */
-export const DEFAULT_TARGET_RESPONSES = 30;

@@ -1,7 +1,5 @@
 'use client';
 
-import { useMemo } from 'react';
-
 import { Lightbulb, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -11,7 +9,6 @@ import { QuestionConfigDetails } from '@/features/surveys/components/dashboard/q
 import { ChoiceDistributionChart } from '@/features/surveys/components/stats/answer-charts/choice-distribution-chart';
 import { RatingDistributionChart } from '@/features/surveys/components/stats/answer-charts/rating-distribution-chart';
 import { ShortTextChart } from '@/features/surveys/components/stats/answer-charts/short-text-chart';
-import { TextAnswersList } from '@/features/surveys/components/stats/answer-charts/text-answers-list';
 import { YesNoChart } from '@/features/surveys/components/stats/answer-charts/yes-no-chart';
 import { QUESTION_TYPE_ICONS, QUESTION_TYPE_LABEL_KEYS } from '@/features/surveys/config';
 import { computeInsight } from '@/features/surveys/lib/compute-insight';
@@ -29,15 +26,12 @@ export const QuestionStatsCard = ({ question, index }: QuestionStatsCardProps) =
   const typeLabel = t(typeLabelKey as Parameters<typeof t>[0]);
   const responseCount = question.answers.length;
 
-  const insight = useMemo(
-    () => computeInsight(question.type, question.answers, question.config, t),
-    [question.type, question.answers, question.config, t]
-  );
+  const insight = computeInsight(question.type, question.answers, question.config, t);
 
   const renderChart = () => {
     switch (question.type) {
       case 'open_text':
-        return <TextAnswersList answers={question.answers} />;
+        return <ShortTextChart answers={question.answers} />;
       case 'short_text':
         return <ShortTextChart answers={question.answers} />;
       case 'multiple_choice':

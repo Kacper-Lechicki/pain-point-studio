@@ -1,5 +1,3 @@
-import { useMemo } from 'react';
-
 import { Download, Eye, Pencil, Send, Share2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -32,7 +30,6 @@ interface SurveyActionMenuContentProps {
   detailsLabelKey?: 'quickPreview' | 'details';
 }
 
-// ── Primary menu item definition ──────────────────────────────────────
 type PrimaryMenuItem =
   | { kind: 'button'; key: string; label: string; icon: LucideIcon; onClick: () => void }
   | { kind: 'link'; key: string; label: string; icon: LucideIcon; href: string };
@@ -51,9 +48,7 @@ export function SurveyActionMenuContent({
   const { isDraft, isArchived, isTrashed, hasShareableLink, questionCount } = flags;
   const canPublish = isDraft && questionCount >= QUESTIONS_MIN;
 
-  // Build visible primary items then sort alphabetically by label
-  const primaryItems = useMemo(() => {
-    // Trashed surveys: no primary actions available
+  const primaryItems = (() => {
     if (isTrashed) {
       return [];
     }
@@ -111,27 +106,10 @@ export function SurveyActionMenuContent({
     }
 
     return items.sort((a, b) => a.label.localeCompare(b.label));
-  }, [
-    t,
-    onDetails,
-    detailsLabelKey,
-    hasShareableLink,
-    onShare,
-    isTrashed,
-    isDraft,
-    isArchived,
-    onExport,
-    canPublish,
-    surveyId,
-  ]);
+  })();
 
-  // Sort status-change actions alphabetically by translated label
-  const sortedActions = useMemo(
-    () =>
-      [...availableActions].sort((a, b) =>
-        t(`surveys.dashboard.actions.${a}`).localeCompare(t(`surveys.dashboard.actions.${b}`))
-      ),
-    [availableActions, t]
+  const sortedActions = [...availableActions].sort((a, b) =>
+    t(`surveys.dashboard.actions.${a}`).localeCompare(t(`surveys.dashboard.actions.${b}`))
   );
 
   return (

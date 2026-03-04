@@ -1,7 +1,2 @@
-export { RichEditor, type RichEditorProps } from './rich-editor';
-export {
-  isTiptapEmpty,
-  textToTiptapJson,
-  tiptapJsonToPlainText,
-  truncateTiptapJson,
-} from './utils';
+export { RichEditor } from './rich-editor';
+export { isTiptapEmpty } from './utils';

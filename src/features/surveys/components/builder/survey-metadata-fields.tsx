@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
 import { useTranslations } from 'next-intl';
 import type { UseFormReturn } from 'react-hook-form';
@@ -48,26 +48,20 @@ export function SurveyMetadataFields({
     ...localProjectOptions.map((p) => ({ value: p.value, label: p.label })),
   ];
 
-  const handleProjectChange = useCallback(
-    (value: string) => {
-      if (value === NO_PROJECT_VALUE) {
-        form.setValue('projectId', null, { shouldDirty: true });
+  function handleProjectChange(value: string) {
+    if (value === NO_PROJECT_VALUE) {
+      form.setValue('projectId', null, { shouldDirty: true });
 
-        return;
-      }
+      return;
+    }
 
-      form.setValue('projectId', value, { shouldDirty: true });
-    },
-    [form]
-  );
+    form.setValue('projectId', value, { shouldDirty: true });
+  }
 
-  const handleProjectCreated = useCallback(
-    (project: { id: string; name: string }) => {
-      setLocalProjectOptions((prev) => [...prev, { value: project.id, label: project.name }]);
-      form.setValue('projectId', project.id, { shouldDirty: true });
-    },
-    [form]
-  );
+  function handleProjectCreated(project: { id: string; name: string }) {
+    setLocalProjectOptions((prev) => [...prev, { value: project.id, label: project.name }]);
+    form.setValue('projectId', project.id, { shouldDirty: true });
+  }
 
   return (
     <>

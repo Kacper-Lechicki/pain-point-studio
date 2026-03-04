@@ -2,18 +2,12 @@ import { z } from 'zod';
 
 import { RESEARCH_PHASES } from '@/features/projects/types';
 import {
+  CONFIG_MAX_JSON_LENGTH,
   QUESTIONS_MAX,
   QUESTION_DESCRIPTION_MAX_LENGTH,
-  QUESTION_OPTIONS_MAX,
-  QUESTION_OPTIONS_MIN,
-  QUESTION_OPTION_MAX_LENGTH,
   QUESTION_TEXT_MAX_LENGTH,
-  RATING_LABEL_MAX_LENGTH,
-  RATING_SCALE_MAX,
-  RATING_SCALE_MIN,
   SURVEY_DESCRIPTION_MAX_LENGTH,
   SURVEY_TITLE_MAX_LENGTH,
-  TEXT_PLACEHOLDER_MAX_LENGTH,
 } from '@/features/surveys/config';
 
 // ── Enum tuples (source of truth) ───────────────────────────────────
@@ -86,44 +80,7 @@ export const createSurveyDraftSchema = surveyMetadataSchema.and(
   })
 );
 
-export type CreateSurveyDraftSchema = z.infer<typeof createSurveyDraftSchema>;
-
-// ── Type-specific config schemas ────────────────────────────────────
-
-/** Config schema for multiple-choice questions (options, selection limits). */
-export const multipleChoiceConfigSchema = z.object({
-  options: z
-    .array(z.string().max(QUESTION_OPTION_MAX_LENGTH, 'surveys.builder.errors.optionTooLong'))
-    .min(QUESTION_OPTIONS_MIN, 'surveys.builder.errors.minOptions')
-    .max(QUESTION_OPTIONS_MAX, 'surveys.builder.errors.maxOptions'),
-  minSelections: z.number().int().min(1).optional(),
-  maxSelections: z.number().int().min(1).optional(),
-  allowOther: z.boolean().optional(),
-});
-
-/** Config schema for rating-scale questions (min/max values, labels). */
-export const ratingScaleConfigSchema = z
-  .object({
-    min: z.number().int().min(RATING_SCALE_MIN, 'surveys.builder.errors.ratingMinValue'),
-    max: z.number().int().max(RATING_SCALE_MAX, 'surveys.builder.errors.ratingMaxValue'),
-    minLabel: z.string().max(RATING_LABEL_MAX_LENGTH).optional(),
-    maxLabel: z.string().max(RATING_LABEL_MAX_LENGTH).optional(),
-  })
-  .refine((data) => data.min < data.max, {
-    message: 'surveys.builder.errors.ratingMinGreaterMax',
-    path: ['max'],
-  });
-
-/** Config schema for text questions (placeholder, max length). */
-export const textConfigSchema = z.object({
-  placeholder: z.string().max(TEXT_PLACEHOLDER_MAX_LENGTH).optional(),
-  maxLength: z.number().int().min(1).optional(),
-});
-
 // ── Question schema ─────────────────────────────────────────────────
-
-/** Max serialized config size in characters (prevents oversized JSON payloads). */
-const CONFIG_MAX_JSON_LENGTH = 2_000;
 
 /** Validates that a config object doesn't exceed a safe serialized size. */
 const configSchema = z
@@ -172,8 +129,6 @@ export const surveyQuestionsSchema = z.object({
   surveyId: z.uuid(),
   questions: z.array(draftQuestionSchema).max(QUESTIONS_MAX, 'surveys.builder.errors.maxQuestions'),
 });
-
-export type SurveyQuestionsSchema = z.infer<typeof surveyQuestionsSchema>;
 
 // ── Response types ──────────────────────────────────────────────────
 

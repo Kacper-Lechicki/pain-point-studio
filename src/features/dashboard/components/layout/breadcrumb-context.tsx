@@ -1,14 +1,6 @@
 'use client';
 
-import {
-  type ReactNode,
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { type ReactNode, createContext, useContext, useEffect, useState } from 'react';
 
 type SegmentMap = Record<string, string>;
 
@@ -23,11 +15,11 @@ const BreadcrumbContext = createContext<BreadcrumbContextValue | null>(null);
 export function BreadcrumbProvider({ children }: { children: ReactNode }) {
   const [segments, setSegments] = useState<SegmentMap>({});
 
-  const setSegment = useCallback((segment: string, label: string) => {
+  const setSegment = (segment: string, label: string) => {
     setSegments((prev) => (prev[segment] === label ? prev : { ...prev, [segment]: label }));
-  }, []);
+  };
 
-  const removeSegment = useCallback((segment: string) => {
+  const removeSegment = (segment: string) => {
     setSegments((prev) => {
       if (!(segment in prev)) {
         return prev;
@@ -39,12 +31,9 @@ export function BreadcrumbProvider({ children }: { children: ReactNode }) {
 
       return next;
     });
-  }, []);
+  };
 
-  const value = useMemo(
-    () => ({ segments, setSegment, removeSegment }),
-    [segments, setSegment, removeSegment]
-  );
+  const value: BreadcrumbContextValue = { segments, setSegment, removeSegment };
 
   return <BreadcrumbContext.Provider value={value}>{children}</BreadcrumbContext.Provider>;
 }

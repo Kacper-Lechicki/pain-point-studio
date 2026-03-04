@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export type PerPage = 5 | 10 | 15;
 
@@ -39,59 +39,42 @@ export function usePagination({
   const startIndex = (effectivePage - 1) * perPage;
   const endIndex = Math.min(startIndex + perPage, totalItems);
 
-  const goToPage = useCallback(
-    (p: number) => {
-      setPage(Math.max(1, Math.min(p, totalPages)));
-    },
-    [totalPages]
-  );
+  const goToPage = (p: number) => {
+    setPage(Math.max(1, Math.min(p, totalPages)));
+  };
 
-  const setPerPage = useCallback((pp: PerPage) => {
+  const setPerPage = (pp: PerPage) => {
     setPerPageState(pp);
     setPage(1);
-  }, []);
+  };
 
-  const nextPage = useCallback(() => {
+  const nextPage = () => {
     setPage((prev) => Math.min(prev + 1, totalPages));
-  }, [totalPages]);
+  };
 
-  const prevPage = useCallback(() => {
+  const prevPage = () => {
     setPage((prev) => Math.max(prev - 1, 1));
-  }, []);
+  };
 
-  return useMemo(
-    () => ({
-      page: effectivePage,
-      perPage,
-      totalPages,
-      totalItems,
-      startIndex,
-      endIndex,
-      goToPage,
-      setPerPage,
-      nextPage,
-      prevPage,
-      canGoNext: effectivePage < totalPages,
-      canGoPrev: effectivePage > 1,
-    }),
-    [
-      effectivePage,
-      perPage,
-      totalPages,
-      totalItems,
-      startIndex,
-      endIndex,
-      goToPage,
-      setPerPage,
-      nextPage,
-      prevPage,
-    ]
-  );
+  return {
+    page: effectivePage,
+    perPage,
+    totalPages,
+    totalItems,
+    startIndex,
+    endIndex,
+    goToPage,
+    setPerPage,
+    nextPage,
+    prevPage,
+    canGoNext: effectivePage < totalPages,
+    canGoPrev: effectivePage > 1,
+  };
 }
 
 /** Resets pagination to page 1. Call when search/filter/sort changes. */
 export function useResetPaginationOnChange(goToPage: (page: number) => void, deps: unknown[]) {
-  const isFirstRender = useMemo(() => ({ current: true }), []);
+  const isFirstRender = useRef(true);
 
   useEffect(() => {
     if (isFirstRender.current) {

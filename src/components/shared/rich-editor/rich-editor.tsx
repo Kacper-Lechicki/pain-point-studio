@@ -1,44 +1,27 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { EditorContent, type JSONContent, useEditor } from '@tiptap/react';
 
+import { BubbleToolbar } from '@/components/shared/rich-editor/bubble-toolbar';
+import { createExtensions } from '@/components/shared/rich-editor/extensions';
+import { ImageUrlPrompt } from '@/components/shared/rich-editor/image-url-prompt';
+import { setImageRequestCallback } from '@/components/shared/rich-editor/slash-commands';
 import { cn } from '@/lib/common/utils';
-
-import { BubbleToolbar } from './bubble-toolbar';
-import { createExtensions } from './extensions';
-import { ImageUrlPrompt } from './image-url-prompt';
-import { setImageRequestCallback } from './slash-commands';
 
 import './editor.css';
 
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-
-export interface RichEditorProps {
-  /** Initial content as Tiptap JSON document */
+interface RichEditorProps {
   content?: JSONContent | null;
-  /** Called on every content change with Tiptap JSON */
   onChange?: (json: JSONContent) => void;
-  /** Placeholder text shown when editor is empty */
   placeholder?: string;
-  /** Whether the editor is read-only */
   editable?: boolean;
-  /** Additional CSS class for the editor wrapper */
   className?: string;
-  /** Auto-focus on mount */
   autoFocus?: boolean;
-  /** Show a helper hint below the editor (e.g. "Type / for commands") */
   showHint?: boolean;
-  /** When true, editor root uses flex column and content area grows to fill height */
   fillHeight?: boolean;
 }
-
-// ---------------------------------------------------------------------------
-// Component
-// ---------------------------------------------------------------------------
 
 export function RichEditor({
   content,
@@ -72,12 +55,10 @@ export function RichEditor({
     },
   });
 
-  // Keep a mutable ref to the editor for use in the image request callback
   useEffect(() => {
     editorRef.current = editor;
   }, [editor]);
 
-  // Wire up image request callback so slash commands can trigger the prompt
   useEffect(() => {
     setImageRequestCallback(() => {
       const ed = editorRef.current;
@@ -100,25 +81,21 @@ export function RichEditor({
     };
   }, []);
 
-  // Sync editable state
   useEffect(() => {
     if (editor && editor.isEditable !== editable) {
       editor.setEditable(editable);
     }
   }, [editor, editable]);
 
-  const handleImageConfirm = useCallback(
-    (url: string) => {
-      editor?.chain().focus().setImage({ src: url }).run();
-      setImagePrompt(null);
-    },
-    [editor]
-  );
+  function handleImageConfirm(url: string) {
+    editor?.chain().focus().setImage({ src: url }).run();
+    setImagePrompt(null);
+  }
 
-  const handleImageCancel = useCallback(() => {
+  function handleImageCancel() {
     setImagePrompt(null);
     editor?.chain().focus().run();
-  }, [editor]);
+  }
 
   if (!editor) {
     return null;

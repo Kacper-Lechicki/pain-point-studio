@@ -1,23 +1,27 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
 import { ClipboardList } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { BulkActionBar, type BulkActionDescriptor } from '@/components/ui/bulk-action-bar';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ListPagination } from '@/components/ui/list-pagination';
 import { bulkChangeSurveyStatus } from '@/features/surveys/actions/bulk-change-survey-status';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
+import { SurveyBulkActionBar } from '@/features/surveys/components/dashboard/survey-bulk-action-bar';
 import { SurveyDetailSheet } from '@/features/surveys/components/dashboard/survey-detail-sheet';
 import { SurveyListKpi } from '@/features/surveys/components/dashboard/survey-list-kpi';
 import { SurveyListRow } from '@/features/surveys/components/dashboard/survey-list-row';
 import { SurveyListTable } from '@/features/surveys/components/dashboard/survey-list-table';
+import {
+  SurveyListToolbar,
+  type SurveySortBy,
+} from '@/features/surveys/components/dashboard/survey-list-toolbar';
 import { SURVEY_ACTION_UI } from '@/features/surveys/config/survey-status';
 import { useRealtimeSurveyList } from '@/features/surveys/hooks/use-realtime-survey-list';
 import {
@@ -36,36 +40,11 @@ import { useFormAction } from '@/hooks/common/use-form-action';
 import { useRefresh } from '@/hooks/common/use-refresh';
 import type { MessageKey } from '@/i18n/types';
 
-import { SurveyListToolbar, type SurveySortBy } from './survey-list-toolbar';
-
-// ── Bulk action button colors ────────────────────────────────────────
-
-const SURVEY_BULK_BUTTON_COLORS: Record<BulkSurveyAction, string> = {
-  complete:
-    'border-violet-500 text-violet-600 hover:bg-violet-500/10 dark:text-violet-400 dark:hover:bg-violet-500/10',
-  cancel: 'border-destructive text-destructive hover:bg-destructive/10',
-  reopen:
-    'border-emerald-500 text-emerald-600 hover:bg-emerald-500/10 dark:text-emerald-400 dark:hover:bg-emerald-500/10',
-  archive:
-    'border-amber-500 text-amber-600 hover:bg-amber-500/10 dark:text-amber-400 dark:hover:bg-amber-500/10',
-  restore:
-    'border-emerald-500 text-emerald-600 hover:bg-emerald-500/10 dark:text-emerald-400 dark:hover:bg-emerald-500/10',
-  trash: 'border-destructive text-destructive hover:bg-destructive/10',
-  restoreTrash:
-    'border-emerald-500 text-emerald-600 hover:bg-emerald-500/10 dark:text-emerald-400 dark:hover:bg-emerald-500/10',
-};
-
-// ── Component ────────────────────────────────────────────────────────
-
 interface SurveyListProps {
   initialSurveys: UserSurvey[];
-  /** When set, the list runs in project context (hides project filter, shows archived status). */
   projectId?: string | undefined;
-  /** Callback to open the "create survey" dialog (rendered by the parent). */
   onCreateSurvey?: (() => void) | undefined;
-  /** Total responses across all surveys in this project (project context only). */
   totalResponses?: number | undefined;
-  /** Project-level target responses cap (project context only). */
   targetResponses?: number | undefined;
 }
 
@@ -88,7 +67,6 @@ export const SurveyList = ({
   const isProjectContext = !!projectId;
 
   const hasActiveSurveys = surveys.some((s) => s.status === 'active');
-  // In project context, realtime is managed at the project level — skip here to avoid double subscriptions.
   const { isConnected: isRealtimeConnected } = useRealtimeSurveyList(
     markSynced,
     hasActiveSurveys && !isProjectContext
@@ -131,16 +109,11 @@ export const SurveyList = ({
   const { selectedId, selectedSurvey, questions, showSheet, setSelected } =
     useSurveySelection(surveys);
 
-  // In project context, clicking a row navigates to the survey detail page.
-  const handleNavigate = useCallback(
-    (surveyId: string) => router.push(getSurveyDetailUrl(surveyId)),
-    [router]
-  );
+  const handleNavigate = (surveyId: string) => router.push(getSurveyDetailUrl(surveyId));
 
   const onSelect = isProjectContext ? handleNavigate : setSelected;
 
   const handleStatusChange = (surveyId: string, action: string) => {
-    // In project context, archived surveys stay visible — don't deselect on archive.
     const deselectStatuses = isProjectContext ? ['trashed'] : ['archived', 'trashed'];
     const { shouldDeselect, updatedSurveys } = applyOptimisticStatusChange(
       surveys,
@@ -156,8 +129,6 @@ export const SurveyList = ({
     setSurveys(updatedSurveys);
   };
 
-  // ── Bulk selection ──────────────────────────────────────────────────
-
   const {
     selectedIds,
     toggleSelect,
@@ -172,7 +143,7 @@ export const SurveyList = ({
     unexpectedErrorMessage: 'surveys.errors.unexpected' as MessageKey,
   });
 
-  const bulkConfirmDialogProps = useMemo(() => {
+  const bulkConfirmDialogProps = (() => {
     if (!bulkConfirmAction) {
       return null;
     }
@@ -189,20 +160,9 @@ export const SurveyList = ({
       confirmLabel: t(`surveys.dashboard.actions.${bulkConfirmAction}` as MessageKey),
       variant: config.variant,
     };
-  }, [bulkConfirmAction, t]);
+  })();
 
-  const bulkActionDescriptors: BulkActionDescriptor[] = useMemo(
-    () =>
-      availableBulkActions.map((action) => ({
-        key: action,
-        icon: SURVEY_ACTION_UI[action].icon,
-        label: t(`surveys.dashboard.actions.${action}` as MessageKey),
-        colorClassName: SURVEY_BULK_BUTTON_COLORS[action],
-      })),
-    [availableBulkActions, t]
-  );
-
-  const handleBulkConfirm = useCallback(async () => {
+  async function handleBulkConfirm() {
     if (!bulkConfirmAction || selectedIds.size === 0) {
       return;
     }
@@ -232,7 +192,7 @@ export const SurveyList = ({
       clearSelection();
       router.refresh();
     }
-  }, [bulkConfirmAction, selectedIds, bulkAction, t, clearSelection, router]);
+  }
 
   return (
     <div className="w-full min-w-0 space-y-4 overflow-x-hidden">
@@ -267,15 +227,13 @@ export const SurveyList = ({
       />
 
       {selectionCount > 0 && (
-        <BulkActionBar
+        <SurveyBulkActionBar
           count={selectionCount}
-          actions={bulkActionDescriptors}
-          onAction={(key) => setBulkConfirmAction(key as BulkSurveyAction)}
+          availableActions={availableBulkActions}
+          onAction={setBulkConfirmAction}
           onClear={clearSelection}
           onSelectAll={() => selectAll(paginatedSurveys)}
           allOnPageSelected={paginatedSurveys.every((s) => selectedIds.has(s.id))}
-          selectAllLabel={t('surveys.dashboard.bulk.selectAll')}
-          clearSelectionLabel={t('surveys.dashboard.bulk.clearSelection')}
         />
       )}
 

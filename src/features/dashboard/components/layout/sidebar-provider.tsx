@@ -3,10 +3,8 @@
 import {
   type ReactNode,
   createContext,
-  useCallback,
   useContext,
   useEffect,
-  useMemo,
   useRef,
   useState,
   useSyncExternalStore,
@@ -17,21 +15,21 @@ import { findActiveNavItem } from '@/features/dashboard/lib/nav-utils';
 import { useBreakpoint } from '@/hooks/common/use-breakpoint';
 import { usePathname } from '@/i18n/routing';
 
-const STORAGE_KEY = 'sidebar-pinned';
+const STORAGE_KEY_PINNED = 'sidebar-pinned';
+const STORAGE_KEY_SUBPANEL = 'sidebar-subpanel-visible';
 const HOVER_DELAY = 75;
 const pinnedListeners = new Set<() => void>();
+const subPanelListeners = new Set<() => void>();
 
 function subscribePinned(callback: () => void) {
   pinnedListeners.add(callback);
 
-  return () => {
-    pinnedListeners.delete(callback);
-  };
+  return () => pinnedListeners.delete(callback);
 }
 
 function getPinnedSnapshot(): boolean {
   try {
-    return localStorage.getItem(STORAGE_KEY) === 'true';
+    return localStorage.getItem(STORAGE_KEY_PINNED) === 'true';
   } catch {
     return false;
   }
@@ -43,10 +41,38 @@ function getPinnedServerSnapshot(): boolean {
 
 function writePinned(next: boolean) {
   try {
-    localStorage.setItem(STORAGE_KEY, String(next));
+    localStorage.setItem(STORAGE_KEY_PINNED, String(next));
   } catch {}
 
   pinnedListeners.forEach((cb) => cb());
+}
+
+function subscribeSubPanelVisible(callback: () => void) {
+  subPanelListeners.add(callback);
+
+  return () => subPanelListeners.delete(callback);
+}
+
+function getSubPanelVisibleSnapshot(): boolean {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY_SUBPANEL);
+
+    return stored === null || stored === 'true';
+  } catch {
+    return true;
+  }
+}
+
+function getSubPanelVisibleServerSnapshot(): boolean {
+  return true;
+}
+
+function writeSubPanelVisible(next: boolean) {
+  try {
+    localStorage.setItem(STORAGE_KEY_SUBPANEL, String(next));
+  } catch {}
+
+  subPanelListeners.forEach((cb) => cb());
 }
 
 interface SidebarContextValue {
@@ -59,6 +85,10 @@ interface SidebarContextValue {
   handleMouseLeave: () => void;
   isDesktop: boolean;
   hasSubPanel: boolean;
+  /** Sub-panel is available for current section and user has it visible (desktop). */
+  subPanelVisible: boolean;
+  subPanelOpen: boolean;
+  toggleSubPanel: () => void;
   activeNavItem: NavItem | undefined;
 }
 
@@ -88,37 +118,48 @@ export function SidebarProvider({ children }: SidebarProviderProps) {
     getPinnedServerSnapshot
   );
 
+  const subPanelOpen = useSyncExternalStore(
+    subscribeSubPanelVisible,
+    getSubPanelVisibleSnapshot,
+    getSubPanelVisibleServerSnapshot
+  );
+
   const [isHovered, setIsHovered] = useState(false);
   const [isMobileOpenRaw, setMobileOpenRaw] = useState(false);
   const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isMobileOpen = isMobileOpenRaw;
   const activeNavItem = findActiveNavItem(pathname);
   const hasSubPanel = activeNavItem !== undefined;
+  const subPanelVisible = hasSubPanel && subPanelOpen;
 
-  const togglePin = useCallback(() => {
+  const togglePin = () => {
     writePinned(!getPinnedSnapshot());
-  }, []);
+  };
 
-  const handleMouseEnter = useCallback(() => {
+  const toggleSubPanel = () => {
+    writeSubPanelVisible(!getSubPanelVisibleSnapshot());
+  };
+
+  const handleMouseEnter = () => {
     if (getPinnedSnapshot()) {
       return;
     }
 
     hoverTimerRef.current = setTimeout(() => setIsHovered(true), HOVER_DELAY);
-  }, []);
+  };
 
-  const handleMouseLeave = useCallback(() => {
+  const handleMouseLeave = () => {
     if (hoverTimerRef.current) {
       clearTimeout(hoverTimerRef.current);
       hoverTimerRef.current = null;
     }
 
     setIsHovered(false);
-  }, []);
+  };
 
-  const setMobileOpen = useCallback((open: boolean) => {
+  const setMobileOpen = (open: boolean) => {
     setMobileOpenRaw(open);
-  }, []);
+  };
 
   useEffect(() => {
     return () => {
@@ -130,32 +171,21 @@ export function SidebarProvider({ children }: SidebarProviderProps) {
 
   const isExpanded = isPinned || isHovered;
 
-  const value = useMemo<SidebarContextValue>(
-    () => ({
-      isExpanded,
-      isPinned,
-      isMobileOpen,
-      togglePin,
-      setMobileOpen,
-      handleMouseEnter,
-      handleMouseLeave,
-      isDesktop,
-      hasSubPanel,
-      activeNavItem,
-    }),
-    [
-      isExpanded,
-      isPinned,
-      isMobileOpen,
-      togglePin,
-      setMobileOpen,
-      handleMouseEnter,
-      handleMouseLeave,
-      isDesktop,
-      hasSubPanel,
-      activeNavItem,
-    ]
-  );
+  const value: SidebarContextValue = {
+    isExpanded,
+    isPinned,
+    isMobileOpen,
+    togglePin,
+    setMobileOpen,
+    handleMouseEnter,
+    handleMouseLeave,
+    isDesktop,
+    hasSubPanel,
+    subPanelVisible,
+    subPanelOpen,
+    toggleSubPanel,
+    activeNavItem,
+  };
 
   return <SidebarContext.Provider value={value}>{children}</SidebarContext.Provider>;
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
@@ -47,6 +47,21 @@ const variants = {
   }),
 };
 
+function WizardStep({ direction, children }: { direction: Direction; children: React.ReactNode }) {
+  return (
+    <motion.div
+      custom={direction}
+      variants={variants}
+      initial="enter"
+      animate="center"
+      exit="exit"
+      transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
 interface CreateProjectWizardProps {
   userId: string;
 }
@@ -77,15 +92,14 @@ export function CreateProjectWizard({ userId }: CreateProjectWizardProps) {
   const hasDirtyFields = Object.keys(form.formState.dirtyFields).length > 0;
   const description = useWatch({ control: form.control, name: 'description' });
 
-  // Warn about unsaved changes until the project is created
   useUnsavedChangesWarning('create-project-wizard', hasDirtyFields && !projectId);
 
-  const goTo = useCallback((target: WizardStep, dir: Direction) => {
+  const goTo = (target: WizardStep, dir: Direction) => {
     setDirection(dir);
     setStep(target);
-  }, []);
+  };
 
-  const validateNameUniqueness = useCallback(async () => {
+  const validateNameUniqueness = async () => {
     const valid = await form.trigger('name');
 
     if (!valid) {
@@ -102,97 +116,73 @@ export function CreateProjectWizard({ userId }: CreateProjectWizardProps) {
     }
 
     return true;
-  }, [form]);
+  };
 
-  const handleNameBlur = useCallback(
-    async (rhfBlur: () => void) => {
-      rhfBlur();
+  const handleNameBlur = async (rhfBlur: () => void) => {
+    rhfBlur();
 
-      const name = form.getValues('name');
+    const name = form.getValues('name');
 
-      if (name.trim()) {
-        await validateNameUniqueness();
-      }
-    },
-    [form, validateNameUniqueness]
-  );
+    if (name.trim()) {
+      await validateNameUniqueness();
+    }
+  };
 
-  const handleNextFromName = useCallback(async () => {
+  const handleNextFromName = async () => {
     if (await validateNameUniqueness()) {
       goTo(2, 'forward');
     }
-  }, [validateNameUniqueness, goTo]);
+  };
 
-  const handleNextFromSummary = useCallback(async () => {
+  const handleNextFromSummary = async () => {
     const valid = await form.trigger('summary');
 
     if (valid) {
       goTo(3, 'forward');
     }
-  }, [form, goTo]);
+  };
 
-  const handleNextFromDescription = useCallback(() => {
+  const handleNextFromDescription = () => {
     goTo(4, 'forward');
-  }, [goTo]);
+  };
 
-  const onSubmit = useCallback(
-    async (data: CreateProjectInput) => {
-      const result = await action.execute(createProject, data);
+  const onSubmit = async (data: CreateProjectInput) => {
+    const result = await action.execute(createProject, data);
 
-      if (result?.data?.projectId) {
-        setProjectId(result.data.projectId);
-        setProjectName(data.name);
-        // Stay on step 4 — the UI will swap to the post-creation view
-      }
-    },
-    [action]
-  );
+    if (result?.data?.projectId) {
+      setProjectId(result.data.projectId);
+      setProjectName(data.name);
+    }
+  };
 
-  const handleDone = useCallback(() => {
+  const handleDone = () => {
     if (projectId) {
       router.push(getProjectDetailUrl(projectId));
     }
-  }, [projectId, router]);
+  };
 
-  const handleDescriptionChange = useCallback(
-    (json: JSONContent) => {
-      form.setValue('description', json, { shouldDirty: true });
-    },
-    [form]
-  );
+  const handleDescriptionChange = (json: JSONContent) => {
+    form.setValue('description', json, { shouldDirty: true });
+  };
 
-  // Intercept Enter on steps 1-2 to advance instead of submitting the form.
-  // Step 3 uses the rich editor which handles Enter internally.
-  // Step 4 has a submit button — Enter naturally submits the form.
-  const handleFormKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        if (step === 1) {
-          e.preventDefault();
-          void handleNextFromName();
-        } else if (step === 2) {
-          e.preventDefault();
-          void handleNextFromSummary();
-        }
+  const handleFormKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      if (step === 1) {
+        e.preventDefault();
+        void handleNextFromName();
+      } else if (step === 2) {
+        e.preventDefault();
+        void handleNextFromSummary();
       }
-    },
-    [step, handleNextFromName, handleNextFromSummary]
-  );
+    }
+  };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} onKeyDown={handleFormKeyDown} className="w-full">
         <AnimatePresence mode="wait" custom={direction}>
           {step === 1 && (
-            <motion.div
-              key="step-1"
-              custom={direction}
-              variants={variants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-            >
+            <WizardStep key="step-1" direction={direction}>
               <WizardStepLayout
                 stepNumber={1}
                 title={t('projects.create.steps.name.title')}
@@ -229,19 +219,11 @@ export function CreateProjectWizard({ userId }: CreateProjectWizardProps) {
                   )}
                 />
               </WizardStepLayout>
-            </motion.div>
+            </WizardStep>
           )}
 
           {step === 2 && (
-            <motion.div
-              key="step-2"
-              custom={direction}
-              variants={variants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-            >
+            <WizardStep key="step-2" direction={direction}>
               <WizardStepLayout
                 stepNumber={2}
                 title={t('projects.create.steps.summary.title')}
@@ -280,19 +262,11 @@ export function CreateProjectWizard({ userId }: CreateProjectWizardProps) {
                   )}
                 />
               </WizardStepLayout>
-            </motion.div>
+            </WizardStep>
           )}
 
           {step === 3 && (
-            <motion.div
-              key="step-3"
-              custom={direction}
-              variants={variants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-            >
+            <WizardStep key="step-3" direction={direction}>
               <WizardStepLayout
                 stepNumber={3}
                 title={t('projects.create.steps.description.title')}
@@ -312,19 +286,11 @@ export function CreateProjectWizard({ userId }: CreateProjectWizardProps) {
                   />
                 </FormItem>
               </WizardStepLayout>
-            </motion.div>
+            </WizardStep>
           )}
 
           {step === 4 && !projectId && (
-            <motion.div
-              key="step-4"
-              custom={direction}
-              variants={variants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-            >
+            <WizardStep key="step-4" direction={direction}>
               <WizardStepLayout
                 stepNumber={4}
                 title={t('projects.create.steps.confirm.title')}
@@ -336,7 +302,6 @@ export function CreateProjectWizard({ userId }: CreateProjectWizardProps) {
                 isSubmit
               >
                 <div className="flex flex-col gap-5">
-                  {/* Name */}
                   <div className="flex flex-col gap-1">
                     <span className="text-xs font-medium underline">
                       {t('projects.create.name')}
@@ -344,7 +309,6 @@ export function CreateProjectWizard({ userId }: CreateProjectWizardProps) {
                     <p className="text-sm">{form.getValues('name')}</p>
                   </div>
 
-                  {/* Summary */}
                   {form.getValues('summary') ? (
                     <div className="flex flex-col gap-1">
                       <span className="text-xs font-medium underline">
@@ -354,7 +318,6 @@ export function CreateProjectWizard({ userId }: CreateProjectWizardProps) {
                     </div>
                   ) : null}
 
-                  {/* Description */}
                   {!isTiptapEmpty(description) ? (
                     <div className="flex flex-col gap-1">
                       <span className="text-xs font-medium underline">
@@ -365,26 +328,18 @@ export function CreateProjectWizard({ userId }: CreateProjectWizardProps) {
                   ) : null}
                 </div>
               </WizardStepLayout>
-            </motion.div>
+            </WizardStep>
           )}
 
           {step === 4 && projectId && (
-            <motion.div
-              key="step-4-done"
-              custom={direction}
-              variants={variants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-            >
+            <WizardStep key="step-4-done" direction={direction}>
               <WizardImageStep
                 projectId={projectId}
                 userId={userId}
                 projectName={projectName}
                 onDone={handleDone}
               />
-            </motion.div>
+            </WizardStep>
           )}
         </AnimatePresence>
       </form>

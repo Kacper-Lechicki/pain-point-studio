@@ -15,7 +15,7 @@ import {
 import { cn } from '@/lib/common/utils';
 
 export function Sidebar() {
-  const { isExpanded, isPinned, hasSubPanel, togglePin, handleMouseEnter, handleMouseLeave } =
+  const { isExpanded, isPinned, subPanelVisible, togglePin, handleMouseEnter, handleMouseLeave } =
     useSidebar();
 
   const t = useTranslations();
@@ -29,7 +29,7 @@ export function Sidebar() {
       }}
       className={cn(
         'bg-sidebar border-sidebar-border dashboard:flex fixed top-14 left-0 z-40 hidden h-[calc(100vh-3.5rem)] flex-col overflow-hidden transition-[width] duration-200 ease-in-out',
-        (!hasSubPanel || (isExpanded && !isPinned)) && 'border-r',
+        (!subPanelVisible || (isExpanded && !isPinned)) && 'border-r',
         isExpanded && !isPinned && 'shadow-lg'
       )}
     >

@@ -2,14 +2,6 @@
  * Shared Supabase type helpers. Provides ergonomic type aliases so feature
  * code doesn't need verbose Database['public']['Tables']['x']['Row'] paths.
  */
-import type { SupabaseClient } from '@supabase/supabase-js';
-
-import type { Database } from './types';
-
-// ── Supabase client type alias ──────────────────────────────────────
-
-/** Typed Supabase client. Use this instead of bare SupabaseClient. */
-export type TypedSupabaseClient = SupabaseClient<Database>;
 
 // ── App-level user types ────────────────────────────────────────────
 

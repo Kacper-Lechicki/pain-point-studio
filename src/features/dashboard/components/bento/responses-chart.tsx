@@ -1,7 +1,5 @@
 'use client';
 
-import { useMemo } from 'react';
-
 import { LineChart as LineChartIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts';
@@ -40,20 +38,16 @@ export const ResponsesChart = ({ data, className }: ResponsesChartProps) => {
     },
   } satisfies ChartConfig;
 
-  const chartData = useMemo(
-    () =>
-      data.map((point) => {
-        const dateStr = point.date.substring(0, 10);
-        const [y, m, d] = dateStr.split('-');
-        const date = new Date(Number(y), Number(m) - 1, Number(d));
+  const chartData = data.map((point) => {
+    const dateStr = point.date.substring(0, 10);
+    const [y, m, d] = dateStr.split('-');
+    const date = new Date(Number(y), Number(m) - 1, Number(d));
 
-        return {
-          date: date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
-          responses: point.count,
-        };
-      }),
-    [data]
-  );
+    return {
+      date: date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+      responses: point.count,
+    };
+  });
 
   const hasData = data.some((point) => point.count > 0);
 

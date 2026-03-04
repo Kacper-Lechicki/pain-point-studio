@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
 import { ChevronLeft, Plus, Settings } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -15,6 +15,7 @@ import { EditProjectDialog } from '@/features/projects/components/edit-project-d
 import { ProjectDetailHeader } from '@/features/projects/components/project-detail-header';
 import { ProjectDetailTabs } from '@/features/projects/components/project-detail-tabs';
 import { useProjectDashboardActions } from '@/features/projects/hooks/use-project-dashboard-actions';
+import { useRealtimeProject } from '@/features/projects/hooks/use-realtime-project';
 import { isProjectReadOnly } from '@/features/projects/lib/project-helpers';
 import type {
   Project,
@@ -26,8 +27,6 @@ import type {
 import type { UserSurvey } from '@/features/surveys/actions';
 import { getCreateSurveyUrl } from '@/features/surveys/lib/survey-urls';
 import { useRefresh } from '@/hooks/common/use-refresh';
-
-import { useRealtimeProject } from '../hooks/use-realtime-project';
 
 interface ProjectDashboardPageProps {
   project: Project;
@@ -99,21 +98,21 @@ export function ProjectDashboardPage({
     ]
   );
 
-  const handleInsightCreated = useCallback((insight: ProjectInsight) => {
+  const handleInsightCreated = (insight: ProjectInsight) => {
     setInsights((prev) => [...prev, insight]);
-  }, []);
+  };
 
-  const handleInsightUpdated = useCallback((updated: ProjectInsight) => {
+  const handleInsightUpdated = (updated: ProjectInsight) => {
     setInsights((prev) => prev.map((i) => (i.id === updated.id ? updated : i)));
-  }, []);
+  };
 
-  const handleInsightDeleted = useCallback((insightId: string) => {
+  const handleInsightDeleted = (insightId: string) => {
     setInsights((prev) => prev.filter((i) => i.id !== insightId));
-  }, []);
+  };
 
-  const handleInsightsChanged = useCallback((newInsights: ProjectInsight[]) => {
+  const handleInsightsChanged = (newInsights: ProjectInsight[]) => {
     setInsights(newInsights);
-  }, []);
+  };
 
   return (
     <main className="flex min-w-0 flex-col">

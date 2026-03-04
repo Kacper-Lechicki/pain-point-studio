@@ -1,7 +1,5 @@
 'use client';
 
-import { useMemo } from 'react';
-
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -36,24 +34,15 @@ export function ProjectOverviewTab({
   const isArchived = isProjectArchived(project);
   const hasSurveys = overviewStats.totalSurveys > 0;
 
-  const currentPhase = useMemo(
-    () => deriveProjectPhase(surveys.map((s) => ({ researchPhase: s.researchPhase }))),
-    [surveys]
-  );
+  const currentPhase = deriveProjectPhase(surveys.map((s) => ({ researchPhase: s.researchPhase })));
 
-  const verdict = useMemo(
-    () =>
-      computeVerdict({
-        totalResponses: overviewStats.totalResponses,
-        targetResponses: project.target_responses,
-        insightCount: insights.length,
-        findings: [],
-        insights,
-      }),
-    [overviewStats.totalResponses, project.target_responses, insights]
-  );
-
-  // ── Empty state — no surveys yet ────────────────────────────────────
+  const verdict = computeVerdict({
+    totalResponses: overviewStats.totalResponses,
+    targetResponses: project.target_responses,
+    insightCount: insights.length,
+    findings: [],
+    insights,
+  });
 
   if (!hasSurveys) {
     return (
@@ -81,16 +70,12 @@ export function ProjectOverviewTab({
     );
   }
 
-  // ── Data-centric layout ───────────────────────────────────────────
-
   return (
     <div className="grid min-w-0 gap-4 lg:grid-cols-[2fr_1fr]">
-      {/* Left: About */}
       <div className="min-w-0">
         <ProjectAboutCard project={project} />
       </div>
 
-      {/* Right: Verdict → KPIs → Trend → Activity (stacked) */}
       <div className="flex min-w-0 flex-col gap-4">
         <OverviewVerdictCard
           verdict={verdict}

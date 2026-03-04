@@ -23,7 +23,6 @@ export function NotesLayout({ sidebar, editor, showEditor }: NotesLayoutProps) {
     );
   }
 
-  // Mobile: show either list or editor
   return (
     <div className="border-border flex h-[500px] flex-col overflow-hidden rounded-lg border">
       {showEditor ? editor : sidebar}

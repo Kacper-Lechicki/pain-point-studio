@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
 import { Lightbulb, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -39,13 +39,10 @@ export function ProjectInsightsTab({
   const t = useTranslations();
   const [addDialogOpen, setAddDialogOpen] = useState(false);
 
-  const handleInsightCreated = useCallback(
-    (insight: ProjectInsight) => {
-      onInsightCreated(insight);
-      setAddDialogOpen(false);
-    },
-    [onInsightCreated]
-  );
+  const handleInsightCreated = (insight: ProjectInsight) => {
+    onInsightCreated(insight);
+    setAddDialogOpen(false);
+  };
 
   if (insights.length === 0) {
     return (

@@ -86,7 +86,7 @@ const UserMenu = () => {
       <DropdownMenuTrigger asChild>
         <button
           className="ring-ring/30 flex items-center rounded-full transition-all md:hover:ring-2"
-          aria-label="User menu"
+          aria-label={t('common.aria.userMenu')}
         >
           <Avatar className="size-8 text-xs font-semibold">
             <AvatarImage src={proxyImageUrl(avatarUrl)} alt="" />

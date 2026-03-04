@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
 import { ZoomIn, ZoomOut } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -45,9 +45,9 @@ const AvatarCropDialog = ({
   const [croppedArea, setCroppedArea] = useState<CropArea | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleCropComplete = useCallback((_: Area, croppedAreaPixels: Area) => {
+  function handleCropComplete(_: Area, croppedAreaPixels: Area) {
     setCroppedArea(croppedAreaPixels);
-  }, []);
+  }
 
   const handleConfirm = async () => {
     if (!croppedArea) {

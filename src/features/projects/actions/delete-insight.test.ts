@@ -2,6 +2,14 @@
 /** Tests for deleting a project insight via the deleteInsight action. */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+// ── Helpers ──────────────────────────────────────────────────────────
+
+import {
+  TEST_INSIGHT_ID as INSIGHT_ID,
+  TEST_USER as USER,
+  chain,
+} from '@/test-utils/action-helpers';
+
 // ── Mocks ────────────────────────────────────────────────────────────
 
 vi.mock('@/lib/common/env', () => ({
@@ -27,40 +35,6 @@ vi.mock('@/lib/supabase/server', () => ({
     from: mockFrom,
   }),
 }));
-
-// ── Helpers ──────────────────────────────────────────────────────────
-
-function chain(result: { data?: unknown; error?: unknown } = {}) {
-  const obj: { data: unknown; error: unknown; [key: string]: unknown } = {
-    data: result.data ?? null,
-    error: result.error ?? null,
-  };
-
-  return new Proxy(obj, {
-    get(target, prop) {
-      if (prop === 'then' || prop === 'catch' || prop === 'finally') {
-        return Promise.resolve(target)[prop as 'then'].bind(Promise.resolve(target));
-      }
-
-      const key = typeof prop === 'string' ? prop : undefined;
-
-      if (key !== undefined && key in target) {
-        return target[key];
-      }
-
-      if (key !== undefined) {
-        target[key] = vi.fn().mockReturnValue(new Proxy(target, this));
-
-        return target[key];
-      }
-
-      return undefined;
-    },
-  });
-}
-
-const INSIGHT_ID = '00000000-0000-4000-8000-000000000010';
-const USER = { id: 'user-123', email: 'test@example.com' };
 
 // ── Tests ────────────────────────────────────────────────────────────
 

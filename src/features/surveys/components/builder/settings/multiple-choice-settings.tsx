@@ -1,5 +1,3 @@
-import { useMemo } from 'react';
-
 import { useTranslations } from 'next-intl';
 
 import { Label } from '@/components/ui/label';
@@ -23,9 +21,9 @@ export function MultipleChoiceSettings({ config, onUpdate }: SettingsProps) {
   const upperBound = Math.max(SELECTION_MIN, availableChoices);
   const clampedMax = Math.min(maxSelections, upperBound);
 
-  const selectionsRange = useMemo(
-    () => Array.from({ length: upperBound - SELECTION_MIN + 1 }, (_, i) => SELECTION_MIN + i),
-    [upperBound]
+  const selectionsRange = Array.from(
+    { length: upperBound - SELECTION_MIN + 1 },
+    (_, i) => SELECTION_MIN + i
   );
 
   const handleAllowOtherChange = (checked: boolean) => {

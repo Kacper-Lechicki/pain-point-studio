@@ -1,6 +1,6 @@
 'use client';
 
-import { type KeyboardEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { type KeyboardEvent, useEffect, useRef, useState } from 'react';
 
 import { ImageIcon, X } from 'lucide-react';
 
@@ -16,12 +16,10 @@ export function ImageUrlPrompt({ position, onConfirm, onCancel }: ImageUrlPrompt
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Auto-focus input on mount
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
 
-  // Close on click outside
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -34,7 +32,7 @@ export function ImageUrlPrompt({ position, onConfirm, onCancel }: ImageUrlPrompt
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [onCancel]);
 
-  const handleConfirm = useCallback(() => {
+  function handleConfirm() {
     const trimmed = url.trim();
 
     if (!trimmed) {
@@ -52,22 +50,19 @@ export function ImageUrlPrompt({ position, onConfirm, onCancel }: ImageUrlPrompt
     }
 
     onConfirm(trimmed);
-  }, [url, onConfirm]);
+  }
 
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        handleConfirm();
-      }
+  function handleKeyDown(e: KeyboardEvent<HTMLInputElement>) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleConfirm();
+    }
 
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        onCancel();
-      }
-    },
-    [handleConfirm, onCancel]
-  );
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      onCancel();
+    }
+  }
 
   return (
     <div

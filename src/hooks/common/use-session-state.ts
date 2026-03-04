@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
 /**
  * Like `useState`, but persists the value in `sessionStorage`.
@@ -28,28 +28,23 @@ export function useSessionState<T>(key: string, defaultValue: T): [T, (value: T)
     }
   });
 
-  const setState = useCallback(
-    (value: T) => {
-      setStateRaw(value);
+  const setState = (value: T) => {
+    setStateRaw(value);
 
-      try {
-        if (typeof sessionStorage !== 'undefined') {
-          const serialised = JSON.stringify(value);
+    try {
+      if (typeof sessionStorage !== 'undefined') {
+        const serialised = JSON.stringify(value);
 
-          if (serialised === JSON.stringify(defaultValue)) {
-            sessionStorage.removeItem(key);
-          } else {
-            sessionStorage.setItem(key, serialised);
-          }
+        if (serialised === JSON.stringify(defaultValue)) {
+          sessionStorage.removeItem(key);
+        } else {
+          sessionStorage.setItem(key, serialised);
         }
-      } catch {
-        // Quota exceeded or unavailable — silently ignore
       }
-    },
-    // defaultValue is stable (literal from call site), key is stable string
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [key]
-  );
+    } catch {
+      // Quota exceeded or unavailable — silently ignore
+    }
+  };
 
   return [state, setState];
 }

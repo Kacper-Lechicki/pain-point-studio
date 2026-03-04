@@ -14,7 +14,7 @@ const researchJourneySchema = z.object({
   totalResponses: z.number(),
 });
 
-export type ResearchJourneyRpc = z.infer<typeof researchJourneySchema>;
+type ResearchJourneyRpc = z.infer<typeof researchJourneySchema>;
 
 /**
  * Fetch research journey milestone data via get_research_journey RPC.

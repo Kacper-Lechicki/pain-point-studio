@@ -18,8 +18,6 @@ import { getSurveyStatsUrl } from '@/features/surveys/lib/survey-urls';
 import Link from '@/i18n/link';
 import { cn } from '@/lib/common/utils';
 
-// ── Survey status dot colors ────────────────────────────────────────
-
 const SURVEY_STATUS_DOT: Record<string, string> = {
   active: 'bg-emerald-500',
   completed: 'bg-blue-500',
@@ -29,18 +27,12 @@ const SURVEY_STATUS_DOT: Record<string, string> = {
   archived: 'bg-muted-foreground/40',
 };
 
-// ── Constants ───────────────────────────────────────────────────────
-
 const MAX_SURVEYS = 5;
-
-// ── Props ───────────────────────────────────────────────────────────
 
 interface PinnedProjectCardProps {
   project: ProjectDetail;
   overviewProject: OverviewProject;
 }
-
-// ── Component ───────────────────────────────────────────────────────
 
 export function PinnedProjectCard({ project, overviewProject }: PinnedProjectCardProps) {
   const t = useTranslations('dashboard.bento');
@@ -49,7 +41,6 @@ export function PinnedProjectCard({ project, overviewProject }: PinnedProjectCar
   const totalResponses = overviewProject.responseCount;
   const totalSurveys = overviewProject.surveyCount;
 
-  // Completion rate: completed responses / total responses across all surveys
   const completedCount = project.surveys.reduce((sum, s) => sum + s.completedCount, 0);
   const totalResponseCount = project.surveys.reduce((sum, s) => sum + s.responseCount, 0);
   const completionRate =
@@ -77,7 +68,6 @@ export function PinnedProjectCard({ project, overviewProject }: PinnedProjectCar
         </p>
         <Pin className="text-chart-violet size-4 shrink-0 fill-current" />
       </div>
-      {/* ── Project header ───────────────────────────────────────────── */}
       <div className="flex shrink-0 items-center gap-2.5 px-4 pt-2">
         <Pin className="text-muted-foreground size-3.5 shrink-0 fill-current" />
 
@@ -100,7 +90,6 @@ export function PinnedProjectCard({ project, overviewProject }: PinnedProjectCar
         </Button>
       </div>
 
-      {/* ── Metrics row ─────────────────────────────────────────────── */}
       <div className="flex shrink-0 items-center gap-2.5 px-4 pt-1.5">
         <span className="text-muted-foreground text-xs">
           {t('pinned.responses', { count: totalResponses })}
@@ -119,7 +108,6 @@ export function PinnedProjectCard({ project, overviewProject }: PinnedProjectCar
         </span>
       </div>
 
-      {/* ── Surveys list (only what fits, pushed to bottom) ───────────── */}
       <div className="flex min-h-0 flex-1 flex-col justify-end overflow-hidden px-4 pt-2 pb-4">
         {visibleSurveys.length > 0 && (
           <>
@@ -136,23 +124,18 @@ export function PinnedProjectCard({ project, overviewProject }: PinnedProjectCar
   );
 }
 
-// ── Survey row ──────────────────────────────────────────────────────
-
 function SurveyRow({ survey }: { survey: ProjectSurvey }) {
   const tBento = useTranslations('dashboard.bento');
   const dotColor = SURVEY_STATUS_DOT[survey.status] ?? 'bg-muted-foreground/40';
 
   return (
     <li className="flex items-center gap-2 text-xs">
-      {/* Status dot */}
       <span className={cn('size-1.5 shrink-0 rounded-full', dotColor)} aria-hidden />
 
-      {/* Title */}
       <Link href={getSurveyStatsUrl(survey.id)} className="min-w-0 flex-1 truncate hover:underline">
         {survey.title}
       </Link>
 
-      {/* Response count */}
       <span className="text-muted-foreground shrink-0 tabular-nums">
         {tBento('pinned.responsesShort', { count: survey.responseCount })}
       </span>

@@ -1,10 +1,9 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import { Info } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { toast } from 'sonner';
 
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -44,7 +43,7 @@ export function PublishSettingsPanel({
   const [endsAt, setEndsAt] = useState<string | null>(null);
   const [maxRespondents, setMaxRespondents] = useState<number | null>(null);
 
-  const now = useMemo(() => new Date(), []);
+  const now = new Date();
 
   const saveAction = useFormAction({
     unexpectedErrorMessage: 'surveys.builder.errors.saveFailed' as MessageKey,
@@ -78,8 +77,6 @@ export function PublishSettingsPanel({
     });
 
     if (saveResult?.error) {
-      toast.error(t('surveys.builder.errors.saveFailed' as MessageKey));
-
       return;
     }
 

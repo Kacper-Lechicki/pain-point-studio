@@ -16,12 +16,15 @@ import { cn } from '@/lib/common/utils';
 export function DashboardFooter() {
   const t = useTranslations();
   const pathname = usePathname();
-  const { isDesktop, isPinned, hasSubPanel } = useSidebar();
+  const { isDesktop, isPinned, subPanelVisible, hasSubPanel } = useSidebar();
   const isBuilder = isBuilderPath(pathname ?? null);
   const copyright = getCopyrightText(t);
+  const hasSubPanelClosed = hasSubPanel && !subPanelVisible;
 
   const marginLeft =
-    isDesktop && !isBuilder ? getDashboardContentMarginLeft(isPinned, hasSubPanel) : undefined;
+    isDesktop && !isBuilder
+      ? getDashboardContentMarginLeft(isPinned, subPanelVisible, hasSubPanelClosed)
+      : undefined;
 
   return (
     <footer

@@ -1,6 +1,6 @@
 'use client';
 
-import { type KeyboardEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { type KeyboardEvent, useEffect, useRef, useState } from 'react';
 
 import type { Editor } from '@tiptap/react';
 import { BubbleMenu } from '@tiptap/react/menus';
@@ -16,19 +16,11 @@ import {
   X,
 } from 'lucide-react';
 
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-
 type ToolbarMode = 'formatting' | 'link-input';
 
 interface BubbleToolbarProps {
   editor: Editor;
 }
-
-// ---------------------------------------------------------------------------
-// Toolbar button
-// ---------------------------------------------------------------------------
 
 function ToolbarButton({
   icon: Icon,
@@ -57,17 +49,9 @@ function ToolbarButton({
   );
 }
 
-// ---------------------------------------------------------------------------
-// Separator
-// ---------------------------------------------------------------------------
-
 function ToolbarSeparator() {
   return <div className="bg-border mx-0.5 h-4 w-px" />;
 }
-
-// ---------------------------------------------------------------------------
-// Link input
-// ---------------------------------------------------------------------------
 
 function LinkInput({ editor, onBack }: { editor: Editor; onBack: () => void }) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -75,12 +59,11 @@ function LinkInput({ editor, onBack }: { editor: Editor; onBack: () => void }) {
     return (editor.getAttributes('link').href as string) ?? '';
   });
 
-  // Focus after a frame to let the BubbleMenu position settle
   useEffect(() => {
     requestAnimationFrame(() => inputRef.current?.focus());
   }, []);
 
-  const applyLink = useCallback(() => {
+  function applyLink() {
     const trimmed = url.trim();
 
     if (trimmed) {
@@ -90,27 +73,24 @@ function LinkInput({ editor, onBack }: { editor: Editor; onBack: () => void }) {
     }
 
     onBack();
-  }, [editor, url, onBack]);
+  }
 
-  const removeLink = useCallback(() => {
+  function removeLink() {
     editor.chain().focus().extendMarkRange('link').unsetLink().run();
     onBack();
-  }, [editor, onBack]);
+  }
 
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        applyLink();
-      }
+  function handleKeyDown(e: KeyboardEvent<HTMLInputElement>) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      applyLink();
+    }
 
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        onBack();
-      }
-    },
-    [applyLink, onBack]
-  );
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      onBack();
+    }
+  }
 
   return (
     <div className="flex items-center gap-0.5">
@@ -133,14 +113,9 @@ function LinkInput({ editor, onBack }: { editor: Editor; onBack: () => void }) {
   );
 }
 
-// ---------------------------------------------------------------------------
-// Bubble Toolbar
-// ---------------------------------------------------------------------------
-
 export function BubbleToolbar({ editor }: BubbleToolbarProps) {
   const [mode, setMode] = useState<ToolbarMode>('formatting');
 
-  // Reset mode when selection changes
   useEffect(() => {
     const handler = () => setMode('formatting');
 

@@ -2,6 +2,8 @@
 
 import { useRef, useState } from 'react';
 
+import dynamic from 'next/dynamic';
+
 import { Upload, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
@@ -11,10 +13,17 @@ import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Spinner } from '@/components/ui/spinner';
 import { updateAvatarUrl } from '@/features/settings/actions';
-import { AvatarCropDialog } from '@/features/settings/components/avatar-crop-dialog';
 import { AVATAR_ACCEPTED_TYPES, AVATAR_MAX_SIZE } from '@/features/settings/config';
 import { proxyImageUrl } from '@/lib/common/utils';
 import { createClient } from '@/lib/supabase/client';
+
+const AvatarCropDialog = dynamic(
+  () =>
+    import('@/features/settings/components/avatar-crop-dialog').then((m) => ({
+      default: m.AvatarCropDialog,
+    })),
+  { ssr: false, loading: () => null }
+);
 
 interface AvatarUploadProps {
   userId: string;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 /**
  * Returns a ref and the element's content rect size. Updates on resize.
@@ -13,17 +13,19 @@ export function useElementSize<T extends HTMLElement>(): [
   const ref = useRef<T | null>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
 
-  const setSizeFromEntry = useCallback((entry: ResizeObserverEntry) => {
-    const { width, height } = entry.contentRect;
-    setSize((prev) => (prev.width === width && prev.height === height ? prev : { width, height }));
-  }, []);
-
   useEffect(() => {
     const el = ref.current;
 
     if (!el) {
       return;
     }
+
+    const setSizeFromEntry = (entry: ResizeObserverEntry) => {
+      const { width, height } = entry.contentRect;
+      setSize((prev) =>
+        prev.width === width && prev.height === height ? prev : { width, height }
+      );
+    };
 
     const observer = new ResizeObserver((entries) => {
       for (const entry of entries) {
@@ -40,7 +42,7 @@ export function useElementSize<T extends HTMLElement>(): [
     }
 
     return () => observer.disconnect();
-  }, [setSizeFromEntry]);
+  }, []);
 
   return [ref, size];
 }

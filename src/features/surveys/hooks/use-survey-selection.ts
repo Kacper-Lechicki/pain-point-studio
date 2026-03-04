@@ -1,18 +1,16 @@
 'use client';
 
-import { useCallback } from 'react';
-
 import { getSurveyWithQuestions } from '@/features/surveys/actions';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import type { MappedQuestion } from '@/features/surveys/lib/map-question-row';
 import { useItemSelection } from '@/hooks/common/use-item-selection';
 
 export function useSurveySelection(surveys: UserSurvey[]) {
-  const fetchDetail = useCallback(async (id: string) => {
+  async function fetchDetail(id: string) {
     const data = await getSurveyWithQuestions(id);
 
     return data?.questions ?? null;
-  }, []);
+  }
 
   const { selectedId, selectedItem, detailData, showSheet, setSelected } = useItemSelection<
     UserSurvey,
@@ -27,5 +25,3 @@ export function useSurveySelection(surveys: UserSurvey[]) {
     setSelected,
   };
 }
-
-export type UseSurveySelectionReturn = ReturnType<typeof useSurveySelection>;

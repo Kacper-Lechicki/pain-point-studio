@@ -38,7 +38,7 @@ interface SubNavItemsProps {
   breadcrumbSegments?: Record<string, string> | undefined;
 }
 
-export function SubNavItems({
+function SubNavItems({
   groups,
   pathname,
   clientState,
@@ -133,6 +133,59 @@ export function SubNavItems({
   );
 }
 
+function MobileNavItem({
+  item,
+  isActive,
+  t,
+  onSubNavClick,
+  onLinkClick,
+}: {
+  item: NavItem;
+  isActive: boolean;
+  t: (key: MessageKey) => string;
+  onSubNavClick?: () => void;
+  onLinkClick?: () => void;
+}) {
+  if (item.disabled) {
+    return (
+      <span
+        data-state="inactive"
+        className={cn(SIDEBAR_NAV_ITEM_CLASSES, 'pointer-events-none opacity-50')}
+      >
+        <item.icon className="size-4 shrink-0" aria-hidden />
+        <span className="truncate">{t(item.labelKey)}</span>
+      </span>
+    );
+  }
+
+  if (item.subNav) {
+    return (
+      <button
+        type="button"
+        data-state={isActive ? 'active' : 'inactive'}
+        onClick={onSubNavClick}
+        className={SIDEBAR_NAV_ITEM_CLASSES}
+      >
+        <item.icon className="size-4 shrink-0" aria-hidden />
+        <span className="truncate">{t(item.labelKey)}</span>
+        <ChevronRight className="ml-auto size-4 opacity-50" />
+      </button>
+    );
+  }
+
+  return (
+    <Link
+      href={item.href}
+      data-state={isActive ? 'active' : 'inactive'}
+      onClick={onLinkClick}
+      className={SIDEBAR_NAV_ITEM_CLASSES}
+    >
+      <item.icon className="size-4 shrink-0" aria-hidden />
+      <span className="truncate">{t(item.labelKey)}</span>
+    </Link>
+  );
+}
+
 interface MobileNavMainLevelProps {
   pathname: string;
   t: (key: MessageKey) => string;
@@ -147,50 +200,19 @@ export function MobileNavMainLevel({ pathname, t, onItemClick, onClose }: Mobile
         {SIDEBAR_NAV.map((group, gi) => (
           <div key={gi} className="flex flex-col gap-2">
             {group.items.map((item) => {
-              if (item.disabled) {
-                return (
-                  <span
-                    key={item.labelKey}
-                    data-state="inactive"
-                    className={cn(SIDEBAR_NAV_ITEM_CLASSES, 'pointer-events-none opacity-50')}
-                  >
-                    <item.icon className="size-4 shrink-0" aria-hidden />
-                    <span className="truncate">{t(item.labelKey)}</span>
-                  </span>
-                );
-              }
-
               const isActive = item.subNav
                 ? matchesNavItem(pathname, item)
                 : pathname === (item.activePrefix ?? item.href);
 
-              if (item.subNav) {
-                return (
-                  <button
-                    key={item.href}
-                    type="button"
-                    data-state={isActive ? 'active' : 'inactive'}
-                    onClick={() => onItemClick(item)}
-                    className={SIDEBAR_NAV_ITEM_CLASSES}
-                  >
-                    <item.icon className="size-4 shrink-0" aria-hidden />
-                    <span className="truncate">{t(item.labelKey)}</span>
-                    <ChevronRight className="ml-auto size-4 opacity-50" />
-                  </button>
-                );
-              }
-
               return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  data-state={isActive ? 'active' : 'inactive'}
-                  onClick={() => onItemClick(item)}
-                  className={SIDEBAR_NAV_ITEM_CLASSES}
-                >
-                  <item.icon className="size-4 shrink-0" aria-hidden />
-                  <span className="truncate">{t(item.labelKey)}</span>
-                </Link>
+                <MobileNavItem
+                  key={item.labelKey}
+                  item={item}
+                  isActive={isActive}
+                  t={t}
+                  onSubNavClick={() => onItemClick(item)}
+                  onLinkClick={() => onItemClick(item)}
+                />
               );
             })}
           </div>
@@ -216,50 +238,19 @@ export function MobileNavMainLevel({ pathname, t, onItemClick, onClose }: Mobile
 
       <div className="mt-auto flex flex-col gap-2 px-2 pt-4 pb-6">
         {[SIDEBAR_PROFILE_ITEM, SIDEBAR_BOTTOM_ITEM, SIDEBAR_GIVE_FEEDBACK_ITEM].map((item) => {
-          if (item.disabled) {
-            return (
-              <span
-                key={item.labelKey}
-                data-state="inactive"
-                className={cn(SIDEBAR_NAV_ITEM_CLASSES, 'pointer-events-none opacity-50')}
-              >
-                <item.icon className="size-4 shrink-0" aria-hidden />
-                <span className="truncate">{t(item.labelKey)}</span>
-              </span>
-            );
-          }
-
           const isActive =
             pathname === (item.activePrefix ?? item.href) ||
             (item.activePrefix != null && pathname.startsWith(item.activePrefix + '/'));
 
-          if (item.subNav) {
-            return (
-              <button
-                key={item.labelKey}
-                type="button"
-                data-state={isActive ? 'active' : 'inactive'}
-                className={SIDEBAR_NAV_ITEM_CLASSES}
-                onClick={() => onItemClick(item)}
-              >
-                <item.icon className="size-4 shrink-0" aria-hidden />
-                <span className="truncate">{t(item.labelKey)}</span>
-                <ChevronRight className="ml-auto size-4 opacity-50" />
-              </button>
-            );
-          }
-
           return (
-            <Link
+            <MobileNavItem
               key={item.labelKey}
-              href={item.href}
-              data-state={isActive ? 'active' : 'inactive'}
-              className={SIDEBAR_NAV_ITEM_CLASSES}
-              onClick={() => onClose()}
-            >
-              <item.icon className="size-4 shrink-0" aria-hidden />
-              <span className="truncate">{t(item.labelKey)}</span>
-            </Link>
+              item={item}
+              isActive={isActive}
+              t={t}
+              onSubNavClick={() => onItemClick(item)}
+              onLinkClick={() => onClose()}
+            />
           );
         })}
       </div>
@@ -282,7 +273,6 @@ interface MobileNavSubLevelProps {
 function MobileSubNavSkeleton() {
   return (
     <>
-      {/* Back link skeleton */}
       <div className="px-2 pt-4">
         <div className="flex min-h-8 items-center gap-2 px-2.5">
           <div className="bg-muted size-4 shrink-0 animate-pulse rounded" />
@@ -290,14 +280,12 @@ function MobileSubNavSkeleton() {
         </div>
       </div>
 
-      {/* Title skeleton */}
       <div className="shrink-0 pt-2">
         <div className="flex h-9 items-center px-5">
           <div className="bg-muted h-3.5 w-28 animate-pulse rounded" />
         </div>
       </div>
 
-      {/* Nav item skeleton */}
       <div className="flex flex-col gap-2 p-2">
         <div className="flex min-h-8 items-center gap-2 px-2.5">
           <div className="bg-muted size-4 shrink-0 animate-pulse rounded" />
@@ -323,7 +311,6 @@ export function MobileNavSubLevel({
   const dynamicTab = findDynamicTab(parentHref, pathname);
   const dynamicLabel = resolveDynamicLabel(dynamicTab, pathname, breadcrumbSegments);
 
-  // Dynamic route detected but data not yet ready — show skeleton
   const isDynamicPending =
     dynamicTab != null && (dynamicLabel == null || !subPanelLinks || subPanelLinks.length === 0);
 
@@ -371,7 +358,7 @@ export function MobileNavSubLevel({
             className={SIDEBAR_NAV_ITEM_CLASSES}
           >
             <ChevronLeft className="size-4 shrink-0" aria-hidden />
-            <span className="truncate">{t('sidebar.back')}</span>
+            <span className="truncate">{t('common.actions.back')}</span>
           </button>
         )}
       </div>

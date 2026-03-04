@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -73,27 +73,24 @@ export function KanbanColumn({
   const [showForm, setShowForm] = useState(false);
   const colors = INSIGHT_COLORS[type];
 
-  const handleAddClick = useCallback(() => {
+  const handleAddClick = () => {
     setShowForm(true);
-  }, []);
+  };
 
-  const handleCreated = useCallback(
-    (insight: ProjectInsight) => {
-      onInsightCreated(insight);
-      setShowForm(false);
-    },
-    [onInsightCreated]
-  );
-
-  const handleCancelForm = useCallback(() => {
+  const handleCreated = (insight: ProjectInsight) => {
+    onInsightCreated(insight);
     setShowForm(false);
-  }, []);
+  };
+
+  const handleCancelForm = () => {
+    setShowForm(false);
+  };
 
   return (
     <div
       data-column-id={type}
       className={cn(
-        'bg-muted/40 flex min-w-0 flex-1 flex-col gap-2.5 rounded-xl p-3 transition-colors',
+        'bg-muted dark:bg-muted flex min-w-0 flex-1 flex-col gap-2.5 rounded-xl p-3 transition-colors',
         isDropTarget && 'bg-primary/5 ring-primary/20 ring-1'
       )}
     >
@@ -149,7 +146,7 @@ export function KanbanColumn({
         </div>
       ) : (
         !showForm && (
-          <div className="border-border/50 flex items-center justify-center rounded-lg border border-dashed py-10">
+          <div className="border-border/70 dark:border-border/80 flex items-center justify-center rounded-lg border border-dashed py-10">
             <span className="text-muted-foreground text-xs">
               {t('projects.insights.addInsightsHere' as MessageKey)}
             </span>

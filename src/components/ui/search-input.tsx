@@ -1,6 +1,7 @@
 'use client';
 
 import { Search, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/common/utils';
@@ -25,6 +26,7 @@ export function SearchInput({
   className,
   size = 'default',
 }: SearchInputProps) {
+  const t = useTranslations();
   const s = SIZES[size];
   const hasValue = value.length > 0;
 
@@ -54,7 +56,7 @@ export function SearchInput({
             'text-muted-foreground hover:text-foreground absolute top-1/2 -translate-y-1/2 transition-colors',
             s.clearPos
           )}
-          aria-label="Clear search"
+          aria-label={t('common.aria.clearSearch')}
         >
           <X className={s.icon} />
         </button>

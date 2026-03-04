@@ -1,8 +1,9 @@
 'use client';
 
-import { MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -120,13 +121,19 @@ export function ProjectCardRow({
           <>
             <div className="flex flex-col gap-0.5">
               <span>{t('projects.list.table.responses')}</span>
-              <span className="text-destructive/90 font-medium tabular-nums">
-                {t('projects.list.table.deletedInDays', {
-                  days:
-                    daysUntilExpiry(project.deleted_at ?? null, PROJECT_TRASH_RETENTION_DAYS) ??
-                    PROJECT_TRASH_RETENTION_DAYS,
-                })}
-              </span>
+              <Badge
+                variant="secondary"
+                className="text-muted-foreground border-border bg-muted/90 mt-0.5 inline-flex w-fit items-center gap-1.5 px-2 py-0.5 text-[11px] font-medium tabular-nums"
+              >
+                <Trash2 className="size-3 shrink-0" aria-hidden />
+                <span className="truncate">
+                  {t('projects.list.table.deletedInDays', {
+                    days:
+                      daysUntilExpiry(project.deleted_at ?? null, PROJECT_TRASH_RETENTION_DAYS) ??
+                      PROJECT_TRASH_RETENTION_DAYS,
+                  })}
+                </span>
+              </Badge>
             </div>
             <div />
             <div />

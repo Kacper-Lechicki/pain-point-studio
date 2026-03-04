@@ -1,7 +1,5 @@
 'use client';
 
-import { useMemo } from 'react';
-
 import { useTranslations } from 'next-intl';
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts';
 
@@ -29,7 +27,7 @@ interface ResponseTimelineChartProps {
 export const ResponseTimelineChart = ({ data, className }: ResponseTimelineChartProps) => {
   const t = useTranslations('surveys.stats');
 
-  const chartData = useMemo(() => {
+  const chartData = (() => {
     const today = new Date();
 
     return data.map((count, i) => {
@@ -41,7 +39,7 @@ export const ResponseTimelineChart = ({ data, className }: ResponseTimelineChart
         responses: count,
       };
     });
-  }, [data]);
+  })();
 
   const hasData = data.some((v) => v > 0);
 

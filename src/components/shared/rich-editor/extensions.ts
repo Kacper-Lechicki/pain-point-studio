@@ -3,7 +3,7 @@ import Placeholder from '@tiptap/extension-placeholder';
 import type { Extensions } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 
-import { SlashCommands } from './slash-commands';
+import { SlashCommands } from '@/components/shared/rich-editor/slash-commands';
 
 interface ExtensionOptions {
   placeholder?: string | undefined;

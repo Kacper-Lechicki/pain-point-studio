@@ -11,15 +11,11 @@ export const startResponseSchema = z.object({
   deviceType: z.enum(DEVICE_TYPES).optional(),
 });
 
-export type StartResponseSchema = z.infer<typeof startResponseSchema>;
-
 export const saveAnswerSchema = z.object({
   responseId: z.uuid(),
   questionId: z.uuid(),
   value: z.record(z.string(), z.unknown()),
 });
-
-export type SaveAnswerSchema = z.infer<typeof saveAnswerSchema>;
 
 export const submitResponseSchema = z.object({
   responseId: z.uuid(),
@@ -27,8 +23,6 @@ export const submitResponseSchema = z.object({
   contactEmail: z.string().email().max(320).optional().or(z.literal('')),
   feedback: z.string().max(2000).optional(),
 });
-
-export type SubmitResponseSchema = z.infer<typeof submitResponseSchema>;
 
 // ── Public survey data shape (returned to client) ───────────────────
 

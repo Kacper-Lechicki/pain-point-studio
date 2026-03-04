@@ -1,5 +1,6 @@
 'use server';
 
+import { NOTE_TITLE_MAX_LENGTH } from '@/features/projects/config';
 import { duplicateProjectNoteSchema } from '@/features/projects/types';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
@@ -24,7 +25,7 @@ export const duplicateProjectNote = withProtectedAction<
       return { error: 'projects.errors.unexpected' };
     }
 
-    const copyTitle = `Copy of ${original.title}`.slice(0, 200);
+    const copyTitle = `Copy of ${original.title}`.slice(0, NOTE_TITLE_MAX_LENGTH);
 
     const { data: copy, error: insertError } = await supabase
       .from('project_notes')

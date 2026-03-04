@@ -2,21 +2,24 @@ import type React from 'react';
 
 import { Archive, Clock, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { DropdownMenu, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
+import { ActivityInfoTrigger } from '@/features/surveys/components/dashboard/activity-info-trigger';
+import { Sparkline } from '@/features/surveys/components/dashboard/sparkline';
+import { SurveyActionMenuContent } from '@/features/surveys/components/dashboard/survey-action-menu';
+import { SurveyProjectBadge } from '@/features/surveys/components/dashboard/survey-project-badge';
+import { SurveyShareDialog } from '@/features/surveys/components/dashboard/survey-share-dialog';
+import { SurveyStatusBadge } from '@/features/surveys/components/dashboard/survey-status-badge';
 import { TRASH_RETENTION_DAYS } from '@/features/surveys/config';
 import type { useSurveyRow } from '@/features/surveys/hooks/use-survey-row';
 import { cn } from '@/lib/common/utils';
 
-import { ActivityInfoTrigger } from './activity-info-trigger';
-import { Sparkline } from './sparkline';
-import { SurveyActionMenuContent } from './survey-action-menu';
-import { SurveyProjectBadge } from './survey-project-badge';
-import { SurveyShareDialog } from './survey-share-dialog';
-import { SurveyStatusBadge } from './survey-status-badge';
+const ACTIVITY_BADGE_BASE =
+  'border-border bg-muted/90 inline-flex w-fit items-center gap-1.5 px-2 py-0.5 text-[11px] font-medium';
 
 interface SurveyCardRowProps {
   survey: UserSurvey;
@@ -24,11 +27,8 @@ interface SurveyCardRowProps {
   onSelect: (surveyId: string) => void;
   row: ReturnType<typeof useSurveyRow>;
   archivedLayout?: boolean;
-  /** When true, hides project badge and simplifies actions. */
   isProjectContext?: boolean | undefined;
-  /** Whether this row's checkbox is checked (for bulk selection). */
   isBulkSelected?: boolean | undefined;
-  /** Toggle bulk selection for this survey's ID. */
   onToggleBulkSelect?: ((id: string) => void) | undefined;
 }
 
@@ -159,12 +159,26 @@ export function SurveyCardRow({
                 <ActivityInfoTrigger
                   titleKey="surveys.dashboard.activityInfo.lastEditedTitle"
                   descriptionKey="surveys.dashboard.activityInfo.lastEditedDescription"
-                  className="text-muted-foreground flex min-w-0 items-start gap-1.5 text-left"
+                  className="flex min-w-0"
+                  dialogBadgeLabel={
+                    <>
+                      <Pencil className="size-3.5 shrink-0" aria-hidden />
+                      <span className="line-clamp-2 min-w-0 overflow-hidden leading-tight text-ellipsis">
+                        {row.updatedAtLabel}
+                      </span>
+                    </>
+                  }
+                  dialogBadgeClassName={cn(ACTIVITY_BADGE_BASE, 'text-muted-foreground')}
                 >
-                  <Pencil className="size-3.5 shrink-0" aria-hidden />
-                  <span className="line-clamp-2 min-w-0 overflow-hidden leading-tight font-medium text-ellipsis">
-                    {row.updatedAtLabel}
-                  </span>
+                  <Badge
+                    variant="secondary"
+                    className={cn(ACTIVITY_BADGE_BASE, 'text-muted-foreground')}
+                  >
+                    <Pencil className="size-3.5 shrink-0" aria-hidden />
+                    <span className="line-clamp-2 min-w-0 overflow-hidden leading-tight text-ellipsis">
+                      {row.updatedAtLabel}
+                    </span>
+                  </Badge>
                 </ActivityInfoTrigger>
               </div>
             </>
@@ -181,14 +195,36 @@ export function SurveyCardRow({
                   descriptionValues={{
                     days: row.trashedPurgeDays ?? TRASH_RETENTION_DAYS,
                   }}
-                  className="flex min-w-0 items-start gap-1.5 text-left text-red-600 dark:text-red-400"
+                  className="flex min-w-0"
+                  dialogBadgeLabel={
+                    <>
+                      <Trash2 className="size-3.5 shrink-0" aria-hidden />
+                      <span className="line-clamp-2 min-w-0 overflow-hidden leading-tight text-ellipsis">
+                        {row.t('surveys.dashboard.table.deletedInDaysShort', {
+                          days: row.trashedPurgeDays ?? TRASH_RETENTION_DAYS,
+                        })}
+                      </span>
+                    </>
+                  }
+                  dialogBadgeClassName={cn(
+                    ACTIVITY_BADGE_BASE,
+                    'tabular-nums text-red-700 dark:text-red-400'
+                  )}
                 >
-                  <Trash2 className="size-3.5 shrink-0" aria-hidden />
-                  <span className="line-clamp-2 min-w-0 overflow-hidden leading-tight font-medium wrap-break-word text-ellipsis tabular-nums">
-                    {row.t('surveys.dashboard.table.deletedInDays', {
-                      days: row.trashedPurgeDays ?? TRASH_RETENTION_DAYS,
-                    })}
-                  </span>
+                  <Badge
+                    variant="secondary"
+                    className={cn(
+                      ACTIVITY_BADGE_BASE,
+                      'text-red-700 tabular-nums dark:text-red-400'
+                    )}
+                  >
+                    <Trash2 className="size-3.5 shrink-0" aria-hidden />
+                    <span className="line-clamp-2 min-w-0 overflow-hidden leading-tight text-ellipsis">
+                      {row.t('surveys.dashboard.table.deletedInDaysShort', {
+                        days: row.trashedPurgeDays ?? TRASH_RETENTION_DAYS,
+                      })}
+                    </span>
+                  </Badge>
                 </ActivityInfoTrigger>
               </div>
             </>
@@ -214,14 +250,36 @@ export function SurveyCardRow({
                     titleKey="surveys.dashboard.activityInfo.autoDeletesTitle"
                     descriptionKey="surveys.dashboard.activityInfo.autoDeletesInDays"
                     descriptionValues={{ days: row.autoDeleteDays }}
-                    className="flex min-w-0 items-start gap-1.5 text-left text-amber-700 dark:text-amber-400"
+                    className="flex min-w-0"
+                    dialogBadgeLabel={
+                      <>
+                        <Archive className="size-3.5 shrink-0" aria-hidden />
+                        <span className="line-clamp-2 min-w-0 overflow-hidden leading-tight text-ellipsis">
+                          {row.t('surveys.dashboard.detailPanel.inDays', {
+                            days: row.autoDeleteDays,
+                          })}
+                        </span>
+                      </>
+                    }
+                    dialogBadgeClassName={cn(
+                      ACTIVITY_BADGE_BASE,
+                      'tabular-nums text-amber-700 dark:text-amber-400'
+                    )}
                   >
-                    <Archive className="size-3.5 shrink-0" aria-hidden />
-                    <span className="line-clamp-2 min-w-0 overflow-hidden leading-tight font-medium text-ellipsis tabular-nums">
-                      {row.t('surveys.dashboard.detailPanel.inDays', {
-                        days: row.autoDeleteDays,
-                      })}
-                    </span>
+                    <Badge
+                      variant="secondary"
+                      className={cn(
+                        ACTIVITY_BADGE_BASE,
+                        'text-amber-700 tabular-nums dark:text-amber-400'
+                      )}
+                    >
+                      <Archive className="size-3.5 shrink-0" aria-hidden />
+                      <span className="line-clamp-2 min-w-0 overflow-hidden leading-tight text-ellipsis">
+                        {row.t('surveys.dashboard.detailPanel.inDays', {
+                          days: row.autoDeleteDays,
+                        })}
+                      </span>
+                    </Badge>
                   </ActivityInfoTrigger>
                 ) : (
                   <span className="text-foreground font-medium tabular-nums">—</span>
@@ -263,15 +321,36 @@ export function SurveyCardRow({
                       titleKey="surveys.dashboard.activityInfo.linkExpiresTitle"
                       descriptionKey="surveys.dashboard.activityInfo.linkExpiresInDays"
                       descriptionValues={{ days: row.linkExpiryDays }}
-                      className="flex min-w-0 items-start gap-1.5 text-left text-violet-700 dark:text-violet-400"
+                      className="flex min-w-0"
+                      dialogBadgeLabel={
+                        <>
+                          <Clock className="size-3.5 shrink-0" aria-hidden />
+                          <span className="line-clamp-2 min-w-0 overflow-hidden leading-tight text-ellipsis">
+                            {row.t('surveys.dashboard.table.deletedInDaysShort', {
+                              days: row.linkExpiryDays,
+                            })}
+                          </span>
+                        </>
+                      }
+                      dialogBadgeClassName={cn(
+                        ACTIVITY_BADGE_BASE,
+                        'tabular-nums text-violet-700 dark:text-violet-400'
+                      )}
                     >
-                      <Clock className="size-3.5 shrink-0" aria-hidden />
-                      <span className="line-clamp-2 min-w-0 overflow-hidden leading-tight font-medium wrap-break-word text-ellipsis tabular-nums">
-                        {row.t('surveys.dashboard.detailPanel.linkExpires')}{' '}
-                        {row.t('surveys.dashboard.detailPanel.inDays', {
-                          days: row.linkExpiryDays,
-                        })}
-                      </span>
+                      <Badge
+                        variant="secondary"
+                        className={cn(
+                          ACTIVITY_BADGE_BASE,
+                          'text-violet-700 tabular-nums dark:text-violet-400'
+                        )}
+                      >
+                        <Clock className="size-3.5 shrink-0" aria-hidden />
+                        <span className="line-clamp-2 min-w-0 overflow-hidden leading-tight text-ellipsis">
+                          {row.t('surveys.dashboard.table.deletedInDaysShort', {
+                            days: row.linkExpiryDays,
+                          })}
+                        </span>
+                      </Badge>
                     </ActivityInfoTrigger>
                   ) : (
                     <span className="text-foreground font-medium tabular-nums">—</span>

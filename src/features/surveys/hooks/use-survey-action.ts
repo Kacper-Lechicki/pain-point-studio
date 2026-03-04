@@ -90,7 +90,9 @@ export function useSurveyAction(
         );
         onStatusChange(surveyId, action);
       } else {
-        toast.error(t('surveys.dashboard.toast.actionFailed'));
+        toast.error(
+          t((result.error ?? 'surveys.dashboard.toast.actionFailed') as Parameters<typeof t>[0])
+        );
       }
     });
   };

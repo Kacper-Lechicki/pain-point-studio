@@ -26,10 +26,6 @@ interface ProjectImageUploadProps {
   onImageChange: (url: string | null) => void;
 }
 
-/**
- * Resize an image file to a square of `dim` × `dim` using canvas,
- * then return it as a Blob.
- */
 function resizeImage(file: File, dim: number): Promise<Blob> {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -42,7 +38,6 @@ function resizeImage(file: File, dim: number): Promise<Blob> {
       canvas.height = dim;
       const ctx = canvas.getContext('2d')!;
 
-      // Center-crop: take the largest centered square from the source
       const side = Math.min(img.width, img.height);
       const sx = (img.width - side) / 2;
       const sy = (img.height - side) / 2;
@@ -124,7 +119,6 @@ export function ProjectImageUpload({
         return;
       }
 
-      // Remove old image if exists
       if (imageUrl) {
         const oldPath = imageUrl.split('/project-images/')[1];
 

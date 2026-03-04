@@ -4,6 +4,7 @@ import * as React from 'react';
 
 import { format, isSameDay, isValid, startOfDay } from 'date-fns';
 import { CalendarIcon, ClockIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import type { Matcher } from 'react-day-picker';
 
 import { Button } from '@/components/ui/button';
@@ -66,12 +67,14 @@ function DateTimePicker({
   onChange,
   onBlur,
   name,
-  placeholder = 'Pick a date & time',
+  placeholder,
   disabled,
   disabledBefore,
   disabledAfter,
   className,
 }: DateTimePickerProps) {
+  const t = useTranslations();
+  const resolvedPlaceholder = placeholder ?? t('common.ui.pickDateTime');
   const [open, setOpen] = React.useState(false);
   const selectedDate = parseDateTime(value);
 
@@ -118,7 +121,7 @@ function DateTimePicker({
     ? String(selectedDate.getMinutes()).padStart(2, '0')
     : undefined;
 
-  const { allowedHours, allowedMinutes } = React.useMemo(() => {
+  const { allowedHours, allowedMinutes } = (() => {
     let minHour = 0;
     let maxHour = 23;
     let minMinuteForCurrentHour = 0;
@@ -155,9 +158,9 @@ function DateTimePicker({
     });
 
     return { allowedHours: hours, allowedMinutes: minutes };
-  }, [selectedDate, disabledBefore, disabledAfter]);
+  })();
 
-  const calendarDisabled = React.useMemo(() => {
+  const calendarDisabled = (() => {
     const matchers: Matcher[] = [];
 
     if (disabledBefore) {
@@ -169,7 +172,7 @@ function DateTimePicker({
     }
 
     return matchers;
-  }, [disabledBefore, disabledAfter]);
+  })();
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -191,7 +194,7 @@ function DateTimePicker({
           {selectedDate ? (
             <span>{format(selectedDate, 'MMM d, yyyy  HH:mm')}</span>
           ) : (
-            <span>{placeholder}</span>
+            <span>{resolvedPlaceholder}</span>
           )}
         </Button>
       </PopoverTrigger>
@@ -221,7 +224,11 @@ function DateTimePicker({
               {...(currentHour ? { value: currentHour } : {})}
               onValueChange={handleHourChange}
             >
-              <SelectTrigger size="sm" className="h-7 w-full text-xs" aria-label="Hour">
+              <SelectTrigger
+                size="sm"
+                className="h-7 w-full text-xs"
+                aria-label={t('common.aria.hour')}
+              >
                 <SelectValue placeholder="HH" />
               </SelectTrigger>
 
@@ -240,7 +247,11 @@ function DateTimePicker({
               {...(currentMinute ? { value: currentMinute } : {})}
               onValueChange={handleMinuteChange}
             >
-              <SelectTrigger size="sm" className="h-7 w-full text-xs" aria-label="Minute">
+              <SelectTrigger
+                size="sm"
+                className="h-7 w-full text-xs"
+                aria-label={t('common.aria.minute')}
+              >
                 <SelectValue placeholder="MM" />
               </SelectTrigger>
 

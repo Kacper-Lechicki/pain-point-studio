@@ -37,7 +37,7 @@ export const DYNAMIC_ROUTE_TABS: Record<string, DynamicRouteTab[]> = {
 
 // ── Dynamic sidebar items (main sidebar) ────────────────────────────
 
-export interface DynamicSidebarItem {
+interface DynamicSidebarItem {
   /** Path that, when matched exactly, shows this item in the sidebar. */
   path: AppRoute;
   labelKey: MessageKey;

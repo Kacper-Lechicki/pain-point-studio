@@ -2,10 +2,6 @@
 
 import { AlertTriangle, RotateCcw } from 'lucide-react';
 
-/**
- * Catch-all error boundary for catastrophic failures (root layout crash).
- * Cannot use next-intl because it replaces the entire root layout.
- */
 export default function GlobalError({ reset }: { reset: () => void }) {
   return (
     <html lang="en" className="dark">

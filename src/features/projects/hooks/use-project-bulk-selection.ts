@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
 import type { ProjectAction } from '@/features/projects/config/status';
@@ -10,7 +10,7 @@ import type { ProjectStatus } from '@/features/projects/types';
 export function useProjectBulkSelection(projects: ProjectWithMetrics[]) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
-  const toggleSelect = useCallback((id: string) => {
+  const toggleSelect = (id: string) => {
     setSelectedIds((prev) => {
       const next = new Set(prev);
 
@@ -22,18 +22,18 @@ export function useProjectBulkSelection(projects: ProjectWithMetrics[]) {
 
       return next;
     });
-  }, []);
+  };
 
-  const selectAll = useCallback((filteredProjects: ProjectWithMetrics[]) => {
+  const selectAll = (filteredProjects: ProjectWithMetrics[]) => {
     setSelectedIds(new Set(filteredProjects.map((p) => p.id)));
-  }, []);
+  };
 
-  const clearSelection = useCallback(() => {
+  const clearSelection = () => {
     setSelectedIds(new Set());
-  }, []);
+  };
 
   /** Actions available for ALL selected projects (intersection). */
-  const availableBulkActions = useMemo(() => {
+  const availableBulkActions = (() => {
     if (selectedIds.size === 0) {
       return [];
     }
@@ -70,7 +70,7 @@ export function useProjectBulkSelection(projects: ProjectWithMetrics[]) {
     commonActions.delete('permanentDelete');
 
     return [...commonActions];
-  }, [selectedIds, projects]);
+  })();
 
   return {
     selectedIds,

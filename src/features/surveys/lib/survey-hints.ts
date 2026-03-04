@@ -8,23 +8,9 @@ import {
 import { deriveSurveyFlags } from '@/features/surveys/config/survey-status';
 import { calculateSubmissionRate } from '@/features/surveys/lib/calculations';
 
-export type HintSeverity = 'warning' | 'info' | 'success';
+type HintSeverity = 'warning' | 'info' | 'success';
 
-export interface HintSeverityStyle {
-  className: string;
-  dot?: string;
-}
-
-export const HINT_SEVERITY_STYLES: Record<HintSeverity, HintSeverityStyle> = {
-  warning: { className: 'text-amber-600 dark:text-amber-400' },
-  success: {
-    className: 'text-emerald-600 dark:text-emerald-400',
-    dot: 'inline-flex size-1.5 shrink-0 rounded-full bg-emerald-500',
-  },
-  info: { className: 'text-muted-foreground' },
-};
-
-export interface CardHint {
+interface CardHint {
   severity: HintSeverity;
   text: string;
 }

@@ -1,7 +1,5 @@
 'use client';
 
-import { useMemo } from 'react';
-
 import { ArrowRight, ClipboardList, Lightbulb, Rocket, Send, Share2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -21,8 +19,6 @@ import type { ResearchPhase } from '@/features/projects/types';
 import Link from '@/i18n/link';
 import type { MessageKey } from '@/i18n/types';
 
-// ── Next step icon mapping ──────────────────────────────────────────
-
 const ACTION_ICONS: Record<NextStepAction, LucideIcon> = {
   'create-survey': ClipboardList,
   'activate-survey': Rocket,
@@ -31,8 +27,6 @@ const ACTION_ICONS: Record<NextStepAction, LucideIcon> = {
   'make-decision': ArrowRight,
   continue: Send,
 };
-
-// ── Component ───────────────────────────────────────────────────────
 
 interface OverviewVerdictCardProps {
   verdict: VerdictResult;
@@ -62,19 +56,16 @@ export function OverviewVerdictCard({
   const Icon = config.icon;
   const percent = Math.round(verdict.confidence * 100);
 
-  const nextStepInput: NextStepInput = useMemo(
-    () => ({
-      totalSurveys,
-      activeSurveys,
-      totalResponses,
-      targetResponses,
-      insightCount,
-      currentPhase,
-    }),
-    [totalSurveys, activeSurveys, totalResponses, targetResponses, insightCount, currentPhase]
-  );
+  const nextStepInput: NextStepInput = {
+    totalSurveys,
+    activeSurveys,
+    totalResponses,
+    targetResponses,
+    insightCount,
+    currentPhase,
+  };
 
-  const nextStep = useMemo(() => computeNextStep(nextStepInput), [nextStepInput]);
+  const nextStep = computeNextStep(nextStepInput);
   const NextStepIcon = ACTION_ICONS[nextStep.action];
 
   const nextStepHref = nextStep.tab
@@ -84,7 +75,6 @@ export function OverviewVerdictCard({
   return (
     <Card className={`gap-0 py-0 shadow-none ${config.colors.bg} ${config.colors.border}`}>
       <CardContent className="flex min-h-0 flex-col gap-0 p-4">
-        {/* Verdict header: badge and icon in one row (like other overview cards) */}
         <div className="flex shrink-0 items-start justify-between gap-2">
           <StatusBadge
             labelKey={config.labelKey}
@@ -115,7 +105,6 @@ export function OverviewVerdictCard({
           </p>
         </div>
 
-        {/* Next step CTA */}
         {!isArchived && (
           <>
             <Separator className="my-4" />

@@ -51,6 +51,24 @@ const eslintConfig = defineConfig([
       '@typescript-eslint/no-floating-promises': 'error',
     },
   },
+  // Enforce @/ alias imports — disallow relative parent imports in non-test, non-barrel files
+  {
+    files: ['src/**/*.ts', 'src/**/*.tsx'],
+    ignores: ['src/**/*.test.ts', 'src/**/*.test.tsx', 'src/**/index.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['../*'],
+              message: 'Use @/ alias instead of relative parent imports.',
+            },
+          ],
+        },
+      ],
+    },
+  },
   // Secret patterns: disabled — too many false positives (i18n keys, test names, constant names)
   {
     plugins: { 'no-secrets': noSecrets },

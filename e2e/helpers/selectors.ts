@@ -2,7 +2,10 @@
 export const sel = {
   toast: '[data-sonner-toast]',
   alertDialog: '[role="alertdialog"]',
+  dialog: '[role="dialog"]',
   submit: 'form button[type="submit"]',
+  nameInput: 'input[name="name"]',
+  summaryInput: 'textarea[name="summary"]',
 } as const;
 
 /** Default password for all e2e test users. */

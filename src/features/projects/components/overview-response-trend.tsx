@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import { LineChart as LineChartIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -45,7 +45,7 @@ export function OverviewResponseTrend({ timeline }: OverviewResponseTrendProps) 
     },
   } satisfies ChartConfig;
 
-  const chartData = useMemo(() => {
+  const chartData = (() => {
     const days = RANGES.find((r) => r.value === range)!.days;
     const sliced = timeline.slice(-days);
 
@@ -59,7 +59,7 @@ export function OverviewResponseTrend({ timeline }: OverviewResponseTrendProps) 
         responses: point.count,
       };
     });
-  }, [timeline, range]);
+  })();
 
   const hasData = chartData.some((point) => point.responses > 0);
 

@@ -10,13 +10,9 @@
  *
  * @example
  * <Button variant="outline" size="sm"
- *   className={cn(COMPACT_ACTION_BASE, COMPACT_ACTION_COLORS.destructive)}
+ *   className={cn(COMPACT_ACTION_COLORS.destructive)}
  * >
  */
-
-/** Base sizing + hover override for compact action buttons (used with variant="outline" size="sm"). */
-export const COMPACT_ACTION_BASE =
-  'h-7 gap-1 px-2 text-xs hover:bg-transparent md:hover:bg-transparent';
 
 /** Color presets for compact action buttons. */
 export const COMPACT_ACTION_COLORS = {

@@ -5,6 +5,7 @@ import { useState } from 'react';
 
 import { useTranslations } from 'next-intl';
 
+import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
   DialogContent,
@@ -16,7 +17,7 @@ import type { MessageKey } from '@/i18n/types';
 import { cn } from '@/lib/common/utils';
 
 interface ActivityInfoTriggerProps {
-  /** Title of the dialog (e.g. "Last edited"). */
+  /** Title of the dialog (e.g. "Last edited"). Shown as sr-only when dialogBadgeLabel is set. */
   titleKey: string;
   /** Description message key (can use ICU params). */
   descriptionKey: string;
@@ -26,6 +27,10 @@ interface ActivityInfoTriggerProps {
   className?: string;
   /** Prevent click from bubbling to row (e.g. for table/card row select). */
   stopPropagation?: boolean;
+  /** When set, dialog shows badge + description (same layout as StatusBadge). */
+  dialogBadgeLabel?: ReactNode;
+  /** Badge className in dialog (e.g. semantic color). Should match the trigger badge. */
+  dialogBadgeClassName?: string;
 }
 
 export function ActivityInfoTrigger({
@@ -35,6 +40,8 @@ export function ActivityInfoTrigger({
   children,
   className,
   stopPropagation = true,
+  dialogBadgeLabel,
+  dialogBadgeClassName,
 }: ActivityInfoTriggerProps) {
   const t = useTranslations();
   const [open, setOpen] = useState(false);
@@ -47,6 +54,8 @@ export function ActivityInfoTrigger({
 
     setOpen(true);
   };
+
+  const useBadgeLayout = dialogBadgeLabel != null;
 
   return (
     <>
@@ -65,10 +74,29 @@ export function ActivityInfoTrigger({
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>{t(titleKey as MessageKey)}</DialogTitle>
-            <DialogDescription className="text-muted-foreground text-sm leading-relaxed">
-              {t(descriptionKey as MessageKey, descriptionValues ?? {})}
-            </DialogDescription>
+            <DialogTitle className={useBadgeLayout ? 'sr-only' : undefined}>
+              {t(titleKey as MessageKey)}
+            </DialogTitle>
+            {useBadgeLayout ? (
+              <div className="flex flex-col items-start gap-3">
+                <Badge
+                  variant="secondary"
+                  className={cn(
+                    'inline-flex items-center gap-1 text-[11px] font-medium',
+                    dialogBadgeClassName
+                  )}
+                >
+                  {dialogBadgeLabel}
+                </Badge>
+                <DialogDescription className="text-muted-foreground text-sm leading-relaxed">
+                  {t(descriptionKey as MessageKey, descriptionValues ?? {})}
+                </DialogDescription>
+              </div>
+            ) : (
+              <DialogDescription className="text-muted-foreground text-sm leading-relaxed">
+                {t(descriptionKey as MessageKey, descriptionValues ?? {})}
+              </DialogDescription>
+            )}
           </DialogHeader>
         </DialogContent>
       </Dialog>

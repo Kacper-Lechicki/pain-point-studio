@@ -13,7 +13,7 @@ interface QuestionTypeConfig {
 }
 
 /** Maps each question type to its icon, i18n label key, and default config. */
-export const QUESTION_TYPE_CONFIG: Record<QuestionType, QuestionTypeConfig> = {
+const QUESTION_TYPE_CONFIG: Record<QuestionType, QuestionTypeConfig> = {
   open_text: {
     icon: AlignLeft,
     labelKey: 'surveys.builder.types.openText',

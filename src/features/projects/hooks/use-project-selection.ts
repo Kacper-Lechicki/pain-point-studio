@@ -1,14 +1,12 @@
 'use client';
 
-import { useCallback } from 'react';
-
 import { getProject } from '@/features/projects/actions/get-project';
 import type { ProjectDetail } from '@/features/projects/actions/get-project';
 import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
 import { useItemSelection } from '@/hooks/common/use-item-selection';
 
 export function useProjectSelection(projects: ProjectWithMetrics[]) {
-  const fetchDetail = useCallback((id: string) => getProject(id), []);
+  const fetchDetail = (id: string) => getProject(id);
 
   const { selectedId, selectedItem, detailData, showSheet, setSelected } = useItemSelection<
     ProjectWithMetrics,
@@ -23,5 +21,3 @@ export function useProjectSelection(projects: ProjectWithMetrics[]) {
     setSelected,
   };
 }
-
-export type UseProjectSelectionReturn = ReturnType<typeof useProjectSelection>;

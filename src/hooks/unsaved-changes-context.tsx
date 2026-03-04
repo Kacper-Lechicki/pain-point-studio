@@ -1,14 +1,6 @@
 'use client';
 
-import {
-  type ReactNode,
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { type ReactNode, createContext, useContext, useEffect, useRef, useState } from 'react';
 
 import { useTranslations } from 'next-intl';
 
@@ -179,7 +171,7 @@ function UnsavedChangesProvider({ children }: UnsavedChangesProviderProps) {
     routerRef.current = router;
   }, [router]);
 
-  const register = useCallback((id: string, dirty: boolean) => {
+  const register = (id: string, dirty: boolean) => {
     setDirtyIds((prev) => {
       const next = new Set(prev);
 
@@ -191,7 +183,7 @@ function UnsavedChangesProvider({ children }: UnsavedChangesProviderProps) {
 
       return next;
     });
-  }, []);
+  };
 
   useEffect(() => {
     historyGuard.active = hasUnsavedChanges;
@@ -264,13 +256,13 @@ function UnsavedChangesProvider({ children }: UnsavedChangesProviderProps) {
 
   const open = pending !== null;
 
-  const handleClose = useCallback((open: boolean) => {
+  const handleClose = (open: boolean) => {
     if (!open) {
       setPending(null);
     }
-  }, []);
+  };
 
-  const handleConfirmLeave = useCallback(() => {
+  const handleConfirmLeave = () => {
     if (!pending) {
       return;
     }
@@ -284,7 +276,7 @@ function UnsavedChangesProvider({ children }: UnsavedChangesProviderProps) {
     setTimeout(() => {
       router.push(targetPathname as Parameters<typeof router.push>[0]);
     }, 0);
-  }, [pending, router]);
+  };
 
   return (
     <UnsavedChangesContext.Provider value={{ register }}>
@@ -325,12 +317,17 @@ function useUnsavedChangesContext(): UnsavedChangesContextValue {
 
 function useUnsavedChangesWarning(id: string, isDirty: boolean): void {
   const { register } = useUnsavedChangesContext();
+  const registerRef = useRef(register);
 
   useEffect(() => {
-    register(id, isDirty);
+    registerRef.current = register;
+  }, [register]);
 
-    return () => register(id, false);
-  }, [id, isDirty, register]);
+  useEffect(() => {
+    registerRef.current(id, isDirty);
+
+    return () => registerRef.current(id, false);
+  }, [id, isDirty]);
 }
 
-export { UnsavedChangesProvider, useUnsavedChangesContext, useUnsavedChangesWarning };
+export { UnsavedChangesProvider, useUnsavedChangesWarning };

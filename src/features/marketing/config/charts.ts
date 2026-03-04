@@ -24,19 +24,19 @@ export function localizeChartConfig<T extends ChartConfig>(
 
 // ── Idea Trends (line chart) ────────────────────────────────────────
 
-export interface IdeaTrendsDataPoint {
+interface IdeaTrendsDataPoint {
   month: string;
   desktop: number;
   mobile: number;
 }
 
 export const IDEA_TRENDS_DATA: IdeaTrendsDataPoint[] = [
-  { month: 'January', desktop: 186, mobile: 80 },
-  { month: 'February', desktop: 305, mobile: 200 },
-  { month: 'March', desktop: 237, mobile: 120 },
-  { month: 'April', desktop: 73, mobile: 190 },
-  { month: 'May', desktop: 209, mobile: 130 },
-  { month: 'June', desktop: 214, mobile: 140 },
+  { month: 'january', desktop: 186, mobile: 80 },
+  { month: 'february', desktop: 305, mobile: 200 },
+  { month: 'march', desktop: 237, mobile: 120 },
+  { month: 'april', desktop: 73, mobile: 190 },
+  { month: 'may', desktop: 209, mobile: 130 },
+  { month: 'june', desktop: 214, mobile: 140 },
 ];
 
 export const IDEA_TRENDS_CONFIG = {
@@ -52,17 +52,17 @@ export const IDEA_TRENDS_CONFIG = {
 
 // ── Pain Points (bar chart) ─────────────────────────────────────────
 
-export interface PainPointsDataPoint {
+interface PainPointsDataPoint {
   painPoint: string;
   intensity: number;
   fill: string;
 }
 
 export const PAIN_POINTS_DATA: PainPointsDataPoint[] = [
-  { painPoint: 'Price', intensity: 45, fill: 'var(--success)' },
-  { painPoint: 'Speed', intensity: 80, fill: 'var(--error)' },
-  { painPoint: 'UX', intensity: 65, fill: 'var(--chart-purple)' },
-  { painPoint: 'Support', intensity: 30, fill: 'var(--info)' },
+  { painPoint: 'price', intensity: 45, fill: 'var(--success)' },
+  { painPoint: 'speed', intensity: 80, fill: 'var(--error)' },
+  { painPoint: 'ux', intensity: 65, fill: 'var(--chart-purple)' },
+  { painPoint: 'support', intensity: 30, fill: 'var(--info)' },
 ];
 
 export const PAIN_POINTS_CONFIG = {
@@ -89,7 +89,7 @@ export const PAIN_POINTS_CONFIG = {
 
 // ── Question Engagement (horizontal bar chart) ─────────────────────
 
-export interface QuestionEngagementDataPoint {
+interface QuestionEngagementDataPoint {
   activity: string;
   count: number;
   fill: string;
@@ -126,19 +126,19 @@ export const QUESTION_ENGAGEMENT_CONFIG = {
 
 // ── Responses Growth (area chart) ───────────────────────────────────
 
-export interface ResponsesGrowthDataPoint {
+interface ResponsesGrowthDataPoint {
   day: string;
   visitors: number;
 }
 
 export const RESPONSES_GROWTH_DATA: ResponsesGrowthDataPoint[] = [
-  { day: 'Mon', visitors: 10 },
-  { day: 'Tue', visitors: 25 },
-  { day: 'Wed', visitors: 45 },
-  { day: 'Thu', visitors: 80 },
-  { day: 'Fri', visitors: 140 },
-  { day: 'Sat', visitors: 210 },
-  { day: 'Sun', visitors: 350 },
+  { day: 'mon', visitors: 10 },
+  { day: 'tue', visitors: 25 },
+  { day: 'wed', visitors: 45 },
+  { day: 'thu', visitors: 80 },
+  { day: 'fri', visitors: 140 },
+  { day: 'sat', visitors: 210 },
+  { day: 'sun', visitors: 350 },
 ];
 
 export const RESPONSES_GROWTH_CONFIG = {

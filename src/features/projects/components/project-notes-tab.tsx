@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 import type { JSONContent } from '@tiptap/react';
 
@@ -46,16 +46,11 @@ export function ProjectNotesTab({ project, initialNotes, initialFolders }: Proje
     onTitleExtracted: handleTitleExtracted,
   });
 
-  // Combined content change handler: update local state + trigger auto-save
-  const handleEditorChange = useCallback(
-    (json: JSONContent) => {
-      handleStateContentChange(json);
-      handleAutoSaveChange(json);
-    },
-    [handleStateContentChange, handleAutoSaveChange]
-  );
+  const handleEditorChange = (json: JSONContent) => {
+    handleStateContentChange(json);
+    handleAutoSaveChange(json);
+  };
 
-  // Auto-create first note when there are none (empty state)
   const activeNotesLength = activeNotes.length;
 
   useEffect(() => {
@@ -65,10 +60,9 @@ export function ProjectNotesTab({ project, initialNotes, initialFolders }: Proje
     }
   }, [archived, activeNotesLength, handleCreateNote]);
 
-  // On mobile, back navigates from editor to list
-  const handleBack = useCallback(() => {
+  const handleBack = () => {
     setSelectedNoteId(null);
-  }, [setSelectedNoteId]);
+  };
 
   const showEditor = isDesktop || !!selectedNoteId;
 

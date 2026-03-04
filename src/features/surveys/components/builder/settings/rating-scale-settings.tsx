@@ -1,5 +1,3 @@
-import { useMemo } from 'react';
-
 import { useTranslations } from 'next-intl';
 
 import { Input } from '@/components/ui/input';
@@ -25,15 +23,9 @@ export function RatingScaleSettings({ config, onUpdate }: SettingsProps) {
   const minLabel = (config.minLabel as string) ?? '';
   const maxLabel = (config.maxLabel as string) ?? '';
 
-  const minOptions = useMemo(
-    () => Array.from({ length: max - RATING_SCALE_MIN }, (_, i) => RATING_SCALE_MIN + i),
-    [max]
-  );
+  const minOptions = Array.from({ length: max - RATING_SCALE_MIN }, (_, i) => RATING_SCALE_MIN + i);
 
-  const maxOptions = useMemo(
-    () => Array.from({ length: RATING_SCALE_MAX - min }, (_, i) => min + 1 + i),
-    [min]
-  );
+  const maxOptions = Array.from({ length: RATING_SCALE_MAX - min }, (_, i) => min + 1 + i);
 
   return (
     <div className="space-y-3">

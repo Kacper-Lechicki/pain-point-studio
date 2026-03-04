@@ -25,10 +25,9 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import type { DragHandleProps } from '@/features/projects/components/notes/sortable-note-list';
 import type { ProjectNoteFolder, ProjectNoteMeta } from '@/features/projects/types';
 import { cn } from '@/lib/common/utils';
-
-import type { DragHandleProps } from './sortable-note-list';
 
 interface NoteListItemProps {
   note: ProjectNoteMeta;
@@ -41,6 +40,10 @@ interface NoteListItemProps {
   onDuplicate?: (noteId: string) => void;
   onMoveToFolder?: (noteId: string, folderId: string | null) => void;
   onDelete?: (noteId: string) => void;
+  /** Additional CSS classes for the container (e.g. opacity-60 for trash items). */
+  className?: string;
+  /** Custom menu content. When provided, replaces the default dropdown menu. */
+  menuSlot?: React.ReactNode;
 }
 
 export function NoteListItem({
@@ -54,6 +57,8 @@ export function NoteListItem({
   onDuplicate,
   onMoveToFolder,
   onDelete,
+  className,
+  menuSlot,
 }: NoteListItemProps) {
   const t = useTranslations('projects.detail.notes');
   const menuOpenRef = useRef(false);
@@ -65,7 +70,7 @@ export function NoteListItem({
     day: 'numeric',
   });
 
-  const hasMenu = !!onDelete;
+  const hasDefaultMenu = !menuSlot && !!onDelete;
   const availableFolders = folders?.filter((f) => f.id !== note.folder_id) ?? [];
   const isInFolder = !!note.folder_id;
 
@@ -90,7 +95,8 @@ export function NoteListItem({
       className={cn(
         'group flex min-h-10 cursor-pointer items-center gap-2 border-l-2 pr-2 pl-4 text-sm transition-colors md:min-h-9',
         isSelected ? 'border-primary bg-accent/50' : 'hover:bg-accent/30 border-transparent',
-        isDragging && 'opacity-50'
+        isDragging && 'opacity-50',
+        className
       )}
     >
       {dragHandleProps ? (
@@ -120,7 +126,9 @@ export function NoteListItem({
 
       <span className="text-muted-foreground shrink-0 text-xs">{dateStr}</span>
 
-      {hasMenu && (
+      {menuSlot}
+
+      {hasDefaultMenu && (
         <DropdownMenu
           onOpenChange={(open) => {
             if (open) {

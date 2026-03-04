@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
 import { ChevronDown } from 'lucide-react';
 import { useFormatter } from 'next-intl';
@@ -18,7 +18,7 @@ export function TextResponseList({ items, highlightFn }: TextResponseListProps) 
   const format = useFormatter();
   const [expandedSet, setExpandedSet] = useState<Set<number>>(() => new Set());
 
-  const toggle = useCallback((index: number) => {
+  function toggle(index: number) {
     setExpandedSet((prev) => {
       const next = new Set(prev);
 
@@ -30,7 +30,7 @@ export function TextResponseList({ items, highlightFn }: TextResponseListProps) 
 
       return next;
     });
-  }, []);
+  }
 
   return (
     <ul className="space-y-1.5" role="list">

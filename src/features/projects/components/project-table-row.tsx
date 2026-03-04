@@ -2,9 +2,10 @@
 
 import type React from 'react';
 
-import { MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -103,13 +104,19 @@ export function ProjectTableRow({
 
       <TableCell className="text-muted-foreground border-border/30 min-w-0 border-l px-5 py-3 text-xs tabular-nums">
         {project.status === 'trashed' ? (
-          <span className="text-destructive/90">
-            {t('projects.list.table.deletedInDays', {
-              days:
-                daysUntilExpiry(project.deleted_at ?? null, PROJECT_TRASH_RETENTION_DAYS) ??
-                PROJECT_TRASH_RETENTION_DAYS,
-            })}
-          </span>
+          <Badge
+            variant="secondary"
+            className="text-muted-foreground border-border bg-muted/90 inline-flex w-fit items-center gap-1 px-2 py-0.5 text-[11px] font-medium"
+          >
+            <Trash2 className="size-3 shrink-0" aria-hidden />
+            <span className="truncate">
+              {t('projects.list.table.deletedInDays', {
+                days:
+                  daysUntilExpiry(project.deleted_at ?? null, PROJECT_TRASH_RETENTION_DAYS) ??
+                  PROJECT_TRASH_RETENTION_DAYS,
+              })}
+            </span>
+          </Badge>
         ) : project.target_responses ? (
           `${project.responseCount}/${project.target_responses}`
         ) : (

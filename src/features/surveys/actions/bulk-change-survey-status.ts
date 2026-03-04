@@ -54,7 +54,7 @@ function buildUpdatePayload(
   }
 }
 
-export interface BulkResult {
+interface BulkResult {
   total: number;
   failed: number;
   failedIds: string[];

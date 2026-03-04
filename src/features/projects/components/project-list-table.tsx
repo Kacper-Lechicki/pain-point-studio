@@ -1,5 +1,3 @@
-import { useMemo } from 'react';
-
 import { useTranslations } from 'next-intl';
 
 import { Checkbox } from '@/components/ui/checkbox';
@@ -40,7 +38,7 @@ export function ProjectListTable({
 }: ProjectListTableProps) {
   const t = useTranslations();
 
-  const { allSelected, someSelected } = useMemo(() => {
+  const { allSelected, someSelected } = (() => {
     if (!selectedIds || projects.length === 0) {
       return { allSelected: false, someSelected: false };
     }
@@ -51,7 +49,7 @@ export function ProjectListTable({
       allSelected: selectedCount === projects.length,
       someSelected: selectedCount > 0 && selectedCount < projects.length,
     };
-  }, [selectedIds, projects]);
+  })();
 
   return (
     <div className="border-border/50 bg-card min-w-0 overflow-auto rounded-lg border">

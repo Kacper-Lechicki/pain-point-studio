@@ -2,9 +2,10 @@
 
 import { useRef } from 'react';
 
+import dynamic from 'next/dynamic';
+
 import { Download } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { QRCodeCanvas } from 'qrcode.react';
 
 import { Button } from '@/components/ui/button';
 import { ClipboardInput } from '@/components/ui/clipboard-input';
@@ -12,6 +13,11 @@ import { Separator } from '@/components/ui/separator';
 import { SOCIAL_CHANNELS } from '@/features/surveys/config';
 import { buildShareUrls } from '@/features/surveys/lib/build-share-urls';
 import { cn } from '@/lib/common/utils';
+
+const QRCodeCanvas = dynamic(
+  () => import('qrcode.react').then((m) => ({ default: m.QRCodeCanvas })),
+  { ssr: false, loading: () => null }
+);
 
 interface SurveyShareContentProps {
   shareUrl: string;

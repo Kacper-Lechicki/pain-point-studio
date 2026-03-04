@@ -1,6 +1,8 @@
 'use client';
 
-import { useId, useMemo } from 'react';
+import { useId } from 'react';
+
+import { useTranslations } from 'next-intl';
 
 import type { SparklinePoint } from '@/features/projects/actions/get-projects-list-extras';
 import { cn } from '@/lib/common/utils';
@@ -21,10 +23,11 @@ export function ActivitySparkline({
   fillWidth = false,
   className,
 }: ActivitySparklineProps) {
+  const t = useTranslations();
   const uniqueId = useId();
   const gradientId = `spark-${uniqueId.replace(/:/g, '')}`;
 
-  const { pathD, areaD, hasData, total } = useMemo(() => {
+  const { pathD, areaD, hasData, total } = (() => {
     const counts = data.map((d) => d.count);
     const sum = counts.reduce((a, b) => a + b, 0);
 
@@ -50,7 +53,7 @@ export function ActivitySparkline({
     const area = `${line} L${last.x.toFixed(1)},${(height - padding).toFixed(1)} L${padding.toFixed(1)},${(height - padding).toFixed(1)} Z`;
 
     return { pathD: line, areaD: area, hasData: true, total: sum };
-  }, [data, width, height]);
+  })();
 
   const viewBox = `0 0 ${width} ${height}`;
   const svgProps = {
@@ -91,7 +94,7 @@ export function ActivitySparkline({
       width={svgWidth}
       {...svgProps}
       role="img"
-      aria-label={`${total} responses in the last 14 days`}
+      aria-label={t('projects.aria.sparklineResponses', { total })}
     >
       <defs>
         <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">

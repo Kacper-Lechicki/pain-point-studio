@@ -1,12 +1,11 @@
 'use client';
 
-import { useMemo } from 'react';
-
 import { useTranslations } from 'next-intl';
 
 import { Badge } from '@/components/ui/badge';
 import type { QuestionAnswerData } from '@/features/surveys/actions/get-survey-stats';
 import {
+  computeRatingStats,
   getBarColor,
   getRingColor,
   getSentimentColor,
@@ -23,54 +22,7 @@ export const RatingDistributionChart = ({ answers, config }: RatingDistributionC
   const t = useTranslations('surveys.stats');
   const scaleMin = (config.min as number) ?? 1;
   const scaleMax = (config.max as number) ?? 5;
-
-  const { bars, average, median, mode, ratio } = useMemo(() => {
-    const counts = new Map<number, number>();
-    const values: number[] = [];
-
-    let sum = 0;
-
-    for (const a of answers) {
-      const rating = a.value.rating as number;
-
-      if (typeof rating === 'number') {
-        counts.set(rating, (counts.get(rating) ?? 0) + 1);
-        sum += rating;
-        values.push(rating);
-      }
-    }
-
-    values.sort((a, b) => a - b);
-    const n = values.length;
-    const mid = Math.floor(n / 2);
-
-    const medianValue =
-      n === 0 ? 0 : n % 2 === 0 ? (values[mid - 1]! + values[mid]!) / 2 : values[mid]!;
-
-    let modeValue = 0;
-    let maxCount = 0;
-
-    for (const [r, c] of counts.entries()) {
-      if (c > maxCount) {
-        maxCount = c;
-        modeValue = r;
-      }
-    }
-
-    const chartBars: { rating: number; count: number }[] = [];
-
-    for (let r = scaleMin; r <= scaleMax; r++) {
-      chartBars.push({ rating: r, count: counts.get(r) ?? 0 });
-    }
-
-    return {
-      bars: chartBars,
-      average: n > 0 ? sum / n : 0,
-      median: medianValue,
-      mode: modeValue,
-      ratio: n > 0 && scaleMax > 0 ? sum / n / scaleMax : 0,
-    };
-  }, [answers, scaleMin, scaleMax]);
+  const { bars, average, median, mode, ratio } = computeRatingStats(answers, scaleMin, scaleMax);
 
   if (bars.length === 0) {
     return <p className="text-muted-foreground text-xs">{t('noChartData')}</p>;

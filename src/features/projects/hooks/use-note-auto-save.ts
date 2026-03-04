@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import type { JSONContent } from '@tiptap/react';
 
@@ -52,50 +52,44 @@ export function useNoteAutoSave({
     };
   }, [noteId]);
 
-  const save = useCallback(
-    async (json: JSONContent, targetNoteId: string) => {
-      setSaveStatus('saving');
+  const save = async (json: JSONContent, targetNoteId: string) => {
+    setSaveStatus('saving');
 
-      // Optimistically extract title and update sidebar
-      const title = extractTitleFromTiptap(json);
-      onTitleExtracted?.(targetNoteId, title);
+    // Optimistically extract title and update sidebar
+    const title = extractTitleFromTiptap(json);
+    onTitleExtracted?.(targetNoteId, title);
 
-      const result = await updateProjectNote({
-        noteId: targetNoteId,
-        content: json,
-      });
+    const result = await updateProjectNote({
+      noteId: targetNoteId,
+      content: json,
+    });
 
-      // Only update status if we're still on the same note
-      if (noteIdRef.current !== targetNoteId) {
-        return;
-      }
+    // Only update status if we're still on the same note
+    if (noteIdRef.current !== targetNoteId) {
+      return;
+    }
 
-      if (result.success) {
-        setSaveStatus('saved');
-      } else {
-        setSaveStatus('failed');
-      }
-    },
-    [onTitleExtracted]
-  );
+    if (result.success) {
+      setSaveStatus('saved');
+    } else {
+      setSaveStatus('failed');
+    }
+  };
 
-  const handleContentChange = useCallback(
-    (json: JSONContent) => {
-      const targetNoteId = noteIdRef.current;
+  const handleContentChange = (json: JSONContent) => {
+    const targetNoteId = noteIdRef.current;
 
-      if (!targetNoteId) {
-        return;
-      }
+    if (!targetNoteId) {
+      return;
+    }
 
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
 
-      setSaveStatus('pending');
-      timerRef.current = setTimeout(() => save(json, targetNoteId), NOTE_CONTENT_DEBOUNCE_MS);
-    },
-    [save]
-  );
+    setSaveStatus('pending');
+    timerRef.current = setTimeout(() => save(json, targetNoteId), NOTE_CONTENT_DEBOUNCE_MS);
+  };
 
   // Cleanup on unmount
   useEffect(() => {

@@ -1,7 +1,5 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
-
 import { useNow } from 'next-intl';
 
 import { useBreakpoint } from '@/hooks/common/use-breakpoint';
@@ -98,51 +96,40 @@ export function useListState<TItem, TSortBy extends string>({
   const [perPage, setPerPageRaw] = useSessionState<PerPage>(`${storageKey}:pp`, defaultPerPage);
 
   // ── Page-resetting setters ─────────────────────────────────────────
-  const resetPage = useCallback(() => {
+  const resetPage = () => {
     setPage(1);
-  }, [setPage]);
+  };
 
-  const setSearchQuery = useCallback(
-    (value: string) => {
-      setSearchQueryRaw(value);
+  const setSearchQuery = (value: string) => {
+    setSearchQueryRaw(value);
+    setPage(1);
+  };
+
+  const handleSortByChange = (key: TSortBy) => {
+    setSortByRaw(key);
+    setSortDirRaw(getDefaultSortDir(key) as SortDir);
+    setPage(1);
+  };
+
+  const setSortDir = (dir: SortDir) => {
+    setSortDirRaw(dir);
+    setPage(1);
+  };
+
+  const handleSortByColumn = (key: TSortBy) => {
+    if (sortBy === key) {
+      setSortDirRaw((sortDir === 'asc' ? 'desc' : 'asc') as SortDir);
       setPage(1);
-    },
-    [setSearchQueryRaw, setPage]
-  );
-
-  const handleSortByChange = useCallback(
-    (key: TSortBy) => {
+    } else {
       setSortByRaw(key);
       setSortDirRaw(getDefaultSortDir(key) as SortDir);
       setPage(1);
-    },
-    [setSortByRaw, setSortDirRaw, setPage, getDefaultSortDir]
-  );
-
-  const setSortDir = useCallback(
-    (dir: SortDir) => {
-      setSortDirRaw(dir);
-      setPage(1);
-    },
-    [setSortDirRaw, setPage]
-  );
-
-  const handleSortByColumn = useCallback(
-    (key: TSortBy) => {
-      if (sortBy === key) {
-        setSortDirRaw((sortDir === 'asc' ? 'desc' : 'asc') as SortDir);
-        setPage(1);
-      } else {
-        setSortByRaw(key);
-        setSortDirRaw(getDefaultSortDir(key) as SortDir);
-        setPage(1);
-      }
-    },
-    [sortBy, sortDir, setSortByRaw, setSortDirRaw, setPage, getDefaultSortDir]
-  );
+    }
+  };
 
   // ── Filtering + sorting ────────────────────────────────────────────
-  const filteredItems = useMemo(() => {
+  let filteredItems: TItem[];
+  {
     let result = preFilter ? items.filter(preFilter) : items;
 
     if (searchQuery.trim()) {
@@ -156,11 +143,11 @@ export function useListState<TItem, TSortBy extends string>({
     const cmp = comparator(sortBy, sortDir);
 
     if (cmp) {
-      return [...result].sort(cmp);
+      filteredItems = [...result].sort(cmp);
+    } else {
+      filteredItems = result;
     }
-
-    return result;
-  }, [items, searchQuery, sortBy, sortDir, preFilter, searchFn, comparator]);
+  }
 
   // ── Pagination ─────────────────────────────────────────────────────
   const totalItems = filteredItems.length;
@@ -169,62 +156,39 @@ export function useListState<TItem, TSortBy extends string>({
   const startIndex = (clampedPage - 1) * perPage;
   const endIndex = Math.min(startIndex + perPage, totalItems);
 
-  const goToPage = useCallback(
-    (p: number) => {
-      setPage(Math.max(1, Math.min(p, totalPages)));
-    },
-    [setPage, totalPages]
-  );
+  const goToPage = (p: number) => {
+    setPage(Math.max(1, Math.min(p, totalPages)));
+  };
 
-  const setPerPage = useCallback(
-    (pp: PerPage) => {
-      setPerPageRaw(pp);
-      setPage(1);
-    },
-    [setPerPageRaw, setPage]
-  );
+  const setPerPage = (pp: PerPage) => {
+    setPerPageRaw(pp);
+    setPage(1);
+  };
 
-  const nextPage = useCallback(() => {
+  const nextPage = () => {
     setPage(Math.min(clampedPage + 1, totalPages));
-  }, [setPage, clampedPage, totalPages]);
+  };
 
-  const prevPage = useCallback(() => {
+  const prevPage = () => {
     setPage(Math.max(clampedPage - 1, 1));
-  }, [setPage, clampedPage]);
+  };
 
-  const pagination = useMemo<PaginationState>(
-    () => ({
-      page: clampedPage,
-      perPage,
-      totalPages,
-      totalItems,
-      startIndex,
-      endIndex,
-      goToPage,
-      setPerPage,
-      nextPage,
-      prevPage,
-      canGoNext: clampedPage < totalPages,
-      canGoPrev: clampedPage > 1,
-    }),
-    [
-      clampedPage,
-      perPage,
-      totalPages,
-      totalItems,
-      startIndex,
-      endIndex,
-      goToPage,
-      setPerPage,
-      nextPage,
-      prevPage,
-    ]
-  );
+  const pagination: PaginationState = {
+    page: clampedPage,
+    perPage,
+    totalPages,
+    totalItems,
+    startIndex,
+    endIndex,
+    goToPage,
+    setPerPage,
+    nextPage,
+    prevPage,
+    canGoNext: clampedPage < totalPages,
+    canGoPrev: clampedPage > 1,
+  };
 
-  const paginatedItems = useMemo(
-    () => filteredItems.slice(startIndex, endIndex),
-    [filteredItems, startIndex, endIndex]
-  );
+  const paginatedItems = filteredItems.slice(startIndex, endIndex);
 
   return {
     now,
