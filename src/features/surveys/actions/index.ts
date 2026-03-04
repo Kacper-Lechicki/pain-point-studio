@@ -2,6 +2,7 @@ export { createSurveyDraft } from './create-survey';
 export { exportSurveyCSV, exportSurveyJSON } from './export-survey';
 export { getSurveyFormData } from './get-survey-form-data';
 export type { ProjectOption } from './get-survey-form-data';
+export { getSurveyProjectId } from './get-survey-project-id';
 export { getSurveyStats } from './get-survey-stats';
 export { getSurveyWithQuestions } from './get-survey-with-questions';
 export { getProjectSurveys } from './get-project-surveys';

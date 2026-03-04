@@ -40,37 +40,39 @@ export const getSurveyWithQuestions = cache(
       return null;
     }
 
-    const { data: survey } = (await supabase
+    const surveyQuery = supabase
       .from('surveys')
       .select(
         'id, title, description, visibility, starts_at, ends_at, max_respondents, status, project_id, research_phase'
       )
       .eq('id', surveyId)
       .eq('user_id', user.id)
-      .maybeSingle()) as {
-      data: {
-        id: string;
-        title: string;
-        description: string;
-        visibility: string;
-        starts_at: string | null;
-        ends_at: string | null;
-        max_respondents: number | null;
-        status: string;
-        project_id: string;
-        research_phase: string | null;
-      } | null;
-    };
+      .maybeSingle();
 
-    if (!survey) {
-      return null;
-    }
-
-    const { data: questions } = await supabase
+    const questionsQuery = supabase
       .from('survey_questions')
       .select('id, text, type, required, description, config, sort_order')
       .eq('survey_id', surveyId)
       .order('sort_order');
+
+    const [surveyResult, questionsResult] = await Promise.all([surveyQuery, questionsQuery]);
+
+    const survey = surveyResult.data as {
+      id: string;
+      title: string;
+      description: string;
+      visibility: string;
+      starts_at: string | null;
+      ends_at: string | null;
+      max_respondents: number | null;
+      status: string;
+      project_id: string;
+      research_phase: string | null;
+    } | null;
+
+    if (!survey) {
+      return null;
+    }
 
     return {
       survey: {
@@ -85,7 +87,7 @@ export const getSurveyWithQuestions = cache(
         projectId: survey.project_id,
         researchPhase: survey.research_phase as ResearchPhase | null,
       },
-      questions: (questions ?? []).map(mapQuestionRow),
+      questions: (questionsResult.data ?? []).map(mapQuestionRow),
     };
   }
 );
