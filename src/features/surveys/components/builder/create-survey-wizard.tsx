@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
@@ -77,37 +77,31 @@ export function CreateSurveyWizard({
 
   const isArchived = isProjectArchived(projectStatus);
 
-  const topLinks = useMemo<SubPanelLink[]>(
-    () => [
-      {
-        label: t('common.backToProjects'),
-        href: ROUTES.dashboard.projects,
-        icon: ChevronLeft,
-      },
-    ],
-    [t]
-  );
+  const topLinks: SubPanelLink[] = [
+    {
+      label: t('common.backToProjects'),
+      href: ROUTES.dashboard.projects,
+      icon: ChevronLeft,
+    },
+  ];
 
-  const bottomLinks = useMemo<SubPanelLink[]>(
-    () => [
-      ...(!isArchived
-        ? [
-            {
-              label: t('projects.detail.createSurvey'),
-              href: getCreateSurveyUrl(projectId),
-              icon: Plus,
-            },
-          ]
-        : []),
-      {
-        label: t('projects.detail.settings'),
-        href: '#',
-        icon: Settings,
-        disabled: true,
-      },
-    ],
-    [projectId, isArchived, t]
-  );
+  const bottomLinks: SubPanelLink[] = [
+    ...(!isArchived
+      ? [
+          {
+            label: t('projects.detail.createSurvey'),
+            href: getCreateSurveyUrl(projectId),
+            icon: Plus,
+          },
+        ]
+      : []),
+    {
+      label: t('projects.detail.settings'),
+      href: '#',
+      icon: Settings,
+      disabled: true,
+    },
+  ];
 
   useSubPanelLinks(topLinks, bottomLinks);
 
@@ -131,58 +125,52 @@ export function CreateSurveyWizard({
 
   useUnsavedChangesWarning('create-survey-wizard', hasDirtyFields && !createdSurveyId);
 
-  const goTo = useCallback((target: WizardStep, dir: Direction) => {
+  function goTo(target: WizardStep, dir: Direction) {
     setDirection(dir);
     setStep(target);
-  }, []);
+  }
 
-  const handleNextFromTitle = useCallback(async () => {
+  async function handleNextFromTitle() {
     const valid = await form.trigger('title');
 
     if (valid) {
       goTo(2, 'forward');
     }
-  }, [form, goTo]);
+  }
 
-  const handleNextFromDescription = useCallback(async () => {
+  async function handleNextFromDescription() {
     const valid = await form.trigger('description');
 
     if (valid) {
       goTo(3, 'forward');
     }
-  }, [form, goTo]);
+  }
 
-  const onSubmit = useCallback(
-    async (data: SurveyMetadataSchema) => {
-      const result = await action.execute(createSurveyDraft, {
-        ...data,
-        projectId,
-        researchPhase: null,
-        action: 'next',
-      });
+  async function onSubmit(data: SurveyMetadataSchema) {
+    const result = await action.execute(createSurveyDraft, {
+      ...data,
+      projectId,
+      researchPhase: null,
+      action: 'next',
+    });
 
-      if (result?.data?.surveyId) {
-        setCreatedSurveyId(result.data.surveyId);
-        router.push(getSurveyEditUrl(result.data.surveyId));
+    if (result?.data?.surveyId) {
+      setCreatedSurveyId(result.data.surveyId);
+      router.push(getSurveyEditUrl(result.data.surveyId));
+    }
+  }
+
+  function handleFormKeyDown(e: React.KeyboardEvent) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      if (step === 1) {
+        e.preventDefault();
+        void handleNextFromTitle();
+      } else if (step === 2) {
+        e.preventDefault();
+        void handleNextFromDescription();
       }
-    },
-    [action, projectId, router]
-  );
-
-  const handleFormKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        if (step === 1) {
-          e.preventDefault();
-          void handleNextFromTitle();
-        } else if (step === 2) {
-          e.preventDefault();
-          void handleNextFromDescription();
-        }
-      }
-    },
-    [step, handleNextFromTitle, handleNextFromDescription]
-  );
+    }
+  }
 
   return (
     <Form {...form}>

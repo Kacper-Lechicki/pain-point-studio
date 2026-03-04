@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { ArrowLeft, ArrowRight, SkipForward } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -46,22 +46,19 @@ export const SurveyFlow = ({ survey, responseId, slug }: SurveyFlowProps) => {
     return () => clearInterval(interval);
   }, [survey.id]);
 
-  const handleSaveError = useCallback(
-    (errorKey?: string) => {
-      if (errorKey && errorKey.includes('closed.')) {
-        setClosedReason('completed');
+  function handleSaveError(errorKey?: string) {
+    if (errorKey && errorKey.includes('closed.')) {
+      setClosedReason('completed');
 
-        return;
-      }
+      return;
+    }
 
-      toast.error(tErrors('respondent.errors.saveFailed'));
-    },
-    [tErrors]
-  );
+    toast.error(tErrors('respondent.errors.saveFailed'));
+  }
 
-  const handleSurveyClosed = useCallback(() => {
+  function handleSurveyClosed() {
     setClosedReason('completed');
-  }, []);
+  }
 
   const {
     currentIndex,

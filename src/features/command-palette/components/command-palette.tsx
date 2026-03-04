@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
 import { useTranslations } from 'next-intl';
 
@@ -30,28 +30,25 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const [view, setView] = useState<View>('search');
   const { projects, surveys, loading } = useCommandPaletteData(open);
 
-  const handleOpenChange = useCallback(
-    (value: boolean) => {
-      onOpenChange(value);
+  function handleOpenChange(value: boolean) {
+    onOpenChange(value);
 
-      if (!value) {
-        setView('search');
-      }
-    },
-    [onOpenChange]
-  );
+    if (!value) {
+      setView('search');
+    }
+  }
 
-  const handleClose = useCallback(() => {
+  function handleClose() {
     handleOpenChange(false);
-  }, [handleOpenChange]);
+  }
 
-  const handleCreateSurvey = useCallback(() => {
+  function handleCreateSurvey() {
     setView('pick-project');
-  }, []);
+  }
 
-  const handleBackToSearch = useCallback(() => {
+  function handleBackToSearch() {
     setView('search');
-  }, []);
+  }
 
   return (
     <CommandDialog open={open} onOpenChange={handleOpenChange}>

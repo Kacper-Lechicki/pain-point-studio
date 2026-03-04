@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
 import { MoreVertical, RotateCcw, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -41,17 +41,17 @@ export function NotesTrashSection({
   const [confirmEmptyOpen, setConfirmEmptyOpen] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
-  const handleEmptyTrash = useCallback(() => {
+  const handleEmptyTrash = () => {
     onEmptyTrash();
     setConfirmEmptyOpen(false);
-  }, [onEmptyTrash]);
+  };
 
-  const handlePermanentlyDelete = useCallback(() => {
+  const handlePermanentlyDelete = () => {
     if (confirmDeleteId) {
       onPermanentlyDelete(confirmDeleteId);
       setConfirmDeleteId(null);
     }
-  }, [confirmDeleteId, onPermanentlyDelete]);
+  };
 
   return (
     <NotesSection

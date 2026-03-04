@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -67,12 +67,12 @@ export function QuestionBuilderPage({
     setPublishSettingsOpen(true);
   }
 
-  const handlePublished = useCallback((slug: string) => {
+  function handlePublished(slug: string) {
     setPublishedSlug(slug);
     setPublishSettingsOpen(false);
     setSettingsOpen(false);
     setMetadataPanelOpen(false);
-  }, []);
+  }
 
   const isPublished = publishedSlug !== null;
 

@@ -35,14 +35,16 @@ async function executeProjectAction(
     await page.locator('body').click({ position: { x: 0, y: 0 } });
     await row.getByRole('button', { name: 'More actions' }).click();
     await expect(page.getByRole('menuitem', { name: menuItemName })).toBeVisible();
-  }).toPass({ timeout: 10_000 });
+    await page.getByRole('menuitem', { name: menuItemName }).click();
 
-  await page.getByRole('menuitem', { name: menuItemName }).click();
+    if (confirmButtonName) {
+      await expect(page.locator(sel.alertDialog)).toBeVisible({ timeout: 3_000 });
+    }
+  }).toPass({ timeout: 10_000 });
 
   if (confirmButtonName) {
     const dialog = page.locator(sel.alertDialog);
 
-    await expect(dialog).toBeVisible({ timeout: 5_000 });
     await dialog.getByRole('button', { name: confirmButtonName }).click();
   }
 }
@@ -115,25 +117,30 @@ test.describe('Projects – Create Wizard', () => {
       await expect(page.locator(sel.summaryInput)).toHaveValue('E2E test summary');
     }).toPass({ timeout: 10_000 });
 
-    await page.getByRole('button', { name: 'Continue', exact: true }).click();
+    await expect(async () => {
+      await page.getByRole('button', { name: 'Continue', exact: true }).click();
+      await expect(page.getByText('Step 3 of 4')).toBeVisible();
+    }).toPass({ timeout: 10_000 });
 
     // Step 3: Description — skip
-    await expect(page.getByText('Step 3 of 4')).toBeVisible({ timeout: 10_000 });
-    await page.getByRole('button', { name: 'Continue', exact: true }).click();
+    await expect(async () => {
+      await page.getByRole('button', { name: 'Continue', exact: true }).click();
+      await expect(page.getByRole('button', { name: 'Create Project' })).toBeVisible();
+    }).toPass({ timeout: 10_000 });
 
     // Step 4: Review + Submit
-    await expect(page.getByRole('button', { name: 'Create Project' })).toBeVisible({
-      timeout: 10_000,
-    });
     await expect(page.getByText(PROJECT_NAME)).toBeVisible();
-    await page.getByRole('button', { name: 'Create Project' }).click();
+
+    await expect(async () => {
+      await page.getByRole('button', { name: 'Create Project' }).click();
+      await expect(page.getByText('Your project has been created!')).toBeVisible();
+    }).toPass({ timeout: 30_000 });
 
     // Image step: success message then go to project
-    await expect(page.getByText('Your project has been created!')).toBeVisible({ timeout: 30_000 });
-    await page.getByRole('button', { name: 'Go to project' }).click();
-
-    // Redirected to project detail page
-    await expect(page).toHaveURL(/\/dashboard\/projects\/[0-9a-f-]+/, { timeout: 15_000 });
+    await expect(async () => {
+      await page.getByRole('button', { name: 'Go to project' }).click();
+      await expect(page).toHaveURL(/\/dashboard\/projects\/[0-9a-f-]+/);
+    }).toPass({ timeout: 15_000 });
     await expect(page.getByRole('heading', { name: PROJECT_NAME })).toBeVisible({
       timeout: 15_000,
     });
@@ -174,7 +181,10 @@ test.describe('Projects – Inline Edit', () => {
     });
 
     // Click the pencil edit button (has aria-label "Edit project name")
-    await page.getByRole('button', { name: 'Edit project name' }).click();
+    await expect(async () => {
+      await page.getByRole('button', { name: 'Edit project name' }).click();
+      await expect(page.getByRole('textbox')).toBeVisible();
+    }).toPass({ timeout: 10_000 });
 
     // Input appears with current name — clear and fill with new name
     await expect(async () => {
@@ -186,12 +196,10 @@ test.describe('Projects – Inline Edit', () => {
     }).toPass({ timeout: 10_000 });
 
     // Click the save button (default variant, icon-xs size — the primary-colored one)
-    await page.locator('button[data-variant="default"][data-size="icon-xs"]').click();
-
-    // Heading should reflect the new name
-    await expect(page.getByRole('heading', { name: 'E2E Updated Name' })).toBeVisible({
-      timeout: 15_000,
-    });
+    await expect(async () => {
+      await page.locator('button[data-variant="default"][data-size="icon-xs"]').click();
+      await expect(page.getByRole('heading', { name: 'E2E Updated Name' })).toBeVisible();
+    }).toPass({ timeout: 15_000 });
   });
 });
 

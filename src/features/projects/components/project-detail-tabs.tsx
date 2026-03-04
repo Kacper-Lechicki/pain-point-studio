@@ -1,7 +1,5 @@
 'use client';
 
-import { useCallback } from 'react';
-
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { useTranslations } from 'next-intl';
@@ -59,25 +57,22 @@ export function ProjectDetailTabs({
   const activeTab: TabValue =
     rawTab && VALID_TABS.includes(rawTab as TabValue) ? (rawTab as TabValue) : 'overview';
 
-  const handleTabChange = useCallback(
-    (value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
+  const handleTabChange = (value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
 
-      if (value === 'overview') {
-        params.delete('tab');
-      } else {
-        params.set('tab', value);
-      }
+    if (value === 'overview') {
+      params.delete('tab');
+    } else {
+      params.set('tab', value);
+    }
 
-      const qs = params.toString();
-      router.replace(`${pathname}${qs ? `?${qs}` : ''}`, { scroll: false });
-    },
-    [router, pathname, searchParams]
-  );
+    const qs = params.toString();
+    router.replace(`${pathname}${qs ? `?${qs}` : ''}`, { scroll: false });
+  };
 
-  const handleCreateSurvey = useCallback(() => {
+  const handleCreateSurvey = () => {
     router.push(getCreateSurveyUrl(project.id));
-  }, [router, project.id]);
+  };
 
   return (
     <Tabs value={activeTab} onValueChange={handleTabChange}>

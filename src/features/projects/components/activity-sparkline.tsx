@@ -1,6 +1,6 @@
 'use client';
 
-import { useId, useMemo } from 'react';
+import { useId } from 'react';
 
 import { useTranslations } from 'next-intl';
 
@@ -27,7 +27,7 @@ export function ActivitySparkline({
   const uniqueId = useId();
   const gradientId = `spark-${uniqueId.replace(/:/g, '')}`;
 
-  const { pathD, areaD, hasData, total } = useMemo(() => {
+  const { pathD, areaD, hasData, total } = (() => {
     const counts = data.map((d) => d.count);
     const sum = counts.reduce((a, b) => a + b, 0);
 
@@ -53,7 +53,7 @@ export function ActivitySparkline({
     const area = `${line} L${last.x.toFixed(1)},${(height - padding).toFixed(1)} L${padding.toFixed(1)},${(height - padding).toFixed(1)} Z`;
 
     return { pathD: line, areaD: area, hasData: true, total: sum };
-  }, [data, width, height]);
+  })();
 
   const viewBox = `0 0 ${width} ${height}`;
   const svgProps = {

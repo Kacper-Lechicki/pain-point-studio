@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface UseSortableListOptions {
   /** Ordered list of item ids. */
@@ -91,36 +91,33 @@ export function useSortableList(options: UseSortableListOptions): UseSortableLis
   const handlePointerMoveRef = useRef<(e: PointerEvent) => void>(() => {});
   const handlePointerUpRef = useRef<() => void>(() => {});
 
-  const handleDragStart = useCallback(
-    (e: React.PointerEvent, itemId: string) => {
-      e.stopPropagation();
+  const handleDragStart = (e: React.PointerEvent, itemId: string) => {
+    e.stopPropagation();
 
-      const container = containerRef.current;
-      const row = container?.querySelector<HTMLElement>(`[${itemIdAttribute}="${itemId}"]`);
+    const container = containerRef.current;
+    const row = container?.querySelector<HTMLElement>(`[${itemIdAttribute}="${itemId}"]`);
 
-      if (row) {
-        const rect = row.getBoundingClientRect();
+    if (row) {
+      const rect = row.getBoundingClientRect();
 
-        dragOffsetRef.current = {
-          x: e.clientX - rect.left,
-          y: e.clientY - rect.top,
-        };
+      dragOffsetRef.current = {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      };
 
-        setGhostWidth(rect.width);
-        ghostPositionRef.current = { x: rect.left, y: rect.top };
-        setGhostPosition({ x: rect.left, y: rect.top });
-      }
+      setGhostWidth(rect.width);
+      ghostPositionRef.current = { x: rect.left, y: rect.top };
+      setGhostPosition({ x: rect.left, y: rect.top });
+    }
 
-      const fromIndex = itemIds.indexOf(itemId);
+    const fromIndex = itemIds.indexOf(itemId);
 
-      placeholderIndexRef.current = fromIndex >= 0 ? fromIndex : 0;
-      draggedIdRef.current = itemId;
+    placeholderIndexRef.current = fromIndex >= 0 ? fromIndex : 0;
+    draggedIdRef.current = itemId;
 
-      setDraggedId(itemId);
-      setPlaceholderIndex(placeholderIndexRef.current);
-    },
-    [containerRef, itemIdAttribute, itemIds]
-  );
+    setDraggedId(itemId);
+    setPlaceholderIndex(placeholderIndexRef.current);
+  };
 
   useEffect(() => {
     handlePointerMoveRef.current = (e: PointerEvent) => {
@@ -218,11 +215,8 @@ export function useSortableList(options: UseSortableListOptions): UseSortableLis
 
   const draggedFromIndex = draggedId ? itemIds.indexOf(draggedId) : -1;
 
-  const showPlaceholderAt = useCallback(
-    (index: number) =>
-      Boolean(draggedId && placeholderIndex === index && placeholderIndex !== draggedFromIndex),
-    [draggedId, placeholderIndex, draggedFromIndex]
-  );
+  const showPlaceholderAt = (index: number) =>
+    Boolean(draggedId && placeholderIndex === index && placeholderIndex !== draggedFromIndex);
 
   const showPlaceholderAtEnd =
     Boolean(draggedId) &&

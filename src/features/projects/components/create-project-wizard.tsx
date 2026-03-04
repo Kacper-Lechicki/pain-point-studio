@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
@@ -79,12 +79,12 @@ export function CreateProjectWizard({ userId }: CreateProjectWizardProps) {
 
   useUnsavedChangesWarning('create-project-wizard', hasDirtyFields && !projectId);
 
-  const goTo = useCallback((target: WizardStep, dir: Direction) => {
+  const goTo = (target: WizardStep, dir: Direction) => {
     setDirection(dir);
     setStep(target);
-  }, []);
+  };
 
-  const validateNameUniqueness = useCallback(async () => {
+  const validateNameUniqueness = async () => {
     const valid = await form.trigger('name');
 
     if (!valid) {
@@ -101,78 +101,66 @@ export function CreateProjectWizard({ userId }: CreateProjectWizardProps) {
     }
 
     return true;
-  }, [form]);
+  };
 
-  const handleNameBlur = useCallback(
-    async (rhfBlur: () => void) => {
-      rhfBlur();
+  const handleNameBlur = async (rhfBlur: () => void) => {
+    rhfBlur();
 
-      const name = form.getValues('name');
+    const name = form.getValues('name');
 
-      if (name.trim()) {
-        await validateNameUniqueness();
-      }
-    },
-    [form, validateNameUniqueness]
-  );
+    if (name.trim()) {
+      await validateNameUniqueness();
+    }
+  };
 
-  const handleNextFromName = useCallback(async () => {
+  const handleNextFromName = async () => {
     if (await validateNameUniqueness()) {
       goTo(2, 'forward');
     }
-  }, [validateNameUniqueness, goTo]);
+  };
 
-  const handleNextFromSummary = useCallback(async () => {
+  const handleNextFromSummary = async () => {
     const valid = await form.trigger('summary');
 
     if (valid) {
       goTo(3, 'forward');
     }
-  }, [form, goTo]);
+  };
 
-  const handleNextFromDescription = useCallback(() => {
+  const handleNextFromDescription = () => {
     goTo(4, 'forward');
-  }, [goTo]);
+  };
 
-  const onSubmit = useCallback(
-    async (data: CreateProjectInput) => {
-      const result = await action.execute(createProject, data);
+  const onSubmit = async (data: CreateProjectInput) => {
+    const result = await action.execute(createProject, data);
 
-      if (result?.data?.projectId) {
-        setProjectId(result.data.projectId);
-        setProjectName(data.name);
-      }
-    },
-    [action]
-  );
+    if (result?.data?.projectId) {
+      setProjectId(result.data.projectId);
+      setProjectName(data.name);
+    }
+  };
 
-  const handleDone = useCallback(() => {
+  const handleDone = () => {
     if (projectId) {
       router.push(getProjectDetailUrl(projectId));
     }
-  }, [projectId, router]);
+  };
 
-  const handleDescriptionChange = useCallback(
-    (json: JSONContent) => {
-      form.setValue('description', json, { shouldDirty: true });
-    },
-    [form]
-  );
+  const handleDescriptionChange = (json: JSONContent) => {
+    form.setValue('description', json, { shouldDirty: true });
+  };
 
-  const handleFormKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        if (step === 1) {
-          e.preventDefault();
-          void handleNextFromName();
-        } else if (step === 2) {
-          e.preventDefault();
-          void handleNextFromSummary();
-        }
+  const handleFormKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      if (step === 1) {
+        e.preventDefault();
+        void handleNextFromName();
+      } else if (step === 2) {
+        e.preventDefault();
+        void handleNextFromSummary();
       }
-    },
-    [step, handleNextFromName, handleNextFromSummary]
-  );
+    }
+  };
 
   return (
     <Form {...form}>

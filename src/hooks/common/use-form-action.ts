@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
@@ -29,50 +29,47 @@ export function useFormAction<D = undefined>(options: UseFormActionOptions<D> = 
     onError,
   } = options;
 
-  const execute = useCallback(
-    async <T, R = D>(
-      action: (data: T) => Promise<ActionResult<R>>,
-      data: T
-    ): Promise<ActionResult<R>> => {
-      setIsLoading(true);
+  const execute = async <T, R = D>(
+    action: (data: T) => Promise<ActionResult<R>>,
+    data: T
+  ): Promise<ActionResult<R>> => {
+    setIsLoading(true);
 
-      try {
-        const result = await action(data);
+    try {
+      const result = await action(data);
 
-        if (result.error) {
-          if (result.error === ERRORS.authRequired) {
-            toast.error(t(ERRORS.authRequired as MessageKey));
-            onError?.();
-            router.replace(ROUTES.auth.signIn);
-            router.refresh();
-
-            return result;
-          }
-
-          toast.error(t(result.error as MessageKey));
+      if (result.error) {
+        if (result.error === ERRORS.authRequired) {
+          toast.error(t(ERRORS.authRequired as MessageKey));
           onError?.();
+          router.replace(ROUTES.auth.signIn);
+          router.refresh();
 
           return result;
         }
 
-        if (successMessage) {
-          toast.success(t(successMessage));
-        }
-
-        onSuccess?.(result.data as D | undefined);
-
-        return result;
-      } catch {
-        toast.error(t(unexpectedErrorMessage));
+        toast.error(t(result.error as MessageKey));
         onError?.();
 
-        return { error: unexpectedErrorMessage } as ActionResult<R>;
-      } finally {
-        setIsLoading(false);
+        return result;
       }
-    },
-    [t, router, successMessage, unexpectedErrorMessage, onSuccess, onError]
-  );
+
+      if (successMessage) {
+        toast.success(t(successMessage));
+      }
+
+      onSuccess?.(result.data as D | undefined);
+
+      return result;
+    } catch {
+      toast.error(t(unexpectedErrorMessage));
+      onError?.();
+
+      return { error: unexpectedErrorMessage } as ActionResult<R>;
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return { isLoading, execute };
 }

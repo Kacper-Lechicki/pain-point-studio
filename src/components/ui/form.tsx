@@ -34,7 +34,7 @@ const FormField = <
 >({
   ...props
 }: ControllerProps<TFieldValues, TName>) => {
-  const fieldContext = React.useMemo(() => ({ name: props.name }), [props.name]);
+  const fieldContext = { name: props.name };
 
   return (
     <FormFieldContext.Provider value={fieldContext}>

@@ -1,13 +1,6 @@
 'use client';
 
-import {
-  forwardRef,
-  useCallback,
-  useImperativeHandle,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react';
+import { type Ref, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react';
 
 import { type Editor, Extension, type Range } from '@tiptap/react';
 import {
@@ -126,111 +119,108 @@ interface SlashCommandListRef {
 interface SlashCommandListProps {
   items: SlashCommandItem[];
   command: (item: SlashCommandItem) => void;
+  ref?: Ref<SlashCommandListRef>;
 }
 
-const SlashCommandList = forwardRef<SlashCommandListRef, SlashCommandListProps>(
-  ({ items, command }, ref) => {
-    const [selectedIndex, setSelectedIndex] = useState(0);
-    const containerRef = useRef<HTMLDivElement>(null);
+function SlashCommandList({ items, command, ref }: SlashCommandListProps) {
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-    useLayoutEffect(() => {
-      const container = containerRef.current;
+  useLayoutEffect(() => {
+    const container = containerRef.current;
 
-      if (!container) {
-        return;
-      }
-
-      const selected = container.querySelector('[data-active="true"]');
-
-      if (selected) {
-        selected.scrollIntoView({ block: 'nearest' });
-      }
-    }, [selectedIndex]);
-
-    const upHandler = useCallback(() => {
-      setSelectedIndex((prev) => (prev + items.length - 1) % items.length);
-    }, [items.length]);
-
-    const downHandler = useCallback(() => {
-      setSelectedIndex((prev) => (prev + 1) % items.length);
-    }, [items.length]);
-
-    const enterHandler = useCallback(() => {
-      const item = items[selectedIndex];
-
-      if (item) {
-        command(item);
-      }
-    }, [items, selectedIndex, command]);
-
-    useImperativeHandle(ref, () => ({
-      onKeyDown: ({ event }: SuggestionKeyDownProps) => {
-        if (event.key === 'ArrowUp') {
-          upHandler();
-
-          return true;
-        }
-
-        if (event.key === 'ArrowDown') {
-          downHandler();
-
-          return true;
-        }
-
-        if (event.key === 'Enter') {
-          enterHandler();
-
-          return true;
-        }
-
-        return false;
-      },
-    }));
-
-    if (items.length === 0) {
-      return (
-        <div className="bg-popover text-popover-foreground rounded-md border p-2 shadow-md">
-          <p className="text-muted-foreground px-2 py-1 text-sm">No results</p>
-        </div>
-      );
+    if (!container) {
+      return;
     }
 
-    return (
-      <div
-        ref={containerRef}
-        className="bg-popover text-popover-foreground z-50 max-h-[280px] overflow-y-auto rounded-md border p-1 shadow-md"
-      >
-        {items.map((item, index) => {
-          const Icon = item.icon;
-          const isActive = index === selectedIndex;
+    const selected = container.querySelector('[data-active="true"]');
 
-          return (
-            <button
-              key={item.title}
-              type="button"
-              data-active={isActive}
-              className={`flex w-full items-center gap-3 rounded-md px-2 py-1.5 text-left text-sm transition-colors ${
-                isActive ? 'bg-accent text-accent-foreground' : 'hover:bg-accent/50'
-              }`}
-              onClick={() => command(item)}
-              onMouseEnter={() => setSelectedIndex(index)}
-            >
-              <div className="bg-muted flex size-8 shrink-0 items-center justify-center rounded-md">
-                <Icon className="size-4" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate font-medium">{item.title}</p>
-                <p className="text-muted-foreground truncate text-xs">{item.description}</p>
-              </div>
-            </button>
-          );
-        })}
+    if (selected) {
+      selected.scrollIntoView({ block: 'nearest' });
+    }
+  }, [selectedIndex]);
+
+  const upHandler = () => {
+    setSelectedIndex((prev) => (prev + items.length - 1) % items.length);
+  };
+
+  const downHandler = () => {
+    setSelectedIndex((prev) => (prev + 1) % items.length);
+  };
+
+  const enterHandler = () => {
+    const item = items[selectedIndex];
+
+    if (item) {
+      command(item);
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    onKeyDown: ({ event }: SuggestionKeyDownProps) => {
+      if (event.key === 'ArrowUp') {
+        upHandler();
+
+        return true;
+      }
+
+      if (event.key === 'ArrowDown') {
+        downHandler();
+
+        return true;
+      }
+
+      if (event.key === 'Enter') {
+        enterHandler();
+
+        return true;
+      }
+
+      return false;
+    },
+  }));
+
+  if (items.length === 0) {
+    return (
+      <div className="bg-popover text-popover-foreground rounded-md border p-2 shadow-md">
+        <p className="text-muted-foreground px-2 py-1 text-sm">No results</p>
       </div>
     );
   }
-);
 
-SlashCommandList.displayName = 'SlashCommandList';
+  return (
+    <div
+      ref={containerRef}
+      className="bg-popover text-popover-foreground z-50 max-h-[280px] overflow-y-auto rounded-md border p-1 shadow-md"
+    >
+      {items.map((item, index) => {
+        const Icon = item.icon;
+        const isActive = index === selectedIndex;
+
+        return (
+          <button
+            key={item.title}
+            type="button"
+            data-active={isActive}
+            className={`flex w-full items-center gap-3 rounded-md px-2 py-1.5 text-left text-sm transition-colors ${
+              isActive ? 'bg-accent text-accent-foreground' : 'hover:bg-accent/50'
+            }`}
+            onClick={() => command(item)}
+            onMouseEnter={() => setSelectedIndex(index)}
+          >
+            <div className="bg-muted flex size-8 shrink-0 items-center justify-center rounded-md">
+              <Icon className="size-4" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate font-medium">{item.title}</p>
+              <p className="text-muted-foreground truncate text-xs">{item.description}</p>
+            </div>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 function createSuggestionRenderer(): ReturnType<
   NonNullable<SuggestionOptions<SlashCommandItem>['render']>

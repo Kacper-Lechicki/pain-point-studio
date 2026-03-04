@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import { Info } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -43,7 +43,7 @@ export function PublishSettingsPanel({
   const [endsAt, setEndsAt] = useState<string | null>(null);
   const [maxRespondents, setMaxRespondents] = useState<number | null>(null);
 
-  const now = useMemo(() => new Date(), []);
+  const now = new Date();
 
   const saveAction = useFormAction({
     unexpectedErrorMessage: 'surveys.builder.errors.saveFailed' as MessageKey,

@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import { Ban, CheckCircle2, Download, MoreHorizontal, Share2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -66,7 +66,7 @@ export function SurveyStatsHeader({
   const t = useTranslations();
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
 
-  const primaryItems = useMemo(() => {
+  const primaryItems = (() => {
     const items: MenuItem[] = [];
 
     if (hasShareableLink) {
@@ -86,9 +86,9 @@ export function SurveyStatsHeader({
     });
 
     return items.sort((a, b) => a.label.localeCompare(b.label));
-  }, [t, hasShareableLink, onShare]);
+  })();
 
-  const statusActions = useMemo(() => {
+  const statusActions = (() => {
     const items: MenuItem[] = [];
 
     if (canComplete) {
@@ -112,7 +112,7 @@ export function SurveyStatsHeader({
     }
 
     return items.sort((a, b) => a.label.localeCompare(b.label));
-  }, [t, canComplete, canCancel, onComplete, onCancel]);
+  })();
 
   return (
     <>

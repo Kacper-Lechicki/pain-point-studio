@@ -47,14 +47,16 @@ async function executeActionOnRow(
     await page.locator('body').click({ position: { x: 0, y: 0 } });
     await row.getByRole('button', { name: 'More actions' }).click();
     await expect(page.getByRole('menuitem', { name: menuItemName })).toBeVisible();
-  }).toPass({ timeout: 10_000 });
+    await page.getByRole('menuitem', { name: menuItemName }).click();
 
-  await page.getByRole('menuitem', { name: menuItemName }).click();
+    if (confirmButtonName) {
+      await expect(page.locator(sel.alertDialog)).toBeVisible({ timeout: 3_000 });
+    }
+  }).toPass({ timeout: 10_000 });
 
   if (confirmButtonName) {
     const dialog = page.locator(sel.alertDialog);
 
-    await expect(dialog).toBeVisible({ timeout: 5_000 });
     await dialog.getByRole('button', { name: confirmButtonName }).click();
   }
 }
@@ -101,25 +103,28 @@ test.describe('Surveys – Creation Flow', () => {
       await expect(page.locator(sel.titleInput)).toHaveValue(SURVEY_TITLE);
     }).toPass({ timeout: 10_000 });
 
-    await page.getByRole('button', { name: 'Continue', exact: true }).click();
+    await expect(async () => {
+      await page.getByRole('button', { name: 'Continue', exact: true }).click();
+      await expect(page.locator(sel.descriptionInput)).toBeVisible();
+    }).toPass({ timeout: 10_000 });
 
     // Step 2: Fill description → Continue
-    await expect(page.locator(sel.descriptionInput)).toBeVisible({ timeout: 10_000 });
 
     await expect(async () => {
       await page.locator(sel.descriptionInput).fill('E2E test survey description');
       await expect(page.locator(sel.descriptionInput)).toHaveValue('E2E test survey description');
     }).toPass({ timeout: 10_000 });
 
-    await page.getByRole('button', { name: 'Continue', exact: true }).click();
+    await expect(async () => {
+      await page.getByRole('button', { name: 'Continue', exact: true }).click();
+      await expect(page.getByRole('button', { name: 'Create Survey' })).toBeVisible();
+    }).toPass({ timeout: 10_000 });
 
     // Step 3: Review → Create Survey (submit)
-    await expect(page.getByRole('button', { name: 'Create Survey' })).toBeVisible({
-      timeout: 10_000,
-    });
-    await page.getByRole('button', { name: 'Create Survey' }).click();
-
-    await expect(page).toHaveURL(/\/dashboard\/research\/new\/[0-9a-f-]+/, { timeout: 30_000 });
+    await expect(async () => {
+      await page.getByRole('button', { name: 'Create Survey' }).click();
+      await expect(page).toHaveURL(/\/dashboard\/research\/new\/[0-9a-f-]+/);
+    }).toPass({ timeout: 30_000 });
 
     await page.goto(projectSurveysUrl(projectId));
 

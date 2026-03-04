@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -73,21 +73,18 @@ export function KanbanColumn({
   const [showForm, setShowForm] = useState(false);
   const colors = INSIGHT_COLORS[type];
 
-  const handleAddClick = useCallback(() => {
+  const handleAddClick = () => {
     setShowForm(true);
-  }, []);
+  };
 
-  const handleCreated = useCallback(
-    (insight: ProjectInsight) => {
-      onInsightCreated(insight);
-      setShowForm(false);
-    },
-    [onInsightCreated]
-  );
-
-  const handleCancelForm = useCallback(() => {
+  const handleCreated = (insight: ProjectInsight) => {
+    onInsightCreated(insight);
     setShowForm(false);
-  }, []);
+  };
+
+  const handleCancelForm = () => {
+    setShowForm(false);
+  };
 
   return (
     <div

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 import type { JSONContent } from '@tiptap/react';
 
@@ -46,13 +46,10 @@ export function ProjectNotesTab({ project, initialNotes, initialFolders }: Proje
     onTitleExtracted: handleTitleExtracted,
   });
 
-  const handleEditorChange = useCallback(
-    (json: JSONContent) => {
-      handleStateContentChange(json);
-      handleAutoSaveChange(json);
-    },
-    [handleStateContentChange, handleAutoSaveChange]
-  );
+  const handleEditorChange = (json: JSONContent) => {
+    handleStateContentChange(json);
+    handleAutoSaveChange(json);
+  };
 
   const activeNotesLength = activeNotes.length;
 
@@ -63,9 +60,9 @@ export function ProjectNotesTab({ project, initialNotes, initialFolders }: Proje
     }
   }, [archived, activeNotesLength, handleCreateNote]);
 
-  const handleBack = useCallback(() => {
+  const handleBack = () => {
     setSelectedNoteId(null);
-  }, [setSelectedNoteId]);
+  };
 
   const showEditor = isDesktop || !!selectedNoteId;
 

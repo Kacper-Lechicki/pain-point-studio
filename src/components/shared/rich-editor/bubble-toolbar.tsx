@@ -1,6 +1,6 @@
 'use client';
 
-import { type KeyboardEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { type KeyboardEvent, useEffect, useRef, useState } from 'react';
 
 import type { Editor } from '@tiptap/react';
 import { BubbleMenu } from '@tiptap/react/menus';
@@ -63,7 +63,7 @@ function LinkInput({ editor, onBack }: { editor: Editor; onBack: () => void }) {
     requestAnimationFrame(() => inputRef.current?.focus());
   }, []);
 
-  const applyLink = useCallback(() => {
+  function applyLink() {
     const trimmed = url.trim();
 
     if (trimmed) {
@@ -73,27 +73,24 @@ function LinkInput({ editor, onBack }: { editor: Editor; onBack: () => void }) {
     }
 
     onBack();
-  }, [editor, url, onBack]);
+  }
 
-  const removeLink = useCallback(() => {
+  function removeLink() {
     editor.chain().focus().extendMarkRange('link').unsetLink().run();
     onBack();
-  }, [editor, onBack]);
+  }
 
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        applyLink();
-      }
+  function handleKeyDown(e: KeyboardEvent<HTMLInputElement>) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      applyLink();
+    }
 
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        onBack();
-      }
-    },
-    [applyLink, onBack]
-  );
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      onBack();
+    }
+  }
 
   return (
     <div className="flex items-center gap-0.5">

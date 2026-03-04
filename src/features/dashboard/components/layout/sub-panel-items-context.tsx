@@ -1,14 +1,6 @@
 'use client';
 
-import {
-  type ReactNode,
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { type ReactNode, createContext, useContext, useEffect, useState } from 'react';
 
 import type { LucideIcon } from 'lucide-react';
 
@@ -32,18 +24,15 @@ export function SubPanelItemsProvider({ children }: { children: ReactNode }) {
   const [links, setLinksRaw] = useState<SubPanelLink[]>([]);
   const [bottomLinks, setBottomLinksRaw] = useState<SubPanelLink[]>([]);
 
-  const setLinks = useCallback((next: SubPanelLink[]) => {
+  const setLinks = (next: SubPanelLink[]) => {
     setLinksRaw(next);
-  }, []);
+  };
 
-  const setBottomLinks = useCallback((next: SubPanelLink[]) => {
+  const setBottomLinks = (next: SubPanelLink[]) => {
     setBottomLinksRaw(next);
-  }, []);
+  };
 
-  const value = useMemo(
-    () => ({ links, bottomLinks, setLinks, setBottomLinks }),
-    [links, bottomLinks, setLinks, setBottomLinks]
-  );
+  const value: SubPanelItemsContextValue = { links, bottomLinks, setLinks, setBottomLinks };
 
   return <SubPanelItemsContext.Provider value={value}>{children}</SubPanelItemsContext.Provider>;
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { formatDistanceToNow } from 'date-fns';
 import {
@@ -103,15 +103,15 @@ export function ProjectDetailHeader({
   const nameInputRef = useRef<HTMLInputElement>(null);
   const summaryInputRef = useRef<HTMLTextAreaElement>(null);
 
-  const startEditingName = useCallback(() => {
+  const startEditingName = () => {
     setNameDraft(project.name);
     setEditingField('name');
-  }, [project.name, setNameDraft, setEditingField]);
+  };
 
-  const startEditingSummary = useCallback(() => {
+  const startEditingSummary = () => {
     setSummaryDraft(project.summary ?? '');
     setEditingField('summary');
-  }, [project.summary, setSummaryDraft, setEditingField]);
+  };
 
   useEffect(() => {
     if (editingField === 'name') {
@@ -123,7 +123,7 @@ export function ProjectDetailHeader({
     }
   }, [editingField]);
 
-  const saveName = useCallback(async () => {
+  const saveName = async () => {
     const trimmed = nameDraft.trim();
 
     if (!trimmed || trimmed === project.name) {
@@ -153,16 +153,9 @@ export function ProjectDetailHeader({
       targetResponses: project.target_responses,
     });
     setTimeout(() => setSaveStatus('idle'), SAVE_STATUS_FEEDBACK_MS);
-  }, [
-    project.id,
-    project.name,
-    project.summary,
-    project.target_responses,
-    nameDraft,
-    onEditSuccess,
-  ]);
+  };
 
-  const saveSummary = useCallback(async () => {
+  const saveSummary = async () => {
     const trimmed = summaryDraft.trim();
 
     if (trimmed === (project.summary ?? '')) {
@@ -192,28 +185,14 @@ export function ProjectDetailHeader({
       targetResponses: project.target_responses,
     });
     setTimeout(() => setSaveStatus('idle'), SAVE_STATUS_FEEDBACK_MS);
-  }, [
-    project.id,
-    project.name,
-    project.summary,
-    project.target_responses,
-    summaryDraft,
-    onEditSuccess,
-  ]);
+  };
 
-  const cancelEdit = useCallback(() => {
+  const cancelEdit = () => {
     setNameDraft(project.name);
     setSummaryDraft(project.summary ?? '');
     setEditingField(null);
     setSaveStatus('idle');
-  }, [
-    project.name,
-    project.summary,
-    setNameDraft,
-    setSummaryDraft,
-    setEditingField,
-    setSaveStatus,
-  ]);
+  };
 
   const isEditingName = editingField === 'name';
   const isEditingSummary = editingField === 'summary';

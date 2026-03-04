@@ -1,7 +1,5 @@
 'use client';
 
-import { useMemo } from 'react';
-
 import { useSearchParams } from 'next/navigation';
 
 import { useTranslations } from 'next-intl';
@@ -98,14 +96,11 @@ export function SecondaryNav({ titleKey, groups, parentHref }: SecondaryNavProps
   const breadcrumb = useBreadcrumbContext();
   const subPanelItems = useSubPanelItems();
   const searchString = nextSearchParams.toString();
-  const currentSearchParams = useMemo(() => new URLSearchParams(searchString), [searchString]);
+  const currentSearchParams = new URLSearchParams(searchString);
   const searchParamKeys = collectSearchParamKeys(groups);
-  const dynamicTab = useMemo(() => findDynamicTab(parentHref, pathname), [parentHref, pathname]);
+  const dynamicTab = findDynamicTab(parentHref, pathname);
 
-  const dynamicLabel = useMemo(
-    () => resolveDynamicLabel(dynamicTab, pathname, breadcrumb?.segments),
-    [dynamicTab, breadcrumb, pathname]
-  );
+  const dynamicLabel = resolveDynamicLabel(dynamicTab, pathname, breadcrumb?.segments);
 
   const isDynamicPending =
     dynamicTab != null &&

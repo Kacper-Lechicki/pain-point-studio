@@ -1,7 +1,5 @@
 'use client';
 
-import { useMemo } from 'react';
-
 import { useTranslations } from 'next-intl';
 
 import type { QuestionAnswerData } from '@/features/surveys/actions/get-survey-stats';
@@ -14,7 +12,7 @@ interface ChoiceDistributionChartProps {
 export const ChoiceDistributionChart = ({ answers }: ChoiceDistributionChartProps) => {
   const t = useTranslations('surveys.stats');
 
-  const { rows, total, respondentCount } = useMemo(() => {
+  const { rows, total, respondentCount } = (() => {
     const counts = new Map<string, number>();
 
     for (const a of answers) {
@@ -38,7 +36,7 @@ export const ChoiceDistributionChart = ({ answers }: ChoiceDistributionChartProp
     const sum = arr.reduce((s, d) => s + d.count, 0);
 
     return { rows: arr, total: sum, respondentCount: answers.length };
-  }, [answers, t]);
+  })();
 
   if (rows.length === 0) {
     return <p className="text-muted-foreground text-xs">{t('noChartData')}</p>;

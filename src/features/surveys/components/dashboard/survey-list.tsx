@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
@@ -109,10 +109,7 @@ export const SurveyList = ({
   const { selectedId, selectedSurvey, questions, showSheet, setSelected } =
     useSurveySelection(surveys);
 
-  const handleNavigate = useCallback(
-    (surveyId: string) => router.push(getSurveyDetailUrl(surveyId)),
-    [router]
-  );
+  const handleNavigate = (surveyId: string) => router.push(getSurveyDetailUrl(surveyId));
 
   const onSelect = isProjectContext ? handleNavigate : setSelected;
 
@@ -146,7 +143,7 @@ export const SurveyList = ({
     unexpectedErrorMessage: 'surveys.errors.unexpected' as MessageKey,
   });
 
-  const bulkConfirmDialogProps = useMemo(() => {
+  const bulkConfirmDialogProps = (() => {
     if (!bulkConfirmAction) {
       return null;
     }
@@ -163,9 +160,9 @@ export const SurveyList = ({
       confirmLabel: t(`surveys.dashboard.actions.${bulkConfirmAction}` as MessageKey),
       variant: config.variant,
     };
-  }, [bulkConfirmAction, t]);
+  })();
 
-  const handleBulkConfirm = useCallback(async () => {
+  async function handleBulkConfirm() {
     if (!bulkConfirmAction || selectedIds.size === 0) {
       return;
     }
@@ -195,7 +192,7 @@ export const SurveyList = ({
       clearSelection();
       router.refresh();
     }
-  }, [bulkConfirmAction, selectedIds, bulkAction, t, clearSelection, router]);
+  }
 
   return (
     <div className="w-full min-w-0 space-y-4 overflow-x-hidden">

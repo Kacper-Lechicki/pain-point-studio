@@ -1,5 +1,3 @@
-import { useMemo } from 'react';
-
 import { useTranslations } from 'next-intl';
 
 import { Checkbox } from '@/components/ui/checkbox';
@@ -47,19 +45,13 @@ export function SurveyListTable({
 }: SurveyListTableProps) {
   const t = useTranslations();
 
-  const allSelected = useMemo(
-    () =>
-      !!selectedIds &&
-      selectedIds.size > 0 &&
-      surveys.length > 0 &&
-      surveys.every((s) => selectedIds.has(s.id)),
-    [selectedIds, surveys]
-  );
+  const allSelected =
+    !!selectedIds &&
+    selectedIds.size > 0 &&
+    surveys.length > 0 &&
+    surveys.every((s) => selectedIds.has(s.id));
 
-  const someSelected = useMemo(
-    () => !!selectedIds && selectedIds.size > 0 && !allSelected,
-    [selectedIds, allSelected]
-  );
+  const someSelected = !!selectedIds && selectedIds.size > 0 && !allSelected;
 
   return (
     <div className="border-border/50 bg-card overflow-hidden rounded-lg border">

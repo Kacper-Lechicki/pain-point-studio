@@ -1,7 +1,5 @@
 'use client';
 
-import { useMemo } from 'react';
-
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -36,22 +34,15 @@ export function ProjectOverviewTab({
   const isArchived = isProjectArchived(project);
   const hasSurveys = overviewStats.totalSurveys > 0;
 
-  const currentPhase = useMemo(
-    () => deriveProjectPhase(surveys.map((s) => ({ researchPhase: s.researchPhase }))),
-    [surveys]
-  );
+  const currentPhase = deriveProjectPhase(surveys.map((s) => ({ researchPhase: s.researchPhase })));
 
-  const verdict = useMemo(
-    () =>
-      computeVerdict({
-        totalResponses: overviewStats.totalResponses,
-        targetResponses: project.target_responses,
-        insightCount: insights.length,
-        findings: [],
-        insights,
-      }),
-    [overviewStats.totalResponses, project.target_responses, insights]
-  );
+  const verdict = computeVerdict({
+    totalResponses: overviewStats.totalResponses,
+    targetResponses: project.target_responses,
+    insightCount: insights.length,
+    findings: [],
+    insights,
+  });
 
   if (!hasSurveys) {
     return (

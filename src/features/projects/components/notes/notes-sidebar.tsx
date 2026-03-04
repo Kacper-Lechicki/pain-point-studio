@@ -1,7 +1,5 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
-
 import { Folder, GripVertical } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -27,33 +25,19 @@ export function NotesSidebar({ state, isArchived }: NotesSidebarProps) {
   const t = useTranslations('projects.detail.notes');
 
   const { setSelectedNoteId } = state;
-  const handleSelectNote = useCallback(
-    (noteId: string) => {
-      setSelectedNoteId(noteId);
-    },
-    [setSelectedNoteId]
-  );
+  const handleSelectNote = (noteId: string) => {
+    setSelectedNoteId(noteId);
+  };
 
-  const noteActions = useMemo(
-    () =>
-      isArchived
-        ? {}
-        : {
-            folders: state.folders,
-            onPin: state.handleTogglePin,
-            onDuplicate: state.handleDuplicateNote,
-            onMoveToFolder: state.handleMoveToFolder,
-            onDelete: state.handleDeleteNote,
-          },
-    [
-      isArchived,
-      state.folders,
-      state.handleTogglePin,
-      state.handleDuplicateNote,
-      state.handleMoveToFolder,
-      state.handleDeleteNote,
-    ]
-  );
+  const noteActions = isArchived
+    ? {}
+    : {
+        folders: state.folders,
+        onPin: state.handleTogglePin,
+        onDuplicate: state.handleDuplicateNote,
+        onMoveToFolder: state.handleMoveToFolder,
+        onDelete: state.handleDeleteNote,
+      };
 
   return (
     <div className="flex h-full flex-col">

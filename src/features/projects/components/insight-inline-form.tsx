@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -50,7 +50,7 @@ export function InsightInlineForm({
 
   const activeType = fixedType ?? selectedType;
 
-  const handleOpen = useCallback(() => {
+  const handleOpen = () => {
     setIsOpen(true);
     setContent('');
 
@@ -61,18 +61,18 @@ export function InsightInlineForm({
     requestAnimationFrame(() => {
       textareaRef.current?.focus();
     });
-  }, [fixedType]);
+  };
 
-  const handleCancel = useCallback(() => {
+  const handleCancel = () => {
     if (!alwaysOpen) {
       setIsOpen(false);
     }
 
     setContent('');
     onCancel?.();
-  }, [alwaysOpen, onCancel]);
+  };
 
-  const handleSubmit = useCallback(async () => {
+  const handleSubmit = async () => {
     const trimmed = content.trim();
 
     if (!trimmed) {
@@ -107,7 +107,7 @@ export function InsightInlineForm({
         setIsOpen(false);
       }
     }
-  }, [content, action, projectId, activeType, onCreated, t, alwaysOpen, onCancel]);
+  };
 
   if (!isOpen && !alwaysOpen) {
     return (

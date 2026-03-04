@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { GripVertical } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -53,7 +53,7 @@ export function KanbanBoard({
 
   const boardRef = useRef<HTMLDivElement>(null);
 
-  const insightsByType = useMemo(() => {
+  const insightsByType = (() => {
     const grouped: Record<InsightType, ProjectInsight[]> = {
       strength: [],
       opportunity: [],
@@ -74,9 +74,9 @@ export function KanbanBoard({
     }
 
     return grouped;
-  }, [localInsights]);
+  })();
 
-  const columns = useMemo(() => {
+  const columns = (() => {
     const result: Record<InsightType, string[]> = {
       strength: [],
       opportunity: [],
@@ -89,95 +89,89 @@ export function KanbanBoard({
     }
 
     return result;
-  }, [insightsByType]);
+  })();
 
-  const handleReorder = useCallback(
-    (columnId: InsightType, newIds: string[]) => {
-      setLocalInsights((prev) => {
-        const updated = prev.map((insight) => {
-          if (insight.type !== columnId) {
-            return insight;
-          }
-
-          const newIndex = newIds.indexOf(insight.id);
-
-          if (newIndex === -1) {
-            return insight;
-          }
-
-          return { ...insight, sort_order: newIndex };
-        });
-
-        queueMicrotask(() => onInsightsChanged?.(updated));
-
-        return updated;
-      });
-
-      void reorderInsights({ insightIds: newIds });
-    },
-    [onInsightsChanged]
-  );
-
-  const handleMove = useCallback(
-    (
-      itemId: string,
-      fromColumn: InsightType,
-      toColumn: InsightType,
-      targetColumnIds: string[],
-      sourceColumnIds: string[]
-    ) => {
-      setLocalInsights((prev) => {
-        const updated = prev.map((insight) => {
-          if (insight.id === itemId) {
-            return {
-              ...insight,
-              type: toColumn,
-              sort_order: targetColumnIds.indexOf(itemId),
-              updated_at: new Date().toISOString(),
-            };
-          }
-
-          if (insight.type === fromColumn) {
-            const idx = sourceColumnIds.indexOf(insight.id);
-
-            if (idx !== -1) {
-              return { ...insight, sort_order: idx };
-            }
-          }
-
-          if (insight.type === toColumn) {
-            const idx = targetColumnIds.indexOf(insight.id);
-
-            if (idx !== -1) {
-              return { ...insight, sort_order: idx };
-            }
-          }
-
+  const handleReorder = (columnId: InsightType, newIds: string[]) => {
+    setLocalInsights((prev) => {
+      const updated = prev.map((insight) => {
+        if (insight.type !== columnId) {
           return insight;
-        });
-
-        queueMicrotask(() => onInsightsChanged?.(updated));
-
-        return updated;
-      });
-
-      void moveInsight({
-        insightId: itemId,
-        newType: toColumn,
-        targetColumnInsightIds: targetColumnIds,
-        sourceColumnInsightIds: sourceColumnIds,
-      }).then((result) => {
-        if (result && !result.error) {
-          toast.success(
-            t('projects.insights.movedTo' as MessageKey, {
-              type: t(PILL_LABEL_KEYS[toColumn] as MessageKey),
-            })
-          );
         }
+
+        const newIndex = newIds.indexOf(insight.id);
+
+        if (newIndex === -1) {
+          return insight;
+        }
+
+        return { ...insight, sort_order: newIndex };
       });
-    },
-    [onInsightsChanged, t]
-  );
+
+      queueMicrotask(() => onInsightsChanged?.(updated));
+
+      return updated;
+    });
+
+    void reorderInsights({ insightIds: newIds });
+  };
+
+  const handleMove = (
+    itemId: string,
+    fromColumn: InsightType,
+    toColumn: InsightType,
+    targetColumnIds: string[],
+    sourceColumnIds: string[]
+  ) => {
+    setLocalInsights((prev) => {
+      const updated = prev.map((insight) => {
+        if (insight.id === itemId) {
+          return {
+            ...insight,
+            type: toColumn,
+            sort_order: targetColumnIds.indexOf(itemId),
+            updated_at: new Date().toISOString(),
+          };
+        }
+
+        if (insight.type === fromColumn) {
+          const idx = sourceColumnIds.indexOf(insight.id);
+
+          if (idx !== -1) {
+            return { ...insight, sort_order: idx };
+          }
+        }
+
+        if (insight.type === toColumn) {
+          const idx = targetColumnIds.indexOf(insight.id);
+
+          if (idx !== -1) {
+            return { ...insight, sort_order: idx };
+          }
+        }
+
+        return insight;
+      });
+
+      queueMicrotask(() => onInsightsChanged?.(updated));
+
+      return updated;
+    });
+
+    void moveInsight({
+      insightId: itemId,
+      newType: toColumn,
+      targetColumnInsightIds: targetColumnIds,
+      sourceColumnInsightIds: sourceColumnIds,
+    }).then((result) => {
+      if (result && !result.error) {
+        toast.success(
+          t('projects.insights.movedTo' as MessageKey, {
+            type: t(PILL_LABEL_KEYS[toColumn] as MessageKey),
+          })
+        );
+      }
+    });
+  };
 
   const {
     draggedId,
@@ -198,25 +192,22 @@ export function KanbanBoard({
     onMove: handleMove,
   });
 
-  const handleMoveToType = useCallback(
-    (insightId: string, newType: InsightType) => {
-      const insight = localInsights.find((i) => i.id === insightId);
+  const handleMoveToType = (insightId: string, newType: InsightType) => {
+    const insight = localInsights.find((i) => i.id === insightId);
 
-      if (!insight) {
-        return;
-      }
+    if (!insight) {
+      return;
+    }
 
-      const targetColumnIds = [...insightsByType[newType].map((i) => i.id), insightId];
-      const sourceColumnIds = insightsByType[insight.type as InsightType]
-        .filter((i) => i.id !== insightId)
-        .map((i) => i.id);
+    const targetColumnIds = [...insightsByType[newType].map((i) => i.id), insightId];
+    const sourceColumnIds = insightsByType[insight.type as InsightType]
+      .filter((i) => i.id !== insightId)
+      .map((i) => i.id);
 
-      handleMove(insightId, insight.type as InsightType, newType, targetColumnIds, sourceColumnIds);
+    handleMove(insightId, insight.type as InsightType, newType, targetColumnIds, sourceColumnIds);
 
-      setActiveMobileType(newType);
-    },
-    [localInsights, insightsByType, handleMove]
-  );
+    setActiveMobileType(newType);
+  };
 
   const draggedInsight = draggedId ? localInsights.find((i) => i.id === draggedId) : null;
 

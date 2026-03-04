@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import { useTranslations } from 'next-intl';
 
@@ -186,13 +186,13 @@ export function useProjectListActions({
     }
   };
 
-  const confirmDialogProps: ProjectConfirmDialogProps | null = useMemo(() => {
+  const confirmDialogProps: ProjectConfirmDialogProps | null = (() => {
     if (!confirmAction) {
       return null;
     }
 
     return getProjectConfirmDialogProps(confirmAction.action, t);
-  }, [confirmAction, t]);
+  })();
 
   return {
     editProject,

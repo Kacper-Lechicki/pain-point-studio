@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, useTransition } from 'react';
+import { useState, useTransition } from 'react';
 
 import { ChevronLeft, Inbox, Link2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -85,13 +85,9 @@ export const SurveyStatsPanel = ({ stats, survey }: SurveyStatsPanelProps) => {
     stats.survey.maxRespondents
   );
 
-  const avgQuestionCompletion = useMemo(
-    () =>
-      calculateAvgQuestionCompletion(
-        stats.questions.map((q) => q.answers.length),
-        stats.completedResponses
-      ),
-    [stats.questions, stats.completedResponses]
+  const avgQuestionCompletion = calculateAvgQuestionCompletion(
+    stats.questions.map((q) => q.answers.length),
+    stats.completedResponses
   );
 
   const handleCompleteSurvey = () => {

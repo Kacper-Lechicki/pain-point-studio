@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import { endOfDay, format, isAfter, isBefore, startOfDay } from 'date-fns';
 import { CalendarIcon, Filter, X } from 'lucide-react';
@@ -47,10 +47,10 @@ export function InlineTextSearch({ responses }: InlineTextSearchProps) {
   const [activeKeyword, setActiveKeyword] = useState<string | null>(null);
   const [sortMode, setSortMode] = useState<SortMode>('newest');
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
-  const responseTexts = useMemo(() => responses.map((r) => r.text), [responses]);
+  const responseTexts = responses.map((r) => r.text);
   const keywords = useKeywordExtraction(responseTexts);
 
-  const dateBounds = useMemo(() => {
+  const dateBounds = (() => {
     let min: Date | null = null;
     let max: Date | null = null;
 
@@ -74,9 +74,9 @@ export function InlineTextSearch({ responses }: InlineTextSearchProps) {
       min: min ? startOfDay(min) : null,
       max: max ? endOfDay(max) : null,
     };
-  }, [responses]);
+  })();
 
-  const filteredResponses = useMemo(() => {
+  const filteredResponses = (() => {
     let result = [...responses];
 
     if (searchQuery.trim()) {
@@ -128,7 +128,7 @@ export function InlineTextSearch({ responses }: InlineTextSearchProps) {
     }
 
     return result;
-  }, [responses, searchQuery, activeKeyword, sortMode, dateRange]);
+  })();
 
   const pagination = usePagination({ totalItems: filteredResponses.length, defaultPerPage: 5 });
 
@@ -139,12 +139,9 @@ export function InlineTextSearch({ responses }: InlineTextSearchProps) {
     dateRange,
   ]);
 
-  const paginatedResponses = useMemo(
-    () => filteredResponses.slice(pagination.startIndex, pagination.endIndex),
-    [filteredResponses, pagination.startIndex, pagination.endIndex]
-  );
+  const paginatedResponses = filteredResponses.slice(pagination.startIndex, pagination.endIndex);
 
-  const highlightRegex = useMemo(() => {
+  const highlightRegex = (() => {
     const words: string[] = [];
 
     if (searchQuery.trim()) {
@@ -156,34 +153,27 @@ export function InlineTextSearch({ responses }: InlineTextSearchProps) {
     }
 
     return buildHighlightRegex(words);
-  }, [searchQuery, activeKeyword]);
+  })();
 
-  const highlightFn = useCallback(
-    (text: string) => highlightText(text, highlightRegex),
-    [highlightRegex]
-  );
+  const highlightFn = (text: string) => highlightText(text, highlightRegex);
 
   const hasDateFilter = dateRange?.from != null;
   const isFiltering = searchQuery.trim().length > 0 || activeKeyword != null || hasDateFilter;
 
-  const sortOptions = useMemo(
-    () =>
-      sortOptionsAlphabetically(
-        SORT_MODES.map((v) => ({
-          value: v,
-          label: t(`surveys.stats.sort.${v}` as Parameters<typeof t>[0]),
-        }))
-      ),
-    [t]
+  const sortOptions = sortOptionsAlphabetically(
+    SORT_MODES.map((v) => ({
+      value: v,
+      label: t(`surveys.stats.sort.${v}` as Parameters<typeof t>[0]),
+    }))
   );
 
-  const clearFilters = useCallback(() => {
+  function clearFilters() {
     setSearchQuery('');
     setActiveKeyword(null);
     setDateRange(undefined);
-  }, []);
+  }
 
-  const dateLabel = useMemo(() => {
+  const dateLabel = (() => {
     if (!dateRange?.from) {
       return null;
     }
@@ -193,7 +183,7 @@ export function InlineTextSearch({ responses }: InlineTextSearchProps) {
     }
 
     return format(dateRange.from, 'MMM d');
-  }, [dateRange]);
+  })();
 
   return (
     <div className="space-y-2">

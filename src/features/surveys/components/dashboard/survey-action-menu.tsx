@@ -1,5 +1,3 @@
-import { useMemo } from 'react';
-
 import { Download, Eye, Pencil, Send, Share2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -50,7 +48,7 @@ export function SurveyActionMenuContent({
   const { isDraft, isArchived, isTrashed, hasShareableLink, questionCount } = flags;
   const canPublish = isDraft && questionCount >= QUESTIONS_MIN;
 
-  const primaryItems = useMemo(() => {
+  const primaryItems = (() => {
     if (isTrashed) {
       return [];
     }
@@ -108,26 +106,10 @@ export function SurveyActionMenuContent({
     }
 
     return items.sort((a, b) => a.label.localeCompare(b.label));
-  }, [
-    t,
-    onDetails,
-    detailsLabelKey,
-    hasShareableLink,
-    onShare,
-    isTrashed,
-    isDraft,
-    isArchived,
-    onExport,
-    canPublish,
-    surveyId,
-  ]);
+  })();
 
-  const sortedActions = useMemo(
-    () =>
-      [...availableActions].sort((a, b) =>
-        t(`surveys.dashboard.actions.${a}`).localeCompare(t(`surveys.dashboard.actions.${b}`))
-      ),
-    [availableActions, t]
+  const sortedActions = [...availableActions].sort((a, b) =>
+    t(`surveys.dashboard.actions.${a}`).localeCompare(t(`surveys.dashboard.actions.${b}`))
   );
 
   return (

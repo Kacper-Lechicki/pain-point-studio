@@ -125,8 +125,10 @@ test.describe('Settings – Password', () => {
       await expect(cpw).toHaveValue(newPassword);
     }).toPass({ timeout: 10_000 });
 
-    await page.locator(sel.passwordSubmit).click();
-    await expect(page.locator(sel.toast).first()).toBeVisible({ timeout: 15_000 });
+    await expect(async () => {
+      await page.locator(sel.passwordSubmit).click();
+      await expect(page.locator(sel.toast).first()).toBeVisible();
+    }).toPass({ timeout: 15_000 });
     await expect(page).toHaveURL(/\/settings\/password/);
   });
 });
@@ -148,16 +150,22 @@ test.describe('Settings – Delete Account', () => {
     await signIn(page);
     await page.goto(url(ROUTES.settings.dangerZone));
     await expect(page.locator(sel.deleteButton)).toBeVisible({ timeout: 15_000 });
-    await page.locator(sel.deleteButton).click();
+
+    await expect(async () => {
+      await page.locator(sel.deleteButton).click();
+      await expect(page.locator('[role="dialog"]')).toBeVisible();
+    }).toPass({ timeout: 10_000 });
 
     const dialog = page.locator('[role="dialog"]');
 
-    await expect(dialog).toBeVisible();
     await expect(dialog.locator('button[type="submit"]')).toBeDisabled();
     await dialog.locator('[data-testid="delete-cancel"]').click();
     await expect(dialog).not.toBeVisible();
-    await page.locator(sel.deleteButton).click();
-    await expect(dialog).toBeVisible();
+
+    await expect(async () => {
+      await page.locator(sel.deleteButton).click();
+      await expect(dialog).toBeVisible();
+    }).toPass({ timeout: 10_000 });
 
     await expect(async () => {
       const input = dialog.locator(sel.confirmation);
@@ -212,9 +220,16 @@ test.describe('Settings – Complete Profile Modal', () => {
       await expect(nameInput).toHaveValue('Test User');
     }).toPass({ timeout: 10_000 });
 
-    await dialog.locator('[data-testid="complete-profile-role"]').click();
+    await expect(async () => {
+      await dialog.locator('[data-testid="complete-profile-role"]').click();
+      await expect(page.locator('[role="option"]').first()).toBeVisible();
+    }).toPass({ timeout: 10_000 });
+
     await page.locator('[role="option"]').first().click();
-    await dialog.locator('button[type="submit"]').click();
-    await expect(dialog).not.toBeVisible({ timeout: 15_000 });
+
+    await expect(async () => {
+      await dialog.locator('button[type="submit"]').click();
+      await expect(dialog).not.toBeVisible();
+    }).toPass({ timeout: 15_000 });
   });
 });

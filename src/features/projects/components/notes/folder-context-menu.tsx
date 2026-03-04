@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
 import { Pencil, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -23,15 +23,15 @@ export function FolderContextMenu({ children, onRename, onDelete }: FolderContex
   const t = useTranslations('projects.detail.notes');
   const [open, setOpen] = useState(false);
 
-  const handleRename = useCallback(() => {
+  const handleRename = () => {
     onRename();
     setOpen(false);
-  }, [onRename]);
+  };
 
-  const handleDelete = useCallback(() => {
+  const handleDelete = () => {
     onDelete();
     setOpen(false);
-  }, [onDelete]);
+  };
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>

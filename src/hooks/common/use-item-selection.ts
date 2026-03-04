@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
@@ -58,38 +58,32 @@ export function useItemSelection<TItem extends { id: string }, TDetail>({
       .catch(() => {});
   }, [selectedId, fetchDetail]);
 
-  const selectedItem = useMemo(
-    () => (selectedId ? (items.find((item) => item.id === selectedId) ?? null) : null),
-    [items, selectedId]
-  );
+  const selectedItem = selectedId ? (items.find((item) => item.id === selectedId) ?? null) : null;
 
-  const setSelected = useCallback(
-    (id: string | null) => {
-      if (id !== selectedId) {
-        fetchedForRef.current = null;
+  const setSelected = (id: string | null) => {
+    if (id !== selectedId) {
+      fetchedForRef.current = null;
 
-        // Only reset detail when switching to another item.
-        // When deselecting (id=null), keep stale data so the closing
-        // sheet animation doesn't flash a loading spinner.
-        if (id) {
-          setDetailData(null);
-        }
-      }
-
-      const next = new URLSearchParams(searchParams.toString());
-
+      // Only reset detail when switching to another item.
+      // When deselecting (id=null), keep stale data so the closing
+      // sheet animation doesn't flash a loading spinner.
       if (id) {
-        next.set('selected', id);
-      } else {
-        next.delete('selected');
+        setDetailData(null);
       }
+    }
 
-      const q = next.toString();
+    const next = new URLSearchParams(searchParams.toString());
 
-      router.replace(q ? `${pathname}?${q}` : pathname);
-    },
-    [selectedId, searchParams, router, pathname]
-  );
+    if (id) {
+      next.set('selected', id);
+    } else {
+      next.delete('selected');
+    }
+
+    const q = next.toString();
+
+    router.replace(q ? `${pathname}?${q}` : pathname);
+  };
 
   const showSheet = !!selectedId && !!selectedItem;
 

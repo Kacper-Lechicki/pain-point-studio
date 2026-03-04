@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { ArrowRightLeft, GripVertical, Pencil, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -69,21 +69,21 @@ export function KanbanCard({
     unexpectedErrorMessage: 'projects.errors.unexpected' as MessageKey,
   });
 
-  const handleStartEdit = useCallback(() => {
+  const handleStartEdit = () => {
     setEditContent(insight.content);
     setIsEditing(true);
 
     requestAnimationFrame(() => {
       textareaRef.current?.focus();
     });
-  }, [insight.content]);
+  };
 
-  const handleCancelEdit = useCallback(() => {
+  const handleCancelEdit = () => {
     setIsEditing(false);
     setEditContent(insight.content);
-  }, [insight.content]);
+  };
 
-  const handleSaveEdit = useCallback(async () => {
+  const handleSaveEdit = async () => {
     const trimmed = editContent.trim();
 
     if (!trimmed || trimmed === insight.content) {
@@ -107,9 +107,9 @@ export function KanbanCard({
     } else {
       onUpdated(original);
     }
-  }, [editContent, insight, onUpdated, updateAction, t]);
+  };
 
-  const handleConfirmDelete = useCallback(async () => {
+  const handleConfirmDelete = async () => {
     const original = insight;
 
     setConfirmDeleteOpen(false);
@@ -124,7 +124,7 @@ export function KanbanCard({
     } else {
       onUpdated(original);
     }
-  }, [insight, onDeleted, onUpdated, deleteAction, t]);
+  };
 
   const colors = INSIGHT_COLORS[insight.type as InsightType];
 

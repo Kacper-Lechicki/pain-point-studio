@@ -3,10 +3,8 @@
 import {
   type ReactNode,
   createContext,
-  useCallback,
   useContext,
   useEffect,
-  useMemo,
   useRef,
   useState,
   useSyncExternalStore,
@@ -134,34 +132,34 @@ export function SidebarProvider({ children }: SidebarProviderProps) {
   const hasSubPanel = activeNavItem !== undefined;
   const subPanelVisible = hasSubPanel && subPanelOpen;
 
-  const togglePin = useCallback(() => {
+  const togglePin = () => {
     writePinned(!getPinnedSnapshot());
-  }, []);
+  };
 
-  const toggleSubPanel = useCallback(() => {
+  const toggleSubPanel = () => {
     writeSubPanelVisible(!getSubPanelVisibleSnapshot());
-  }, []);
+  };
 
-  const handleMouseEnter = useCallback(() => {
+  const handleMouseEnter = () => {
     if (getPinnedSnapshot()) {
       return;
     }
 
     hoverTimerRef.current = setTimeout(() => setIsHovered(true), HOVER_DELAY);
-  }, []);
+  };
 
-  const handleMouseLeave = useCallback(() => {
+  const handleMouseLeave = () => {
     if (hoverTimerRef.current) {
       clearTimeout(hoverTimerRef.current);
       hoverTimerRef.current = null;
     }
 
     setIsHovered(false);
-  }, []);
+  };
 
-  const setMobileOpen = useCallback((open: boolean) => {
+  const setMobileOpen = (open: boolean) => {
     setMobileOpenRaw(open);
-  }, []);
+  };
 
   useEffect(() => {
     return () => {
@@ -173,38 +171,21 @@ export function SidebarProvider({ children }: SidebarProviderProps) {
 
   const isExpanded = isPinned || isHovered;
 
-  const value = useMemo<SidebarContextValue>(
-    () => ({
-      isExpanded,
-      isPinned,
-      isMobileOpen,
-      togglePin,
-      setMobileOpen,
-      handleMouseEnter,
-      handleMouseLeave,
-      isDesktop,
-      hasSubPanel,
-      subPanelVisible,
-      subPanelOpen,
-      toggleSubPanel,
-      activeNavItem,
-    }),
-    [
-      isExpanded,
-      isPinned,
-      isMobileOpen,
-      togglePin,
-      setMobileOpen,
-      handleMouseEnter,
-      handleMouseLeave,
-      isDesktop,
-      hasSubPanel,
-      subPanelVisible,
-      subPanelOpen,
-      toggleSubPanel,
-      activeNavItem,
-    ]
-  );
+  const value: SidebarContextValue = {
+    isExpanded,
+    isPinned,
+    isMobileOpen,
+    togglePin,
+    setMobileOpen,
+    handleMouseEnter,
+    handleMouseLeave,
+    isDesktop,
+    hasSubPanel,
+    subPanelVisible,
+    subPanelOpen,
+    toggleSubPanel,
+    activeNavItem,
+  };
 
   return <SidebarContext.Provider value={value}>{children}</SidebarContext.Provider>;
 }

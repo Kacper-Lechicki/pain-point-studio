@@ -1,6 +1,6 @@
 'use client';
 
-import { type KeyboardEvent, useCallback, useRef, useState } from 'react';
+import { type KeyboardEvent, useRef, useState } from 'react';
 
 import { FolderPlus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -18,7 +18,7 @@ export function NewFolderInput({ onCreate }: NewFolderInputProps) {
   const [value, setValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleCreate = useCallback(async () => {
+  const handleCreate = async () => {
     const name = value.trim();
 
     if (!name) {
@@ -30,33 +30,30 @@ export function NewFolderInput({ onCreate }: NewFolderInputProps) {
     await onCreate(name);
     setValue('');
     setIsExpanded(false);
-  }, [value, onCreate]);
+  };
 
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        void handleCreate();
-      } else if (e.key === 'Escape') {
-        setValue('');
-        setIsExpanded(false);
-      }
-    },
-    [handleCreate]
-  );
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      void handleCreate();
+    } else if (e.key === 'Escape') {
+      setValue('');
+      setIsExpanded(false);
+    }
+  };
 
-  const handleExpand = useCallback(() => {
+  const handleExpand = () => {
     setIsExpanded(true);
     requestAnimationFrame(() => inputRef.current?.focus());
-  }, []);
+  };
 
-  const handleBlur = useCallback(() => {
+  const handleBlur = () => {
     if (!value.trim()) {
       setIsExpanded(false);
     } else {
       void handleCreate();
     }
-  }, [value, handleCreate]);
+  };
 
   if (!isExpanded) {
     return (

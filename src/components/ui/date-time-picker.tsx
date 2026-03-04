@@ -121,7 +121,7 @@ function DateTimePicker({
     ? String(selectedDate.getMinutes()).padStart(2, '0')
     : undefined;
 
-  const { allowedHours, allowedMinutes } = React.useMemo(() => {
+  const { allowedHours, allowedMinutes } = (() => {
     let minHour = 0;
     let maxHour = 23;
     let minMinuteForCurrentHour = 0;
@@ -158,9 +158,9 @@ function DateTimePicker({
     });
 
     return { allowedHours: hours, allowedMinutes: minutes };
-  }, [selectedDate, disabledBefore, disabledAfter]);
+  })();
 
-  const calendarDisabled = React.useMemo(() => {
+  const calendarDisabled = (() => {
     const matchers: Matcher[] = [];
 
     if (disabledBefore) {
@@ -172,7 +172,7 @@ function DateTimePicker({
     }
 
     return matchers;
-  }, [disabledBefore, disabledAfter]);
+  })();
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

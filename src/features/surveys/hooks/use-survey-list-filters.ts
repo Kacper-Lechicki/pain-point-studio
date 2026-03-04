@@ -1,5 +1,3 @@
-import { useCallback, useMemo } from 'react';
-
 import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import {
   NO_PROJECT_FILTER_ID,
@@ -77,29 +75,26 @@ export function useSurveyListFilters(surveys: UserSurvey[], options?: UseSurveyL
 
   const basePreFilter = getBasePreFilter(isProjectCtx);
 
-  const preFilter = useCallback(
-    (s: UserSurvey) => {
-      if (!basePreFilter(s, statusFilter)) {
-        return false;
+  const preFilter = (s: UserSurvey) => {
+    if (!basePreFilter(s, statusFilter)) {
+      return false;
+    }
+
+    if (!isProjectCtx && projectFilter.length > 0) {
+      const hasNone = projectFilter.includes(NO_PROJECT_FILTER_ID);
+      const projectIds = projectFilter.filter((id) => id !== NO_PROJECT_FILTER_ID);
+
+      if (s.projectId === null) {
+        return hasNone;
       }
 
-      if (!isProjectCtx && projectFilter.length > 0) {
-        const hasNone = projectFilter.includes(NO_PROJECT_FILTER_ID);
-        const projectIds = projectFilter.filter((id) => id !== NO_PROJECT_FILTER_ID);
+      return projectIds.includes(s.projectId);
+    }
 
-        if (s.projectId === null) {
-          return hasNone;
-        }
+    return true;
+  };
 
-        return projectIds.includes(s.projectId);
-      }
-
-      return true;
-    },
-    [statusFilter, projectFilter, basePreFilter, isProjectCtx]
-  );
-
-  const statusCounts = useMemo(() => {
+  const statusCounts = (() => {
     const counts: Record<string, number> = isProjectCtx
       ? { active: 0, draft: 0, completed: 0, cancelled: 0, archived: 0, trashed: 0 }
       : { active: 0, draft: 0, completed: 0, cancelled: 0, trashed: 0 };
@@ -122,9 +117,9 @@ export function useSurveyListFilters(surveys: UserSurvey[], options?: UseSurveyL
     }
 
     return counts;
-  }, [surveys, isProjectCtx]);
+  })();
 
-  const projectOptions = useMemo(() => {
+  const projectOptions = (() => {
     if (isProjectCtx) {
       return [];
     }
@@ -167,22 +162,19 @@ export function useSurveyListFilters(surveys: UserSurvey[], options?: UseSurveyL
     }
 
     return options;
-  }, [surveys, statusFilter, isProjectCtx]);
+  })();
 
-  const setProjectFilter = useCallback(
-    (ids: string[]) => {
-      setProjectFilterRaw(ids);
-    },
-    [setProjectFilterRaw]
-  );
+  const setProjectFilter = (ids: string[]) => {
+    setProjectFilterRaw(ids);
+  };
 
-  const kpiStatuses = useMemo(() => {
+  const kpiStatuses = (() => {
     const order: SurveyStatusFilter[] = isProjectCtx
       ? ['active', 'draft', 'completed', 'cancelled', 'archived']
       : ['active', 'draft', 'completed', 'cancelled'];
 
     return order.filter((s) => (statusCounts[s] ?? 0) > 0);
-  }, [statusCounts, isProjectCtx]);
+  })();
 
   const isFiltered = statusFilter.length > 0 || (!isProjectCtx && projectFilter.length > 0);
 

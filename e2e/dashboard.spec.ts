@@ -79,8 +79,10 @@ test.describe('Dashboard – Populated', () => {
     });
 
     // DashboardTimeFilter renders <a> links with labels "7d", "30d", "90d"
-    await page.getByRole('link', { name: '7d' }).first().click();
-
-    await expect(page).toHaveURL(/period=7/, { timeout: 10_000 });
+    // webkit can swallow clicks during hydration — retry pattern
+    await expect(async () => {
+      await page.getByRole('link', { name: '7d' }).first().click();
+      await expect(page).toHaveURL(/period=7/);
+    }).toPass({ timeout: 15_000 });
   });
 });

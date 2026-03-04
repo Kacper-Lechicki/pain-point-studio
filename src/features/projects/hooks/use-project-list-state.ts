@@ -1,7 +1,5 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
-
 import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
 import type { ProjectsListExtrasMap } from '@/features/projects/actions/get-projects-list-extras';
 import type {
@@ -27,28 +25,22 @@ export function useProjectListState(
     []
   );
 
-  const preFilter = useCallback(
-    (p: ProjectWithMetrics) => {
-      if (statusFilter.length > 0 && !statusFilter.includes(p.status as ProjectStatusFilter)) {
-        return false;
-      }
+  const preFilter = (p: ProjectWithMetrics) => {
+    if (statusFilter.length > 0 && !statusFilter.includes(p.status as ProjectStatusFilter)) {
+      return false;
+    }
 
-      // When no filter active, hide trashed and archived projects from default view
-      if (statusFilter.length === 0 && (p.status === 'trashed' || p.status === 'archived')) {
-        return false;
-      }
+    // When no filter active, hide trashed and archived projects from default view
+    if (statusFilter.length === 0 && (p.status === 'trashed' || p.status === 'archived')) {
+      return false;
+    }
 
-      return true;
-    },
-    [statusFilter]
-  );
+    return true;
+  };
 
   // ── Comparator that captures extras context ───────────────────────
-  const comparator = useCallback(
-    (sortBy: ProjectSortBy, sortDir: 'asc' | 'desc') =>
-      getProjectComparator(sortBy, sortDir, extras),
-    [extras]
-  );
+  const comparator = (sortBy: ProjectSortBy, sortDir: 'asc' | 'desc') =>
+    getProjectComparator(sortBy, sortDir, extras);
 
   // ── Delegate to generic list state ─────────────────────────────────
   const {
@@ -77,18 +69,15 @@ export function useProjectListState(
   });
 
   // ── Page-resetting wrappers for domain filters ─────────────────────
-  const setStatusFilter = useCallback(
-    (v: ProjectStatusFilter[]) => {
-      setStatusFilterRaw(v);
-      resetPage();
-    },
-    [setStatusFilterRaw, resetPage]
-  );
+  const setStatusFilter = (v: ProjectStatusFilter[]) => {
+    setStatusFilterRaw(v);
+    resetPage();
+  };
 
   const isFiltered = statusFilter.length > 0;
 
   // ── Derived counts for KPI badges and toolbar ───────────────────────
-  const statusCounts = useMemo(() => {
+  const statusCounts = (() => {
     const counts: Record<string, number> = {
       active: 0,
       completed: 0,
@@ -103,14 +92,14 @@ export function useProjectListState(
     }
 
     return counts;
-  }, [projects]);
+  })();
 
-  const kpiStatuses = useMemo(() => {
+  const kpiStatuses = (() => {
     // Show active, completed, archived in KPI (not trashed)
     const order: ProjectStatusFilter[] = ['active', 'completed', 'archived'];
 
     return order.filter((s) => (statusCounts[s] ?? 0) > 0);
-  }, [statusCounts]);
+  })();
 
   return {
     now,

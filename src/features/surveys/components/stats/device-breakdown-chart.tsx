@@ -1,7 +1,5 @@
 'use client';
 
-import { useMemo } from 'react';
-
 import { useTranslations } from 'next-intl';
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 
@@ -32,7 +30,7 @@ export const DeviceBreakdownChart = ({ data, className }: DeviceBreakdownChartPr
     },
   } satisfies ChartConfig;
 
-  const chartData = useMemo(() => {
+  const chartData = (() => {
     const today = new Date();
 
     return data.map((point, i) => {
@@ -45,7 +43,7 @@ export const DeviceBreakdownChart = ({ data, className }: DeviceBreakdownChartPr
         mobile: point.mobile,
       };
     });
-  }, [data]);
+  })();
 
   const hasData = data.some((p) => p.desktop > 0 || p.mobile > 0);
 

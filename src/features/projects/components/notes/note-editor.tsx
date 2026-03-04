@@ -1,7 +1,5 @@
 'use client';
 
-import { useCallback } from 'react';
-
 import type { JSONContent } from '@tiptap/react';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { StickyNote } from 'lucide-react';
@@ -36,12 +34,9 @@ export function NoteEditor({
   const t = useTranslations('projects.detail.notes');
   const isDesktop = useBreakpoint('md');
 
-  const handleChange = useCallback(
-    (json: JSONContent) => {
-      onContentChange(json);
-    },
-    [onContentChange]
-  );
+  const handleChange = (json: JSONContent) => {
+    onContentChange(json);
+  };
 
   if (!noteId) {
     return (

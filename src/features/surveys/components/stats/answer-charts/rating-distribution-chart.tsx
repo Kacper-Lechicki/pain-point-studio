@@ -1,7 +1,5 @@
 'use client';
 
-import { useMemo } from 'react';
-
 import { useTranslations } from 'next-intl';
 
 import { Badge } from '@/components/ui/badge';
@@ -24,7 +22,7 @@ export const RatingDistributionChart = ({ answers, config }: RatingDistributionC
   const scaleMin = (config.min as number) ?? 1;
   const scaleMax = (config.max as number) ?? 5;
 
-  const { bars, average, median, mode, ratio } = useMemo(() => {
+  const { bars, average, median, mode, ratio } = (() => {
     const counts = new Map<number, number>();
     const values: number[] = [];
 
@@ -70,7 +68,7 @@ export const RatingDistributionChart = ({ answers, config }: RatingDistributionC
       mode: modeValue,
       ratio: n > 0 && scaleMax > 0 ? sum / n / scaleMax : 0,
     };
-  }, [answers, scaleMin, scaleMax]);
+  })();
 
   if (bars.length === 0) {
     return <p className="text-muted-foreground text-xs">{t('noChartData')}</p>;

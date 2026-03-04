@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface UseKanbanBoardOptions<TColumnId extends string> {
   /** Map of column IDs to arrays of item IDs in that column. */
@@ -163,52 +163,49 @@ export function useKanbanBoard<TColumnId extends string>(
   const handlePointerMoveRef = useRef<(e: PointerEvent) => void>(() => {});
   const handlePointerUpRef = useRef<() => void>(() => {});
 
-  const handleDragStart = useCallback(
-    (e: React.PointerEvent, itemId: string) => {
-      e.stopPropagation();
+  const handleDragStart = (e: React.PointerEvent, itemId: string) => {
+    e.stopPropagation();
 
-      const board = boardRef.current;
+    const board = boardRef.current;
 
-      if (!board) {
-        return;
-      }
+    if (!board) {
+      return;
+    }
 
-      // Find the card element
-      const cardEl = board.querySelector<HTMLElement>(`[${itemIdAttribute}="${itemId}"]`);
+    // Find the card element
+    const cardEl = board.querySelector<HTMLElement>(`[${itemIdAttribute}="${itemId}"]`);
 
-      if (cardEl) {
-        const rect = cardEl.getBoundingClientRect();
+    if (cardEl) {
+      const rect = cardEl.getBoundingClientRect();
 
-        dragOffsetRef.current = {
-          x: e.clientX - rect.left,
-          y: e.clientY - rect.top,
-        };
+      dragOffsetRef.current = {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      };
 
-        setGhostWidth(rect.width);
-        ghostPositionRef.current = { x: rect.left, y: rect.top };
-        setGhostPosition({ x: rect.left, y: rect.top });
-      }
+      setGhostWidth(rect.width);
+      ghostPositionRef.current = { x: rect.left, y: rect.top };
+      setGhostPosition({ x: rect.left, y: rect.top });
+    }
 
-      const fromColumn = findItemColumn(columns, columnIds, itemId);
+    const fromColumn = findItemColumn(columns, columnIds, itemId);
 
-      if (!fromColumn) {
-        return;
-      }
+    if (!fromColumn) {
+      return;
+    }
 
-      const fromIndex = columns[fromColumn].indexOf(itemId);
+    const fromIndex = columns[fromColumn].indexOf(itemId);
 
-      hoveredColumnRef.current = fromColumn;
-      placeholderIndexRef.current = fromIndex >= 0 ? fromIndex : 0;
-      draggedIdRef.current = itemId;
-      draggedFromColumnRef.current = fromColumn;
+    hoveredColumnRef.current = fromColumn;
+    placeholderIndexRef.current = fromIndex >= 0 ? fromIndex : 0;
+    draggedIdRef.current = itemId;
+    draggedFromColumnRef.current = fromColumn;
 
-      setDraggedId(itemId);
-      setDraggedFromColumn(fromColumn);
-      setHoveredColumn(fromColumn);
-      setPlaceholderIndex(placeholderIndexRef.current);
-    },
-    [boardRef, itemIdAttribute, columns, columnIds]
-  );
+    setDraggedId(itemId);
+    setDraggedFromColumn(fromColumn);
+    setHoveredColumn(fromColumn);
+    setPlaceholderIndex(placeholderIndexRef.current);
+  };
 
   useEffect(() => {
     handlePointerMoveRef.current = (e: PointerEvent) => {
@@ -344,52 +341,46 @@ export function useKanbanBoard<TColumnId extends string>(
     };
   }, [draggedId]);
 
-  const showPlaceholderAt = useCallback(
-    (columnId: string, index: number) => {
-      if (!draggedId || hoveredColumn !== columnId || placeholderIndex !== index) {
+  const showPlaceholderAt = (columnId: string, index: number) => {
+    if (!draggedId || hoveredColumn !== columnId || placeholderIndex !== index) {
+      return false;
+    }
+
+    // If same column, don't show placeholder at the dragged item's own position
+    if (draggedFromColumn === columnId) {
+      const fromIdx = columns[columnId as TColumnId]?.indexOf(draggedId) ?? -1;
+
+      if (fromIdx === index) {
         return false;
       }
+    }
 
-      // If same column, don't show placeholder at the dragged item's own position
-      if (draggedFromColumn === columnId) {
-        const fromIdx = columns[columnId as TColumnId]?.indexOf(draggedId) ?? -1;
+    return true;
+  };
 
-        if (fromIdx === index) {
-          return false;
-        }
-      }
+  const showPlaceholderAtEnd = (columnId: string) => {
+    if (!draggedId || hoveredColumn !== columnId) {
+      return false;
+    }
 
-      return true;
-    },
-    [draggedId, hoveredColumn, placeholderIndex, draggedFromColumn, columns]
-  );
+    const colItems = columns[columnId as TColumnId] ?? [];
+    const isAtEnd = placeholderIndex === colItems.length;
 
-  const showPlaceholderAtEnd = useCallback(
-    (columnId: string) => {
-      if (!draggedId || hoveredColumn !== columnId) {
+    if (!isAtEnd) {
+      return false;
+    }
+
+    // If same column, check if dragged from last position
+    if (draggedFromColumn === columnId) {
+      const fromIdx = colItems.indexOf(draggedId);
+
+      if (fromIdx === colItems.length - 1) {
         return false;
       }
+    }
 
-      const colItems = columns[columnId as TColumnId] ?? [];
-      const isAtEnd = placeholderIndex === colItems.length;
-
-      if (!isAtEnd) {
-        return false;
-      }
-
-      // If same column, check if dragged from last position
-      if (draggedFromColumn === columnId) {
-        const fromIdx = colItems.indexOf(draggedId);
-
-        if (fromIdx === colItems.length - 1) {
-          return false;
-        }
-      }
-
-      return true;
-    },
-    [draggedId, hoveredColumn, placeholderIndex, draggedFromColumn, columns]
-  );
+    return true;
+  };
 
   return {
     draggedId,

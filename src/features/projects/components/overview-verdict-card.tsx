@@ -1,7 +1,5 @@
 'use client';
 
-import { useMemo } from 'react';
-
 import { ArrowRight, ClipboardList, Lightbulb, Rocket, Send, Share2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -58,19 +56,16 @@ export function OverviewVerdictCard({
   const Icon = config.icon;
   const percent = Math.round(verdict.confidence * 100);
 
-  const nextStepInput: NextStepInput = useMemo(
-    () => ({
-      totalSurveys,
-      activeSurveys,
-      totalResponses,
-      targetResponses,
-      insightCount,
-      currentPhase,
-    }),
-    [totalSurveys, activeSurveys, totalResponses, targetResponses, insightCount, currentPhase]
-  );
+  const nextStepInput: NextStepInput = {
+    totalSurveys,
+    activeSurveys,
+    totalResponses,
+    targetResponses,
+    insightCount,
+    currentPhase,
+  };
 
-  const nextStep = useMemo(() => computeNextStep(nextStepInput), [nextStepInput]);
+  const nextStep = computeNextStep(nextStepInput);
   const NextStepIcon = ACTION_ICONS[nextStep.action];
 
   const nextStepHref = nextStep.tab

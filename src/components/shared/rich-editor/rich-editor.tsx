@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { EditorContent, type JSONContent, useEditor } from '@tiptap/react';
 
@@ -87,18 +87,15 @@ export function RichEditor({
     }
   }, [editor, editable]);
 
-  const handleImageConfirm = useCallback(
-    (url: string) => {
-      editor?.chain().focus().setImage({ src: url }).run();
-      setImagePrompt(null);
-    },
-    [editor]
-  );
+  function handleImageConfirm(url: string) {
+    editor?.chain().focus().setImage({ src: url }).run();
+    setImagePrompt(null);
+  }
 
-  const handleImageCancel = useCallback(() => {
+  function handleImageCancel() {
     setImagePrompt(null);
     editor?.chain().focus().run();
-  }, [editor]);
+  }
 
   if (!editor) {
     return null;

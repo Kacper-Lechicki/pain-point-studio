@@ -1,7 +1,5 @@
 'use client';
 
-import { useMemo } from 'react';
-
 import { Lightbulb, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -29,10 +27,7 @@ export const QuestionStatsCard = ({ question, index }: QuestionStatsCardProps) =
   const typeLabel = t(typeLabelKey as Parameters<typeof t>[0]);
   const responseCount = question.answers.length;
 
-  const insight = useMemo(
-    () => computeInsight(question.type, question.answers, question.config, t),
-    [question.type, question.answers, question.config, t]
-  );
+  const insight = computeInsight(question.type, question.answers, question.config, t);
 
   const renderChart = () => {
     switch (question.type) {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
@@ -93,15 +93,15 @@ export function ProjectsListPage({ projects, extras }: ProjectsListPageProps) {
     unexpectedErrorMessage: 'projects.errors.unexpected' as MessageKey,
   });
 
-  const bulkConfirmDialogProps = useMemo(() => {
+  const bulkConfirmDialogProps = (() => {
     if (!bulkConfirmAction) {
       return null;
     }
 
     return getProjectConfirmDialogProps(bulkConfirmAction, t);
-  }, [bulkConfirmAction, t]);
+  })();
 
-  const handleBulkConfirm = useCallback(async () => {
+  const handleBulkConfirm = async () => {
     if (!bulkConfirmAction || selectedIds.size === 0) {
       return;
     }
@@ -131,14 +131,11 @@ export function ProjectsListPage({ projects, extras }: ProjectsListPageProps) {
       clearSelection();
       router.refresh();
     }
-  }, [bulkConfirmAction, selectedIds, bulkAction, t, clearSelection, router]);
+  };
 
-  const handleSelect = useCallback(
-    (projectId: string) => {
-      router.push(getProjectDetailUrl(projectId));
-    },
-    [router]
-  );
+  const handleSelect = (projectId: string) => {
+    router.push(getProjectDetailUrl(projectId));
+  };
 
   return (
     <div className="space-y-4">

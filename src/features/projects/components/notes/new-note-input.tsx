@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -15,7 +15,7 @@ export function NewNoteInput({ onCreate }: NewNoteInputProps) {
   const t = useTranslations('projects.detail.notes');
   const [isCreating, setIsCreating] = useState(false);
 
-  const handleCreate = useCallback(async () => {
+  const handleCreate = async () => {
     if (isCreating) {
       return;
     }
@@ -27,7 +27,7 @@ export function NewNoteInput({ onCreate }: NewNoteInputProps) {
     } finally {
       setIsCreating(false);
     }
-  }, [isCreating, onCreate]);
+  };
 
   return (
     <Button

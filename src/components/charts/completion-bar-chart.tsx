@@ -1,7 +1,5 @@
 'use client';
 
-import { useMemo } from 'react';
-
 import { cn } from '@/lib/common/utils';
 
 interface CompletionBarChartData {
@@ -37,18 +35,14 @@ export function CompletionBarChart({
 }: CompletionBarChartProps) {
   const labels = labelsProp ?? DEFAULT_LABELS;
 
-  const { rows, total, maxCount } = useMemo(() => {
-    const rows = SEGMENTS.map(({ key }) => ({
-      key,
-      label: labels[key],
-      count: data[key],
-      color: SEGMENTS.find((s) => s.key === key)!.color,
-    }));
-    const total = data.completed + data.inProgress + data.abandoned;
-    const maxCount = Math.max(...rows.map((r) => r.count), 1);
-
-    return { rows, total, maxCount };
-  }, [data, labels]);
+  const rows = SEGMENTS.map(({ key }) => ({
+    key,
+    label: labels[key],
+    count: data[key],
+    color: SEGMENTS.find((s) => s.key === key)!.color,
+  }));
+  const total = data.completed + data.inProgress + data.abandoned;
+  const maxCount = Math.max(...rows.map((r) => r.count), 1);
 
   const hasData = total > 0;
 

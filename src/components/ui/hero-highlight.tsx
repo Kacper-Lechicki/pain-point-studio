@@ -47,7 +47,7 @@ export const HeroHighlight = ({
     setMounted(true);
   }, []);
 
-  const dotPatterns = React.useMemo(() => {
+  const dotPatterns = (() => {
     if (!mounted) {
       return { default: '', hover: '' };
     }
@@ -56,7 +56,7 @@ export const HeroHighlight = ({
       default: getEncodedPattern(getComputedColor('--dot-default')),
       hover: getEncodedPattern(getComputedColor('--dot-hover')),
     };
-  }, [mounted]);
+  })();
 
   const handleMouseMove = ({
     currentTarget,

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useRef, useState, useTransition } from 'react';
+import { useRef, useState, useTransition } from 'react';
 
 import { useRouter } from 'next/navigation';
 
@@ -22,7 +22,7 @@ export function useRefresh() {
   const [lastSyncedAt, setLastSyncedAt] = useState(Date.now);
   const lastSyncedAtRef = useRef(lastSyncedAt);
 
-  const refresh = useCallback(() => {
+  const refresh = () => {
     startTransition(() => {
       router.refresh();
 
@@ -32,14 +32,14 @@ export function useRefresh() {
       setLastSyncedAt(now);
       toast.success(t('common.dataRefreshed'));
     });
-  }, [router, t]);
+  };
 
   /** Call from realtime or any external sync to bump the timestamp. */
-  const markSynced = useCallback(() => {
+  const markSynced = () => {
     const now = Date.now();
     lastSyncedAtRef.current = now;
     setLastSyncedAt(now);
-  }, []);
+  };
 
   return { isRefreshing, refresh, lastSyncedAt, markSynced } as const;
 }

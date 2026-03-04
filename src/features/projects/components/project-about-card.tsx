@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import type { JSONContent } from '@tiptap/react';
 import { Pencil, X } from 'lucide-react';
@@ -57,11 +57,11 @@ export function ProjectAboutCard({ project }: ProjectAboutCardProps) {
     return () => cancelAnimationFrame(raf);
   }, [editing, content]);
 
-  const handleDraftChange = useCallback((json: JSONContent) => {
+  const handleDraftChange = (json: JSONContent) => {
     draftRef.current = json;
-  }, []);
+  };
 
-  const handleSave = useCallback(async () => {
+  const handleSave = async () => {
     const json = draftRef.current;
 
     if (!json) {
@@ -88,13 +88,13 @@ export function ProjectAboutCard({ project }: ProjectAboutCardProps) {
     } else {
       setSaveStatus('failed');
     }
-  }, [project.id]);
+  };
 
-  const handleCancel = useCallback(() => {
+  const handleCancel = () => {
     draftRef.current = content;
     setEditing(false);
     setSaveStatus('idle');
-  }, [content]);
+  };
 
   useEffect(() => {
     return () => {

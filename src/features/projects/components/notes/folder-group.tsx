@@ -1,6 +1,6 @@
 'use client';
 
-import { type KeyboardEvent, useCallback, useRef, useState } from 'react';
+import { type KeyboardEvent, useRef, useState } from 'react';
 
 import { ChevronRight, Folder, GripVertical, MoreHorizontal } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -57,20 +57,20 @@ export function FolderGroup({
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const renameInputRef = useRef<HTMLInputElement>(null);
 
-  const handleToggle = useCallback(() => {
+  const handleToggle = () => {
     onToggleExpand(folder.id);
-  }, [onToggleExpand, folder.id]);
+  };
 
-  const handleStartRename = useCallback(() => {
+  const handleStartRename = () => {
     setRenameValue(folder.name);
     setIsRenaming(true);
     requestAnimationFrame(() => {
       renameInputRef.current?.focus();
       renameInputRef.current?.select();
     });
-  }, [folder.name]);
+  };
 
-  const handleRenameSubmit = useCallback(() => {
+  const handleRenameSubmit = () => {
     const trimmed = renameValue.trim();
 
     if (trimmed && trimmed !== folder.name) {
@@ -78,25 +78,22 @@ export function FolderGroup({
     }
 
     setIsRenaming(false);
-  }, [renameValue, folder.id, folder.name, onRenameFolder]);
+  };
 
-  const handleRenameKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        handleRenameSubmit();
-      } else if (e.key === 'Escape') {
-        setIsRenaming(false);
-        setRenameValue(folder.name);
-      }
-    },
-    [handleRenameSubmit, folder.name]
-  );
+  const handleRenameKeyDown = (e: KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleRenameSubmit();
+    } else if (e.key === 'Escape') {
+      setIsRenaming(false);
+      setRenameValue(folder.name);
+    }
+  };
 
-  const handleConfirmDelete = useCallback(() => {
+  const handleConfirmDelete = () => {
     onDeleteFolder(folder.id);
     setConfirmDeleteOpen(false);
-  }, [onDeleteFolder, folder.id]);
+  };
 
   return (
     <div>

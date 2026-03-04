@@ -23,13 +23,12 @@ async function executeDetailAction(
     await page.locator('body').click({ position: { x: 0, y: 0 } });
     await page.getByRole('button', { name: 'More actions' }).click();
     await expect(page.getByRole('menuitem', { name: menuItemName })).toBeVisible();
+    await page.getByRole('menuitem', { name: menuItemName }).click();
+    await expect(page.locator(sel.alertDialog)).toBeVisible({ timeout: 3_000 });
   }).toPass({ timeout: 10_000 });
-
-  await page.getByRole('menuitem', { name: menuItemName }).click();
 
   const dialog = page.locator(sel.alertDialog);
 
-  await expect(dialog).toBeVisible({ timeout: 5_000 });
   await dialog.getByRole('button', { name: confirmButtonName }).click();
 }
 
@@ -52,11 +51,13 @@ async function executeBannerAction(
   buttonName: string,
   confirmButtonName: string
 ) {
-  await page.getByRole('button', { name: buttonName, exact: true }).click();
+  await expect(async () => {
+    await page.getByRole('button', { name: buttonName, exact: true }).click();
+    await expect(page.locator(sel.alertDialog)).toBeVisible({ timeout: 3_000 });
+  }).toPass({ timeout: 10_000 });
 
   const dialog = page.locator(sel.alertDialog);
 
-  await expect(dialog).toBeVisible({ timeout: 5_000 });
   await dialog.getByRole('button', { name: confirmButtonName }).click();
 }
 

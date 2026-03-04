@@ -1,6 +1,6 @@
 'use client';
 
-import { Fragment, useCallback, useRef, useState } from 'react';
+import { Fragment, useRef, useState } from 'react';
 
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -38,12 +38,9 @@ function BuilderSidebarContent({ onItemSelect }: { onItemSelect?: (() => void) |
     itemIds: state.questions.map((q) => q.id),
     containerRef: listRef,
     itemIdAttribute: ITEM_ID_ATTR,
-    onReorder: useCallback(
-      (newIds: string[]) => {
-        reorderQuestions(newIds);
-      },
-      [reorderQuestions]
-    ),
+    onReorder: (newIds: string[]) => {
+      reorderQuestions(newIds);
+    },
   });
 
   const {
