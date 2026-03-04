@@ -47,6 +47,21 @@ const variants = {
   }),
 };
 
+function WizardStep({ direction, children }: { direction: Direction; children: React.ReactNode }) {
+  return (
+    <motion.div
+      custom={direction}
+      variants={variants}
+      initial="enter"
+      animate="center"
+      exit="exit"
+      transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
 interface CreateProjectWizardProps {
   userId: string;
 }
@@ -167,15 +182,7 @@ export function CreateProjectWizard({ userId }: CreateProjectWizardProps) {
       <form onSubmit={form.handleSubmit(onSubmit)} onKeyDown={handleFormKeyDown} className="w-full">
         <AnimatePresence mode="wait" custom={direction}>
           {step === 1 && (
-            <motion.div
-              key="step-1"
-              custom={direction}
-              variants={variants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-            >
+            <WizardStep key="step-1" direction={direction}>
               <WizardStepLayout
                 stepNumber={1}
                 title={t('projects.create.steps.name.title')}
@@ -212,19 +219,11 @@ export function CreateProjectWizard({ userId }: CreateProjectWizardProps) {
                   )}
                 />
               </WizardStepLayout>
-            </motion.div>
+            </WizardStep>
           )}
 
           {step === 2 && (
-            <motion.div
-              key="step-2"
-              custom={direction}
-              variants={variants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-            >
+            <WizardStep key="step-2" direction={direction}>
               <WizardStepLayout
                 stepNumber={2}
                 title={t('projects.create.steps.summary.title')}
@@ -263,19 +262,11 @@ export function CreateProjectWizard({ userId }: CreateProjectWizardProps) {
                   )}
                 />
               </WizardStepLayout>
-            </motion.div>
+            </WizardStep>
           )}
 
           {step === 3 && (
-            <motion.div
-              key="step-3"
-              custom={direction}
-              variants={variants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-            >
+            <WizardStep key="step-3" direction={direction}>
               <WizardStepLayout
                 stepNumber={3}
                 title={t('projects.create.steps.description.title')}
@@ -295,19 +286,11 @@ export function CreateProjectWizard({ userId }: CreateProjectWizardProps) {
                   />
                 </FormItem>
               </WizardStepLayout>
-            </motion.div>
+            </WizardStep>
           )}
 
           {step === 4 && !projectId && (
-            <motion.div
-              key="step-4"
-              custom={direction}
-              variants={variants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-            >
+            <WizardStep key="step-4" direction={direction}>
               <WizardStepLayout
                 stepNumber={4}
                 title={t('projects.create.steps.confirm.title')}
@@ -345,26 +328,18 @@ export function CreateProjectWizard({ userId }: CreateProjectWizardProps) {
                   ) : null}
                 </div>
               </WizardStepLayout>
-            </motion.div>
+            </WizardStep>
           )}
 
           {step === 4 && projectId && (
-            <motion.div
-              key="step-4-done"
-              custom={direction}
-              variants={variants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-            >
+            <WizardStep key="step-4-done" direction={direction}>
               <WizardImageStep
                 projectId={projectId}
                 userId={userId}
                 projectName={projectName}
                 onDone={handleDone}
               />
-            </motion.div>
+            </WizardStep>
           )}
         </AnimatePresence>
       </form>

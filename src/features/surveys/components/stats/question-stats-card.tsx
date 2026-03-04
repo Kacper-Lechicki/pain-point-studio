@@ -9,7 +9,6 @@ import { QuestionConfigDetails } from '@/features/surveys/components/dashboard/q
 import { ChoiceDistributionChart } from '@/features/surveys/components/stats/answer-charts/choice-distribution-chart';
 import { RatingDistributionChart } from '@/features/surveys/components/stats/answer-charts/rating-distribution-chart';
 import { ShortTextChart } from '@/features/surveys/components/stats/answer-charts/short-text-chart';
-import { TextAnswersList } from '@/features/surveys/components/stats/answer-charts/text-answers-list';
 import { YesNoChart } from '@/features/surveys/components/stats/answer-charts/yes-no-chart';
 import { QUESTION_TYPE_ICONS, QUESTION_TYPE_LABEL_KEYS } from '@/features/surveys/config';
 import { computeInsight } from '@/features/surveys/lib/compute-insight';
@@ -32,7 +31,7 @@ export const QuestionStatsCard = ({ question, index }: QuestionStatsCardProps) =
   const renderChart = () => {
     switch (question.type) {
       case 'open_text':
-        return <TextAnswersList answers={question.answers} />;
+        return <ShortTextChart answers={question.answers} />;
       case 'short_text':
         return <ShortTextChart answers={question.answers} />;
       case 'multiple_choice':

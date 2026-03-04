@@ -36,6 +36,19 @@ interface ProjectDetailTabsProps {
   onInsightsChanged: (insights: ProjectInsight[]) => void;
 }
 
+function TabCount({ count }: { count: number }) {
+  if (count === 0) {
+    return null;
+  }
+
+  return (
+    <>
+      {' '}
+      <span className="text-muted-foreground text-xs tabular-nums">({count})</span>
+    </>
+  );
+}
+
 export function ProjectDetailTabs({
   project,
   surveys,
@@ -74,40 +87,23 @@ export function ProjectDetailTabs({
     router.push(getCreateSurveyUrl(project.id));
   };
 
+  const activeNotesCount = notesMeta.filter((n) => !n.deleted_at).length;
+
   return (
     <Tabs value={activeTab} onValueChange={handleTabChange}>
       <TabsList variant="line">
         <TabsTrigger value="overview">{t('projects.detail.tabs.overview')}</TabsTrigger>
         <TabsTrigger value="surveys">
           {t('projects.detail.tabs.research')}
-          {surveys.length > 0 && (
-            <>
-              {' '}
-              <span className="text-muted-foreground text-xs tabular-nums">({surveys.length})</span>
-            </>
-          )}
+          <TabCount count={surveys.length} />
         </TabsTrigger>
         <TabsTrigger value="insights">
           {t('projects.detail.tabs.insights')}
-          {insights.length > 0 && (
-            <>
-              {' '}
-              <span className="text-muted-foreground text-xs tabular-nums">
-                ({insights.length})
-              </span>
-            </>
-          )}
+          <TabCount count={insights.length} />
         </TabsTrigger>
         <TabsTrigger value="notes">
           {t('projects.detail.tabs.notes')}
-          {notesMeta.filter((n) => !n.deleted_at).length > 0 && (
-            <>
-              {' '}
-              <span className="text-muted-foreground text-xs tabular-nums">
-                ({notesMeta.filter((n) => !n.deleted_at).length})
-              </span>
-            </>
-          )}
+          <TabCount count={activeNotesCount} />
         </TabsTrigger>
       </TabsList>
 

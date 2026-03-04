@@ -25,6 +25,52 @@ interface BuilderSidebarProps {
 
 const ITEM_ID_ATTR = 'data-question-id';
 
+function DragGhostOverlay({
+  question,
+  index,
+  ghostPosition,
+  ghostWidth,
+}: {
+  question: { type: string; text: string };
+  index: number;
+  ghostPosition: { x: number; y: number };
+  ghostWidth: number | null;
+}) {
+  const t = useTranslations();
+  const TypeIcon = QUESTION_TYPE_ICONS[question.type as keyof typeof QUESTION_TYPE_ICONS];
+  const displayText = question.text.trim() || t('surveys.builder.untitledQuestion');
+
+  return createPortal(
+    <div
+      role="presentation"
+      aria-hidden
+      className="bg-background pointer-events-none fixed top-0 left-0 z-50 flex min-h-10 items-center gap-2 rounded-lg px-2 shadow-lg md:min-h-9"
+      style={{
+        transform: `translate3d(${ghostPosition.x}px, ${ghostPosition.y}px, 0)`,
+        width: ghostWidth || 'auto',
+        minWidth: 200,
+        willChange: 'transform',
+      }}
+    >
+      <span className="text-muted-foreground size-4 shrink-0" />
+      <span className="text-muted-foreground shrink-0 text-xs font-medium tabular-nums">
+        {index + 1}.
+      </span>
+      <TypeIcon className="text-muted-foreground size-4 shrink-0" />
+      <span
+        className={cn(
+          'min-w-0 flex-1 truncate text-xs',
+          question.text.trim() ? 'text-foreground' : 'text-muted-foreground italic'
+        )}
+      >
+        {displayText}
+      </span>
+      <span className="size-9 shrink-0" />
+    </div>,
+    document.body
+  );
+}
+
 function BuilderSidebarContent({ onItemSelect }: { onItemSelect?: (() => void) | undefined }) {
   const t = useTranslations();
 
@@ -124,42 +170,15 @@ function BuilderSidebarContent({ onItemSelect }: { onItemSelect?: (() => void) |
             return null;
           }
 
-          const TypeIcon = QUESTION_TYPE_ICONS[question.type];
-          const displayText = question.text.trim() || t('surveys.builder.untitledQuestion');
           const index = state.questions.findIndex((q) => q.id === draggedId);
 
-          return createPortal(
-            <div
-              role="presentation"
-              aria-hidden
-              className="bg-background pointer-events-none fixed top-0 left-0 z-50 flex min-h-10 items-center gap-2 rounded-lg px-2 shadow-lg md:min-h-9"
-              style={{
-                transform: `translate3d(${ghostPosition.x}px, ${ghostPosition.y}px, 0)`,
-                width: ghostWidth || 'auto',
-                minWidth: 200,
-                willChange: 'transform',
-              }}
-            >
-              <span className="text-muted-foreground size-4 shrink-0" />
-
-              <span className="text-muted-foreground shrink-0 text-xs font-medium tabular-nums">
-                {index + 1}.
-              </span>
-
-              <TypeIcon className="text-muted-foreground size-4 shrink-0" />
-
-              <span
-                className={cn(
-                  'min-w-0 flex-1 truncate text-xs',
-                  question.text.trim() ? 'text-foreground' : 'text-muted-foreground italic'
-                )}
-              >
-                {displayText}
-              </span>
-
-              <span className="size-9 shrink-0" />
-            </div>,
-            document.body
+          return (
+            <DragGhostOverlay
+              question={question}
+              index={index}
+              ghostPosition={ghostPosition}
+              ghostWidth={ghostWidth}
+            />
           );
         })()}
 
