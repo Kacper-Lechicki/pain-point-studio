@@ -3,6 +3,7 @@
 import * as React from 'react';
 
 import { CheckIcon, ChevronDownIcon, Search } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { FORM_CONTROL_SIZES } from '@/components/ui/form-variants';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -32,15 +33,19 @@ function Combobox({
   options,
   value,
   onValueChange,
-  placeholder = 'Select...',
-  searchPlaceholder = 'Search...',
-  emptyMessage = 'No results found.',
+  placeholder,
+  searchPlaceholder,
+  emptyMessage,
   optionLeading,
   className,
   'aria-label': ariaLabel,
   'aria-invalid': ariaInvalid,
   'data-testid': dataTestId,
 }: ComboboxProps) {
+  const t = useTranslations();
+  const resolvedPlaceholder = placeholder ?? t('common.ui.select');
+  const resolvedSearchPlaceholder = searchPlaceholder ?? t('common.ui.searchPlaceholder');
+  const resolvedEmptyMessage = emptyMessage ?? t('common.ui.noResults');
   const [open, setOpen] = React.useState(false);
   const [search, setSearch] = React.useState('');
   const inputRef = React.useRef<HTMLInputElement>(null);
@@ -87,7 +92,7 @@ function Combobox({
           <span className="flex min-w-0 flex-1 items-center gap-2">
             {selectedOption && optionLeading ? optionLeading(selectedOption) : null}
             <span className={cn('truncate', !selectedLabel && 'text-muted-foreground')}>
-              {selectedLabel ?? placeholder}
+              {selectedLabel ?? resolvedPlaceholder}
             </span>
           </span>
 
@@ -112,7 +117,7 @@ function Combobox({
               ref={inputRef}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder={searchPlaceholder}
+              placeholder={resolvedSearchPlaceholder}
               className="placeholder:text-muted-foreground flex h-9 w-full bg-transparent py-2 text-sm outline-none disabled:cursor-not-allowed disabled:opacity-50"
               onKeyDown={(e) => {
                 if (e.key === 'Escape') {
@@ -126,7 +131,7 @@ function Combobox({
 
         <div id={listboxId} role="listbox" className="max-h-[200px] overflow-y-auto p-1">
           {filtered.length === 0 ? (
-            <p className="text-muted-foreground py-4 text-center text-sm">{emptyMessage}</p>
+            <p className="text-muted-foreground py-4 text-center text-sm">{resolvedEmptyMessage}</p>
           ) : (
             filtered.map((option) => {
               const isSelected = value === option.value;

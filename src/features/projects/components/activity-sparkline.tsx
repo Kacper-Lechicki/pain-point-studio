@@ -2,6 +2,8 @@
 
 import { useId, useMemo } from 'react';
 
+import { useTranslations } from 'next-intl';
+
 import type { SparklinePoint } from '@/features/projects/actions/get-projects-list-extras';
 import { cn } from '@/lib/common/utils';
 
@@ -21,6 +23,7 @@ export function ActivitySparkline({
   fillWidth = false,
   className,
 }: ActivitySparklineProps) {
+  const t = useTranslations();
   const uniqueId = useId();
   const gradientId = `spark-${uniqueId.replace(/:/g, '')}`;
 
@@ -91,7 +94,7 @@ export function ActivitySparkline({
       width={svgWidth}
       {...svgProps}
       role="img"
-      aria-label={`${total} responses in the last 14 days`}
+      aria-label={t('projects.aria.sparklineResponses', { total })}
     >
       <defs>
         <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">

@@ -93,6 +93,32 @@
       "secondsAgo": "{seconds}s ago",
       "minutesAgo": "{minutes}m ago",
       "hoursAgo": "{hours}h ago"
+    },
+    "aria": {
+      "loading": "Loading",
+      "clearSearch": "Clear search",
+      "pagination": "Pagination",
+      "scrollToTop": "Scroll to top",
+      "toggleMenu": "Toggle menu",
+      "userMenu": "User menu",
+      "hour": "Hour",
+      "minute": "Minute",
+      "decrease": "Decrease {name}",
+      "increase": "Increase {name}"
+    },
+    "ui": {
+      "copy": "Copy",
+      "copied": "Copied",
+      "select": "Select...",
+      "searchPlaceholder": "Search...",
+      "noResults": "No results found.",
+      "pickDateTime": "Pick a date & time"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "back": "Back",
+      "save": "Save"
     }
   },
   "auth": {
@@ -314,7 +340,6 @@
       "stepIndicator": "Step {current} of {total}",
       "navigation": {
         "next": "Next",
-        "back": "Back",
         "createSurvey": "Create Survey"
       },
       "success": "Survey created."
@@ -837,6 +862,9 @@
     }
   },
   "projects": {
+    "aria": {
+      "sparklineResponses": "{total} responses in the last 14 days"
+    },
     "insightTypes": {
       "strength": "Strength",
       "opportunity": "Opportunity",
@@ -1314,14 +1342,9 @@
       "createSuccess": "Insight added.",
       "updateSuccess": "Insight updated.",
       "deleteSuccess": "Insight deleted.",
-      "saveNote": "Save",
-      "cancelNote": "Cancel",
       "confirmDeleteTitle": "Delete insight?",
       "confirmDeleteDescription": "This insight will be permanently deleted.",
-      "confirmDeleteAction": "Delete",
-      "selectType": "Type",
-      "editNote": "Edit",
-      "deleteNote": "Delete"
+      "selectType": "Type"
     },
     "insights": {
       "addInsight": "Add Insight",
@@ -1522,7 +1545,6 @@
     "unpinSidebar": "Unpin sidebar",
     "showSubpanel": "Show secondary panel",
     "hideSubpanel": "Hide secondary panel",
-    "back": "Back",
     "projectDetails": "Project Details",
     "surveyDetails": "Survey Details",
     "profilePreview": "Profile",
@@ -1729,6 +1751,29 @@
         "chart": {
           "visitors": "Responses "
         }
+      },
+      "months": {
+        "january": "January",
+        "february": "February",
+        "march": "March",
+        "april": "April",
+        "may": "May",
+        "june": "June"
+      },
+      "days": {
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat",
+        "sun": "Sun"
+      },
+      "data": {
+        "price": "Price",
+        "speed": "Speed",
+        "ux": "UX",
+        "support": "Support"
       }
     },
     "components": {

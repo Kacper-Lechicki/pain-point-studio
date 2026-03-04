@@ -367,7 +367,7 @@ export function MobileNavSubLevel({
             className={SIDEBAR_NAV_ITEM_CLASSES}
           >
             <ChevronLeft className="size-4 shrink-0" aria-hidden />
-            <span className="truncate">{t('sidebar.back')}</span>
+            <span className="truncate">{t('common.actions.back')}</span>
           </button>
         )}
       </div>

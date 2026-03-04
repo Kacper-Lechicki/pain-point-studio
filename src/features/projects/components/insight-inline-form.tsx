@@ -163,11 +163,11 @@ export function InsightInlineForm({
 
       <div className="flex items-center gap-1.5">
         <Button size="sm" onClick={handleSubmit} disabled={action.isLoading || !content.trim()}>
-          {t('projects.scorecard.saveNote' as MessageKey)}
+          {t('common.actions.save')}
         </Button>
 
         <Button variant="ghost" size="sm" onClick={handleCancel}>
-          {t('projects.scorecard.cancelNote' as MessageKey)}
+          {t('common.cancel')}
         </Button>
       </div>
     </div>

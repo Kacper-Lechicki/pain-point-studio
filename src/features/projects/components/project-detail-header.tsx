@@ -372,7 +372,7 @@ export function ProjectDetailHeader({
                     variant="ghost"
                     size="icon-xs"
                     onClick={cancelEdit}
-                    aria-label={t('projects.detail.about.cancel')}
+                    aria-label={t('common.cancel')}
                   >
                     <X className="size-3.5" />
                   </Button>
@@ -439,7 +439,7 @@ export function ProjectDetailHeader({
                   variant="ghost"
                   size="icon-xs"
                   onClick={cancelEdit}
-                  aria-label={t('projects.detail.about.cancel')}
+                  aria-label={t('common.cancel')}
                 >
                   <X className="size-3.5" />
                 </Button>

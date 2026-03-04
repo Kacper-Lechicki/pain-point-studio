@@ -2,9 +2,10 @@ import { cn } from '@/lib/common/utils';
 
 interface SpinnerProps {
   className?: string;
+  'aria-label'?: string;
 }
 
-const Spinner = ({ className }: SpinnerProps) => {
+const Spinner = ({ className, 'aria-label': ariaLabel = 'Loading' }: SpinnerProps) => {
   return (
     <div
       className={cn(
@@ -12,7 +13,7 @@ const Spinner = ({ className }: SpinnerProps) => {
         className
       )}
       role="status"
-      aria-label="Loading"
+      aria-label={ariaLabel}
     />
   );
 };

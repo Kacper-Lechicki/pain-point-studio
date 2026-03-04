@@ -3,6 +3,7 @@
 import * as React from 'react';
 
 import { Minus, Plus } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,6 +27,7 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
     { value, onChange, onBlur, name, min, max, step = 1, placeholder, disabled, className },
     ref
   ) => {
+    const t = useTranslations();
     const canDecrement = value !== null && (min === undefined || value - step >= min);
     const canIncrement = value === null || max === undefined || value + step <= max;
 
@@ -126,7 +128,7 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
           disabled={disabled || !canDecrement}
           onClick={handleDecrement}
           tabIndex={-1}
-          aria-label={`Decrease${name ? ` ${name}` : ''}`}
+          aria-label={t('common.aria.decrease', { name: name ?? '' })}
         >
           <Minus className="size-4" />
         </Button>
@@ -156,7 +158,7 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
           disabled={disabled || !canIncrement}
           onClick={handleIncrement}
           tabIndex={-1}
-          aria-label={`Increase${name ? ` ${name}` : ''}`}
+          aria-label={t('common.aria.increase', { name: name ?? '' })}
         >
           <Plus className="size-4" />
         </Button>

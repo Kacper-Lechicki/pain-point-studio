@@ -11,10 +11,11 @@ import {
   localizeChartConfig,
 } from '@/features/marketing/config';
 
-const formatDayTick = (value: string): string => value.slice(0, 3);
-
 const ResponsesGrowthChart = () => {
   const t = useTranslations();
+
+  const formatDayTick = (value: string): string =>
+    t(`marketing.charts.days.${value}` as Parameters<typeof t>[0]);
   const title = t('marketing.charts.responsesGrowth.title');
   const description = t('marketing.charts.responsesGrowth.description');
 

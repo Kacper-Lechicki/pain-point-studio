@@ -258,7 +258,7 @@ export function CreateSurveyWizard({
                   current: 2,
                   total: TOTAL_STEPS,
                 })}
-                backLabel={t('surveys.create.navigation.back')}
+                backLabel={t('common.actions.back')}
                 title={t('surveys.create.steps.description.title')}
                 hint={t('surveys.create.steps.description.hint')}
                 onNext={handleNextFromDescription}
@@ -315,7 +315,7 @@ export function CreateSurveyWizard({
                   current: 3,
                   total: TOTAL_STEPS,
                 })}
-                backLabel={t('surveys.create.navigation.back')}
+                backLabel={t('common.actions.back')}
                 title={t('surveys.create.steps.confirm.title')}
                 hint={t('surveys.create.steps.confirm.hint')}
                 onNext={() => {}}

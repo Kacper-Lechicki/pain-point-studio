@@ -154,11 +154,11 @@ export function KanbanCard({
             onClick={handleSaveEdit}
             disabled={updateAction.isLoading || !editContent.trim()}
           >
-            {t('projects.scorecard.saveNote' as MessageKey)}
+            {t('common.actions.save')}
           </Button>
 
           <Button variant="ghost" size="sm" onClick={handleCancelEdit}>
-            {t('projects.scorecard.cancelNote' as MessageKey)}
+            {t('common.cancel')}
           </Button>
         </div>
       </div>
@@ -213,7 +213,7 @@ export function KanbanCard({
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={handleStartEdit}>
               <Pencil className="size-3.5" />
-              {t('projects.scorecard.editNote' as MessageKey)}
+              {t('common.actions.edit')}
             </DropdownMenuItem>
 
             {onMoveToType && (
@@ -245,7 +245,7 @@ export function KanbanCard({
 
             <DropdownMenuItem variant="destructive" onClick={() => setConfirmDeleteOpen(true)}>
               <Trash2 className="size-3.5" />
-              {t('projects.scorecard.deleteNote' as MessageKey)}
+              {t('common.actions.delete')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -257,7 +257,7 @@ export function KanbanCard({
         onConfirm={handleConfirmDelete}
         title={t('projects.scorecard.confirmDeleteTitle' as MessageKey)}
         description={t('projects.scorecard.confirmDeleteDescription' as MessageKey)}
-        confirmLabel={t('projects.scorecard.confirmDeleteAction' as MessageKey)}
+        confirmLabel={t('common.actions.delete')}
         variant="destructive"
       />
     </>
