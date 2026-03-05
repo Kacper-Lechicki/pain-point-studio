@@ -313,7 +313,7 @@ export function InlineTextSearch({ responses }: InlineTextSearchProps) {
           <button
             type="button"
             onClick={clearFilters}
-            className="text-muted-foreground hover:text-foreground flex items-center gap-0.5 text-[10px] transition-colors"
+            className="text-muted-foreground md:hover:text-foreground flex items-center gap-0.5 text-[10px] transition-colors"
           >
             <X className="size-2.5" />
             {t('surveys.stats.dialog.clearAll' as Parameters<typeof t>[0])}

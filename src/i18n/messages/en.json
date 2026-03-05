@@ -250,7 +250,8 @@
         "type": {
           "response": "New response",
           "survey_completed": "Survey completed",
-          "survey_activated": "Survey activated"
+          "survey_activated": "Survey activated",
+          "survey_started": "Survey started"
         }
       },
       "charts": {
@@ -1205,7 +1206,8 @@
         "type": {
           "response": "New response",
           "survey_completed": "Survey completed",
-          "survey_activated": "Survey activated"
+          "survey_activated": "Survey activated",
+          "survey_started": "Survey started"
         }
       },
       "notes": {
@@ -1376,6 +1378,8 @@
       "active": "active",
       "draft": "draft",
       "completed": "completed",
+      "cancelled": "cancelled",
+      "archived": "archived",
       "last7d": "7d",
       "responseTrend": "Responses Over Time",
       "noResponses": "No responses yet",
@@ -1387,8 +1391,19 @@
       "activityType": {
         "response": "New response",
         "survey_completed": "Survey completed",
-        "survey_activated": "Survey published"
-      }
+        "survey_activated": "Survey published",
+        "survey_started": "Survey started"
+      },
+      "avgTime": "Avg Time",
+      "avgTimeValue": "{minutes}m {seconds}s",
+      "avgTimeNone": "\u2014",
+      "lastResponse": "Last response",
+      "lastResponseAgo": "{distance} ago",
+      "lastResponseNone": "\u2014",
+      "breakdownLabel": "Breakdown",
+      "breakdownCompleted": "completed",
+      "breakdownInProgress": "in progress",
+      "breakdownAbandoned": "abandoned"
     },
     "journey": {
       "sectionLabel": "Research Journey",

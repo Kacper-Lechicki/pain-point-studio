@@ -50,7 +50,7 @@ interface ListToolbarProps<TSortBy extends string> {
 }
 
 const FILTER_ITEM_CLASS =
-  'flex cursor-pointer items-center gap-2 rounded-lg border border-transparent px-2 py-1.5 text-sm outline-hidden transition-colors select-none hover:border-dashed hover:border-foreground/30 hover:text-foreground';
+  'flex cursor-pointer items-center gap-2 rounded-lg border border-transparent px-2 py-1.5 text-sm outline-hidden transition-colors select-none md:hover:border-dashed md:hover:border-foreground/30 md:hover:text-foreground';
 
 export function ListToolbar<TSortBy extends string>({
   searchQuery,

@@ -76,7 +76,7 @@ export function ImageUrlPrompt({ position, onConfirm, onCancel }: ImageUrlPrompt
         <button
           type="button"
           onClick={onCancel}
-          className="text-muted-foreground hover:text-foreground ml-auto rounded-sm p-0.5 transition-colors"
+          className="text-muted-foreground md:hover:text-foreground ml-auto rounded-sm p-0.5 transition-colors"
         >
           <X className="size-3.5" />
         </button>
@@ -101,14 +101,14 @@ export function ImageUrlPrompt({ position, onConfirm, onCancel }: ImageUrlPrompt
         <button
           type="button"
           onClick={onCancel}
-          className="text-muted-foreground hover:bg-secondary h-7 rounded-md px-2.5 text-xs font-medium transition-colors"
+          className="text-muted-foreground md:hover:bg-secondary h-7 rounded-md px-2.5 text-xs font-medium transition-colors"
         >
           Cancel
         </button>
         <button
           type="button"
           onClick={handleConfirm}
-          className="bg-primary text-primary-foreground hover:bg-primary/90 h-7 rounded-md px-2.5 text-xs font-medium transition-colors"
+          className="bg-primary text-primary-foreground md:hover:bg-primary/90 h-7 rounded-md px-2.5 text-xs font-medium transition-colors"
         >
           Insert
         </button>

@@ -64,7 +64,7 @@ export function NotesTrashSection({
             variant="ghost"
             size="icon-xs"
             onClick={() => setConfirmEmptyOpen(true)}
-            className="text-muted-foreground hover:text-destructive"
+            className="text-muted-foreground md:hover:text-destructive"
           >
             <Trash2 className="size-3" />
           </Button>

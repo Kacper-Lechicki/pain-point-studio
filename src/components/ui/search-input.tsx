@@ -53,7 +53,7 @@ export function SearchInput({
           type="button"
           onClick={() => onChange('')}
           className={cn(
-            'text-muted-foreground hover:text-foreground absolute top-1/2 -translate-y-1/2 transition-colors',
+            'text-muted-foreground md:hover:text-foreground absolute top-1/2 -translate-y-1/2 transition-colors',
             s.clearPos
           )}
           aria-label={t('common.aria.clearSearch')}

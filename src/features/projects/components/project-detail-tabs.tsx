@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import type { SurveySignalData } from '@/features/projects/actions/get-project-signals-data';
 import { ProjectInsightsTab } from '@/features/projects/components/project-insights-tab';
 import { ProjectNotesTab } from '@/features/projects/components/project-notes-tab';
 import { ProjectOverviewTab } from '@/features/projects/components/project-overview-tab';
@@ -30,6 +31,7 @@ interface ProjectDetailTabsProps {
   notesMeta: ProjectNoteMeta[];
   noteFolders: ProjectNoteFolder[];
   overviewStats: ProjectOverviewStats;
+  signalsData: SurveySignalData[];
   onInsightCreated: (insight: ProjectInsight) => void;
   onInsightUpdated: (insight: ProjectInsight) => void;
   onInsightDeleted: (insightId: string) => void;
@@ -56,6 +58,7 @@ export function ProjectDetailTabs({
   notesMeta,
   noteFolders,
   overviewStats,
+  signalsData,
   onInsightCreated,
   onInsightUpdated,
   onInsightDeleted,
@@ -113,6 +116,7 @@ export function ProjectDetailTabs({
           surveys={surveys}
           insights={insights}
           overviewStats={overviewStats}
+          signalsData={signalsData}
         />
       </TabsContent>
 

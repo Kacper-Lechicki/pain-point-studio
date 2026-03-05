@@ -6,7 +6,7 @@ export interface TimelinePoint {
 }
 
 export interface ActivityItem {
-  type: 'response' | 'survey_completed' | 'survey_activated';
+  type: 'response' | 'survey_completed' | 'survey_activated' | 'survey_started';
   title: string;
   timestamp: string;
   surveyId: string;

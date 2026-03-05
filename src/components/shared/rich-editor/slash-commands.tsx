@@ -182,8 +182,8 @@ function SlashCommandList({ items, command, ref }: SlashCommandListProps) {
 
   if (items.length === 0) {
     return (
-      <div className="bg-popover text-popover-foreground rounded-md border p-2 shadow-md">
-        <p className="text-muted-foreground px-2 py-1 text-sm">No results</p>
+      <div className="bg-popover text-popover-foreground rounded-md border p-1 shadow-md">
+        <p className="text-muted-foreground py-6 text-center text-sm">No results</p>
       </div>
     );
   }
@@ -202,15 +202,15 @@ function SlashCommandList({ items, command, ref }: SlashCommandListProps) {
             key={item.title}
             type="button"
             data-active={isActive}
-            className={`flex w-full items-center gap-3 rounded-md px-2 py-1.5 text-left text-sm transition-colors ${
-              isActive ? 'bg-accent text-accent-foreground' : 'hover:bg-accent/50'
+            className={`flex min-h-10 w-full cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-left text-sm transition-colors md:min-h-9 ${
+              isActive ? 'bg-muted text-foreground' : 'md:hover:bg-muted'
             }`}
             onClick={() => command(item)}
             onMouseEnter={() => setSelectedIndex(index)}
           >
-            <div className="bg-muted flex size-8 shrink-0 items-center justify-center rounded-md">
-              <Icon className="size-4" />
-            </div>
+            <Icon
+              className={`size-4 shrink-0 ${isActive ? 'text-foreground' : 'text-muted-foreground'}`}
+            />
             <div className="min-w-0 flex-1">
               <p className="truncate font-medium">{item.title}</p>
               <p className="text-muted-foreground truncate text-xs">{item.description}</p>

@@ -41,7 +41,7 @@ function ToolbarButton({
       className={`flex size-7 items-center justify-center rounded-md transition-colors ${
         isActive
           ? 'bg-secondary text-foreground'
-          : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
+          : 'text-muted-foreground md:hover:bg-secondary md:hover:text-foreground'
       }`}
     >
       <Icon className="size-3.5" />

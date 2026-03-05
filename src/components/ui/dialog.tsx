@@ -79,7 +79,7 @@ function DialogHeader({ className, children, ...props }: React.ComponentProps<'d
         <Button
           variant="ghost"
           size="icon-xs"
-          className="text-muted-foreground hover:text-foreground -my-1 shrink-0 in-data-hide-header-close:hidden"
+          className="text-muted-foreground md:hover:text-foreground -my-1 shrink-0 in-data-hide-header-close:hidden"
         >
           <XIcon className="size-4" />
           <span className="sr-only">{t('common.close')}</span>

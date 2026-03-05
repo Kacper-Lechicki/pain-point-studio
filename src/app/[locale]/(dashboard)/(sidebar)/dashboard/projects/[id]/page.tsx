@@ -10,6 +10,7 @@ import { getProject } from '@/features/projects/actions/get-project';
 import { getProjectInsights } from '@/features/projects/actions/get-project-insights';
 import { getProjectNotes } from '@/features/projects/actions/get-project-notes';
 import { getProjectOverviewStats } from '@/features/projects/actions/get-project-overview-stats';
+import { getProjectSignalsData } from '@/features/projects/actions/get-project-signals-data';
 import { ProjectDashboardPage } from '@/features/projects/components/project-dashboard-page';
 import { getProjectSurveys } from '@/features/surveys/actions';
 
@@ -26,7 +27,7 @@ const EMPTY_OVERVIEW_STATS = {
   lastResponseAt: null,
   recentActivity: [],
   responsesTimeline: [],
-  surveyStatusDistribution: { draft: 0, active: 0, completed: 0 },
+  surveyStatusDistribution: { draft: 0, active: 0, completed: 0, cancelled: 0, archived: 0 },
   completionBreakdown: { completed: 0, inProgress: 0, abandoned: 0 },
 };
 
@@ -43,13 +44,14 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
     notFound();
   }
 
-  const [insightsResult, statsResult, surveysResult, notesResult, foldersResult] =
+  const [insightsResult, statsResult, surveysResult, notesResult, foldersResult, signalsResult] =
     await Promise.allSettled([
       getProjectInsights(id),
       getProjectOverviewStats(id),
       getProjectSurveys(id),
       getProjectNotes(id),
       getNoteFolders(id),
+      getProjectSignalsData(id),
     ]);
 
   return (
@@ -65,6 +67,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
           notesMeta={settled(notesResult, []) ?? []}
           noteFolders={settled(foldersResult, []) ?? []}
           overviewStats={settled(statsResult, null) ?? EMPTY_OVERVIEW_STATS}
+          signalsData={settled(signalsResult, [])}
         />
       </PageTransition>
     </>

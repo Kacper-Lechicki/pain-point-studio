@@ -43,7 +43,7 @@ export function TextResponseList({ items, highlightFn }: TextResponseListProps) 
             <button
               type="button"
               onClick={() => toggle(i)}
-              className="border-border/60 bg-muted hover:bg-muted/80 group flex w-full cursor-pointer flex-col rounded-lg border px-3 py-2 text-left transition-colors sm:px-4"
+              className="border-border/60 bg-muted md:hover:bg-muted/80 group flex w-full cursor-pointer flex-col rounded-lg border px-3 py-2 text-left transition-colors sm:px-4"
             >
               <p
                 className={cn(

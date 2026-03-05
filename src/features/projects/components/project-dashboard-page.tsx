@@ -11,6 +11,7 @@ import { useBreadcrumbSegment } from '@/features/dashboard/components/layout/bre
 import { useSubPanelLinks } from '@/features/dashboard/components/layout/sub-panel-items-context';
 import { DASHBOARD_PAGE_BODY_GAP_TOP } from '@/features/dashboard/config/layout';
 import type { ProjectOwner } from '@/features/projects/actions/get-project';
+import type { SurveySignalData } from '@/features/projects/actions/get-project-signals-data';
 import { EditProjectDialog } from '@/features/projects/components/edit-project-dialog';
 import { ProjectDetailHeader } from '@/features/projects/components/project-detail-header';
 import { ProjectDetailTabs } from '@/features/projects/components/project-detail-tabs';
@@ -36,6 +37,7 @@ interface ProjectDashboardPageProps {
   notesMeta: ProjectNoteMeta[];
   noteFolders: ProjectNoteFolder[];
   overviewStats: ProjectOverviewStats;
+  signalsData: SurveySignalData[];
 }
 
 export function ProjectDashboardPage({
@@ -46,6 +48,7 @@ export function ProjectDashboardPage({
   notesMeta,
   noteFolders,
   overviewStats,
+  signalsData,
 }: ProjectDashboardPageProps) {
   const [insights, setInsights] = useState(initialInsights);
 
@@ -140,6 +143,7 @@ export function ProjectDashboardPage({
           notesMeta={notesMeta}
           noteFolders={noteFolders}
           overviewStats={overviewStats}
+          signalsData={signalsData}
           onInsightCreated={handleInsightCreated}
           onInsightUpdated={handleInsightUpdated}
           onInsightDeleted={handleInsightDeleted}

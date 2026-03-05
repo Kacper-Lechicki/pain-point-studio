@@ -101,7 +101,7 @@ export function Breadcrumbs() {
                 ) : (
                   <Link
                     href={crumb.href as AppRoute}
-                    className="text-muted-foreground hover:text-foreground shrink-0 whitespace-nowrap transition-colors"
+                    className="text-muted-foreground md:hover:text-foreground shrink-0 whitespace-nowrap transition-colors"
                   >
                     {crumb.label}
                   </Link>

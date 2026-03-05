@@ -27,7 +27,7 @@ export function DashboardTimeFilter({ currentPeriod }: DashboardTimeFilterProps)
             'rounded-md border px-3 py-1.5 text-xs font-medium transition-colors',
             currentPeriod === period
               ? 'bg-primary text-primary-foreground border-transparent shadow-sm'
-              : 'text-muted-foreground hover:border-foreground/30 hover:text-foreground border-transparent hover:border-dashed'
+              : 'text-muted-foreground md:hover:border-foreground/30 md:hover:text-foreground border-transparent md:hover:border-dashed'
           )}
         >
           {LABELS[period]}

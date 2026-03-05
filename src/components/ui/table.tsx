@@ -59,7 +59,7 @@ function TableRow({
     <tr
       ref={ref}
       className={cn(
-        'border-border/50 hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors',
+        'border-border/50 md:hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors',
         className
       )}
       {...props}

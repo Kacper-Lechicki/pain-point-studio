@@ -185,7 +185,7 @@ export function ProjectImageUpload({
       >
         <ProjectAvatar imageUrl={imageUrl} name={projectName} size={48} />
 
-        <span className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
+        <span className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/50 opacity-0 transition-opacity md:group-hover:opacity-100">
           {isUploading ? (
             <Spinner className="size-4 text-white" />
           ) : (

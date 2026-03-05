@@ -84,7 +84,7 @@ export function OverviewResponseTrend({ timeline }: OverviewResponseTrendProps) 
                     'rounded-md border px-1.5 py-0.5 text-[10px] leading-none font-medium transition-colors',
                     range === r.value
                       ? 'bg-primary text-primary-foreground border-transparent shadow-sm'
-                      : 'text-muted-foreground hover:text-foreground border-transparent'
+                      : 'text-muted-foreground md:hover:text-foreground border-transparent'
                   )}
                 >
                   {r.value}

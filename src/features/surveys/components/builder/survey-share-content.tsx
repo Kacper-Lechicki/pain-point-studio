@@ -66,7 +66,7 @@ export function SurveyShareContent({
             type="button"
             onClick={handleDownloadQR}
             className={cn(
-              'text-muted-foreground hover:text-foreground flex items-center gap-1 text-[10px] transition-colors',
+              'text-muted-foreground md:hover:text-foreground flex items-center gap-1 text-[10px] transition-colors',
               'focus-visible:ring-ring focus-visible:ring-1 focus-visible:outline-none'
             )}
           >

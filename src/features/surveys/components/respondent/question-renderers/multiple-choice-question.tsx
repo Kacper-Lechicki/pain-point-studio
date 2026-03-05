@@ -59,7 +59,7 @@ export const MultipleChoiceQuestion = ({
               'flex min-h-10 w-full items-center gap-3 rounded-lg border px-4 py-2.5 text-left text-sm transition-colors md:min-h-9',
               isSelected
                 ? 'border-primary bg-primary/5 text-foreground'
-                : 'border-border text-foreground hover:bg-muted/50'
+                : 'border-border text-foreground md:hover:bg-muted/50'
             )}
           >
             <div

@@ -178,7 +178,7 @@ export function SurveyMetadataFields({
                 <button
                   type="button"
                   onClick={() => setCreateDialogOpen(true)}
-                  className="text-muted-foreground hover:text-foreground text-sm underline underline-offset-2 transition-colors"
+                  className="text-muted-foreground md:hover:text-foreground text-sm underline underline-offset-2 transition-colors"
                 >
                   {t('surveys.create.newProject')}
                 </button>

@@ -79,7 +79,7 @@ export function BuilderTopBar({
           <div className="flex min-w-0 items-center gap-1.5">
             <Link
               href={projectSurveysUrl}
-              className="text-muted-foreground hover:text-foreground flex shrink-0 items-center gap-1.5 text-sm transition-colors"
+              className="text-muted-foreground md:hover:text-foreground flex shrink-0 items-center gap-1.5 text-sm transition-colors"
               aria-label={t('surveys.builder.backToSurveys')}
             >
               <ArrowLeft className="size-4 shrink-0" aria-hidden />
@@ -131,7 +131,7 @@ export function BuilderTopBar({
           <div className="flex min-h-11 items-center gap-1.5 px-3 py-2">
             <Link
               href={projectSurveysUrl}
-              className="text-muted-foreground hover:text-foreground flex shrink-0 items-center gap-1.5 text-xs transition-colors"
+              className="text-muted-foreground md:hover:text-foreground flex shrink-0 items-center gap-1.5 text-xs transition-colors"
               aria-label={t('surveys.builder.backToSurveys')}
             >
               <ArrowLeft className="size-3.5 shrink-0" aria-hidden />

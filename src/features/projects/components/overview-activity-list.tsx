@@ -17,12 +17,14 @@ const ACTIVITY_ICONS: Record<ActivityItem['type'], LucideIcon> = {
   response: MessageSquare,
   survey_completed: CheckCircle,
   survey_activated: Rocket,
+  survey_started: Rocket,
 };
 
 const ACTIVITY_ICON_COLORS: Record<ActivityItem['type'], string> = {
   response: 'text-chart-cyan',
   survey_completed: 'text-chart-emerald',
   survey_activated: 'text-chart-violet',
+  survey_started: 'text-chart-violet',
 };
 
 interface OverviewActivityListProps {
@@ -71,7 +73,7 @@ export function OverviewActivityList({ items, maxItems = 5 }: OverviewActivityLi
                     <Icon className={cn(iconColor, 'size-3.5')} />
                   </div>
                   <span className="text-muted-foreground min-w-0 flex-1 truncate text-xs">
-                    <span className="text-foreground font-medium group-hover:underline">
+                    <span className="text-foreground font-medium md:group-hover:underline">
                       {item.title}
                     </span>
                     {' \u00b7 '}

@@ -24,7 +24,7 @@ export const YesNoQuestion = ({ value, onChange }: YesNoQuestionProps) => {
           'flex min-h-12 flex-1 items-center justify-center gap-2 rounded-lg border text-sm font-medium transition-colors',
           value === true
             ? 'border-success bg-success/10 text-success'
-            : 'border-border text-foreground hover:bg-muted/50'
+            : 'border-border text-foreground md:hover:bg-muted/50'
         )}
       >
         <ThumbsUp className="size-4" />
@@ -40,7 +40,7 @@ export const YesNoQuestion = ({ value, onChange }: YesNoQuestionProps) => {
           'flex min-h-12 flex-1 items-center justify-center gap-2 rounded-lg border text-sm font-medium transition-colors',
           value === false
             ? 'border-destructive bg-destructive/10 text-destructive'
-            : 'border-border text-foreground hover:bg-muted/50'
+            : 'border-border text-foreground md:hover:bg-muted/50'
         )}
       >
         <ThumbsDown className="size-4" />

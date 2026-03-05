@@ -62,7 +62,7 @@ export function BuilderCenter() {
                   'flex size-7 items-center justify-center rounded-full border text-xs font-medium tabular-nums transition-colors',
                   isStepActive
                     ? 'bg-primary text-primary-foreground border-primary'
-                    : 'border-border text-muted-foreground hover:bg-accent hover:text-foreground hover:border-foreground/20'
+                    : 'border-border text-muted-foreground md:hover:bg-accent md:hover:text-foreground md:hover:border-foreground/20'
                 )}
                 aria-current={isStepActive ? 'step' : undefined}
               >

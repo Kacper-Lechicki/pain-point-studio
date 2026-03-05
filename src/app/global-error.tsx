@@ -18,7 +18,7 @@ export default function GlobalError({ reset }: { reset: () => void }) {
         <button
           type="button"
           onClick={reset}
-          className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium"
+          className="bg-primary text-primary-foreground md:hover:bg-primary/90 inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium"
         >
           <RotateCcw className="size-4" />
           Try again
