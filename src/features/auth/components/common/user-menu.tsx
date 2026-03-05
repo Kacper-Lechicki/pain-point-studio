@@ -71,7 +71,6 @@ const UserMenu = () => {
         toast.error(t(result.error as MessageKey));
         setIsSigningOut(false);
       } else {
-        toast.success(t('auth.signOutSuccess'));
         router.push(ROUTES.common.home);
         router.refresh();
       }

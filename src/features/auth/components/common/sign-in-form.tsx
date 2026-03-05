@@ -20,14 +20,12 @@ import { signInWithEmail } from '@/features/auth/actions';
 import { SignInSchema, signInSchema } from '@/features/auth/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import { Link, useRouter } from '@/i18n/routing';
-import type { MessageKey } from '@/i18n/types';
 
 const SignInForm = () => {
   const t = useTranslations();
   const router = useRouter();
 
   const { isLoading, execute } = useFormAction({
-    successMessage: 'auth.signInSuccess' as MessageKey,
     onSuccess: () => {
       router.push(ROUTES.common.dashboard);
       router.refresh();

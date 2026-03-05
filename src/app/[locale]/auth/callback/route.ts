@@ -104,9 +104,11 @@ export async function GET(
             ? 'emailChangeConfirmed'
             : type === 'recovery'
               ? 'passwordResetReady'
-              : 'signInSuccess';
+              : null;
 
-      redirectUrl.searchParams.set('toast', toastKey);
+      if (toastKey) {
+        redirectUrl.searchParams.set('toast', toastKey);
+      }
 
       return NextResponse.redirect(redirectUrl);
     }

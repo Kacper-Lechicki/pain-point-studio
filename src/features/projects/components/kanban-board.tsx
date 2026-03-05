@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from 'react';
 import { GripVertical } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { createPortal } from 'react-dom';
-import { toast } from 'sonner';
 
 import { moveInsight } from '@/features/projects/actions/move-insight';
 import { reorderInsights } from '@/features/projects/actions/reorder-insights';
@@ -162,14 +161,6 @@ export function KanbanBoard({
       newType: toColumn,
       targetColumnInsightIds: targetColumnIds,
       sourceColumnInsightIds: sourceColumnIds,
-    }).then((result) => {
-      if (result && !result.error) {
-        toast.success(
-          t('projects.insights.movedTo' as MessageKey, {
-            type: t(PILL_LABEL_KEYS[toColumn] as MessageKey),
-          })
-        );
-      }
     });
   };
 

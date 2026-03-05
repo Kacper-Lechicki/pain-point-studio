@@ -67,17 +67,6 @@ function applyOptimisticUpdate(prev: Project, action: ProjectAction): Project {
   }
 }
 
-/** Toast message key for each project action. */
-const ACTION_SUCCESS_KEYS: Record<ProjectAction, string> = {
-  complete: 'projects.detail.completeSuccess',
-  archive: 'projects.detail.archiveSuccess',
-  reopen: 'projects.detail.reopenSuccess',
-  restore: 'projects.detail.restoreSuccess',
-  trash: 'projects.detail.trashSuccess',
-  restoreTrash: 'projects.detail.restoreTrashSuccess',
-  permanentDelete: 'projects.detail.permanentDeleteSuccess',
-};
-
 export function useProjectDashboardActions({ initialProject }: UseProjectDashboardActionsParams) {
   const t = useTranslations();
   const router = useRouter();
@@ -124,8 +113,6 @@ export function useProjectDashboardActions({ initialProject }: UseProjectDashboa
       });
 
       if (result && !result.error) {
-        const { toast } = await import('sonner');
-        toast.success(t(ACTION_SUCCESS_KEYS.permanentDelete as MessageKey));
         router.push(ROUTES.dashboard.projects);
       }
 
@@ -141,10 +128,7 @@ export function useProjectDashboardActions({ initialProject }: UseProjectDashboa
       action: confirmAction,
     });
 
-    if (result && !result.error) {
-      const { toast } = await import('sonner');
-      toast.success(t(ACTION_SUCCESS_KEYS[confirmAction] as MessageKey));
-    } else {
+    if (result?.error) {
       // Revert on failure
       setProject(initialProject);
     }

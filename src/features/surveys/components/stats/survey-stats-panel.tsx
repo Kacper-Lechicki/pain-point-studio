@@ -4,7 +4,6 @@ import { useState, useTransition } from 'react';
 
 import { ChevronLeft, Inbox, Link2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
@@ -96,7 +95,6 @@ export const SurveyStatsPanel = ({ stats, survey }: SurveyStatsPanelProps) => {
 
       if (result.success) {
         setOptimisticStatus('completed');
-        toast.success(t('surveys.stats.surveyCompleted'));
       }
 
       setShowCompleteDialog(false);
@@ -109,7 +107,6 @@ export const SurveyStatsPanel = ({ stats, survey }: SurveyStatsPanelProps) => {
 
       if (result.success) {
         setOptimisticStatus('cancelled');
-        toast.success(t('surveys.stats.surveyCancelled'));
       }
 
       setShowCancelDialog(false);

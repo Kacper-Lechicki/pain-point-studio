@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-/** useRefresh hook: triggers router refresh with success toast. */
+/** useRefresh hook: triggers router refresh with pending state. */
 import { act, renderHook } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -7,19 +7,10 @@ import { useRefresh } from './use-refresh';
 
 const mocks = vi.hoisted(() => ({
   mockRefresh: vi.fn(),
-  mockSuccess: vi.fn(),
 }));
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ refresh: mocks.mockRefresh }),
-}));
-
-vi.mock('next-intl', () => ({
-  useTranslations: () => (key: string) => key,
-}));
-
-vi.mock('sonner', () => ({
-  toast: { success: mocks.mockSuccess },
 }));
 
 // ── useRefresh ───────────────────────────────────────────────────────
@@ -36,7 +27,7 @@ describe('useRefresh', () => {
     expect(typeof result.current.markSynced).toBe('function');
   });
 
-  it('should call router.refresh and toast.success when refresh is invoked', () => {
+  it('should call router.refresh when refresh is invoked', () => {
     const { result } = renderHook(() => useRefresh());
 
     act(() => {
@@ -44,7 +35,6 @@ describe('useRefresh', () => {
     });
 
     expect(mocks.mockRefresh).toHaveBeenCalled();
-    expect(mocks.mockSuccess).toHaveBeenCalledWith('common.dataRefreshed');
   });
 
   it('should initialise lastSyncedAt to roughly Date.now()', () => {
@@ -87,9 +77,8 @@ describe('useRefresh', () => {
     vi.restoreAllMocks();
   });
 
-  it('should not call router.refresh or show toast when markSynced is called', () => {
+  it('should not call router.refresh when markSynced is called', () => {
     mocks.mockRefresh.mockClear();
-    mocks.mockSuccess.mockClear();
 
     const { result } = renderHook(() => useRefresh());
 
@@ -98,6 +87,5 @@ describe('useRefresh', () => {
     });
 
     expect(mocks.mockRefresh).not.toHaveBeenCalled();
-    expect(mocks.mockSuccess).not.toHaveBeenCalled();
   });
 });

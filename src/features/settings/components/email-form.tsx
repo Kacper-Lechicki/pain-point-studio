@@ -69,7 +69,6 @@ const EmailForm = ({ currentEmail, pendingEmail, emailChangeConfirmStatus }: Ema
         return;
       }
 
-      toast.success(t('settings.email.changeCancelled' as MessageKey));
       router.refresh();
     });
   }

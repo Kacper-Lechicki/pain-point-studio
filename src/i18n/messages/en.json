@@ -54,7 +54,6 @@
     "backToProject": "Project Details",
     "backToSettings": "Settings",
     "loading": "Loading...",
-    "dataRefreshed": "Data refreshed",
     "search": "Search...",
     "noResults": "No results found.",
     "error": {
@@ -173,8 +172,6 @@
     "enterEmailToReset": "Enter your email to receive a password reset link",
     "setNewPassword": "Set New Password",
     "enterNewPassword": "Please enter your new password below",
-    "signInSuccess": "Signed in.",
-    "signOutSuccess": "Signed out.",
     "emailConfirmed": "Email confirmed. You are now signed in",
     "emailChangeConfirmed": "Email address updated",
     "passwordUpdated": "Password updated",
@@ -482,10 +479,8 @@
       "progressToLimit": "{count} of {max} responses",
       "completeSurvey": "Complete Survey",
       "completeSurveyConfirm": "The survey will stop accepting new responses. The survey link will remain accessible for 14 days, then expire.",
-      "surveyCompleted": "Survey completed successfully.",
       "cancelSurvey": "Cancel Survey",
       "cancelSurveyConfirm": "This will withdraw the survey. The survey link will remain accessible for 14 days with a withdrawal notice.",
-      "surveyCancelled": "Survey cancelled successfully.",
       "shareLink": "Share Link",
       "export": "Export",
       "surveyNameLabel": "Name",
@@ -756,14 +751,6 @@
         "permanentDeleteDescription": "This will permanently delete the survey, all its questions, and all collected responses. This action cannot be undone."
       },
       "toast": {
-        "completed": "Survey completed.",
-        "cancelled": "Survey cancelled.",
-        "archived": "Survey archived.",
-        "restored": "Survey restored.",
-        "reopened": "Survey reopened.",
-        "trashed": "Survey moved to trash.",
-        "restoredFromTrash": "Survey restored from trash.",
-        "permanentlyDeleted": "Survey permanently deleted.",
         "duplicated": "Survey duplicated as draft.",
         "actionFailed": "Something went wrong. Please try again."
       },
@@ -808,7 +795,6 @@
       },
       "clearFilters": "Clear filters",
       "bulk": {
-        "selected": "{count} selected",
         "selectAll": "Select all",
         "clearSelection": "Clear selection",
         "selectSurvey": "Select {name}",
@@ -1043,7 +1029,6 @@
         "permanentDeleteAction": "Delete Forever"
       },
       "bulk": {
-        "selected": "{count} selected",
         "selectAll": "Select all",
         "clearSelection": "Clear selection",
         "selectProject": "Select {name}",
@@ -1063,14 +1048,6 @@
         "title": "No projects match filters",
         "description": "Try adjusting your filters."
       },
-      "completeSuccess": "Project completed.",
-      "archiveSuccess": "Project archived.",
-      "reopenSuccess": "Project reopened.",
-      "restoreSuccess": "Project restored.",
-      "trashSuccess": "Project moved to trash.",
-      "restoreTrashSuccess": "Project restored from trash.",
-      "permanentDeleteSuccess": "Project permanently deleted.",
-      "deleteSuccess": "Project deleted.",
       "clearFilters": "Clear filters"
     },
     "statusInfo": {
@@ -1088,14 +1065,6 @@
       "noSurveysDescription": "Create your first survey to start collecting responses.",
       "createSurvey": "Create survey",
       "responses": "{count, plural, one {# response} other {# responses}}",
-      "completeSuccess": "Project completed.",
-      "archiveSuccess": "Project archived.",
-      "reopenSuccess": "Project reopened.",
-      "restoreSuccess": "Project restored.",
-      "trashSuccess": "Project moved to trash.",
-      "restoreTrashSuccess": "Project restored from trash.",
-      "permanentDeleteSuccess": "Project permanently deleted.",
-      "deleteSuccess": "Project deleted.",
       "searchPlaceholder": "Search surveys...",
       "research": {
         "kpi": {
@@ -1339,9 +1308,6 @@
       "addNote": "Add note",
       "noteBadge": "note",
       "contentPlaceholder": "Write your observation or decision...",
-      "createSuccess": "Insight added.",
-      "updateSuccess": "Insight updated.",
-      "deleteSuccess": "Insight deleted.",
       "confirmDeleteTitle": "Delete insight?",
       "confirmDeleteDescription": "This insight will be permanently deleted.",
       "selectType": "Type"
@@ -1349,7 +1315,6 @@
     "insights": {
       "addInsight": "Add Insight",
       "addInsightsHere": "Add insights here",
-      "movedTo": "Moved to {type}",
       "moveTo": "Move to",
       "emptyTitle": "No insights yet",
       "emptyDescription": "Capture your research findings as strengths, opportunities, threats, and decisions to build your project scorecard.",
@@ -1825,8 +1790,6 @@
       "previewProfile": "Preview Profile",
       "saveProfile": "Save Profile",
       "profileUpdated": "Profile updated.",
-      "avatarUpdated": "Profile photo updated.",
-      "avatarRemoved": "Profile photo removed.",
       "removeAvatarConfirmTitle": "Remove profile photo?",
       "removeAvatarConfirmDescription": "Your profile photo will be permanently removed.",
       "cropAvatar": "Crop Photo",
@@ -1864,8 +1827,7 @@
       "emailUpdateSent": "Confirmation emails sent. Please check both inboxes.",
       "pendingChange": "Email change to {newEmail} is in progress.",
       "confirmationsStatus": "{count, plural, =0 {No confirmations yet — check both inboxes.} =1 {1 of 2 confirmations completed.} other {}}",
-      "cancelChange": "Cancel Change",
-      "changeCancelled": "Email change cancelled."
+      "cancelChange": "Cancel Change"
     },
     "password": {
       "title": "Change Password",

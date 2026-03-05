@@ -20,17 +20,6 @@ type ConfirmAction = {
   project: ProjectWithMetrics;
 };
 
-/** Toast message key for each project action. */
-const ACTION_SUCCESS_KEYS: Record<ProjectAction, string> = {
-  complete: 'projects.list.completeSuccess',
-  archive: 'projects.list.archiveSuccess',
-  reopen: 'projects.list.reopenSuccess',
-  restore: 'projects.list.restoreSuccess',
-  trash: 'projects.list.trashSuccess',
-  restoreTrash: 'projects.list.restoreTrashSuccess',
-  permanentDelete: 'projects.list.permanentDeleteSuccess',
-};
-
 /** Applies an optimistic status update to a project in the list. */
 function applyOptimisticListUpdate(
   p: ProjectWithMetrics,
@@ -140,10 +129,7 @@ export function useProjectListActions({
         projectId: project.id,
       });
 
-      if (result && !result.error) {
-        const { toast } = await import('sonner');
-        toast.success(t(ACTION_SUCCESS_KEYS.permanentDelete as MessageKey));
-      } else {
+      if (result?.error) {
         // Revert: add back to list
         setLocalProjects((prev) => [...prev, project]);
       }
@@ -162,10 +148,7 @@ export function useProjectListActions({
       action,
     });
 
-    if (result && !result.error) {
-      const { toast } = await import('sonner');
-      toast.success(t(ACTION_SUCCESS_KEYS[action] as MessageKey));
-    } else {
+    if (result?.error) {
       // Revert on failure
       setLocalProjects((prev) =>
         prev.map((p) =>

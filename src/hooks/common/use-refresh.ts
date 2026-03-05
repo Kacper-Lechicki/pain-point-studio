@@ -4,11 +4,8 @@ import { useRef, useState, useTransition } from 'react';
 
 import { useRouter } from 'next/navigation';
 
-import { useTranslations } from 'next-intl';
-import { toast } from 'sonner';
-
 /**
- * Wraps `router.refresh()` with a pending state and a success toast.
+ * Wraps `router.refresh()` with a pending state.
  * The returned `isRefreshing` flag can drive a spin animation on an icon.
  *
  * `lastSyncedAt` tracks when data was last refreshed — either via the
@@ -17,7 +14,6 @@ import { toast } from 'sonner';
  */
 export function useRefresh() {
   const router = useRouter();
-  const t = useTranslations();
   const [isRefreshing, startTransition] = useTransition();
   const [lastSyncedAt, setLastSyncedAt] = useState(Date.now);
   const lastSyncedAtRef = useRef(lastSyncedAt);
@@ -30,7 +26,6 @@ export function useRefresh() {
 
       lastSyncedAtRef.current = now;
       setLastSyncedAt(now);
-      toast.success(t('common.dataRefreshed'));
     });
   };
 
