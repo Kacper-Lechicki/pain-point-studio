@@ -183,6 +183,7 @@ export const SurveyStatsPanel = ({ stats, survey }: SurveyStatsPanelProps) => {
           icon={Inbox}
           title={t('surveys.stats.noResponses')}
           description={t('surveys.stats.noResponsesDescription')}
+          accent="emerald"
           action={
             shareUrl ? (
               <Button size="sm" onClick={handleShare} className="gap-1.5">

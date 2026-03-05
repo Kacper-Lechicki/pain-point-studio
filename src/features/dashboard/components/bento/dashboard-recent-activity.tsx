@@ -6,6 +6,7 @@ import type { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Card } from '@/components/ui/card';
+import { EmptyState } from '@/components/ui/empty-state';
 import {
   BENTO_CARD_CLASS,
   BENTO_EMPTY_STATE_MIN_H,
@@ -47,15 +48,14 @@ export function DashboardRecentActivity({ items }: DashboardRecentActivityProps)
         </div>
 
         {visibleItems.length === 0 ? (
-          <div
-            className={cn(
-              'flex flex-1 flex-col items-center justify-center gap-2 text-center',
-              BENTO_EMPTY_STATE_MIN_H
-            )}
-          >
-            <Activity className="text-muted-foreground/50 size-8 shrink-0" aria-hidden />
-            <p className="text-muted-foreground text-sm">{t('recentActivity.empty')}</p>
-          </div>
+          <EmptyState
+            variant="card"
+            accent="pink"
+            icon={Activity}
+            title={t('recentActivity.empty')}
+            description={t('recentActivity.emptyDescription')}
+            className={cn('flex-1 justify-center', BENTO_EMPTY_STATE_MIN_H)}
+          />
         ) : (
           <div className="min-w-0 flex-1">
             {visibleItems.map((item, index) => {

@@ -1,10 +1,10 @@
 'use client';
 
-import { Plus } from 'lucide-react';
+import { ClipboardList, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
-import { HeroHighlight } from '@/components/ui/hero-highlight';
+import { EmptyState } from '@/components/ui/empty-state';
 import { isProjectArchived } from '@/features/projects/lib/project-helpers';
 import type { Project } from '@/features/projects/types';
 import type { UserSurvey } from '@/features/surveys/actions';
@@ -24,25 +24,20 @@ export function ProjectSurveysTab({ project, surveys, onCreateSurvey }: ProjectS
 
   if (surveys.length === 0) {
     return (
-      <HeroHighlight
-        showDotsOnMobile={false}
-        containerClassName="w-full rounded-lg border border-dashed border-border"
-      >
-        <div className="flex w-full flex-col items-center px-4 py-12 text-center md:py-16">
-          <p className="text-foreground text-base font-medium">
-            {t('projects.detail.empty.noSurveys')}
-          </p>
-          <p className="text-muted-foreground mt-1 max-w-sm text-sm">
-            {t('projects.detail.empty.noSurveysDescription')}
-          </p>
-          {effectiveCreateSurvey && (
-            <Button className="mt-4" onClick={effectiveCreateSurvey}>
+      <EmptyState
+        icon={ClipboardList}
+        title={t('projects.detail.empty.noSurveys')}
+        description={t('projects.detail.empty.noSurveysDescription')}
+        accent="cyan"
+        action={
+          effectiveCreateSurvey ? (
+            <Button onClick={effectiveCreateSurvey}>
               <Plus className="size-4" aria-hidden />
               {t('projects.detail.createSurvey')}
             </Button>
-          )}
-        </div>
-      </HeroHighlight>
+          ) : undefined
+        }
+      />
     );
   }
 

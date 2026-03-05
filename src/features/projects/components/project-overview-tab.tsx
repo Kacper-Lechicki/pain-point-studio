@@ -1,10 +1,10 @@
 'use client';
 
-import { Plus } from 'lucide-react';
+import { ClipboardList, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
-import { HeroHighlight } from '@/components/ui/hero-highlight';
+import { EmptyState } from '@/components/ui/empty-state';
 import { OverviewActivityList } from '@/features/projects/components/overview-activity-list';
 import { OverviewResponseTrend } from '@/features/projects/components/overview-response-trend';
 import { OverviewVerdictCard } from '@/features/projects/components/overview-verdict-card';
@@ -46,27 +46,22 @@ export function ProjectOverviewTab({
 
   if (!hasSurveys) {
     return (
-      <HeroHighlight
-        showDotsOnMobile={false}
-        containerClassName="w-full rounded-lg border border-dashed border-border"
-      >
-        <div className="flex w-full flex-col items-center px-4 py-12 text-center md:py-16">
-          <p className="text-foreground text-base font-medium">
-            {t('projects.detail.empty.title')}
-          </p>
-          <p className="text-muted-foreground mt-1 max-w-sm text-sm">
-            {t('projects.detail.empty.description')}
-          </p>
-          {!isArchived && (
-            <Button className="mt-4" asChild>
+      <EmptyState
+        icon={ClipboardList}
+        title={t('projects.detail.empty.title')}
+        description={t('projects.detail.empty.description')}
+        accent="cyan"
+        action={
+          !isArchived ? (
+            <Button asChild>
               <Link href={`${getProjectDetailUrl(project.id)}?tab=surveys`}>
                 <Plus className="size-4" aria-hidden />
                 {t('projects.detail.createSurvey')}
               </Link>
             </Button>
-          )}
-        </div>
-      </HeroHighlight>
+          ) : undefined
+        }
+      />
     );
   }
 

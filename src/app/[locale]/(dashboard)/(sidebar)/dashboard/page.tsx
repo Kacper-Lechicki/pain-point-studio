@@ -36,6 +36,7 @@ export default async function DashboardPage({ searchParams }: Props) {
           icon={FolderKanban}
           title={t('dashboard.overview.empty.title')}
           description={t('dashboard.overview.empty.description')}
+          accent="primary"
           action={
             <Button asChild>
               <Link href={ROUTES.dashboard.projectNew}>

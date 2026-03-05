@@ -246,6 +246,7 @@
       "recentActivity": {
         "title": "Recent Activity",
         "empty": "No recent activity",
+        "emptyDescription": "Activity will appear here as responses come in.",
         "type": {
           "response": "New response",
           "survey_completed": "Survey completed",
@@ -1381,7 +1382,8 @@
       "surveyBreakdown": "Survey Progress",
       "createFirstSurvey": "Create your first survey to start collecting data",
       "recentActivity": "Recent Activity",
-      "noActivity": "No activity yet — publish a survey to get started",
+      "noActivity": "No activity yet",
+      "noActivityDescription": "Publish a survey to start seeing activity here.",
       "activityType": {
         "response": "New response",
         "survey_completed": "Survey completed",

@@ -61,7 +61,8 @@ export function DashboardProjectsList({ projects, pinnedProjectId }: DashboardPr
 
         {visibleProjects.length === 0 ? (
           <EmptyState
-            variant="compact"
+            variant="card"
+            accent="violet"
             icon={FolderKanban}
             title={t('projects.noProjectsToPin')}
             description={t('projects.noProjectsDescription')}

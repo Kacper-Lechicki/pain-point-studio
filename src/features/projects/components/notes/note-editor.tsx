@@ -45,7 +45,7 @@ export function NoteEditor({
           icon={StickyNote}
           title={t('selectNote')}
           description={t('selectNoteDescription')}
-          variant="compact"
+          variant="inline"
         />
       </div>
     );
