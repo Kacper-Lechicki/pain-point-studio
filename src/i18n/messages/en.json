@@ -1327,7 +1327,36 @@
         "opportunity": "Opportunity",
         "threat": "Threat",
         "decision": "Decision"
+      },
+      "toolbar": {
+        "searchPlaceholder": "Search insights...",
+        "filterLabel": "Filter",
+        "clearFilters": "Clear filters",
+        "typeSection": "Type",
+        "sort": {
+          "manual": "Manual order",
+          "newest": "Newest first",
+          "oldest": "Oldest first",
+          "updated": "Recently updated",
+          "alphabetical": "Alphabetical"
+        },
+        "noResults": "No matching insights",
+        "noResultsDescription": "Try adjusting your search or filters."
       }
+    },
+    "suggestions": {
+      "title": "Suggested",
+      "minResponsesBanner": "Collect at least {min} responses to unlock automated insights.",
+      "dismiss": "Dismiss",
+      "source": "From: {survey}",
+      "sourceWithQuestion": "From: {survey} → {question}",
+      "editPlaceholder": "Edit suggestion before moving...",
+      "empty": "No suggestions yet",
+      "info": "Info",
+      "infoTitle": "Suggestion Source",
+      "infoSurvey": "Survey",
+      "infoQuestion": "Question",
+      "infoContent": "Suggestion"
     },
     "verdict": {
       "confidence": "{current} of {target} responses collected",

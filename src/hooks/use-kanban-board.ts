@@ -23,6 +23,8 @@ interface UseKanbanBoardOptions<TColumnId extends string> {
     targetColumnIds: string[],
     sourceColumnIds: string[]
   ) => void;
+  /** Columns that cannot receive drops. Pointer still tracks but no placeholder/hover is shown. */
+  disabledColumns?: readonly TColumnId[];
 }
 
 interface UseKanbanBoardResult {
@@ -132,8 +134,16 @@ function computeDropIndex(
 export function useKanbanBoard<TColumnId extends string>(
   options: UseKanbanBoardOptions<TColumnId>
 ): UseKanbanBoardResult {
-  const { columns, columnIds, boardRef, columnIdAttribute, itemIdAttribute, onReorder, onMove } =
-    options;
+  const {
+    columns,
+    columnIds,
+    boardRef,
+    columnIdAttribute,
+    itemIdAttribute,
+    onReorder,
+    onMove,
+    disabledColumns,
+  } = options;
 
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [draggedFromColumn, setDraggedFromColumn] = useState<TColumnId | null>(null);
@@ -151,6 +161,7 @@ export function useKanbanBoard<TColumnId extends string>(
   const draggedFromColumnRef = useRef<TColumnId | null>(null);
   const columnsRef = useRef(columns);
   const columnIdsRef = useRef(columnIds);
+  const disabledColumnsRef = useRef(disabledColumns);
 
   useEffect(() => {
     columnsRef.current = columns;
@@ -159,6 +170,10 @@ export function useKanbanBoard<TColumnId extends string>(
   useEffect(() => {
     columnIdsRef.current = columnIds;
   }, [columnIds]);
+
+  useEffect(() => {
+    disabledColumnsRef.current = disabledColumns;
+  }, [disabledColumns]);
 
   const handlePointerMoveRef = useRef<(e: PointerEvent) => void>(() => {});
   const handlePointerUpRef = useRef<() => void>(() => {});
@@ -226,28 +241,39 @@ export function useKanbanBoard<TColumnId extends string>(
         const hCol = findHoveredColumn(board, columnIdAttribute, e.clientX, e.clientY);
 
         if (hCol && columnIdsRef.current.includes(hCol as TColumnId)) {
-          hoveredColumnRef.current = hCol;
-          const colItems = columnsRef.current[hCol as TColumnId] ?? [];
-          const dropIdx = computeDropIndex(
-            board,
-            columnIdAttribute,
-            itemIdAttribute,
-            hCol,
-            colItems,
-            e.clientY,
-            currentDraggedId
-          );
+          const isDisabled = disabledColumnsRef.current?.includes(hCol as TColumnId) ?? false;
 
-          placeholderIndexRef.current = dropIdx;
+          if (isDisabled) {
+            hoveredColumnRef.current = null;
+          } else {
+            hoveredColumnRef.current = hCol;
+            const colItems = columnsRef.current[hCol as TColumnId] ?? [];
+            const dropIdx = computeDropIndex(
+              board,
+              columnIdAttribute,
+              itemIdAttribute,
+              hCol,
+              colItems,
+              e.clientY,
+              currentDraggedId
+            );
+
+            placeholderIndexRef.current = dropIdx;
+          }
+        } else {
+          // Pointer is outside all columns — clear hover so drop is a no-op
+          hoveredColumnRef.current = null;
         }
       }
 
       if (rafIdRef.current === null) {
         rafIdRef.current = requestAnimationFrame(() => {
           rafIdRef.current = null;
+          const isOverColumn = hoveredColumnRef.current !== null;
+
           setGhostPosition(ghostPositionRef.current);
           setHoveredColumn(hoveredColumnRef.current);
-          setPlaceholderIndex(placeholderIndexRef.current);
+          setPlaceholderIndex(isOverColumn ? placeholderIndexRef.current : null);
         });
       }
     };

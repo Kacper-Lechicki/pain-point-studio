@@ -82,6 +82,7 @@ export function useSortableList(options: UseSortableListOptions): UseSortableLis
   const placeholderIndexRef = useRef(0);
   const rafIdRef = useRef<number | null>(null);
   const draggedIdRef = useRef<string | null>(null);
+  const insideContainerRef = useRef(true);
   const itemIdsRef = useRef<string[]>(itemIds);
 
   useEffect(() => {
@@ -135,22 +136,35 @@ export function useSortableList(options: UseSortableListOptions): UseSortableLis
       const container = containerRef.current;
 
       if (container) {
-        const newIndex = computeDropIndex(
-          container,
-          itemIdsRef.current,
-          itemIdAttribute,
-          e.clientY,
-          currentDraggedId
-        );
+        const rect = container.getBoundingClientRect();
+        const isInside =
+          e.clientX >= rect.left &&
+          e.clientX <= rect.right &&
+          e.clientY >= rect.top - 40 &&
+          e.clientY <= rect.bottom + 40;
 
-        placeholderIndexRef.current = newIndex;
+        if (isInside) {
+          insideContainerRef.current = true;
+
+          const newIndex = computeDropIndex(
+            container,
+            itemIdsRef.current,
+            itemIdAttribute,
+            e.clientY,
+            currentDraggedId
+          );
+
+          placeholderIndexRef.current = newIndex;
+        } else {
+          insideContainerRef.current = false;
+        }
       }
 
       if (rafIdRef.current === null) {
         rafIdRef.current = requestAnimationFrame(() => {
           rafIdRef.current = null;
           setGhostPosition(ghostPositionRef.current);
-          setPlaceholderIndex(placeholderIndexRef.current);
+          setPlaceholderIndex(insideContainerRef.current ? placeholderIndexRef.current : null);
         });
       }
     };
@@ -169,17 +183,20 @@ export function useSortableList(options: UseSortableListOptions): UseSortableLis
         rafIdRef.current = null;
       }
 
-      const ids = itemIdsRef.current;
-      const fromIndex = ids.indexOf(currentDraggedId);
-      const toIndex = placeholderIndexRef.current;
+      // Only reorder if pointer is inside the container
+      if (insideContainerRef.current) {
+        const ids = itemIdsRef.current;
+        const fromIndex = ids.indexOf(currentDraggedId);
+        const toIndex = placeholderIndexRef.current;
 
-      if (fromIndex !== -1 && fromIndex !== toIndex) {
-        const reordered = [...ids];
-        const [removed] = reordered.splice(fromIndex, 1);
-        const insertAt = fromIndex < toIndex ? Math.min(toIndex - 1, reordered.length) : toIndex;
+        if (fromIndex !== -1 && fromIndex !== toIndex) {
+          const reordered = [...ids];
+          const [removed] = reordered.splice(fromIndex, 1);
+          const insertAt = fromIndex < toIndex ? Math.min(toIndex - 1, reordered.length) : toIndex;
 
-        reordered.splice(insertAt, 0, removed!);
-        onReorder(reordered);
+          reordered.splice(insertAt, 0, removed!);
+          onReorder(reordered);
+        }
       }
 
       setDraggedId(null);

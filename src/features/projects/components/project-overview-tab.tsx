@@ -84,7 +84,6 @@ export function ProjectOverviewTab({
           verdict={verdict}
           totalResponses={overviewStats.totalResponses}
           targetResponses={project.target_responses}
-          projectId={project.id}
           currentPhase={currentPhase}
           activeSurveys={overviewStats.activeSurveys}
           totalSurveys={overviewStats.totalSurveys}

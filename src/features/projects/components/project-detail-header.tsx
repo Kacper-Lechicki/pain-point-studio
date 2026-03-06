@@ -3,7 +3,17 @@
 import { useCallback } from 'react';
 
 import { formatDistanceToNow } from 'date-fns';
-import { Archive, Check, EllipsisVertical, Trash2, Trophy, X } from 'lucide-react';
+import {
+  Archive,
+  Calendar,
+  Check,
+  Clock,
+  EllipsisVertical,
+  MessageSquare,
+  Trash2,
+  Trophy,
+  X,
+} from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -338,7 +348,7 @@ export function ProjectDetailHeader({
                   className={cn(
                     'text-foreground min-w-0 text-2xl leading-tight font-bold wrap-break-word sm:text-3xl',
                     canEditInline &&
-                      'decoration-muted-foreground/40 cursor-pointer rounded-md underline-offset-4 md:hover:underline'
+                      'decoration-muted-foreground/40 w-fit cursor-pointer rounded-md underline-offset-4 md:hover:underline'
                   )}
                   onClick={canEditInline ? nameEdit.startEditing : undefined}
                   role={canEditInline ? 'button' : undefined}
@@ -393,7 +403,7 @@ export function ProjectDetailHeader({
                 'text-muted-foreground mt-2 text-sm leading-relaxed',
                 !project.summary && 'italic',
                 canEditInline &&
-                  'decoration-muted-foreground/40 cursor-pointer rounded-md underline-offset-4 md:hover:underline'
+                  'decoration-muted-foreground/40 w-fit cursor-pointer rounded-md underline-offset-4 md:hover:underline'
               )}
               onClick={canEditInline ? summaryEdit.startEditing : undefined}
               role={canEditInline ? 'button' : undefined}
@@ -436,7 +446,8 @@ export function ProjectDetailHeader({
             </>
           )}
 
-          <span>
+          <span className="inline-flex items-center gap-1">
+            <Clock className="size-3 shrink-0" aria-hidden />
             {t('projects.detail.meta.updated')}{' '}
             {formatDistanceToNow(new Date(project.updated_at), {
               addSuffix: true,
@@ -445,7 +456,8 @@ export function ProjectDetailHeader({
 
           <span className="text-muted-foreground/40">&middot;</span>
 
-          <span>
+          <span className="inline-flex items-center gap-1">
+            <MessageSquare className="size-3 shrink-0" aria-hidden />
             {t('projects.detail.meta.lastResponse')}{' '}
             {lastResponseAt
               ? formatDistanceToNow(new Date(lastResponseAt), {
@@ -456,7 +468,8 @@ export function ProjectDetailHeader({
 
           <span className="text-muted-foreground/40">&middot;</span>
 
-          <span>
+          <span className="inline-flex items-center gap-1">
+            <Calendar className="size-3 shrink-0" aria-hidden />
             {t('projects.detail.meta.created')}{' '}
             {new Date(project.created_at).toLocaleDateString('en-US', {
               month: 'short',

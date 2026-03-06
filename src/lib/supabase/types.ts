@@ -28,6 +28,38 @@ export type Database = {
   };
   public: {
     Tables: {
+      insight_suggestion_actions: {
+        Row: {
+          action: string;
+          created_at: string;
+          id: string;
+          project_id: string;
+          signature: string;
+        };
+        Insert: {
+          action: string;
+          created_at?: string;
+          id?: string;
+          project_id: string;
+          signature: string;
+        };
+        Update: {
+          action?: string;
+          created_at?: string;
+          id?: string;
+          project_id?: string;
+          signature?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'insight_suggestion_actions_project_id_fkey';
+            columns: ['project_id'];
+            isOneToOne: false;
+            referencedRelation: 'projects';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       profiles: {
         Row: {
           avatar_url: string;

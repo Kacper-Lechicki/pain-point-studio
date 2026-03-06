@@ -19,7 +19,7 @@ export function CommandPaletteTrigger({ onOpen }: CommandPaletteTriggerProps) {
       <button
         type="button"
         onClick={onOpen}
-        className="border-input bg-muted/50 text-muted-foreground md:hover:bg-muted md:hover:text-foreground hidden h-[30px] w-48 items-center gap-1.5 rounded-md border px-2 text-xs transition-colors md:flex"
+        className="border-input bg-muted/50 text-muted-foreground md:hover:border-foreground/30 md:hover:text-foreground hidden h-[30px] w-48 items-center gap-1.5 rounded-md border px-2 text-xs transition-colors md:flex md:hover:border-dashed"
         aria-label={t('trigger.shortcut')}
       >
         <Search className="size-3.5 shrink-0" />

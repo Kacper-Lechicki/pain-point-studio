@@ -4,7 +4,6 @@ import { ArrowRight, ClipboardList, Lightbulb, Rocket, Send, Share2 } from 'luci
 import type { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { StatusBadge } from '@/components/ui/status-badge';
@@ -14,9 +13,7 @@ import {
   type NextStepInput,
   computeNextStep,
 } from '@/features/projects/lib/next-step';
-import { getProjectDetailUrl } from '@/features/projects/lib/project-urls';
 import type { ResearchPhase } from '@/features/projects/types';
-import Link from '@/i18n/link';
 import type { MessageKey } from '@/i18n/types';
 
 const ACTION_ICONS: Record<NextStepAction, LucideIcon> = {
@@ -32,7 +29,6 @@ interface OverviewVerdictCardProps {
   verdict: VerdictResult;
   totalResponses: number;
   targetResponses: number;
-  projectId: string;
   currentPhase: ResearchPhase | null;
   activeSurveys: number;
   totalSurveys: number;
@@ -44,7 +40,6 @@ export function OverviewVerdictCard({
   verdict,
   totalResponses,
   targetResponses,
-  projectId,
   currentPhase,
   activeSurveys,
   totalSurveys,
@@ -67,10 +62,6 @@ export function OverviewVerdictCard({
 
   const nextStep = computeNextStep(nextStepInput);
   const NextStepIcon = ACTION_ICONS[nextStep.action];
-
-  const nextStepHref = nextStep.tab
-    ? `${getProjectDetailUrl(projectId)}?tab=${nextStep.tab}`
-    : undefined;
 
   return (
     <Card className={`gap-0 py-0 shadow-none ${config.colors.bg} ${config.colors.border}`}>
@@ -117,15 +108,6 @@ export function OverviewVerdictCard({
               <p className="text-foreground min-w-0 flex-1 text-sm">
                 {t(nextStep.labelKey as MessageKey)}
               </p>
-
-              {nextStepHref && (
-                <Button variant="outline" size="sm" asChild>
-                  <Link href={nextStepHref}>
-                    {t('projects.nextStep.action' as MessageKey)}
-                    <ArrowRight className="size-3.5" aria-hidden />
-                  </Link>
-                </Button>
-              )}
             </div>
           </>
         )}

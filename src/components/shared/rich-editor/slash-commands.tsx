@@ -23,6 +23,8 @@ import {
 import { type Root, createRoot } from 'react-dom/client';
 import tippy, { type Instance as TippyInstance } from 'tippy.js';
 
+import { cn } from '@/lib/common/utils';
+
 interface SlashCommandItem {
   title: string;
   description: string;
@@ -202,14 +204,20 @@ function SlashCommandList({ items, command, ref }: SlashCommandListProps) {
             key={item.title}
             type="button"
             data-active={isActive}
-            className={`flex min-h-10 w-full cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-left text-sm transition-colors md:min-h-9 ${
-              isActive ? 'bg-muted text-foreground' : 'md:hover:bg-muted'
-            }`}
+            className={cn(
+              'flex min-h-10 w-full cursor-pointer items-center gap-2 rounded-lg border border-dashed border-transparent px-2 py-1.5 text-left text-sm transition-colors md:min-h-9',
+              isActive
+                ? 'border-foreground/30 text-foreground'
+                : 'md:hover:border-foreground/30 md:hover:text-foreground'
+            )}
             onClick={() => command(item)}
             onMouseEnter={() => setSelectedIndex(index)}
           >
             <Icon
-              className={`size-4 shrink-0 ${isActive ? 'text-foreground' : 'text-muted-foreground'}`}
+              className={cn(
+                'size-4 shrink-0',
+                isActive ? 'text-foreground' : 'text-muted-foreground'
+              )}
             />
             <div className="min-w-0 flex-1">
               <p className="truncate font-medium">{item.title}</p>

@@ -5,6 +5,10 @@ import { getTranslations } from 'next-intl/server';
 import { PageTransition } from '@/components/ui/page-transition';
 import { ROUTES } from '@/config';
 import { DashboardPageBack } from '@/features/dashboard/components/layout/dashboard-page-back';
+import {
+  type InsightSuggestionsResult,
+  getInsightSuggestions,
+} from '@/features/projects/actions/get-insight-suggestions';
 import { getNoteFolders } from '@/features/projects/actions/get-note-folders';
 import { getProject } from '@/features/projects/actions/get-project';
 import { getProjectInsights } from '@/features/projects/actions/get-project-insights';
@@ -44,15 +48,28 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
     notFound();
   }
 
-  const [insightsResult, statsResult, surveysResult, notesResult, foldersResult, signalsResult] =
-    await Promise.allSettled([
-      getProjectInsights(id),
-      getProjectOverviewStats(id),
-      getProjectSurveys(id),
-      getProjectNotes(id),
-      getNoteFolders(id),
-      getProjectSignalsData(id),
-    ]);
+  const EMPTY_SUGGESTIONS: InsightSuggestionsResult = {
+    suggestions: [],
+    totalCompletedResponses: 0,
+  };
+
+  const [
+    insightsResult,
+    statsResult,
+    surveysResult,
+    notesResult,
+    foldersResult,
+    signalsResult,
+    suggestionsResult,
+  ] = await Promise.allSettled([
+    getProjectInsights(id),
+    getProjectOverviewStats(id),
+    getProjectSurveys(id),
+    getProjectNotes(id),
+    getNoteFolders(id),
+    getProjectSignalsData(id),
+    getInsightSuggestions(id),
+  ]);
 
   return (
     <>
@@ -68,6 +85,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
           noteFolders={settled(foldersResult, []) ?? []}
           overviewStats={settled(statsResult, null) ?? EMPTY_OVERVIEW_STATS}
           signalsData={settled(signalsResult, [])}
+          suggestionsData={settled(suggestionsResult, EMPTY_SUGGESTIONS)}
         />
       </PageTransition>
     </>

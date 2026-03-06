@@ -24,7 +24,7 @@ const COLUMN_LABEL_KEYS: Record<InsightType, string> = {
 /** Drop placeholder shown between cards during drag. */
 function DropPlaceholder() {
   return (
-    <div className="border-primary/50 bg-primary/5 min-h-10 rounded-lg border border-dashed md:min-h-9" />
+    <div className="border-primary/50 bg-primary/5 mb-2 min-h-10 rounded-lg border border-dashed md:min-h-9" />
   );
 }
 
@@ -90,7 +90,7 @@ export function KanbanColumn({
     <div
       data-column-id={type}
       className={cn(
-        'bg-muted dark:bg-muted flex min-w-0 flex-1 flex-col gap-2.5 rounded-xl p-3 transition-colors',
+        'bg-muted dark:bg-muted flex min-w-0 flex-col gap-2.5 rounded-xl p-3 transition-colors',
         isDropTarget && 'bg-primary/5 ring-primary/20 ring-1'
       )}
     >
