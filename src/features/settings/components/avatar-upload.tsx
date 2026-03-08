@@ -119,7 +119,6 @@ const AvatarUpload = ({
       } else {
         onAvatarChange(publicUrl);
         window.dispatchEvent(new Event('auth:refresh'));
-        toast.success(t('settings.profile.avatarUpdated'));
       }
     } catch {
       toast.error(t('settings.errors.uploadFailed'));
@@ -159,7 +158,6 @@ const AvatarUpload = ({
       } else {
         onAvatarChange('');
         window.dispatchEvent(new Event('auth:refresh'));
-        toast.success(t('settings.profile.avatarRemoved'));
       }
     } catch {
       toast.error(t('settings.errors.uploadFailed'));

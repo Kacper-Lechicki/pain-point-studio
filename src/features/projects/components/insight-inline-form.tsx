@@ -4,7 +4,6 @@ import { useRef, useState } from 'react';
 
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -98,7 +97,6 @@ export function InsightInlineForm({
       };
 
       onCreated(newInsight);
-      toast.success(t('projects.scorecard.createSuccess' as MessageKey));
       setContent('');
 
       if (alwaysOpen) {

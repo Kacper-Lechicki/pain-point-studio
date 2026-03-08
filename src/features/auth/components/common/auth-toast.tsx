@@ -7,12 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-const TOAST_KEYS = [
-  'signInSuccess',
-  'emailConfirmed',
-  'emailChangeConfirmed',
-  'passwordResetReady',
-] as const;
+const TOAST_KEYS = ['emailConfirmed', 'emailChangeConfirmed', 'passwordResetReady'] as const;
 const ERROR_KEYS = ['linkExpired', 'callbackError', 'profileCreationFailed'] as const;
 
 type ToastKey = (typeof TOAST_KEYS)[number];

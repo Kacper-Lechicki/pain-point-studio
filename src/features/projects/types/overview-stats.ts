@@ -11,6 +11,8 @@ export interface SurveyStatusDistribution {
   draft: number;
   active: number;
   completed: number;
+  cancelled: number;
+  archived: number;
 }
 
 export interface CompletionBreakdown {

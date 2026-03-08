@@ -97,7 +97,7 @@ export function BulkActionBar({
         <Button
           variant="ghost"
           size="icon-xs"
-          className="text-muted-foreground hover:text-foreground shrink-0"
+          className="text-muted-foreground md:hover:text-foreground shrink-0"
           onClick={onClear}
           aria-label={clearSelectionLabel}
         >

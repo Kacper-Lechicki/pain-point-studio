@@ -65,7 +65,7 @@ function BuilderSettingsPanelContent() {
                     'flex aspect-square flex-col items-center justify-center gap-1 overflow-hidden rounded-md p-1.5 text-center transition-colors',
                     activeQuestion.type === type
                       ? 'bg-primary/10 text-primary ring-primary/30 ring-1'
-                      : 'hover:bg-accent text-muted-foreground'
+                      : 'md:hover:bg-accent text-muted-foreground'
                   )}
                 >
                   <Icon className="size-4" />

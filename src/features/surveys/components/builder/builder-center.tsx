@@ -30,7 +30,7 @@ export function BuilderCenter() {
 
   if (state.questions.length === 0) {
     return (
-      <div className="flex min-h-0 flex-1 flex-col">
+      <div className="flex h-full min-h-0 flex-1 flex-col">
         <BuilderEmptyState />
       </div>
     );
@@ -47,7 +47,7 @@ export function BuilderCenter() {
   const showDescription = activeQuestion.description !== null;
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+    <div className="flex h-full min-h-0 flex-1 flex-col overflow-y-auto">
       <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8">
         <div className="mb-4 flex flex-wrap items-center gap-1.5">
           {state.questions.map((q, i) => {
@@ -62,7 +62,7 @@ export function BuilderCenter() {
                   'flex size-7 items-center justify-center rounded-full border text-xs font-medium tabular-nums transition-colors',
                   isStepActive
                     ? 'bg-primary text-primary-foreground border-primary'
-                    : 'border-border text-muted-foreground hover:bg-accent hover:text-foreground hover:border-foreground/20'
+                    : 'border-border text-muted-foreground md:hover:bg-accent md:hover:text-foreground md:hover:border-foreground/20'
                 )}
                 aria-current={isStepActive ? 'step' : undefined}
               >

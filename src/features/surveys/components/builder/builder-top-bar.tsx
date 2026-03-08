@@ -22,6 +22,8 @@ interface BuilderTopBarProps {
   surveyTitle: string;
   surveyStatus: SurveyStatus;
   projectId: string;
+  /** Project name for back link and context; falls back to "Project Details" when missing. */
+  projectName: string | null;
   isDesktop: boolean;
   onToggleSidebar?: () => void;
   onToggleSettings?: () => void;
@@ -34,6 +36,7 @@ export function BuilderTopBar({
   surveyTitle,
   surveyStatus,
   projectId,
+  projectName,
   isDesktop,
   onToggleSidebar,
   onToggleSettings,
@@ -71,6 +74,7 @@ export function BuilderTopBar({
 
   const isLoading = saveAction.isLoading;
   const projectSurveysUrl = `${getProjectDetailUrl(projectId)}?tab=surveys`;
+  const backLabel = projectName ?? t('common.backToProject');
 
   return (
     <>
@@ -79,11 +83,11 @@ export function BuilderTopBar({
           <div className="flex min-w-0 items-center gap-1.5">
             <Link
               href={projectSurveysUrl}
-              className="text-muted-foreground hover:text-foreground flex shrink-0 items-center gap-1.5 text-sm transition-colors"
-              aria-label={t('surveys.builder.backToSurveys')}
+              className="text-muted-foreground md:hover:text-foreground flex shrink-0 items-center gap-1.5 text-sm transition-colors"
+              aria-label={backLabel}
             >
               <ArrowLeft className="size-4 shrink-0" aria-hidden />
-              {t('surveys.title')}
+              {backLabel}
             </Link>
 
             <span className="text-muted-foreground text-sm">/</span>
@@ -131,11 +135,11 @@ export function BuilderTopBar({
           <div className="flex min-h-11 items-center gap-1.5 px-3 py-2">
             <Link
               href={projectSurveysUrl}
-              className="text-muted-foreground hover:text-foreground flex shrink-0 items-center gap-1.5 text-xs transition-colors"
-              aria-label={t('surveys.builder.backToSurveys')}
+              className="text-muted-foreground md:hover:text-foreground flex shrink-0 items-center gap-1.5 text-xs transition-colors"
+              aria-label={backLabel}
             >
               <ArrowLeft className="size-3.5 shrink-0" aria-hidden />
-              {t('surveys.title')}
+              {backLabel}
             </Link>
 
             <span className="text-muted-foreground text-xs">/</span>

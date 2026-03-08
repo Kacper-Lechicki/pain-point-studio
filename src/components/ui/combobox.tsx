@@ -84,7 +84,7 @@ function Combobox({
           aria-invalid={ariaInvalid}
           data-testid={dataTestId}
           className={cn(
-            "border-input data-placeholder:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 dark:bg-input/30 dark:hover:bg-input/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive flex w-full items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50",
+            "border-input data-placeholder:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 dark:bg-input/30 dark:md:hover:bg-input/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive flex w-full items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50",
             FORM_CONTROL_SIZES.default,
             className
           )}
@@ -143,7 +143,7 @@ function Combobox({
                   role="option"
                   aria-selected={isSelected}
                   onClick={() => select(option.value)}
-                  className="focus-visible:border-foreground/30 focus-visible:text-foreground hover:border-foreground/30 hover:text-foreground relative flex min-h-10 w-full cursor-pointer items-center gap-2 rounded-lg border border-transparent py-1.5 pr-8 pl-2 text-sm outline-hidden transition-colors select-none hover:border-dashed focus-visible:border-dashed md:min-h-9"
+                  className="focus-visible:border-foreground/30 focus-visible:text-foreground md:hover:border-foreground/30 md:hover:text-foreground relative flex min-h-10 w-full cursor-pointer items-center gap-2 rounded-lg border border-transparent py-1.5 pr-8 pl-2 text-sm outline-hidden transition-colors select-none focus-visible:border-dashed md:min-h-9 md:hover:border-dashed"
                 >
                   {optionLeading ? optionLeading(option) : null}
                   <span className="flex-1 truncate text-left">{option.label}</span>

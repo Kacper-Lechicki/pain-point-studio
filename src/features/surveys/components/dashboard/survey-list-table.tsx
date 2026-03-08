@@ -57,7 +57,7 @@ export function SurveyListTable({
     <div className="border-border/50 bg-card overflow-hidden rounded-lg border">
       <Table className="table-fixed">
         <TableHeader>
-          <TableRow className="bg-muted/60 hover:bg-muted/60">
+          <TableRow className="bg-muted/60 md:hover:bg-muted/60">
             {onToggleBulkSelect && (
               <TableHead className="w-10 shrink-0 px-3 py-3">
                 <Checkbox

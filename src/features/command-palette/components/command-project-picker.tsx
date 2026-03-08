@@ -35,7 +35,7 @@ export function CommandProjectPicker({ projects, onBack, onClose }: CommandProje
           variant="ghost"
           size="icon-xs"
           onClick={onBack}
-          className="text-muted-foreground hover:text-foreground shrink-0"
+          className="text-muted-foreground md:hover:text-foreground shrink-0"
         >
           <ArrowLeft className="size-4" />
           <span className="sr-only">{t('projectPicker.back')}</span>

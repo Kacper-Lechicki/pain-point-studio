@@ -28,6 +28,38 @@ export type Database = {
   };
   public: {
     Tables: {
+      insight_suggestion_actions: {
+        Row: {
+          action: string;
+          created_at: string;
+          id: string;
+          project_id: string;
+          signature: string;
+        };
+        Insert: {
+          action: string;
+          created_at?: string;
+          id?: string;
+          project_id: string;
+          signature: string;
+        };
+        Update: {
+          action?: string;
+          created_at?: string;
+          id?: string;
+          project_id?: string;
+          signature?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'insight_suggestion_actions_project_id_fkey';
+            columns: ['project_id'];
+            isOneToOne: false;
+            referencedRelation: 'projects';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       profiles: {
         Row: {
           avatar_url: string;
@@ -530,6 +562,10 @@ export type Database = {
       };
       get_projects_list_extras: { Args: { p_user_id: string }; Returns: Json };
       get_research_journey: { Args: { p_user_id: string }; Returns: Json };
+      get_response_detail: {
+        Args: { p_response_id: string; p_user_id: string };
+        Returns: Json;
+      };
       get_survey_completion_timeline: {
         Args: { p_survey_id: string; p_user_id: string };
         Returns: Json;
@@ -537,6 +573,21 @@ export type Database = {
       get_survey_response_count: {
         Args: { p_survey_id: string };
         Returns: number;
+      };
+      get_survey_responses_list: {
+        Args: {
+          p_device?: string;
+          p_has_contact?: boolean;
+          p_page?: number;
+          p_per_page?: number;
+          p_search?: string;
+          p_sort_by?: string;
+          p_sort_dir?: string;
+          p_status?: string;
+          p_survey_id: string;
+          p_user_id: string;
+        };
+        Returns: Json;
       };
       get_survey_stats_data: {
         Args: { p_survey_id: string; p_user_id: string };

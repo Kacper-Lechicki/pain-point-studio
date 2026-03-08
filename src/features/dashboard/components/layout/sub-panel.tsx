@@ -60,7 +60,7 @@ export function SubPanel() {
               <button
                 type="button"
                 onClick={toggleSubPanel}
-                className="text-sidebar-foreground/50 hover:text-sidebar-foreground flex size-7 items-center justify-center rounded-md transition-colors"
+                className="text-sidebar-foreground/50 md:hover:text-sidebar-foreground flex size-7 items-center justify-center rounded-md transition-colors"
                 aria-label={t('sidebar.hideSubpanel')}
               >
                 <PanelLeftClose className="size-3.5" />

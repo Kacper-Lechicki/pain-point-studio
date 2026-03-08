@@ -25,7 +25,7 @@ const VALID_STATS = {
     { type: 'response', title: 'New response', timestamp: '2025-01-01', surveyId: 's1' },
   ],
   responsesTimeline: [{ date: '2025-01-01', count: 5 }],
-  surveyStatusDistribution: { draft: 1, active: 2, completed: 2 },
+  surveyStatusDistribution: { draft: 1, active: 2, completed: 2, cancelled: 0, archived: 0 },
   completionBreakdown: { completed: 70, inProgress: 20, abandoned: 10 },
 };
 

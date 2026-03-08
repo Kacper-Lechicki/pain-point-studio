@@ -3,6 +3,7 @@
 import { useState } from 'react';
 
 import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 
 import { changeProjectStatus } from '@/features/projects/actions/change-project-status';
 import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
@@ -15,20 +16,19 @@ import {
 import { useFormAction } from '@/hooks/common/use-form-action';
 import type { MessageKey } from '@/i18n/types';
 
+const PROJECT_TOAST_KEY: Record<ProjectAction, MessageKey> = {
+  complete: 'projects.toast.completed' as MessageKey,
+  archive: 'projects.toast.archived' as MessageKey,
+  reopen: 'projects.toast.reopened' as MessageKey,
+  restore: 'projects.toast.restored' as MessageKey,
+  trash: 'projects.toast.trashed' as MessageKey,
+  restoreTrash: 'projects.toast.restoredFromTrash' as MessageKey,
+  permanentDelete: 'projects.toast.permanentlyDeleted' as MessageKey,
+};
+
 type ConfirmAction = {
   action: ProjectAction;
   project: ProjectWithMetrics;
-};
-
-/** Toast message key for each project action. */
-const ACTION_SUCCESS_KEYS: Record<ProjectAction, string> = {
-  complete: 'projects.list.completeSuccess',
-  archive: 'projects.list.archiveSuccess',
-  reopen: 'projects.list.reopenSuccess',
-  restore: 'projects.list.restoreSuccess',
-  trash: 'projects.list.trashSuccess',
-  restoreTrash: 'projects.list.restoreTrashSuccess',
-  permanentDelete: 'projects.list.permanentDeleteSuccess',
 };
 
 /** Applies an optimistic status update to a project in the list. */
@@ -140,12 +140,10 @@ export function useProjectListActions({
         projectId: project.id,
       });
 
-      if (result && !result.error) {
-        const { toast } = await import('sonner');
-        toast.success(t(ACTION_SUCCESS_KEYS.permanentDelete as MessageKey));
-      } else {
-        // Revert: add back to list
+      if (result?.error) {
         setLocalProjects((prev) => [...prev, project]);
+      } else {
+        toast.success(t(PROJECT_TOAST_KEY.permanentDelete));
       }
 
       return;
@@ -162,11 +160,7 @@ export function useProjectListActions({
       action,
     });
 
-    if (result && !result.error) {
-      const { toast } = await import('sonner');
-      toast.success(t(ACTION_SUCCESS_KEYS[action] as MessageKey));
-    } else {
-      // Revert on failure
+    if (result?.error) {
       setLocalProjects((prev) =>
         prev.map((p) =>
           p.id === project.id
@@ -183,6 +177,8 @@ export function useProjectListActions({
             : p
         )
       );
+    } else {
+      toast.success(t(PROJECT_TOAST_KEY[action]));
     }
   };
 

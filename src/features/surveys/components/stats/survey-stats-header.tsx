@@ -2,22 +2,21 @@
 
 import { useState } from 'react';
 
-import { Ban, CheckCircle2, Download, MoreHorizontal, Share2 } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+import { MoreHorizontal } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { RefreshRealtimeButton } from '@/components/ui/refresh-realtime-button';
 import { StatusBadge } from '@/components/ui/status-badge';
+import { SurveyActionMenuContent } from '@/features/surveys/components/dashboard/survey-action-menu';
 import { SurveyStatusBadge } from '@/features/surveys/components/dashboard/survey-status-badge';
 import { ExportDialog } from '@/features/surveys/components/stats/export-dialog';
+import type { SurveyAction } from '@/features/surveys/config/survey-status';
 import type { SurveyStatus } from '@/features/surveys/types';
 
 interface SurveyStatsHeaderProps {
@@ -32,18 +31,16 @@ interface SurveyStatsHeaderProps {
   onRefresh: () => void;
   hasShareableLink: boolean;
   onShare: () => void;
-  canComplete: boolean;
-  canCancel: boolean;
-  onComplete: () => void;
-  onCancel: () => void;
-}
-
-interface MenuItem {
-  key: string;
-  label: string;
-  icon: LucideIcon;
-  onClick: () => void;
-  variant?: 'destructive' | 'accent';
+  /** Same flags as list menu: Export/Edit/Publish visibility. */
+  flags: {
+    isDraft: boolean;
+    isArchived: boolean;
+    isTrashed: boolean;
+    hasShareableLink: boolean;
+    questionCount: number;
+  };
+  availableActions: SurveyAction[];
+  onActionClick: (action: SurveyAction) => void;
 }
 
 export function SurveyStatsHeader({
@@ -56,68 +53,19 @@ export function SurveyStatsHeader({
   isRealtimeConnected,
   lastSyncedAt,
   onRefresh,
-  hasShareableLink,
   onShare,
-  canComplete,
-  canCancel,
-  onComplete,
-  onCancel,
+  flags,
+  availableActions,
+  onActionClick,
 }: SurveyStatsHeaderProps) {
   const t = useTranslations();
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
 
-  const primaryItems = (() => {
-    const items: MenuItem[] = [];
-
-    if (hasShareableLink) {
-      items.push({
-        key: 'share',
-        label: t('surveys.dashboard.actions.share'),
-        icon: Share2,
-        onClick: onShare,
-      });
-    }
-
-    items.push({
-      key: 'export',
-      label: t('surveys.stats.export'),
-      icon: Download,
-      onClick: () => setExportDialogOpen(true),
-    });
-
-    return items.sort((a, b) => a.label.localeCompare(b.label));
-  })();
-
-  const statusActions = (() => {
-    const items: MenuItem[] = [];
-
-    if (canComplete) {
-      items.push({
-        key: 'complete',
-        label: t('surveys.stats.completeSurvey'),
-        icon: CheckCircle2,
-        onClick: onComplete,
-        variant: 'accent',
-      });
-    }
-
-    if (canCancel) {
-      items.push({
-        key: 'cancel',
-        label: t('surveys.stats.cancelSurvey'),
-        icon: Ban,
-        onClick: onCancel,
-        variant: 'destructive',
-      });
-    }
-
-    return items.sort((a, b) => a.label.localeCompare(b.label));
-  })();
+  const canExport = !flags.isDraft && !flags.isArchived;
 
   return (
     <>
       <div className="min-w-0">
-        {/* Badges + actions on one row */}
         <div className="flex items-center justify-between gap-2">
           <div className="flex flex-wrap items-center gap-1.5">
             <StatusBadge
@@ -153,35 +101,19 @@ export function SurveyStatsHeader({
               </DropdownMenuTrigger>
 
               <DropdownMenuContent align="end">
-                {primaryItems.map((item) => (
-                  <DropdownMenuItem key={item.key} onClick={item.onClick}>
-                    <item.icon className="size-4" aria-hidden />
-                    {item.label}
-                  </DropdownMenuItem>
-                ))}
-
-                {statusActions.length > 0 && (
-                  <>
-                    <DropdownMenuSeparator />
-
-                    {statusActions.map((item) => (
-                      <DropdownMenuItem
-                        key={item.key}
-                        {...(item.variant ? { variant: item.variant } : {})}
-                        onClick={item.onClick}
-                      >
-                        <item.icon className="size-4" aria-hidden />
-                        {item.label}
-                      </DropdownMenuItem>
-                    ))}
-                  </>
-                )}
+                <SurveyActionMenuContent
+                  surveyId={surveyId}
+                  flags={flags}
+                  availableActions={availableActions}
+                  onShare={onShare}
+                  onExport={canExport ? () => setExportDialogOpen(true) : undefined}
+                  handleActionClick={onActionClick}
+                />
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
         </div>
 
-        {/* Title + description — full width */}
         <h1 className="text-foreground mt-1 text-2xl leading-tight font-bold sm:text-3xl">
           {title}
         </h1>

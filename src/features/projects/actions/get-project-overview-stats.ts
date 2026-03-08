@@ -8,7 +8,7 @@ import type { ProjectOverviewStats } from '@/features/projects/types';
 import { createClient } from '@/lib/supabase/server';
 
 const activityItemSchema = z.object({
-  type: z.enum(['response', 'survey_completed', 'survey_activated']),
+  type: z.enum(['response', 'survey_completed', 'survey_activated', 'survey_started']),
   title: z.string(),
   timestamp: z.string(),
   surveyId: z.string(),
@@ -23,6 +23,8 @@ const surveyStatusDistributionSchema = z.object({
   draft: z.number(),
   active: z.number(),
   completed: z.number(),
+  cancelled: z.number().default(0),
+  archived: z.number().default(0),
 });
 
 const completionBreakdownSchema = z.object({

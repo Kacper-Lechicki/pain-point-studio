@@ -4,7 +4,6 @@ import { useRef, useState } from 'react';
 
 import { ArrowRightLeft, GripVertical, Pencil, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
@@ -102,9 +101,7 @@ export function KanbanCard({
       content: trimmed,
     });
 
-    if (result && !result.error) {
-      toast.success(t('projects.scorecard.updateSuccess' as MessageKey));
-    } else {
+    if (result?.error) {
       onUpdated(original);
     }
   };
@@ -119,9 +116,7 @@ export function KanbanCard({
       insightId: insight.id,
     });
 
-    if (result && !result.error) {
-      toast.success(t('projects.scorecard.deleteSuccess' as MessageKey));
-    } else {
+    if (result?.error) {
       onUpdated(original);
     }
   };
@@ -169,7 +164,7 @@ export function KanbanCard({
     <>
       <div
         className={cn(
-          'bg-card group relative flex items-start gap-2 rounded-lg border px-3 py-2.5 shadow-sm transition-shadow hover:shadow-md',
+          'bg-card group relative flex items-start gap-2 rounded-lg border px-3 py-2.5 shadow-sm transition-shadow md:hover:shadow-md',
           showStripe && 'border-l-2',
           showStripe && colors?.stripe,
           isDragging && 'invisible h-0 min-h-0 overflow-hidden border-none p-0'

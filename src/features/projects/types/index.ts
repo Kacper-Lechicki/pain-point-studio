@@ -3,3 +3,4 @@ export * from './note-schemas';
 export * from './overview-stats';
 export * from './project';
 export * from './schemas';
+export * from './suggestion';

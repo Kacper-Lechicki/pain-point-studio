@@ -73,7 +73,7 @@ export function PinnedProjectCard({ project, overviewProject }: PinnedProjectCar
 
         <Link
           href={`/dashboard/projects/${project.project.id}`}
-          className="min-w-0 shrink truncate text-base font-semibold hover:underline"
+          className="min-w-0 shrink truncate text-base font-semibold md:hover:underline"
         >
           {project.project.name}
         </Link>
@@ -132,7 +132,10 @@ function SurveyRow({ survey }: { survey: ProjectSurvey }) {
     <li className="flex items-center gap-2 text-xs">
       <span className={cn('size-1.5 shrink-0 rounded-full', dotColor)} aria-hidden />
 
-      <Link href={getSurveyStatsUrl(survey.id)} className="min-w-0 flex-1 truncate hover:underline">
+      <Link
+        href={getSurveyStatsUrl(survey.id)}
+        className="min-w-0 flex-1 truncate md:hover:underline"
+      >
         {survey.title}
       </Link>
 

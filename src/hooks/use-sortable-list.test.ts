@@ -9,6 +9,18 @@ const ATTR = 'data-item-id';
 function createContainer(ids: string[], itemHeight = 50): HTMLDivElement {
   const container = document.createElement('div');
 
+  container.getBoundingClientRect = () => ({
+    top: 0,
+    bottom: ids.length * itemHeight,
+    left: 0,
+    right: 200,
+    width: 200,
+    height: ids.length * itemHeight,
+    x: 0,
+    y: 0,
+    toJSON: () => {},
+  });
+
   ids.forEach((id, i) => {
     const el = document.createElement('div');
 

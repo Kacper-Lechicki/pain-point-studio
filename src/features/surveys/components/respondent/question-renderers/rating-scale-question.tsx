@@ -31,7 +31,7 @@ export const RatingScaleQuestion = ({ value, config, onChange }: RatingScaleQues
               'flex min-h-10 min-w-10 items-center justify-center rounded-lg border text-sm font-medium transition-colors md:min-h-9 md:min-w-9',
               value === n
                 ? 'border-primary bg-primary text-primary-foreground'
-                : 'border-border text-foreground hover:bg-muted/50'
+                : 'border-border text-foreground md:hover:bg-muted/50'
             )}
           >
             {n}

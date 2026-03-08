@@ -100,7 +100,7 @@ export function ExportDialog({ open, onOpenChange, surveyId, surveyTitle }: Expo
                 onClick={() => handleExport(format)}
                 disabled={isDisabled}
                 className={cn(
-                  'border-border hover:border-foreground/20 hover:bg-accent flex items-center gap-3 rounded-lg border p-3 text-left transition-colors',
+                  'border-border md:hover:border-foreground/20 md:hover:bg-accent flex items-center gap-3 rounded-lg border p-3 text-left transition-colors',
                   'disabled:pointer-events-none disabled:opacity-50'
                 )}
               >

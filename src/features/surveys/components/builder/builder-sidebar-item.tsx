@@ -62,7 +62,7 @@ export function BuilderSidebarItem({
       }}
       className={cn(
         'group flex min-h-10 cursor-pointer items-center gap-2 border-l-2 pr-2 pl-4 text-sm transition-colors md:min-h-9',
-        isActive ? 'border-primary bg-accent/50' : 'hover:bg-accent/30 border-transparent',
+        isActive ? 'border-primary bg-accent/50' : 'md:hover:bg-accent/30 border-transparent',
         isDragging && 'opacity-50'
       )}
     >

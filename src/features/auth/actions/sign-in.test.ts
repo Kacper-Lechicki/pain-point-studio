@@ -113,18 +113,17 @@ describe('Auth Actions – Sign In', () => {
       expect(mockSignInWithOAuth).not.toHaveBeenCalled();
     });
 
-    it('should redirect on successful OAuth', async () => {
-      const { redirect } = await import('next/navigation');
-
+    it('should return OAuth URL on success for client-side redirect', async () => {
       mockSignInWithOAuth.mockResolvedValue({
         data: { url: 'https://accounts.google.com/oauth' },
         error: null,
       });
 
       const { signInWithOAuth } = await import('./sign-in');
-      await signInWithOAuth('google');
+      const result = await signInWithOAuth('google');
 
-      expect(redirect).toHaveBeenCalledWith('https://accounts.google.com/oauth');
+      expect(result.url).toBe('https://accounts.google.com/oauth');
+      expect(result.error).toBeUndefined();
     });
 
     it('should return an error on OAuth failure', async () => {
@@ -146,10 +145,9 @@ describe('Auth Actions – Sign In', () => {
       });
 
       const { signInWithOAuth } = await import('./sign-in');
+      const result = await signInWithOAuth('github');
 
-      try {
-        await signInWithOAuth('github');
-      } catch {}
+      expect(result.url).toBe('https://github.com/oauth');
 
       expect(mockSignInWithOAuth).toHaveBeenCalledWith({
         provider: 'github',

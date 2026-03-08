@@ -21,12 +21,18 @@ const OAuthButtons = () => {
     try {
       const result = await signInWithOAuth(provider);
 
+      if (result.url) {
+        window.location.href = result.url;
+
+        return;
+      }
+
       if (result.error) {
         toast.error(t(result.error as MessageKey));
-        setLoading(null);
       }
     } catch {
       toast.error(t('auth.errors.unexpected' as MessageKey));
+    } finally {
       setLoading(null);
     }
   };

@@ -30,7 +30,7 @@ export function SortableTableHeader<T extends string>({
         type="button"
         onClick={() => onSort(sortKey)}
         className={cn(
-          'gap-1 font-medium whitespace-nowrap hover:opacity-80',
+          'gap-1 font-medium whitespace-nowrap md:hover:opacity-80',
           centered ? 'inline-flex items-center justify-center' : 'flex items-center'
         )}
       >

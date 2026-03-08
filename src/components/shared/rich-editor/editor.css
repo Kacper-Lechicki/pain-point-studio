@@ -168,8 +168,10 @@
   cursor: pointer;
 }
 
-.tiptap a:hover {
-  text-decoration: underline;
+@media (hover: hover) {
+  .tiptap a:hover {
+    text-decoration: underline;
+  }
 }
 
 /* ---- Images ---- */

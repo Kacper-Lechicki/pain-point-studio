@@ -49,7 +49,7 @@ export function DashboardProjectsList({ projects, pinnedProjectId }: DashboardPr
             {visibleProjects.length > 0 && (
               <Link
                 href={ROUTES.dashboard.projects}
-                className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-xs transition-colors"
+                className="text-muted-foreground md:hover:text-foreground inline-flex items-center gap-1 text-xs transition-colors"
               >
                 {t('projects.viewAll')}
                 <ArrowRight className="size-3" />
@@ -61,7 +61,8 @@ export function DashboardProjectsList({ projects, pinnedProjectId }: DashboardPr
 
         {visibleProjects.length === 0 ? (
           <EmptyState
-            variant="compact"
+            variant="card"
+            accent="violet"
             icon={FolderKanban}
             title={t('projects.noProjectsToPin')}
             description={t('projects.noProjectsDescription')}
@@ -106,7 +107,7 @@ export function DashboardProjectsList({ projects, pinnedProjectId }: DashboardPr
                       <div className="min-w-0 flex-1 overflow-hidden">
                         <Link
                           href={getProjectDetailUrl(project.id)}
-                          className="hover:text-foreground inline-block max-w-full truncate text-sm font-medium transition-colors hover:underline"
+                          className="md:hover:text-foreground inline-block max-w-full truncate text-sm font-medium transition-colors md:hover:underline"
                         >
                           {project.name}
                         </Link>

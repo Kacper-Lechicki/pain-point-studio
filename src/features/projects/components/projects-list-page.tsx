@@ -115,17 +115,11 @@ export function ProjectsListPage({ projects, extras }: ProjectsListPageProps) {
     });
 
     if (result && !result.error) {
-      const { toast } = await import('sonner');
       const failed = result.data?.failed ?? 0;
 
       if (failed > 0) {
+        const { toast } = await import('sonner');
         toast.warning(t('projects.list.bulk.partialSuccess', { failed }));
-      } else {
-        toast.success(
-          t('projects.list.bulk.selected', { count: ids.length }) +
-            ' — ' +
-            t(`projects.list.actions.${bulkConfirmAction}` as MessageKey)
-        );
       }
 
       clearSelection();

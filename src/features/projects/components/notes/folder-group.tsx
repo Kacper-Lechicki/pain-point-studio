@@ -101,7 +101,7 @@ export function FolderGroup({
       <div className="group flex items-center gap-0.5 px-1">
         {dragHandleProps && (
           <span
-            className="text-muted-foreground flex shrink-0 cursor-grab touch-none opacity-0 transition-opacity group-hover:opacity-100 active:cursor-grabbing"
+            className="text-muted-foreground flex shrink-0 cursor-grab touch-none opacity-0 transition-opacity active:cursor-grabbing md:group-hover:opacity-100"
             onPointerDown={(e) => {
               e.stopPropagation();
               e.preventDefault();
@@ -120,7 +120,7 @@ export function FolderGroup({
           onClick={handleToggle}
           className={cn(
             'flex min-w-0 flex-1 items-center gap-1.5 rounded-md px-1.5 py-1.5 text-sm transition-colors',
-            'hover:bg-accent/50'
+            'md:hover:bg-accent/50'
           )}
         >
           <ChevronRight
@@ -159,7 +159,7 @@ export function FolderGroup({
             <Button
               variant="ghost"
               size="icon-xs"
-              className="text-muted-foreground opacity-0 group-hover:opacity-100"
+              className="text-muted-foreground opacity-0 md:group-hover:opacity-100"
             >
               <MoreHorizontal className="size-3.5" />
             </Button>

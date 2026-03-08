@@ -43,7 +43,7 @@ export function NotesSection({
           onClick={toggleExpanded}
           className={cn(
             'flex items-center gap-1 text-xs font-medium',
-            'text-muted-foreground hover:text-foreground transition-colors',
+            'text-muted-foreground md:hover:text-foreground transition-colors',
             !collapsible && 'cursor-default'
           )}
         >

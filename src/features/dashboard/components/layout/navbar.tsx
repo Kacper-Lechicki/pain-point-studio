@@ -45,7 +45,7 @@ const Navbar = () => {
 
           <Link
             href={ROUTES.common.dashboard}
-            className="text-foreground hover:text-foreground/90 xs:block hidden shrink-0 truncate text-lg font-semibold tracking-tight transition-colors"
+            className="text-foreground md:hover:text-foreground/90 xs:block hidden shrink-0 truncate text-lg font-semibold tracking-tight transition-colors"
           >
             {t(BRAND.name)}
           </Link>

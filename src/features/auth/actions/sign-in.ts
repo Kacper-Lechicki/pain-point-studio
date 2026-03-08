@@ -1,7 +1,5 @@
 'use server';
 
-import { redirect } from 'next/navigation';
-
 import { getLocale } from 'next-intl/server';
 
 import { getAuthCallbackUrl } from '@/features/auth/config/urls';
@@ -31,7 +29,9 @@ export const signInWithEmail = withPublicAction('sign-in', {
   },
 });
 
-export const signInWithOAuth = async (provider: string): Promise<{ error: string }> => {
+export const signInWithOAuth = async (
+  provider: string
+): Promise<{ error?: string; url?: string }> => {
   const parsed = authProviderSchema.safeParse(provider);
 
   if (!parsed.success) {
@@ -43,8 +43,6 @@ export const signInWithOAuth = async (provider: string): Promise<{ error: string
   if (limited) {
     return { error: 'auth.errors.rateLimitExceeded' };
   }
-
-  let redirectUrl: string | null = null;
 
   try {
     const supabase = await createClient();
@@ -59,13 +57,13 @@ export const signInWithOAuth = async (provider: string): Promise<{ error: string
       return { error: mapSupabaseError(error.message) };
     }
 
-    redirectUrl = data?.url ?? null;
+    const url = data?.url ?? null;
+
+    if (url) {
+      return { url };
+    }
   } catch {
     return { error: 'auth.errors.unexpected' };
-  }
-
-  if (redirectUrl) {
-    redirect(redirectUrl);
   }
 
   return { error: 'auth.errors.unexpected' };

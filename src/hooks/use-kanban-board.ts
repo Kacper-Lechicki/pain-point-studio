@@ -23,6 +23,8 @@ interface UseKanbanBoardOptions<TColumnId extends string> {
     targetColumnIds: string[],
     sourceColumnIds: string[]
   ) => void;
+  /** Columns that cannot receive drops. Pointer still tracks but no placeholder/hover is shown. */
+  disabledColumns?: readonly TColumnId[];
 }
 
 interface UseKanbanBoardResult {
@@ -132,8 +134,16 @@ function computeDropIndex(
 export function useKanbanBoard<TColumnId extends string>(
   options: UseKanbanBoardOptions<TColumnId>
 ): UseKanbanBoardResult {
-  const { columns, columnIds, boardRef, columnIdAttribute, itemIdAttribute, onReorder, onMove } =
-    options;
+  const {
+    columns,
+    columnIds,
+    boardRef,
+    columnIdAttribute,
+    itemIdAttribute,
+    onReorder,
+    onMove,
+    disabledColumns,
+  } = options;
 
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [draggedFromColumn, setDraggedFromColumn] = useState<TColumnId | null>(null);
@@ -151,6 +161,9 @@ export function useKanbanBoard<TColumnId extends string>(
   const draggedFromColumnRef = useRef<TColumnId | null>(null);
   const columnsRef = useRef(columns);
   const columnIdsRef = useRef(columnIds);
+  const disabledColumnsRef = useRef(disabledColumns);
+  const pointerClientXRef = useRef(0);
+  const scrollRafRef = useRef<number | null>(null);
 
   useEffect(() => {
     columnsRef.current = columns;
@@ -160,8 +173,55 @@ export function useKanbanBoard<TColumnId extends string>(
     columnIdsRef.current = columnIds;
   }, [columnIds]);
 
+  useEffect(() => {
+    disabledColumnsRef.current = disabledColumns;
+  }, [disabledColumns]);
+
   const handlePointerMoveRef = useRef<(e: PointerEvent) => void>(() => {});
   const handlePointerUpRef = useRef<() => void>(() => {});
+
+  // ── Auto-scroll the board container when dragging near edges ────
+  const SCROLL_EDGE_PX = 60;
+  const SCROLL_SPEED = 12;
+
+  const startAutoScroll = () => {
+    const tick = () => {
+      const board = boardRef.current;
+
+      if (!board || !draggedIdRef.current) {
+        scrollRafRef.current = null;
+
+        return;
+      }
+
+      const rect = board.getBoundingClientRect();
+      const x = pointerClientXRef.current;
+      const distFromLeft = x - rect.left;
+      const distFromRight = rect.right - x;
+
+      if (distFromLeft < SCROLL_EDGE_PX && board.scrollLeft > 0) {
+        const intensity = 1 - distFromLeft / SCROLL_EDGE_PX;
+        board.scrollLeft -= Math.ceil(SCROLL_SPEED * intensity);
+      } else if (
+        distFromRight < SCROLL_EDGE_PX &&
+        board.scrollLeft < board.scrollWidth - board.clientWidth
+      ) {
+        const intensity = 1 - distFromRight / SCROLL_EDGE_PX;
+        board.scrollLeft += Math.ceil(SCROLL_SPEED * intensity);
+      }
+
+      scrollRafRef.current = requestAnimationFrame(tick);
+    };
+
+    scrollRafRef.current = requestAnimationFrame(tick);
+  };
+
+  const stopAutoScroll = () => {
+    if (scrollRafRef.current !== null) {
+      cancelAnimationFrame(scrollRafRef.current);
+      scrollRafRef.current = null;
+    }
+  };
 
   const handleDragStart = (e: React.PointerEvent, itemId: string) => {
     e.stopPropagation();
@@ -200,11 +260,14 @@ export function useKanbanBoard<TColumnId extends string>(
     placeholderIndexRef.current = fromIndex >= 0 ? fromIndex : 0;
     draggedIdRef.current = itemId;
     draggedFromColumnRef.current = fromColumn;
+    pointerClientXRef.current = e.clientX;
 
     setDraggedId(itemId);
     setDraggedFromColumn(fromColumn);
     setHoveredColumn(fromColumn);
     setPlaceholderIndex(placeholderIndexRef.current);
+
+    startAutoScroll();
   };
 
   useEffect(() => {
@@ -214,6 +277,8 @@ export function useKanbanBoard<TColumnId extends string>(
       if (!currentDraggedId) {
         return;
       }
+
+      pointerClientXRef.current = e.clientX;
 
       const x = e.clientX - dragOffsetRef.current.x;
       const y = e.clientY - dragOffsetRef.current.y;
@@ -226,28 +291,39 @@ export function useKanbanBoard<TColumnId extends string>(
         const hCol = findHoveredColumn(board, columnIdAttribute, e.clientX, e.clientY);
 
         if (hCol && columnIdsRef.current.includes(hCol as TColumnId)) {
-          hoveredColumnRef.current = hCol;
-          const colItems = columnsRef.current[hCol as TColumnId] ?? [];
-          const dropIdx = computeDropIndex(
-            board,
-            columnIdAttribute,
-            itemIdAttribute,
-            hCol,
-            colItems,
-            e.clientY,
-            currentDraggedId
-          );
+          const isDisabled = disabledColumnsRef.current?.includes(hCol as TColumnId) ?? false;
 
-          placeholderIndexRef.current = dropIdx;
+          if (isDisabled) {
+            hoveredColumnRef.current = null;
+          } else {
+            hoveredColumnRef.current = hCol;
+            const colItems = columnsRef.current[hCol as TColumnId] ?? [];
+            const dropIdx = computeDropIndex(
+              board,
+              columnIdAttribute,
+              itemIdAttribute,
+              hCol,
+              colItems,
+              e.clientY,
+              currentDraggedId
+            );
+
+            placeholderIndexRef.current = dropIdx;
+          }
+        } else {
+          // Pointer is outside all columns — clear hover so drop is a no-op
+          hoveredColumnRef.current = null;
         }
       }
 
       if (rafIdRef.current === null) {
         rafIdRef.current = requestAnimationFrame(() => {
           rafIdRef.current = null;
+          const isOverColumn = hoveredColumnRef.current !== null;
+
           setGhostPosition(ghostPositionRef.current);
           setHoveredColumn(hoveredColumnRef.current);
-          setPlaceholderIndex(placeholderIndexRef.current);
+          setPlaceholderIndex(isOverColumn ? placeholderIndexRef.current : null);
         });
       }
     };
@@ -255,6 +331,8 @@ export function useKanbanBoard<TColumnId extends string>(
     handlePointerUpRef.current = () => {
       const currentDraggedId = draggedIdRef.current;
       const fromColumn = draggedFromColumnRef.current;
+
+      stopAutoScroll();
 
       if (!currentDraggedId || !fromColumn) {
         return;
@@ -334,6 +412,7 @@ export function useKanbanBoard<TColumnId extends string>(
       window.removeEventListener('pointermove', onMove, moveOpts);
       window.removeEventListener('pointerup', onUp, true);
       window.removeEventListener('pointercancel', onUp, true);
+      stopAutoScroll();
 
       if (rafIdRef.current !== null) {
         cancelAnimationFrame(rafIdRef.current);

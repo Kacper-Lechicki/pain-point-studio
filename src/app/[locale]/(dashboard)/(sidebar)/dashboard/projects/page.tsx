@@ -51,6 +51,7 @@ export default async function ProjectsPage() {
             icon={FolderKanban}
             title={t('projects.empty.title')}
             description={t('projects.empty.description')}
+            accent="violet"
             action={
               <Button asChild>
                 <Link href={ROUTES.dashboard.projectNew}>

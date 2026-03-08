@@ -23,6 +23,8 @@ import {
 import { type Root, createRoot } from 'react-dom/client';
 import tippy, { type Instance as TippyInstance } from 'tippy.js';
 
+import { cn } from '@/lib/common/utils';
+
 interface SlashCommandItem {
   title: string;
   description: string;
@@ -182,8 +184,8 @@ function SlashCommandList({ items, command, ref }: SlashCommandListProps) {
 
   if (items.length === 0) {
     return (
-      <div className="bg-popover text-popover-foreground rounded-md border p-2 shadow-md">
-        <p className="text-muted-foreground px-2 py-1 text-sm">No results</p>
+      <div className="bg-popover text-popover-foreground rounded-md border p-1 shadow-md">
+        <p className="text-muted-foreground py-6 text-center text-sm">No results</p>
       </div>
     );
   }
@@ -202,15 +204,21 @@ function SlashCommandList({ items, command, ref }: SlashCommandListProps) {
             key={item.title}
             type="button"
             data-active={isActive}
-            className={`flex w-full items-center gap-3 rounded-md px-2 py-1.5 text-left text-sm transition-colors ${
-              isActive ? 'bg-accent text-accent-foreground' : 'hover:bg-accent/50'
-            }`}
+            className={cn(
+              'flex min-h-10 w-full cursor-pointer items-center gap-2 rounded-lg border border-dashed border-transparent px-2 py-1.5 text-left text-sm transition-colors md:min-h-9',
+              isActive
+                ? 'border-foreground/30 text-foreground'
+                : 'md:hover:border-foreground/30 md:hover:text-foreground'
+            )}
             onClick={() => command(item)}
             onMouseEnter={() => setSelectedIndex(index)}
           >
-            <div className="bg-muted flex size-8 shrink-0 items-center justify-center rounded-md">
-              <Icon className="size-4" />
-            </div>
+            <Icon
+              className={cn(
+                'size-4 shrink-0',
+                isActive ? 'text-foreground' : 'text-muted-foreground'
+              )}
+            />
             <div className="min-w-0 flex-1">
               <p className="truncate font-medium">{item.title}</p>
               <p className="text-muted-foreground truncate text-xs">{item.description}</p>

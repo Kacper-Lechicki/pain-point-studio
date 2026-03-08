@@ -110,14 +110,20 @@ export const RatingDistributionChart = ({ answers, config }: RatingDistributionC
         {bars.map((bar) => {
           const barHeight = maxBarCount > 0 ? (bar.count / maxBarCount) * 100 : 0;
           const hasCount = bar.count > 0;
+          const total = bars.reduce((s, b) => s + b.count, 0);
+          const pct = total > 0 ? Math.round((bar.count / total) * 100) : 0;
 
           return (
             <div key={bar.rating} className="flex flex-1 flex-col items-center gap-1">
-              {hasCount && (
-                <span className="text-muted-foreground text-[10px] tabular-nums">{bar.count}</span>
-              )}
-
-              <div className="flex h-40 w-full items-end">
+              <div className="flex h-40 w-full flex-col items-center justify-end gap-1">
+                {hasCount && (
+                  <span className="text-foreground text-[11px] font-semibold tabular-nums">
+                    {bar.count}
+                    <span className="text-muted-foreground ml-0.5 text-[9px] font-normal">
+                      ({pct}%)
+                    </span>
+                  </span>
+                )}
                 <div
                   className={cn(
                     'w-full rounded-t transition-all',
@@ -127,12 +133,8 @@ export const RatingDistributionChart = ({ answers, config }: RatingDistributionC
                 />
               </div>
 
-              <span
-                className={cn(
-                  'text-[11px] tabular-nums',
-                  hasCount ? 'text-foreground font-medium' : 'text-muted-foreground'
-                )}
-              >
+              <span className="text-muted-foreground text-[10px] tabular-nums">
+                {'★'}
                 {bar.rating}
               </span>
             </div>

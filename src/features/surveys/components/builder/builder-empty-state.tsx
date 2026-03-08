@@ -18,6 +18,7 @@ export function BuilderEmptyState() {
           icon={ClipboardList}
           title={t('title')}
           description={t('description')}
+          accent="cyan"
           action={
             <Button onClick={() => addQuestion()}>
               <Plus className="size-4" aria-hidden />

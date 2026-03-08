@@ -3,6 +3,7 @@
 import { useState } from 'react';
 
 import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 
 import { ROUTES } from '@/config/routes';
 import { changeProjectStatus } from '@/features/projects/actions/change-project-status';
@@ -16,6 +17,16 @@ import type { Project } from '@/features/projects/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import { useRouter } from '@/i18n/routing';
 import type { MessageKey } from '@/i18n/types';
+
+const PROJECT_TOAST_KEY: Record<ProjectAction, MessageKey> = {
+  complete: 'projects.toast.completed' as MessageKey,
+  archive: 'projects.toast.archived' as MessageKey,
+  reopen: 'projects.toast.reopened' as MessageKey,
+  restore: 'projects.toast.restored' as MessageKey,
+  trash: 'projects.toast.trashed' as MessageKey,
+  restoreTrash: 'projects.toast.restoredFromTrash' as MessageKey,
+  permanentDelete: 'projects.toast.permanentlyDeleted' as MessageKey,
+};
 
 interface UseProjectDashboardActionsParams {
   initialProject: Project;
@@ -67,17 +78,6 @@ function applyOptimisticUpdate(prev: Project, action: ProjectAction): Project {
   }
 }
 
-/** Toast message key for each project action. */
-const ACTION_SUCCESS_KEYS: Record<ProjectAction, string> = {
-  complete: 'projects.detail.completeSuccess',
-  archive: 'projects.detail.archiveSuccess',
-  reopen: 'projects.detail.reopenSuccess',
-  restore: 'projects.detail.restoreSuccess',
-  trash: 'projects.detail.trashSuccess',
-  restoreTrash: 'projects.detail.restoreTrashSuccess',
-  permanentDelete: 'projects.detail.permanentDeleteSuccess',
-};
-
 export function useProjectDashboardActions({ initialProject }: UseProjectDashboardActionsParams) {
   const t = useTranslations();
   const router = useRouter();
@@ -124,8 +124,7 @@ export function useProjectDashboardActions({ initialProject }: UseProjectDashboa
       });
 
       if (result && !result.error) {
-        const { toast } = await import('sonner');
-        toast.success(t(ACTION_SUCCESS_KEYS.permanentDelete as MessageKey));
+        toast.success(t(PROJECT_TOAST_KEY.permanentDelete));
         router.push(ROUTES.dashboard.projects);
       }
 
@@ -141,12 +140,10 @@ export function useProjectDashboardActions({ initialProject }: UseProjectDashboa
       action: confirmAction,
     });
 
-    if (result && !result.error) {
-      const { toast } = await import('sonner');
-      toast.success(t(ACTION_SUCCESS_KEYS[confirmAction] as MessageKey));
-    } else {
-      // Revert on failure
+    if (result?.error) {
       setProject(initialProject);
+    } else {
+      toast.success(t(PROJECT_TOAST_KEY[confirmAction]));
     }
   };
 

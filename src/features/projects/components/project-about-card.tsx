@@ -204,7 +204,7 @@ export function ProjectAboutCard({ project }: ProjectAboutCardProps) {
           <button
             type="button"
             onClick={() => setExpanded(true)}
-            className="text-muted-foreground hover:text-foreground relative z-10 w-full pt-1 pb-2 text-center text-xs font-medium transition-colors"
+            className="text-muted-foreground md:hover:text-foreground relative z-10 w-full pt-1 pb-2 text-center text-xs font-medium transition-colors"
           >
             {t('showMore')}
           </button>
@@ -215,7 +215,7 @@ export function ProjectAboutCard({ project }: ProjectAboutCardProps) {
         <button
           type="button"
           onClick={() => setExpanded(false)}
-          className="text-muted-foreground hover:text-foreground w-full pt-1 pb-2 text-center text-xs font-medium transition-colors"
+          className="text-muted-foreground md:hover:text-foreground w-full pt-1 pb-2 text-center text-xs font-medium transition-colors"
         >
           {t('showLess')}
         </button>

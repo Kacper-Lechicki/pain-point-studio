@@ -13,17 +13,19 @@ import type { MessageKey } from '@/i18n/types';
 /** Outline colors for bulk action buttons: solid colored border + colored text. */
 const BULK_BUTTON_COLORS: Record<BulkSurveyAction, string> = {
   complete:
-    'border-violet-500 text-violet-600 hover:bg-violet-500/10 dark:text-violet-400 dark:hover:bg-violet-500/10',
-  cancel: 'border-destructive text-destructive hover:bg-destructive/10',
+    'border-violet-500 text-violet-600 md:hover:bg-violet-500/10 dark:text-violet-400 dark:md:hover:bg-violet-500/10',
+  cancel:
+    'border-red-500 text-red-600 md:hover:bg-red-500/10 dark:text-red-400 dark:md:hover:bg-red-500/10',
   reopen:
-    'border-emerald-500 text-emerald-600 hover:bg-emerald-500/10 dark:text-emerald-400 dark:hover:bg-emerald-500/10',
+    'border-emerald-500 text-emerald-600 md:hover:bg-emerald-500/10 dark:text-emerald-400 dark:md:hover:bg-emerald-500/10',
   archive:
-    'border-amber-500 text-amber-600 hover:bg-amber-500/10 dark:text-amber-400 dark:hover:bg-amber-500/10',
+    'border-amber-500 text-amber-600 md:hover:bg-amber-500/10 dark:text-amber-400 dark:md:hover:bg-amber-500/10',
   restore:
-    'border-emerald-500 text-emerald-600 hover:bg-emerald-500/10 dark:text-emerald-400 dark:hover:bg-emerald-500/10',
-  trash: 'border-destructive text-destructive hover:bg-destructive/10',
+    'border-emerald-500 text-emerald-600 md:hover:bg-emerald-500/10 dark:text-emerald-400 dark:md:hover:bg-emerald-500/10',
+  trash:
+    'border-red-500 text-red-600 md:hover:bg-red-500/10 dark:text-red-400 dark:md:hover:bg-red-500/10',
   restoreTrash:
-    'border-emerald-500 text-emerald-600 hover:bg-emerald-500/10 dark:text-emerald-400 dark:hover:bg-emerald-500/10',
+    'border-emerald-500 text-emerald-600 md:hover:bg-emerald-500/10 dark:text-emerald-400 dark:md:hover:bg-emerald-500/10',
 };
 
 interface SurveyBulkActionBarProps {

@@ -55,7 +55,7 @@ export function ProjectListTable({
     <div className="border-border/50 bg-card min-w-0 overflow-auto rounded-lg border">
       <Table className="w-full table-fixed">
         <TableHeader>
-          <TableRow className="bg-muted/60 hover:bg-muted/60">
+          <TableRow className="bg-muted/60 md:hover:bg-muted/60">
             {onToggleSelect && (
               <TableHead className="w-10 shrink-0 px-3 py-3">
                 <Checkbox
