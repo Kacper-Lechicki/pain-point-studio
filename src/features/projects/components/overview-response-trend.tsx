@@ -13,6 +13,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useElementSize } from '@/features/dashboard/hooks/use-element-size';
 import type { TimelinePoint } from '@/features/dashboard/types/dashboard-stats';
 import type { MessageKey } from '@/i18n/types';
@@ -106,7 +107,7 @@ export function OverviewResponseTrend({ timeline }: OverviewResponseTrendProps) 
           </div>
         ) : (
           <div ref={chartContainerRef} className="h-[200px] min-w-0">
-            {chartWidth > 0 && chartHeight > 0 && (
+            {chartWidth > 0 && chartHeight > 0 ? (
               <ChartContainer
                 config={chartConfig}
                 dimensions={{ width: chartWidth, height: chartHeight }}
@@ -146,6 +147,8 @@ export function OverviewResponseTrend({ timeline }: OverviewResponseTrendProps) 
                   />
                 </LineChart>
               </ChartContainer>
+            ) : (
+              <Skeleton className="h-full w-full rounded-lg" />
             )}
           </div>
         )}

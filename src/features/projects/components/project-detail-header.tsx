@@ -10,6 +10,7 @@ import {
   Clock,
   EllipsisVertical,
   MessageSquare,
+  Pencil,
   Trash2,
   Trophy,
   X,
@@ -27,6 +28,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { RefreshRealtimeButton } from '@/components/ui/refresh-realtime-button';
+import { StatusBadge } from '@/components/ui/status-badge';
 import { Textarea } from '@/components/ui/textarea';
 import type { ProjectOwner } from '@/features/projects/actions/get-project';
 import { updateProject } from '@/features/projects/actions/update-project';
@@ -270,7 +272,15 @@ export function ProjectDetailHeader({
           <div className="min-w-0 flex-1">
             {/* Badge + actions row */}
             <div className="flex items-center justify-between gap-2">
-              <ProjectStatusBadge status={project.status as ProjectStatus} />
+              <div className="flex flex-wrap items-center gap-1.5">
+                <StatusBadge
+                  labelKey="projects.detail.contextBadge"
+                  descriptionKey="projects.detail.contextBadgeDescription"
+                  ariaLabelKey="projects.detail.contextBadgeAriaLabel"
+                  variant="secondary"
+                />
+                <ProjectStatusBadge status={project.status as ProjectStatus} />
+              </div>
 
               <div className="flex shrink-0 items-center gap-1">
                 {hasActiveSurveys && onRefresh && (
@@ -344,28 +354,40 @@ export function ProjectDetailHeader({
                   />
                 </div>
               ) : (
-                <h1
-                  className={cn(
-                    'text-foreground min-w-0 text-2xl leading-tight font-bold wrap-break-word sm:text-3xl',
-                    canEditInline &&
-                      'decoration-muted-foreground/40 w-fit cursor-pointer rounded-md underline-offset-4 md:hover:underline'
-                  )}
-                  onClick={canEditInline ? nameEdit.startEditing : undefined}
-                  role={canEditInline ? 'button' : undefined}
-                  tabIndex={canEditInline ? 0 : undefined}
-                  onKeyDown={
-                    canEditInline
-                      ? (e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            nameEdit.startEditing();
+                <div className="flex min-w-0 items-baseline gap-1.5">
+                  <h1
+                    className={cn(
+                      'text-foreground min-w-0 text-2xl leading-tight font-bold wrap-break-word sm:text-3xl',
+                      canEditInline &&
+                        'decoration-muted-foreground/40 w-fit cursor-pointer rounded-md underline-offset-4 md:hover:underline'
+                    )}
+                    onClick={canEditInline ? nameEdit.startEditing : undefined}
+                    tabIndex={canEditInline ? 0 : undefined}
+                    onKeyDown={
+                      canEditInline
+                        ? (e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              nameEdit.startEditing();
+                            }
                           }
-                        }
-                      : undefined
-                  }
-                >
-                  {project.name}
-                </h1>
+                        : undefined
+                    }
+                  >
+                    {project.name}
+                  </h1>
+                  {canEditInline && (
+                    <Button
+                      variant="ghost"
+                      size="icon-xs"
+                      className="text-muted-foreground shrink-0"
+                      onClick={nameEdit.startEditing}
+                      aria-label={t('projects.detail.editName')}
+                    >
+                      <Pencil className="size-3.5" />
+                    </Button>
+                  )}
+                </div>
               )}
             </div>
           </div>

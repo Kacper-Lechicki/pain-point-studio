@@ -469,9 +469,102 @@
     "stats": {
       "title": "Survey Results",
       "contextBadge": "Survey",
+      "tabs": {
+        "overview": "Overview",
+        "responses": "Responses",
+        "questions": "Questions"
+      },
+      "metrics": {
+        "views": "Views",
+        "viewsSubtitle": "Total page impressions",
+        "started": "Started",
+        "startedSubtitle": "Respondents who began the survey",
+        "responses": "Responses",
+        "responsesSubtitle": "Completed submissions",
+        "submissionRate": "Submission rate",
+        "submissionRateSubtitle": "Of started responses",
+        "avgTime": "Avg. completion",
+        "avgTimeSubtitle": "Per completed response",
+        "ofMax": "of {max}",
+        "firstResponse": "First response",
+        "lastResponse": "Last response"
+      },
+      "info": {
+        "title": "Survey details",
+        "schedule": "Schedule",
+        "dateRange": "{start} – {end}",
+        "project": "Project",
+        "respondentCap": "Cap: {max}",
+        "respondentCapLabel": "Respondent cap",
+        "noEndDate": "No end date",
+        "noStartDate": "Not started"
+      },
+      "overviewUnderConstruction": {
+        "title": "Under construction",
+        "description": "We're redesigning this tab to give you better insights. Check back soon!"
+      },
+      "overviewEmpty": {
+        "title": "No responses yet",
+        "description": "Share the survey link to start collecting feedback from your audience.",
+        "shareCta": "Share Survey"
+      },
+      "questionsEmpty": {
+        "title": "No data yet",
+        "description": "Question analytics will appear once responses are collected."
+      },
+      "responseList": {
+        "searchPlaceholder": "Search responses…",
+        "filterLabel": "Filter",
+        "clearFilters": "Clear filters",
+        "filterStatus": "Status",
+        "filterDevice": "Device",
+        "filterContact": "Contact",
+        "contactWith": "With contact",
+        "contactWithout": "Without contact",
+        "sortLabel": "Sort",
+        "sortCompletedAt": "Date completed",
+        "sortStartedAt": "Date started",
+        "sortDuration": "Duration",
+        "sortAsc": "Oldest first",
+        "sortDesc": "Newest first",
+        "colStatus": "Status",
+        "colCompleted": "Completed",
+        "colDevice": "Device",
+        "colDuration": "Duration",
+        "statusCompleted": "Completed",
+        "statusInProgress": "In progress",
+        "statusAbandoned": "Abandoned",
+        "status_completed": "Completed",
+        "status_in_progress": "In progress",
+        "status_abandoned": "Abandoned",
+        "deviceDesktop": "Desktop",
+        "deviceMobile": "Mobile",
+        "deviceTablet": "Tablet",
+        "device_desktop": "Desktop",
+        "device_mobile": "Mobile",
+        "device_tablet": "Tablet",
+        "noResults": "No responses match your filters.",
+        "detailTitle": "Response",
+        "noAnswers": "No answers recorded.",
+        "feedback": "Feedback",
+        "contact": "Contact",
+        "prevResponse": "Previous response",
+        "nextResponse": "Next response",
+        "skipped": "Skipped",
+        "yes": "Yes",
+        "no": "No",
+        "viewTable": "Table view",
+        "dateRange": "Date range",
+        "clearDateRange": "Clear date range",
+        "statusInfo": {
+          "completed": "This response was fully completed by the respondent. All questions were answered and the survey was submitted successfully.",
+          "in_progress": "This response is currently in progress. The respondent has started the survey but hasn't submitted it yet.",
+          "abandoned": "This response was abandoned. The respondent started the survey but didn't complete it within the allowed time.",
+          "ariaLabel": "Learn more about {status} status"
+        }
+      },
       "contextBadgeDescription": "A survey collects responses from your target audience through structured questions. Each survey belongs to a project and helps gather data to validate or invalidate your assumptions.",
       "contextBadgeAriaLabel": "{status} context badge",
-      "overview": "Overview",
       "metricsLabel": "Key metrics",
       "totalResponses": "Total responses",
       "completedResponses": "Completed",
@@ -754,7 +847,15 @@
       },
       "toast": {
         "duplicated": "Survey duplicated as draft.",
-        "actionFailed": "Something went wrong. Please try again."
+        "actionFailed": "Something went wrong. Please try again.",
+        "completed": "Survey marked as completed.",
+        "cancelled": "Survey cancelled.",
+        "reopened": "Survey reopened.",
+        "archived": "Survey archived.",
+        "restored": "Survey restored.",
+        "trashed": "Survey moved to trash.",
+        "restoredFromTrash": "Survey restored from trash.",
+        "permanentlyDeleted": "Survey permanently deleted."
       },
       "shareDialog": {
         "title": "Share survey"
@@ -858,6 +959,15 @@
       "opportunity": "Opportunity",
       "threat": "Threat",
       "decision": "Decision"
+    },
+    "toast": {
+      "completed": "Project marked as completed.",
+      "archived": "Project archived.",
+      "reopened": "Project reopened.",
+      "restored": "Project restored.",
+      "trashed": "Project moved to trash.",
+      "restoredFromTrash": "Project restored from trash.",
+      "permanentlyDeleted": "Project permanently deleted."
     },
     "errors": {
       "fieldRequired": "This field is required.",
@@ -1346,7 +1456,7 @@
     },
     "suggestions": {
       "title": "Suggested",
-      "minResponsesBanner": "Collect at least {min} responses to unlock automated insights.",
+      "minResponsesBanner": "More responses means better suggestions. Aim for at least {min}.",
       "dismiss": "Dismiss",
       "source": "From: {survey}",
       "sourceWithQuestion": "From: {survey} → {question}",

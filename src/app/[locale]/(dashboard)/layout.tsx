@@ -25,7 +25,7 @@ const DashboardLayout = async ({ children }: { children: ReactNode }) => {
           <SubPanelItemsProvider>
             <DashboardLayoutChrome profile={profile}>{children}</DashboardLayoutChrome>
 
-            <Suspense>
+            <Suspense fallback={null}>
               <AuthToast />
             </Suspense>
           </SubPanelItemsProvider>

@@ -112,7 +112,9 @@ export function ProjectInsightsTab({
   }, [insights, searchQuery, typeFilter, sortBy]);
 
   const filteredSuggestions = useMemo(() => {
-    if (!searchQuery.trim()) {return suggestions;}
+    if (!searchQuery.trim()) {
+      return suggestions;
+    }
 
     const q = searchQuery.toLowerCase();
 

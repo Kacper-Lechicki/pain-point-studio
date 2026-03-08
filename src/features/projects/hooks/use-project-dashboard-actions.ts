@@ -3,6 +3,7 @@
 import { useState } from 'react';
 
 import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 
 import { ROUTES } from '@/config/routes';
 import { changeProjectStatus } from '@/features/projects/actions/change-project-status';
@@ -16,6 +17,16 @@ import type { Project } from '@/features/projects/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import { useRouter } from '@/i18n/routing';
 import type { MessageKey } from '@/i18n/types';
+
+const PROJECT_TOAST_KEY: Record<ProjectAction, MessageKey> = {
+  complete: 'projects.toast.completed' as MessageKey,
+  archive: 'projects.toast.archived' as MessageKey,
+  reopen: 'projects.toast.reopened' as MessageKey,
+  restore: 'projects.toast.restored' as MessageKey,
+  trash: 'projects.toast.trashed' as MessageKey,
+  restoreTrash: 'projects.toast.restoredFromTrash' as MessageKey,
+  permanentDelete: 'projects.toast.permanentlyDeleted' as MessageKey,
+};
 
 interface UseProjectDashboardActionsParams {
   initialProject: Project;
@@ -113,6 +124,7 @@ export function useProjectDashboardActions({ initialProject }: UseProjectDashboa
       });
 
       if (result && !result.error) {
+        toast.success(t(PROJECT_TOAST_KEY.permanentDelete));
         router.push(ROUTES.dashboard.projects);
       }
 
@@ -129,8 +141,9 @@ export function useProjectDashboardActions({ initialProject }: UseProjectDashboa
     });
 
     if (result?.error) {
-      // Revert on failure
       setProject(initialProject);
+    } else {
+      toast.success(t(PROJECT_TOAST_KEY[confirmAction]));
     }
   };
 

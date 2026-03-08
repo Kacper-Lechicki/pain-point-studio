@@ -3,6 +3,7 @@
 import { useState } from 'react';
 
 import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 
 import { changeProjectStatus } from '@/features/projects/actions/change-project-status';
 import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
@@ -14,6 +15,16 @@ import {
 } from '@/features/projects/lib/project-confirm-props';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import type { MessageKey } from '@/i18n/types';
+
+const PROJECT_TOAST_KEY: Record<ProjectAction, MessageKey> = {
+  complete: 'projects.toast.completed' as MessageKey,
+  archive: 'projects.toast.archived' as MessageKey,
+  reopen: 'projects.toast.reopened' as MessageKey,
+  restore: 'projects.toast.restored' as MessageKey,
+  trash: 'projects.toast.trashed' as MessageKey,
+  restoreTrash: 'projects.toast.restoredFromTrash' as MessageKey,
+  permanentDelete: 'projects.toast.permanentlyDeleted' as MessageKey,
+};
 
 type ConfirmAction = {
   action: ProjectAction;
@@ -130,8 +141,9 @@ export function useProjectListActions({
       });
 
       if (result?.error) {
-        // Revert: add back to list
         setLocalProjects((prev) => [...prev, project]);
+      } else {
+        toast.success(t(PROJECT_TOAST_KEY.permanentDelete));
       }
 
       return;
@@ -149,7 +161,6 @@ export function useProjectListActions({
     });
 
     if (result?.error) {
-      // Revert on failure
       setLocalProjects((prev) =>
         prev.map((p) =>
           p.id === project.id
@@ -166,6 +177,8 @@ export function useProjectListActions({
             : p
         )
       );
+    } else {
+      toast.success(t(PROJECT_TOAST_KEY[action]));
     }
   };
 

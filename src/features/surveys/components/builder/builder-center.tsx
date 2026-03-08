@@ -30,7 +30,7 @@ export function BuilderCenter() {
 
   if (state.questions.length === 0) {
     return (
-      <div className="flex min-h-0 flex-1 flex-col">
+      <div className="flex h-full min-h-0 flex-1 flex-col">
         <BuilderEmptyState />
       </div>
     );
@@ -47,7 +47,7 @@ export function BuilderCenter() {
   const showDescription = activeQuestion.description !== null;
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+    <div className="flex h-full min-h-0 flex-1 flex-col overflow-y-auto">
       <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-8 sm:py-8">
         <div className="mb-4 flex flex-wrap items-center gap-1.5">
           {state.questions.map((q, i) => {

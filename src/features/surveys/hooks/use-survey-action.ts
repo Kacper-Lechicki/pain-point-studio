@@ -85,6 +85,9 @@ export function useSurveyAction(
       setConfirmDialog(null);
 
       if (result.success) {
+        toast.success(
+          t(`surveys.dashboard.${SURVEY_ACTION_UI[action].toastKey}` as Parameters<typeof t>[0])
+        );
         onStatusChange(surveyId, action);
       } else {
         toast.error(

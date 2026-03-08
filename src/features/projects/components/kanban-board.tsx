@@ -3,32 +3,21 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { GripVertical } from 'lucide-react';
-import { useTranslations } from 'next-intl';
 import { createPortal } from 'react-dom';
 
 import { moveInsight } from '@/features/projects/actions/move-insight';
 import { reorderInsights } from '@/features/projects/actions/reorder-insights';
-import { KanbanCard } from '@/features/projects/components/kanban-card';
 import { KanbanColumn } from '@/features/projects/components/kanban-column';
-import { SuggestionCard } from '@/features/projects/components/suggestion-card';
 import { SuggestionColumn } from '@/features/projects/components/suggestion-panel';
 import { INSIGHT_COLORS } from '@/features/projects/config/insight-colors';
 import type { InsightSuggestion, InsightType, ProjectInsight } from '@/features/projects/types';
 import { INSIGHT_TYPES } from '@/features/projects/types';
 import { useKanbanBoard } from '@/hooks/use-kanban-board';
-import type { MessageKey } from '@/i18n/types';
 import { cn } from '@/lib/common/utils';
 
 // ── Board column type (SWOT + optional suggestions) ────────────────
 
 type BoardColumnId = InsightType | 'suggested';
-
-const PILL_LABEL_KEYS: Record<InsightType, string> = {
-  strength: 'projects.scorecard.strengths',
-  opportunity: 'projects.scorecard.opportunities',
-  threat: 'projects.scorecard.threats',
-  decision: 'projects.scorecard.decisions',
-};
 
 // ── Props ──────────────────────────────────────────────────────────
 
@@ -64,9 +53,6 @@ export function KanbanBoard({
   visibleTypes,
   onDragCompleted,
 }: KanbanBoardProps) {
-  const t = useTranslations();
-  const [activeMobileType, setActiveMobileType] = useState<InsightType>('strength');
-
   const [localInsights, setLocalInsights] = useState(insights);
 
   useEffect(() => {
@@ -79,11 +65,6 @@ export function KanbanBoard({
   const typesToRender: readonly InsightType[] =
     visibleTypes && visibleTypes.length > 0 ? visibleTypes : INSIGHT_TYPES;
   const totalColumns = INSIGHT_TYPES.length + (hasSuggestions ? 1 : 0);
-
-  // Reset mobile tab if filtered out
-  const effectiveMobileType: InsightType = typesToRender.includes(activeMobileType)
-    ? activeMobileType
-    : (typesToRender[0] ?? 'strength');
 
   // ── Group insights by type ─────────────────────────────────────
 
@@ -134,7 +115,9 @@ export function KanbanBoard({
 
   const handleReorder = (columnId: BoardColumnId, newIds: string[]) => {
     // Reordering within 'suggested' column — no persistence needed
-    if (columnId === 'suggested') {return;}
+    if (columnId === 'suggested') {
+      return;
+    }
 
     setLocalInsights((prev) => {
       const updated = prev.map((insight) => {
@@ -168,7 +151,9 @@ export function KanbanBoard({
     sourceColumnIds: string[]
   ) => {
     // Prevent dropping INTO the suggested column
-    if (toColumn === 'suggested') {return;}
+    if (toColumn === 'suggested') {
+      return;
+    }
 
     // Moving FROM suggested → SWOT column = accept suggestion
     if (fromColumn === 'suggested') {
@@ -259,8 +244,6 @@ export function KanbanBoard({
       .map((i) => i.id);
 
     handleMove(insightId, insight.type as InsightType, newType, targetColumnIds, sourceColumnIds);
-
-    setActiveMobileType(newType);
   };
 
   // ── Ghost card content ─────────────────────────────────────────
@@ -277,82 +260,11 @@ export function KanbanBoard({
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Mobile: suggestions column above tabs */}
-      {hasSuggestions && (
-        <div className="md:hidden">
-          <SuggestionColumn
-            suggestions={suggestions ?? []}
-            totalCompletedResponses={totalCompletedResponses}
-            onMoveTo={(sig, type, content) => onSuggestionAccepted?.(sig, type, content)}
-            onDismissed={(sig) => onSuggestionDismissed?.(sig)}
-            renderCard={(suggestion) => (
-              <SuggestionCard
-                key={suggestion.signature}
-                suggestion={suggestion}
-                onMoveTo={(sig, type, content) => onSuggestionAccepted?.(sig, type, content)}
-                onDismissed={(sig) => onSuggestionDismissed?.(sig)}
-                hideDragHandle
-              />
-            )}
-          />
-        </div>
-      )}
-
-      {/* Mobile: type tabs */}
-      <div className="flex gap-1.5 overflow-x-auto md:hidden">
-        {typesToRender.map((type) => {
-          const colors = INSIGHT_COLORS[type];
-          const isActive = effectiveMobileType === type;
-
-          return (
-            <button
-              key={type}
-              type="button"
-              onClick={() => setActiveMobileType(type)}
-              className={cn(
-                'flex shrink-0 items-center gap-1 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors',
-                isActive
-                  ? cn(colors.pillBg, colors.pillBorder, colors.pillText)
-                  : 'border-border text-muted-foreground'
-              )}
-            >
-              {isActive && <span className={cn('size-1.5 rounded-full', colors.dot)} aria-hidden />}
-              {t(PILL_LABEL_KEYS[type] as MessageKey)}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Mobile: active column */}
-      <div className="md:hidden">
-        <KanbanColumn
-          key={effectiveMobileType}
-          type={effectiveMobileType}
-          insights={insightsByType[effectiveMobileType]}
-          projectId={projectId}
-          onInsightCreated={onInsightCreated}
-          onInsightUpdated={onInsightUpdated}
-          onInsightDeleted={onInsightDeleted}
-          onMoveToType={handleMoveToType}
-          renderCard={(insight) => (
-            <KanbanCard
-              key={insight.id}
-              insight={insight}
-              onUpdated={onInsightUpdated}
-              onDeleted={onInsightDeleted}
-              hideDragHandle
-              showStripe
-              onMoveToType={handleMoveToType}
-            />
-          )}
-        />
-      </div>
-
-      {/* Desktop: all columns */}
+      {/* All columns — horizontally scrollable */}
       <div
         ref={boardRef}
-        className="hidden gap-3 md:grid"
-        style={{ gridTemplateColumns: `repeat(${totalColumns}, minmax(0, 1fr))` }}
+        className="grid gap-3 overflow-x-auto pb-2"
+        style={{ gridTemplateColumns: `repeat(${totalColumns}, minmax(280px, 1fr))` }}
       >
         {hasSuggestions && (
           <SuggestionColumn

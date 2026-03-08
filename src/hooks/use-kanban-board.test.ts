@@ -124,16 +124,37 @@ describe('useKanbanBoard', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
+    const rafTimeouts = new Map<number, ReturnType<typeof setTimeout>>();
+    let rafId = 0;
+
     vi.stubGlobal(
       'requestAnimationFrame',
       vi.fn((cb: FrameRequestCallback) => {
-        cb(0);
+        const id = ++rafId;
 
-        return 0;
+        rafTimeouts.set(
+          id,
+          setTimeout(() => {
+            rafTimeouts.delete(id);
+            cb(0);
+          }, 0)
+        );
+
+        return id;
       })
     );
 
-    vi.stubGlobal('cancelAnimationFrame', vi.fn());
+    vi.stubGlobal(
+      'cancelAnimationFrame',
+      vi.fn((id: number) => {
+        const t = rafTimeouts.get(id);
+
+        if (t !== undefined) {
+          clearTimeout(t);
+          rafTimeouts.delete(id);
+        }
+      })
+    );
   });
 
   afterEach(() => {
@@ -238,7 +259,7 @@ describe('useKanbanBoard', () => {
   // ── Pointer move and column hover ──────────────────────────────────
 
   describe('pointer move and column hover', () => {
-    it('should update hoveredColumn on pointermove', () => {
+    it('should update hoveredColumn on pointermove', async () => {
       board = createBoard({ A: ['a1', 'a2'], B: ['b1'] });
       const ref = { current: board };
 
@@ -250,14 +271,15 @@ describe('useKanbanBoard', () => {
       expect(result.current.hoveredColumn).toBe('A');
 
       // Move pointer into column B (left=210, right=410). clientX=300 is within B.
-      act(() => {
+      await act(async () => {
         window.dispatchEvent(new PointerEvent('pointermove', { clientX: 300, clientY: 20 }));
+        await new Promise((r) => setTimeout(r, 0));
       });
 
       expect(result.current.hoveredColumn).toBe('B');
     });
 
-    it('should update placeholderIndex within hovered column', () => {
+    it('should update placeholderIndex within hovered column', async () => {
       board = createBoard({ A: ['a1'], B: ['b1', 'b2'] });
       const ref = { current: board };
 
@@ -266,8 +288,9 @@ describe('useKanbanBoard', () => {
       startDrag(result, 'a1', 100, 10);
 
       // Move into column B below b1 midpoint (mid = 30). clientY=40 is below mid.
-      act(() => {
+      await act(async () => {
         window.dispatchEvent(new PointerEvent('pointermove', { clientX: 300, clientY: 40 }));
+        await new Promise((r) => setTimeout(r, 0));
       });
 
       expect(result.current.hoveredColumn).toBe('B');
@@ -306,7 +329,7 @@ describe('useKanbanBoard', () => {
       expect(result.current.ghostPosition).toEqual({ x: 0, y: ITEM_HEIGHT });
     });
 
-    it('should update ghostPosition on pointermove', () => {
+    it('should update ghostPosition on pointermove', async () => {
       board = createBoard({ A: ['a1'] });
       const ref = { current: board };
 
@@ -316,8 +339,9 @@ describe('useKanbanBoard', () => {
       startDrag(result, 'a1', 50, 10);
 
       // Move pointer to (200, 100). Ghost = (200-50, 100-10) = (150, 90).
-      act(() => {
+      await act(async () => {
         window.dispatchEvent(new PointerEvent('pointermove', { clientX: 200, clientY: 100 }));
+        await new Promise((r) => setTimeout(r, 0));
       });
 
       expect(result.current.ghostPosition).toEqual({ x: 150, y: 90 });
@@ -339,7 +363,7 @@ describe('useKanbanBoard', () => {
       expect(result.current.showPlaceholderAt('A', 0)).toBe(false);
     });
 
-    it('should show placeholder at a different index in a different column', () => {
+    it('should show placeholder at a different index in a different column', async () => {
       board = createBoard({ A: ['a1'], B: ['b1', 'b2'] });
       const ref = { current: board };
 
@@ -348,14 +372,15 @@ describe('useKanbanBoard', () => {
       startDrag(result, 'a1', 100, 10);
 
       // Move into column B at index 0.
-      act(() => {
+      await act(async () => {
         window.dispatchEvent(new PointerEvent('pointermove', { clientX: 300, clientY: 10 }));
+        await new Promise((r) => setTimeout(r, 0));
       });
 
       expect(result.current.showPlaceholderAt('B', 0)).toBe(true);
     });
 
-    it('should show placeholder at end of column', () => {
+    it('should show placeholder at end of column', async () => {
       board = createBoard({ A: ['a1'], B: ['b1'] });
       const ref = { current: board };
 
@@ -364,8 +389,9 @@ describe('useKanbanBoard', () => {
       startDrag(result, 'a1', 100, 10);
 
       // Move into column B below b1 midpoint. b1 mid = 30. clientY=50 → index 1 = colItems.length.
-      act(() => {
+      await act(async () => {
         window.dispatchEvent(new PointerEvent('pointermove', { clientX: 300, clientY: 50 }));
+        await new Promise((r) => setTimeout(r, 0));
       });
 
       expect(result.current.showPlaceholderAtEnd('B')).toBe(true);

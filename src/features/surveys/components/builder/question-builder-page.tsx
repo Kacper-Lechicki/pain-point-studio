@@ -1,11 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
+import { ROUTES } from '@/config/routes';
+import {
+  type BreadcrumbCrumb,
+  useBreadcrumbSegment,
+  useBreadcrumbTrail,
+} from '@/features/dashboard/components/layout/breadcrumb-context';
 import { getProjectDetailUrl } from '@/features/projects/lib/project-urls';
 import type { ProjectOption } from '@/features/surveys/actions';
 import { BuilderCenter } from '@/features/surveys/components/builder/builder-center';
@@ -17,6 +23,7 @@ import { PublishSettingsPanel } from '@/features/surveys/components/builder/publ
 import { PublishSuccessPanel } from '@/features/surveys/components/builder/publish-success-panel';
 import { QuestionBuilderProvider } from '@/features/surveys/hooks/use-question-builder-context';
 import { getSurveyShareUrl } from '@/features/surveys/lib/share-url';
+import { getSurveyEditUrl } from '@/features/surveys/lib/survey-urls';
 import type { QuestionSchema, SurveyMetadataSchema, SurveyStatus } from '@/features/surveys/types';
 import { useBreakpoint } from '@/hooks/common/use-breakpoint';
 
@@ -75,15 +82,42 @@ export function QuestionBuilderPage({
   }
 
   const isPublished = publishedSlug !== null;
+  const projectName = projectOptions.find((p) => p.value === projectId)?.label ?? null;
+
+  const t = useTranslations();
+  const breadcrumbTrail = useMemo(() => {
+    const base: BreadcrumbCrumb[] = [
+      { label: t('breadcrumbs.dashboard'), href: ROUTES.common.dashboard },
+      { label: t('breadcrumbs.projects'), href: ROUTES.dashboard.projects },
+    ];
+
+    if (projectName) {
+      base.push({
+        label: projectName,
+        href: `${getProjectDetailUrl(projectId)}?tab=surveys`,
+      });
+    }
+
+    base.push({
+      label: surveyTitle,
+      href: getSurveyEditUrl(surveyId),
+    });
+
+    return base;
+  }, [t, projectName, projectId, surveyTitle, surveyId]);
+
+  useBreadcrumbTrail(breadcrumbTrail);
+  useBreadcrumbSegment(surveyId, surveyTitle);
 
   return (
     <QuestionBuilderProvider initialQuestions={initialQuestions}>
-      <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden">
+      <div className="flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden">
         <BuilderTopBar
           surveyId={surveyId}
           surveyTitle={surveyTitle}
           surveyStatus={surveyStatus}
           projectId={projectId}
+          projectName={projectName}
           isDesktop={isDesktop}
           onToggleSidebar={() => setSidebarOpen(true)}
           onToggleSettings={openSettingsPanel}
@@ -91,7 +125,7 @@ export function QuestionBuilderPage({
           onOpenPublishSettings={openPublishSettings}
         />
 
-        <div className="flex min-h-0 flex-1 overflow-hidden">
+        <div className="flex h-full min-h-0 flex-1 overflow-hidden">
           <BuilderSidebar isDesktop={isDesktop} open={sidebarOpen} onOpenChange={setSidebarOpen} />
           <BuilderCenter />
 

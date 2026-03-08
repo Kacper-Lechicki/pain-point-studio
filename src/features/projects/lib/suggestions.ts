@@ -41,7 +41,9 @@ function suggestYesNo(
 ): InsightSuggestion | null {
   const answers = q.answers.filter((a) => typeof a.value.answer === 'boolean');
 
-  if (answers.length === 0) {return null;}
+  if (answers.length === 0) {
+    return null;
+  }
 
   const yesCount = answers.filter((a) => a.value.answer === true).length;
   const fraction = yesCount / answers.length;
@@ -75,10 +77,14 @@ function suggestRating(
   for (const a of q.answers) {
     const r = a.value.rating;
 
-    if (typeof r === 'number') {ratings.push(r);}
+    if (typeof r === 'number') {
+      ratings.push(r);
+    }
   }
 
-  if (ratings.length === 0) {return null;}
+  if (ratings.length === 0) {
+    return null;
+  }
 
   const avg = ratings.reduce((s, v) => s + v, 0) / ratings.length;
   const max = (q.config.max as number) ?? 5;
@@ -108,14 +114,20 @@ function suggestMultipleChoice(
   for (const a of q.answers) {
     const selected = a.value.selected as string[] | undefined;
 
-    if (!Array.isArray(selected) || selected.length === 0) {continue;}
+    if (!Array.isArray(selected) || selected.length === 0) {
+      continue;
+    }
 
     respondentCount++;
 
-    for (const opt of selected) {counts.set(opt, (counts.get(opt) ?? 0) + 1);}
+    for (const opt of selected) {
+      counts.set(opt, (counts.get(opt) ?? 0) + 1);
+    }
   }
 
-  if (respondentCount === 0) {return null;}
+  if (respondentCount === 0) {
+    return null;
+  }
 
   let dominantOption = '';
   let dominantCount = 0;
@@ -129,7 +141,9 @@ function suggestMultipleChoice(
 
   const fraction = dominantCount / respondentCount;
 
-  if (fraction < FINDING_THRESHOLDS.multipleChoice.dominantMin) {return null;}
+  if (fraction < FINDING_THRESHOLDS.multipleChoice.dominantMin) {
+    return null;
+  }
 
   const pct = Math.round(fraction * 100);
 
@@ -142,11 +156,15 @@ function suggestMultipleChoice(
 }
 
 function suggestCompletionRate(survey: SurveySignalData): InsightSuggestion | null {
-  if (survey.totalResponses === 0) {return null;}
+  if (survey.totalResponses === 0) {
+    return null;
+  }
 
   const rate = survey.completedResponses / survey.totalResponses;
 
-  if (rate > FINDING_THRESHOLDS.completionRate.lowMax) {return null;}
+  if (rate > FINDING_THRESHOLDS.completionRate.lowMax) {
+    return null;
+  }
 
   const pct = Math.round(rate * 100);
 

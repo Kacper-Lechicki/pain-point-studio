@@ -12,6 +12,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Spinner } from '@/components/ui/spinner';
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -22,6 +23,8 @@ interface ConfirmDialogProps {
   confirmLabel?: string;
   cancelLabel?: string;
   variant?: 'default' | 'destructive' | 'warning' | 'accent' | 'success';
+  /** Show a loading spinner on the confirm button and disable interaction. */
+  isLoading?: boolean;
 }
 
 const ConfirmDialog = ({
@@ -33,11 +36,12 @@ const ConfirmDialog = ({
   confirmLabel,
   cancelLabel,
   variant = 'destructive',
+  isLoading = false,
 }: ConfirmDialogProps) => {
   const t = useTranslations();
 
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
+    <AlertDialog open={open} onOpenChange={isLoading ? () => {} : onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{title ?? t('common.confirm.title')}</AlertDialogTitle>
@@ -48,11 +52,12 @@ const ConfirmDialog = ({
         </AlertDialogHeader>
 
         <AlertDialogFooter>
-          <AlertDialogCancel variant="outline">
+          <AlertDialogCancel variant="outline" disabled={isLoading}>
             {cancelLabel ?? t('common.cancel')}
           </AlertDialogCancel>
 
-          <AlertDialogAction variant={variant} onClick={onConfirm}>
+          <AlertDialogAction variant={variant} onClick={onConfirm} disabled={isLoading}>
+            {isLoading && <Spinner className="size-4" />}
             {confirmLabel ?? t('common.confirm.action')}
           </AlertDialogAction>
         </AlertDialogFooter>

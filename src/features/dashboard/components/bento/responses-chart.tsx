@@ -11,6 +11,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   BENTO_CARD_CLASS,
   BENTO_EMPTY_STATE_MIN_H,
@@ -73,7 +74,7 @@ export const ResponsesChart = ({ data, className }: ResponsesChartProps) => {
           </div>
         ) : (
           <div ref={chartContainerRef} className={cn('min-w-0 flex-1', BENTO_EMPTY_STATE_MIN_H)}>
-            {chartWidth > 0 && chartHeight > 0 && (
+            {chartWidth > 0 && chartHeight > 0 ? (
               <ChartContainer
                 config={chartConfig}
                 dimensions={{ width: chartWidth, height: chartHeight }}
@@ -113,6 +114,8 @@ export const ResponsesChart = ({ data, className }: ResponsesChartProps) => {
                   />
                 </LineChart>
               </ChartContainer>
+            ) : (
+              <Skeleton className="h-full w-full rounded-lg" />
             )}
           </div>
         )}
