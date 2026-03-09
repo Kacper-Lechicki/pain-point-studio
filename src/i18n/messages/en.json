@@ -2015,6 +2015,7 @@
       "errors": {
         "cannotUnlinkLast": "Cannot disconnect your only login method.",
         "identityNotFound": "Identity not found.",
+        "identityAlreadyLinked": "This account is already linked to another user.",
         "unlinkFailed": "Failed to disconnect account. Please try again.",
         "linkFailed": "Failed to link account. Please try again."
       }

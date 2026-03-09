@@ -56,7 +56,7 @@ describe('useLinkIdentity', () => {
     expect(mocks.mockLinkIdentity).toHaveBeenCalledWith({
       provider: 'google',
       options: {
-        redirectTo: 'https://example.com/en/auth/callback?next=/en/settings%23connected-accounts',
+        redirectTo: 'https://example.com/en/auth/callback?next=/en/settings/connected-accounts',
       },
     });
   });

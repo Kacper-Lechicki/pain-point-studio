@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { Info, KeyRound, Link2, Link as LinkIcon, Unlink } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
@@ -31,9 +32,31 @@ interface ConnectedAccountsProps {
   hasPassword: boolean;
 }
 
+const LINK_ERROR_MAP: Record<string, string> = {
+  identity_already_exists: 'settings.connectedAccounts.errors.identityAlreadyLinked',
+  manual_linking_disabled: 'settings.connectedAccounts.errors.linkFailed',
+  identity_not_found: 'settings.connectedAccounts.errors.identityNotFound',
+  callbackError: 'settings.connectedAccounts.errors.linkFailed',
+  linkExpired: 'auth.errors.linkExpired',
+};
+
 const ConnectedAccounts = ({ identities, hasPassword }: ConnectedAccountsProps) => {
   const t = useTranslations();
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const errorCode = searchParams.get('error');
+
+    if (!errorCode) {
+      return;
+    }
+
+    const messageKey = LINK_ERROR_MAP[errorCode] ?? 'settings.connectedAccounts.errors.linkFailed';
+
+    toast.error(t(messageKey as MessageKey));
+    window.history.replaceState(null, '', window.location.pathname);
+  }, [searchParams, t]);
 
   const [unlinkTarget, setUnlinkTarget] = useState<{
     identity: IdentityData;

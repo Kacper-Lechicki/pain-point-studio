@@ -25,7 +25,7 @@ export function useLinkIdentity() {
       const { error } = await supabase.auth.linkIdentity({
         provider,
         options: {
-          redirectTo: `${env.NEXT_PUBLIC_APP_URL}/${locale}/auth/callback?next=/${locale}/settings%23connected-accounts`,
+          redirectTo: `${env.NEXT_PUBLIC_APP_URL}/${locale}/auth/callback?next=/${locale}/settings/connected-accounts`,
         },
       });
 
