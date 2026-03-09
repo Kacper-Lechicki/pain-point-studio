@@ -4,11 +4,11 @@ import { defineConfig, devices } from '@playwright/test';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { loadEnvConfig } = require('@next/env');
+
 loadEnvConfig(process.cwd());
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { env } = require(path.join(process.cwd(), 'e2e/helpers/env'));
-
 const PORT = process.env.PORT;
 const baseURL = PORT ? `http://localhost:${PORT}` : env.NEXT_PUBLIC_APP_URL;
 
@@ -44,9 +44,9 @@ export default defineConfig({
     navigationTimeout: 30_000,
   },
   // Configure projects for major browsers.
-  // 3 projects: desktop engines (chromium + webkit) + mobile viewport (Mobile Chrome).
+  // 2 projects: desktop engines (chromium + webkit).
   // Firefox is omitted (minimal unique coverage vs chromium).
-  // Mobile Safari is omitted (webkit already catches engine bugs; Mobile Chrome covers viewport).
+  // Mobile Chrome/Safari omitted (webkit catches engine bugs; responsive tested via viewport).
   projects: [
     {
       name: 'chromium',
@@ -55,10 +55,6 @@ export default defineConfig({
     {
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
-    },
-    {
-      name: 'Mobile Chrome',
-      use: { ...devices['Pixel 5'] },
     },
   ],
   // Run your local dev server before starting the tests

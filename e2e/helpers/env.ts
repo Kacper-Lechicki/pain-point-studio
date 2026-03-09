@@ -1,13 +1,5 @@
-/**
- * Simplified env for non-Next.js contexts (e.g. Playwright config).
- * The main env validation lives in `@/lib/common/env` and uses t3-env.
- * This file reads directly from process.env for tools that can't use t3-env.
- */
-
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
 
-// Safety guard: prevent e2e tests from running against production Supabase.
-// This check runs before any test because playwright.config.ts imports this file first.
 if (SUPABASE_URL && !/^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?/.test(SUPABASE_URL)) {
   throw new Error(
     `[e2e] NEXT_PUBLIC_SUPABASE_URL points to "${SUPABASE_URL}" which is NOT a local instance.\n` +

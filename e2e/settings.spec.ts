@@ -1,235 +1,134 @@
-/**
- * Settings: profile update, password change, account deletion, and onboarding modal.
- */
-import { expect, test } from '@playwright/test';
-
+import { expect, test } from './fixtures';
+import { fillField, waitForToast } from './helpers/actions';
 import { makeApiSignIn, scopedEmail } from './helpers/auth';
 import { ROUTES, url } from './helpers/routes';
-import { E2E_PASSWORD, sel as sharedSel } from './helpers/selectors';
+import { E2E_PASSWORD, sel } from './helpers/selectors';
 import { deleteUserByEmail, ensureUser } from './helpers/supabase-admin';
 
-const sel = {
-  ...sharedSel,
-  fullName: 'form#profile-form input[name="fullName"]',
-  bio: 'textarea[name="bio"]',
-  profileSubmit: 'form#profile-form button[type="submit"]',
-  email: 'input[name="email"]',
-  currentPassword: 'input[name="currentPassword"]',
-  password: 'input[name="password"]',
-  confirmPassword: 'input[name="confirmPassword"]',
-  passwordSubmit: 'form#password-form button[type="submit"]',
-  deleteButton: 'button[data-variant="destructive"]:has(svg.lucide-trash-2)',
-  confirmation: 'input[name="confirmation"]',
-} as const;
+test('profile update and settings navigation', async ({ page, authenticatedPage: { email } }) => {
+  await page.goto(url(ROUTES.settings.profile), { waitUntil: 'networkidle' });
 
-/** Profile form locators scoped to main content to avoid matching the Complete Profile modal. */
-function profileInMain(page: import('@playwright/test').Page) {
-  return page.getByRole('main');
-}
+  const main = page.getByRole('main');
 
-// ─────────────────────────────────────────────────────────────────
-// Settings – Profile & Navigation
-// ─────────────────────────────────────────────────────────────────
-test.describe('Settings – Profile & Navigation', () => {
-  let email: string;
-  let signIn: ReturnType<typeof makeApiSignIn>;
+  await expect(main.locator(sel.fullName)).toBeVisible({ timeout: 15_000 });
+  await fillField(main.locator(sel.fullName), 'Test User');
+  await main.locator(sel.profileSubmit).click();
+  await waitForToast(page);
+  await page.goto(url(ROUTES.settings.email));
+  await expect(page.locator(sel.emailInput)).toBeVisible({ timeout: 15_000 });
+  await expect(page.locator(sel.emailInput)).toHaveValue(email);
+  await page.goto(url(ROUTES.settings.password));
+  await expect(page.locator(sel.passwordInput)).toBeVisible({ timeout: 15_000 });
+  await page.goBack();
+  await expect(page).toHaveURL(/\/settings\/email/, { timeout: 10_000 });
+  await page.goto(url(ROUTES.common.settings));
+  await expect(main.locator(sel.fullName)).toBeVisible({ timeout: 15_000 });
+});
 
-  test.beforeAll(async ({}, testInfo) => {
-    email = scopedEmail('e2e-settings-core', testInfo.project.name);
-    signIn = makeApiSignIn(email, E2E_PASSWORD);
-    await ensureUser(email, E2E_PASSWORD);
+test('update password successfully', async ({ page, authenticatedPage: {} }) => {
+  await page.goto(url(ROUTES.settings.password), { waitUntil: 'networkidle' });
+  await expect(page.locator(sel.passwordInput)).toBeVisible({ timeout: 15_000 });
+
+  const newPassword = 'NewE2ePass1!';
+
+  await fillField(page.locator(sel.currentPassword), E2E_PASSWORD);
+  await fillField(page.locator(sel.passwordInput), newPassword);
+  await fillField(page.locator(sel.confirmPassword), newPassword);
+  await page.locator(sel.passwordSubmit).click();
+  await waitForToast(page);
+  await expect(page).toHaveURL(/\/settings\/password/);
+});
+
+test('email change submits and shows confirmation', async ({
+  page,
+  authenticatedPage: { email },
+}) => {
+  await page.goto(url(ROUTES.settings.email), { waitUntil: 'networkidle' });
+  await expect(page.locator(sel.emailInput)).toBeVisible({ timeout: 15_000 });
+  await expect(page.locator(sel.emailInput)).toHaveValue(email);
+  await fillField(page.locator(sel.emailInput), 'newemail-e2e@example.com');
+  await page.locator(sel.submit).click();
+  await waitForToast(page);
+});
+
+test('cancel pending email change', async ({ page, authenticatedPage: {} }) => {
+  await page.goto(url(ROUTES.settings.email), { waitUntil: 'networkidle' });
+  await expect(page.locator(sel.emailInput)).toBeVisible({ timeout: 15_000 });
+  await fillField(page.locator(sel.emailInput), 'cancel-test-e2e@example.com');
+  await page.locator(sel.submit).click();
+  await waitForToast(page);
+
+  await page.reload({ waitUntil: 'networkidle' });
+
+  await expect(page.getByRole('button', { name: 'Cancel Change' })).toBeVisible({
+    timeout: 15_000,
   });
 
-  test.afterAll(async ({}, testInfo) => {
-    const e = scopedEmail('e2e-settings-core', testInfo.project.name);
-    await deleteUserByEmail(e).catch(() => {});
-  });
+  await page.getByRole('button', { name: 'Cancel Change' }).click();
 
-  test('profile update and settings navigation', async ({ page }) => {
-    await signIn(page);
-    await page.goto(url(ROUTES.settings.profile));
-
-    const main = profileInMain(page);
-
-    await expect(main.locator(sel.fullName)).toBeVisible({ timeout: 15_000 });
-
-    await expect(async () => {
-      const nameInput = main.locator(sel.fullName);
-
-      await nameInput.click();
-      await nameInput.fill('Test User');
-      await expect(nameInput).toHaveValue('Test User');
-    }).toPass({ timeout: 10_000 });
-
-    await expect(async () => {
-      await main.locator(sel.profileSubmit).click();
-      await expect(page.locator(sel.toast).first()).toBeVisible({ timeout: 10_000 });
-    }).toPass({ timeout: 20_000 });
-
-    await page.goto(url(ROUTES.settings.email));
-    await expect(page.locator(sel.email)).toBeVisible({ timeout: 15_000 });
-    await expect(page.locator(sel.email)).toHaveValue(email);
-    await page.goto(url(ROUTES.settings.password));
-    await expect(page.locator(sel.password)).toBeVisible({ timeout: 15_000 });
-    await page.goBack();
-    await expect(page).toHaveURL(/\/settings\/email/, { timeout: 10_000 });
-    await page.goto(url(ROUTES.common.settings));
-
-    await expect(profileInMain(page).locator(sel.fullName)).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByRole('button', { name: 'Cancel Change' })).not.toBeVisible({
+    timeout: 15_000,
   });
 });
 
-// ─────────────────────────────────────────────────────────────────
-// Settings – Password Update
-// ─────────────────────────────────────────────────────────────────
-test.describe('Settings – Password', () => {
-  let email: string;
-  let signIn: ReturnType<typeof makeApiSignIn>;
-
-  test.beforeAll(async ({}, testInfo) => {
-    email = scopedEmail('e2e-settings-password', testInfo.project.name);
-    signIn = makeApiSignIn(email, E2E_PASSWORD);
-    await ensureUser(email, E2E_PASSWORD);
-  });
-
-  test.afterAll(async ({}, testInfo) => {
-    const e = scopedEmail('e2e-settings-password', testInfo.project.name);
-    await deleteUserByEmail(e).catch(() => {});
-  });
-
-  test('updates password successfully', async ({ page }) => {
-    await signIn(page);
-    await page.goto(url(ROUTES.settings.password));
-    await expect(page.locator(sel.password)).toBeVisible({ timeout: 15_000 });
-
-    const cpwField = page.locator(sel.currentPassword);
-    const pw = page.locator(sel.password);
-    const cpw = page.locator(sel.confirmPassword);
-    const newPassword = 'NewE2ePass1!';
-
-    await expect(async () => {
-      await cpwField.click();
-      await cpwField.fill(E2E_PASSWORD);
-      await expect(cpwField).toHaveValue(E2E_PASSWORD);
-    }).toPass({ timeout: 10_000 });
-
-    await expect(async () => {
-      await pw.click();
-      await pw.fill(newPassword);
-      await expect(pw).toHaveValue(newPassword);
-    }).toPass({ timeout: 10_000 });
-
-    await expect(async () => {
-      await cpw.click();
-      await cpw.fill(newPassword);
-      await expect(cpw).toHaveValue(newPassword);
-    }).toPass({ timeout: 10_000 });
-
-    await expect(async () => {
-      await page.locator(sel.passwordSubmit).click();
-      await expect(page.locator(sel.toast).first()).toBeVisible();
-    }).toPass({ timeout: 15_000 });
-    await expect(page).toHaveURL(/\/settings\/password/);
-  });
+test('connected accounts page renders', async ({ page, authenticatedPage: {} }) => {
+  await page.goto(url(ROUTES.settings.connectedAccounts));
+  await expect(page.getByRole('main')).toBeVisible({ timeout: 15_000 });
 });
 
-// ─────────────────────────────────────────────────────────────────
-// Settings – Delete Account
-// ─────────────────────────────────────────────────────────────────
-test.describe('Settings – Delete Account', () => {
-  test.afterAll(async ({}, testInfo) => {
-    const e = scopedEmail('e2e-settings-delete', testInfo.project.name);
-    await deleteUserByEmail(e).catch(() => {});
-  });
+test('delete account: dialog -> cancel -> confirm -> locked', async ({ page }, testInfo) => {
+  const email = scopedEmail('e2e-settings-delete', testInfo.project.name);
+  const signIn = makeApiSignIn(email, E2E_PASSWORD);
 
-  test('dialog → cancel → confirm → delete → dashboard locked', async ({ page }, testInfo) => {
-    const email = scopedEmail('e2e-settings-delete', testInfo.project.name);
-    const signIn = makeApiSignIn(email, E2E_PASSWORD);
+  await ensureUser(email, E2E_PASSWORD);
 
-    await ensureUser(email, E2E_PASSWORD);
+  try {
     await signIn(page);
-    await page.goto(url(ROUTES.settings.dangerZone));
+    await page.goto(url(ROUTES.settings.dangerZone), { waitUntil: 'networkidle' });
     await expect(page.locator(sel.deleteButton)).toBeVisible({ timeout: 15_000 });
+    await page.locator(sel.deleteButton).click();
 
-    await expect(async () => {
-      await page.locator(sel.deleteButton).click();
-      await expect(page.locator('[role="dialog"]')).toBeVisible();
-    }).toPass({ timeout: 10_000 });
+    const dialog = page.locator(sel.dialog);
 
-    const dialog = page.locator('[role="dialog"]');
-
+    await expect(dialog).toBeVisible({ timeout: 5_000 });
     await expect(dialog.locator('button[type="submit"]')).toBeDisabled();
     await dialog.locator('[data-testid="delete-cancel"]').click();
     await expect(dialog).not.toBeVisible();
-
-    await expect(async () => {
-      await page.locator(sel.deleteButton).click();
-      await expect(dialog).toBeVisible();
-    }).toPass({ timeout: 10_000 });
-
-    await expect(async () => {
-      const input = dialog.locator(sel.confirmation);
-      await input.click();
-      await input.fill(email);
-      await expect(input).toHaveValue(email);
-    }).toPass({ timeout: 10_000 });
-
+    await page.locator(sel.deleteButton).click();
+    await expect(dialog).toBeVisible({ timeout: 5_000 });
+    await fillField(dialog.locator(sel.confirmation), email);
     await expect(dialog.locator('button[type="submit"]')).toBeEnabled();
     await dialog.locator('button[type="submit"]').click();
     await expect(page).not.toHaveURL(/\/settings/, { timeout: 45_000 });
-
-    await expect(async () => {
-      await page.goto(url(ROUTES.common.dashboard), { timeout: 15_000 });
-      await expect(page).toHaveURL(/\/sign-in/, { timeout: 10_000 });
-    }).toPass({ timeout: 30_000 });
-  });
+    await page.goto(url(ROUTES.common.dashboard), { timeout: 15_000 });
+    await expect(page).toHaveURL(/\/sign-in/, { timeout: 10_000 });
+  } finally {
+    await deleteUserByEmail(email).catch(() => {});
+  }
 });
 
-// ─────────────────────────────────────────────────────────────────
-// Settings – Complete Profile Modal
-// ─────────────────────────────────────────────────────────────────
-test.describe('Settings – Complete Profile Modal', () => {
-  let email: string;
-  let signIn: ReturnType<typeof makeApiSignIn>;
+test('complete profile modal: non-dismissable -> fill -> disappear', async ({ page }, testInfo) => {
+  const email = scopedEmail('e2e-settings-modal', testInfo.project.name);
 
-  test.beforeAll(async ({}, testInfo) => {
-    email = scopedEmail('e2e-settings-modal', testInfo.project.name);
-    signIn = makeApiSignIn(email, E2E_PASSWORD);
-    await ensureUser(email, E2E_PASSWORD, { fullName: '', role: '' });
-  });
+  await ensureUser(email, E2E_PASSWORD, { fullName: '', role: '' });
 
-  test.afterAll(async ({}, testInfo) => {
-    const e = scopedEmail('e2e-settings-modal', testInfo.project.name);
-    await deleteUserByEmail(e).catch(() => {});
-  });
+  const signIn = makeApiSignIn(email, E2E_PASSWORD);
 
-  test('non-dismissable modal → fill form → modal disappears', async ({ page }) => {
+  try {
     await signIn(page);
 
-    const dialog = page.locator('[role="dialog"]');
+    const dialog = page.locator(sel.dialog);
 
     await expect(dialog).toBeVisible({ timeout: 15_000 });
     await page.keyboard.press('Escape');
     await expect(dialog).toBeVisible();
-
-    await expect(async () => {
-      const nameInput = dialog.locator('input[name="fullName"]');
-
-      await nameInput.click();
-      await nameInput.fill('Test User');
-      await expect(nameInput).toHaveValue('Test User');
-    }).toPass({ timeout: 10_000 });
-
-    await expect(async () => {
-      await dialog.locator('[data-testid="complete-profile-role"]').click();
-      await expect(page.locator('[role="option"]').first()).toBeVisible();
-    }).toPass({ timeout: 10_000 });
-
+    await fillField(dialog.locator('input[name="fullName"]'), 'Test User');
+    await dialog.locator('[data-testid="complete-profile-role"]').click();
+    await expect(page.locator('[role="option"]').first()).toBeVisible({ timeout: 5_000 });
     await page.locator('[role="option"]').first().click();
-
-    await expect(async () => {
-      await dialog.locator('button[type="submit"]').click();
-      await expect(dialog).not.toBeVisible();
-    }).toPass({ timeout: 15_000 });
-  });
+    await dialog.locator('button[type="submit"]').click();
+    await expect(dialog).not.toBeVisible({ timeout: 15_000 });
+  } finally {
+    await deleteUserByEmail(email).catch(() => {});
+  }
 });

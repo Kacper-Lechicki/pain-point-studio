@@ -19,7 +19,7 @@
     "test": "vitest",
     "test:types": "tsc --noEmit",
     "test:unit": "vitest",
-    "test:e2e": "pnpm supabase:restart && rm -rf .next && pnpm exec playwright install && playwright test",
+    "test:e2e": "pnpm supabase:restart && rm -rf .next && pnpm exec playwright install && pnpm exec playwright test",
     "test:all": "pnpm build && pnpm lint:fix && pnpm lint:prettier:fix && pnpm test:types && pnpm test:unit && pnpm test:e2e",
     "--- SUPABASE (local) ---": "exit 0",
     "supabase:start": "supabase start",

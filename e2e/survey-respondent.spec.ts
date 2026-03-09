@@ -1,9 +1,5 @@
-/**
- * Survey respondent: public survey flow (landing → answer questions → submit → thank you)
- * and closed survey states.
- */
-import { expect, test } from '@playwright/test';
-
+import { expect, test } from './fixtures';
+import { fillField } from './helpers/actions';
 import { scopedEmail } from './helpers/auth';
 import { url } from './helpers/routes';
 import { E2E_PASSWORD } from './helpers/selectors';
@@ -15,123 +11,137 @@ import {
   updateSurveyViaDb,
 } from './helpers/survey-admin';
 
-// ─────────────────────────────────────────────────────────────────
-// Respondent – Full Flow
-// ─────────────────────────────────────────────────────────────────
-test.describe('Respondent – Full Flow', () => {
-  let slug: string;
+test('full flow: landing -> start -> answer -> submit -> thank you', async ({ page }, testInfo) => {
+  const email = scopedEmail('e2e-respondent-flow', testInfo.project.name);
+  const userId = await ensureUser(email, E2E_PASSWORD);
+  const projectId = await createProjectViaDb(userId, 'E2E Respondent Flow');
+  const slug = generateSlug();
 
-  test.beforeAll(async ({}, testInfo) => {
-    const email = scopedEmail('e2e-respondent-flow', testInfo.project.name);
-    const userId = await ensureUser(email, E2E_PASSWORD);
-    const projectId = await createProjectViaDb(userId, 'E2E Respondent Flow');
+  await createSurveyWithQuestions(userId, { status: 'active', slug, projectId }, 2);
 
-    slug = generateSlug();
+  try {
+    await page.goto(url(`/r/${slug}`), { waitUntil: 'networkidle' });
+    await page.getByRole('button', { name: /start/i }).click();
 
-    await createSurveyWithQuestions(userId, { status: 'active', slug, projectId }, 2);
-  });
-
-  test.afterAll(async ({}, testInfo) => {
-    const e = scopedEmail('e2e-respondent-flow', testInfo.project.name);
-    await deleteUserByEmail(e).catch(() => {});
-  });
-
-  test('landing → start → answer → submit → thank you', async ({ page }) => {
-    await page.goto(url(`/r/${slug}`));
-
-    // Landing page: start button visible — webkit can swallow clicks during hydration
-    await expect(async () => {
-      await page.getByRole('button', { name: /start/i }).click();
-      await expect(page.locator('textarea, input[type="text"]').first()).toBeVisible();
-    }).toPass({ timeout: 15_000 });
-
-    // Question 1: answer and proceed
-
-    await expect(async () => {
-      const input = page.locator('textarea, input[type="text"]').first();
-
-      await input.fill('E2E answer to question 1');
-      await expect(input).toHaveValue('E2E answer to question 1');
-    }).toPass({ timeout: 10_000 });
-
-    await expect(async () => {
-      await page.getByRole('button', { name: 'Next', exact: true }).click();
-      await expect(page.locator('textarea, input[type="text"]').first()).toBeVisible();
-    }).toPass({ timeout: 10_000 });
-
-    // Question 2: answer and finish
-
-    await expect(async () => {
-      const input = page.locator('textarea, input[type="text"]').first();
-
-      await input.fill('E2E answer to question 2');
-      await expect(input).toHaveValue('E2E answer to question 2');
-    }).toPass({ timeout: 10_000 });
-
-    await expect(async () => {
-      await page.getByRole('button', { name: /finish/i }).click();
-      await expect(page.getByRole('button', { name: /submit/i })).toBeVisible();
-    }).toPass({ timeout: 10_000 });
-
-    // Completion screen: submit
-    await expect(async () => {
-      await page.getByRole('button', { name: /submit/i }).click();
-      await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
-    }).toPass({ timeout: 15_000 });
-
-    // Thank you screen
-
-    await expect(page.getByRole('button', { name: /start/i })).not.toBeVisible();
-  });
-});
-
-// ─────────────────────────────────────────────────────────────────
-// Respondent – Closed Survey
-// ─────────────────────────────────────────────────────────────────
-test.describe('Respondent – Closed Survey', () => {
-  let completedSlug: string;
-
-  test.beforeAll(async ({}, testInfo) => {
-    const email = scopedEmail('e2e-respondent-closed', testInfo.project.name);
-    const userId = await ensureUser(email, E2E_PASSWORD);
-    const projectId = await createProjectViaDb(userId, 'E2E Respondent Closed');
-
-    // Create an active survey, then mark as completed
-    completedSlug = generateSlug();
-
-    const { surveyId } = await createSurveyWithQuestions(
-      userId,
-      { status: 'active', slug: completedSlug, projectId },
-      1
-    );
-
-    await updateSurveyViaDb(surveyId, {
-      status: 'completed',
-      completed_at: new Date().toISOString(),
+    await expect(page.locator('textarea, input[type="text"]').first()).toBeVisible({
+      timeout: 15_000,
     });
-  });
 
-  test.afterAll(async ({}, testInfo) => {
-    const e = scopedEmail('e2e-respondent-closed', testInfo.project.name);
-    await deleteUserByEmail(e).catch(() => {});
-  });
+    await fillField(page.locator('textarea, input[type="text"]').first(), 'E2E answer 1');
+    await page.getByRole('button', { name: 'Next', exact: true }).click();
 
-  test('completed survey shows closed message', async ({ page }) => {
-    await page.goto(url(`/r/${completedSlug}`));
+    await expect(page.locator('textarea, input[type="text"]').first()).toBeVisible({
+      timeout: 10_000,
+    });
 
-    // Closed state: heading visible, no start button
+    await fillField(page.locator('textarea, input[type="text"]').first(), 'E2E answer 2');
+    await page.getByRole('button', { name: /finish/i }).click();
+    await expect(page.getByRole('button', { name: /submit/i })).toBeVisible({ timeout: 10_000 });
+    await page.getByRole('button', { name: /submit/i }).click();
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible({ timeout: 15_000 });
-
     await expect(page.getByRole('button', { name: /start/i })).not.toBeVisible();
-  });
+  } finally {
+    await deleteUserByEmail(email).catch(() => {});
+  }
 });
 
-// ─────────────────────────────────────────────────────────────────
-// Respondent – Invalid Slug
-// ─────────────────────────────────────────────────────────────────
-test.describe('Respondent – Invalid Slug', () => {
-  test('non-existent slug returns 404', async ({ page }) => {
-    const response = await page.goto(url('/r/nonexistent_slug_xyz'));
-    expect(response?.status()).toBe(404);
+test('completed survey shows closed message', async ({ page }, testInfo) => {
+  const email = scopedEmail('e2e-respondent-completed', testInfo.project.name);
+  const userId = await ensureUser(email, E2E_PASSWORD);
+  const projectId = await createProjectViaDb(userId, 'E2E Respondent Completed');
+  const slug = generateSlug();
+
+  const { surveyId } = await createSurveyWithQuestions(
+    userId,
+    { status: 'active', slug, projectId },
+    1
+  );
+
+  await updateSurveyViaDb(surveyId, {
+    status: 'completed',
+    completed_at: new Date().toISOString(),
   });
+
+  try {
+    await page.goto(url(`/r/${slug}`));
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('button', { name: /start/i })).not.toBeVisible();
+  } finally {
+    await deleteUserByEmail(email).catch(() => {});
+  }
+});
+
+test('cancelled survey shows closed message', async ({ page }, testInfo) => {
+  const email = scopedEmail('e2e-respondent-cancelled', testInfo.project.name);
+  const userId = await ensureUser(email, E2E_PASSWORD);
+  const projectId = await createProjectViaDb(userId, 'E2E Respondent Cancelled');
+  const slug = generateSlug();
+
+  const { surveyId } = await createSurveyWithQuestions(
+    userId,
+    { status: 'active', slug, projectId },
+    1
+  );
+
+  await updateSurveyViaDb(surveyId, { status: 'cancelled' });
+
+  try {
+    await page.goto(url(`/r/${slug}`));
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('button', { name: /start/i })).not.toBeVisible();
+  } finally {
+    await deleteUserByEmail(email).catch(() => {});
+  }
+});
+
+test('archived survey shows closed message', async ({ page }, testInfo) => {
+  const email = scopedEmail('e2e-respondent-archived', testInfo.project.name);
+  const userId = await ensureUser(email, E2E_PASSWORD);
+  const projectId = await createProjectViaDb(userId, 'E2E Respondent Archived');
+  const slug = generateSlug();
+
+  const { surveyId } = await createSurveyWithQuestions(
+    userId,
+    { status: 'active', slug, projectId },
+    1
+  );
+
+  await updateSurveyViaDb(surveyId, {
+    status: 'completed',
+    completed_at: new Date().toISOString(),
+  });
+
+  await updateSurveyViaDb(surveyId, {
+    status: 'archived',
+    archived_at: new Date().toISOString(),
+  });
+
+  try {
+    await page.goto(url(`/r/${slug}`));
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('button', { name: /start/i })).not.toBeVisible();
+  } finally {
+    await deleteUserByEmail(email).catch(() => {});
+  }
+});
+
+test('draft survey returns 404', async ({ page }, testInfo) => {
+  const email = scopedEmail('e2e-respondent-draft', testInfo.project.name);
+  const userId = await ensureUser(email, E2E_PASSWORD);
+  const projectId = await createProjectViaDb(userId, 'E2E Respondent Draft');
+  const slug = generateSlug();
+
+  await createSurveyWithQuestions(userId, { status: 'draft', slug, projectId }, 1);
+
+  try {
+    const response = await page.goto(url(`/r/${slug}`));
+    expect(response?.status()).toBe(404);
+  } finally {
+    await deleteUserByEmail(email).catch(() => {});
+  }
+});
+
+test('non-existent slug returns 404', async ({ page }) => {
+  const response = await page.goto(url('/r/nonexistent_slug_xyz'));
+  expect(response?.status()).toBe(404);
 });

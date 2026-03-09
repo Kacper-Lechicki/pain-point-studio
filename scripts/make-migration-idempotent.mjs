@@ -56,18 +56,14 @@ function resolveTargets() {
 // Transformation helpers
 // ---------------------------------------------------------------------------
 
-/**
- * Wrap `ALTER TABLE ONLY ... ADD CONSTRAINT "name" ...;`
- * (possibly spanning two lines) in a DO $$ IF NOT EXISTS block.
- */
 function wrapConstraints(content) {
   let count = 0;
 
-  // Match only top-level (non-indented) ALTER TABLE ONLY ... ADD CONSTRAINT
   const re = /^(ALTER TABLE ONLY [^\n]+\n\s+ADD CONSTRAINT "([^"]+)"[^;]+;)/gm;
 
   content = content.replace(re, (_match, full, conname) => {
     count++;
+
     const indented = full.replace(/\n\s+/g, '\n        ');
 
     return [
@@ -82,22 +78,15 @@ function wrapConstraints(content) {
   return { content, count };
 }
 
-/**
- * Prepend DROP POLICY IF EXISTS before each CREATE POLICY.
- */
 function addDropPolicies(content) {
   let count = 0;
 
-  // Match CREATE POLICY "name" ON "schema"."table"
   const re = /CREATE POLICY "([^"]+)" ON ("(?:[^"]+)"\.?"(?:[^"]+)")/g;
-
-  // Collect matches first to avoid issues with overlapping replacements
   const replacements = [];
 
   let m;
 
   while ((m = re.exec(content)) !== null) {
-    // Check preceding text for DROP POLICY IF EXISTS on the same line area
     const before = content.substring(Math.max(0, m.index - 200), m.index);
 
     if (before.includes(`DROP POLICY IF EXISTS "${m[1]}"`)) {
@@ -111,22 +100,18 @@ function addDropPolicies(content) {
     });
   }
 
-  // Apply in reverse order to preserve indices
   for (let i = replacements.length - 1; i >= 0; i--) {
     const { index, policyName, tableRef } = replacements[i];
     const dropLine = `DROP POLICY IF EXISTS "${policyName}" ON ${tableRef};\n`;
 
     content = content.substring(0, index) + dropLine + content.substring(index);
+
     count++;
   }
 
   return { content, count };
 }
 
-/**
- * CREATE INDEX → CREATE INDEX IF NOT EXISTS
- * CREATE UNIQUE INDEX → CREATE UNIQUE INDEX IF NOT EXISTS
- */
 function addIndexIfNotExists(content) {
   let count = 0;
 
@@ -138,22 +123,15 @@ function addIndexIfNotExists(content) {
   return { content, count };
 }
 
-/**
- * Wrap `CREATE TYPE "schema"."name" AS ENUM (...);` in a DO $$ IF NOT EXISTS block.
- * Also wraps the immediately following `ALTER TYPE ... OWNER TO ...;` if present.
- *
- * PostgreSQL has no `CREATE TYPE IF NOT EXISTS`, so we check pg_type directly.
- */
 function wrapCreateTypes(content) {
   let count = 0;
 
-  // Match CREATE TYPE "schema"."name" AS ENUM (\n...\n);
-  // followed optionally by blank lines + ALTER TYPE "schema"."name" OWNER TO ...;
   const re =
     /^(CREATE TYPE "([^"]+)"\."([^"]+)" AS ENUM \(\n(?:[\s\S]*?\n)\);)\n(\n*(?:ALTER TYPE "([^"]+)"\."([^"]+)" OWNER TO "[^"]+";\n)?)/gm;
 
   content = content.replace(re, (_match, createStmt, _schema, typeName, trailing) => {
     count++;
+
     const indented = createStmt.replace(/\n/g, '\n    ');
 
     const lines = [
@@ -172,12 +150,6 @@ function wrapCreateTypes(content) {
   return { content, count };
 }
 
-/**
- * Strip trigger definitions on the "auth" schema. Supabase Cloud does not
- * allow `db push` to create triggers on `auth.users`. Leaving them in
- * causes silent failures. The trigger must be created manually via the
- * Dashboard (see supabase/auth_trigger.sql).
- */
 function stripAuthTriggers(content) {
   let count = 0;
 
@@ -199,10 +171,6 @@ function stripAuthTriggers(content) {
   return { content, count };
 }
 
-/**
- * Wrap `ALTER PUBLICATION ... ADD TABLE ONLY ...;` to avoid "relation already
- * exists in publication" errors.
- */
 function wrapPublicationAddTable(content) {
   let count = 0;
 
