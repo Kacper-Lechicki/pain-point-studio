@@ -10,10 +10,10 @@ interface QuestionsTabProps {
   hasResponses: boolean;
 }
 
-export function QuestionsTab({ questions, hasResponses }: QuestionsTabProps) {
+export function QuestionsTab({ questions }: QuestionsTabProps) {
   const t = useTranslations('surveys.stats');
 
-  if (!hasResponses) {
+  if (questions.length === 0) {
     return (
       <EmptyState
         icon={BarChart3}

@@ -25,6 +25,8 @@ import { ResponsesToolbar } from './responses-toolbar';
 interface ResponsesTabProps {
   surveyId: string;
   totalResponses: number;
+  /** Timestamp that changes on each realtime sync — triggers a refetch. */
+  refreshTrigger?: number | undefined;
 }
 
 function CardListSkeleton() {
@@ -47,7 +49,7 @@ function CardListSkeleton() {
   );
 }
 
-export function ResponsesTab({ surveyId, totalResponses }: ResponsesTabProps) {
+export function ResponsesTab({ surveyId, totalResponses, refreshTrigger }: ResponsesTabProps) {
   const t = useTranslations('surveys.stats');
   const isMd = useBreakpoint('md');
   const {
@@ -65,7 +67,7 @@ export function ResponsesTab({ surveyId, totalResponses }: ResponsesTabProps) {
     setPage,
     setPerPage,
     clearFilters,
-  } = useResponseList({ surveyId });
+  } = useResponseList({ surveyId, refreshTrigger });
 
   const [selectedResponse, setSelectedResponse] = useState<SurveyResponseListItem | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
@@ -116,7 +118,7 @@ export function ResponsesTab({ surveyId, totalResponses }: ResponsesTabProps) {
   const startIndex = (filters.page - 1) * perPage;
   const endIndex = Math.min(startIndex + perPage, totalCount);
 
-  if (totalResponses === 0 && !hasLoaded) {
+  if (totalResponses === 0) {
     return (
       <EmptyState
         icon={Inbox}

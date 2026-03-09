@@ -30,9 +30,11 @@ interface SurveyStatsTabsProps {
   survey: UserSurvey | null;
   shareUrl: string | null;
   onShare: () => void;
+  /** Timestamp that changes on each realtime sync — forwarded to ResponsesTab. */
+  refreshTrigger?: number | undefined;
 }
 
-export function SurveyStatsTabs({ stats }: SurveyStatsTabsProps) {
+export function SurveyStatsTabs({ stats, refreshTrigger }: SurveyStatsTabsProps) {
   const t = useTranslations('surveys.stats');
   const router = useRouter();
   const pathname = usePathname();
@@ -70,11 +72,15 @@ export function SurveyStatsTabs({ stats }: SurveyStatsTabsProps) {
       </TabsList>
 
       <TabsContent value="overview" className="pt-5">
-        <OverviewTab stats={stats} />
+        <OverviewTab />
       </TabsContent>
 
       <TabsContent value="responses" className="pt-5">
-        <ResponsesTab surveyId={stats.survey.id} totalResponses={stats.totalResponses} />
+        <ResponsesTab
+          surveyId={stats.survey.id}
+          totalResponses={stats.totalResponses}
+          refreshTrigger={refreshTrigger}
+        />
       </TabsContent>
 
       <TabsContent value="questions" className="pt-5">

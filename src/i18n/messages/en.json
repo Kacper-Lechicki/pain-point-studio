@@ -19,6 +19,13 @@
   "common": {
     "close": "Close",
     "cancel": "Cancel",
+    "imageCrop": {
+      "title": "Crop Image",
+      "description": "Drag to reposition. Scroll to zoom in or out.",
+      "zoom": "Zoom",
+      "confirm": "Apply",
+      "cancel": "Cancel"
+    },
     "confirm": {
       "title": "Are you sure?",
       "description": "This action cannot be undone.",
@@ -1437,6 +1444,16 @@
         "opportunity": "Opportunity",
         "threat": "Threat",
         "decision": "Decision"
+      },
+      "pending": {
+        "title": "Surveys awaiting review",
+        "description": "These surveys have completed. Choose which ones should contribute to project insights.",
+        "include": "Include",
+        "exclude": "Exclude",
+        "includeAll": "Include all",
+        "responses": "{count, plural, one {# response} other {# responses}}",
+        "included": "Survey included in insights",
+        "excluded": "Survey excluded from insights"
       },
       "toolbar": {
         "searchPlaceholder": "Search insights...",

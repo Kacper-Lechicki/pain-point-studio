@@ -136,7 +136,13 @@ export const SurveyStatsPanel = ({ stats, survey }: SurveyStatsPanelProps) => {
         onActionClick={handleActionClick}
       />
 
-      <SurveyStatsTabs stats={stats} survey={survey} shareUrl={shareUrl} onShare={handleShare} />
+      <SurveyStatsTabs
+        stats={stats}
+        survey={survey}
+        shareUrl={shareUrl}
+        onShare={handleShare}
+        refreshTrigger={lastSyncedAt}
+      />
 
       {hasShareableLink && shareUrl && (
         <SurveyShareDialog

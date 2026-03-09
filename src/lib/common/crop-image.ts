@@ -1,5 +1,3 @@
-import { AVATAR_OUTPUT_SIZE } from '@/features/settings/config';
-
 /** Pixel coordinates and dimensions of the crop region. */
 export interface CropArea {
   x: number;
@@ -12,7 +10,8 @@ export interface CropArea {
 export async function cropImage(
   imageSrc: string,
   cropArea: CropArea,
-  mimeType: string = 'image/jpeg'
+  mimeType: string = 'image/jpeg',
+  outputSize: number = 256
 ): Promise<Blob> {
   const image = await loadImage(imageSrc);
   const canvas = document.createElement('canvas');
@@ -22,22 +21,12 @@ export async function cropImage(
     throw new Error('Canvas context not available');
   }
 
-  const outputSize = Math.min(AVATAR_OUTPUT_SIZE, cropArea.width, cropArea.height);
+  const size = Math.min(outputSize, cropArea.width, cropArea.height);
 
-  canvas.width = outputSize;
-  canvas.height = outputSize;
+  canvas.width = size;
+  canvas.height = size;
 
-  ctx.drawImage(
-    image,
-    cropArea.x,
-    cropArea.y,
-    cropArea.width,
-    cropArea.height,
-    0,
-    0,
-    outputSize,
-    outputSize
-  );
+  ctx.drawImage(image, cropArea.x, cropArea.y, cropArea.width, cropArea.height, 0, 0, size, size);
 
   return new Promise<Blob>((resolve, reject) => {
     canvas.toBlob(

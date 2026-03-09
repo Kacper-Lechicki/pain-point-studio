@@ -2,6 +2,8 @@
 
 import { useRef, useState } from 'react';
 
+import dynamic from 'next/dynamic';
+
 import { Camera, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
@@ -18,52 +20,17 @@ import {
 } from '@/features/projects/config';
 import { createClient } from '@/lib/supabase/client';
 
+const ImageCropDialog = dynamic(
+  () => import('@/components/ui/image-crop-dialog').then((m) => ({ default: m.ImageCropDialog })),
+  { ssr: false, loading: () => null }
+);
+
 interface ProjectImageUploadProps {
   projectId: string;
   userId: string;
   imageUrl: string | null;
   projectName: string;
   onImageChange: (url: string | null) => void;
-}
-
-function resizeImage(file: File, dim: number): Promise<Blob> {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    const url = URL.createObjectURL(file);
-
-    img.onload = () => {
-      URL.revokeObjectURL(url);
-      const canvas = document.createElement('canvas');
-      canvas.width = dim;
-      canvas.height = dim;
-      const ctx = canvas.getContext('2d')!;
-
-      const side = Math.min(img.width, img.height);
-      const sx = (img.width - side) / 2;
-      const sy = (img.height - side) / 2;
-
-      ctx.drawImage(img, sx, sy, side, side, 0, 0, dim, dim);
-
-      canvas.toBlob(
-        (blob) => {
-          if (blob) {
-            resolve(blob);
-          } else {
-            reject(new Error('Canvas toBlob returned null'));
-          }
-        },
-        file.type,
-        0.85
-      );
-    };
-
-    img.onerror = () => {
-      URL.revokeObjectURL(url);
-      reject(new Error('Failed to load image'));
-    };
-
-    img.src = url;
-  });
 }
 
 export function ProjectImageUpload({
@@ -77,8 +44,10 @@ export function ProjectImageUpload({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
+  const [cropDialogOpen, setCropDialogOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<{ src: string; type: string } | null>(null);
 
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
     if (fileInputRef.current) {
@@ -101,17 +70,30 @@ export function ProjectImageUpload({
       return;
     }
 
+    const objectUrl = URL.createObjectURL(file);
+
+    setSelectedFile({ src: objectUrl, type: file.type });
+    setCropDialogOpen(true);
+  };
+
+  const handleCropComplete = async (blob: Blob) => {
+    setCropDialogOpen(false);
+
+    if (selectedFile?.src) {
+      URL.revokeObjectURL(selectedFile.src);
+    }
+
+    setSelectedFile(null);
     setIsUploading(true);
 
     try {
-      const resized = await resizeImage(file, PROJECT_IMAGE_DIMENSION);
       const supabase = createClient();
-      const ext = file.type.split('/')[1] || 'jpg';
+      const ext = blob.type.split('/')[1] || 'jpg';
       const filePath = `${userId}/${projectId}/${Date.now()}.${ext}`;
 
       const { error: uploadError } = await supabase.storage
         .from('project-images')
-        .upload(filePath, resized, { upsert: true, contentType: file.type });
+        .upload(filePath, blob, { upsert: true, contentType: blob.type });
 
       if (uploadError) {
         toast.error(t('projects.detail.imageUploadFailed'));
@@ -142,6 +124,15 @@ export function ProjectImageUpload({
       toast.error(t('projects.detail.imageUploadFailed'));
     } finally {
       setIsUploading(false);
+    }
+  };
+
+  const handleCropDialogChange = (open: boolean) => {
+    setCropDialogOpen(open);
+
+    if (!open && selectedFile?.src) {
+      URL.revokeObjectURL(selectedFile.src);
+      setSelectedFile(null);
     }
   };
 
@@ -225,6 +216,18 @@ export function ProjectImageUpload({
         description={t('projects.detail.removeImageConfirmDescription')}
         confirmLabel={t('projects.detail.removeImage')}
       />
+
+      {selectedFile && (
+        <ImageCropDialog
+          open={cropDialogOpen}
+          onOpenChange={handleCropDialogChange}
+          imageSrc={selectedFile.src}
+          mimeType={selectedFile.type}
+          cropShape="rect"
+          outputSize={PROJECT_IMAGE_DIMENSION}
+          onCropComplete={handleCropComplete}
+        />
+      )}
     </>
   );
 }

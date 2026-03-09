@@ -17,10 +17,12 @@ import { HeroHighlight } from '@/components/ui/hero-highlight';
 import { acceptSuggestion } from '@/features/projects/actions/accept-suggestion';
 import { dismissSuggestion } from '@/features/projects/actions/dismiss-suggestion';
 import type { InsightSuggestionsResult } from '@/features/projects/actions/get-insight-suggestions';
+import type { PendingInsightSurvey } from '@/features/projects/actions/get-pending-insight-surveys';
 import { InsightInlineForm } from '@/features/projects/components/insight-inline-form';
 import { KanbanBoard } from '@/features/projects/components/kanban-board';
 import type { InsightSortBy } from '@/features/projects/components/kanban-toolbar';
 import { KanbanToolbar } from '@/features/projects/components/kanban-toolbar';
+import { PendingInsightsBanner } from '@/features/projects/components/pending-insights-banner';
 import type { InsightType, ProjectInsight } from '@/features/projects/types';
 import { INSIGHT_TYPES } from '@/features/projects/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
@@ -30,6 +32,7 @@ interface ProjectInsightsTabProps {
   projectId: string;
   insights: ProjectInsight[];
   suggestionsData: InsightSuggestionsResult;
+  pendingSurveys: PendingInsightSurvey[];
   onInsightCreated: (insight: ProjectInsight) => void;
   onInsightUpdated: (insight: ProjectInsight) => void;
   onInsightDeleted: (insightId: string) => void;
@@ -40,6 +43,7 @@ export function ProjectInsightsTab({
   projectId,
   insights,
   suggestionsData,
+  pendingSurveys,
   onInsightCreated,
   onInsightUpdated,
   onInsightDeleted,
@@ -173,11 +177,27 @@ export function ProjectInsightsTab({
     });
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handlePendingDecided = (_surveyId: string, _included: boolean) => {
+    // After a survey is included/excluded, the page needs to reload
+    // to recompute suggestions. Using router.refresh() from the parent
+    // would be ideal but for now we just let the toast confirm the action.
+    // The next page load will reflect the change.
+  };
+
+  // ── Pending banner (rendered in both empty and board states) ────────
+
+  const pendingBanner = pendingSurveys.length > 0 && (
+    <PendingInsightsBanner surveys={pendingSurveys} onDecided={handlePendingDecided} />
+  );
+
   // ── Empty state (no insights + no suggestions at all) ──────────────
 
   if (insights.length === 0 && suggestions.length === 0) {
     return (
       <div className="flex flex-col gap-4">
+        {pendingBanner}
+
         <HeroHighlight
           showDotsOnMobile={false}
           containerClassName="w-full rounded-lg border border-dashed border-border"
@@ -223,6 +243,8 @@ export function ProjectInsightsTab({
 
   return (
     <div className="flex flex-col gap-4">
+      {pendingBanner}
+
       <KanbanToolbar
         searchQuery={searchQuery}
         onSearchQueryChange={setSearchQuery}

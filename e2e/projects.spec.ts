@@ -48,7 +48,7 @@ test('edit project name inline on detail page', async ({ page, testProject: { pr
     timeout: 15_000,
   });
 
-  await page.getByRole('button', { name: 'Edit project name' }).click();
+  await page.getByRole('heading', { name: 'E2E Test Project' }).click();
   await expect(page.getByRole('textbox')).toBeVisible({ timeout: 5_000 });
   await fillField(page.getByRole('textbox'), 'E2E Updated Name');
   await page.locator('button[data-variant="default"][data-size="icon-xs"]').click();

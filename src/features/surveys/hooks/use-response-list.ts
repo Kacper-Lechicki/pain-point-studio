@@ -15,9 +15,11 @@ import {
 
 interface UseResponseListOptions {
   surveyId: string;
+  /** Changing this value triggers a refetch (e.g. from realtime events). */
+  refreshTrigger?: number | undefined;
 }
 
-export function useResponseList({ surveyId }: UseResponseListOptions) {
+export function useResponseList({ surveyId, refreshTrigger }: UseResponseListOptions) {
   const [items, setItems] = useState<SurveyResponseListItem[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [filters, setFilters] = useState<ResponseListFilters>(DEFAULT_RESPONSE_FILTERS);
@@ -55,12 +57,14 @@ export function useResponseList({ surveyId }: UseResponseListOptions) {
     [surveyId, filters, startTransition]
   );
 
-  // Fetch on mount and whenever filters change (except search, which is debounced)
+  // Fetch on mount, whenever filters change (except search, which is debounced),
+  // or when a realtime event bumps refreshTrigger.
   useEffect(() => {
     fetchResponses();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     surveyId,
+    refreshTrigger,
     filters.page,
     filters.perPage,
     filters.status,

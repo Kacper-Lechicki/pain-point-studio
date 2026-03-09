@@ -140,3 +140,91 @@ export async function createSurveyWithQuestions(
 
   return { surveyId, questionIds };
 }
+
+export async function createResponseViaDb(
+  surveyId: string,
+  status: 'in_progress' | 'completed' | 'abandoned' = 'completed'
+): Promise<string> {
+  const admin = getAdminClient();
+
+  const { data, error } = await admin
+    .from('survey_responses')
+    .insert({
+      survey_id: surveyId,
+      status,
+      completed_at: status === 'completed' ? new Date().toISOString() : null,
+    })
+    .select('id')
+    .single();
+
+  if (error || !data) {
+    throw new Error(`[e2e] Failed to create response: ${error?.message ?? 'no data returned'}`);
+  }
+
+  return data.id;
+}
+
+export async function createAnswerViaDb(
+  responseId: string,
+  questionId: string,
+  value: Record<string, unknown>
+): Promise<string> {
+  const admin = getAdminClient();
+
+  const { data, error } = await admin
+    .from('survey_answers')
+    .insert({
+      response_id: responseId,
+      question_id: questionId,
+      value,
+    })
+    .select('id')
+    .single();
+
+  if (error || !data) {
+    throw new Error(`[e2e] Failed to create answer: ${error?.message ?? 'no data returned'}`);
+  }
+
+  return data.id;
+}
+
+export async function createCompletedSurveyWithResponses(
+  userId: string,
+  projectId: string,
+  responseCount = 5,
+  title?: string
+): Promise<{ surveyId: string; questionIds: string[]; title: string }> {
+  const surveyTitle = title ?? `E2E Insights Survey ${Date.now()}`;
+  const surveyId = await createSurveyViaDb({
+    userId,
+    projectId,
+    title: surveyTitle,
+    status: 'active',
+    slug: generateSlug(),
+    startsAt: new Date().toISOString(),
+  });
+
+  const questionId = await createQuestionViaDb({
+    surveyId,
+    text: 'Is this feature useful?',
+    type: 'yes_no',
+    sortOrder: 0,
+  });
+
+  const questionIds = [questionId];
+
+  for (let i = 0; i < responseCount; i++) {
+    const responseId = await createResponseViaDb(surveyId, 'completed');
+
+    for (const questionId of questionIds) {
+      await createAnswerViaDb(responseId, questionId, { answer: true });
+    }
+  }
+
+  await updateSurveyViaDb(surveyId, {
+    status: 'completed',
+    completed_at: new Date().toISOString(),
+  });
+
+  return { surveyId, questionIds, title: surveyTitle };
+}

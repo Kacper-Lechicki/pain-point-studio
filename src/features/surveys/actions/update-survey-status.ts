@@ -118,6 +118,7 @@ function createStatusAction(action: SurveyAction) {
             status: 'active' as SurveyStatus,
             completed_at: null,
             cancelled_at: null,
+            generate_insights: null,
           })
           .eq('id', data.surveyId)
           .eq('user_id', user.id)
