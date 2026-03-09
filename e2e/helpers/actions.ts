@@ -20,21 +20,28 @@ export async function executeMenuAction(
   confirmButtonName?: string
 ) {
   await expect(row).toBeVisible({ timeout: 15_000 });
-  await page.keyboard.press('Escape');
 
-  await page
-    .locator(`${sel.alertDialog}, [role="menu"]`)
-    .first()
-    .waitFor({ state: 'hidden', timeout: 3_000 })
-    .catch(() => {});
+  await expect(async () => {
+    await page.keyboard.press('Escape');
 
-  await row.getByRole('button', { name: 'More actions' }).click();
-  await page.getByRole('menuitem', { name: menuItemName }).click();
+    await page
+      .locator(`${sel.alertDialog}, [role="menu"]`)
+      .first()
+      .waitFor({ state: 'hidden', timeout: 3_000 })
+      .catch(() => {});
+
+    await row.getByRole('button', { name: 'More actions' }).click();
+
+    const menuItem = page.getByRole('menuitem', { name: menuItemName });
+
+    await expect(menuItem).toBeVisible({ timeout: 3_000 });
+    await menuItem.click();
+  }).toPass({ timeout: 15_000 });
 
   if (confirmButtonName) {
     const dialog = page.locator(sel.alertDialog);
 
-    await expect(dialog).toBeVisible({ timeout: 3_000 });
+    await expect(dialog).toBeVisible({ timeout: 5_000 });
     await dialog.getByRole('button', { name: confirmButtonName }).click();
   }
 }
@@ -44,20 +51,26 @@ export async function executeDetailAction(
   menuItemName: string,
   confirmButtonName: string
 ) {
-  await page.keyboard.press('Escape');
+  await expect(async () => {
+    await page.keyboard.press('Escape');
 
-  await page
-    .locator(`${sel.alertDialog}, [role="menu"]`)
-    .first()
-    .waitFor({ state: 'hidden', timeout: 3_000 })
-    .catch(() => {});
+    await page
+      .locator(`${sel.alertDialog}, [role="menu"]`)
+      .first()
+      .waitFor({ state: 'hidden', timeout: 3_000 })
+      .catch(() => {});
 
-  await page.getByRole('button', { name: 'More actions' }).click();
-  await page.getByRole('menuitem', { name: menuItemName }).click();
+    await page.getByRole('button', { name: 'More actions' }).click();
+
+    const menuItem = page.getByRole('menuitem', { name: menuItemName });
+
+    await expect(menuItem).toBeVisible({ timeout: 3_000 });
+    await menuItem.click();
+  }).toPass({ timeout: 15_000 });
 
   const dialog = page.locator(sel.alertDialog);
 
-  await expect(dialog).toBeVisible({ timeout: 3_000 });
+  await expect(dialog).toBeVisible({ timeout: 5_000 });
   await dialog.getByRole('button', { name: confirmButtonName }).click();
 }
 
@@ -80,10 +93,5 @@ export async function waitForToast(page: Page) {
 
 export async function waitForToastCycle(page: Page) {
   await waitForToast(page);
-
-  await page
-    .locator(sel.toast)
-    .first()
-    .waitFor({ state: 'hidden', timeout: 10_000 })
-    .catch(() => {});
+  await expect(page.locator(sel.toast)).toHaveCount(0, { timeout: 10_000 });
 }

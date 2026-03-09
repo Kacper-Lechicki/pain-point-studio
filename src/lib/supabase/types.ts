@@ -542,6 +542,10 @@ export type Database = {
           new_email: string;
         }[];
       };
+      find_user_by_email_excluding: {
+        Args: { lookup_email: string; exclude_id: string };
+        Returns: string | null;
+      };
       get_export_responses: {
         Args: { p_survey_id: string; p_user_id: string };
         Returns: {
@@ -597,6 +601,10 @@ export type Database = {
       get_user_surveys_with_counts: {
         Args: { p_user_id: string };
         Returns: Json;
+      };
+      merge_user_data: {
+        Args: { from_user_id: string; to_user_id: string };
+        Returns: undefined;
       };
       has_password: { Args: never; Returns: boolean };
       purge_trashed_projects: { Args: never; Returns: undefined };

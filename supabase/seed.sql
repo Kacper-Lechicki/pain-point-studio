@@ -1050,3 +1050,42 @@ SELECT cron.schedule(
   '*/15 * * * *',
   $$SELECT public.complete_expired_surveys()$$
 );
+
+-- ============================================================
+-- E2E helper: Insert a fake OAuth identity for testing.
+-- Only exists in local dev — seed.sql is NOT applied in production.
+-- Allows e2e tests to simulate users with multiple auth providers
+-- without going through a real OAuth redirect flow.
+-- ============================================================
+CREATE OR REPLACE FUNCTION public.add_fake_oauth_identity(
+  p_user_id UUID,
+  p_identity_id UUID,
+  p_provider TEXT,
+  p_email TEXT,
+  p_created_at TIMESTAMPTZ
+) RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path TO ''
+AS $$
+BEGIN
+  INSERT INTO auth.identities (
+    id, user_id, identity_data, provider, provider_id,
+    last_sign_in_at, created_at, updated_at
+  ) VALUES (
+    p_identity_id,
+    p_user_id,
+    jsonb_build_object(
+      'sub', p_identity_id::text,
+      'email', p_email,
+      'email_verified', true,
+      'full_name', 'E2E OAuth User'
+    ),
+    p_provider,
+    p_identity_id::text,
+    p_created_at,
+    p_created_at,
+    p_created_at
+  );
+END;
+$$;
