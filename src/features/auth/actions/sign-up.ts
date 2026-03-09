@@ -16,7 +16,7 @@ export const signUpWithEmail = withPublicAction('sign-up', {
   action: async ({ data, supabase }) => {
     const locale = await getLocale();
 
-    const { error } = await supabase.auth.signUp({
+    const { data: signUpData, error } = await supabase.auth.signUp({
       email: data.email,
       password: data.password,
       options: {
@@ -26,6 +26,12 @@ export const signUpWithEmail = withPublicAction('sign-up', {
 
     if (error) {
       return { error: mapSupabaseError(error.message) };
+    }
+
+    // Supabase returns a user with empty identities when the email is already
+    // taken by a confirmed account — no confirmation email is sent in this case.
+    if (signUpData.user && signUpData.user.identities?.length === 0) {
+      return { error: 'auth.errors.userAlreadyRegistered' };
     }
 
     return { success: true };
