@@ -39,7 +39,10 @@ describe('Auth Actions – Sign Up', () => {
   });
 
   it('should return success on valid registration', async () => {
-    mockSignUp.mockResolvedValue({ error: null });
+    mockSignUp.mockResolvedValue({
+      data: { user: { identities: [{ id: '1' }] } },
+      error: null,
+    });
 
     const { signUpWithEmail } = await import('./sign-up');
 
@@ -61,6 +64,7 @@ describe('Auth Actions – Sign Up', () => {
 
   it('should return an error when Supabase rejects registration', async () => {
     mockSignUp.mockResolvedValue({
+      data: { user: null },
       error: { message: 'User already registered' },
     });
 
@@ -73,6 +77,22 @@ describe('Auth Actions – Sign Up', () => {
 
     expect(result.error).toBeDefined();
     expect(result).not.toHaveProperty('success');
+  });
+
+  it('should detect already-registered email via empty identities', async () => {
+    mockSignUp.mockResolvedValue({
+      data: { user: { identities: [] } },
+      error: null,
+    });
+
+    const { signUpWithEmail } = await import('./sign-up');
+
+    const result = await signUpWithEmail({
+      email: 'taken@example.com',
+      password: 'SecurePass1!',
+    });
+
+    expect(result).toEqual({ error: 'auth.errors.userAlreadyRegistered' });
   });
 
   it('should not call Supabase when form data is invalid', async () => {
