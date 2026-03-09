@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/server';
 const SAFE_REDIRECT_PREFIXES = [
   ROUTES.common.dashboard,
   ROUTES.common.settings,
+  ROUTES.settings.connectedAccounts,
   ROUTES.auth.updatePassword,
   ROUTES.profile.preview,
 ] as const;
@@ -123,6 +124,22 @@ export async function GET(
       return NextResponse.redirect(signInUrl);
     }
 
+    // Identity-linking errors — redirect back to settings, not sign-in.
+    const isLinkingFlow = next?.includes('/settings');
+    const IDENTITY_LINK_CODES = new Set([
+      'identity_already_exists',
+      'manual_linking_disabled',
+      'identity_not_found',
+    ]);
+
+    if (isLinkingFlow && error.code && IDENTITY_LINK_CODES.has(error.code)) {
+      const settingsUrl = new URL(`/${locale}${ROUTES.settings.connectedAccounts}`, request.url);
+
+      settingsUrl.searchParams.set('error', error.code);
+
+      return NextResponse.redirect(settingsUrl);
+    }
+
     const EXPIRED_CODES = new Set(['otp_expired', 'flow_state_expired', 'bad_code_verifier']);
 
     if (
@@ -131,6 +148,15 @@ export async function GET(
       error.message?.includes('invalid')
     ) {
       callbackErrorKey = 'linkExpired';
+    }
+
+    // For linking flows, redirect back to settings instead of sign-in on any error.
+    if (isLinkingFlow) {
+      const settingsUrl = new URL(`/${locale}${ROUTES.settings.connectedAccounts}`, request.url);
+
+      settingsUrl.searchParams.set('error', callbackErrorKey);
+
+      return NextResponse.redirect(settingsUrl);
     }
   }
 

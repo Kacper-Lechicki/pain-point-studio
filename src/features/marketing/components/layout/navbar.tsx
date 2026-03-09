@@ -92,13 +92,13 @@ const Navbar = () => {
             </Button>
 
             <Button className="group gap-2" variant="secondary" asChild>
-              <Link href={ROUTES.common.home}>
+              <LoadingLink href={ROUTES.auth.signIn}>
                 {exploreLabel}
                 <Globe
                   className="size-4 transition-transform duration-300 md:group-hover:rotate-12"
                   aria-hidden="true"
                 />
-              </Link>
+              </LoadingLink>
             </Button>
           </div>
 
@@ -140,10 +140,10 @@ const Navbar = () => {
             </Button>
 
             <Button variant="secondary" className="flex-1 justify-center gap-2" asChild>
-              <Link href={ROUTES.common.home} onClick={() => setIsMobileMenuOpen(false)}>
+              <LoadingLink href={ROUTES.auth.signIn} onClick={() => setIsMobileMenuOpen(false)}>
                 {exploreLabel}
                 <Globe className="size-4" aria-hidden="true" />
-              </Link>
+              </LoadingLink>
             </Button>
           </div>
         </div>
