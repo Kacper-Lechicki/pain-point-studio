@@ -10,7 +10,6 @@ import {
   Clock,
   EllipsisVertical,
   MessageSquare,
-  Pencil,
   Trash2,
   Trophy,
   X,
@@ -354,40 +353,27 @@ export function ProjectDetailHeader({
                   />
                 </div>
               ) : (
-                <div className="flex min-w-0 items-baseline gap-1.5">
-                  <h1
-                    className={cn(
-                      'text-foreground min-w-0 text-2xl leading-tight font-bold wrap-break-word sm:text-3xl',
-                      canEditInline &&
-                        'decoration-muted-foreground/40 w-fit cursor-pointer rounded-md underline-offset-4 md:hover:underline'
-                    )}
-                    onClick={canEditInline ? nameEdit.startEditing : undefined}
-                    tabIndex={canEditInline ? 0 : undefined}
-                    onKeyDown={
-                      canEditInline
-                        ? (e) => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                              e.preventDefault();
-                              nameEdit.startEditing();
-                            }
-                          }
-                        : undefined
-                    }
-                  >
-                    {project.name}
-                  </h1>
-                  {canEditInline && (
-                    <Button
-                      variant="ghost"
-                      size="icon-xs"
-                      className="text-muted-foreground shrink-0"
-                      onClick={nameEdit.startEditing}
-                      aria-label={t('projects.detail.editName')}
-                    >
-                      <Pencil className="size-3.5" />
-                    </Button>
+                <h1
+                  className={cn(
+                    'text-foreground min-w-0 text-2xl leading-tight font-bold wrap-break-word sm:text-3xl',
+                    canEditInline &&
+                      'decoration-muted-foreground/40 w-fit cursor-pointer rounded-md underline-offset-4 md:hover:underline'
                   )}
-                </div>
+                  onClick={canEditInline ? nameEdit.startEditing : undefined}
+                  tabIndex={canEditInline ? 0 : undefined}
+                  onKeyDown={
+                    canEditInline
+                      ? (e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            nameEdit.startEditing();
+                          }
+                        }
+                      : undefined
+                  }
+                >
+                  {project.name}
+                </h1>
               )}
             </div>
           </div>
@@ -480,11 +466,13 @@ export function ProjectDetailHeader({
 
           <span className="inline-flex items-center gap-1">
             <MessageSquare className="size-3 shrink-0" aria-hidden />
-            {t('projects.detail.meta.lastResponse')}{' '}
             {lastResponseAt
-              ? formatDistanceToNow(new Date(lastResponseAt), {
-                  addSuffix: true,
-                }).replace(/^about /i, '')
+              ? `${t('projects.detail.meta.lastResponse')} ${formatDistanceToNow(
+                  new Date(lastResponseAt),
+                  {
+                    addSuffix: true,
+                  }
+                ).replace(/^about /i, '')}`
               : t('projects.detail.meta.noResponses')}
           </span>
 

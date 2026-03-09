@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { ROUTES } from '@/config';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { createClient } from '@/lib/supabase/server';
 
 const SAFE_REDIRECT_PREFIXES = [
@@ -48,12 +49,32 @@ export async function GET(
 
     if (!error) {
       if (data?.user) {
-        // Guard against OAuth providers that don't return an email.
         if (!data.user.email) {
           const signInUrl = new URL(`/${locale}${ROUTES.auth.signIn}`, request.url);
+
           signInUrl.searchParams.set('error', 'callbackError');
 
           return NextResponse.redirect(signInUrl);
+        }
+
+        if (data.user.identities && data.user.identities.length === 1) {
+          const admin = createAdminClient();
+
+          const { data: duplicateUserId } = await admin.rpc('find_user_by_email_excluding', {
+            lookup_email: data.user.email,
+            exclude_id: data.user.id,
+          });
+
+          if (duplicateUserId) {
+            try {
+              await admin.rpc('merge_user_data', {
+                from_user_id: duplicateUserId,
+                to_user_id: data.user.id,
+              });
+
+              await admin.auth.admin.deleteUser(duplicateUserId);
+            } catch {}
+          }
         }
 
         const { data: profile } = await supabase
@@ -63,8 +84,6 @@ export async function GET(
           .single();
 
         if (!profile) {
-          // Trigger on auth.users may not have fired (e.g. Supabase cloud
-          // restrictions on auth-schema triggers). Ensure a profile row exists.
           const { error: upsertError } = await supabase.from('profiles').upsert(
             {
               id: data.user.id,
@@ -81,7 +100,6 @@ export async function GET(
             return NextResponse.redirect(signInUrl);
           }
         } else {
-          // Sync avatar: if OAuth provider returned a newer avatar, update profile.
           const providerAvatar = data.user.user_metadata?.avatar_url as string | undefined;
 
           if (providerAvatar && providerAvatar !== profile.avatar_url) {
@@ -114,18 +132,14 @@ export async function GET(
       return NextResponse.redirect(redirectUrl);
     }
 
-    // Map Supabase error to a specific key so the UI can show a helpful message.
-    // Prefer structured error.code over fragile string matching on error.message.
-
-    // User cancelled the OAuth consent screen — redirect silently to sign-in.
     if (error.code === 'access_denied') {
       const signInUrl = new URL(`/${locale}${ROUTES.auth.signIn}`, request.url);
 
       return NextResponse.redirect(signInUrl);
     }
 
-    // Identity-linking errors — redirect back to settings, not sign-in.
     const isLinkingFlow = next?.includes('/settings');
+
     const IDENTITY_LINK_CODES = new Set([
       'identity_already_exists',
       'manual_linking_disabled',
@@ -150,7 +164,6 @@ export async function GET(
       callbackErrorKey = 'linkExpired';
     }
 
-    // For linking flows, redirect back to settings instead of sign-in on any error.
     if (isLinkingFlow) {
       const settingsUrl = new URL(`/${locale}${ROUTES.settings.connectedAccounts}`, request.url);
 

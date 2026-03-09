@@ -1,9 +1,6 @@
+import type { QuestionType, SurveyStatus } from '@/features/surveys/types';
+
 import { getAdminClient } from './supabase-admin';
-
-// ── Types ────────────────────────────────────────────────────────
-
-type SurveyStatus = 'draft' | 'active' | 'completed' | 'cancelled' | 'archived';
-type QuestionType = 'open_text' | 'short_text' | 'multiple_choice' | 'rating_scale' | 'yes_no';
 
 interface CreateSurveyOptions {
   userId: string;
@@ -25,12 +22,6 @@ interface CreateQuestionOptions {
   config?: Record<string, unknown>;
 }
 
-// ── Helpers ──────────────────────────────────────────────────────
-
-/**
- * Generates a random slug matching the DB constraint `^[A-Za-z0-9_-]{8,21}$`.
- * Format: `e2e_<timestamp>_<random>` (always 16-18 chars).
- */
 export function generateSlug(): string {
   const ts = Date.now().toString(36);
   const rand = Math.random().toString(36).slice(2, 6);
@@ -38,12 +29,6 @@ export function generateSlug(): string {
   return `e2e_${ts}_${rand}`;
 }
 
-// ── CRUD ─────────────────────────────────────────────────────────
-
-/**
- * Inserts a project directly via the admin client (bypasses RLS).
- * Returns the project id.
- */
 export async function createProjectViaDb(
   userId: string,
   name = 'E2E Test Project'
@@ -63,10 +48,6 @@ export async function createProjectViaDb(
   return data.id;
 }
 
-/**
- * Inserts a survey directly via the admin client (bypasses RLS).
- * Returns the survey id.
- */
 export async function createSurveyViaDb(options: CreateSurveyOptions): Promise<string> {
   const admin = getAdminClient();
 
@@ -93,10 +74,6 @@ export async function createSurveyViaDb(options: CreateSurveyOptions): Promise<s
   return data.id;
 }
 
-/**
- * Inserts a question directly via the admin client (bypasses RLS).
- * Returns the question id.
- */
 export async function createQuestionViaDb(options: CreateQuestionOptions): Promise<string> {
   const admin = getAdminClient();
 
@@ -120,9 +97,6 @@ export async function createQuestionViaDb(options: CreateQuestionOptions): Promi
   return data.id;
 }
 
-/**
- * Updates arbitrary fields on a survey (bypasses RLS).
- */
 export async function updateSurveyViaDb(
   surveyId: string,
   fields: Record<string, unknown>
@@ -135,13 +109,6 @@ export async function updateSurveyViaDb(
   }
 }
 
-/**
- * Creates a survey with N questions in one call.
- * By default creates a draft survey with 1 open_text question.
- *
- * For active surveys, pass `status: 'active'` in surveyOverrides —
- * the function automatically sets slug and starts_at.
- */
 export async function createSurveyWithQuestions(
   userId: string,
   surveyOverrides: Partial<Omit<CreateSurveyOptions, 'userId'>> & { projectId: string },
@@ -152,7 +119,6 @@ export async function createSurveyWithQuestions(
   const surveyId = await createSurveyViaDb({
     userId,
     ...surveyOverrides,
-    // Active surveys need a slug and starts_at — set defaults if not provided
     slug: isActive ? (surveyOverrides?.slug ?? generateSlug()) : (surveyOverrides?.slug ?? null),
     startsAt: isActive
       ? (surveyOverrides?.startsAt ?? new Date().toISOString())
@@ -168,8 +134,97 @@ export async function createSurveyWithQuestions(
       type: 'open_text',
       sortOrder: i,
     });
+
     questionIds.push(id);
   }
 
   return { surveyId, questionIds };
+}
+
+export async function createResponseViaDb(
+  surveyId: string,
+  status: 'in_progress' | 'completed' | 'abandoned' = 'completed'
+): Promise<string> {
+  const admin = getAdminClient();
+
+  const { data, error } = await admin
+    .from('survey_responses')
+    .insert({
+      survey_id: surveyId,
+      status,
+      completed_at: status === 'completed' ? new Date().toISOString() : null,
+    })
+    .select('id')
+    .single();
+
+  if (error || !data) {
+    throw new Error(`[e2e] Failed to create response: ${error?.message ?? 'no data returned'}`);
+  }
+
+  return data.id;
+}
+
+export async function createAnswerViaDb(
+  responseId: string,
+  questionId: string,
+  value: Record<string, unknown>
+): Promise<string> {
+  const admin = getAdminClient();
+
+  const { data, error } = await admin
+    .from('survey_answers')
+    .insert({
+      response_id: responseId,
+      question_id: questionId,
+      value,
+    })
+    .select('id')
+    .single();
+
+  if (error || !data) {
+    throw new Error(`[e2e] Failed to create answer: ${error?.message ?? 'no data returned'}`);
+  }
+
+  return data.id;
+}
+
+export async function createCompletedSurveyWithResponses(
+  userId: string,
+  projectId: string,
+  responseCount = 5,
+  title?: string
+): Promise<{ surveyId: string; questionIds: string[]; title: string }> {
+  const surveyTitle = title ?? `E2E Insights Survey ${Date.now()}`;
+  const surveyId = await createSurveyViaDb({
+    userId,
+    projectId,
+    title: surveyTitle,
+    status: 'active',
+    slug: generateSlug(),
+    startsAt: new Date().toISOString(),
+  });
+
+  const questionId = await createQuestionViaDb({
+    surveyId,
+    text: 'Is this feature useful?',
+    type: 'yes_no',
+    sortOrder: 0,
+  });
+
+  const questionIds = [questionId];
+
+  for (let i = 0; i < responseCount; i++) {
+    const responseId = await createResponseViaDb(surveyId, 'completed');
+
+    for (const questionId of questionIds) {
+      await createAnswerViaDb(responseId, questionId, { answer: true });
+    }
+  }
+
+  await updateSurveyViaDb(surveyId, {
+    status: 'completed',
+    completed_at: new Date().toISOString(),
+  });
+
+  return { surveyId, questionIds, title: surveyTitle };
 }

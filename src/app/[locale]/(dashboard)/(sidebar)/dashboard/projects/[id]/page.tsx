@@ -10,6 +10,7 @@ import {
   getInsightSuggestions,
 } from '@/features/projects/actions/get-insight-suggestions';
 import { getNoteFolders } from '@/features/projects/actions/get-note-folders';
+import { getPendingInsightSurveys } from '@/features/projects/actions/get-pending-insight-surveys';
 import { getProject } from '@/features/projects/actions/get-project';
 import { getProjectInsights } from '@/features/projects/actions/get-project-insights';
 import { getProjectNotes } from '@/features/projects/actions/get-project-notes';
@@ -61,6 +62,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
     foldersResult,
     signalsResult,
     suggestionsResult,
+    pendingResult,
   ] = await Promise.allSettled([
     getProjectInsights(id),
     getProjectOverviewStats(id),
@@ -69,6 +71,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
     getNoteFolders(id),
     getProjectSignalsData(id),
     getInsightSuggestions(id),
+    getPendingInsightSurveys(id),
   ]);
 
   return (
@@ -86,6 +89,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
           overviewStats={settled(statsResult, null) ?? EMPTY_OVERVIEW_STATS}
           signalsData={settled(signalsResult, [])}
           suggestionsData={settled(suggestionsResult, EMPTY_SUGGESTIONS)}
+          pendingSurveys={settled(pendingResult, [])}
         />
       </PageTransition>
     </>

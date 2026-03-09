@@ -445,6 +445,7 @@ export type Database = {
           deleted_at: string | null;
           description: string;
           ends_at: string | null;
+          generate_insights: boolean | null;
           id: string;
           max_respondents: number | null;
           pre_trash_status: string | null;
@@ -468,6 +469,7 @@ export type Database = {
           deleted_at?: string | null;
           description: string;
           ends_at?: string | null;
+          generate_insights?: boolean | null;
           id?: string;
           max_respondents?: number | null;
           pre_trash_status?: string | null;
@@ -491,6 +493,7 @@ export type Database = {
           deleted_at?: string | null;
           description?: string;
           ends_at?: string | null;
+          generate_insights?: boolean | null;
           id?: string;
           max_respondents?: number | null;
           pre_trash_status?: string | null;
@@ -521,6 +524,16 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      add_fake_oauth_identity: {
+        Args: {
+          p_created_at: string;
+          p_email: string;
+          p_identity_id: string;
+          p_provider: string;
+          p_user_id: string;
+        };
+        Returns: undefined;
+      };
       cancel_email_change: { Args: never; Returns: undefined };
       change_project_status_with_cascade: {
         Args: { p_action: string; p_project_id: string; p_user_id: string };
@@ -530,6 +543,10 @@ export type Database = {
       complete_expired_surveys: { Args: never; Returns: undefined };
       decrypt_pii: { Args: { encrypted: string }; Returns: string };
       encrypt_pii: { Args: { plain_text: string }; Returns: string };
+      find_user_by_email_excluding: {
+        Args: { exclude_id: string; lookup_email: string };
+        Returns: string;
+      };
       get_dashboard_overview: { Args: { p_user_id: string }; Returns: Json };
       get_dashboard_stats: {
         Args: { p_days: number; p_user_id: string };
@@ -576,6 +593,8 @@ export type Database = {
       };
       get_survey_responses_list: {
         Args: {
+          p_date_from?: string;
+          p_date_to?: string;
           p_device?: string;
           p_has_contact?: boolean;
           p_page?: number;
@@ -599,6 +618,10 @@ export type Database = {
         Returns: Json;
       };
       has_password: { Args: never; Returns: boolean };
+      merge_user_data: {
+        Args: { from_user_id: string; to_user_id: string };
+        Returns: undefined;
+      };
       purge_trashed_projects: { Args: never; Returns: undefined };
       purge_trashed_surveys: { Args: never; Returns: undefined };
       record_survey_view: { Args: { p_survey_id: string }; Returns: undefined };

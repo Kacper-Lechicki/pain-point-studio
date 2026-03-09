@@ -1,19 +1,5 @@
-/** Shared test utilities for server action unit tests. */
 import { vi } from 'vitest';
 
-/**
- * Creates a Proxy-based mock that simulates Supabase's chained query API.
- *
- * Any property access (`.select()`, `.eq()`, `.order()`, etc.) returns the same
- * proxy so chains resolve to `{ data, error }` when awaited.
- *
- * @example
- * ```ts
- * const selectChain = chain({ data: [{ id: '1' }] });
- * mockFrom.mockReturnValue(selectChain);
- * // await supabase.from('table').select().eq('id', '1') → { data: [...], error: null }
- * ```
- */
 export function chain(result: { data?: unknown; error?: unknown } = {}) {
   const obj: { data: unknown; error: unknown; [key: string]: unknown } = {
     data: result.data ?? null,
@@ -42,8 +28,6 @@ export function chain(result: { data?: unknown; error?: unknown } = {}) {
     },
   });
 }
-
-// ── Common test constants ────────────────────────────────────────────
 
 export const TEST_USER = { id: 'user-123', email: 'test@example.com' };
 export const TEST_PROJECT_ID = '00000000-0000-4000-8000-000000000001';

@@ -4,10 +4,6 @@ import { env } from './env';
 
 let _admin: SupabaseClient | null = null;
 
-/**
- * Returns a cached Supabase admin client using the service role key.
- * Shared by all e2e helpers (user management, survey seeding, etc.).
- */
 export function getAdminClient() {
   if (_admin) {
     return _admin;
@@ -24,17 +20,6 @@ export function getAdminClient() {
   return _admin;
 }
 
-/**
- * Ensures a confirmed user exists with the given credentials.
- * Handles race conditions when multiple Playwright projects run
- * beforeAll in parallel by retrying on failure.
- *
- * By default sets fullName='E2E User' and role='other' on the profile
- * so the complete-profile modal doesn't block tests.
- * Pass `{ fullName: '', role: '' }` to test the incomplete profile flow.
- *
- * Returns the user's id.
- */
 export async function ensureUser(
   email: string,
   password: string,
@@ -81,19 +66,9 @@ export async function ensureUser(
   throw new Error('[e2e] ensureUser: unexpected code path');
 }
 
-/**
- * Deletes a user by email from the local Supabase instance.
- * No-op if the user does not exist.
- *
- * Uses GoTrue admin API listUsers first. If the user isn't found there
- * (local GoTrue's listUsers can be unreliable after db reset), falls back
- * to the `get_user_id_by_email` RPC function (defined in seed.sql) which
- * queries auth.users directly.
- */
 export async function deleteUserByEmail(email: string): Promise<void> {
   const admin = getAdminClient();
 
-  // Try GoTrue admin API first
   let page = 1;
 
   while (true) {
@@ -114,8 +89,6 @@ export async function deleteUserByEmail(email: string): Promise<void> {
     page++;
   }
 
-  // Fallback: use the seed-defined RPC function to look up the user id
-  // directly in auth.users (bypasses GoTrue's potentially stale listUsers).
   const { data: userId } = await admin.rpc('get_user_id_by_email', {
     lookup_email: email,
   });

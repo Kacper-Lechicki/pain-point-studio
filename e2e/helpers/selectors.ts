@@ -1,4 +1,3 @@
-/** Shared selectors reused across e2e spec files. */
 export const sel = {
   toast: '[data-sonner-toast]',
   alertDialog: '[role="alertdialog"]',
@@ -6,7 +5,19 @@ export const sel = {
   submit: 'form button[type="submit"]',
   nameInput: 'input[name="name"]',
   summaryInput: 'textarea[name="summary"]',
+  titleInput: 'input[name="title"]',
+  descriptionInput: 'textarea[name="description"]',
+  questionInput: 'input[placeholder="Type your question here..."]',
+  emailInput: 'input[name="email"]',
+  passwordInput: 'input[name="password"]',
+  fullName: 'form#profile-form input[name="fullName"]',
+  bio: 'textarea[name="bio"]',
+  profileSubmit: 'form#profile-form button[type="submit"]',
+  currentPassword: 'input[name="currentPassword"]',
+  confirmPassword: 'input[name="confirmPassword"]',
+  passwordSubmit: 'form#password-form button[type="submit"]',
+  deleteButton: 'button[data-variant="destructive"]:has(svg.lucide-trash-2)',
+  confirmation: 'input[name="confirmation"]',
 } as const;
 
-/** Default password for all e2e test users. */
 export const E2E_PASSWORD = 'E2eTestPass1!';

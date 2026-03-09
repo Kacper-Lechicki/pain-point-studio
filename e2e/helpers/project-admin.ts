@@ -1,11 +1,10 @@
+import type { ProjectStatus } from '@/features/projects/types';
+
 import { getAdminClient } from './supabase-admin';
 import { createProjectViaDb, createSurveyWithQuestions } from './survey-admin';
 
-type ProjectStatus = 'active' | 'completed' | 'archived' | 'trashed';
+export { createProjectViaDb } from './survey-admin';
 
-/**
- * Updates arbitrary fields on a project via the admin client (bypasses RLS).
- */
 export async function updateProjectViaDb(
   projectId: string,
   fields: Record<string, unknown>
@@ -18,19 +17,11 @@ export async function updateProjectViaDb(
   }
 }
 
-/**
- * Hard-deletes a project via the admin client (bypasses RLS).
- * Used for afterAll cleanup. No-op if the project doesn't exist.
- */
 export async function deleteProjectViaDb(projectId: string): Promise<void> {
   const admin = getAdminClient();
   await admin.from('projects').delete().eq('id', projectId);
 }
 
-/**
- * Creates a project in a specific status.
- * Always creates as 'active' first (DB default), then updates status + metadata.
- */
 export async function createProjectWithStatus(
   userId: string,
   status: ProjectStatus,
@@ -43,6 +34,7 @@ export async function createProjectWithStatus(
   }
 
   const now = new Date().toISOString();
+
   const statusFields: Record<string, Record<string, unknown>> = {
     completed: { status: 'completed', completed_at: now },
     archived: { status: 'archived', archived_at: now, pre_archive_status: 'active' },
@@ -54,9 +46,6 @@ export async function createProjectWithStatus(
   return projectId;
 }
 
-/**
- * Creates a project with N surveys (each with 1 question, draft status).
- */
 export async function createProjectWithSurveys(
   userId: string,
   surveyCount: number,
@@ -72,6 +61,3 @@ export async function createProjectWithSurveys(
 
   return { projectId, surveyIds };
 }
-
-// Re-export for convenience
-export { createProjectViaDb } from './survey-admin';

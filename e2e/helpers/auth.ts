@@ -7,32 +7,14 @@ import { E2E_PASSWORD } from './selectors';
 
 const DEFAULT_PASSWORD = E2E_PASSWORD;
 
-/**
- * Generates a project-scoped email to prevent collisions when
- * multiple Playwright projects run against the same Supabase instance.
- */
 export function scopedEmail(base: string, projectName: string) {
   const slug = projectName.toLowerCase().replace(/\s+/g, '-');
 
   return `${base}+${slug}@example.com`;
 }
 
-// ── API-based sign-in (fast, reliable) ───────────────────────────
-//
-// Calls GoTrue via the Supabase JS client (Node.js, not the browser),
-// then injects the returned session as cookies into the Playwright
-// browser context. This bypasses the sign-in form entirely and is
-// immune to hydration issues, form-submit races, and GoTrue slowness
-// under load (a single API call instead of fill → submit → redirect).
-
-/**
- * Signs in via the Supabase API and navigates the page to the dashboard.
- * Use this for any test that needs an authenticated session but doesn't
- * test the sign-in form itself.
- */
 export function makeApiSignIn(email: string, password = DEFAULT_PASSWORD) {
   return async function apiSignIn(page: import('@playwright/test').Page) {
-    // 1. Authenticate via GoTrue REST API
     const supabase = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_ANON_KEY, {
       auth: { autoRefreshToken: false, persistSession: false },
     });
@@ -43,9 +25,6 @@ export function makeApiSignIn(email: string, password = DEFAULT_PASSWORD) {
       throw new Error(`[e2e] API signIn failed for ${email}: ${error?.message ?? 'no session'}`);
     }
 
-    // 2. Build the cookie value that @supabase/ssr expects.
-    //    The cookie name follows the pattern: sb-<project-ref>-auth-token
-    //    where project-ref is extracted from the Supabase URL (the hostname segment).
     const projectRef = new URL(env.NEXT_PUBLIC_SUPABASE_URL).hostname.split('.')[0];
     const cookieName = `sb-${projectRef}-auth-token`;
 
@@ -57,8 +36,6 @@ export function makeApiSignIn(email: string, password = DEFAULT_PASSWORD) {
       token_type: data.session.token_type,
     });
 
-    // 3. Supabase SSR stores long tokens in chunks of ~3180 chars.
-    //    We replicate that chunking so the middleware can read them.
     const CHUNK_SIZE = 3180;
     const baseUrl = new URL(env.NEXT_PUBLIC_APP_URL);
 
@@ -87,8 +64,6 @@ export function makeApiSignIn(email: string, password = DEFAULT_PASSWORD) {
       await page.context().addCookies(chunks.map((c) => ({ ...cookieBase, ...c })));
     }
 
-    // 4. Navigate to the dashboard — middleware reads the cookies and
-    //    validates the session, so the page renders as authenticated.
     await page.goto(url(ROUTES.common.dashboard), { timeout: 30_000 });
     await expect(page).toHaveURL(/\/dashboard/, { timeout: 15_000 });
   };

@@ -2,25 +2,9 @@ import fs from 'fs';
 
 import { glob } from 'glob';
 
-/**
- * STATUS I18N- Unused Translation Detector
- *
- * This script scans the project source code to identify translation keys defined in the locale file
- * that are potentially not being used. It employs a "safe" heuristic approach to minimize false positives:
- *
- * 1. Dynamic Safety: Automatically detects template literals (e.g., `category.${id}`) and protects those namespaces.
- * 2. Smart Ancestry: If a parent key (e.g., 'metadata.keywords') is used in code, all its children/indices
- * are automatically marked as used. This handles arrays and config objects passed to components.
- * 3. Context Awareness: Detects keys used via `useTranslations('scope')` + `t('key')`.
- *
- * Usage: node scripts/status-i18n.mjs
- */
-
-// === CONFIGURATION ===
 const TRANSLATION_FILE_PATH = './src/i18n/messages/en.json';
 const SRC_PATTERN = './src/**/*.{ts,tsx,js,jsx}';
 const ALWAYS_KEEP_PREFIXES = ['error', 'errors.', 'api.', 'common.'];
-// ====================
 
 function flattenKeys(obj, prefix = '') {
   return Object.keys(obj).reduce((acc, k) => {

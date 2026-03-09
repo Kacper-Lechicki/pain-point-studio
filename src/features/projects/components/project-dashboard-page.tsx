@@ -11,6 +11,7 @@ import { useBreadcrumbSegment } from '@/features/dashboard/components/layout/bre
 import { useSubPanelLinks } from '@/features/dashboard/components/layout/sub-panel-items-context';
 import { DASHBOARD_PAGE_BODY_GAP_TOP } from '@/features/dashboard/config/layout';
 import type { InsightSuggestionsResult } from '@/features/projects/actions/get-insight-suggestions';
+import type { PendingInsightSurvey } from '@/features/projects/actions/get-pending-insight-surveys';
 import type { ProjectOwner } from '@/features/projects/actions/get-project';
 import type { SurveySignalData } from '@/features/projects/actions/get-project-signals-data';
 import { EditProjectDialog } from '@/features/projects/components/edit-project-dialog';
@@ -40,6 +41,7 @@ interface ProjectDashboardPageProps {
   overviewStats: ProjectOverviewStats;
   signalsData: SurveySignalData[];
   suggestionsData: InsightSuggestionsResult;
+  pendingSurveys: PendingInsightSurvey[];
 }
 
 export function ProjectDashboardPage({
@@ -52,6 +54,7 @@ export function ProjectDashboardPage({
   overviewStats,
   signalsData,
   suggestionsData,
+  pendingSurveys,
 }: ProjectDashboardPageProps) {
   const [insights, setInsights] = useState(initialInsights);
 
@@ -148,6 +151,7 @@ export function ProjectDashboardPage({
           overviewStats={overviewStats}
           signalsData={signalsData}
           suggestionsData={suggestionsData}
+          pendingSurveys={pendingSurveys}
           onInsightCreated={handleInsightCreated}
           onInsightUpdated={handleInsightUpdated}
           onInsightDeleted={handleInsightDeleted}

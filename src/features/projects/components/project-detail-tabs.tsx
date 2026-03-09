@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { InsightSuggestionsResult } from '@/features/projects/actions/get-insight-suggestions';
+import type { PendingInsightSurvey } from '@/features/projects/actions/get-pending-insight-surveys';
 import type { SurveySignalData } from '@/features/projects/actions/get-project-signals-data';
 import { ProjectInsightsTab } from '@/features/projects/components/project-insights-tab';
 import { ProjectNotesTab } from '@/features/projects/components/project-notes-tab';
@@ -34,6 +35,7 @@ interface ProjectDetailTabsProps {
   overviewStats: ProjectOverviewStats;
   signalsData: SurveySignalData[];
   suggestionsData: InsightSuggestionsResult;
+  pendingSurveys: PendingInsightSurvey[];
   onInsightCreated: (insight: ProjectInsight) => void;
   onInsightUpdated: (insight: ProjectInsight) => void;
   onInsightDeleted: (insightId: string) => void;
@@ -62,6 +64,7 @@ export function ProjectDetailTabs({
   overviewStats,
   signalsData,
   suggestionsData,
+  pendingSurveys,
   onInsightCreated,
   onInsightUpdated,
   onInsightDeleted,
@@ -136,6 +139,7 @@ export function ProjectDetailTabs({
           projectId={project.id}
           insights={insights}
           suggestionsData={suggestionsData}
+          pendingSurveys={pendingSurveys}
           onInsightCreated={onInsightCreated}
           onInsightUpdated={onInsightUpdated}
           onInsightDeleted={onInsightDeleted}
