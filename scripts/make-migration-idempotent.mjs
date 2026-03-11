@@ -81,7 +81,7 @@ function wrapConstraints(content) {
 function addDropPolicies(content) {
   let count = 0;
 
-  const re = /CREATE POLICY "([^"]+)" ON ("(?:[^"]+)"\.?"(?:[^"]+)")/g;
+  const re = /CREATE POLICY "([^"]+)"\s+ON ((?:"[^"]+"\.?"[^"]+")|(?:[a-z_]+\.[a-z_]+))/g;
   const replacements = [];
 
   let m;
@@ -108,6 +108,22 @@ function addDropPolicies(content) {
 
     count++;
   }
+
+  return { content, count };
+}
+
+function wrapAddColumn(content) {
+  let count = 0;
+
+  // Match: ALTER TABLE [ONLY] <table> ADD COLUMN <col> <rest>;
+  // Handles both quoted ("public"."surveys") and unquoted (public.surveys) table names
+  // and multi-line statements ending with ;
+  const re = /^(ALTER TABLE (?:ONLY )?((?:"[^"]+"\.?"[^"]+")|(?:[a-z_]+\.[a-z_]+))\s*\n?\s*ADD COLUMN (?!IF NOT EXISTS)("?)([^"\s]+)\3[^;]+;)/gm;
+
+  content = content.replace(re, (match, _full, _table, _quote, _colName) => {
+    count++;
+    return match.replace(/ADD COLUMN (?!IF NOT EXISTS)/, 'ADD COLUMN IF NOT EXISTS ');
+  });
 
   return { content, count };
 }
@@ -223,7 +239,10 @@ function transformFile(filePath) {
   const r6 = stripAuthTriggers(content);
   content = r6.content;
 
-  const totalChanges = r1.count + r2.count + r3.count + r4.count + r5.count + r6.count;
+  const r7 = wrapAddColumn(content);
+  content = r7.content;
+
+  const totalChanges = r1.count + r2.count + r3.count + r4.count + r5.count + r6.count + r7.count;
 
   if (totalChanges === 0) {
     console.log('  No transformations needed.\n');
@@ -238,6 +257,7 @@ function transformFile(filePath) {
   console.log(`  CREATE INDEX    → IF NOT EXISTS added:       ${r4.count}`);
   console.log(`  ADD TABLE (pub) → IF NOT EXISTS wrappers:   ${r5.count}`);
   console.log(`  AUTH triggers   → stripped (manual apply):   ${r6.count}`);
+  console.log(`  ADD COLUMN      → IF NOT EXISTS added:       ${r7.count}`);
   console.log('');
 }
 

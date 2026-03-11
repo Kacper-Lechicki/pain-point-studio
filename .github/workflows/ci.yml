@@ -46,3 +46,31 @@ jobs:
 
       - name: Unit Tests
         run: pnpm test:unit
+
+  check-migrations:
+    name: Check Migrations
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: 2.75.0
+
+      - name: Make Migrations Idempotent
+        run: node scripts/make-migration-idempotent.mjs
+
+      - name: Link Project
+        run: supabase link --project-ref "$SUPABASE_PROJECT_REF"
+        env:
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+
+      - name: Dry Run
+        run: supabase db push --dry-run
