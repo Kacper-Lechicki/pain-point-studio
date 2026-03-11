@@ -57,6 +57,7 @@ export function RefreshRealtimeButton({
         </Button>
 
         <span
+          data-realtime-connected={isRealtimeConnected}
           className={cn(
             'absolute -top-px -right-px size-1.5 rounded-full',
             isRealtimeConnected ? 'bg-emerald-500' : 'bg-amber-500'

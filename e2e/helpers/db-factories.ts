@@ -1,6 +1,11 @@
+import type { ProjectStatus } from '@/features/projects/types';
 import type { QuestionType, SurveyStatus } from '@/features/surveys/types';
 
 import { getAdminClient } from './supabase-admin';
+
+// ---------------------------------------------------------------------------
+// Shared types
+// ---------------------------------------------------------------------------
 
 interface CreateSurveyOptions {
   userId: string;
@@ -22,12 +27,20 @@ interface CreateQuestionOptions {
   config?: Record<string, unknown>;
 }
 
+// ---------------------------------------------------------------------------
+// Utilities
+// ---------------------------------------------------------------------------
+
 export function generateSlug(): string {
   const ts = Date.now().toString(36);
   const rand = Math.random().toString(36).slice(2, 6);
 
   return `e2e_${ts}_${rand}`;
 }
+
+// ---------------------------------------------------------------------------
+// Projects
+// ---------------------------------------------------------------------------
 
 export async function createProjectViaDb(
   userId: string,
@@ -47,6 +60,67 @@ export async function createProjectViaDb(
 
   return data.id;
 }
+
+export async function updateProjectViaDb(
+  projectId: string,
+  fields: Record<string, unknown>
+): Promise<void> {
+  const admin = getAdminClient();
+  const { error } = await admin.from('projects').update(fields).eq('id', projectId);
+
+  if (error) {
+    throw new Error(`[e2e] Failed to update project ${projectId}: ${error.message}`);
+  }
+}
+
+export async function deleteProjectViaDb(projectId: string): Promise<void> {
+  const admin = getAdminClient();
+  await admin.from('projects').delete().eq('id', projectId);
+}
+
+export async function createProjectWithStatus(
+  userId: string,
+  status: ProjectStatus,
+  name?: string
+): Promise<string> {
+  const projectId = await createProjectViaDb(userId, name ?? `E2E ${status} Project`);
+
+  if (status === 'active') {
+    return projectId;
+  }
+
+  const now = new Date().toISOString();
+
+  const statusFields: Record<string, Record<string, unknown>> = {
+    completed: { status: 'completed', completed_at: now },
+    archived: { status: 'archived', archived_at: now, pre_archive_status: 'active' },
+    trashed: { status: 'trashed', deleted_at: now, pre_trash_status: 'active' },
+  };
+
+  await updateProjectViaDb(projectId, statusFields[status]!);
+
+  return projectId;
+}
+
+export async function createProjectWithSurveys(
+  userId: string,
+  surveyCount: number,
+  projectName?: string
+): Promise<{ projectId: string; surveyIds: string[] }> {
+  const projectId = await createProjectViaDb(userId, projectName ?? 'E2E Project with Surveys');
+  const surveyIds: string[] = [];
+
+  for (let i = 0; i < surveyCount; i++) {
+    const { surveyId } = await createSurveyWithQuestions(userId, { projectId }, 1);
+    surveyIds.push(surveyId);
+  }
+
+  return { projectId, surveyIds };
+}
+
+// ---------------------------------------------------------------------------
+// Surveys
+// ---------------------------------------------------------------------------
 
 export async function createSurveyViaDb(options: CreateSurveyOptions): Promise<string> {
   const admin = getAdminClient();
@@ -69,29 +143,6 @@ export async function createSurveyViaDb(options: CreateSurveyOptions): Promise<s
 
   if (error || !data) {
     throw new Error(`[e2e] Failed to create survey: ${error?.message ?? 'no data returned'}`);
-  }
-
-  return data.id;
-}
-
-export async function createQuestionViaDb(options: CreateQuestionOptions): Promise<string> {
-  const admin = getAdminClient();
-
-  const { data, error } = await admin
-    .from('survey_questions')
-    .insert({
-      survey_id: options.surveyId,
-      text: options.text ?? `E2E Test Question ${options.sortOrder + 1}`,
-      type: options.type ?? 'open_text',
-      sort_order: options.sortOrder,
-      required: options.required ?? true,
-      config: options.config ?? {},
-    })
-    .select('id')
-    .single();
-
-  if (error || !data) {
-    throw new Error(`[e2e] Failed to create question: ${error?.message ?? 'no data returned'}`);
   }
 
   return data.id;
@@ -140,6 +191,37 @@ export async function createSurveyWithQuestions(
 
   return { surveyId, questionIds };
 }
+
+// ---------------------------------------------------------------------------
+// Questions
+// ---------------------------------------------------------------------------
+
+export async function createQuestionViaDb(options: CreateQuestionOptions): Promise<string> {
+  const admin = getAdminClient();
+
+  const { data, error } = await admin
+    .from('survey_questions')
+    .insert({
+      survey_id: options.surveyId,
+      text: options.text ?? `E2E Test Question ${options.sortOrder + 1}`,
+      type: options.type ?? 'open_text',
+      sort_order: options.sortOrder,
+      required: options.required ?? true,
+      config: options.config ?? {},
+    })
+    .select('id')
+    .single();
+
+  if (error || !data) {
+    throw new Error(`[e2e] Failed to create question: ${error?.message ?? 'no data returned'}`);
+  }
+
+  return data.id;
+}
+
+// ---------------------------------------------------------------------------
+// Responses & Answers
+// ---------------------------------------------------------------------------
 
 export async function createResponseViaDb(
   surveyId: string,

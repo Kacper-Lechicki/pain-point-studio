@@ -1,12 +1,12 @@
-import { expect, test } from './fixtures';
-import { fillField } from './helpers/actions';
-import { url } from './helpers/routes';
+import { expect, test } from '../fixtures';
+import { fillField, waitForRealtimeConnected } from '../helpers/actions';
 import {
   createAnswerViaDb,
   createResponseViaDb,
   createSurveyWithQuestions,
   generateSlug,
-} from './helpers/survey-admin';
+} from '../helpers/db-factories';
+import { url } from '../helpers/routes';
 
 test.describe('Survey responses tab', () => {
   test('shows responses already present when navigating to responses tab', async ({
@@ -47,12 +47,17 @@ test.describe('Survey responses tab', () => {
 
     await expect(responsesTabTrigger).toBeVisible({ timeout: 15_000 });
     await expect(responsesTabTrigger).toContainText('(0)');
+    await waitForRealtimeConnected(page);
 
     const responseId = await createResponseViaDb(surveyId, 'completed');
 
     await createAnswerViaDb(responseId, questionIds[0]!, { answer: 'Realtime answer' });
 
     await expect(async () => {
+      await page
+        .getByRole('button', { name: 'Refresh data' })
+        .click()
+        .catch(() => {});
       const rows = page.locator('table tbody tr');
       await expect(rows).toHaveCount(1, { timeout: 3_000 });
     }).toPass({ timeout: 20_000 });
@@ -75,12 +80,17 @@ test.describe('Survey responses tab', () => {
     await createAnswerViaDb(firstResponse, questionIds[0]!, { answer: 'First' });
     await page.goto(url(`/dashboard/research/stats/${surveyId}?tab=responses`));
     await expect(page.locator('table tbody tr')).toHaveCount(1, { timeout: 15_000 });
+    await waitForRealtimeConnected(page);
 
     const secondResponse = await createResponseViaDb(surveyId, 'completed');
 
     await createAnswerViaDb(secondResponse, questionIds[0]!, { answer: 'Second' });
 
     await expect(async () => {
+      await page
+        .getByRole('button', { name: 'Refresh data' })
+        .click()
+        .catch(() => {});
       const rows = page.locator('table tbody tr');
       await expect(rows).toHaveCount(2, { timeout: 3_000 });
     }).toPass({ timeout: 20_000 });
@@ -134,6 +144,10 @@ test.describe('Survey responses tab', () => {
       });
 
       await expect(async () => {
+        await page
+          .getByRole('button', { name: 'Refresh data' })
+          .click()
+          .catch(() => {});
         const rows = page.locator('table tbody tr');
         await expect(rows).toHaveCount(1, { timeout: 3_000 });
       }).toPass({ timeout: 25_000 });

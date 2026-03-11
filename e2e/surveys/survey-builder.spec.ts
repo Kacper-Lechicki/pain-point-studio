@@ -1,7 +1,7 @@
-import { expect, test } from './fixtures';
-import { waitForToast } from './helpers/actions';
-import { ROUTES, url } from './helpers/routes';
-import { sel } from './helpers/selectors';
+import { expect, test } from '../fixtures';
+import { waitForToast } from '../helpers/actions';
+import { ROUTES, url } from '../helpers/routes';
+import { sel } from '../helpers/selectors';
 
 function builderUrl(surveyId: string) {
   return url(`${ROUTES.dashboard.researchNew}/${surveyId}`);

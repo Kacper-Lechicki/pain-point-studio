@@ -1,4 +1,4 @@
-import { expect, test } from './fixtures';
+import { expect, test } from '../fixtures';
 import {
   executeDetailAction,
   executeMenuAction,
@@ -6,10 +6,10 @@ import {
   listItem,
   waitForToast,
   waitForToastCycle,
-} from './helpers/actions';
-import { ROUTES, url } from './helpers/routes';
-import { sel } from './helpers/selectors';
-import { createSurveyWithQuestions, updateSurveyViaDb } from './helpers/survey-admin';
+} from '../helpers/actions';
+import { createSurveyWithQuestions, updateSurveyViaDb } from '../helpers/db-factories';
+import { ROUTES, url } from '../helpers/routes';
+import { sel } from '../helpers/selectors';
 
 function projectSurveysUrl(projectId: string) {
   return url(`${ROUTES.dashboard.projects}/${projectId}?tab=surveys`);

@@ -118,7 +118,8 @@ function wrapAddColumn(content) {
   // Match: ALTER TABLE [ONLY] <table> ADD COLUMN <col> <rest>;
   // Handles both quoted ("public"."surveys") and unquoted (public.surveys) table names
   // and multi-line statements ending with ;
-  const re = /^(ALTER TABLE (?:ONLY )?((?:"[^"]+"\.?"[^"]+")|(?:[a-z_]+\.[a-z_]+))\s*\n?\s*ADD COLUMN (?!IF NOT EXISTS)("?)([^"\s]+)\3[^;]+;)/gm;
+  const re =
+    /^(ALTER TABLE (?:ONLY )?((?:"[^"]+"\.?"[^"]+")|(?:[a-z_]+\.[a-z_]+))\s*\n?\s*ADD COLUMN (?!IF NOT EXISTS)("?)([^"\s]+)\3[^;]+;)/gm;
 
   content = content.replace(re, (match, _full, _table, _quote, _colName) => {
     count++;

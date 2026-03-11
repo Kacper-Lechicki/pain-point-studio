@@ -1,7 +1,7 @@
-import { expect, test } from './fixtures';
-import { ROUTES, url } from './helpers/routes';
-import { getAdminClient } from './helpers/supabase-admin';
-import { createProjectViaDb, createSurveyWithQuestions } from './helpers/survey-admin';
+import { expect, test } from '../fixtures';
+import { createProjectViaDb, createSurveyWithQuestions } from '../helpers/db-factories';
+import { ROUTES, url } from '../helpers/routes';
+import { getAdminClient } from '../helpers/supabase-admin';
 
 test('profile shows full name, bio, member since, and research journey', async ({
   page,

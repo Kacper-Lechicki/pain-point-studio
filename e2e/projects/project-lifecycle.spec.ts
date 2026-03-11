@@ -1,6 +1,6 @@
-import { expect, test } from './fixtures';
-import { executeBannerAction, executeDetailAction, waitForToastCycle } from './helpers/actions';
-import { ROUTES, url } from './helpers/routes';
+import { expect, test } from '../fixtures';
+import { executeBannerAction, executeDetailAction, waitForToastCycle } from '../helpers/actions';
+import { ROUTES, url } from '../helpers/routes';
 
 test('project: active -> complete -> reopen', async ({ page, testProject: { projectId } }) => {
   await page.goto(url(`${ROUTES.dashboard.projects}/${projectId}`));
