@@ -1,6 +1,6 @@
-import { expect, test } from './fixtures';
-import { ROUTES, url } from './helpers/routes';
-import { sel } from './helpers/selectors';
+import { expect, test } from '../fixtures';
+import { ROUTES, url } from '../helpers/routes';
+import { sel } from '../helpers/selectors';
 
 function notesUrl(projectId: string) {
   return url(`${ROUTES.dashboard.projects}/${projectId}?tab=notes`);

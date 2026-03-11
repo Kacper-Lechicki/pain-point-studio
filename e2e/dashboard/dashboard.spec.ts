@@ -1,6 +1,5 @@
-import { expect, test } from './fixtures';
-import { createProjectWithSurveys } from './helpers/project-admin';
-import { createProjectViaDb } from './helpers/survey-admin';
+import { expect, test } from '../fixtures';
+import { createProjectViaDb, createProjectWithSurveys } from '../helpers/db-factories';
 
 test('empty state shows CTA to create first project', async ({ authenticatedPage: {}, page }) => {
   await expect(page.getByRole('link', { name: /project/i })).toBeVisible({ timeout: 15_000 });

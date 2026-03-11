@@ -1,9 +1,9 @@
-import { expect, test } from './fixtures';
-import { fillField, waitForToast } from './helpers/actions';
-import { makeApiSignIn, scopedEmail } from './helpers/auth';
-import { ROUTES, url } from './helpers/routes';
-import { E2E_PASSWORD, sel } from './helpers/selectors';
-import { deleteUserByEmail, ensureUser } from './helpers/supabase-admin';
+import { expect, test } from '../fixtures';
+import { fillField, waitForToast } from '../helpers/actions';
+import { makeApiSignIn, scopedEmail } from '../helpers/auth';
+import { ROUTES, url } from '../helpers/routes';
+import { E2E_PASSWORD, sel } from '../helpers/selectors';
+import { deleteUserByEmail, ensureUser } from '../helpers/supabase-admin';
 
 test('profile update and settings navigation', async ({ page, authenticatedPage: { email } }) => {
   await page.goto(url(ROUTES.settings.profile), { waitUntil: 'networkidle' });

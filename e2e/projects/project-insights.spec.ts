@@ -1,7 +1,7 @@
-import { expect, test } from './fixtures';
-import { executeMenuAction, listItem, waitForToast, waitForToastCycle } from './helpers/actions';
-import { ROUTES, url } from './helpers/routes';
-import { createCompletedSurveyWithResponses, updateSurveyViaDb } from './helpers/survey-admin';
+import { expect, test } from '../fixtures';
+import { executeMenuAction, listItem, waitForToast, waitForToastCycle } from '../helpers/actions';
+import { createCompletedSurveyWithResponses, updateSurveyViaDb } from '../helpers/db-factories';
+import { ROUTES, url } from '../helpers/routes';
 
 function projectInsightsUrl(projectId: string) {
   return url(`${ROUTES.dashboard.projects}/${projectId}?tab=insights`);

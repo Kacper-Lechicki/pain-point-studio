@@ -1,18 +1,20 @@
-import { expect, test } from './fixtures';
-import { waitForToast } from './helpers/actions';
-import { makeApiSignIn, scopedEmail } from './helpers/auth';
-import { ensureUserWithOAuthIdentity } from './helpers/identity-admin';
-import { ROUTES, url } from './helpers/routes';
-import { E2E_PASSWORD, sel } from './helpers/selectors';
-import { deleteUserByEmail, ensureUser, getAdminClient } from './helpers/supabase-admin';
-import { createProjectViaDb } from './helpers/survey-admin';
+import { expect, test } from '../fixtures';
+import { waitForToast } from '../helpers/actions';
+import { makeApiSignIn, scopedEmail } from '../helpers/auth';
+import { createProjectViaDb } from '../helpers/db-factories';
+import { ensureUserWithOAuthIdentity } from '../helpers/identity';
+import { ROUTES, url } from '../helpers/routes';
+import { E2E_PASSWORD, sel } from '../helpers/selectors';
+import { deleteUserByEmail, ensureUser, getAdminClient } from '../helpers/supabase-admin';
 
 // ---------------------------------------------------------------------------
 // Connected Accounts — Multi-Identity
 // ---------------------------------------------------------------------------
 
 test.describe('Connected Accounts — Multi-Identity', () => {
-  test('user with email+password and GitHub sees both connected', async ({ page }, testInfo) => {
+  test('user with email+password and GitHub sees both connected @webkit', async ({
+    page,
+  }, testInfo) => {
     const email = scopedEmail('e2e-multi-id', testInfo.project.name);
     const signIn = makeApiSignIn(email, E2E_PASSWORD);
 

@@ -1,9 +1,9 @@
-import { expect, test } from './fixtures';
-import { executeMenuAction, fillField, listItem, waitForToast } from './helpers/actions';
-import { ROUTES, url } from './helpers/routes';
-import { sel } from './helpers/selectors';
-import { getAdminClient } from './helpers/supabase-admin';
-import { createProjectViaDb } from './helpers/survey-admin';
+import { expect, test } from '../fixtures';
+import { executeMenuAction, fillField, listItem, waitForToast } from '../helpers/actions';
+import { createProjectViaDb } from '../helpers/db-factories';
+import { ROUTES, url } from '../helpers/routes';
+import { sel } from '../helpers/selectors';
+import { getAdminClient } from '../helpers/supabase-admin';
 
 test('empty state shows CTA to create project', async ({ page, authenticatedPage: {} }) => {
   await page.goto(url(ROUTES.dashboard.projects));

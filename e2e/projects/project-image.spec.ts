@@ -1,9 +1,9 @@
 import path from 'node:path';
 
-import { expect, test } from './fixtures';
-import { ROUTES, url } from './helpers/routes';
+import { expect, test } from '../fixtures';
+import { ROUTES, url } from '../helpers/routes';
 
-const TEST_IMAGE = path.resolve(__dirname, 'fixtures/test-image.png');
+const TEST_IMAGE = path.resolve(__dirname, '../fixtures/test-image.png');
 
 function projectUrl(projectId: string) {
   return url(`${ROUTES.dashboard.projects}/${projectId}`);

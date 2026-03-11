@@ -1,12 +1,12 @@
-import { expect, test } from './fixtures';
-import { fillField } from './helpers/actions';
-import { scopedEmail } from './helpers/auth';
-import { ROUTES, url } from './helpers/routes';
-import { E2E_PASSWORD, sel } from './helpers/selectors';
-import { deleteUserByEmail, ensureUser } from './helpers/supabase-admin';
+import { expect, test } from '../fixtures';
+import { fillField } from '../helpers/actions';
+import { scopedEmail } from '../helpers/auth';
+import { ROUTES, url } from '../helpers/routes';
+import { E2E_PASSWORD, sel } from '../helpers/selectors';
+import { deleteUserByEmail, ensureUser } from '../helpers/supabase-admin';
 
 test.describe('Sign-In', () => {
-  test('shows error for invalid credentials', async ({ page }) => {
+  test('shows error for invalid credentials @webkit', async ({ page }) => {
     await page.goto(url(ROUTES.auth.signIn), { waitUntil: 'networkidle' });
     await expect(page.locator(sel.emailInput)).toBeVisible({ timeout: 15_000 });
     await fillField(page.locator(sel.emailInput), 'nonexistent@example.com');
@@ -18,7 +18,9 @@ test.describe('Sign-In', () => {
 });
 
 test.describe('Sign-Up', () => {
-  test('rejects weak password then succeeds with strong one', async ({ page }, testInfo) => {
+  test('rejects weak password then succeeds with strong one @webkit', async ({
+    page,
+  }, testInfo) => {
     const signupEmail = scopedEmail('e2e-signup', testInfo.project.name);
     await deleteUserByEmail(signupEmail).catch(() => {});
 
@@ -99,7 +101,7 @@ test.describe('Forgot Password', () => {
 });
 
 test.describe('Auth Lifecycle', () => {
-  test('session -> auth redirects -> sign out -> dashboard locked', async ({
+  test('session -> auth redirects -> sign out -> dashboard locked @webkit', async ({
     page,
     authenticatedPage: {},
   }) => {

@@ -1,9 +1,9 @@
 import { test as base } from '@playwright/test';
 
 import { makeApiSignIn, scopedEmail } from './helpers/auth';
+import { createProjectViaDb, createSurveyWithQuestions } from './helpers/db-factories';
 import { E2E_PASSWORD } from './helpers/selectors';
 import { deleteUserByEmail, ensureUser } from './helpers/supabase-admin';
-import { createProjectViaDb, createSurveyWithQuestions } from './helpers/survey-admin';
 
 export { expect } from '@playwright/test';
 

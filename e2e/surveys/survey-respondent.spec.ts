@@ -1,17 +1,19 @@
-import { expect, test } from './fixtures';
-import { fillField } from './helpers/actions';
-import { scopedEmail } from './helpers/auth';
-import { url } from './helpers/routes';
-import { E2E_PASSWORD } from './helpers/selectors';
-import { deleteUserByEmail, ensureUser } from './helpers/supabase-admin';
+import { expect, test } from '../fixtures';
+import { fillField } from '../helpers/actions';
+import { scopedEmail } from '../helpers/auth';
 import {
   createProjectViaDb,
   createSurveyWithQuestions,
   generateSlug,
   updateSurveyViaDb,
-} from './helpers/survey-admin';
+} from '../helpers/db-factories';
+import { url } from '../helpers/routes';
+import { E2E_PASSWORD } from '../helpers/selectors';
+import { deleteUserByEmail, ensureUser } from '../helpers/supabase-admin';
 
-test('full flow: landing -> start -> answer -> submit -> thank you', async ({ page }, testInfo) => {
+test('full flow: landing -> start -> answer -> submit -> thank you @webkit', async ({
+  page,
+}, testInfo) => {
   const email = scopedEmail('e2e-respondent-flow', testInfo.project.name);
   const userId = await ensureUser(email, E2E_PASSWORD);
   const projectId = await createProjectViaDb(userId, 'E2E Respondent Flow');

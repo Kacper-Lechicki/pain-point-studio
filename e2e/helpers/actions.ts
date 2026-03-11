@@ -2,6 +2,12 @@ import { type Locator, type Page, expect } from '@playwright/test';
 
 import { sel } from './selectors';
 
+export async function waitForRealtimeConnected(page: Page) {
+  await expect(page.locator('[data-realtime-connected="true"]')).toBeAttached({
+    timeout: 15_000,
+  });
+}
+
 export async function fillField(locator: Locator, value: string, timeout = 10_000) {
   await expect(async () => {
     await locator.fill(value);

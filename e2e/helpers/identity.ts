@@ -1,5 +1,4 @@
-import { getAdminClient } from './supabase-admin';
-import { ensureUser } from './supabase-admin';
+import { ensureUser, getAdminClient } from './supabase-admin';
 
 export async function addOAuthIdentity(
   userId: string,
