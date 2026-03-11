@@ -41,141 +41,159 @@ export async function GET(
   const next = requestUrl.searchParams.get('next');
   const type = requestUrl.searchParams.get('type');
 
-  let callbackErrorKey = 'callbackError';
+  const errorRedirect = (key: string) => {
+    const isLinkingFlow = next?.includes('/settings');
 
-  if (code) {
+    const base = isLinkingFlow
+      ? `/${locale}${ROUTES.settings.connectedAccounts}`
+      : `/${locale}${ROUTES.auth.signIn}`;
+
+    const url = new URL(base, request.url);
+
+    url.searchParams.set('error', key);
+
+    return NextResponse.redirect(url);
+  };
+
+  if (!code) {
+    return errorRedirect('callbackError');
+  }
+
+  try {
     const supabase = await createClient();
     const { error, data } = await supabase.auth.exchangeCodeForSession(code);
 
-    if (!error) {
-      if (data?.user) {
-        if (!data.user.email) {
-          const signInUrl = new URL(`/${locale}${ROUTES.auth.signIn}`, request.url);
+    if (error) {
+      return handleAuthError(error, request, locale, next);
+    }
 
-          signInUrl.searchParams.set('error', 'callbackError');
+    if (!data?.user?.email) {
+      return errorRedirect('callbackError');
+    }
 
-          return NextResponse.redirect(signInUrl);
-        }
+    const user = data.user;
 
-        if (data.user.identities && data.user.identities.length === 1) {
-          const admin = createAdminClient();
+    // Merge duplicate email-only accounts when a new OAuth identity is created
+    if (user.identities && user.identities.length === 1) {
+      try {
+        const admin = createAdminClient();
 
-          const { data: duplicateUserId } = await admin.rpc('find_user_by_email_excluding', {
-            lookup_email: data.user.email,
-            exclude_id: data.user.id,
+        const { data: duplicateUserId } = await admin.rpc('find_user_by_email_excluding', {
+          lookup_email: user.email!,
+          exclude_id: user.id,
+        });
+
+        if (duplicateUserId) {
+          await admin.rpc('merge_user_data', {
+            from_user_id: duplicateUserId,
+            to_user_id: user.id,
           });
 
-          if (duplicateUserId) {
-            try {
-              await admin.rpc('merge_user_data', {
-                from_user_id: duplicateUserId,
-                to_user_id: data.user.id,
-              });
-
-              await admin.auth.admin.deleteUser(duplicateUserId);
-            } catch {}
-          }
+          await admin.auth.admin.deleteUser(duplicateUserId);
         }
-
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', data.user.id)
-          .single();
-
-        if (!profile) {
-          const { error: upsertError } = await supabase.from('profiles').upsert(
-            {
-              id: data.user.id,
-              full_name: (data.user.user_metadata?.full_name as string) ?? '',
-              avatar_url: (data.user.user_metadata?.avatar_url as string) ?? '',
-            },
-            { onConflict: 'id' }
-          );
-
-          if (upsertError) {
-            const signInUrl = new URL(`/${locale}${ROUTES.auth.signIn}`, request.url);
-            signInUrl.searchParams.set('error', 'profileCreationFailed');
-
-            return NextResponse.redirect(signInUrl);
-          }
-        } else {
-          const providerAvatar = data.user.user_metadata?.avatar_url as string | undefined;
-
-          if (providerAvatar && providerAvatar !== profile.avatar_url) {
-            await supabase
-              .from('profiles')
-              .update({ avatar_url: providerAvatar })
-              .eq('id', data.user.id);
-          }
-        }
+      } catch {
+        // Non-fatal: merge failure shouldn't block sign-in
       }
+    }
 
-      const fallbackPath = `/${locale}${ROUTES.common.dashboard}`;
-      const redirectPath = getSafeRedirectPath(next, locale, fallbackPath);
+    // Ensure profile exists (fallback for when auth trigger didn't fire)
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single();
 
-      const redirectUrl = new URL(redirectPath, request.url);
+    if (!profile) {
+      const { error: upsertError } = await supabase.from('profiles').upsert(
+        {
+          id: user.id,
+          full_name: (user.user_metadata?.full_name as string) ?? '',
+          avatar_url: (user.user_metadata?.avatar_url as string) ?? '',
+        },
+        { onConflict: 'id' }
+      );
 
-      const toastKey =
-        type === 'signup'
-          ? 'emailConfirmed'
-          : type === 'email_change'
-            ? 'emailChangeConfirmed'
-            : type === 'recovery'
-              ? 'passwordResetReady'
-              : null;
-
-      if (toastKey) {
-        redirectUrl.searchParams.set('toast', toastKey);
+      if (upsertError) {
+        return errorRedirect('profileCreationFailed');
       }
+    } else {
+      const providerAvatar = user.user_metadata?.avatar_url as string | undefined;
 
-      return NextResponse.redirect(redirectUrl);
+      if (providerAvatar && providerAvatar !== profile.avatar_url) {
+        await supabase.from('profiles').update({ avatar_url: providerAvatar }).eq('id', user.id);
+      }
     }
 
-    if (error.code === 'access_denied') {
-      const signInUrl = new URL(`/${locale}${ROUTES.auth.signIn}`, request.url);
+    const fallbackPath = `/${locale}${ROUTES.common.dashboard}`;
+    const redirectPath = getSafeRedirectPath(next, locale, fallbackPath);
+    const redirectUrl = new URL(redirectPath, request.url);
 
-      return NextResponse.redirect(signInUrl);
+    const toastKey =
+      type === 'signup'
+        ? 'emailConfirmed'
+        : type === 'email_change'
+          ? 'emailChangeConfirmed'
+          : type === 'recovery'
+            ? 'passwordResetReady'
+            : null;
+
+    if (toastKey) {
+      redirectUrl.searchParams.set('toast', toastKey);
     }
 
-    const isLinkingFlow = next?.includes('/settings');
+    return NextResponse.redirect(redirectUrl);
+  } catch {
+    // Catch-all: any unhandled error redirects gracefully instead of 500
+    return errorRedirect('callbackError');
+  }
+}
 
-    const IDENTITY_LINK_CODES = new Set([
-      'identity_already_exists',
-      'manual_linking_disabled',
-      'identity_not_found',
-    ]);
+function handleAuthError(
+  error: { code?: string | undefined; message?: string | undefined },
+  request: NextRequest,
+  locale: string,
+  next: string | null
+) {
+  if (error.code === 'access_denied') {
+    const signInUrl = new URL(`/${locale}${ROUTES.auth.signIn}`, request.url);
 
-    if (isLinkingFlow && error.code && IDENTITY_LINK_CODES.has(error.code)) {
-      const settingsUrl = new URL(`/${locale}${ROUTES.settings.connectedAccounts}`, request.url);
-
-      settingsUrl.searchParams.set('error', error.code);
-
-      return NextResponse.redirect(settingsUrl);
-    }
-
-    const EXPIRED_CODES = new Set(['otp_expired', 'flow_state_expired', 'bad_code_verifier']);
-
-    if (
-      (error.code && EXPIRED_CODES.has(error.code)) ||
-      error.message?.includes('expired') ||
-      error.message?.includes('invalid')
-    ) {
-      callbackErrorKey = 'linkExpired';
-    }
-
-    if (isLinkingFlow) {
-      const settingsUrl = new URL(`/${locale}${ROUTES.settings.connectedAccounts}`, request.url);
-
-      settingsUrl.searchParams.set('error', callbackErrorKey);
-
-      return NextResponse.redirect(settingsUrl);
-    }
+    return NextResponse.redirect(signInUrl);
   }
 
-  const signInUrl = new URL(`/${locale}${ROUTES.auth.signIn}`, request.url);
+  const isLinkingFlow = next?.includes('/settings');
 
-  signInUrl.searchParams.set('error', callbackErrorKey);
+  const IDENTITY_LINK_CODES = new Set([
+    'identity_already_exists',
+    'manual_linking_disabled',
+    'identity_not_found',
+  ]);
 
-  return NextResponse.redirect(signInUrl);
+  if (isLinkingFlow && error.code && IDENTITY_LINK_CODES.has(error.code)) {
+    const settingsUrl = new URL(`/${locale}${ROUTES.settings.connectedAccounts}`, request.url);
+
+    settingsUrl.searchParams.set('error', error.code);
+
+    return NextResponse.redirect(settingsUrl);
+  }
+
+  const EXPIRED_CODES = new Set(['otp_expired', 'flow_state_expired', 'bad_code_verifier']);
+
+  let callbackErrorKey = 'callbackError';
+
+  if (
+    (error.code && EXPIRED_CODES.has(error.code)) ||
+    error.message?.includes('expired') ||
+    error.message?.includes('invalid')
+  ) {
+    callbackErrorKey = 'linkExpired';
+  }
+
+  const base = isLinkingFlow
+    ? `/${locale}${ROUTES.settings.connectedAccounts}`
+    : `/${locale}${ROUTES.auth.signIn}`;
+  const url = new URL(base, request.url);
+
+  url.searchParams.set('error', callbackErrorKey);
+
+  return NextResponse.redirect(url);
 }
