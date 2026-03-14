@@ -1,23 +1,25 @@
+'use client';
+
 import type React from 'react';
 
 import { Archive, Clock, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 
+import { SurveyStatusBadge } from '@/components/shared/survey-status-badge';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { DropdownMenu, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { TableCell, TableRow } from '@/components/ui/table';
-import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import { ActivityInfoTrigger } from '@/features/surveys/components/dashboard/activity-info-trigger';
 import { Sparkline } from '@/features/surveys/components/dashboard/sparkline';
 import { SurveyActionMenuContent } from '@/features/surveys/components/dashboard/survey-action-menu';
 import { SurveyProjectBadge } from '@/features/surveys/components/dashboard/survey-project-badge';
 import { SurveyShareDialog } from '@/features/surveys/components/dashboard/survey-share-dialog';
-import { SurveyStatusBadge } from '@/features/surveys/components/dashboard/survey-status-badge';
 import { ExportDialog } from '@/features/surveys/components/stats/export-dialog';
 import { TRASH_RETENTION_DAYS } from '@/features/surveys/config';
 import type { useSurveyRow } from '@/features/surveys/hooks/use-survey-row';
+import type { UserSurvey } from '@/features/surveys/types';
 import { cn } from '@/lib/common/utils';
 
 const ACTIVITY_BADGE_BASE =

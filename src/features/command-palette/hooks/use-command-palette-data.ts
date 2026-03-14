@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 
-import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
 import { getProjects } from '@/features/projects/actions/get-projects';
-import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
+import type { ProjectWithMetrics } from '@/features/projects/types';
 import { getUserSurveys } from '@/features/surveys/actions/get-user-surveys';
+import type { UserSurvey } from '@/features/surveys/types';
 import { usePathname } from '@/i18n/routing';
 
 export function useCommandPaletteData(open: boolean) {

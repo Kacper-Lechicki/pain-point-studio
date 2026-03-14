@@ -48,9 +48,6 @@ export const RATING_LABEL_MAX_LENGTH = 100;
 /** Interval (ms) for `useNow()` calls that update relative timestamps. */
 export const NOW_UPDATE_INTERVAL_MS = 60_000;
 
-/** Debounce (ms) for realtime subscription refreshes on the survey list. */
-export const REALTIME_DEBOUNCE_MS = 1_500;
-
 /** Debounce (ms) for realtime subscription refreshes on the single survey stats page. */
 export const REALTIME_STATS_DEBOUNCE_MS = 1_000;
 

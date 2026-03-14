@@ -1,8 +1,4 @@
-/**
- * Shared class names for the dashboard bento layout.
- * Keeps cards visually consistent with the reference: rounded, subtle border, clean spacing.
- */
-export const BENTO_CARD_CLASS = 'rounded-lg border border-border/70 bg-card shadow-sm gap-0 py-0';
+export { BENTO_CARD_CLASS } from '@/config/layout';
 
 /** Min height for Row 4 cards (Pinned Project + Your Projects) so they stay equal and fit 5 list items. */
 export const BENTO_ROW4_CARD_MIN_H = 'min-h-[14rem]';

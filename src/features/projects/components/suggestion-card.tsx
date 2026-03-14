@@ -35,11 +35,8 @@ interface SuggestionCardProps {
   suggestion: InsightSuggestion;
   onMoveTo: (signature: string, type: InsightType, content: string) => void;
   onDismissed: (signature: string) => void;
-  /** Called when pointer goes down on the drag handle. */
   onDragStart?: (e: React.PointerEvent) => void;
-  /** Whether this card is currently being dragged. */
   isDragging?: boolean;
-  /** Hide the drag handle (e.g. on mobile). */
   hideDragHandle?: boolean;
 }
 
@@ -54,7 +51,6 @@ export function SuggestionCard({
   const t = useTranslations();
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(suggestion.content);
-  /** Ephemeral content after "Save" without moving — used for display and for next move. */
   const [localContent, setLocalContent] = useState<string | null>(null);
   const [infoOpen, setInfoOpen] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -77,8 +73,6 @@ export function SuggestionCard({
     setIsEditing(false);
     onMoveTo(suggestion.signature, type, content);
   };
-
-  // ── Edit mode ────────────────────────────────────────────────────
 
   if (isEditing) {
     return (
@@ -110,8 +104,6 @@ export function SuggestionCard({
     );
   }
 
-  // ── Save local edit (no server call — just updates local text) ────
-
   function handleSaveEdit() {
     const trimmed = editContent.trim();
 
@@ -121,12 +113,9 @@ export function SuggestionCard({
       return;
     }
 
-    // Store locally for display & future move; only persists if user then moves to a column.
     setLocalContent(trimmed);
     setIsEditing(false);
   }
-
-  // ── Default mode ─────────────────────────────────────────────────
 
   return (
     <>

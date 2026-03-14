@@ -1,8 +1,8 @@
 /** Tests for project sort helpers (default direction and comparator logic). */
 import { describe, expect, it } from 'vitest';
 
-import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
-import type { ProjectsListExtrasMap } from '@/features/projects/actions/get-projects-list-extras';
+import type { ProjectWithMetrics } from '@/features/projects/types';
+import type { ProjectsListExtrasMap } from '@/features/projects/types';
 
 import { getDefaultSortDir, getProjectComparator } from './sort-helpers';
 

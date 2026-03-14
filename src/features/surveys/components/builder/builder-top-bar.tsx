@@ -3,10 +3,9 @@
 import { ArrowLeft, List, Pencil, Save, Send, Settings2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { UserMenu } from '@/components/shared/user-menu';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
-import { UserMenu } from '@/features/auth/components/common/user-menu';
-import { getProjectDetailUrl } from '@/features/projects/lib/project-urls';
 import { saveSurveyQuestions } from '@/features/surveys/actions';
 import { SaveStatusIndicator } from '@/features/surveys/components/builder/save-status-indicator';
 import { deriveSurveyFlags } from '@/features/surveys/config/survey-status';
@@ -16,6 +15,7 @@ import { useFormAction } from '@/hooks/common/use-form-action';
 import { useUnsavedChangesWarning } from '@/hooks/unsaved-changes-context';
 import Link from '@/i18n/link';
 import type { MessageKey } from '@/i18n/types';
+import { getProjectDetailUrl } from '@/lib/common/urls/project-urls';
 
 interface BuilderTopBarProps {
   surveyId: string;

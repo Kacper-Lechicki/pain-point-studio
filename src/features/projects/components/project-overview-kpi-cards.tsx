@@ -4,7 +4,7 @@ import { ClipboardList } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Card } from '@/components/ui/card';
-import { BENTO_CARD_CLASS } from '@/features/dashboard/components/bento/bento-styles';
+import { BENTO_CARD_CLASS } from '@/config/layout';
 import type { ProjectOverviewStats } from '@/features/projects/types';
 import type { MessageKey } from '@/i18n/types';
 import { cn } from '@/lib/common/utils';
@@ -40,7 +40,6 @@ export function ProjectOverviewKpiCards({
   const breakdown = overviewStats.completionBreakdown;
   const breakdownTotal = breakdown.completed + breakdown.inProgress + breakdown.abandoned;
 
-  // Format avg time
   const avgTimeSeconds = overviewStats.avgTimeSeconds;
   let avgTimeDisplay: string;
 
@@ -58,7 +57,6 @@ export function ProjectOverviewKpiCards({
   return (
     <Card className={BENTO_CARD_CLASS}>
       <div className="flex flex-col gap-4 p-4">
-        {/* ── Header row ── */}
         <div className="flex shrink-0 items-center justify-between gap-2">
           <span className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
             {t('projects.overview.metrics' as MessageKey)}
@@ -66,9 +64,7 @@ export function ProjectOverviewKpiCards({
           <ClipboardList className="text-chart-emerald size-4 shrink-0" aria-hidden />
         </div>
 
-        {/* ── 3-column stat grid ── */}
         <div className="grid grid-cols-3 gap-3">
-          {/* Surveys */}
           <div className="flex flex-col gap-1">
             <span className="text-muted-foreground text-[11px] font-medium tracking-wider uppercase">
               {t('projects.overview.surveys' as MessageKey)}
@@ -79,7 +75,6 @@ export function ProjectOverviewKpiCards({
             <div className="mt-1 h-5" />
           </div>
 
-          {/* Responses */}
           <div className="flex flex-col gap-1">
             <span className="text-muted-foreground text-[11px] font-medium tracking-wider uppercase">
               {t('projects.overview.responses' as MessageKey)}
@@ -93,7 +88,6 @@ export function ProjectOverviewKpiCards({
             <div className="mt-1 h-5" />
           </div>
 
-          {/* Avg Time */}
           <div className="flex flex-col gap-1">
             <span className="text-muted-foreground text-[11px] font-medium tracking-wider uppercase">
               {t('projects.overview.avgTime' as MessageKey)}
@@ -103,7 +97,6 @@ export function ProjectOverviewKpiCards({
           </div>
         </div>
 
-        {/* ── Survey status bar + legend ── */}
         {surveyTotal > 0 && (
           <div className="border-border flex flex-col gap-2 border-t pt-3">
             <span className="text-muted-foreground text-[11px] font-medium tracking-wider uppercase">
@@ -173,7 +166,6 @@ export function ProjectOverviewKpiCards({
           </div>
         )}
 
-        {/* ── Bottom: completion bar + breakdown ── */}
         <div className="border-border flex flex-col gap-2 border-t pt-3">
           <div className="flex items-center justify-between gap-2">
             <span className="text-muted-foreground text-[11px] font-medium tracking-wider uppercase">

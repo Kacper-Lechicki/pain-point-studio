@@ -1,5 +1,7 @@
 'use client';
 
+import type { ReactNode } from 'react';
+
 import { ClipboardList, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -7,22 +9,25 @@ import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { isProjectArchived } from '@/features/projects/lib/project-helpers';
 import type { Project } from '@/features/projects/types';
-import type { UserSurvey } from '@/features/surveys/actions';
-import { SurveyList } from '@/features/surveys/components/dashboard/survey-list';
 
 interface ProjectSurveysTabProps {
   project: Project;
-  surveys: UserSurvey[];
+  hasSurveys: boolean;
   onCreateSurvey?: () => void;
+  children: ReactNode;
 }
 
-export function ProjectSurveysTab({ project, surveys, onCreateSurvey }: ProjectSurveysTabProps) {
+export function ProjectSurveysTab({
+  project,
+  hasSurveys,
+  onCreateSurvey,
+  children,
+}: ProjectSurveysTabProps) {
   const t = useTranslations();
   const isArchived = isProjectArchived(project);
-  const totalResponses = surveys.reduce((sum, s) => sum + s.completedCount, 0);
   const effectiveCreateSurvey = !isArchived ? onCreateSurvey : undefined;
 
-  if (surveys.length === 0) {
+  if (!hasSurveys) {
     return (
       <EmptyState
         icon={ClipboardList}
@@ -41,13 +46,5 @@ export function ProjectSurveysTab({ project, surveys, onCreateSurvey }: ProjectS
     );
   }
 
-  return (
-    <SurveyList
-      initialSurveys={surveys}
-      projectId={project.id}
-      onCreateSurvey={effectiveCreateSurvey}
-      totalResponses={totalResponses}
-      targetResponses={project.target_responses}
-    />
-  );
+  return <>{children}</>;
 }

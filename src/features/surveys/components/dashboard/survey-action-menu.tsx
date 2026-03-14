@@ -1,3 +1,5 @@
+'use client';
+
 import { Download, Eye, Pencil, Send, Share2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -10,8 +12,8 @@ import {
 import { QUESTIONS_MIN } from '@/features/surveys/config/constraints';
 import type { SurveyAction } from '@/features/surveys/config/survey-status';
 import { SURVEY_ACTION_UI } from '@/features/surveys/config/survey-status';
-import { getSurveyEditUrl, getSurveyPublishUrl } from '@/features/surveys/lib/survey-urls';
 import Link from '@/i18n/link';
+import { getSurveyEditUrl, getSurveyPublishUrl } from '@/lib/common/urls/survey-urls';
 
 interface SurveyActionMenuContentProps {
   surveyId: string;

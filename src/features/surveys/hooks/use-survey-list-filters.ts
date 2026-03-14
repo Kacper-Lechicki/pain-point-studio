@@ -1,4 +1,3 @@
-import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import {
   NO_PROJECT_FILTER_ID,
   type ProjectFilterOption,
@@ -6,6 +5,7 @@ import {
   type SurveyStatusFilter,
 } from '@/features/surveys/components/dashboard/survey-list-toolbar';
 import { deriveSurveyFlags } from '@/features/surveys/config/survey-status';
+import type { UserSurvey } from '@/features/surveys/types';
 import { useSessionState } from '@/hooks/common/use-session-state';
 
 // ── Module-level constants ──────────────────────────────────────────

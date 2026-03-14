@@ -1,4 +1,4 @@
-import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
+import type { UserSurvey } from '@/features/surveys/types';
 
 const ASC_KEYS: readonly string[] = ['title', 'status'];
 

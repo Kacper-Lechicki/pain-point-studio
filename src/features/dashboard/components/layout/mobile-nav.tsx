@@ -6,16 +6,16 @@ import { AnimatePresence, motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 
 import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet';
-import { useBreadcrumbContext } from '@/features/dashboard/components/layout/breadcrumb-context';
 import {
   MobileNavMainLevel,
   MobileNavSubLevel,
 } from '@/features/dashboard/components/layout/mobile-nav-levels';
 import { useSidebar } from '@/features/dashboard/components/layout/sidebar-provider';
-import { useSubPanelItems } from '@/features/dashboard/components/layout/sub-panel-items-context';
 import type { NavItem } from '@/features/dashboard/config/navigation';
 import { getHash } from '@/features/dashboard/hooks/use-hash-sync';
 import { findActiveNavItem } from '@/features/dashboard/lib/nav-utils';
+import { useBreadcrumbContext } from '@/hooks/common/use-breadcrumb';
+import { useSubPanelItems } from '@/hooks/common/use-sub-panel-items';
 import { usePathname } from '@/i18n/routing';
 
 const TRANSITION = { duration: 0.15, ease: [0.25, 0.1, 0.25, 1] as const };

@@ -12,8 +12,6 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ListPagination } from '@/components/ui/list-pagination';
 import { bulkChangeProjectStatus } from '@/features/projects/actions/bulk-change-project-status';
-import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
-import type { ProjectsListExtrasMap } from '@/features/projects/actions/get-projects-list-extras';
 import { BulkActionBar } from '@/features/projects/components/bulk-action-bar';
 import { EditProjectDialog } from '@/features/projects/components/edit-project-dialog';
 import { ProjectCardRow } from '@/features/projects/components/project-card-row';
@@ -25,9 +23,11 @@ import { useProjectBulkSelection } from '@/features/projects/hooks/use-project-b
 import { useProjectListActions } from '@/features/projects/hooks/use-project-list-actions';
 import { useProjectListState } from '@/features/projects/hooks/use-project-list-state';
 import { getProjectConfirmDialogProps } from '@/features/projects/lib/project-confirm-props';
-import { getProjectDetailUrl } from '@/features/projects/lib/project-urls';
+import type { ProjectWithMetrics } from '@/features/projects/types';
+import type { ProjectsListExtrasMap } from '@/features/projects/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import type { MessageKey } from '@/i18n/types';
+import { getProjectDetailUrl } from '@/lib/common/urls/project-urls';
 
 interface ProjectsListPageProps {
   projects: ProjectWithMetrics[];

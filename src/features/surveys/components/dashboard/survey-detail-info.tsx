@@ -1,14 +1,16 @@
+'use client';
+
 import { Archive, CalendarClock, CalendarX2, FolderKanban, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { SurveyStatusBadge } from '@/components/shared/survey-status-badge';
 import { MetricRow, SectionLabel } from '@/components/ui/metric-display';
-import { getProjectDetailUrl } from '@/features/projects/lib/project-urls';
-import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import { ExpiryMetricRow } from '@/features/surveys/components/dashboard/expiry-metric-row';
-import { SurveyStatusBadge } from '@/features/surveys/components/dashboard/survey-status-badge';
 import { SURVEY_STATUS_CONFIG } from '@/features/surveys/config/survey-status';
 import type { SurveyStatusFlags } from '@/features/surveys/config/survey-status';
+import type { UserSurvey } from '@/features/surveys/types';
 import Link from '@/i18n/link';
+import { getProjectDetailUrl } from '@/lib/common/urls/project-urls';
 
 interface SurveyDetailInfoProps {
   survey: UserSurvey;

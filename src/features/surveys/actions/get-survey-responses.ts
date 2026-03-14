@@ -1,30 +1,15 @@
 'use server';
 
-import { z } from 'zod';
-
 import type { SurveyResponseListItem } from '@/features/surveys/types/response-list';
+import { surveyResponseFiltersSchema } from '@/features/surveys/types/response-list';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
 
-const schema = z.object({
-  surveyId: z.string().uuid(),
-  page: z.number().int().min(1).default(1),
-  perPage: z.number().int().min(1).max(100).default(20),
-  status: z.enum(['in_progress', 'completed', 'abandoned']).optional(),
-  device: z.enum(['desktop', 'mobile', 'tablet']).optional(),
-  hasContact: z.boolean().optional(),
-  search: z.string().optional(),
-  sortBy: z.enum(['completed_at', 'started_at', 'duration']).default('completed_at'),
-  sortDir: z.enum(['asc', 'desc']).default('desc'),
-  dateFrom: z.string().optional(),
-  dateTo: z.string().optional(),
-});
-
 export const getSurveyResponses = withProtectedAction<
-  typeof schema,
+  typeof surveyResponseFiltersSchema,
   { items: SurveyResponseListItem[]; totalCount: number }
 >('get-survey-responses', {
-  schema,
+  schema: surveyResponseFiltersSchema,
   rateLimit: RATE_LIMITS.crud,
   action: async ({ data, user, supabase }) => {
     const params = {

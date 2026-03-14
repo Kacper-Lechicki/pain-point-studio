@@ -113,7 +113,6 @@ export function ResponseDetailDialog({
     onOpenChange(nextOpen);
   };
 
-  // Keyboard navigation
   useEffect(() => {
     if (!open) {
       return;
@@ -143,13 +142,10 @@ export function ResponseDetailDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
         className={cn(
-          // Mobile: full-screen sheet
           'flex h-full max-h-full w-full max-w-full flex-col gap-0 rounded-none p-0',
-          // Desktop: centered modal
           'sm:h-auto sm:max-h-[85vh] sm:max-w-xl sm:rounded-lg'
         )}
       >
-        {/* ── Header ── */}
         <DialogHeader className="border-border/50 shrink-0 items-center border-b px-4 py-3 sm:px-6 sm:py-4">
           <div className="flex items-center gap-2">
             <DialogTitle className="text-base font-semibold">{t('detailTitle')}</DialogTitle>
@@ -158,7 +154,6 @@ export function ResponseDetailDialog({
           <DialogDescription className="sr-only">{t('detailTitle')}</DialogDescription>
         </DialogHeader>
 
-        {/* ── Meta strip ── */}
         {meta && (
           <div className="border-border/50 bg-muted/30 flex shrink-0 flex-wrap items-center gap-x-4 gap-y-1 border-b px-4 py-2.5 sm:px-6">
             {meta.completedAt && (
@@ -183,10 +178,8 @@ export function ResponseDetailDialog({
           </div>
         )}
 
-        {/* ── Scrollable content ── */}
         <div className="flex-1 overflow-y-auto">
           <div className="flex flex-col gap-6 px-4 py-4 sm:px-6 sm:py-5">
-            {/* Answers */}
             {isLoading ? (
               <div className="flex flex-col gap-6">
                 {Array.from({ length: 3 }).map((_, i) => (
@@ -206,7 +199,6 @@ export function ResponseDetailDialog({
               <p className="text-muted-foreground py-8 text-center text-sm">{t('noAnswers')}</p>
             )}
 
-            {/* Feedback */}
             {detail?.feedback && (
               <div className="border-border/50 flex flex-col gap-2 border-t pt-5">
                 <p className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
@@ -220,7 +212,6 @@ export function ResponseDetailDialog({
               </div>
             )}
 
-            {/* Contact */}
             {(meta?.contactName || meta?.contactEmail) && (
               <div className="border-border/50 flex flex-col gap-3 border-t pt-5">
                 <p className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
@@ -247,7 +238,6 @@ export function ResponseDetailDialog({
           </div>
         </div>
 
-        {/* ── Sticky footer with navigation ── */}
         <div className="border-border/50 flex shrink-0 items-center gap-1 border-t px-4 py-3 sm:px-6">
           <Button
             variant="outline"

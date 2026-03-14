@@ -10,6 +10,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 
+import { WizardStepLayout } from '@/components/shared/wizard-step-layout';
 import {
   Form,
   FormControl,
@@ -21,22 +22,21 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { ROUTES } from '@/config/routes';
-import { useBreadcrumbSegment } from '@/features/dashboard/components/layout/breadcrumb-context';
-import type { SubPanelLink } from '@/features/dashboard/components/layout/sub-panel-items-context';
-import { useSubPanelLinks } from '@/features/dashboard/components/layout/sub-panel-items-context';
-import { WizardStepLayout } from '@/features/projects/components/wizard-step-layout';
 import { isProjectArchived } from '@/features/projects/lib/project-helpers';
 import { createSurveyDraft } from '@/features/surveys/actions';
 import { SURVEY_DESCRIPTION_MAX_LENGTH, SURVEY_TITLE_MAX_LENGTH } from '@/features/surveys/config';
-import { getCreateSurveyUrl, getSurveyEditUrl } from '@/features/surveys/lib/survey-urls';
 import {
   SURVEY_VISIBILITY_VALUES,
   type SurveyMetadataSchema,
   surveyMetadataSchema,
 } from '@/features/surveys/types';
+import { useBreadcrumbSegment } from '@/hooks/common/use-breadcrumb';
 import { useFormAction } from '@/hooks/common/use-form-action';
+import type { SubPanelLink } from '@/hooks/common/use-sub-panel-items';
+import { useSubPanelLinks } from '@/hooks/common/use-sub-panel-items';
 import { useUnsavedChangesWarning } from '@/hooks/unsaved-changes-context';
 import type { MessageKey } from '@/i18n/types';
+import { getCreateSurveyUrl, getSurveyEditUrl } from '@/lib/common/urls/survey-urls';
 
 type WizardStep = 1 | 2 | 3;
 type Direction = 'forward' | 'backward';

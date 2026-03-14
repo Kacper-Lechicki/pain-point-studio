@@ -5,8 +5,8 @@ import { useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import type { AuthProvider } from '@/features/auth/types';
 import type { MessageKey } from '@/i18n/types';
+import type { AuthProvider } from '@/lib/common/auth-provider';
 import { env } from '@/lib/common/env';
 import { createClient } from '@/lib/supabase/client';
 

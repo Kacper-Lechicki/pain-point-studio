@@ -15,11 +15,7 @@ import { INSIGHT_TYPES } from '@/features/projects/types';
 import { useKanbanBoard } from '@/hooks/use-kanban-board';
 import { cn } from '@/lib/common/utils';
 
-// ── Board column type (SWOT + optional suggestions) ────────────────
-
 type BoardColumnId = InsightType | 'suggested';
-
-// ── Props ──────────────────────────────────────────────────────────
 
 interface KanbanBoardProps {
   projectId: string;
@@ -28,14 +24,11 @@ interface KanbanBoardProps {
   onInsightUpdated: (insight: ProjectInsight) => void;
   onInsightDeleted: (insightId: string) => void;
   onInsightsChanged?: (insights: ProjectInsight[]) => void;
-  /** Suggestion data (null/undefined = column hidden). */
   suggestions?: InsightSuggestion[];
   totalCompletedResponses?: number;
   onSuggestionAccepted?: (signature: string, type: InsightType, content: string) => void;
   onSuggestionDismissed?: (signature: string) => void;
-  /** Which SWOT types to show columns for. Defaults to all. */
   visibleTypes?: readonly InsightType[];
-  /** Called when a drag operation completes (reorder or move). */
   onDragCompleted?: () => void;
 }
 
@@ -66,8 +59,6 @@ export function KanbanBoard({
     visibleTypes && visibleTypes.length > 0 ? visibleTypes : INSIGHT_TYPES;
   const totalColumns = INSIGHT_TYPES.length + (hasSuggestions ? 1 : 0);
 
-  // ── Group insights by type ─────────────────────────────────────
-
   const insightsByType = (() => {
     const grouped: Record<InsightType, ProjectInsight[]> = {
       strength: [],
@@ -91,8 +82,6 @@ export function KanbanBoard({
     return grouped;
   })();
 
-  // ── Build columns map (with optional suggestions column) ───────
-
   const allColumnIds: readonly BoardColumnId[] = hasSuggestions
     ? (['suggested', ...typesToRender] as const)
     : typesToRender;
@@ -111,10 +100,7 @@ export function KanbanBoard({
     return result as Record<BoardColumnId, string[]>;
   })();
 
-  // ── Drag callbacks ─────────────────────────────────────────────
-
   const handleReorder = (columnId: BoardColumnId, newIds: string[]) => {
-    // Reordering within 'suggested' column — no persistence needed
     if (columnId === 'suggested') {
       return;
     }
@@ -150,12 +136,10 @@ export function KanbanBoard({
     targetColumnIds: string[],
     sourceColumnIds: string[]
   ) => {
-    // Prevent dropping INTO the suggested column
     if (toColumn === 'suggested') {
       return;
     }
 
-    // Moving FROM suggested → SWOT column = accept suggestion
     if (fromColumn === 'suggested') {
       const suggestion = suggestions?.find((s) => s.signature === itemId);
 
@@ -166,7 +150,6 @@ export function KanbanBoard({
       return;
     }
 
-    // Normal SWOT → SWOT move
     setLocalInsights((prev) => {
       const updated = prev.map((insight) => {
         if (insight.id === itemId) {
@@ -246,8 +229,6 @@ export function KanbanBoard({
     handleMove(insightId, insight.type as InsightType, newType, targetColumnIds, sourceColumnIds);
   };
 
-  // ── Ghost card content ─────────────────────────────────────────
-
   const draggedInsight = draggedId ? localInsights.find((i) => i.id === draggedId) : null;
   const draggedSuggestion =
     draggedId && !draggedInsight ? suggestions?.find((s) => s.signature === draggedId) : null;
@@ -256,11 +237,8 @@ export function KanbanBoard({
     ? INSIGHT_COLORS[draggedInsight.type as InsightType]?.stripe
     : undefined;
 
-  // ── Render ─────────────────────────────────────────────────────
-
   return (
     <div className="flex flex-col gap-4">
-      {/* All columns — horizontally scrollable */}
       <div
         ref={boardRef}
         className="grid gap-3 overflow-x-auto pb-2"
@@ -300,7 +278,6 @@ export function KanbanBoard({
         ))}
       </div>
 
-      {/* Drag ghost */}
       {draggedId &&
         ghostContent &&
         ghostPosition &&

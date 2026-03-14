@@ -3,7 +3,7 @@ import { notFound, redirect } from 'next/navigation';
 import { PageTransition } from '@/components/ui/page-transition';
 import { getSurveyFormData, getSurveyWithQuestions } from '@/features/surveys/actions';
 import { QuestionBuilderPage } from '@/features/surveys/components/builder/question-builder-page';
-import { getSurveyStatsUrl } from '@/features/surveys/lib/survey-urls';
+import { getSurveyStatsUrl } from '@/lib/common/urls/survey-urls';
 
 interface Props {
   params: Promise<{ id: string }>;

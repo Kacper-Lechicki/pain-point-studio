@@ -2,7 +2,6 @@
 
 import { cache } from 'react';
 
-import type { ResearchPhase } from '@/features/projects/types';
 import type { MappedQuestion } from '@/features/surveys/lib/map-question-row';
 import { mapQuestionRow } from '@/features/surveys/lib/map-question-row';
 import {
@@ -10,6 +9,7 @@ import {
   type SurveyStatus,
   type SurveyVisibility,
 } from '@/features/surveys/types';
+import type { ResearchPhase } from '@/lib/common/research';
 import { createClient } from '@/lib/supabase/server';
 
 interface SurveyBuilderData {

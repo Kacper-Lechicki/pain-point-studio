@@ -13,10 +13,6 @@ export interface DragHandleProps {
   onPointerDown: (e: React.PointerEvent) => void;
 }
 
-/* -------------------------------------------------------------------------- */
-/*  Generic SortableList<T>                                                    */
-/* -------------------------------------------------------------------------- */
-
 interface SortableListProps<T extends { id: string }> {
   items: T[];
   itemIdAttribute: string;
@@ -116,10 +112,6 @@ export function SortableList<T extends { id: string }>({
     </>
   );
 }
-
-/* -------------------------------------------------------------------------- */
-/*  SortableNoteList — convenience wrapper for notes                           */
-/* -------------------------------------------------------------------------- */
 
 interface SortableNoteListProps {
   notes: ProjectNoteMeta[];

@@ -2,26 +2,10 @@
 
 import { cache } from 'react';
 
-import { z } from 'zod';
-
+import { type ResearchJourney, researchJourneySchema } from '@/features/profile/types';
 import { createClient } from '@/lib/supabase/server';
 
-const researchJourneySchema = z.object({
-  memberSince: z.string(),
-  firstProjectAt: z.string().nullable(),
-  firstSurveyAt: z.string().nullable(),
-  firstResponseAt: z.string().nullable(),
-  totalResponses: z.number(),
-});
-
-type ResearchJourneyRpc = z.infer<typeof researchJourneySchema>;
-
-/**
- * Fetch research journey milestone data via get_research_journey RPC.
- * Returns null when unauthenticated, on RPC error, or when the response fails validation.
- * Wrapped with React `cache()` for per-request deduplication.
- */
-export const getResearchJourney = cache(async (): Promise<ResearchJourneyRpc | null> => {
+export const getResearchJourney = cache(async (): Promise<ResearchJourney | null> => {
   const supabase = await createClient();
 
   const {

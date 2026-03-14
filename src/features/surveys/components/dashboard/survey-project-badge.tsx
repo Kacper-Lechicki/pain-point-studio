@@ -1,8 +1,10 @@
+'use client';
+
 import { FolderKanban } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
-import { getProjectDetailUrl } from '@/features/projects/lib/project-urls';
 import Link from '@/i18n/link';
+import { getProjectDetailUrl } from '@/lib/common/urls/project-urls';
 
 interface SurveyProjectBadgeProps {
   projectId: string | null;

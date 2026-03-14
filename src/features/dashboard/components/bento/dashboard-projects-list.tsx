@@ -9,15 +9,15 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ROUTES } from '@/config';
-import type { OverviewProject } from '@/features/dashboard/actions/get-dashboard-overview';
 import { setPinnedProject } from '@/features/dashboard/actions/set-pinned-project';
 import {
   BENTO_CARD_CLASS,
   BENTO_ROW4_CARD_MIN_H,
 } from '@/features/dashboard/components/bento/bento-styles';
 import { BENTO_VISIBLE_ITEMS } from '@/features/dashboard/config/layout';
-import { getProjectDetailUrl } from '@/features/projects/lib/project-urls';
+import type { OverviewProject } from '@/features/dashboard/types';
 import Link from '@/i18n/link';
+import { getProjectDetailUrl } from '@/lib/common/urls/project-urls';
 import { cn } from '@/lib/common/utils';
 
 interface DashboardProjectsListProps {

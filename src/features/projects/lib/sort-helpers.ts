@@ -1,6 +1,6 @@
-import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
-import type { ProjectsListExtrasMap } from '@/features/projects/actions/get-projects-list-extras';
 import type { ProjectSortBy } from '@/features/projects/components/project-list-toolbar';
+import type { ProjectWithMetrics } from '@/features/projects/types';
+import type { ProjectsListExtrasMap } from '@/features/projects/types';
 
 const ASC_KEYS: readonly string[] = ['name', 'status'];
 

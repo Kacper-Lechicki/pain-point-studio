@@ -3,7 +3,7 @@
 import { Check, Circle, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { PASSWORD_CONFIG, calculatePasswordStrength } from '@/features/auth/config/password';
+import { PASSWORD_CONFIG, calculatePasswordStrength } from '@/lib/common/password';
 import { cn } from '@/lib/common/utils';
 
 interface PasswordStrengthProps {

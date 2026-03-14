@@ -12,7 +12,6 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ListPagination } from '@/components/ui/list-pagination';
 import { bulkChangeSurveyStatus } from '@/features/surveys/actions/bulk-change-survey-status';
-import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import { SurveyBulkActionBar } from '@/features/surveys/components/dashboard/survey-bulk-action-bar';
 import { SurveyDetailSheet } from '@/features/surveys/components/dashboard/survey-detail-sheet';
 import { SurveyListKpi } from '@/features/surveys/components/dashboard/survey-list-kpi';
@@ -35,10 +34,11 @@ import {
 import { useSurveyListState } from '@/features/surveys/hooks/use-survey-list-state';
 import { useSurveySelection } from '@/features/surveys/hooks/use-survey-selection';
 import { applyOptimisticStatusChange } from '@/features/surveys/lib/status-change-handler';
-import { getSurveyDetailUrl } from '@/features/surveys/lib/survey-urls';
+import type { UserSurvey } from '@/features/surveys/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import { useRefresh } from '@/hooks/common/use-refresh';
 import type { MessageKey } from '@/i18n/types';
+import { getSurveyDetailUrl } from '@/lib/common/urls/survey-urls';
 
 interface SurveyListProps {
   initialSurveys: UserSurvey[];

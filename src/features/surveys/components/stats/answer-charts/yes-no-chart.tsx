@@ -3,7 +3,7 @@
 import { Check, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import type { QuestionAnswerData } from '@/features/surveys/actions/get-survey-stats';
+import type { QuestionAnswerData } from '@/features/surveys/types';
 import { cn } from '@/lib/common/utils';
 
 interface YesNoChartProps {

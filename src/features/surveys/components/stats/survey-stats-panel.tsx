@@ -9,14 +9,6 @@ import { useTranslations } from 'next-intl';
 
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { ROUTES } from '@/config/routes';
-import {
-  useBreadcrumbSegment,
-  useBreadcrumbTrail,
-} from '@/features/dashboard/components/layout/breadcrumb-context';
-import { useSubPanelLinks } from '@/features/dashboard/components/layout/sub-panel-items-context';
-import { getProjectDetailUrl } from '@/features/projects/lib/project-urls';
-import type { SurveyStats } from '@/features/surveys/actions/get-survey-stats';
-import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import { SurveyShareDialog } from '@/features/surveys/components/dashboard/survey-share-dialog';
 import { SurveyStatsHeader } from '@/features/surveys/components/stats/survey-stats-header';
 import { SurveyStatsTabs } from '@/features/surveys/components/stats/survey-stats-tabs';
@@ -26,9 +18,13 @@ import {
   useSurveyAction,
   useSurveyCardActions,
 } from '@/features/surveys/hooks';
-import { getSurveyStatsUrl } from '@/features/surveys/lib/survey-urls';
+import type { SurveyStats, UserSurvey } from '@/features/surveys/types';
 import type { SurveyStatus } from '@/features/surveys/types';
+import { useBreadcrumbSegment, useBreadcrumbTrail } from '@/hooks/common/use-breadcrumb';
 import { useRefresh } from '@/hooks/common/use-refresh';
+import { useSubPanelLinks } from '@/hooks/common/use-sub-panel-items';
+import { getProjectDetailUrl } from '@/lib/common/urls/project-urls';
+import { getSurveyStatsUrl } from '@/lib/common/urls/survey-urls';
 
 interface SurveyStatsPanelProps {
   stats: SurveyStats;

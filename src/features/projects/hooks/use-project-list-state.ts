@@ -1,12 +1,12 @@
 'use client';
 
-import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
-import type { ProjectsListExtrasMap } from '@/features/projects/actions/get-projects-list-extras';
 import type {
   ProjectSortBy,
   ProjectStatusFilter,
 } from '@/features/projects/components/project-list-toolbar';
 import { getDefaultSortDir, getProjectComparator } from '@/features/projects/lib/sort-helpers';
+import type { ProjectWithMetrics } from '@/features/projects/types';
+import type { ProjectsListExtrasMap } from '@/features/projects/types';
 import { useListState } from '@/hooks/common/use-list-state';
 import { useSessionState } from '@/hooks/common/use-session-state';
 

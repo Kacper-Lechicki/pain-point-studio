@@ -53,13 +53,9 @@ export function ProjectInsightsTab({
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [suggestions, setSuggestions] = useState(suggestionsData.suggestions);
 
-  // ── Toolbar state ──────────────────────────────────────────────────
-
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState<InsightType[]>([]);
   const [sortBy, setSortBy] = useState<InsightSortBy>('manual');
-
-  // ── Derived data ───────────────────────────────────────────────────
 
   const typeCounts = useMemo(() => {
     const counts: Record<InsightType, number> = {
@@ -83,18 +79,15 @@ export function ProjectInsightsTab({
   const filteredInsights = useMemo(() => {
     let result = insights;
 
-    // Text search
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       result = result.filter((i) => i.content.toLowerCase().includes(q));
     }
 
-    // Type filter
     if (typeFilter.length > 0) {
       result = result.filter((i) => typeFilter.includes(i.type as InsightType));
     }
 
-    // Sort (only if not manual)
     if (sortBy !== 'manual') {
       result = [...result].sort((a, b) => {
         switch (sortBy) {
@@ -129,8 +122,6 @@ export function ProjectInsightsTab({
   const hasNoResults =
     isFiltering && filteredInsights.length === 0 && filteredSuggestions.length === 0;
   const visibleTypes = typeFilter.length > 0 ? typeFilter : INSIGHT_TYPES;
-
-  // ── Actions ────────────────────────────────────────────────────────
 
   const acceptAction = useFormAction({
     unexpectedErrorMessage: 'projects.errors.unexpected' as MessageKey,
@@ -178,20 +169,11 @@ export function ProjectInsightsTab({
   };
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handlePendingDecided = (_surveyId: string, _included: boolean) => {
-    // After a survey is included/excluded, the page needs to reload
-    // to recompute suggestions. Using router.refresh() from the parent
-    // would be ideal but for now we just let the toast confirm the action.
-    // The next page load will reflect the change.
-  };
-
-  // ── Pending banner (rendered in both empty and board states) ────────
+  const handlePendingDecided = (_surveyId: string, _included: boolean) => {};
 
   const pendingBanner = pendingSurveys.length > 0 && (
     <PendingInsightsBanner surveys={pendingSurveys} onDecided={handlePendingDecided} />
   );
-
-  // ── Empty state (no insights + no suggestions at all) ──────────────
 
   if (insights.length === 0 && suggestions.length === 0) {
     return (
@@ -238,8 +220,6 @@ export function ProjectInsightsTab({
       </div>
     );
   }
-
-  // ── Board with toolbar ─────────────────────────────────────────────
 
   return (
     <div className="flex flex-col gap-4">

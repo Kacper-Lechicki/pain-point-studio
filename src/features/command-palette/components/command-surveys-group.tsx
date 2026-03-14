@@ -6,8 +6,8 @@ import { NotebookPen } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { CommandGroup, CommandItem } from '@/components/ui/command';
-import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
-import { getSurveyStatsUrl } from '@/features/surveys/lib/survey-urls';
+import type { UserSurvey } from '@/features/surveys/types';
+import { getSurveyStatsUrl } from '@/lib/common/urls/survey-urls';
 
 interface CommandSurveysGroupProps {
   surveys: UserSurvey[];

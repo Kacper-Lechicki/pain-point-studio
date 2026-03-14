@@ -1,6 +1,18 @@
-import type { SocialLink } from '@/features/settings/types';
+import { z } from 'zod';
+
+import type { SocialLink } from '@/lib/common/social';
 
 // -- Research Journey types ------------------------------------------------
+
+export const researchJourneySchema = z.object({
+  memberSince: z.string(),
+  firstProjectAt: z.string().nullable(),
+  firstSurveyAt: z.string().nullable(),
+  firstResponseAt: z.string().nullable(),
+  totalResponses: z.number(),
+});
+
+export type ResearchJourney = z.infer<typeof researchJourneySchema>;
 
 export interface ResearchJourneyData {
   memberSince: string;

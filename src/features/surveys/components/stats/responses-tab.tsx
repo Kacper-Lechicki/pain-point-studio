@@ -25,7 +25,6 @@ import { ResponsesToolbar } from './responses-toolbar';
 interface ResponsesTabProps {
   surveyId: string;
   totalResponses: number;
-  /** Timestamp that changes on each realtime sync — triggers a refetch. */
   refreshTrigger?: number | undefined;
 }
 
@@ -112,7 +111,6 @@ export function ResponsesTab({ surveyId, totalResponses, refreshTrigger }: Respo
     ? items.findIndex((item) => item.id === selectedResponse.id)
     : -1;
 
-  // Pagination helpers
   const perPage = filters.perPage as PerPage;
   const totalPages = Math.max(1, Math.ceil(totalCount / perPage));
   const startIndex = (filters.page - 1) * perPage;

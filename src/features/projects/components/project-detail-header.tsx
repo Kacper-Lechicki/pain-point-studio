@@ -62,19 +62,13 @@ interface ProjectDetailHeaderProps {
   onEdit: () => void;
   onAction: (action: ProjectAction) => void;
   onImageChange: (url: string | null) => void;
-  /** When provided, name and summary show edit pens and support inline editing. */
   onEditSuccess?: (data: ProjectDetailHeaderEditSuccess) => void;
-  /** Realtime refresh state — shown next to the actions dropdown. */
   isRefreshing?: boolean | undefined;
   isRealtimeConnected?: boolean | undefined;
   lastSyncedAt?: number | undefined;
   onRefresh?: (() => void) | undefined;
   hasActiveSurveys?: boolean | undefined;
 }
-
-/* ------------------------------------------------------------------ */
-/*  Status banner                                                      */
-/* ------------------------------------------------------------------ */
 
 function ProjectStatusBanner({
   icon: Icon,
@@ -99,10 +93,6 @@ function ProjectStatusBanner({
     </div>
   );
 }
-
-/* ------------------------------------------------------------------ */
-/*  Inline edit actions (counter + status + cancel/confirm)            */
-/* ------------------------------------------------------------------ */
 
 function InlineEditActions({
   charCount,
@@ -139,10 +129,6 @@ function InlineEditActions({
     </div>
   );
 }
-
-/* ------------------------------------------------------------------ */
-/*  Main component                                                     */
-/* ------------------------------------------------------------------ */
 
 export function ProjectDetailHeader({
   project,
@@ -208,7 +194,6 @@ export function ProjectDetailHeader({
 
   return (
     <div className="flex flex-col gap-2">
-      {/* Status banners */}
       {isProjectArchived(project) && (
         <ProjectStatusBanner
           icon={Archive}
@@ -250,9 +235,7 @@ export function ProjectDetailHeader({
       )}
 
       <div className="min-w-0">
-        {/* ── Identity row: Avatar + title zone ── */}
         <div className="flex items-start gap-3">
-          {/* Avatar — always visible */}
           <div className="shrink-0 pt-0.5">
             {!readOnly ? (
               <ProjectImageUpload
@@ -267,9 +250,7 @@ export function ProjectDetailHeader({
             )}
           </div>
 
-          {/* Title zone */}
           <div className="min-w-0 flex-1">
-            {/* Badge + actions row */}
             <div className="flex items-center justify-between gap-2">
               <div className="flex flex-wrap items-center gap-1.5">
                 <StatusBadge
@@ -324,7 +305,6 @@ export function ProjectDetailHeader({
               </div>
             </div>
 
-            {/* Title — inline edit */}
             <div className="text-foreground mt-1 min-w-0">
               {nameEdit.isEditing ? (
                 <div className="flex min-w-0 flex-col gap-2">
@@ -379,7 +359,6 @@ export function ProjectDetailHeader({
           </div>
         </div>
 
-        {/* ── Description ── */}
         {summaryEdit.isEditing ? (
           <div className="mt-2 flex flex-col gap-2">
             <Textarea
@@ -432,7 +411,6 @@ export function ProjectDetailHeader({
           )
         )}
 
-        {/* ── Metadata strip ── */}
         <div className="text-muted-foreground mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
           {owner && (
             <>

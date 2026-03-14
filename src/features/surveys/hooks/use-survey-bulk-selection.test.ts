@@ -2,7 +2,7 @@
 import { act, renderHook } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
+import type { UserSurvey } from '@/features/surveys/types';
 
 import { useSurveyBulkSelection } from './use-survey-bulk-selection';
 

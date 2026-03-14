@@ -14,9 +14,9 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useElementSize } from '@/features/dashboard/hooks/use-element-size';
-import type { TimelinePoint } from '@/features/dashboard/types/dashboard-stats';
+import { useElementSize } from '@/hooks/common/use-element-size';
 import type { MessageKey } from '@/i18n/types';
+import type { TimelinePoint } from '@/lib/common/analytics';
 import { cn } from '@/lib/common/utils';
 
 const CHART_MARGIN = { left: 0, right: 4, top: 4, bottom: 4 };

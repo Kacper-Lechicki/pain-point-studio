@@ -4,9 +4,9 @@ import { getTranslations } from 'next-intl/server';
 
 import { PageTransition } from '@/components/ui/page-transition';
 import { DashboardPageBack } from '@/features/dashboard/components/layout/dashboard-page-back';
-import { getProjectDetailUrl } from '@/features/projects/lib/project-urls';
 import { getSurveyStats, getUserSurveys } from '@/features/surveys/actions';
 import { SurveyStatsPanel } from '@/features/surveys/components/stats/survey-stats-panel';
+import { getProjectDetailUrl } from '@/lib/common/urls/project-urls';
 
 interface SurveyStatsPageProps {
   params: Promise<{ id: string }>;

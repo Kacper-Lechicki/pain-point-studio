@@ -6,8 +6,8 @@ import { FolderKanban } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { CommandGroup, CommandItem } from '@/components/ui/command';
-import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
-import { getProjectDetailUrl } from '@/features/projects/lib/project-urls';
+import type { ProjectWithMetrics } from '@/features/projects/types';
+import { getProjectDetailUrl } from '@/lib/common/urls/project-urls';
 
 interface CommandProjectsGroupProps {
   projects: ProjectWithMetrics[];

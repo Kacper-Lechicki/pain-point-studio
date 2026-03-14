@@ -4,8 +4,6 @@ import { useSearchParams } from 'next/navigation';
 
 import { useTranslations } from 'next-intl';
 
-import { useBreadcrumbContext } from '@/features/dashboard/components/layout/breadcrumb-context';
-import { useSubPanelItems } from '@/features/dashboard/components/layout/sub-panel-items-context';
 import { SIDEBAR_NAV_ITEM_CLASSES } from '@/features/dashboard/config/nav-styles';
 import type { SubNavConfig } from '@/features/dashboard/config/navigation';
 import { useHashSync } from '@/features/dashboard/hooks/use-hash-sync';
@@ -16,6 +14,8 @@ import {
   isSubItemActive,
   resolveDynamicLabel,
 } from '@/features/dashboard/lib/nav-utils';
+import { useBreadcrumbContext } from '@/hooks/common/use-breadcrumb';
+import { useSubPanelItems } from '@/hooks/common/use-sub-panel-items';
 import { Link, usePathname } from '@/i18n/routing';
 import type { MessageKey } from '@/i18n/types';
 import { cn } from '@/lib/common/utils';

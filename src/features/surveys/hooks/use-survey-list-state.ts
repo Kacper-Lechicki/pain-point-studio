@@ -1,8 +1,8 @@
 'use client';
 
-import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import { NOW_UPDATE_INTERVAL_MS } from '@/features/surveys/config';
 import { getDefaultSortDir, getSurveyComparator } from '@/features/surveys/lib/sort-helpers';
+import type { UserSurvey } from '@/features/surveys/types';
 import { useListState } from '@/hooks/common/use-list-state';
 // Re-import PerPage so we don't depend on use-pagination directly
 import type { PerPage } from '@/hooks/common/use-pagination';

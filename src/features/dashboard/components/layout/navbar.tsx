@@ -3,9 +3,9 @@
 import { Menu } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { UserMenu } from '@/components/shared/user-menu';
 import { Button } from '@/components/ui/button';
 import { BRAND, ROUTES } from '@/config';
-import { UserMenu } from '@/features/auth/components/common/user-menu';
 import { CommandPalette } from '@/features/command-palette/components/command-palette';
 import { CommandPaletteTrigger } from '@/features/command-palette/components/command-palette-trigger';
 import { useCommandPalette } from '@/features/command-palette/hooks/use-command-palette';

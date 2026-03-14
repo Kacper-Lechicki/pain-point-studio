@@ -3,7 +3,7 @@
 import { renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
+import type { UserSurvey } from '@/features/surveys/types';
 
 import { useSurveyRow } from './use-survey-row';
 
@@ -44,7 +44,7 @@ vi.mock('@/features/surveys/config', () => ({
   SURVEY_RETENTION_DAYS: 14,
 }));
 
-vi.mock('@/features/surveys/lib/calculations', () => ({
+vi.mock('@/lib/common/calculations', () => ({
   daysUntilExpiry: () => 10,
 }));
 

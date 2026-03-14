@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
-import { basePasswordSchema } from '@/features/auth/config/password';
 import { BIO_MAX_LENGTH, FULL_NAME_MAX_LENGTH, MAX_SOCIAL_LINKS } from '@/features/settings/config';
 import { SOCIAL_LINK_DOMAINS } from '@/features/settings/config/social-link-types';
+import { basePasswordSchema } from '@/lib/common/password';
 
 // ── Validation schemas ──────────────────────────────────────────────
 
@@ -33,7 +33,7 @@ export const socialLinkSchema = z
     { message: 'settings.errors.socialLinkDomainMismatch', path: ['url'] }
   );
 
-export type SocialLink = z.infer<typeof socialLinkSchema>;
+export type { SocialLink } from '@/lib/common/social';
 
 /** Minimal profile data required during first-time onboarding. */
 export const completeProfileSchema = z.object({

@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 import type { QuestionType } from '@/features/surveys/types';
 
 export type ResponseStatus = 'in_progress' | 'completed' | 'abandoned';
@@ -51,3 +53,17 @@ export const DEFAULT_RESPONSE_FILTERS: ResponseListFilters = {
   page: 1,
   perPage: 10,
 };
+
+export const surveyResponseFiltersSchema = z.object({
+  surveyId: z.string().uuid(),
+  page: z.number().int().min(1).default(1),
+  perPage: z.number().int().min(1).max(100).default(20),
+  status: z.enum(['in_progress', 'completed', 'abandoned']).optional(),
+  device: z.enum(['desktop', 'mobile', 'tablet']).optional(),
+  hasContact: z.boolean().optional(),
+  search: z.string().optional(),
+  sortBy: z.enum(['completed_at', 'started_at', 'duration']).default('completed_at'),
+  sortDir: z.enum(['asc', 'desc']).default('desc'),
+  dateFrom: z.string().optional(),
+  dateTo: z.string().optional(),
+});

@@ -6,10 +6,10 @@ import { CheckCircle2, ClipboardList, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
+import { SurveyStatusBadge } from '@/components/shared/survey-status-badge';
 import { Button } from '@/components/ui/button';
 import type { PendingInsightSurvey } from '@/features/projects/actions/get-pending-insight-surveys';
 import { setSurveyInsightPreference } from '@/features/projects/actions/set-survey-insight-preference';
-import { SurveyStatusBadge } from '@/features/surveys/components/dashboard/survey-status-badge';
 import type { SurveyStatus } from '@/features/surveys/types';
 import type { MessageKey } from '@/i18n/types';
 
@@ -28,7 +28,6 @@ export function PendingInsightsBanner({ surveys, onDecided }: PendingInsightsBan
   }
 
   const handleDecision = (surveyId: string, include: boolean) => {
-    // Optimistically remove from list
     setLocalSurveys((prev) => prev.filter((s) => s.id !== surveyId));
 
     startTransition(async () => {
@@ -47,7 +46,6 @@ export function PendingInsightsBanner({ surveys, onDecided }: PendingInsightsBan
         );
         onDecided(surveyId, include);
       } else {
-        // Restore on failure
         setLocalSurveys((prev) => {
           const survey = surveys.find((s) => s.id === surveyId);
 
@@ -83,7 +81,6 @@ export function PendingInsightsBanner({ surveys, onDecided }: PendingInsightsBan
       data-testid="pending-insights-banner"
       className="rounded-xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950/30"
     >
-      {/* Header */}
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <ClipboardList className="size-4 text-amber-700 dark:text-amber-300" aria-hidden />
@@ -109,7 +106,6 @@ export function PendingInsightsBanner({ surveys, onDecided }: PendingInsightsBan
         {t('projects.insights.pending.description' as MessageKey)}
       </p>
 
-      {/* Survey cards */}
       <div className="flex flex-col gap-2">
         {localSurveys.map((survey) => (
           <div

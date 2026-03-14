@@ -1,4 +1,3 @@
-/** Tests for survey dashboard URL builder functions. */
 import { describe, expect, it } from 'vitest';
 
 import {
@@ -8,15 +7,11 @@ import {
   getSurveyStatsUrl,
 } from './survey-urls';
 
-// ── getSurveyEditUrl ────────────────────────────────────────────────
-
 describe('getSurveyEditUrl', () => {
   it('should return the edit URL for a given survey ID', () => {
     expect(getSurveyEditUrl('abc-123')).toBe('/dashboard/research/new/abc-123');
   });
 });
-
-// ── getSurveyPublishUrl ─────────────────────────────────────────────
 
 describe('getSurveyPublishUrl', () => {
   it('should return the edit URL with publish query param', () => {
@@ -24,15 +19,11 @@ describe('getSurveyPublishUrl', () => {
   });
 });
 
-// ── getSurveyStatsUrl ───────────────────────────────────────────────
-
 describe('getSurveyStatsUrl', () => {
   it('should return the stats URL for a given survey ID', () => {
     expect(getSurveyStatsUrl('abc-123')).toBe('/dashboard/research/stats/abc-123');
   });
 });
-
-// ── getSurveyDetailUrl ──────────────────────────────────────────────
 
 describe('getSurveyDetailUrl', () => {
   it('should return the detail URL for a given survey ID', () => {

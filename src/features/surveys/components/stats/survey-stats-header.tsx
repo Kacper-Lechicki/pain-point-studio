@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { MoreHorizontal } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { SurveyStatusBadge } from '@/components/shared/survey-status-badge';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -14,7 +15,6 @@ import {
 import { RefreshRealtimeButton } from '@/components/ui/refresh-realtime-button';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { SurveyActionMenuContent } from '@/features/surveys/components/dashboard/survey-action-menu';
-import { SurveyStatusBadge } from '@/features/surveys/components/dashboard/survey-status-badge';
 import { ExportDialog } from '@/features/surveys/components/stats/export-dialog';
 import type { SurveyAction } from '@/features/surveys/config/survey-status';
 import type { SurveyStatus } from '@/features/surveys/types';

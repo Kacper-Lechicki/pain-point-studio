@@ -13,7 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Spinner } from '@/components/ui/spinner';
-import { OAUTH_PROVIDERS, type OAuthProviderConfig } from '@/features/auth/config';
+import { OAUTH_PROVIDERS, type OAuthProviderConfig } from '@/config/oauth-providers';
 import { unlinkIdentity } from '@/features/settings/actions';
 import { SettingsSectionHeader } from '@/features/settings/components/settings-section-header';
 import { useLinkIdentity } from '@/features/settings/hooks/use-link-identity';

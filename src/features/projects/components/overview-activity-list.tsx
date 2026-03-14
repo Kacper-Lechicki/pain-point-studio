@@ -7,10 +7,10 @@ import { useTranslations } from 'next-intl';
 
 import { Card, CardContent } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
-import type { ActivityItem } from '@/features/dashboard/types/dashboard-stats';
-import { getSurveyStatsUrl } from '@/features/surveys/lib/survey-urls';
 import Link from '@/i18n/link';
 import type { MessageKey } from '@/i18n/types';
+import type { ActivityItem } from '@/lib/common/analytics';
+import { getSurveyStatsUrl } from '@/lib/common/urls/survey-urls';
 import { cn } from '@/lib/common/utils';
 
 const ACTIVITY_ICONS: Record<ActivityItem['type'], LucideIcon> = {

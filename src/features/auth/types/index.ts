@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { basePasswordSchema } from '@/features/auth/config/password';
+import { basePasswordSchema } from '@/lib/common/password';
 
 // ── Auth form validation schemas ────────────────────────────────────
 
@@ -37,6 +37,4 @@ export type SignUpSchema = z.infer<typeof signUpSchema>;
 export type ForgotPasswordSchema = z.infer<typeof forgotPasswordSchema>;
 export type UpdatePasswordSchema = z.infer<typeof updatePasswordSchema>;
 
-export const AUTH_PROVIDERS = ['google', 'github'] as const;
-export type AuthProvider = (typeof AUTH_PROVIDERS)[number];
-export const authProviderSchema = z.enum(AUTH_PROVIDERS);
+export { AUTH_PROVIDERS, type AuthProvider, authProviderSchema } from '@/lib/common/auth-provider';

@@ -11,6 +11,7 @@ import { useTranslations } from 'next-intl';
 import { useForm, useWatch } from 'react-hook-form';
 
 import { RichEditor, isTiptapEmpty } from '@/components/shared/rich-editor';
+import { WizardStepLayout } from '@/components/shared/wizard-step-layout';
 import {
   Form,
   FormControl,
@@ -24,13 +25,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { checkProjectNameExists } from '@/features/projects/actions/check-project-name-exists';
 import { createProject } from '@/features/projects/actions/create-project';
 import { WizardImageStep } from '@/features/projects/components/wizard-image-step';
-import { WizardStepLayout } from '@/features/projects/components/wizard-step-layout';
 import { PROJECT_NAME_MAX_LENGTH, PROJECT_SUMMARY_MAX_LENGTH } from '@/features/projects/config';
-import { getProjectDetailUrl } from '@/features/projects/lib/project-urls';
 import { type CreateProjectInput, createProjectSchema } from '@/features/projects/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import { useUnsavedChangesWarning } from '@/hooks/unsaved-changes-context';
 import type { MessageKey } from '@/i18n/types';
+import { getProjectDetailUrl } from '@/lib/common/urls/project-urls';
 
 type WizardStep = 1 | 2 | 3 | 4;
 type Direction = 'forward' | 'backward';

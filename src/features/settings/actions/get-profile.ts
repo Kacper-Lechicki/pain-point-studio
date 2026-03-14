@@ -73,7 +73,9 @@ export const getProfile = cache(async (): Promise<ProfileData | null> => {
     hasPassword,
     pendingEmail: pendingRow?.new_email ?? null,
     emailChangeConfirmStatus: pendingRow?.confirm_status ?? 0,
-    socialLinks: (Array.isArray(profile?.social_links) ? profile.social_links : []) as SocialLink[],
+    socialLinks: (Array.isArray(profile?.social_links)
+      ? profile.social_links
+      : []) as unknown as SocialLink[],
     pinnedProjectId: profile?.pinned_project_id ?? null,
     memberSince: user.createdAt,
     identities: user.identities.map((identity) => ({

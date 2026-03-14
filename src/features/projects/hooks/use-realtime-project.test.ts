@@ -34,7 +34,7 @@ vi.mock('@/lib/supabase/client', () => ({
   }),
 }));
 
-vi.mock('@/features/surveys/config', () => ({
+vi.mock('@/config/realtime', () => ({
   REALTIME_DEBOUNCE_MS: 100,
 }));
 

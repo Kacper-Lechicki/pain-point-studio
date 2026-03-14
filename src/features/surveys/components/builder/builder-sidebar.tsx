@@ -8,7 +8,7 @@ import { createPortal } from 'react-dom';
 
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
-import { BUILDER_PANEL_WIDTH_CLASS } from '@/features/dashboard/config/layout';
+import { BUILDER_PANEL_WIDTH_CLASS } from '@/config/layout';
 import { BuilderSidebarItem } from '@/features/surveys/components/builder/builder-sidebar-item';
 import { ResponsivePanel } from '@/features/surveys/components/builder/responsive-panel';
 import { QUESTIONS_MAX } from '@/features/surveys/config';

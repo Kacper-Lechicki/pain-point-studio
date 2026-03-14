@@ -5,9 +5,9 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
+import { OAUTH_PROVIDERS } from '@/config/oauth-providers';
 import { signInWithOAuth } from '@/features/auth/actions';
 import { OAuthButton } from '@/features/auth/components/common/oauth-button';
-import { OAUTH_PROVIDERS } from '@/features/auth/config';
 import { AuthProvider } from '@/features/auth/types';
 import type { MessageKey } from '@/i18n/types';
 
