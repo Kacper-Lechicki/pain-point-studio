@@ -14,12 +14,12 @@ import { OverviewVerdictCard } from '@/features/projects/components/overview-ver
 import { ProjectAboutCard } from '@/features/projects/components/project-about-card';
 import { ProjectOverviewKpiCards } from '@/features/projects/components/project-overview-kpi-cards';
 import { deriveProjectPhase, isProjectArchived } from '@/features/projects/lib/project-helpers';
-import { getProjectDetailUrl } from '@/features/projects/lib/project-urls';
 import { generateFindings } from '@/features/projects/lib/signals';
 import { computeVerdict } from '@/features/projects/lib/verdict';
 import type { Project, ProjectInsight, ProjectOverviewStats } from '@/features/projects/types';
-import type { UserSurvey } from '@/features/surveys/actions';
+import type { UserSurvey } from '@/features/surveys/types';
 import Link from '@/i18n/link';
+import { getProjectDetailUrl } from '@/lib/common/urls/project-urls';
 
 interface ProjectOverviewTabProps {
   project: Project;

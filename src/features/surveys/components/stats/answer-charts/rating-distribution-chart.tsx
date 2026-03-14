@@ -3,7 +3,6 @@
 import { useTranslations } from 'next-intl';
 
 import { Badge } from '@/components/ui/badge';
-import type { QuestionAnswerData } from '@/features/surveys/actions/get-survey-stats';
 import {
   computeRatingStats,
   getBarColor,
@@ -11,6 +10,7 @@ import {
   getSentimentColor,
   getSentimentKey,
 } from '@/features/surveys/lib/rating-helpers';
+import type { QuestionAnswerData } from '@/features/surveys/types';
 import { cn } from '@/lib/common/utils';
 
 interface RatingDistributionChartProps {

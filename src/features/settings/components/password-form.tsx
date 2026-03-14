@@ -7,6 +7,7 @@ import { Info, KeyRound } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useForm, useWatch } from 'react-hook-form';
 
+import { PasswordStrength } from '@/components/shared/password-strength';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
   Form,
@@ -18,7 +19,6 @@ import {
 } from '@/components/ui/form';
 import { PasswordInput } from '@/components/ui/password-input';
 import { SubmitButton } from '@/components/ui/submit-button';
-import { PasswordStrength } from '@/features/auth/components/common/password-strength';
 import { changePassword, setPassword } from '@/features/settings/actions';
 import { SettingsSectionHeader } from '@/features/settings/components/settings-section-header';
 import {

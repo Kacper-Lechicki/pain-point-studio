@@ -12,10 +12,10 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { getProjectDetailUrl } from '@/features/projects/lib/project-urls';
 import { SurveyShareContent } from '@/features/surveys/components/builder/survey-share-content';
-import { getSurveyStatsUrl } from '@/features/surveys/lib/survey-urls';
 import Link from '@/i18n/link';
+import { getProjectDetailUrl } from '@/lib/common/urls/project-urls';
+import { getSurveyStatsUrl } from '@/lib/common/urls/survey-urls';
 
 interface PublishSuccessPanelProps {
   open: boolean;

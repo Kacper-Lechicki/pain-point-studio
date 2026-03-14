@@ -2,14 +2,10 @@
 
 import { cache } from 'react';
 
-import type { Project } from '@/features/projects/types';
+import type { ProjectWithMetrics } from '@/features/projects/types';
 import { createClient } from '@/lib/supabase/server';
 
-export interface ProjectWithMetrics extends Project {
-  surveyCount: number;
-  activeSurveyCount: number;
-  responseCount: number;
-}
+export type { ProjectWithMetrics } from '@/features/projects/types';
 
 export const getProjects = cache(async (): Promise<ProjectWithMetrics[] | null> => {
   const supabase = await createClient();

@@ -2,7 +2,7 @@
 import { act, renderHook } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
+import type { ProjectWithMetrics } from '@/features/projects/types';
 
 import { useProjectBulkSelection } from './use-project-bulk-selection';
 

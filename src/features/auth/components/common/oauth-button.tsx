@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
-import { OAuthProviderConfig } from '@/features/auth/config';
+import { OAuthProviderConfig } from '@/config/oauth-providers';
 import { cn } from '@/lib/common/utils';
 
 interface OAuthButtonProps {

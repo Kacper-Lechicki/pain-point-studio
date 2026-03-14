@@ -1,7 +1,7 @@
 /** Tests for computeInsight across all question types (multiple choice, rating, yes/no, text). */
 import { describe, expect, it, vi } from 'vitest';
 
-import type { QuestionAnswerData } from '@/features/surveys/actions/get-survey-stats';
+import type { QuestionAnswerData } from '@/features/surveys/types';
 
 import { computeInsight } from './compute-insight';
 

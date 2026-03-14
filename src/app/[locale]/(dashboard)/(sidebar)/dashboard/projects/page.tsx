@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { PageTransition } from '@/components/ui/page-transition';
 import { ROUTES } from '@/config';
-import { DASHBOARD_PAGE_BODY_GAP_TOP } from '@/features/dashboard/config/layout';
+import { DASHBOARD_PAGE_BODY_GAP_TOP } from '@/config/layout';
 import { getProjects } from '@/features/projects/actions/get-projects';
 import { getProjectsListExtras } from '@/features/projects/actions/get-projects-list-extras';
 import { ProjectsListPage } from '@/features/projects/components/projects-list-page';

@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useForm, useWatch } from 'react-hook-form';
 
+import { PasswordStrength } from '@/components/shared/password-strength';
 import {
   Form,
   FormControl,
@@ -19,7 +20,6 @@ import { PasswordInput } from '@/components/ui/password-input';
 import { SubmitButton } from '@/components/ui/submit-button';
 import { signUpWithEmail } from '@/features/auth/actions';
 import { AuthSuccessMessage } from '@/features/auth/components/common/auth-success-message';
-import { PasswordStrength } from '@/features/auth/components/common/password-strength';
 import { SignUpSchema, signUpSchema } from '@/features/auth/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import type { MessageKey } from '@/i18n/types';

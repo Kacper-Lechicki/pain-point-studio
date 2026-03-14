@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useForm, useWatch } from 'react-hook-form';
 
+import { PasswordStrength } from '@/components/shared/password-strength';
 import {
   Form,
   FormControl,
@@ -16,7 +17,6 @@ import { PasswordInput } from '@/components/ui/password-input';
 import { SubmitButton } from '@/components/ui/submit-button';
 import { ROUTES } from '@/config';
 import { updatePassword } from '@/features/auth/actions';
-import { PasswordStrength } from '@/features/auth/components/common/password-strength';
 import { UpdatePasswordSchema, updatePasswordSchema } from '@/features/auth/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import { useRouter } from '@/i18n/routing';

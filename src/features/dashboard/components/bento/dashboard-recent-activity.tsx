@@ -13,8 +13,8 @@ import {
 } from '@/features/dashboard/components/bento/bento-styles';
 import { BENTO_VISIBLE_ITEMS } from '@/features/dashboard/config/layout';
 import type { ActivityItem } from '@/features/dashboard/types/dashboard-stats';
-import { getSurveyStatsUrl } from '@/features/surveys/lib/survey-urls';
 import Link from '@/i18n/link';
+import { getSurveyStatsUrl } from '@/lib/common/urls/survey-urls';
 import { cn } from '@/lib/common/utils';
 
 const ACTIVITY_ICONS: Record<ActivityItem['type'], LucideIcon> = {

@@ -5,8 +5,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import type { SurveyStats } from '@/features/surveys/actions/get-survey-stats';
-import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
+import type { SurveyStats, UserSurvey } from '@/features/surveys/types';
 
 import { OverviewTab } from './overview-tab';
 import { QuestionsTab } from './questions-tab';

@@ -1,3 +1,5 @@
+'use client';
+
 import { Github, Globe, Link as LinkIcon, Linkedin, Plus, Trash2, Twitter } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { Control, UseFieldArrayReturn } from 'react-hook-form';

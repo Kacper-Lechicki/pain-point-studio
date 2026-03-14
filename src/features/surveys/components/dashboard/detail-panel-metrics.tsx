@@ -1,10 +1,12 @@
+'use client';
+
 import { BarChart3, MousePointerClick, Percent, Timer, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { SectionLabel } from '@/components/ui/metric-display';
-import { getSurveyStatsUrl } from '@/features/surveys/lib/survey-urls';
 import Link from '@/i18n/link';
+import { getSurveyStatsUrl } from '@/lib/common/urls/survey-urls';
 
 function formatTime(totalSeconds: number | null): string {
   if (totalSeconds == null) {

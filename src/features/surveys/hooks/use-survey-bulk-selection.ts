@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 
-import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import type { SurveyAction } from '@/features/surveys/config/survey-status';
 import { getAvailableActions } from '@/features/surveys/config/survey-status';
+import type { UserSurvey } from '@/features/surveys/types';
 import type { SurveyStatus } from '@/features/surveys/types';
 
 /** Bulk actions allowed in survey lists (exclude permanent delete for safety). */

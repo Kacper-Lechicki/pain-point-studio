@@ -1,3 +1,5 @@
+'use client';
+
 import type { ReactNode } from 'react';
 
 import { ArrowLeft } from 'lucide-react';
@@ -76,7 +78,6 @@ export function WizardStepLayout({
 
   return (
     <div className="flex flex-col gap-8">
-      {/* Header */}
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-3">
           <StepIndicator current={stepNumber} total={totalSteps} />
@@ -91,10 +92,8 @@ export function WizardStepLayout({
         </div>
       </div>
 
-      {/* Content */}
       <div>{children}</div>
 
-      {/* Navigation */}
       <div className="flex items-center justify-end gap-2">
         {onBack && (
           <Button

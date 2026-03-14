@@ -1,4 +1,4 @@
-import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
+import type { UserSurvey } from '@/features/surveys/types';
 import type { SurveyStatus } from '@/features/surveys/types';
 
 interface StatusChangeResult {

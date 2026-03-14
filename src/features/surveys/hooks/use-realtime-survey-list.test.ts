@@ -17,7 +17,7 @@ vi.mock('next/navigation', () => ({
   useRouter: () => ({ refresh: mocks.mockRefresh }),
 }));
 
-vi.mock('@/features/surveys/config', () => ({
+vi.mock('@/config/realtime', () => ({
   REALTIME_DEBOUNCE_MS: 100,
 }));
 

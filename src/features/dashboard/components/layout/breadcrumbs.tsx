@@ -4,10 +4,7 @@ import { ChevronRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { AppRoute } from '@/config/routes';
-import {
-  type BreadcrumbCrumb,
-  useBreadcrumbContext,
-} from '@/features/dashboard/components/layout/breadcrumb-context';
+import { type BreadcrumbCrumb, useBreadcrumbContext } from '@/hooks/common/use-breadcrumb';
 import { Link, usePathname } from '@/i18n/routing';
 import { cn } from '@/lib/common/utils';
 

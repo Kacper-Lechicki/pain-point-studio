@@ -1,9 +1,9 @@
 'use client';
 
-import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import { SurveyCardRow } from '@/features/surveys/components/dashboard/survey-card-row';
 import { SurveyTableRow } from '@/features/surveys/components/dashboard/survey-table-row';
 import { useSurveyRow } from '@/features/surveys/hooks/use-survey-row';
+import type { UserSurvey } from '@/features/surveys/types';
 
 interface SurveyListRowProps {
   survey: UserSurvey;

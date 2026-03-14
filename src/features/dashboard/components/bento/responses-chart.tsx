@@ -16,8 +16,8 @@ import {
   BENTO_CARD_CLASS,
   BENTO_EMPTY_STATE_MIN_H,
 } from '@/features/dashboard/components/bento/bento-styles';
-import { useElementSize } from '@/features/dashboard/hooks/use-element-size';
 import type { TimelinePoint } from '@/features/dashboard/types/dashboard-stats';
+import { useElementSize } from '@/hooks/common/use-element-size';
 import { cn } from '@/lib/common/utils';
 
 const CHART_MARGIN = { left: 0, right: 4, top: 4, bottom: 4 };

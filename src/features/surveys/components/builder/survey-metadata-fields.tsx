@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import type { UseFormReturn } from 'react-hook-form';
 
+import { CreateProjectInlineDialog } from '@/components/shared/create-project-inline-dialog';
 import { Combobox } from '@/components/ui/combobox';
 import {
   FormControl,
@@ -17,7 +18,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { CreateProjectInlineDialog } from '@/features/projects/components/create-project-inline-dialog';
 import type { ProjectOption } from '@/features/surveys/actions';
 import { SURVEY_DESCRIPTION_MAX_LENGTH, SURVEY_TITLE_MAX_LENGTH } from '@/features/surveys/config';
 import type { SurveyMetadataSchema } from '@/features/surveys/types';

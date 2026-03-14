@@ -3,7 +3,7 @@
 import { Github, Globe, Link as LinkIcon, Linkedin, type LucideIcon, Twitter } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import type { SocialLink } from '@/features/settings/types';
+import type { SocialLink } from '@/lib/common/social';
 import { cn } from '@/lib/common/utils';
 
 const SOCIAL_ICONS: Record<string, LucideIcon> = {

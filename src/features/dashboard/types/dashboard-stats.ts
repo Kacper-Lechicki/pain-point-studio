@@ -1,16 +1,8 @@
-import type { CompletionTimelinePoint } from '@/features/projects/types';
+import { z } from 'zod';
 
-export interface TimelinePoint {
-  date: string;
-  count: number;
-}
+import type { ActivityItem, CompletionTimelinePoint, TimelinePoint } from '@/lib/common/analytics';
 
-export interface ActivityItem {
-  type: 'response' | 'survey_completed' | 'survey_activated' | 'survey_started';
-  title: string;
-  timestamp: string;
-  surveyId: string;
-}
+export type { ActivityItem, CompletionTimelinePoint, TimelinePoint };
 
 export interface DashboardStats {
   totalResponses: number;
@@ -23,3 +15,34 @@ export interface DashboardStats {
   completionTimeline: CompletionTimelinePoint[];
   recentActivity: ActivityItem[];
 }
+
+const timelinePointSchema = z.object({
+  date: z.string(),
+  count: z.number(),
+});
+
+const completionTimelinePointSchema = z.object({
+  date: z.string(),
+  completed: z.number(),
+  inProgress: z.number(),
+  abandoned: z.number(),
+});
+
+const activityItemSchema = z.object({
+  type: z.enum(['response', 'survey_completed', 'survey_activated']),
+  title: z.string(),
+  timestamp: z.string(),
+  surveyId: z.string(),
+});
+
+export const dashboardStatsSchema = z.object({
+  totalResponses: z.number(),
+  prevTotalResponses: z.number().nullable(),
+  activeSurveys: z.number(),
+  prevActiveSurveys: z.number().nullable(),
+  avgCompletionRate: z.number(),
+  prevAvgCompletionRate: z.number().nullable(),
+  responsesTimeline: z.array(timelinePointSchema),
+  completionTimeline: z.array(completionTimelinePointSchema).default([]),
+  recentActivity: z.array(activityItemSchema),
+});

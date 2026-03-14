@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 
-import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
 import type { ProjectAction } from '@/features/projects/config/status';
 import { getAvailableActions } from '@/features/projects/config/status';
+import type { ProjectWithMetrics } from '@/features/projects/types';
 import type { ProjectStatus } from '@/features/projects/types';
 
 export function useProjectBulkSelection(projects: ProjectWithMetrics[]) {

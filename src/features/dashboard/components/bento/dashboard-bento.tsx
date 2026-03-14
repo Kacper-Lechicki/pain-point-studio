@@ -1,4 +1,3 @@
-import type { OverviewProject } from '@/features/dashboard/actions/get-dashboard-overview';
 import { DashboardGreeting } from '@/features/dashboard/components/bento/dashboard-greeting';
 import { DashboardKpiCards } from '@/features/dashboard/components/bento/dashboard-kpi-cards';
 import { DashboardProjectsList } from '@/features/dashboard/components/bento/dashboard-projects-list';
@@ -7,6 +6,7 @@ import { DashboardTimeFilter } from '@/features/dashboard/components/bento/dashb
 import { PinnedProjectCard } from '@/features/dashboard/components/bento/pinned-project-card';
 import { PinnedProjectEmpty } from '@/features/dashboard/components/bento/pinned-project-empty';
 import { ResponsesChart } from '@/features/dashboard/components/bento/responses-chart';
+import type { OverviewProject } from '@/features/dashboard/types';
 import type { DashboardStats } from '@/features/dashboard/types/dashboard-stats';
 import type { ProjectDetail } from '@/features/projects/actions/get-project';
 

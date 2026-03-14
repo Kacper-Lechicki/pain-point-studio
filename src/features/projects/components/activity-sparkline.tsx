@@ -4,7 +4,7 @@ import { useId } from 'react';
 
 import { useTranslations } from 'next-intl';
 
-import type { SparklinePoint } from '@/features/projects/actions/get-projects-list-extras';
+import type { SparklinePoint } from '@/features/projects/types';
 import { cn } from '@/lib/common/utils';
 
 interface ActivitySparklineProps {

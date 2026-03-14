@@ -3,7 +3,7 @@
 import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
+import type { ProjectWithMetrics } from '@/features/projects/types';
 
 import { useProjectListState } from './use-project-list-state';
 

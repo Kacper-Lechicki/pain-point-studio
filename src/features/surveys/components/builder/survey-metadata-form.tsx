@@ -15,7 +15,6 @@ import { ROUTES } from '@/config/routes';
 import { createSurveyDraft } from '@/features/surveys/actions';
 import type { ProjectOption } from '@/features/surveys/actions';
 import { SurveyMetadataFields } from '@/features/surveys/components/builder/survey-metadata-fields';
-import { getSurveyEditUrl } from '@/features/surveys/lib/survey-urls';
 import {
   type DraftAction,
   SURVEY_VISIBILITY_VALUES,
@@ -25,6 +24,7 @@ import {
 import { useFormAction } from '@/hooks/common/use-form-action';
 import { useUnsavedChangesWarning } from '@/hooks/unsaved-changes-context';
 import type { MessageKey } from '@/i18n/types';
+import { getSurveyEditUrl } from '@/lib/common/urls/survey-urls';
 
 interface SurveyMetadataFormProps {
   projectOptions: ProjectOption[];

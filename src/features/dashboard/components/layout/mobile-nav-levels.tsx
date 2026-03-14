@@ -1,6 +1,7 @@
+'use client';
+
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-import type { SubPanelLink } from '@/features/dashboard/components/layout/sub-panel-items-context';
 import {
   SIDEBAR_NAV_ACTIVE,
   SIDEBAR_NAV_INACTIVE,
@@ -24,6 +25,7 @@ import {
   matchesNavItem,
   resolveDynamicLabel,
 } from '@/features/dashboard/lib/nav-utils';
+import type { SubPanelLink } from '@/hooks/common/use-sub-panel-items';
 import { Link } from '@/i18n/routing';
 import type { MessageKey } from '@/i18n/types';
 import { cn } from '@/lib/common/utils';

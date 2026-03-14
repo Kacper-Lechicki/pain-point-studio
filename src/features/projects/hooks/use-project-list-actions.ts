@@ -6,13 +6,13 @@ import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import { changeProjectStatus } from '@/features/projects/actions/change-project-status';
-import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
 import { permanentDeleteProject } from '@/features/projects/actions/permanent-delete-project';
 import type { ProjectAction } from '@/features/projects/config/status';
 import {
   type ProjectConfirmDialogProps,
   getProjectConfirmDialogProps,
 } from '@/features/projects/lib/project-confirm-props';
+import type { ProjectWithMetrics } from '@/features/projects/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import type { MessageKey } from '@/i18n/types';
 

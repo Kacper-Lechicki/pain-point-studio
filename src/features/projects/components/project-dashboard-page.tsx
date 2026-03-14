@@ -2,14 +2,14 @@
 
 import { useState } from 'react';
 
+import { useRouter } from 'next/navigation';
+
 import { ChevronLeft, Plus, Settings } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { DASHBOARD_PAGE_BODY_GAP_TOP } from '@/config/layout';
 import { ROUTES } from '@/config/routes';
-import { useBreadcrumbSegment } from '@/features/dashboard/components/layout/breadcrumb-context';
-import { useSubPanelLinks } from '@/features/dashboard/components/layout/sub-panel-items-context';
-import { DASHBOARD_PAGE_BODY_GAP_TOP } from '@/features/dashboard/config/layout';
 import type { InsightSuggestionsResult } from '@/features/projects/actions/get-insight-suggestions';
 import type { PendingInsightSurvey } from '@/features/projects/actions/get-pending-insight-surveys';
 import type { ProjectOwner } from '@/features/projects/actions/get-project';
@@ -27,9 +27,12 @@ import type {
   ProjectNoteMeta,
   ProjectOverviewStats,
 } from '@/features/projects/types';
-import type { UserSurvey } from '@/features/surveys/actions';
-import { getCreateSurveyUrl } from '@/features/surveys/lib/survey-urls';
+import { SurveyList } from '@/features/surveys/components/dashboard/survey-list';
+import type { UserSurvey } from '@/features/surveys/types';
+import { useBreadcrumbSegment } from '@/hooks/common/use-breadcrumb';
 import { useRefresh } from '@/hooks/common/use-refresh';
+import { useSubPanelLinks } from '@/hooks/common/use-sub-panel-items';
+import { getCreateSurveyUrl } from '@/lib/common/urls/survey-urls';
 
 interface ProjectDashboardPageProps {
   project: Project;
@@ -57,6 +60,7 @@ export function ProjectDashboardPage({
   pendingSurveys,
 }: ProjectDashboardPageProps) {
   const [insights, setInsights] = useState(initialInsights);
+  const router = useRouter();
 
   const { isRefreshing, refresh, lastSyncedAt, markSynced } = useRefresh();
   const hasActiveSurveys = surveys.some((s) => s.status === 'active');
@@ -123,6 +127,18 @@ export function ProjectDashboardPage({
     setInsights(newInsights);
   };
 
+  const totalResponses = surveys.reduce((sum, s) => sum + s.completedCount, 0);
+
+  const surveyListSlot = (
+    <SurveyList
+      initialSurveys={surveys}
+      projectId={project.id}
+      onCreateSurvey={!readOnly ? () => router.push(getCreateSurveyUrl(project.id)) : undefined}
+      totalResponses={totalResponses}
+      targetResponses={project.target_responses}
+    />
+  );
+
   return (
     <main className="flex min-w-0 flex-col">
       <ProjectDetailHeader
@@ -145,6 +161,7 @@ export function ProjectDashboardPage({
         <ProjectDetailTabs
           project={project}
           surveys={surveys}
+          surveyListSlot={surveyListSlot}
           insights={insights}
           notesMeta={notesMeta}
           noteFolders={noteFolders}

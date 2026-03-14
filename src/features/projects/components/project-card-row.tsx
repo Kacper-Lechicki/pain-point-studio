@@ -12,17 +12,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
-import type { ProjectListExtras } from '@/features/projects/actions/get-projects-list-extras';
 import { ActivitySparkline } from '@/features/projects/components/activity-sparkline';
 import { ProjectAvatar } from '@/features/projects/components/project-avatar';
 import { ProjectStatusBadge } from '@/features/projects/components/project-status-badge';
 import { PROJECT_TRASH_RETENTION_DAYS } from '@/features/projects/config/constraints';
 import type { ProjectAction } from '@/features/projects/config/status';
 import { PROJECT_ACTION_UI, getAvailableActions } from '@/features/projects/config/status';
+import type { ProjectWithMetrics } from '@/features/projects/types';
+import type { ProjectListExtras } from '@/features/projects/types';
 import type { ProjectStatus } from '@/features/projects/types';
-import { daysUntilExpiry } from '@/features/surveys/lib/calculations';
 import type { MessageKey } from '@/i18n/types';
+import { daysUntilExpiry } from '@/lib/common/calculations';
 
 interface ProjectCardRowProps {
   project: ProjectWithMetrics;

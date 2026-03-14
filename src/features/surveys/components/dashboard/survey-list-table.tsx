@@ -1,11 +1,13 @@
+'use client';
+
 import { useTranslations } from 'next-intl';
 
 import { Checkbox } from '@/components/ui/checkbox';
 import { SortableTableHeader } from '@/components/ui/sortable-table-header';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import { SurveyListRow } from '@/features/surveys/components/dashboard/survey-list-row';
 import type { SurveySortBy } from '@/features/surveys/components/dashboard/survey-list-toolbar';
+import type { UserSurvey } from '@/features/surveys/types';
 
 interface SurveyListTableProps {
   surveys: UserSurvey[];

@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-import { RESEARCH_PHASES } from '@/features/projects/types';
 import {
   CONFIG_MAX_JSON_LENGTH,
   QUESTIONS_MAX,
@@ -9,6 +8,7 @@ import {
   SURVEY_DESCRIPTION_MAX_LENGTH,
   SURVEY_TITLE_MAX_LENGTH,
 } from '@/features/surveys/config';
+import { RESEARCH_PHASES } from '@/lib/common/research';
 
 // ── Enum tuples (source of truth) ───────────────────────────────────
 
@@ -132,4 +132,16 @@ export const surveyQuestionsSchema = z.object({
 
 // ── Response types ──────────────────────────────────────────────────
 
+export * from './survey-stats';
+export * from './user-survey';
 export * from './response';
+export type {
+  ResponseStatus,
+  SurveyResponseListItem,
+  ResponseAnswer,
+  ResponseDetail,
+  ResponseSortBy,
+  SortDirection,
+  ResponseListFilters,
+} from './response-list';
+export { DEFAULT_RESPONSE_FILTERS, surveyResponseFiltersSchema } from './response-list';

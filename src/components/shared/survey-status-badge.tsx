@@ -1,8 +1,8 @@
 import { StatusBadge } from '@/components/ui/status-badge';
 import { TRASH_RETENTION_DAYS } from '@/features/surveys/config';
 import { SURVEY_STATUS_CONFIG } from '@/features/surveys/config/survey-status';
-import { daysUntilExpiry } from '@/features/surveys/lib/calculations';
 import type { SurveyStatus } from '@/features/surveys/types';
+import { daysUntilExpiry } from '@/lib/common/calculations';
 
 interface SurveyStatusBadgeProps {
   status: SurveyStatus;

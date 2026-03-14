@@ -10,7 +10,6 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { DropdownMenu, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { SectionLabel } from '@/components/ui/metric-display';
 import { Separator } from '@/components/ui/separator';
-import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import { DetailPanelMetrics } from '@/features/surveys/components/dashboard/detail-panel-metrics';
 import { DetailQuestionsList } from '@/features/surveys/components/dashboard/detail-questions-list';
 import { Sparkline, getSparklineColor } from '@/features/surveys/components/dashboard/sparkline';
@@ -23,6 +22,7 @@ import { deriveSurveyFlags, getAvailableActions } from '@/features/surveys/confi
 import { useSurveyAction, useSurveyCardActions } from '@/features/surveys/hooks';
 import { calculateRespondentProgress } from '@/features/surveys/lib/calculations';
 import type { MappedQuestion } from '@/features/surveys/lib/map-question-row';
+import type { UserSurvey } from '@/features/surveys/types';
 import { cn } from '@/lib/common/utils';
 
 type DetailPanelVariant = 'sheet' | 'sidebar';

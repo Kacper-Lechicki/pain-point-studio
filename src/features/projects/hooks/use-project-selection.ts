@@ -2,7 +2,7 @@
 
 import { getProject } from '@/features/projects/actions/get-project';
 import type { ProjectDetail } from '@/features/projects/actions/get-project';
-import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
+import type { ProjectWithMetrics } from '@/features/projects/types';
 import { useItemSelection } from '@/hooks/common/use-item-selection';
 
 export function useProjectSelection(projects: ProjectWithMetrics[]) {

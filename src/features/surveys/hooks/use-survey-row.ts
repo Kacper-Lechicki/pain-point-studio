@@ -2,13 +2,13 @@ import { useState } from 'react';
 
 import { useFormatter, useTranslations } from 'next-intl';
 
-import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import { getSparklineColor } from '@/features/surveys/components/dashboard/sparkline';
 import { SURVEY_RETENTION_DAYS, TRASH_RETENTION_DAYS } from '@/features/surveys/config';
 import { deriveSurveyFlags, getAvailableActions } from '@/features/surveys/config/survey-status';
 import { useSurveyAction } from '@/features/surveys/hooks/use-survey-action';
 import { useSurveyCardActions } from '@/features/surveys/hooks/use-survey-card-actions';
-import { daysUntilExpiry } from '@/features/surveys/lib/calculations';
+import type { UserSurvey } from '@/features/surveys/types';
+import { daysUntilExpiry } from '@/lib/common/calculations';
 
 export function useSurveyRow(
   survey: UserSurvey,

@@ -15,8 +15,8 @@ import {
   CommandList,
 } from '@/components/ui/command';
 import { ROUTES } from '@/config/routes';
-import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
-import { getCreateSurveyUrl } from '@/features/surveys/lib/survey-urls';
+import type { ProjectWithMetrics } from '@/features/projects/types';
+import { getCreateSurveyUrl } from '@/lib/common/urls/survey-urls';
 
 interface CommandProjectPickerProps {
   projects: ProjectWithMetrics[];

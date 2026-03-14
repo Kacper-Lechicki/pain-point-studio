@@ -1,7 +1,6 @@
 import type { useTranslations } from 'next-intl';
 
-import type { QuestionAnswerData } from '@/features/surveys/actions/get-survey-stats';
-import type { QuestionType } from '@/features/surveys/types';
+import type { QuestionAnswerData, QuestionType } from '@/features/surveys/types';
 
 export function computeInsight(
   type: QuestionType,

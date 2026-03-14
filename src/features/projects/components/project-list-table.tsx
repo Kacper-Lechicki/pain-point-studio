@@ -1,13 +1,15 @@
+'use client';
+
 import { useTranslations } from 'next-intl';
 
 import { Checkbox } from '@/components/ui/checkbox';
 import { SortableTableHeader } from '@/components/ui/sortable-table-header';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import type { ProjectWithMetrics } from '@/features/projects/actions/get-projects';
-import type { ProjectsListExtrasMap } from '@/features/projects/actions/get-projects-list-extras';
 import type { ProjectSortBy } from '@/features/projects/components/project-list-toolbar';
 import { ProjectTableRow } from '@/features/projects/components/project-table-row';
 import type { ProjectAction } from '@/features/projects/config/status';
+import type { ProjectWithMetrics } from '@/features/projects/types';
+import type { ProjectsListExtrasMap } from '@/features/projects/types';
 
 interface ProjectListTableProps {
   projects: ProjectWithMetrics[];

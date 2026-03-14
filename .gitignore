@@ -68,3 +68,6 @@ supabase/.temp/
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# claude code
+.claude/settings.local.json

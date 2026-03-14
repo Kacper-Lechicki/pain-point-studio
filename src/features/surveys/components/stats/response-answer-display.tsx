@@ -1,3 +1,5 @@
+'use client';
+
 import { Star, ThumbsDown, ThumbsUp } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 

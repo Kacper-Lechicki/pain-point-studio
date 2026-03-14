@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
-import { REALTIME_DEBOUNCE_MS } from '@/features/surveys/config';
+import { REALTIME_DEBOUNCE_MS } from '@/config/realtime';
 import { createClient } from '@/lib/supabase/client';
 
 /**

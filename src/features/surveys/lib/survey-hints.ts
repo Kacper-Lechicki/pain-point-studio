@@ -1,12 +1,12 @@
 import type { useTranslations } from 'next-intl';
 
-import type { UserSurvey } from '@/features/surveys/actions/get-user-surveys';
 import {
   RESPONDENT_LIMIT_WARNING_THRESHOLD,
   SURVEY_ENDING_SOON_DAYS,
 } from '@/features/surveys/config';
 import { deriveSurveyFlags } from '@/features/surveys/config/survey-status';
 import { calculateSubmissionRate } from '@/features/surveys/lib/calculations';
+import type { UserSurvey } from '@/features/surveys/types';
 
 type HintSeverity = 'warning' | 'info' | 'success';
 

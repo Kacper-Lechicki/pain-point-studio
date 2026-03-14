@@ -42,9 +42,6 @@ export function getDashboardContentMarginLeft(
   return isPinned ? 'var(--sidebar-width-expanded)' : 'var(--sidebar-width-collapsed)';
 }
 
-/** Builder side-panels share the same fixed width for visual symmetry. */
-export const BUILDER_PANEL_WIDTH_CLASS = 'min-w-72 max-w-72';
-
 // ── Footer (page + sidebar) ──────────────────────────────────────────
 
 /** Height shared by dashboard page footer and sidebar footer (lock). */
@@ -56,8 +53,6 @@ export const DASHBOARD_FOOTER_GAP_TOP_CLASS = 'mt-10';
 // ── Content area ────────────────────────────────────────────────────
 
 export const DASHBOARD_CONTENT_MAX_WIDTH = 'container';
-export const DASHBOARD_PAGE_BODY_GAP = 'mb-8';
-export const DASHBOARD_PAGE_BODY_GAP_TOP = 'mt-8';
 
 /** Number of items visible in dashboard bento cards (projects list, recent activity). */
 export const BENTO_VISIBLE_ITEMS = 5;

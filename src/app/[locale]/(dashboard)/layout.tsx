@@ -4,11 +4,11 @@ import { redirect } from 'next/navigation';
 
 import { ROUTES } from '@/config';
 import { AuthToast } from '@/features/auth/components/common/auth-toast';
-import { BreadcrumbProvider } from '@/features/dashboard/components/layout/breadcrumb-context';
 import { DashboardLayoutChrome } from '@/features/dashboard/components/layout/dashboard-layout-chrome';
 import { SidebarProvider } from '@/features/dashboard/components/layout/sidebar-provider';
-import { SubPanelItemsProvider } from '@/features/dashboard/components/layout/sub-panel-items-context';
 import { getProfile } from '@/features/settings/actions';
+import { BreadcrumbProvider } from '@/hooks/common/use-breadcrumb';
+import { SubPanelItemsProvider } from '@/hooks/common/use-sub-panel-items';
 import { UnsavedChangesProvider } from '@/hooks/unsaved-changes-context';
 
 const DashboardLayout = async ({ children }: { children: ReactNode }) => {

@@ -4,7 +4,6 @@ import { Lightbulb, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Badge } from '@/components/ui/badge';
-import type { QuestionStats } from '@/features/surveys/actions/get-survey-stats';
 import { QuestionConfigDetails } from '@/features/surveys/components/dashboard/question-config-details';
 import { ChoiceDistributionChart } from '@/features/surveys/components/stats/answer-charts/choice-distribution-chart';
 import { RatingDistributionChart } from '@/features/surveys/components/stats/answer-charts/rating-distribution-chart';
@@ -12,6 +11,7 @@ import { ShortTextChart } from '@/features/surveys/components/stats/answer-chart
 import { YesNoChart } from '@/features/surveys/components/stats/answer-charts/yes-no-chart';
 import { QUESTION_TYPE_ICONS, QUESTION_TYPE_LABEL_KEYS } from '@/features/surveys/config';
 import { computeInsight } from '@/features/surveys/lib/compute-insight';
+import type { QuestionStats } from '@/features/surveys/types';
 
 interface QuestionStatsCardProps {
   question: QuestionStats;

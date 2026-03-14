@@ -1,3 +1,5 @@
+'use client';
+
 import { MousePointerClick } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 

@@ -1,5 +1,7 @@
 'use client';
 
+import type { ReactNode } from 'react';
+
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { useTranslations } from 'next-intl';
@@ -19,8 +21,8 @@ import type {
   ProjectNoteMeta,
   ProjectOverviewStats,
 } from '@/features/projects/types';
-import type { UserSurvey } from '@/features/surveys/actions';
-import { getCreateSurveyUrl } from '@/features/surveys/lib/survey-urls';
+import type { UserSurvey } from '@/features/surveys/types';
+import { getCreateSurveyUrl } from '@/lib/common/urls/survey-urls';
 
 type TabValue = 'overview' | 'surveys' | 'insights' | 'notes';
 
@@ -29,6 +31,7 @@ const VALID_TABS: TabValue[] = ['overview', 'surveys', 'insights', 'notes'];
 interface ProjectDetailTabsProps {
   project: Project;
   surveys: UserSurvey[];
+  surveyListSlot: ReactNode;
   insights: ProjectInsight[];
   notesMeta: ProjectNoteMeta[];
   noteFolders: ProjectNoteFolder[];
@@ -58,6 +61,7 @@ function TabCount({ count }: { count: number }) {
 export function ProjectDetailTabs({
   project,
   surveys,
+  surveyListSlot,
   insights,
   notesMeta,
   noteFolders,
@@ -129,9 +133,11 @@ export function ProjectDetailTabs({
       <TabsContent value="surveys" className="pt-5">
         <ProjectSurveysTab
           project={project}
-          surveys={surveys}
+          hasSurveys={surveys.length > 0}
           onCreateSurvey={handleCreateSurvey}
-        />
+        >
+          {surveyListSlot}
+        </ProjectSurveysTab>
       </TabsContent>
 
       <TabsContent value="insights" className="pt-5">

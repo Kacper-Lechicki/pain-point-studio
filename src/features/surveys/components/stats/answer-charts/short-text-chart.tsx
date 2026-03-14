@@ -2,9 +2,9 @@
 
 import { useTranslations } from 'next-intl';
 
-import type { QuestionAnswerData } from '@/features/surveys/actions/get-survey-stats';
 import { InlineTextSearch } from '@/features/surveys/components/stats/answer-charts/inline-text-search';
 import type { ResponseItem } from '@/features/surveys/components/stats/answer-charts/inline-text-search';
+import type { QuestionAnswerData } from '@/features/surveys/types';
 
 interface ShortTextChartProps {
   answers: QuestionAnswerData[];

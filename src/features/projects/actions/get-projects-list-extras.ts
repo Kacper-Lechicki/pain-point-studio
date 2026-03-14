@@ -2,35 +2,15 @@
 
 import { cache } from 'react';
 
-import { z } from 'zod';
-
+import { type ProjectsListExtrasMap, projectExtrasMapSchema } from '@/features/projects/types';
 import { createClient } from '@/lib/supabase/server';
 
-const sparklinePointSchema = z.object({
-  date: z.string(),
-  count: z.number(),
-});
+export type {
+  ProjectListExtras,
+  SparklinePoint,
+  ProjectsListExtrasMap,
+} from '@/features/projects/types';
 
-const projectExtrasSchema = z.object({
-  draftCount: z.number(),
-  activeCount: z.number(),
-  completedCount: z.number(),
-  nearestEndsAt: z.string().nullable(),
-  sparkline: z.array(sparklinePointSchema),
-});
-
-export type ProjectListExtras = z.infer<typeof projectExtrasSchema>;
-export type SparklinePoint = z.infer<typeof sparklinePointSchema>;
-
-const resultSchema = z.record(z.string(), projectExtrasSchema);
-
-export type ProjectsListExtrasMap = z.infer<typeof resultSchema>;
-
-/**
- * Fetch batch extras (smart status data + sparkline) for all user projects.
- * Returns a map keyed by project ID, or null on error.
- * Wrapped with React `cache()` for per-request deduplication.
- */
 export const getProjectsListExtras = cache(async (): Promise<ProjectsListExtrasMap | null> => {
   const supabase = await createClient();
 
@@ -50,7 +30,7 @@ export const getProjectsListExtras = cache(async (): Promise<ProjectsListExtrasM
     return null;
   }
 
-  const parsed = resultSchema.safeParse(data);
+  const parsed = projectExtrasMapSchema.safeParse(data);
 
   if (!parsed.success) {
     return null;

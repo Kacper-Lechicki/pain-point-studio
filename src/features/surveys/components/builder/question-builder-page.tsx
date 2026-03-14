@@ -7,12 +7,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/config/routes';
-import {
-  type BreadcrumbCrumb,
-  useBreadcrumbSegment,
-  useBreadcrumbTrail,
-} from '@/features/dashboard/components/layout/breadcrumb-context';
-import { getProjectDetailUrl } from '@/features/projects/lib/project-urls';
 import type { ProjectOption } from '@/features/surveys/actions';
 import { BuilderCenter } from '@/features/surveys/components/builder/builder-center';
 import { BuilderMetadataPanel } from '@/features/surveys/components/builder/builder-metadata-panel';
@@ -23,9 +17,15 @@ import { PublishSettingsPanel } from '@/features/surveys/components/builder/publ
 import { PublishSuccessPanel } from '@/features/surveys/components/builder/publish-success-panel';
 import { QuestionBuilderProvider } from '@/features/surveys/hooks/use-question-builder-context';
 import { getSurveyShareUrl } from '@/features/surveys/lib/share-url';
-import { getSurveyEditUrl } from '@/features/surveys/lib/survey-urls';
 import type { QuestionSchema, SurveyMetadataSchema, SurveyStatus } from '@/features/surveys/types';
+import {
+  type BreadcrumbCrumb,
+  useBreadcrumbSegment,
+  useBreadcrumbTrail,
+} from '@/hooks/common/use-breadcrumb';
 import { useBreakpoint } from '@/hooks/common/use-breakpoint';
+import { getProjectDetailUrl } from '@/lib/common/urls/project-urls';
+import { getSurveyEditUrl } from '@/lib/common/urls/survey-urls';
 
 interface QuestionBuilderPageProps {
   surveyId: string;

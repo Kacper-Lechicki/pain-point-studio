@@ -1,3 +1,5 @@
+'use client';
+
 import { Check, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 

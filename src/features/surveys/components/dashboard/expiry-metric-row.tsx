@@ -1,9 +1,11 @@
+'use client';
+
 import { Timer } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { MetricRow } from '@/components/ui/metric-display';
 import { SURVEY_RETENTION_DAYS } from '@/features/surveys/config';
-import { daysUntilExpiry } from '@/features/surveys/lib/calculations';
+import { daysUntilExpiry } from '@/lib/common/calculations';
 
 interface ExpiryMetricRowProps {
   timestampAt: string | null | undefined;

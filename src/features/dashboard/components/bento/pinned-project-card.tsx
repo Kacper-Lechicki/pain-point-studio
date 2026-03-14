@@ -7,15 +7,15 @@ import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import type { OverviewProject } from '@/features/dashboard/actions/get-dashboard-overview';
 import { setPinnedProject } from '@/features/dashboard/actions/set-pinned-project';
 import {
   BENTO_CARD_CLASS,
   BENTO_ROW4_CARD_MIN_H,
 } from '@/features/dashboard/components/bento/bento-styles';
+import type { OverviewProject } from '@/features/dashboard/types';
 import type { ProjectDetail, ProjectSurvey } from '@/features/projects/actions/get-project';
-import { getSurveyStatsUrl } from '@/features/surveys/lib/survey-urls';
 import Link from '@/i18n/link';
+import { getSurveyStatsUrl } from '@/lib/common/urls/survey-urls';
 import { cn } from '@/lib/common/utils';
 
 const SURVEY_STATUS_DOT: Record<string, string> = {

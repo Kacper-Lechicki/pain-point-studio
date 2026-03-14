@@ -1,9 +1,11 @@
+'use client';
+
 import { BarChart3 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { EmptyState } from '@/components/ui/empty-state';
-import type { QuestionStats } from '@/features/surveys/actions/get-survey-stats';
 import { QuestionStatsCard } from '@/features/surveys/components/stats/question-stats-card';
+import type { QuestionStats } from '@/features/surveys/types';
 
 interface QuestionsTabProps {
   questions: QuestionStats[];
