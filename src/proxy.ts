@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { ROUTES } from '@/config';
 import i18nMiddleware from '@/i18n/config';
-import { type Locale, defaultLocale, locales } from '@/i18n/constants';
+import { locales } from '@/i18n/constants';
 import { isAuthenticated, isProtectionEnabled } from '@/lib/common/deploy-credentials';
 import { updateSession } from '@/lib/supabase/middleware';
 
@@ -20,17 +20,15 @@ const PUBLIC_ROUTES = [
 const AUTH_ROUTES = [ROUTES.auth.signIn, ROUTES.auth.signUp, ROUTES.auth.forgotPassword];
 const LOCALE_LIST: readonly string[] = locales;
 
-function getPathnameAndLocale(pathname: string): { pathname: string; locale: Locale } {
-  const segments = pathname.split('/').filter(Boolean);
+function getPathname(rawPathname: string): string {
+  const segments = rawPathname.split('/').filter(Boolean);
   const maybeLocale = segments[0];
 
   if (maybeLocale && LOCALE_LIST.includes(maybeLocale)) {
-    const pathWithoutLocale = segments.length > 1 ? '/' + segments.slice(1).join('/') : '/';
-
-    return { pathname: pathWithoutLocale, locale: maybeLocale as Locale };
+    return segments.length > 1 ? '/' + segments.slice(1).join('/') : '/';
   }
 
-  return { pathname: pathname && pathname.startsWith('/') ? pathname : '/', locale: defaultLocale };
+  return rawPathname && rawPathname.startsWith('/') ? rawPathname : '/';
 }
 
 function copyCookies(from: NextResponse, to: NextResponse): void {
@@ -52,7 +50,7 @@ const middleware = async (req: NextRequest) => {
     });
   }
 
-  const { pathname, locale } = getPathnameAndLocale(req.nextUrl.pathname);
+  const pathname = getPathname(req.nextUrl.pathname);
 
   const isPublicRoute = PUBLIC_ROUTES.some(
     (route) => pathname === route || pathname.startsWith(route + '/')
@@ -60,7 +58,7 @@ const middleware = async (req: NextRequest) => {
 
   // Unauthenticated on protected route — redirect to sign-in and forward session cookies.
   if (!user && !isPublicRoute) {
-    const res = NextResponse.redirect(new URL(`/${locale}${ROUTES.auth.signIn}`, req.url));
+    const res = NextResponse.redirect(new URL(ROUTES.auth.signIn, req.url));
 
     copyCookies(supabaseResponse, res);
 
@@ -73,7 +71,7 @@ const middleware = async (req: NextRequest) => {
   );
 
   if (user && (pathname === ROUTES.common.home || isAuthRoute)) {
-    const res = NextResponse.redirect(new URL(`/${locale}${ROUTES.common.dashboard}`, req.url));
+    const res = NextResponse.redirect(new URL(ROUTES.common.dashboard, req.url));
 
     copyCookies(supabaseResponse, res);
 
@@ -82,7 +80,7 @@ const middleware = async (req: NextRequest) => {
 
   const i18nResponse = i18nMiddleware(req);
 
-  // Disable bfcache on protected pages so expired sessions don’t restore stale auth UI.
+  // Disable bfcache on protected pages so expired sessions don't restore stale auth UI.
   if (!isPublicRoute) {
     i18nResponse.headers.set('Cache-Control', 'no-store, max-age=0');
   }

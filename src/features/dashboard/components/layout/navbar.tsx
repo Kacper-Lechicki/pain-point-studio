@@ -29,8 +29,8 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="bg-background/80 border-border/80 dashboard:border-b fixed inset-x-0 top-0 z-50 backdrop-blur-md transition-colors duration-300">
-        <div className="dashboard:px-4 flex h-14 items-center gap-3 px-4">
+      <header className="bg-background/80 border-border/80 dashboard:border-b fixed inset-x-0 top-0 z-50 backdrop-blur-md transition-colors duration-300">
+        <nav className="dashboard:px-4 flex h-14 items-center gap-3 px-4">
           {hasSidebar && (
             <Button
               variant="ghost"
@@ -57,8 +57,8 @@ const Navbar = () => {
           <CommandPaletteTrigger onOpen={() => setOpen(true)} />
 
           <UserMenu />
-        </div>
-      </nav>
+        </nav>
+      </header>
 
       <CommandPalette open={open} onOpenChange={setOpen} />
     </>

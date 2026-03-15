@@ -96,6 +96,12 @@ const FIELDS = [
 - One responsibility per file. Exception: schema + inferred type for the same domain belong together in `types/`.
 - Avoid wrapper abstractions that add no value. If a wrapper just forwards props/calls, remove it.
 
+## Documentation Upkeep
+
+- After any key change (new command, env var, dependency, architecture pattern, convention), update the affected docs **in the same session**: `CLAUDE.md`, `docs/DEVELOPER_GUIDE.md`, and/or the relevant `.claude/rules/*.md` file.
+- See the full mapping of change types → docs to update in the "Documentation Upkeep" section of `CLAUDE.md`.
+- Never create new documentation files — all technical docs live in `docs/DEVELOPER_GUIDE.md`.
+
 ## Git Operations
 
 - **Never execute git operations.** No `git commit`, `git push`, `git pull`, `git merge`, `gh pr create`, or any other git/GitHub CLI commands.

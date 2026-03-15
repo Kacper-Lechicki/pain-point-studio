@@ -14,9 +14,21 @@
       "user interviews",
       "problem discovery",
       "developer tools"
-    ]
+    ],
+    "pages": {
+      "dashboard": "Dashboard",
+      "project": "{name} — Project",
+      "surveyBuilder": "{name} — Survey Builder",
+      "settingsProfile": "Profile Settings",
+      "settingsAccount": "Account Settings",
+      "surveyRespond": "{name}",
+      "signIn": "Sign In",
+      "signUp": "Create Account",
+      "forgotPassword": "Reset Password"
+    }
   },
   "common": {
+    "skipToContent": "Skip to main content",
     "close": "Close",
     "cancel": "Cancel",
     "imageCrop": {

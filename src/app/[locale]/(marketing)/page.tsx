@@ -1,41 +1,19 @@
-import dynamic from 'next/dynamic';
-
+import Cta from '@/app/[locale]/(marketing)/_components/cta';
+import Developers from '@/app/[locale]/(marketing)/_components/developers';
+import FeaturesGrid from '@/app/[locale]/(marketing)/_components/features-grid';
+import FunctionalMinimalism from '@/app/[locale]/(marketing)/_components/functional-minimalism';
 import Hero from '@/app/[locale]/(marketing)/_components/hero';
-import { PageTransition } from '@/components/ui/page-transition';
+import HowItWorks from '@/app/[locale]/(marketing)/_components/how-it-works';
+import Problems from '@/app/[locale]/(marketing)/_components/problems';
 import { routing } from '@/i18n/routing';
-
-const Problems = dynamic(() => import('@/app/[locale]/(marketing)/_components/problems'), {
-  loading: () => null,
-});
-
-const HowItWorks = dynamic(() => import('@/app/[locale]/(marketing)/_components/how-it-works'), {
-  loading: () => null,
-});
-
-const FunctionalMinimalism = dynamic(
-  () => import('@/app/[locale]/(marketing)/_components/functional-minimalism'),
-  { loading: () => null }
-);
-
-const Developers = dynamic(() => import('@/app/[locale]/(marketing)/_components/developers'), {
-  loading: () => null,
-});
-
-const FeaturesGrid = dynamic(() => import('@/app/[locale]/(marketing)/_components/features-grid'), {
-  loading: () => null,
-});
-
-const Cta = dynamic(() => import('@/app/[locale]/(marketing)/_components/cta'), {
-  loading: () => null,
-});
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
-const HomePage = async () => {
+const HomePage = () => {
   return (
-    <PageTransition>
+    <>
       <Hero />
       <Problems />
       <HowItWorks />
@@ -43,7 +21,7 @@ const HomePage = async () => {
       <Developers />
       <FeaturesGrid />
       <Cta />
-    </PageTransition>
+    </>
   );
 };
 

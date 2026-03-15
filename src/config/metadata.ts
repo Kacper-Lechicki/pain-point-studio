@@ -17,4 +17,15 @@ export const getAppMetadata = (t: {
   authors: [{ name: t(BRAND.author) }],
   creator: t(BRAND.author),
   publisher: t(BRAND.author),
+  openGraph: {
+    type: 'website',
+    title: t(BRAND.name),
+    description: t('metadata.description'),
+    siteName: t(BRAND.name),
+  },
+  twitter: {
+    card: 'summary',
+    title: t(BRAND.name),
+    description: t('metadata.description'),
+  },
 });

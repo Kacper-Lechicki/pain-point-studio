@@ -23,6 +23,19 @@ interface ProjectDetailPageProps {
   params: Promise<{ id: string }>;
 }
 
+export async function generateMetadata({ params }: ProjectDetailPageProps) {
+  const { id } = await params;
+  const [data, t] = await Promise.all([getProject(id), getTranslations()]);
+
+  if (!data) {
+    return { title: t('metadata.title') };
+  }
+
+  return {
+    title: `${t('metadata.pages.project', { name: data.project.name })} | ${t('metadata.title')}`,
+  };
+}
+
 const EMPTY_OVERVIEW_STATS = {
   totalSurveys: 0,
   activeSurveys: 0,

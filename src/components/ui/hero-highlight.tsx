@@ -2,13 +2,10 @@
 
 import React from 'react';
 
-import { motion, useMotionTemplate, useMotionValue } from 'motion/react';
-
 import { cn } from '@/lib/common/utils';
 
 const getEncodedPattern = (color: string) => {
   const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='16' height='24' fill='none'><circle fill='${color}' id='pattern-circle' cx='10' cy='10' r='2.5'></circle></svg>`;
-
   const base64 = btoa(svg);
 
   return `url("data:image/svg+xml;base64,${base64}")`;
@@ -39,15 +36,14 @@ export const HeroHighlight = ({
   navbar,
   showDotsOnMobile = true,
 }: HeroHighlightProps) => {
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
   const [mounted, setMounted] = React.useState(false);
+  const [mousePos, setMousePos] = React.useState<{ x: number; y: number } | null>(null);
 
   React.useEffect(() => {
     setMounted(true);
   }, []);
 
-  const dotPatterns = (() => {
+  const dotPatterns = React.useMemo(() => {
     if (!mounted) {
       return { default: '', hover: '' };
     }
@@ -56,21 +52,23 @@ export const HeroHighlight = ({
       default: getEncodedPattern(getComputedColor('--dot-default')),
       hover: getEncodedPattern(getComputedColor('--dot-hover')),
     };
-  })();
+  }, [mounted]);
 
-  const handleMouseMove = ({
-    currentTarget,
-    clientX,
-    clientY,
-  }: React.MouseEvent<HTMLDivElement>) => {
-    if (!currentTarget) {
+  const rafRef = React.useRef<number>(0);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!e.currentTarget) {
       return;
     }
 
-    const { left, top } = currentTarget.getBoundingClientRect();
+    const { left, top } = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - left;
+    const y = e.clientY - top;
 
-    mouseX.set(clientX - left);
-    mouseY.set(clientY - top);
+    cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(() => {
+      setMousePos({ x, y });
+    });
   };
 
   return (
@@ -88,33 +86,35 @@ export const HeroHighlight = ({
         }}
       />
 
-      <motion.div
-        className={cn(
-          'pointer-events-none absolute inset-0 mask-[radial-gradient(ellipse_at_center,black,transparent_80%)] opacity-0 transition duration-300 md:group-hover:opacity-100',
-          !showDotsOnMobile && 'max-lg:hidden!'
-        )}
-        style={{
-          backgroundImage: dotPatterns.hover,
-          WebkitMaskImage: useMotionTemplate`
-            radial-gradient(
-              180px circle at ${mouseX}px ${mouseY}px,
-              black 60%,
-              transparent 100%
-            ),
-            radial-gradient(ellipse at center, black, transparent 80%)
-          `,
-          maskImage: useMotionTemplate`
-            radial-gradient(
-              180px circle at ${mouseX}px ${mouseY}px,
-              black 60%,
-              transparent 100%
-            ),
-            radial-gradient(ellipse at center, black, transparent 80%)
-          `,
-          maskComposite: 'intersect',
-          WebkitMaskComposite: 'source-in',
-        }}
-      />
+      {mousePos && (
+        <div
+          className={cn(
+            'pointer-events-none absolute inset-0 mask-[radial-gradient(ellipse_at_center,black,transparent_80%)] opacity-0 transition duration-300 md:group-hover:opacity-100',
+            !showDotsOnMobile && 'max-lg:hidden!'
+          )}
+          style={{
+            backgroundImage: dotPatterns.hover,
+            WebkitMaskImage: `
+              radial-gradient(
+                180px circle at ${mousePos.x}px ${mousePos.y}px,
+                black 60%,
+                transparent 100%
+              ),
+              radial-gradient(ellipse at center, black, transparent 80%)
+            `,
+            maskImage: `
+              radial-gradient(
+                180px circle at ${mousePos.x}px ${mousePos.y}px,
+                black 60%,
+                transparent 100%
+              ),
+              radial-gradient(ellipse at center, black, transparent 80%)
+            `,
+            maskComposite: 'intersect',
+            WebkitMaskComposite: 'source-in',
+          }}
+        />
+      )}
 
       <div className={cn('relative z-20', className)}>{children}</div>
 

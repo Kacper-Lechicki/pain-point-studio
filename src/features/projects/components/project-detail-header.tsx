@@ -2,22 +2,9 @@
 
 import { useCallback } from 'react';
 
-import { formatDistanceToNow } from 'date-fns';
-import {
-  Archive,
-  Calendar,
-  Check,
-  Clock,
-  EllipsisVertical,
-  MessageSquare,
-  Trash2,
-  Trophy,
-  X,
-} from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+import { Archive, EllipsisVertical, Trash2, Trophy } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -31,9 +18,12 @@ import { StatusBadge } from '@/components/ui/status-badge';
 import { Textarea } from '@/components/ui/textarea';
 import type { ProjectOwner } from '@/features/projects/actions/get-project';
 import { updateProject } from '@/features/projects/actions/update-project';
+import { InlineEditActions } from '@/features/projects/components/inline-edit-actions';
 import { ProjectAvatar } from '@/features/projects/components/project-avatar';
 import { ProjectImageUpload } from '@/features/projects/components/project-image-upload';
+import { ProjectMetadata } from '@/features/projects/components/project-metadata';
 import { ProjectStatusBadge } from '@/features/projects/components/project-status-badge';
+import { ProjectStatusBanner } from '@/features/projects/components/project-status-banner';
 import { PROJECT_NAME_MAX_LENGTH, PROJECT_SUMMARY_MAX_LENGTH } from '@/features/projects/config';
 import type { ProjectAction } from '@/features/projects/config/status';
 import { PROJECT_ACTION_UI, getAvailableActions } from '@/features/projects/config/status';
@@ -68,66 +58,6 @@ interface ProjectDetailHeaderProps {
   lastSyncedAt?: number | undefined;
   onRefresh?: (() => void) | undefined;
   hasActiveSurveys?: boolean | undefined;
-}
-
-function ProjectStatusBanner({
-  icon: Icon,
-  colorClass,
-  message,
-  actionLabel,
-  onAction,
-}: {
-  icon: LucideIcon;
-  colorClass: string;
-  message: string;
-  actionLabel: string;
-  onAction: () => void;
-}) {
-  return (
-    <div className={cn('flex items-center gap-2 rounded-lg px-3 py-2', colorClass)}>
-      <Icon className="size-4 shrink-0" aria-hidden />
-      <span className="text-muted-foreground flex-1 text-sm">{message}</span>
-      <Button variant="outline" size="sm" onClick={onAction}>
-        {actionLabel}
-      </Button>
-    </div>
-  );
-}
-
-function InlineEditActions({
-  charCount,
-  maxLength,
-  saveStatus,
-  onCancel,
-  onSave,
-}: {
-  charCount: number;
-  maxLength: number;
-  saveStatus: 'idle' | 'saving' | 'saved' | 'failed';
-  onCancel: () => void;
-  onSave: () => void;
-}) {
-  const t = useTranslations();
-
-  return (
-    <div className="flex items-center gap-1.5">
-      <span className="text-muted-foreground text-xs tabular-nums">
-        {charCount}/{maxLength}
-      </span>
-      {saveStatus === 'saving' && (
-        <span className="text-muted-foreground text-xs">{t('projects.detail.about.saving')}</span>
-      )}
-      {saveStatus === 'failed' && (
-        <span className="text-destructive text-xs">{t('projects.detail.about.failed')}</span>
-      )}
-      <Button variant="ghost" size="icon-xs" onClick={onCancel} aria-label={t('common.cancel')}>
-        <X className="size-3.5" />
-      </Button>
-      <Button size="icon-xs" onClick={onSave} disabled={saveStatus === 'saving'}>
-        <Check className="size-3.5" />
-      </Button>
-    </div>
-  );
 }
 
 export function ProjectDetailHeader({
@@ -411,61 +341,12 @@ export function ProjectDetailHeader({
           )
         )}
 
-        <div className="text-muted-foreground mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
-          {owner && (
-            <>
-              <div className="flex items-center gap-1.5">
-                <Avatar size="sm">
-                  {owner.avatarUrl && <AvatarImage src={owner.avatarUrl} alt={owner.fullName} />}
-                  <AvatarFallback>
-                    {owner.fullName
-                      .split(' ')
-                      .map((n) => n[0])
-                      .join('')
-                      .slice(0, 2)
-                      .toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <span>{owner.fullName}</span>
-              </div>
-              <span className="text-muted-foreground/40">&middot;</span>
-            </>
-          )}
-
-          <span className="inline-flex items-center gap-1">
-            <Clock className="size-3 shrink-0" aria-hidden />
-            {t('projects.detail.meta.updated')}{' '}
-            {formatDistanceToNow(new Date(project.updated_at), {
-              addSuffix: true,
-            }).replace(/^about /i, '')}
-          </span>
-
-          <span className="text-muted-foreground/40">&middot;</span>
-
-          <span className="inline-flex items-center gap-1">
-            <MessageSquare className="size-3 shrink-0" aria-hidden />
-            {lastResponseAt
-              ? `${t('projects.detail.meta.lastResponse')} ${formatDistanceToNow(
-                  new Date(lastResponseAt),
-                  {
-                    addSuffix: true,
-                  }
-                ).replace(/^about /i, '')}`
-              : t('projects.detail.meta.noResponses')}
-          </span>
-
-          <span className="text-muted-foreground/40">&middot;</span>
-
-          <span className="inline-flex items-center gap-1">
-            <Calendar className="size-3 shrink-0" aria-hidden />
-            {t('projects.detail.meta.created')}{' '}
-            {new Date(project.created_at).toLocaleDateString('en-US', {
-              month: 'short',
-              day: 'numeric',
-              year: 'numeric',
-            })}
-          </span>
-        </div>
+        <ProjectMetadata
+          updatedAt={project.updated_at}
+          createdAt={project.created_at}
+          lastResponseAt={lastResponseAt}
+          owner={owner}
+        />
       </div>
     </div>
   );

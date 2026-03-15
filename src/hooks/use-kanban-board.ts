@@ -48,6 +48,8 @@ interface UseKanbanBoardResult {
   showPlaceholderAt: (columnId: string, index: number) => boolean;
   /** Whether to show placeholder after the last item in a column. */
   showPlaceholderAtEnd: (columnId: string) => boolean;
+  /** Keyboard handler for arrow key movement. Attach to drag handle's onKeyDown. */
+  handleKeyboardMove: (e: React.KeyboardEvent, itemId: string, currentColumnId: string) => void;
 }
 
 /** Find which column an item belongs to. */
@@ -461,6 +463,57 @@ export function useKanbanBoard<TColumnId extends string>(
     return true;
   };
 
+  const handleKeyboardMove = (e: React.KeyboardEvent, itemId: string, currentColumnId: string) => {
+    const isVertical = e.key === 'ArrowUp' || e.key === 'ArrowDown';
+    const isHorizontal = e.key === 'ArrowLeft' || e.key === 'ArrowRight';
+
+    if (!isVertical && !isHorizontal) {
+      return;
+    }
+
+    e.preventDefault();
+    const colId = currentColumnId as TColumnId;
+    const colItems = columns[colId];
+
+    if (isVertical) {
+      const currentIndex = colItems.indexOf(itemId);
+
+      if (currentIndex === -1) {
+        return;
+      }
+
+      const newIndex = e.key === 'ArrowUp' ? currentIndex - 1 : currentIndex + 1;
+
+      if (newIndex < 0 || newIndex >= colItems.length) {
+        return;
+      }
+
+      const newIds = [...colItems];
+      const moved = newIds.splice(currentIndex, 1)[0]!;
+      newIds.splice(newIndex, 0, moved);
+      onReorder(colId, newIds);
+    }
+
+    if (isHorizontal) {
+      const colIdx = columnIds.indexOf(colId);
+      const targetColIdx = e.key === 'ArrowLeft' ? colIdx - 1 : colIdx + 1;
+
+      if (targetColIdx < 0 || targetColIdx >= columnIds.length) {
+        return;
+      }
+
+      const targetColId = columnIds[targetColIdx];
+
+      if (!targetColId || disabledColumns?.includes(targetColId)) {
+        return;
+      }
+
+      const sourceIds = colItems.filter((id) => id !== itemId);
+      const targetIds = [...columns[targetColId], itemId];
+      onMove(itemId, colId, targetColId, targetIds, sourceIds);
+    }
+  };
+
   return {
     draggedId,
     draggedFromColumn,
@@ -469,6 +522,7 @@ export function useKanbanBoard<TColumnId extends string>(
     ghostPosition,
     ghostWidth,
     handleDragStart,
+    handleKeyboardMove,
     isDragging: (id: string) => draggedId === id,
     showPlaceholderAt,
     showPlaceholderAtEnd,
