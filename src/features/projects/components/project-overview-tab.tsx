@@ -2,6 +2,8 @@
 
 import { useMemo } from 'react';
 
+import dynamic from 'next/dynamic';
+
 import { ClipboardList, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -9,7 +11,6 @@ import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import type { SurveySignalData } from '@/features/projects/actions/get-project-signals-data';
 import { OverviewActivityList } from '@/features/projects/components/overview-activity-list';
-import { OverviewResponseTrend } from '@/features/projects/components/overview-response-trend';
 import { OverviewVerdictCard } from '@/features/projects/components/overview-verdict-card';
 import { ProjectAboutCard } from '@/features/projects/components/project-about-card';
 import { ProjectOverviewKpiCards } from '@/features/projects/components/project-overview-kpi-cards';
@@ -20,6 +21,16 @@ import type { Project, ProjectInsight, ProjectOverviewStats } from '@/features/p
 import type { UserSurvey } from '@/features/surveys/types';
 import Link from '@/i18n/link';
 import { getProjectDetailUrl } from '@/lib/common/urls/project-urls';
+
+const OverviewResponseTrend = dynamic(
+  () =>
+    import('@/features/projects/components/overview-response-trend').then(
+      (mod) => mod.OverviewResponseTrend
+    ),
+  {
+    loading: () => <div className="bg-card h-[280px] animate-pulse rounded-lg border" />,
+  }
+);
 
 interface ProjectOverviewTabProps {
   project: Project;

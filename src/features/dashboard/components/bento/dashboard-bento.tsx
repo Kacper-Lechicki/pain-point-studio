@@ -1,3 +1,5 @@
+import dynamic from 'next/dynamic';
+
 import { DashboardGreeting } from '@/features/dashboard/components/bento/dashboard-greeting';
 import { DashboardKpiCards } from '@/features/dashboard/components/bento/dashboard-kpi-cards';
 import { DashboardProjectsList } from '@/features/dashboard/components/bento/dashboard-projects-list';
@@ -5,10 +7,19 @@ import { DashboardRecentActivity } from '@/features/dashboard/components/bento/d
 import { DashboardTimeFilter } from '@/features/dashboard/components/bento/dashboard-time-filter';
 import { PinnedProjectCard } from '@/features/dashboard/components/bento/pinned-project-card';
 import { PinnedProjectEmpty } from '@/features/dashboard/components/bento/pinned-project-empty';
-import { ResponsesChart } from '@/features/dashboard/components/bento/responses-chart';
 import type { OverviewProject } from '@/features/dashboard/types';
 import type { DashboardStats } from '@/features/dashboard/types/dashboard-stats';
 import type { ProjectDetail } from '@/features/projects/actions/get-project';
+
+const ResponsesChart = dynamic(
+  () =>
+    import('@/features/dashboard/components/bento/responses-chart').then(
+      (mod) => mod.ResponsesChart
+    ),
+  {
+    loading: () => <div className="bg-card h-full min-h-[280px] animate-pulse rounded-lg border" />,
+  }
+);
 
 interface DashboardBentoProps {
   fullName: string;

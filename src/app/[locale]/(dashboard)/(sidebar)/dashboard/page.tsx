@@ -14,6 +14,12 @@ import Link from '@/i18n/link';
 
 export const dynamic = 'force-dynamic';
 
+export async function generateMetadata() {
+  const t = await getTranslations();
+
+  return { title: `${t('metadata.pages.dashboard')} | ${t('metadata.title')}` };
+}
+
 interface Props {
   searchParams: Promise<{ period?: string }>;
 }

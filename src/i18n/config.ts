@@ -10,5 +10,6 @@ import { PATHNAMES } from '@/i18n/pathnames';
 export default createMiddleware({
   locales,
   defaultLocale,
+  localePrefix: 'never',
   pathnames: PATHNAMES,
 });

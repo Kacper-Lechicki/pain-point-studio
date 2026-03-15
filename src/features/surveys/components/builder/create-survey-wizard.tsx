@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronLeft, Plus, Settings } from 'lucide-react';
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 
@@ -68,6 +68,7 @@ export function CreateSurveyWizard({
 }: CreateSurveyWizardProps) {
   const t = useTranslations();
   const router = useRouter();
+  const prefersReducedMotion = useReducedMotion();
 
   const [step, setStep] = useState<WizardStep>(1);
   const [direction, setDirection] = useState<Direction>('forward');
@@ -184,7 +185,11 @@ export function CreateSurveyWizard({
               initial="enter"
               animate="center"
               exit="exit"
-              transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+              transition={
+                prefersReducedMotion
+                  ? { duration: 0 }
+                  : { duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }
+              }
             >
               <WizardStepLayout
                 stepNumber={1}
@@ -237,7 +242,11 @@ export function CreateSurveyWizard({
               initial="enter"
               animate="center"
               exit="exit"
-              transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+              transition={
+                prefersReducedMotion
+                  ? { duration: 0 }
+                  : { duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }
+              }
             >
               <WizardStepLayout
                 stepNumber={2}
@@ -294,7 +303,11 @@ export function CreateSurveyWizard({
               initial="enter"
               animate="center"
               exit="exit"
-              transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+              transition={
+                prefersReducedMotion
+                  ? { duration: 0 }
+                  : { duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }
+              }
             >
               <WizardStepLayout
                 stepNumber={3}

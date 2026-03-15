@@ -1,13 +1,15 @@
+'use client';
+
 import { Info, Send } from 'lucide-react';
-import { getTranslations } from 'next-intl/server';
+import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { HeroHighlight } from '@/components/ui/hero-highlight';
 import { ROUTES } from '@/config';
 import { Link } from '@/i18n/routing';
 
-const Hero = async () => {
-  const t = await getTranslations();
+const Hero = () => {
+  const t = useTranslations();
 
   const badge = t('marketing.hero.badge');
   const title = t('marketing.hero.title');

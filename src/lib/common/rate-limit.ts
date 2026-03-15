@@ -1,10 +1,3 @@
-/**
- * In-memory rate limiter keyed by IP (x-forwarded-for). Used by withProtectedAction
- * and withPublicAction to cap request frequency per action. Disabled outside
- * production and when CI is set (avoids failing E2E that share an IP).
- * In production, requests without x-forwarded-for are treated as rate limited to avoid
- * a single shared bucket for all such clients.
- */
 import { headers } from 'next/headers';
 
 import { env } from '@/lib/common/env';
@@ -13,7 +6,6 @@ export interface RateLimitConfig {
   key: string;
   limit: number;
   windowSeconds: number;
-  /** Include user-agent in the key to differentiate users behind shared IPs. */
   includeUserAgent?: boolean;
 }
 
@@ -88,6 +80,67 @@ class InMemoryRateLimiter implements RateLimiter {
   }
 }
 
-const limiter = new InMemoryRateLimiter();
+class UpstashRateLimiter implements RateLimiter {
+  private limiterCache = new Map<
+    string,
+    InstanceType<typeof import('@upstash/ratelimit').Ratelimit>
+  >();
+
+  async check(config: RateLimitConfig): Promise<{ limited: boolean }> {
+    const headerStore = await headers();
+    const forwarded =
+      headerStore.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+      headerStore.get('x-real-ip')?.trim();
+
+    if (!forwarded) {
+      return { limited: true };
+    }
+
+    const ua = config.includeUserAgent ? (headerStore.get('user-agent') ?? '') : '';
+    const identifier = ua ? `${forwarded}:${ua}` : forwarded;
+
+    const limiter = await this.getLimiter(config);
+    const { success } = await limiter.limit(`${config.key}:${identifier}`);
+
+    return { limited: !success };
+  }
+
+  private async getLimiter(config: RateLimitConfig) {
+    const cacheKey = `${config.key}:${config.limit}:${config.windowSeconds}`;
+    const cached = this.limiterCache.get(cacheKey);
+
+    if (cached) {
+      return cached;
+    }
+
+    const { Ratelimit } = await import('@upstash/ratelimit');
+    const { Redis } = await import('@upstash/redis');
+
+    const limiter = new Ratelimit({
+      redis: new Redis({
+        url: env.UPSTASH_REDIS_REST_URL!,
+        token: env.UPSTASH_REDIS_REST_TOKEN!,
+      }),
+      limiter: Ratelimit.slidingWindow(config.limit, `${config.windowSeconds} s`),
+      prefix: 'ratelimit',
+    });
+
+    this.limiterCache.set(cacheKey, limiter);
+
+    return limiter;
+  }
+}
+
+function createLimiter(): RateLimiter {
+  if (env.UPSTASH_REDIS_REST_URL && env.UPSTASH_REDIS_REST_TOKEN) {
+    return new UpstashRateLimiter();
+  }
+
+  return new InMemoryRateLimiter();
+}
+
+const limiter = createLimiter();
 
 export const rateLimit = (config: RateLimitConfig) => limiter.check(config);
+
+export { InMemoryRateLimiter, UpstashRateLimiter, createLimiter };

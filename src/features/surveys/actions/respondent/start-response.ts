@@ -1,6 +1,6 @@
 'use server';
 
-import { headers } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 
 import { createHash } from 'node:crypto';
 
@@ -9,18 +9,41 @@ import { startResponseSchema } from '@/features/surveys/types';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withPublicAction } from '@/lib/common/with-public-action';
 
+const FINGERPRINT_COOKIE = '__fp';
+
 async function computeFingerprint(): Promise<string | null> {
   const h = await headers();
   const ip = h.get('x-forwarded-for')?.split(',')[0]?.trim();
   const ua = h.get('user-agent');
+  const acceptLang = h.get('accept-language');
+  const acceptEnc = h.get('accept-encoding');
 
-  if (!ip) {
-    return null;
+  if (ip) {
+    return createHash('sha256')
+      .update(`${ip}:${ua ?? ''}:${acceptLang ?? ''}:${acceptEnc ?? ''}`)
+      .digest('hex');
   }
 
-  return createHash('sha256')
-    .update(`${ip}:${ua ?? ''}`)
+  const cookieStore = await cookies();
+  const existingFp = cookieStore.get(FINGERPRINT_COOKIE)?.value;
+
+  if (existingFp) {
+    return existingFp;
+  }
+
+  const randomFp = createHash('sha256')
+    .update(`${Date.now()}:${Math.random()}:${ua ?? ''}`)
     .digest('hex');
+
+  cookieStore.set(FINGERPRINT_COOKIE, randomFp, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'lax',
+    maxAge: 60 * 60 * 24 * 365,
+    path: '/',
+  });
+
+  return randomFp;
 }
 
 export const startResponse = withPublicAction<typeof startResponseSchema, { responseId: string }>(

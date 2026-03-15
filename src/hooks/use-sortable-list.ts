@@ -32,6 +32,8 @@ interface UseSortableListResult {
   showPlaceholderAtEnd: boolean;
   /** Index of the dragged item in the list. -1 when not dragging. */
   draggedFromIndex: number;
+  /** Keyboard handler for arrow key reordering. Attach to drag handle's onKeyDown. */
+  handleKeyboardReorder: (e: React.KeyboardEvent, itemId: string) => void;
 }
 
 function computeDropIndex(
@@ -240,12 +242,37 @@ export function useSortableList(options: UseSortableListOptions): UseSortableLis
     placeholderIndex === itemIds.length &&
     placeholderIndex !== draggedFromIndex;
 
+  const handleKeyboardReorder = (e: React.KeyboardEvent, itemId: string) => {
+    if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') {
+      return;
+    }
+
+    e.preventDefault();
+    const currentIndex = itemIds.indexOf(itemId);
+
+    if (currentIndex === -1) {
+      return;
+    }
+
+    const newIndex = e.key === 'ArrowUp' ? currentIndex - 1 : currentIndex + 1;
+
+    if (newIndex < 0 || newIndex >= itemIds.length) {
+      return;
+    }
+
+    const newIds = [...itemIds];
+    const moved = newIds.splice(currentIndex, 1)[0]!;
+    newIds.splice(newIndex, 0, moved);
+    onReorder(newIds);
+  };
+
   return {
     draggedId,
     placeholderIndex,
     ghostPosition,
     ghostWidth,
     handleDragStart,
+    handleKeyboardReorder,
     isDragging: (id: string) => draggedId === id,
     showPlaceholderAt,
     showPlaceholderAtEnd,

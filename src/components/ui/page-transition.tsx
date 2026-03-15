@@ -1,8 +1,6 @@
-'use client';
+import { type ReactNode } from 'react';
 
-import { ReactNode } from 'react';
-
-import { motion } from 'motion/react';
+import { cn } from '@/lib/common/utils';
 
 interface PageTransitionProps {
   children: ReactNode;
@@ -11,14 +9,14 @@ interface PageTransitionProps {
 
 const PageTransition = ({ children, className }: PageTransitionProps) => {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-      className={className}
+    <div
+      className={cn(
+        'animate-[page-fade-in_0.2s_cubic-bezier(0.25,0.1,0.25,1)_both] motion-reduce:animate-none',
+        className
+      )}
     >
       {children}
-    </motion.div>
+    </div>
   );
 };
 

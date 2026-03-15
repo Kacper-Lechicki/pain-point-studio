@@ -17,7 +17,10 @@ const AuthGroupLayout = ({ children }: AuthGroupLayoutProps) => {
       showDotsOnMobile={false}
     >
       <div className="pointer-events-none relative flex min-h-screen w-full flex-col *:pointer-events-auto">
-        <main className="flex min-h-0 flex-1 flex-col items-center overflow-auto px-6 pt-22 pb-12 md:pt-32">
+        <main
+          id="main-content"
+          className="flex min-h-0 flex-1 flex-col items-center overflow-auto px-6 pt-22 pb-12 md:pt-32"
+        >
           <div className="mx-auto w-full md:max-w-[600px]">
             <div className="lg:border-border/50 lg:bg-card/80 w-full rounded-lg sm:p-4 lg:border lg:p-8 lg:shadow-xl lg:backdrop-blur-sm">
               <AuthToast showNoScriptFallback />

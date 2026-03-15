@@ -17,9 +17,11 @@ Pain Point Studio — a developer research platform for idea validation. Next.js
 | Format check           | `pnpm lint:prettier`                                 |
 | Type check             | `pnpm test:types`                                    |
 | Unit tests             | `pnpm test:unit`                                     |
+| Unit tests + coverage  | `pnpm test:coverage`                                 |
 | Single unit test       | `pnpm test:unit -- src/path/to/file.test.ts`         |
 | E2E tests              | `pnpm test:e2e` (restarts Supabase, clears .next)    |
 | Single E2E test        | `pnpm exec playwright test e2e/path/to/file.spec.ts` |
+| Lighthouse audit       | `pnpm test:lighthouse` (builds automatically)        |
 | All checks             | `pnpm test:all`                                      |
 | Unused code detection  | `pnpm knip`                                          |
 | Reset local DB         | `pnpm supabase:reset`                                |
@@ -36,7 +38,10 @@ Pain Point Studio — a developer research platform for idea validation. Next.js
 - **shadcn/ui** (New York style) — components in `src/components/ui/`
 - **t3-env** for env validation — env vars are strings, use `z.coerce.number()` for numbers
 - **Zod v4** + React Hook Form for form validation
-- **Vitest** (unit) + **Playwright** (E2E: Chromium + WebKit)
+- **Vitest** (unit, v8 coverage) + **Playwright** (E2E: Chromium + WebKit) + **Lighthouse CI**
+- **Upstash Redis** for distributed rate limiting (production); in-memory fallback in dev
+
+> For full architecture details, see [`docs/DEVELOPER_GUIDE.md`](docs/DEVELOPER_GUIDE.md).
 
 ## Architecture
 
@@ -76,7 +81,28 @@ Generic machine in `src/lib/common/status-machine.ts`, configs in `src/features/
 - **Testing**: Every file in `**/lib/`, `**/actions/`, `**/hooks/` must have a co-located `.test.ts` file. Only exempt: `index.ts` barrels and pure type-only files.
 - **Commits**: conventional only — `feat`, `fix`, `test`, `setup`, `docs`. Pre-commit: lint-staged + `tsc --noEmit`
 - **Imports**: `@/*` → `src/*`. Order enforced by prettier: React → Next → Node → third-party → `@/` → relative → CSS
-- **Styling**: Tailwind v4 CSS variables (light + dark). Breakpoints: `xs` (400px), `dashboard` (1400px). Fonts: Inter, Source Serif 4, JetBrains Mono
+- **Styling**: Tailwind v4 CSS variables (light + dark). Breakpoints: `xs` (400px), `dashboard` (1400px). Fonts: Inter, Source Serif 4, JetBrains Mono (all via `next/font`)
+- **Accessibility**: Skip-to-content link on layouts. `aria-live="polite"` on dynamic error messages. `useReducedMotion()` on all motion components. Wrap navbars in `<header>`. Keyboard handlers on drag-and-drop.
+
+## Documentation Upkeep
+
+After any key change (new feature, new env var, new command, architecture change, new convention, dependency addition/removal), update the affected documentation **in the same work session**:
+
+| Change type                                             | Update                                                                                                |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| New/changed command or script                           | `CLAUDE.md` Commands table + `docs/DEVELOPER_GUIDE.md` Section A                                      |
+| New env var                                             | `src/lib/common/env.ts` + `.env.example` + `.env.local.example` + `docs/DEVELOPER_GUIDE.md` Section A |
+| New dependency (runtime)                                | `docs/DEVELOPER_GUIDE.md` Tech Stack table                                                            |
+| Architecture change (new feature, new pattern, routing) | `CLAUDE.md` Architecture section + `docs/DEVELOPER_GUIDE.md` Section B                                |
+| Database change (table, RPC, migration)                 | `docs/DEVELOPER_GUIDE.md` Section C                                                                   |
+| Auth flow change                                        | `docs/DEVELOPER_GUIDE.md` Section D                                                                   |
+| Security change (rate limit, RLS, CSP)                  | `docs/DEVELOPER_GUIDE.md` Section F                                                                   |
+| Accessibility pattern change                            | `CLAUDE.md` Conventions + `docs/DEVELOPER_GUIDE.md` Section G                                         |
+| Performance optimization                                | `docs/DEVELOPER_GUIDE.md` Section H                                                                   |
+| Testing pattern change                                  | `docs/DEVELOPER_GUIDE.md` Section I                                                                   |
+| New convention or rule                                  | `CLAUDE.md` Conventions + relevant `.claude/rules/*.md`                                               |
+
+Do **not** create new docs files — all technical documentation lives in `docs/DEVELOPER_GUIDE.md`. `README.md` stays as a quick-start front door.
 
 ## Context-specific rules
 

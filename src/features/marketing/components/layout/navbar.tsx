@@ -39,13 +39,13 @@ const Navbar = () => {
   }, [showMobileMenu]);
 
   return (
-    <nav
+    <header
       className={cn(
         'sticky top-0 z-50 backdrop-blur-md transition-colors duration-300',
         showMobileMenu ? 'bg-background' : 'bg-background/80'
       )}
     >
-      <div className="container mx-auto flex h-16 items-center px-6 sm:px-4 lg:px-8">
+      <nav className="container mx-auto flex h-16 items-center px-6 sm:px-4 lg:px-8">
         <div className="flex min-w-0 flex-1 items-center justify-start">
           <Link
             href={ROUTES.common.home}
@@ -117,7 +117,7 @@ const Navbar = () => {
             </Button>
           </div>
         </div>
-      </div>
+      </nav>
 
       <div
         className={cn(
@@ -176,7 +176,7 @@ const Navbar = () => {
           <p className="text-muted-foreground text-center text-sm">{copyrightText}</p>
         </div>
       </div>
-    </nav>
+    </header>
   );
 };
 

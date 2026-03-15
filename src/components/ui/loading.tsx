@@ -8,7 +8,7 @@ interface LoadingProps {
 
 const Loading = ({ className, spinnerClassName }: LoadingProps) => {
   return (
-    <div className={cn('flex min-h-[50vh] w-full items-center justify-center', className)}>
+    <div className={cn('flex min-h-screen w-full items-center justify-center', className)}>
       <Spinner className={cn('size-8', spinnerClassName)} />
     </div>
   );

@@ -1,5 +1,7 @@
 import { notFound, redirect } from 'next/navigation';
 
+import { getTranslations } from 'next-intl/server';
+
 import { PageTransition } from '@/components/ui/page-transition';
 import { getSurveyFormData, getSurveyWithQuestions } from '@/features/surveys/actions';
 import { QuestionBuilderPage } from '@/features/surveys/components/builder/question-builder-page';
@@ -7,6 +9,19 @@ import { getSurveyStatsUrl } from '@/lib/common/urls/survey-urls';
 
 interface Props {
   params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({ params }: Props) {
+  const { id } = await params;
+  const [data, t] = await Promise.all([getSurveyWithQuestions(id), getTranslations()]);
+
+  if (!data) {
+    return { title: t('metadata.title') };
+  }
+
+  return {
+    title: `${t('metadata.pages.surveyBuilder', { name: data.survey.title })} | ${t('metadata.title')}`,
+  };
 }
 
 export default async function SurveyBuilderRoute({ params }: Props) {

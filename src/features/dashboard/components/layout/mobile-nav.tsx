@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 
 import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet';
@@ -24,6 +24,7 @@ export function MobileNav() {
   const { isMobileOpen, setMobileOpen } = useSidebar();
   const pathname = usePathname();
   const t = useTranslations();
+  const prefersReducedMotion = useReducedMotion();
   const breadcrumb = useBreadcrumbContext();
   const subPanelItems = useSubPanelItems();
 
@@ -111,22 +112,17 @@ export function MobileNav() {
 
   return (
     <Sheet open={isMobileOpen} onOpenChange={handleOpenChange}>
-      <SheetContent
-        side="left"
-        className="flex w-64 flex-col p-0"
-        showCloseButton={false}
-        aria-describedby={undefined}
-      >
+      <SheetContent side="left" className="flex w-64 flex-col p-0" showCloseButton={false}>
         <SheetTitle className="sr-only">Navigation</SheetTitle>
 
         <AnimatePresence mode="wait">
           {activeLevel === 'main' ? (
             <motion.div
               key="main"
-              initial={{ x: -20, opacity: 0 }}
+              initial={prefersReducedMotion ? false : { x: -20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              exit={{ x: -20, opacity: 0 }}
-              transition={TRANSITION}
+              exit={prefersReducedMotion ? { opacity: 0 } : { x: -20, opacity: 0 }}
+              transition={prefersReducedMotion ? { duration: 0 } : TRANSITION}
               className="flex flex-1 flex-col overflow-y-auto"
             >
               <MobileNavMainLevel
@@ -139,10 +135,12 @@ export function MobileNav() {
           ) : (
             <motion.div
               key="sub"
-              initial={skipSubEnterAnimation ? false : { x: 20, opacity: 0 }}
+              initial={
+                skipSubEnterAnimation || prefersReducedMotion ? false : { x: 20, opacity: 0 }
+              }
               animate={{ x: 0, opacity: 1 }}
-              exit={{ x: 20, opacity: 0 }}
-              transition={TRANSITION}
+              exit={prefersReducedMotion ? { opacity: 0 } : { x: 20, opacity: 0 }}
+              transition={prefersReducedMotion ? { duration: 0 } : TRANSITION}
               className="flex flex-1 flex-col overflow-y-auto pb-8"
             >
               <MobileNavSubLevel
