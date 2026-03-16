@@ -38,18 +38,13 @@ interface EditableProject {
   id: string;
   name: string;
   summary: string | null;
-  target_responses: number;
 }
 
 interface EditProjectDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   project: EditableProject;
-  onSuccess: (data: {
-    name: string;
-    summary: string | undefined;
-    targetResponses: number | undefined;
-  }) => void;
+  onSuccess: (data: { name: string; summary: string | undefined }) => void;
 }
 
 export function EditProjectDialog({
@@ -71,7 +66,6 @@ export function EditProjectDialog({
       projectId: project.id,
       name: project.name,
       summary: project.summary ?? '',
-      targetResponses: project.target_responses,
     },
   });
 
@@ -80,7 +74,6 @@ export function EditProjectDialog({
       projectId: project.id,
       name: project.name,
       summary: project.summary ?? '',
-      targetResponses: project.target_responses,
     });
   }, [project, form]);
 
@@ -91,7 +84,6 @@ export function EditProjectDialog({
       onSuccess({
         name: data.name,
         summary: data.summary,
-        targetResponses: data.targetResponses,
       });
       onOpenChange(false);
     }
@@ -164,31 +156,6 @@ export function EditProjectDialog({
                       })}
                     </span>
                   </div>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="targetResponses"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t('projects.edit.targetResponses' as MessageKey)}</FormLabel>
-                  <FormDescription>
-                    {t('projects.edit.targetResponsesHelper' as MessageKey)}
-                  </FormDescription>
-
-                  <FormControl>
-                    <Input
-                      type="number"
-                      min={1}
-                      max={10000}
-                      {...field}
-                      onChange={(e) => field.onChange(e.target.valueAsNumber || undefined)}
-                    />
-                  </FormControl>
-
-                  <FormMessage />
                 </FormItem>
               )}
             />

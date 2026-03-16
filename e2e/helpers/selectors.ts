@@ -18,6 +18,8 @@ export const sel = {
   passwordSubmit: 'form#password-form button[type="submit"]',
   deleteButton: 'button[data-variant="destructive"]:has(svg.lucide-trash-2)',
   confirmation: 'input[name="confirmation"]',
+  projectSettingsName: 'form#project-settings-form input[name="name"]',
+  projectSettingsSubmit: 'form#project-settings-form button[type="submit"]',
 } as const;
 
 export const E2E_PASSWORD = 'E2eTestPass1!';

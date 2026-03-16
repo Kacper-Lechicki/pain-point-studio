@@ -40,7 +40,7 @@ function makeSurvey(overrides: Partial<Record<keyof UserSurvey, unknown>> = {}):
     projectId: 'proj-default',
     projectName: 'Default Project',
     responseCount: 0,
-    targetResponses: 100,
+    responseLimit: 100,
     lastResponseAt: null,
     recentActivity: [0, 0, 0, 0, 0, 0, 0],
     createdAt: '2024-01-01',

@@ -65,6 +65,25 @@ export function isSubItemActive(
   return item.alsoActiveFor?.includes(pathname) ?? false;
 }
 
+function isPathMatch(pathname: string, href: string): boolean {
+  return pathname === href || pathname.startsWith(href + '/');
+}
+
+/**
+ * Returns the longest matching href for a pathname, so only the most
+ * specific section link is considered active (e.g. /settings/danger-zone
+ * wins over /settings).
+ */
+export function findMostSpecificActiveHref(pathname: string, hrefs: string[]): string | null {
+  const matchingHrefs = hrefs.filter((href) => isPathMatch(pathname, href));
+
+  if (matchingHrefs.length === 0) {
+    return null;
+  }
+
+  return matchingHrefs.reduce((best, current) => (current.length > best.length ? current : best));
+}
+
 // ── Dynamic route tab helpers ─────────────────────────────────────────
 
 /**

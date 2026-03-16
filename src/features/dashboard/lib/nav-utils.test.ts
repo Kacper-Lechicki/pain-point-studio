@@ -3,7 +3,12 @@ import { describe, expect, it } from 'vitest';
 
 import type { SubNavGroup, SubNavItem } from '@/features/dashboard/config/navigation';
 
-import { collectSearchParamKeys, getSubItemHref, isSubItemActive } from './nav-utils';
+import {
+  collectSearchParamKeys,
+  findMostSpecificActiveHref,
+  getSubItemHref,
+  isSubItemActive,
+} from './nav-utils';
 
 // ── getSubItemHref ──────────────────────────────────────────────────
 
@@ -203,5 +208,37 @@ describe('isSubItemActive', () => {
   it('should return false when nothing matches', () => {
     const result = isSubItemActive(item(), '/other', '', new URLSearchParams(), []);
     expect(result).toBe(false);
+  });
+});
+
+// ── findMostSpecificActiveHref ───────────────────────────────────────
+
+describe('findMostSpecificActiveHref', () => {
+  it('should return null when no href matches pathname', () => {
+    const result = findMostSpecificActiveHref('/dashboard/projects/1', ['/dashboard/research']);
+    expect(result).toBeNull();
+  });
+
+  it('should return exact href when it matches', () => {
+    const result = findMostSpecificActiveHref('/dashboard/projects/1/settings', [
+      '/dashboard/projects/1/settings',
+      '/dashboard/projects/1/settings/danger-zone',
+    ]);
+    expect(result).toBe('/dashboard/projects/1/settings');
+  });
+
+  it('should return deepest matching href for nested paths', () => {
+    const result = findMostSpecificActiveHref('/dashboard/projects/1/settings/danger-zone', [
+      '/dashboard/projects/1/settings',
+      '/dashboard/projects/1/settings/danger-zone',
+    ]);
+    expect(result).toBe('/dashboard/projects/1/settings/danger-zone');
+  });
+
+  it('should not match partial segment prefixes', () => {
+    const result = findMostSpecificActiveHref('/dashboard/projects/1/settings-advanced', [
+      '/dashboard/projects/1/settings',
+    ]);
+    expect(result).toBeNull();
   });
 });

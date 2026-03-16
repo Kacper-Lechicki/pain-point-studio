@@ -4,24 +4,31 @@ import { useRef, useState } from 'react';
 
 import dynamic from 'next/dynamic';
 
-import { Upload, X } from 'lucide-react';
+import { Camera, Trash2, Upload } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Spinner } from '@/components/ui/spinner';
 import { updateAvatarUrl } from '@/features/settings/actions';
-import { AVATAR_ACCEPTED_TYPES, AVATAR_MAX_SIZE } from '@/features/settings/config';
+import {
+  AVATAR_ACCEPTED_TYPES,
+  AVATAR_MAX_SIZE,
+  AVATAR_OUTPUT_SIZE,
+} from '@/features/settings/config';
 import { proxyImageUrl } from '@/lib/common/utils';
 import { createClient } from '@/lib/supabase/client';
 
-const AvatarCropDialog = dynamic(
-  () =>
-    import('@/features/settings/components/avatar-crop-dialog').then((m) => ({
-      default: m.AvatarCropDialog,
-    })),
+const ImageCropDialog = dynamic(
+  () => import('@/components/ui/image-crop-dialog').then((m) => ({ default: m.ImageCropDialog })),
   { ssr: false, loading: () => null }
 );
 
@@ -141,6 +148,13 @@ const AvatarUpload = ({
       return;
     }
 
+    setCropDialogOpen(false);
+
+    if (selectedFile?.src) {
+      URL.revokeObjectURL(selectedFile.src);
+    }
+
+    setSelectedFile(null);
     setIsUploading(true);
 
     try {
@@ -166,24 +180,52 @@ const AvatarUpload = ({
     }
   };
 
+  const openFilePicker = () => fileInputRef.current?.click();
+
+  const avatarElement = (
+    <Avatar className="ring-offset-background ring-border/50 size-20 shrink-0 ring-2 ring-offset-2">
+      <AvatarImage
+        src={proxyImageUrl(currentUrl || undefined)}
+        alt={t('settings.profile.avatar')}
+      />
+
+      <AvatarFallback className="text-lg">{fallbackInitials}</AvatarFallback>
+    </Avatar>
+  );
+
   return (
     <div className="bg-muted/20 flex flex-col items-center gap-4 rounded-lg border border-dashed p-4 sm:flex-row sm:items-center">
-      <Avatar className="ring-offset-background ring-border/50 size-20 shrink-0 ring-2 ring-offset-2">
-        <AvatarImage
-          src={proxyImageUrl(currentUrl || undefined)}
-          alt={t('settings.profile.avatar')}
-        />
+      {currentUrl ? (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button type="button" className="cursor-pointer" disabled={isUploading}>
+              {avatarElement}
+            </button>
+          </DropdownMenuTrigger>
 
-        <AvatarFallback className="text-lg">{fallbackInitials}</AvatarFallback>
-      </Avatar>
+          <DropdownMenuContent align="start">
+            <DropdownMenuItem onClick={openFilePicker}>
+              <Camera className="size-4" aria-hidden />
+              {t('settings.profile.changeAvatar')}
+            </DropdownMenuItem>
+
+            <DropdownMenuItem variant="destructive" onClick={() => setShowRemoveConfirm(true)}>
+              <Trash2 className="size-4" aria-hidden />
+              {t('settings.profile.removeAvatar')}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ) : (
+        avatarElement
+      )}
 
       <div className="flex flex-col items-center gap-2 sm:items-start">
-        <div className="flex flex-wrap justify-center gap-2 sm:justify-start">
+        <div className="flex gap-2">
           <Button
             type="button"
             variant="outline"
             size="sm"
-            onClick={() => fileInputRef.current?.click()}
+            onClick={openFilePicker}
             disabled={isUploading}
           >
             {isUploading ? (
@@ -203,7 +245,7 @@ const AvatarUpload = ({
               onClick={() => setShowRemoveConfirm(true)}
               disabled={isUploading}
             >
-              <X className="size-4" aria-hidden="true" />
+              <Trash2 className="size-4" aria-hidden="true" />
               {t('settings.profile.removeAvatar')}
             </Button>
           )}
@@ -236,12 +278,18 @@ const AvatarUpload = ({
       />
 
       {selectedFile && (
-        <AvatarCropDialog
+        <ImageCropDialog
           open={cropDialogOpen}
           onOpenChange={handleCropDialogChange}
           imageSrc={selectedFile.src}
           mimeType={selectedFile.type}
+          cropShape="round"
+          outputSize={AVATAR_OUTPUT_SIZE}
           onCropComplete={handleCropComplete}
+          onRemove={currentUrl ? handleRemove : undefined}
+          removeLabel={t('settings.profile.removeAvatar')}
+          removeConfirmTitle={t('settings.profile.removeAvatarConfirmTitle')}
+          removeConfirmDescription={t('settings.profile.removeAvatarConfirmDescription')}
         />
       )}
     </div>

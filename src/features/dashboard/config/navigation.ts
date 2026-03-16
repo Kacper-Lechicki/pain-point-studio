@@ -7,9 +7,11 @@ import type { MessageKey } from '@/i18n/types';
 // ── Sub-panel item (child route) ──────────────────────────────────────
 
 export interface SubNavItem {
-  labelKey: MessageKey;
+  labelKey?: MessageKey | undefined;
+  /** Plain string label for dynamic items (used instead of labelKey). */
+  label?: string | undefined;
   icon: LucideIcon;
-  href: AppRoute;
+  href: AppRoute | string;
   /** URL hash (without #) for same-path sections, e.g. settings#profile. */
   hash?: string | undefined;
   /** Query params appended to href, e.g. { status: 'active' }. */
@@ -24,6 +26,8 @@ export interface SubNavItem {
 
 export interface SubNavGroup {
   headingKey?: MessageKey | undefined;
+  /** Message shown when items array is empty (e.g. "No recently opened projects"). */
+  emptyMessageKey?: MessageKey | undefined;
   items: SubNavItem[];
 }
 

@@ -117,8 +117,8 @@ export function ProjectTableRow({
               })}
             </span>
           </Badge>
-        ) : project.target_responses ? (
-          `${project.responseCount}/${project.target_responses}`
+        ) : project.response_limit ? (
+          `${project.responseCount}/${project.response_limit}`
         ) : (
           project.responseCount
         )}

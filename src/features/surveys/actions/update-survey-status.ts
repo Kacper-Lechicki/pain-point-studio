@@ -40,6 +40,26 @@ async function requireActiveProject(
   return null;
 }
 
+/** Verifies the project has remaining response capacity. Returns error key if at limit. */
+async function requireProjectCapacity(
+  supabase: SupabaseClient,
+  projectId: string | null
+): Promise<string | null> {
+  if (!projectId) {
+    return null;
+  }
+
+  const { data: remaining } = await supabase.rpc('get_project_remaining_capacity', {
+    p_project_id: projectId,
+  });
+
+  if (remaining != null && (remaining as number) <= 0) {
+    return 'surveys.errors.projectLimitReached';
+  }
+
+  return null;
+}
+
 /**
  * After a failed update (0 rows affected), re-query the survey to determine
  * whether it's a real "not found" or a status conflict (stale client data).
@@ -112,6 +132,12 @@ function createStatusAction(action: SurveyAction) {
           return { error: projectError };
         }
 
+        const capacityError = await requireProjectCapacity(supabase, survey.project_id);
+
+        if (capacityError) {
+          return { error: capacityError };
+        }
+
         const { data: row, error } = await supabase
           .from('surveys')
           .update({
@@ -154,10 +180,21 @@ function createStatusAction(action: SurveyAction) {
           return { error: projectError };
         }
 
+        // If restoring to active, check project capacity
+        const restoredStatus = (current.previous_status || 'draft') as SurveyStatus;
+
+        if (restoredStatus === 'active') {
+          const capacityError = await requireProjectCapacity(supabase, current.project_id);
+
+          if (capacityError) {
+            return { error: capacityError };
+          }
+        }
+
         const { data: row, error } = await supabase
           .from('surveys')
           .update({
-            status: (current.previous_status || 'draft') as SurveyStatus,
+            status: restoredStatus,
             archived_at: null,
             previous_status: null,
           })
@@ -228,10 +265,21 @@ function createStatusAction(action: SurveyAction) {
           return { error: projectError };
         }
 
+        // If restoring to active, check project capacity
+        const restoredTrashStatus = (current.pre_trash_status || 'draft') as SurveyStatus;
+
+        if (restoredTrashStatus === 'active') {
+          const capacityError = await requireProjectCapacity(supabase, current.project_id);
+
+          if (capacityError) {
+            return { error: capacityError };
+          }
+        }
+
         const { data: row, error } = await supabase
           .from('surveys')
           .update({
-            status: (current.pre_trash_status || 'draft') as SurveyStatus,
+            status: restoredTrashStatus,
             deleted_at: null,
             pre_trash_status: null,
           })

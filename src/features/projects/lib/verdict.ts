@@ -6,7 +6,7 @@ import type { Finding, ProjectInsight } from '@/features/projects/types';
 
 export interface VerdictInput {
   totalResponses: number;
-  targetResponses: number;
+  responseLimit: number;
   /** Count of manually-created insights (from the Insights tab). */
   insightCount: number;
   /** Auto-generated findings from survey data. */
@@ -45,14 +45,14 @@ function countNegativeFindings(findings: Finding[]): number {
  * MVP heuristic; intentionally simple and interpretable.
  */
 export function computeVerdict(input: VerdictInput): VerdictResult {
-  const { totalResponses, targetResponses, insightCount, findings, insights } = input;
+  const { totalResponses, responseLimit, insightCount, findings, insights } = input;
 
   // ── No data ─────────────────────────────────────────
   if (totalResponses === 0) {
     return { status: 'no-data', confidence: 0, summaryKey: 'projects.verdict.noData.summary' };
   }
 
-  const confidence = Math.min(totalResponses / Math.max(targetResponses, 1), 1);
+  const confidence = Math.min(totalResponses / Math.max(responseLimit, 1), 1);
   const totalSignals = findings.length + insightCount;
 
   // ── Early exploration (little data) ─────────────────

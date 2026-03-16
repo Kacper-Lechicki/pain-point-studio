@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
@@ -14,9 +14,10 @@ import type { InsightSuggestionsResult } from '@/features/projects/actions/get-i
 import type { PendingInsightSurvey } from '@/features/projects/actions/get-pending-insight-surveys';
 import type { ProjectOwner } from '@/features/projects/actions/get-project';
 import type { SurveySignalData } from '@/features/projects/actions/get-project-signals-data';
-import { EditProjectDialog } from '@/features/projects/components/edit-project-dialog';
 import { ProjectDetailHeader } from '@/features/projects/components/project-detail-header';
 import { ProjectDetailTabs } from '@/features/projects/components/project-detail-tabs';
+import type { ProjectAction } from '@/features/projects/config/status';
+import { PROJECT_ACTION_UI, getAvailableActions } from '@/features/projects/config/status';
 import { useProjectDashboardActions } from '@/features/projects/hooks/use-project-dashboard-actions';
 import { useRealtimeProject } from '@/features/projects/hooks/use-realtime-project';
 import { isProjectReadOnly } from '@/features/projects/lib/project-helpers';
@@ -26,12 +27,16 @@ import type {
   ProjectNoteFolder,
   ProjectNoteMeta,
   ProjectOverviewStats,
+  ProjectStatus,
 } from '@/features/projects/types';
 import { SurveyList } from '@/features/surveys/components/dashboard/survey-list';
 import type { UserSurvey } from '@/features/surveys/types';
 import { useBreadcrumbSegment } from '@/hooks/common/use-breadcrumb';
+import { useRecentItems } from '@/hooks/common/use-recent-items';
 import { useRefresh } from '@/hooks/common/use-refresh';
+import type { SubPanelAction } from '@/hooks/common/use-sub-panel-items';
 import { useSubPanelLinks } from '@/hooks/common/use-sub-panel-items';
+import type { MessageKey } from '@/i18n/types';
 import { getCreateSurveyUrl } from '@/lib/common/urls/survey-urls';
 
 interface ProjectDashboardPageProps {
@@ -66,50 +71,60 @@ export function ProjectDashboardPage({
   const hasActiveSurveys = surveys.some((s) => s.status === 'active');
   const { isConnected: isRealtimeConnected } = useRealtimeProject(markSynced, hasActiveSurveys);
 
-  const {
-    project,
-    editOpen,
-    setEditOpen,
-    confirmAction,
-    setConfirmAction,
-    handleEditSuccess,
-    handleImageChange,
-    handleConfirm,
-    confirmDialogProps,
-  } = useProjectDashboardActions({ initialProject });
+  const { project, confirmAction, setConfirmAction, handleConfirm, confirmDialogProps } =
+    useProjectDashboardActions({ initialProject });
 
   const t = useTranslations();
 
   useBreadcrumbSegment(project.id, project.name);
 
-  const readOnly = isProjectReadOnly(project);
+  const { track: trackRecentProject } = useRecentItems('project');
 
-  useSubPanelLinks(
-    [
+  useEffect(() => {
+    trackRecentProject(project.id);
+  }, [project.id, trackRecentProject]);
+
+  const readOnly = isProjectReadOnly(project);
+  const availableActions = getAvailableActions(project.status as ProjectStatus);
+
+  const quickActions: SubPanelAction[] = availableActions.map((action) => {
+    const ui = PROJECT_ACTION_UI[action];
+    const Icon = ui.icon;
+
+    return {
+      label: t(`projects.list.actions.${action}` as MessageKey),
+      icon: Icon,
+      onClick: () => setConfirmAction(action as ProjectAction),
+      variant: ui.menuItemVariant ?? 'default',
+    };
+  });
+
+  useSubPanelLinks({
+    links: [
       {
         label: t('common.backToProjects'),
         href: ROUTES.dashboard.projects,
         icon: ChevronLeft,
       },
     ],
-    [
-      ...(!readOnly
-        ? [
-            {
-              label: t('projects.detail.createSurvey'),
-              href: getCreateSurveyUrl(project.id),
-              icon: Plus,
-            },
-          ]
-        : []),
+    bottomLinks: !readOnly
+      ? [
+          {
+            label: t('projects.detail.createSurvey'),
+            href: getCreateSurveyUrl(project.id),
+            icon: Plus,
+          },
+        ]
+      : [],
+    footerLinks: [
       {
         label: t('projects.detail.settings'),
-        href: '#',
+        href: `${ROUTES.dashboard.projects}/${project.id}/settings`,
         icon: Settings,
-        disabled: true,
       },
-    ]
-  );
+    ],
+    actions: quickActions,
+  });
 
   const handleInsightCreated = (insight: ProjectInsight) => {
     setInsights((prev) => [...prev, insight]);
@@ -135,7 +150,7 @@ export function ProjectDashboardPage({
       projectId={project.id}
       onCreateSurvey={!readOnly ? () => router.push(getCreateSurveyUrl(project.id)) : undefined}
       totalResponses={totalResponses}
-      targetResponses={project.target_responses}
+      responseLimit={project.response_limit}
     />
   );
 
@@ -143,13 +158,9 @@ export function ProjectDashboardPage({
     <main className="flex min-w-0 flex-col">
       <ProjectDetailHeader
         project={project}
-        userId={project.user_id}
         owner={owner}
-        onEdit={() => setEditOpen(true)}
         onAction={setConfirmAction}
         lastResponseAt={overviewStats.lastResponseAt}
-        onImageChange={handleImageChange}
-        onEditSuccess={handleEditSuccess}
         isRefreshing={isRefreshing}
         isRealtimeConnected={isRealtimeConnected}
         lastSyncedAt={lastSyncedAt}
@@ -175,13 +186,6 @@ export function ProjectDashboardPage({
           onInsightsChanged={handleInsightsChanged}
         />
       </div>
-
-      <EditProjectDialog
-        open={editOpen}
-        onOpenChange={setEditOpen}
-        project={project}
-        onSuccess={handleEditSuccess}
-      />
 
       {confirmDialogProps && (
         <ConfirmDialog

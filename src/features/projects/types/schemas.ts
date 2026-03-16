@@ -41,7 +41,6 @@ export const updateProjectSchema = z.object({
     .min(1, 'projects.errors.fieldRequired')
     .max(PROJECT_SUMMARY_MAX_LENGTH, 'projects.errors.summaryTooLong')
     .optional(),
-  targetResponses: z.number().int().min(1).max(10000).optional(),
 });
 
 export type UpdateProjectInput = z.infer<typeof updateProjectSchema>;
@@ -56,6 +55,12 @@ export const updateProjectDescriptionSchema = z.object({
 export const updateProjectImageSchema = z.object({
   projectId: z.uuid(),
   imageUrl: z.string().url().or(z.literal('')),
+});
+
+/** Schema for permanently deleting a project (from any status) with name confirmation. */
+export const permanentDeleteProjectForceSchema = z.object({
+  projectId: z.uuid(),
+  confirmation: z.string().trim().min(1, 'projects.errors.fieldRequired'),
 });
 
 // ── Insight schemas ─────────────────────────────────────────────────

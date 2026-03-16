@@ -22,7 +22,7 @@ interface SurveyListKpiProps {
   /** Total responses across all surveys in this project. */
   totalResponses?: number | undefined;
   /** Project-level target responses cap. */
-  targetResponses?: number | undefined;
+  responseLimit?: number | undefined;
   /** Callback to open the "create survey" dialog (shown in project context). */
   onCreateSurvey?: (() => void) | undefined;
 }
@@ -37,7 +37,7 @@ export function SurveyListKpi({
   onRefresh,
   isProjectContext,
   totalResponses,
-  targetResponses,
+  responseLimit,
   onCreateSurvey,
 }: SurveyListKpiProps) {
   const t = useTranslations();
@@ -75,11 +75,11 @@ export function SurveyListKpi({
             </span>
           </span>
         ))}
-        {isProjectContext && targetResponses != null && targetResponses > 0 && (
+        {isProjectContext && responseLimit != null && responseLimit > 0 && (
           <span className="text-muted-foreground border-border/60 bg-muted/40 inline-flex shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs tabular-nums">
             <span className="text-foreground font-semibold">{totalResponses ?? 0}</span>
             <span>/</span>
-            <span>{targetResponses}</span>
+            <span>{responseLimit}</span>
             <span>{t('surveys.dashboard.responseUsageLabel')}</span>
           </span>
         )}

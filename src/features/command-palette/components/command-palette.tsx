@@ -15,6 +15,8 @@ import { CommandActionsGroup } from '@/features/command-palette/components/comma
 import { CommandPagesGroup } from '@/features/command-palette/components/command-pages-group';
 import { CommandProjectPicker } from '@/features/command-palette/components/command-project-picker';
 import { CommandProjectsGroup } from '@/features/command-palette/components/command-projects-group';
+import { CommandRecentProjectsGroup } from '@/features/command-palette/components/command-recent-projects-group';
+import { CommandRecentSurveysGroup } from '@/features/command-palette/components/command-recent-surveys-group';
 import { CommandSurveysGroup } from '@/features/command-palette/components/command-surveys-group';
 import { useCommandPaletteData } from '@/features/command-palette/hooks/use-command-palette-data';
 
@@ -70,6 +72,10 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                 <CommandEmpty>{t('noResults')}</CommandEmpty>
 
                 <CommandActionsGroup onClose={handleClose} onCreateSurvey={handleCreateSurvey} />
+
+                <CommandRecentProjectsGroup onClose={handleClose} />
+
+                <CommandRecentSurveysGroup onClose={handleClose} />
 
                 <CommandPagesGroup onClose={handleClose} />
 

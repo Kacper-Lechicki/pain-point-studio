@@ -36,7 +36,8 @@
       "description": "Drag to reposition. Scroll to zoom in or out.",
       "zoom": "Zoom",
       "confirm": "Apply",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "remove": "Remove"
     },
     "confirm": {
       "title": "Are you sure?",
@@ -369,6 +370,7 @@
       "unexpected": "Something went wrong. Please try again.",
       "conflict": "This survey was updated elsewhere. Please refresh and try again.",
       "projectNotActive": "The parent project must be active to perform this action.",
+      "projectLimitReached": "This project has reached its response limit ({limit} responses).",
       "exportTooManyResponses": "This survey has too many responses to export at once. Please contact support.",
       "bulkAllFailed": "None of the selected surveys could be updated. They may have already changed status."
     },
@@ -1046,7 +1048,7 @@
           "hint": "Upload a logo or image to help you quickly identify this project. You can always add or change it later.",
           "successMessage": "Your project has been created!",
           "skipLabel": "Skip for now",
-          "doneLabel": "Go to project"
+          "doneLabel": "Let's start!"
         }
       },
       "navigation": {
@@ -1267,6 +1269,7 @@
       "editName": "Edit project name",
       "editSummary": "Edit project summary",
       "changeImage": "Change image",
+      "uploadImage": "Upload image",
       "removeImage": "Remove image",
       "removeImageConfirmTitle": "Remove project image?",
       "removeImageConfirmDescription": "The image will be permanently deleted.",
@@ -1608,9 +1611,28 @@
       "yesterday": "Yesterday",
       "newResponses": "{count, plural, one {# new response} other {# new responses}}"
     },
-    "edit": {
-      "targetResponses": "Target Responses",
-      "targetResponsesHelper": "How many responses do you want to collect before making a decision?"
+    "settings": {
+      "title": "Project Settings",
+      "description": "Manage your project details and configuration.",
+      "generalTitle": "General",
+      "generalDescription": "Update your project name, summary, and image.",
+      "saveSettings": "Save Changes",
+      "saved": "Project settings updated.",
+      "projectImageHint": "JPEG, PNG, or WebP up to 5 MB.",
+      "responseLimit": "Response Limit",
+      "responseLimitDescription": "Your plan includes {limit} responses per project.",
+      "dangerZone": {
+        "title": "Danger Zone",
+        "description": "Irreversible actions that permanently affect this project.",
+        "deleteProject": "Delete Project",
+        "deleteDescription": "Permanently delete this project and all its data. This cannot be undone.",
+        "deleteConfirmTitle": "Permanently delete project?",
+        "deleteConfirmDescription": "This will permanently delete the project, all its surveys, questions, responses, insights, and notes. This action cannot be undone.",
+        "deleteConfirmLabel": "Type \"{name}\" to confirm",
+        "deleteConfirmPlaceholder": "Project name",
+        "deleteButton": "Delete Project Forever",
+        "deleted": "Project permanently deleted."
+      }
     }
   },
   "respondent": {
@@ -1700,7 +1722,12 @@
     "profilePreview": "Profile",
     "askAi": "Ask AI",
     "giveFeedback": "Give Feedback",
-    "shareFeedback": "Share Feedback"
+    "shareFeedback": "Share Feedback",
+    "recentProjects": "Recent",
+    "noRecentProjects": "No recently opened projects",
+    "recentSurveys": "Recent Surveys",
+    "noRecentSurveys": "No recently opened surveys",
+    "quickActions": "Quick Actions"
   },
   "breadcrumbs": {
     "dashboard": "Dashboard",
@@ -2138,7 +2165,9 @@
       "quickActions": "Quick Actions",
       "pages": "Pages",
       "projects": "Projects",
-      "surveys": "Surveys"
+      "surveys": "Surveys",
+      "recentProjects": "Recent Projects",
+      "recentSurveys": "Recent Surveys"
     },
     "actions": {
       "createProject": "Create Project",

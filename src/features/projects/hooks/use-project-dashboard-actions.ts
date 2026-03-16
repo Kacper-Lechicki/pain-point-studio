@@ -32,7 +32,6 @@ interface UseProjectDashboardActionsParams {
   initialProject: Project;
 }
 
-/** Maps each project action to its optimistic local state update. */
 function applyOptimisticUpdate(prev: Project, action: ProjectAction): Project {
   const now = new Date().toISOString();
 
@@ -82,34 +81,11 @@ export function useProjectDashboardActions({ initialProject }: UseProjectDashboa
   const t = useTranslations();
   const router = useRouter();
   const [project, setProject] = useState(initialProject);
-  const [editOpen, setEditOpen] = useState(false);
   const [confirmAction, setConfirmAction] = useState<ProjectAction | null>(null);
 
   const statusAction = useFormAction({
     unexpectedErrorMessage: 'projects.errors.unexpected' as MessageKey,
   });
-
-  const handleEditSuccess = (data: {
-    name: string;
-    summary: string | undefined;
-    targetResponses?: number | undefined;
-  }) => {
-    setProject((prev) => ({
-      ...prev,
-      name: data.name,
-      summary: data.summary ?? null,
-      ...(data.targetResponses != null && { target_responses: data.targetResponses }),
-      updated_at: new Date().toISOString(),
-    }));
-  };
-
-  const handleImageChange = (url: string | null) => {
-    setProject((prev) => ({
-      ...prev,
-      image_url: url,
-      updated_at: new Date().toISOString(),
-    }));
-  };
 
   const handleConfirm = async () => {
     if (!confirmAction) {
@@ -131,7 +107,6 @@ export function useProjectDashboardActions({ initialProject }: UseProjectDashboa
       return;
     }
 
-    // Optimistic update for status changes
     setProject((prev) => applyOptimisticUpdate(prev, confirmAction));
     setConfirmAction(null);
 
@@ -157,12 +132,8 @@ export function useProjectDashboardActions({ initialProject }: UseProjectDashboa
 
   return {
     project,
-    editOpen,
-    setEditOpen,
     confirmAction,
     setConfirmAction,
-    handleEditSuccess,
-    handleImageChange,
     handleConfirm,
     confirmDialogProps,
   };

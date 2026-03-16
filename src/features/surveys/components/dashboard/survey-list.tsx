@@ -45,7 +45,7 @@ interface SurveyListProps {
   projectId?: string | undefined;
   onCreateSurvey?: (() => void) | undefined;
   totalResponses?: number | undefined;
-  targetResponses?: number | undefined;
+  responseLimit?: number | undefined;
 }
 
 export const SurveyList = ({
@@ -53,7 +53,7 @@ export const SurveyList = ({
   projectId,
   onCreateSurvey,
   totalResponses,
-  targetResponses,
+  responseLimit,
 }: SurveyListProps) => {
   const t = useTranslations();
   const router = useRouter();
@@ -200,7 +200,7 @@ export const SurveyList = ({
         onRefresh={refresh}
         isProjectContext={isProjectContext}
         totalResponses={totalResponses}
-        targetResponses={targetResponses}
+        responseLimit={responseLimit}
         onCreateSurvey={onCreateSurvey}
       />
 

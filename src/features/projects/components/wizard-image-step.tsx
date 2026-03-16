@@ -44,14 +44,9 @@ export function WizardImageStep({ projectId, userId, projectName, onDone }: Wiza
       </div>
 
       {/* Navigation */}
-      <div className="flex items-center gap-3">
-        <Button type="button" variant="ghost" onClick={onDone}>
-          {t('skipLabel')}
-        </Button>
-        <Button type="button" onClick={onDone}>
-          {t('doneLabel')}
-        </Button>
-      </div>
+      <Button type="button" variant={imageUrl ? 'default' : 'ghost'} onClick={onDone}>
+        {imageUrl ? t('doneLabel') : t('skipLabel')}
+      </Button>
     </div>
   );
 }

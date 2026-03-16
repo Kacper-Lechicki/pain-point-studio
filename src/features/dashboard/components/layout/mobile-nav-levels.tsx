@@ -1,6 +1,7 @@
 'use client';
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { NotebookPen } from 'lucide-react';
 
 import {
   SIDEBAR_NAV_ACTIVE,
@@ -17,18 +18,29 @@ import {
   SIDEBAR_NAV,
   SIDEBAR_PROFILE_ITEM,
 } from '@/features/dashboard/config/navigation';
+import { useProjectsSubNavGroups } from '@/features/dashboard/hooks/use-projects-sub-nav-groups';
 import {
   collectSearchParamKeys,
   findDynamicTab,
+  findMostSpecificActiveHref,
   getSubItemHref,
   isSubItemActive,
   matchesNavItem,
   resolveDynamicLabel,
 } from '@/features/dashboard/lib/nav-utils';
-import type { SubPanelLink } from '@/hooks/common/use-sub-panel-items';
+import { useRecentItems } from '@/hooks/common/use-recent-items';
+import type { SubPanelAction, SubPanelLink } from '@/hooks/common/use-sub-panel-items';
 import { Link } from '@/i18n/routing';
 import type { MessageKey } from '@/i18n/types';
+import { getSurveyStatsUrl } from '@/lib/common/urls/survey-urls';
 import { cn } from '@/lib/common/utils';
+
+const MOBILE_ACTION_VARIANT_CLASSES: Record<string, string | undefined> = {
+  default: undefined,
+  destructive: 'text-red-600/70 dark:text-red-400/70',
+  warning: 'text-amber-700/70 dark:text-amber-400/70',
+  accent: 'text-violet-600/70 dark:text-violet-400/70',
+};
 
 interface SubNavItemsProps {
   groups: SubNavGroup[];
@@ -38,6 +50,7 @@ interface SubNavItemsProps {
   onNavigate: () => void;
   parentHref?: string | undefined;
   breadcrumbSegments?: Record<string, string> | undefined;
+  isDynamicItemActive?: boolean;
 }
 
 function SubNavItems({
@@ -48,6 +61,7 @@ function SubNavItems({
   onNavigate,
   parentHref,
   breadcrumbSegments,
+  isDynamicItemActive = true,
 }: SubNavItemsProps) {
   const searchParamKeys = collectSearchParamKeys(groups);
   const currentSearchParams = clientState ? new URLSearchParams(clientState.search) : null;
@@ -55,12 +69,22 @@ function SubNavItems({
   const dynamicTab = findDynamicTab(parentHref, pathname);
   const dynamicLabel = resolveDynamicLabel(dynamicTab, pathname, breadcrumbSegments);
   const isDynamicActive = dynamicTab != null && dynamicLabel != null;
+  const dynamicEntityId =
+    dynamicTab != null ? pathname.slice(dynamicTab.prefix.length + 1).split('/')[0] : undefined;
+  const dynamicBaseHref =
+    dynamicTab != null && dynamicEntityId ? `${dynamicTab.prefix}/${dynamicEntityId}` : pathname;
 
   return (
-    <nav className="flex flex-1 flex-col gap-2 p-2 pb-8" onClick={onNavigate}>
+    <nav className="flex flex-col gap-2 p-2" onClick={onNavigate}>
       {isDynamicActive ? (
         <div className="flex flex-col gap-2">
-          <Link href={pathname} className={cn(SIDEBAR_NAV_ITEM_BASE, SIDEBAR_NAV_ACTIVE)}>
+          <Link
+            href={isDynamicItemActive ? pathname : dynamicBaseHref}
+            className={cn(
+              SIDEBAR_NAV_ITEM_BASE,
+              isDynamicItemActive ? SIDEBAR_NAV_ACTIVE : SIDEBAR_NAV_INACTIVE
+            )}
+          >
             <dynamicTab.icon className="size-4 shrink-0" aria-hidden />
             <span className="truncate">{dynamicLabel}</span>
           </Link>
@@ -71,7 +95,7 @@ function SubNavItems({
             {group.headingKey && (
               <div
                 className={cn(
-                  'text-muted-foreground mb-1 px-3 text-xs font-semibold tracking-wider uppercase',
+                  'decoration-muted-foreground/50 mb-1 px-3 text-sm font-semibold underline underline-offset-4',
                   gi === 0 ? 'mt-0' : 'mt-6'
                 )}
               >
@@ -79,9 +103,16 @@ function SubNavItems({
               </div>
             )}
 
+            {group.items.length === 0 && group.emptyMessageKey && (
+              <p className="text-muted-foreground/60 px-3 py-1 text-xs">
+                {t(group.emptyMessageKey)}
+              </p>
+            )}
+
             <div className="flex flex-col gap-2">
               {group.items.map((subItem) => {
                 const href = getSubItemHref(subItem);
+                const itemLabel = subItem.label ?? t(subItem.labelKey!);
 
                 if (subItem.disabled) {
                   return (
@@ -95,7 +126,7 @@ function SubNavItems({
                       )}
                     >
                       <subItem.icon className="size-4 shrink-0" aria-hidden />
-                      <span className="truncate">{t(subItem.labelKey)}</span>
+                      <span className="truncate">{itemLabel}</span>
                     </span>
                   );
                 }
@@ -115,7 +146,7 @@ function SubNavItems({
                       className={cn(SIDEBAR_NAV_ITEM_BASE, stateClasses)}
                     >
                       <subItem.icon className="size-4 shrink-0" aria-hidden />
-                      <span className="truncate">{t(subItem.labelKey)}</span>
+                      <span className="truncate">{itemLabel}</span>
                     </a>
                   );
                 }
@@ -123,7 +154,7 @@ function SubNavItems({
                 return (
                   <Link key={href} href={href} className={cn(SIDEBAR_NAV_ITEM_BASE, stateClasses)}>
                     <subItem.icon className="size-4 shrink-0" aria-hidden />
-                    <span className="truncate">{t(subItem.labelKey)}</span>
+                    <span className="truncate">{itemLabel}</span>
                   </Link>
                 );
               })}
@@ -270,6 +301,9 @@ interface MobileNavSubLevelProps {
   breadcrumbSegments?: Record<string, string> | undefined;
   subPanelLinks?: SubPanelLink[] | undefined;
   subPanelBottomLinks?: SubPanelLink[] | undefined;
+  subPanelFooterLinks?: SubPanelLink[] | undefined;
+  subPanelActions?: SubPanelAction[] | undefined;
+  subPanelTitleKey?: MessageKey | undefined;
 }
 
 function MobileSubNavSkeleton() {
@@ -308,10 +342,23 @@ export function MobileNavSubLevel({
   breadcrumbSegments,
   subPanelLinks,
   subPanelBottomLinks,
+  subPanelFooterLinks,
+  subPanelActions,
+  subPanelTitleKey,
 }: MobileNavSubLevelProps) {
   const parentHref = selectedItem.activePrefix ?? selectedItem.href;
+  const isProjectsNav = selectedItem.subNav?.titleKey === 'sidebar.projects';
+  const enhancedGroups = useProjectsSubNavGroups(selectedItem.subNav!.groups, isProjectsNav);
   const dynamicTab = findDynamicTab(parentHref, pathname);
   const dynamicLabel = resolveDynamicLabel(dynamicTab, pathname, breadcrumbSegments);
+  const dynamicProjectId =
+    dynamicTab != null && dynamicTab.prefix === '/dashboard/projects'
+      ? pathname.slice(dynamicTab.prefix.length + 1).split('/')[0]
+      : undefined;
+  const { items: recentSurveys } = useRecentItems('survey', {
+    limit: 10,
+    projectId: dynamicProjectId,
+  });
 
   const isDynamicPending =
     dynamicTab != null && (dynamicLabel == null || !subPanelLinks || subPanelLinks.length === 0);
@@ -321,36 +368,50 @@ export function MobileNavSubLevel({
   }
 
   const isDynamicActive = dynamicTab != null && dynamicLabel != null;
-  const resolvedTitleKey =
-    isDynamicActive && dynamicTab.titleKey ? dynamicTab.titleKey : selectedItem.subNav!.titleKey;
+  const hasCustomTitle = isDynamicActive && subPanelTitleKey != null;
+  const enabledBottomLinkHrefs =
+    subPanelBottomLinks?.filter((link) => !link.disabled).map((link) => link.href) ?? [];
+  const enabledFooterLinkHrefs =
+    subPanelFooterLinks?.filter((link) => !link.disabled).map((link) => link.href) ?? [];
+  const activeBottomHref = findMostSpecificActiveHref(pathname, enabledBottomLinkHrefs);
+  const activeFooterHref = findMostSpecificActiveHref(pathname, enabledFooterLinkHrefs);
+  const hasActiveBottomLink =
+    isDynamicActive && (activeBottomHref != null || activeFooterHref != null);
+  const resolvedTitleKey = hasCustomTitle
+    ? subPanelTitleKey
+    : isDynamicActive && dynamicTab.titleKey
+      ? dynamicTab.titleKey
+      : selectedItem.subNav!.titleKey;
+
+  const renderSubPanelLink = (link: SubPanelLink, isActive = false) =>
+    link.disabled ? (
+      <span
+        key={link.href + link.label}
+        data-state="inactive"
+        className={cn(SIDEBAR_NAV_ITEM_CLASSES, 'pointer-events-none opacity-50')}
+      >
+        <link.icon className="size-4 shrink-0" aria-hidden />
+        <span className="truncate">{link.label}</span>
+      </span>
+    ) : (
+      <Link
+        key={link.href + link.label}
+        href={link.href}
+        data-state={isActive ? 'active' : 'inactive'}
+        className={SIDEBAR_NAV_ITEM_CLASSES}
+        onClick={onNavigate}
+      >
+        <link.icon className="size-4 shrink-0" aria-hidden />
+        <span className="truncate">{link.label}</span>
+      </Link>
+    );
 
   return (
     <>
       <div className="px-2 pt-4">
         {isDynamicActive && subPanelLinks && subPanelLinks.length > 0 ? (
           <div className="flex flex-col gap-2">
-            {subPanelLinks.map((link) =>
-              link.disabled ? (
-                <span
-                  key={link.href}
-                  data-state="inactive"
-                  className={cn(SIDEBAR_NAV_ITEM_CLASSES, 'pointer-events-none opacity-50')}
-                >
-                  <link.icon className="size-4 shrink-0" aria-hidden />
-                  <span className="truncate">{link.label}</span>
-                </span>
-              ) : (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  data-state="inactive"
-                  className={SIDEBAR_NAV_ITEM_CLASSES}
-                >
-                  <link.icon className="size-4 shrink-0" aria-hidden />
-                  <span className="truncate">{link.label}</span>
-                </Link>
-              )
-            )}
+            {subPanelLinks.map((link) => renderSubPanelLink(link))}
           </div>
         ) : (
           <button
@@ -373,40 +434,97 @@ export function MobileNavSubLevel({
         </div>
       </div>
 
-      <SubNavItems
-        groups={selectedItem.subNav!.groups}
-        pathname={pathname}
-        clientState={clientState}
-        t={t}
-        onNavigate={onNavigate}
-        parentHref={parentHref}
-        breadcrumbSegments={breadcrumbSegments}
-      />
+      {isDynamicActive ? (
+        !hasCustomTitle && (
+          <SubNavItems
+            groups={enhancedGroups}
+            pathname={pathname}
+            clientState={clientState}
+            t={t}
+            onNavigate={onNavigate}
+            parentHref={parentHref}
+            breadcrumbSegments={breadcrumbSegments}
+            isDynamicItemActive={!hasActiveBottomLink}
+          />
+        )
+      ) : (
+        <SubNavItems
+          groups={enhancedGroups}
+          pathname={pathname}
+          clientState={clientState}
+          t={t}
+          onNavigate={onNavigate}
+          parentHref={parentHref}
+          breadcrumbSegments={breadcrumbSegments}
+        />
+      )}
 
       {isDynamicActive && subPanelBottomLinks && subPanelBottomLinks.length > 0 && (
         <div className="flex flex-col gap-2 px-2">
           {subPanelBottomLinks.map((link) =>
-            link.disabled ? (
-              <span
-                key={link.href + link.label}
+            renderSubPanelLink(link, !link.disabled && activeBottomHref === link.href)
+          )}
+        </div>
+      )}
+
+      {isDynamicActive && subPanelActions && subPanelActions.length > 0 && (
+        <div className="px-2 pt-4">
+          <div className="decoration-muted-foreground/50 mb-1 px-3 text-sm font-semibold underline underline-offset-4">
+            {t('sidebar.quickActions' as MessageKey)}
+          </div>
+
+          <div className="flex flex-col gap-2" onClick={onNavigate}>
+            {subPanelActions.map((action) => (
+              <button
+                key={action.label}
+                type="button"
                 data-state="inactive"
-                className={cn(SIDEBAR_NAV_ITEM_CLASSES, 'pointer-events-none opacity-50')}
+                className={cn(
+                  SIDEBAR_NAV_ITEM_CLASSES,
+                  MOBILE_ACTION_VARIANT_CLASSES[action.variant ?? 'default']
+                )}
+                onClick={action.onClick}
+                disabled={action.disabled}
               >
-                <link.icon className="size-4 shrink-0" aria-hidden />
-                <span className="truncate">{link.label}</span>
-              </span>
-            ) : (
-              <Link
-                key={link.href + link.label}
-                href={link.href}
-                data-state="inactive"
-                className={SIDEBAR_NAV_ITEM_CLASSES}
-                onClick={onNavigate}
-              >
-                <link.icon className="size-4 shrink-0" aria-hidden />
-                <span className="truncate">{link.label}</span>
-              </Link>
-            )
+                <action.icon className="size-4 shrink-0" aria-hidden />
+                <span className="truncate">{action.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {isDynamicActive && !hasCustomTitle && dynamicProjectId && (
+        <div className="px-2 pt-4">
+          <div className="decoration-muted-foreground/50 mb-1 px-3 text-sm font-semibold underline underline-offset-4">
+            {t('sidebar.recentSurveys' as MessageKey)}
+          </div>
+
+          {recentSurveys.length === 0 ? (
+            <p className="text-muted-foreground/60 px-3 py-1 text-xs">
+              {t('sidebar.noRecentSurveys' as MessageKey)}
+            </p>
+          ) : (
+            <div className="flex flex-col gap-2">
+              {recentSurveys.map((survey) =>
+                renderSubPanelLink(
+                  {
+                    label: survey.label,
+                    href: getSurveyStatsUrl(survey.id),
+                    icon: NotebookPen,
+                  },
+                  pathname === getSurveyStatsUrl(survey.id)
+                )
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {isDynamicActive && subPanelFooterLinks && subPanelFooterLinks.length > 0 && (
+        <div className="mt-auto flex flex-col gap-2 px-2 pt-4 pb-6">
+          {subPanelFooterLinks.map((link) =>
+            renderSubPanelLink(link, !link.disabled && activeFooterHref === link.href)
           )}
         </div>
       )}

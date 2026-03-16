@@ -44,7 +44,6 @@ vi.mock('@/features/projects/lib/project-confirm-props', () => ({
   }),
 }));
 
-// Dynamic import mock for sonner
 vi.mock('sonner', () => ({
   toast: { success: vi.fn() },
 }));
@@ -58,7 +57,7 @@ function makeProject(overrides: Partial<Project> = {}): Project {
     description: null,
     summary: null,
     image_url: null,
-    target_responses: 100,
+    response_limit: 100,
     completed_at: null,
     archived_at: null,
     deleted_at: null,
@@ -81,59 +80,6 @@ describe('useProjectDashboardActions', () => {
     const { result } = renderHook(() => useProjectDashboardActions({ initialProject: project }));
 
     expect(result.current.project).toBe(project);
-  });
-
-  it('handleEditSuccess updates project name and summary', () => {
-    const { result } = renderHook(() =>
-      useProjectDashboardActions({ initialProject: makeProject() })
-    );
-
-    act(() => {
-      result.current.handleEditSuccess({ name: 'New Name', summary: 'New Summary' });
-    });
-
-    expect(result.current.project.name).toBe('New Name');
-    expect(result.current.project.summary).toBe('New Summary');
-  });
-
-  it('handleEditSuccess updates targetResponses when provided', () => {
-    const { result } = renderHook(() =>
-      useProjectDashboardActions({ initialProject: makeProject() })
-    );
-
-    act(() => {
-      result.current.handleEditSuccess({
-        name: 'Name',
-        summary: undefined,
-        targetResponses: 200,
-      });
-    });
-
-    expect(result.current.project.target_responses).toBe(200);
-  });
-
-  it('handleImageChange updates image_url', () => {
-    const { result } = renderHook(() =>
-      useProjectDashboardActions({ initialProject: makeProject() })
-    );
-
-    act(() => {
-      result.current.handleImageChange('https://img.example.com/new.jpg');
-    });
-
-    expect(result.current.project.image_url).toBe('https://img.example.com/new.jpg');
-  });
-
-  it('handleImageChange sets null to remove image', () => {
-    const { result } = renderHook(() =>
-      useProjectDashboardActions({ initialProject: makeProject({ image_url: 'old.jpg' }) })
-    );
-
-    act(() => {
-      result.current.handleImageChange(null);
-    });
-
-    expect(result.current.project.image_url).toBeNull();
   });
 
   it('handleConfirm does nothing when no confirmAction is set', async () => {
@@ -180,7 +126,6 @@ describe('useProjectDashboardActions', () => {
       await result.current.handleConfirm();
     });
 
-    // Reverted to initial
     expect(result.current.project.status).toBe('active');
   });
 
@@ -225,17 +170,5 @@ describe('useProjectDashboardActions', () => {
       confirmLabel: 'projects.list.confirm.trashAction',
       variant: 'destructive',
     });
-  });
-
-  it('editOpen can be toggled', () => {
-    const { result } = renderHook(() =>
-      useProjectDashboardActions({ initialProject: makeProject() })
-    );
-
-    expect(result.current.editOpen).toBe(false);
-
-    act(() => result.current.setEditOpen(true));
-
-    expect(result.current.editOpen).toBe(true);
   });
 });

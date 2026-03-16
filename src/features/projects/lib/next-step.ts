@@ -22,7 +22,7 @@ export interface NextStepInput {
   totalSurveys: number;
   activeSurveys: number;
   totalResponses: number;
-  targetResponses: number;
+  responseLimit: number;
   insightCount: number;
   currentPhase: ResearchPhase | null;
 }
@@ -34,7 +34,7 @@ export interface NextStepInput {
  * Returns exactly one CTA based on the project's current state.
  */
 export function computeNextStep(input: NextStepInput): NextStepResult {
-  const { totalSurveys, activeSurveys, totalResponses, targetResponses, insightCount } = input;
+  const { totalSurveys, activeSurveys, totalResponses, responseLimit, insightCount } = input;
 
   // No surveys yet — first step is to create one
   if (totalSurveys === 0) {
@@ -55,7 +55,7 @@ export function computeNextStep(input: NextStepInput): NextStepResult {
   }
 
   // Active surveys but below halfway to target
-  if (totalResponses < targetResponses * 0.5) {
+  if (totalResponses < responseLimit * 0.5) {
     return {
       action: 'share-survey',
       labelKey: 'projects.nextStep.shareSurvey',
@@ -72,7 +72,7 @@ export function computeNextStep(input: NextStepInput): NextStepResult {
   }
 
   // Has insights and good data — time to decide
-  if (totalResponses >= targetResponses * 0.7 && insightCount >= 3) {
+  if (totalResponses >= responseLimit * 0.7 && insightCount >= 3) {
     return {
       action: 'make-decision',
       labelKey: 'projects.nextStep.makeDecision',

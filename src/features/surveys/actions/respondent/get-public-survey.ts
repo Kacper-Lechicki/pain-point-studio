@@ -15,7 +15,7 @@ const getPublicSurveyCached = cache(async (slug: string): Promise<PublicSurveyDa
   const { data: survey } = await supabase
     .from('surveys')
     .select(
-      'id, title, description, status, starts_at, ends_at, max_respondents, completed_at, cancelled_at'
+      'id, title, description, status, starts_at, ends_at, max_respondents, completed_at, cancelled_at, project_id'
     )
     .eq('slug', slug)
     .in('status', ['active', 'completed', 'cancelled'])
@@ -86,6 +86,18 @@ const getPublicSurveyCached = cache(async (slug: string): Promise<PublicSurveyDa
   ) {
     isAcceptingResponses = false;
     closedReason = 'max_reached';
+  }
+
+  // Check project-level response limit
+  if (survey.status === 'active' && isAcceptingResponses && survey.project_id) {
+    const { data: remaining } = await supabase.rpc('get_project_remaining_capacity', {
+      p_project_id: survey.project_id,
+    });
+
+    if (remaining != null && (remaining as number) <= 0) {
+      isAcceptingResponses = false;
+      closedReason = 'max_reached';
+    }
   }
 
   const mappedQuestions = (questions ?? []).map(mapQuestionRow);

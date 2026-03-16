@@ -8,6 +8,7 @@ import Cropper from 'react-easy-crop';
 import type { Area } from 'react-easy-crop';
 
 import { Button } from '@/components/ui/button';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import {
   Dialog,
   DialogContent,
@@ -28,6 +29,10 @@ interface ImageCropDialogProps {
   cropShape?: 'round' | 'rect';
   outputSize?: number;
   onCropComplete: (blob: Blob) => void;
+  onRemove?: (() => void) | (() => Promise<void>) | undefined;
+  removeLabel?: string;
+  removeConfirmTitle?: string;
+  removeConfirmDescription?: string;
 }
 
 const MIN_ZOOM = 1;
@@ -42,12 +47,17 @@ export function ImageCropDialog({
   cropShape = 'rect',
   outputSize = 256,
   onCropComplete,
+  onRemove,
+  removeLabel,
+  removeConfirmTitle,
+  removeConfirmDescription,
 }: ImageCropDialogProps) {
   const t = useTranslations('common.imageCrop');
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedArea, setCroppedArea] = useState<CropArea | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
 
   function handleCropComplete(_: Area, croppedAreaPixels: Area) {
     setCroppedArea(croppedAreaPixels);
@@ -79,59 +89,92 @@ export function ImageCropDialog({
     onOpenChange(nextOpen);
   };
 
+  const handleRemoveConfirm = () => {
+    setShowRemoveConfirm(false);
+    void onRemove?.();
+  };
+
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>{t('title')}</DialogTitle>
-          <DialogDescription>{t('description')}</DialogDescription>
-        </DialogHeader>
+    <>
+      <Dialog open={open} onOpenChange={handleOpenChange}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t('title')}</DialogTitle>
+            <DialogDescription>{t('description')}</DialogDescription>
+          </DialogHeader>
 
-        <div className="bg-muted relative aspect-square w-full overflow-hidden rounded-md">
-          <Cropper
-            image={imageSrc}
-            crop={crop}
-            zoom={zoom}
-            aspect={1}
-            onCropChange={setCrop}
-            onZoomChange={setZoom}
-            onCropComplete={handleCropComplete}
-            cropShape={cropShape}
-            showGrid={false}
-          />
-        </div>
+          <div className="bg-muted relative aspect-square w-full overflow-hidden rounded-md">
+            <Cropper
+              image={imageSrc}
+              crop={crop}
+              zoom={zoom}
+              aspect={1}
+              onCropChange={setCrop}
+              onZoomChange={setZoom}
+              onCropComplete={handleCropComplete}
+              cropShape={cropShape}
+              showGrid={false}
+            />
+          </div>
 
-        <div className="flex items-center gap-3 px-1">
-          <ZoomOut className="text-muted-foreground size-4 shrink-0" aria-hidden="true" />
+          <div className="flex items-center gap-3 px-1">
+            <ZoomOut className="text-muted-foreground size-4 shrink-0" aria-hidden="true" />
 
-          <Slider
-            value={[zoom]}
-            min={MIN_ZOOM}
-            max={MAX_ZOOM}
-            step={ZOOM_STEP}
-            onValueChange={([value]) => value !== undefined && setZoom(value)}
-            aria-label={t('zoom')}
-          />
+            <Slider
+              value={[zoom]}
+              min={MIN_ZOOM}
+              max={MAX_ZOOM}
+              step={ZOOM_STEP}
+              onValueChange={([value]) => value !== undefined && setZoom(value)}
+              aria-label={t('zoom')}
+            />
 
-          <ZoomIn className="text-muted-foreground size-4 shrink-0" aria-hidden="true" />
-        </div>
+            <ZoomIn className="text-muted-foreground size-4 shrink-0" aria-hidden="true" />
+          </div>
 
-        <DialogFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => handleOpenChange(false)}
-            disabled={isProcessing}
-          >
-            {t('cancel')}
-          </Button>
+          <DialogFooter className="flex-row sm:justify-between">
+            {onRemove ? (
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={() => setShowRemoveConfirm(true)}
+                disabled={isProcessing}
+              >
+                {removeLabel ?? t('remove')}
+              </Button>
+            ) : (
+              <div />
+            )}
 
-          <Button type="button" onClick={handleConfirm} disabled={isProcessing || !croppedArea}>
-            {isProcessing && <Spinner className="size-4" />}
-            {t('confirm')}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => handleOpenChange(false)}
+                disabled={isProcessing}
+              >
+                {t('cancel')}
+              </Button>
+
+              <Button type="button" onClick={handleConfirm} disabled={isProcessing || !croppedArea}>
+                {isProcessing && <Spinner className="size-4" />}
+                {t('confirm')}
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {onRemove && (
+        <ConfirmDialog
+          open={showRemoveConfirm}
+          onOpenChange={setShowRemoveConfirm}
+          onConfirm={handleRemoveConfirm}
+          title={removeConfirmTitle ?? ''}
+          description={removeConfirmDescription ?? ''}
+          confirmLabel={removeLabel ?? ''}
+        />
+      )}
+    </>
   );
 }

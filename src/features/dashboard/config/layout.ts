@@ -90,6 +90,12 @@ function isNarrowPath(pathname: string): boolean {
     return true;
   }
 
+  const projectSettingsMatch = /^\/dashboard\/projects\/[^/]+\/settings(\/|$)/.test(path);
+
+  if (projectSettingsMatch) {
+    return true;
+  }
+
   return false;
 }
 

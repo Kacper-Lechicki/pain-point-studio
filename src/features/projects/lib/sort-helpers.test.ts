@@ -15,7 +15,7 @@ function makeProject(overrides: Partial<ProjectWithMetrics> = {}): ProjectWithMe
     image_url: null,
     status: 'active',
     user_id: 'user-1',
-    target_responses: 0,
+    response_limit: 0,
     archived_at: null,
     completed_at: null,
     deleted_at: null,
