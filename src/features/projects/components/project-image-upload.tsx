@@ -8,8 +8,13 @@ import { Camera, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
-import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Spinner } from '@/components/ui/spinner';
 import { updateProjectImage } from '@/features/projects/actions/update-project-image';
 import { ProjectAvatar } from '@/features/projects/components/project-avatar';
@@ -141,6 +146,13 @@ export function ProjectImageUpload({
       return;
     }
 
+    setCropDialogOpen(false);
+
+    if (selectedFile?.src) {
+      URL.revokeObjectURL(selectedFile.src);
+    }
+
+    setSelectedFile(null);
     setIsUploading(true);
 
     try {
@@ -165,38 +177,63 @@ export function ProjectImageUpload({
     }
   };
 
+  const openFilePicker = () => fileInputRef.current?.click();
+
+  const avatarButton = (
+    <button
+      type="button"
+      className="group relative cursor-pointer"
+      disabled={isUploading}
+      aria-label={t('projects.detail.changeImage')}
+    >
+      <ProjectAvatar imageUrl={imageUrl} name={projectName} size={48} />
+
+      <span className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/50 opacity-0 transition-opacity md:group-hover:opacity-100">
+        {isUploading ? (
+          <Spinner className="size-4 text-white" />
+        ) : (
+          <Camera className="size-4 text-white" aria-hidden />
+        )}
+      </span>
+    </button>
+  );
+
   return (
     <>
-      <button
-        type="button"
-        className="group relative cursor-pointer"
-        onClick={() => fileInputRef.current?.click()}
-        disabled={isUploading}
-        aria-label={t('projects.detail.changeImage')}
-      >
-        <ProjectAvatar imageUrl={imageUrl} name={projectName} size={48} />
+      {imageUrl ? (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>{avatarButton}</DropdownMenuTrigger>
 
-        <span className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/50 opacity-0 transition-opacity md:group-hover:opacity-100">
-          {isUploading ? (
-            <Spinner className="size-4 text-white" />
-          ) : (
-            <Camera className="size-4 text-white" aria-hidden />
-          )}
-        </span>
-      </button>
+          <DropdownMenuContent align="start">
+            <DropdownMenuItem onClick={openFilePicker}>
+              <Camera className="size-4" aria-hidden />
+              {t('projects.detail.changeImage')}
+            </DropdownMenuItem>
 
-      {imageUrl && (
-        <Button
+            <DropdownMenuItem variant="destructive" onClick={() => setShowRemoveConfirm(true)}>
+              <Trash2 className="size-4" aria-hidden />
+              {t('projects.detail.removeImage')}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ) : (
+        <button
           type="button"
-          variant="ghost"
-          size="icon-xs"
-          className="text-muted-foreground"
-          onClick={() => setShowRemoveConfirm(true)}
+          className="group relative cursor-pointer"
+          onClick={openFilePicker}
           disabled={isUploading}
-          aria-label={t('projects.detail.removeImage')}
+          aria-label={t('projects.detail.changeImage')}
         >
-          <Trash2 className="size-3.5" aria-hidden />
-        </Button>
+          <ProjectAvatar imageUrl={imageUrl} name={projectName} size={48} />
+
+          <span className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/50 opacity-0 transition-opacity md:group-hover:opacity-100">
+            {isUploading ? (
+              <Spinner className="size-4 text-white" />
+            ) : (
+              <Camera className="size-4 text-white" aria-hidden />
+            )}
+          </span>
+        </button>
       )}
 
       <input
@@ -226,6 +263,10 @@ export function ProjectImageUpload({
           cropShape="rect"
           outputSize={PROJECT_IMAGE_DIMENSION}
           onCropComplete={handleCropComplete}
+          onRemove={imageUrl ? handleRemove : undefined}
+          removeLabel={t('projects.detail.removeImage')}
+          removeConfirmTitle={t('projects.detail.removeImageConfirmTitle')}
+          removeConfirmDescription={t('projects.detail.removeImageConfirmDescription')}
         />
       )}
     </>

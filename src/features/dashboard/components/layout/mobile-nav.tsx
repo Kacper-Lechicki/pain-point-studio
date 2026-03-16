@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 
-import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet';
 import {
   MobileNavMainLevel,
   MobileNavSubLevel,
@@ -114,6 +114,7 @@ export function MobileNav() {
     <Sheet open={isMobileOpen} onOpenChange={handleOpenChange}>
       <SheetContent side="left" className="flex w-64 flex-col p-0" showCloseButton={false}>
         <SheetTitle className="sr-only">Navigation</SheetTitle>
+        <SheetDescription className="sr-only">Main navigation menu</SheetDescription>
 
         <AnimatePresence mode="wait">
           {activeLevel === 'main' ? (
@@ -141,7 +142,7 @@ export function MobileNav() {
               animate={{ x: 0, opacity: 1 }}
               exit={prefersReducedMotion ? { opacity: 0 } : { x: 20, opacity: 0 }}
               transition={prefersReducedMotion ? { duration: 0 } : TRANSITION}
-              className="flex flex-1 flex-col overflow-y-auto pb-8"
+              className="flex flex-1 flex-col overflow-y-auto"
             >
               <MobileNavSubLevel
                 selectedItem={selectedItem!}
@@ -153,6 +154,7 @@ export function MobileNav() {
                 breadcrumbSegments={breadcrumb?.segments}
                 subPanelLinks={subPanelItems?.links}
                 subPanelBottomLinks={subPanelItems?.bottomLinks}
+                subPanelFooterLinks={subPanelItems?.footerLinks}
               />
             </motion.div>
           )}

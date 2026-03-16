@@ -4,11 +4,6 @@ import { useMemo } from 'react';
 
 import dynamic from 'next/dynamic';
 
-import { ClipboardList, Plus } from 'lucide-react';
-import { useTranslations } from 'next-intl';
-
-import { Button } from '@/components/ui/button';
-import { EmptyState } from '@/components/ui/empty-state';
 import type { SurveySignalData } from '@/features/projects/actions/get-project-signals-data';
 import { OverviewActivityList } from '@/features/projects/components/overview-activity-list';
 import { OverviewVerdictCard } from '@/features/projects/components/overview-verdict-card';
@@ -19,8 +14,6 @@ import { generateFindings } from '@/features/projects/lib/signals';
 import { computeVerdict } from '@/features/projects/lib/verdict';
 import type { Project, ProjectInsight, ProjectOverviewStats } from '@/features/projects/types';
 import type { UserSurvey } from '@/features/surveys/types';
-import Link from '@/i18n/link';
-import { getProjectDetailUrl } from '@/lib/common/urls/project-urls';
 
 const OverviewResponseTrend = dynamic(
   () =>
@@ -47,9 +40,7 @@ export function ProjectOverviewTab({
   overviewStats,
   signalsData,
 }: ProjectOverviewTabProps) {
-  const t = useTranslations();
   const isArchived = isProjectArchived(project);
-  const hasSurveys = overviewStats.totalSurveys > 0;
 
   const currentPhase = deriveProjectPhase(surveys.map((s) => ({ researchPhase: s.researchPhase })));
 
@@ -62,27 +53,6 @@ export function ProjectOverviewTab({
     findings,
     insights,
   });
-
-  if (!hasSurveys) {
-    return (
-      <EmptyState
-        icon={ClipboardList}
-        title={t('projects.detail.empty.title')}
-        description={t('projects.detail.empty.description')}
-        accent="cyan"
-        action={
-          !isArchived ? (
-            <Button asChild>
-              <Link href={`${getProjectDetailUrl(project.id)}?tab=surveys`}>
-                <Plus className="size-4" aria-hidden />
-                {t('projects.detail.createSurvey')}
-              </Link>
-            </Button>
-          ) : undefined
-        }
-      />
-    );
-  }
 
   return (
     <div className="grid min-w-0 gap-4 lg:grid-cols-[2fr_1fr]">

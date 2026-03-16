@@ -14,8 +14,10 @@ export interface SubPanelLink {
 interface SubPanelItemsContextValue {
   links: SubPanelLink[];
   bottomLinks: SubPanelLink[];
+  footerLinks: SubPanelLink[];
   setLinks: (links: SubPanelLink[]) => void;
   setBottomLinks: (links: SubPanelLink[]) => void;
+  setFooterLinks: (links: SubPanelLink[]) => void;
 }
 
 const SubPanelItemsContext = createContext<SubPanelItemsContextValue | null>(null);
@@ -23,6 +25,7 @@ const SubPanelItemsContext = createContext<SubPanelItemsContextValue | null>(nul
 export function SubPanelItemsProvider({ children }: { children: ReactNode }) {
   const [links, setLinksRaw] = useState<SubPanelLink[]>([]);
   const [bottomLinks, setBottomLinksRaw] = useState<SubPanelLink[]>([]);
+  const [footerLinks, setFooterLinksRaw] = useState<SubPanelLink[]>([]);
 
   const setLinks = (next: SubPanelLink[]) => {
     setLinksRaw(next);
@@ -32,33 +35,62 @@ export function SubPanelItemsProvider({ children }: { children: ReactNode }) {
     setBottomLinksRaw(next);
   };
 
-  const value: SubPanelItemsContextValue = { links, bottomLinks, setLinks, setBottomLinks };
+  const setFooterLinks = (next: SubPanelLink[]) => {
+    setFooterLinksRaw(next);
+  };
+
+  const value: SubPanelItemsContextValue = {
+    links,
+    bottomLinks,
+    footerLinks,
+    setLinks,
+    setBottomLinks,
+    setFooterLinks,
+  };
 
   return <SubPanelItemsContext.Provider value={value}>{children}</SubPanelItemsContext.Provider>;
 }
 
-export function useSubPanelLinks(links: SubPanelLink[], bottomLinks?: SubPanelLink[]) {
+interface UseSubPanelLinksOptions {
+  links: SubPanelLink[];
+  bottomLinks?: SubPanelLink[];
+  footerLinks?: SubPanelLink[];
+}
+
+export function useSubPanelLinks(
+  linksOrOptions: SubPanelLink[] | UseSubPanelLinksOptions,
+  bottomLinks?: SubPanelLink[]
+) {
   const ctx = useContext(SubPanelItemsContext);
   const setLinks = ctx?.setLinks;
   const setBottomLinks = ctx?.setBottomLinks;
+  const setFooterLinks = ctx?.setFooterLinks;
 
-  const key = links.map((l) => `${l.href}:${l.label}`).join('|');
-  const bottomKey = bottomLinks?.map((l) => `${l.href}:${l.label}`).join('|') ?? '';
+  const isOptions = !Array.isArray(linksOrOptions);
+  const resolvedLinks = isOptions ? linksOrOptions.links : linksOrOptions;
+  const resolvedBottomLinks = isOptions ? linksOrOptions.bottomLinks : bottomLinks;
+  const resolvedFooterLinks = isOptions ? linksOrOptions.footerLinks : undefined;
+
+  const key = resolvedLinks.map((l) => `${l.href}:${l.label}`).join('|');
+  const bottomKey = resolvedBottomLinks?.map((l) => `${l.href}:${l.label}`).join('|') ?? '';
+  const footerKey = resolvedFooterLinks?.map((l) => `${l.href}:${l.label}`).join('|') ?? '';
 
   useEffect(() => {
-    if (!setLinks || !setBottomLinks) {
+    if (!setLinks || !setBottomLinks || !setFooterLinks) {
       return;
     }
 
-    setLinks(links);
-    setBottomLinks(bottomLinks ?? []);
+    setLinks(resolvedLinks);
+    setBottomLinks(resolvedBottomLinks ?? []);
+    setFooterLinks(resolvedFooterLinks ?? []);
 
     return () => {
       setLinks([]);
       setBottomLinks([]);
+      setFooterLinks([]);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- key captures link identity
-  }, [key, bottomKey, setLinks, setBottomLinks]);
+  }, [key, bottomKey, footerKey, setLinks, setBottomLinks, setFooterLinks]);
 }
 
 export function useSubPanelItems() {

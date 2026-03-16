@@ -4,13 +4,14 @@ import { useEffect, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
-import { FolderKanban } from 'lucide-react';
+import { FolderKanban, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ListPagination } from '@/components/ui/list-pagination';
+import { ROUTES } from '@/config';
 import { bulkChangeProjectStatus } from '@/features/projects/actions/bulk-change-project-status';
 import { BulkActionBar } from '@/features/projects/components/bulk-action-bar';
 import { EditProjectDialog } from '@/features/projects/components/edit-project-dialog';
@@ -26,6 +27,7 @@ import { getProjectConfirmDialogProps } from '@/features/projects/lib/project-co
 import type { ProjectWithMetrics } from '@/features/projects/types';
 import type { ProjectsListExtrasMap } from '@/features/projects/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
+import Link from '@/i18n/link';
 import type { MessageKey } from '@/i18n/types';
 import { getProjectDetailUrl } from '@/lib/common/urls/project-urls';
 
@@ -159,33 +161,50 @@ export function ProjectsListPage({ projects, extras }: ProjectsListPageProps) {
       )}
 
       {filteredProjects.length === 0 ? (
-        <EmptyState
-          icon={FolderKanban}
-          title={
-            searchQuery.trim()
-              ? t('projects.list.emptySearch.title', { query: searchQuery })
-              : t('projects.list.emptyFilter.title')
-          }
-          description={
-            searchQuery.trim()
-              ? t('projects.list.emptySearch.description')
-              : t('projects.list.emptyFilter.description')
-          }
-          action={
-            (searchQuery.trim() || isFiltered) && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setSearchQuery('');
-                  setStatusFilter([]);
-                }}
-              >
-                {t('projects.list.clearFilters')}
+        localProjects.length === 0 ? (
+          <EmptyState
+            icon={FolderKanban}
+            title={t('projects.empty.title')}
+            description={t('projects.empty.description')}
+            accent="violet"
+            action={
+              <Button asChild>
+                <Link href={ROUTES.dashboard.projectNew}>
+                  <Plus className="size-4" aria-hidden />
+                  {t('projects.empty.cta')}
+                </Link>
               </Button>
-            )
-          }
-        />
+            }
+          />
+        ) : (
+          <EmptyState
+            icon={FolderKanban}
+            title={
+              searchQuery.trim()
+                ? t('projects.list.emptySearch.title', { query: searchQuery })
+                : t('projects.list.emptyFilter.title')
+            }
+            description={
+              searchQuery.trim()
+                ? t('projects.list.emptySearch.description')
+                : t('projects.list.emptyFilter.description')
+            }
+            action={
+              (searchQuery.trim() || isFiltered) && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setSearchQuery('');
+                    setStatusFilter([]);
+                  }}
+                >
+                  {t('projects.list.clearFilters')}
+                </Button>
+              )
+            }
+          />
+        )
       ) : isMd ? (
         <ProjectListTable
           projects={paginatedProjects}

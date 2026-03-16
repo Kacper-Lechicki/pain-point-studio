@@ -135,16 +135,16 @@ All validated at build time via `src/lib/common/env.ts` using `@t3-oss/env-nextj
 
 All domain code lives under `src/features/`. 8 features, each self-contained with its own actions, components, hooks, lib, types, and config:
 
-| Feature           | Responsibility                                                                                | Key Files                                                                        |
-| ----------------- | --------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `auth`            | Sign-up, sign-in, OAuth, password reset, identity linking                                     | `actions/sign-in.ts`, `actions/sign-up.ts`, `components/`                        |
-| `command-palette` | Global `Cmd+K` search and navigation                                                          | `components/command-palette.tsx`, `hooks/use-command-palette.ts`                 |
-| `dashboard`       | Overview bento grid, layout shell (sidebar, navbar, sub-panel)                                | `components/layout/`, `components/bento/`, `actions/get-dashboard-*.ts`          |
-| `marketing`       | Landing page sections, charts, public content                                                 | `components/layout/`, `components/charts/`, `config/`                            |
-| `profile`         | Public profile preview and research journey                                                   | `components/profile-header.tsx`, `components/research-journey.tsx`               |
-| `projects`        | Project CRUD, notes (rich text + folders), insights (AI-suggested), overview stats, kanban    | `actions/`, `components/project-dashboard-page.tsx`, `hooks/use-kanban-board.ts` |
-| `settings`        | Profile editing, email change, password change, connected accounts, account deletion          | `actions/`, `components/profile-form.tsx`, `components/avatar-upload.tsx`        |
-| `surveys`         | Survey builder (question editor), respondent flow (public), analytics (stats, charts, export) | `actions/`, `components/builder/`, `components/respondent/`, `components/stats/` |
+| Feature           | Responsibility                                                                                | Key Files                                                                                                                                        |
+| ----------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `auth`            | Sign-up, sign-in, OAuth, password reset, identity linking                                     | `actions/sign-in.ts`, `actions/sign-up.ts`, `components/`                                                                                        |
+| `command-palette` | Global `Cmd+K` search and navigation, recent projects/surveys groups                          | `components/command-palette.tsx`, `components/command-recent-*-group.tsx`                                                                        |
+| `dashboard`       | Overview bento grid, layout shell (sidebar, navbar, sub-panel), recent items tracking         | `components/layout/`, `components/bento/`, `actions/get-recent-items.ts`, `actions/track-recent-item.ts`, `hooks/use-projects-sub-nav-groups.ts` |
+| `marketing`       | Landing page sections, charts, public content                                                 | `components/layout/`, `components/charts/`, `config/`                                                                                            |
+| `profile`         | Public profile preview and research journey                                                   | `components/profile-header.tsx`, `components/research-journey.tsx`                                                                               |
+| `projects`        | Project CRUD, notes (rich text + folders), insights (AI-suggested), overview stats, kanban    | `actions/`, `components/project-dashboard-page.tsx`, `hooks/use-kanban-board.ts`                                                                 |
+| `settings`        | Profile editing, email change, password change, connected accounts, account deletion          | `actions/`, `components/profile-form.tsx`, `components/avatar-upload.tsx`                                                                        |
+| `surveys`         | Survey builder (question editor), respondent flow (public), analytics (stats, charts, export) | `actions/`, `components/builder/`, `components/respondent/`, `components/stats/`                                                                 |
 
 Internal anatomy of each feature:
 
@@ -370,7 +370,7 @@ Key settings:
 
 ### Schema Overview
 
-10 tables with Row Level Security. All in `public` schema. Extensions: `pgcrypto`, `supabase_vault`, `uuid-ossp`, `pg_cron`, `pg_net`.
+11 tables with Row Level Security. All in `public` schema. Extensions: `pgcrypto`, `supabase_vault`, `uuid-ossp`, `pg_cron`, `pg_net`.
 
 | Table                        | Purpose                                          | Key Columns                                                                                                                                                            |
 | ---------------------------- | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -384,6 +384,7 @@ Key settings:
 | `survey_questions`           | Questions in surveys                             | `id`, `survey_id`, `text`, `type` (question_type enum), `required`, `description`, `config` (JSON), `position`                                                         |
 | `survey_responses`           | Response sessions                                | `id`, `survey_id`, `fingerprint`, `device_type`, `status` (in_progress/completed/abandoned), `started_at`, `completed_at`, `contact_name`, `contact_email`, `feedback` |
 | `survey_answers`             | Individual answers                               | `id`, `response_id`, `question_id`, `value` (JSON)                                                                                                                     |
+| `user_recent_items`          | Recently visited projects/surveys per user       | `id`, `user_id`, `item_id`, `item_type` (project/survey), `visited_at`. Unique on `(user_id, item_id)`.                                                                |
 
 ### Database Enums
 
@@ -392,7 +393,7 @@ question_type: 'open_text' | 'short_text' | 'multiple_choice' | 'rating_scale' |
 survey_status: 'draft' | 'active' | 'completed' | 'cancelled' | 'archived' | 'trashed'
 ```
 
-### RPC Functions (37 total)
+### RPC Functions (39 total)
 
 **Auth & User Management:**
 
@@ -436,10 +437,12 @@ survey_status: 'draft' | 'active' | 'completed' | 'cancelled' | 'archived' | 'tr
 - `encrypt_pii(plain_text)` — AES encryption using Supabase Vault secret
 - `decrypt_pii(encrypted)` — AES decryption
 
-**Dashboard:**
+**Dashboard & Recent Items:**
 
 - `get_dashboard_overview(p_user_id)` — User's projects with active survey counts
 - `get_dashboard_stats(p_user_id, p_days)` — KPIs: total responses, completion rate, timeline, recent activity
+- `upsert_recent_item(p_item_id, p_item_type)` — Fire-and-forget upsert into `user_recent_items`. Auto-trims to 5 per item type.
+- `get_recent_items(p_item_type, p_limit, p_project_id)` — Returns recent items with fresh labels (joins projects/surveys). Filters out trashed/cancelled items. Optional project filter for surveys.
 
 **Other:**
 

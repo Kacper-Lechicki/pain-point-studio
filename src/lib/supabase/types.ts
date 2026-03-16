@@ -519,6 +519,30 @@ export type Database = {
           },
         ];
       };
+      user_recent_items: {
+        Row: {
+          id: string;
+          item_id: string;
+          item_type: string;
+          user_id: string;
+          visited_at: string;
+        };
+        Insert: {
+          id?: string;
+          item_id: string;
+          item_type: string;
+          user_id: string;
+          visited_at?: string;
+        };
+        Update: {
+          id?: string;
+          item_id?: string;
+          item_type?: string;
+          user_id?: string;
+          visited_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -578,6 +602,16 @@ export type Database = {
         Returns: Json;
       };
       get_projects_list_extras: { Args: { p_user_id: string }; Returns: Json };
+      get_recent_items:
+        | { Args: { p_item_type: string; p_limit?: number }; Returns: Json }
+        | {
+            Args: {
+              p_item_type: string;
+              p_limit?: number;
+              p_project_id?: string;
+            };
+            Returns: Json;
+          };
       get_research_journey: { Args: { p_user_id: string }; Returns: Json };
       get_response_detail: {
         Args: { p_response_id: string; p_user_id: string };
@@ -649,6 +683,10 @@ export type Database = {
           p_feedback?: string;
           p_response_id: string;
         };
+        Returns: undefined;
+      };
+      upsert_recent_item: {
+        Args: { p_item_id: string; p_item_type: string };
         Returns: undefined;
       };
       validate_and_save_answer: {

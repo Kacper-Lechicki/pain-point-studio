@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
@@ -21,6 +21,7 @@ import {
 import type { SurveyStats, UserSurvey } from '@/features/surveys/types';
 import type { SurveyStatus } from '@/features/surveys/types';
 import { useBreadcrumbSegment, useBreadcrumbTrail } from '@/hooks/common/use-breadcrumb';
+import { useRecentItems } from '@/hooks/common/use-recent-items';
 import { useRefresh } from '@/hooks/common/use-refresh';
 import { useSubPanelLinks } from '@/hooks/common/use-sub-panel-items';
 import { getProjectDetailUrl } from '@/lib/common/urls/project-urls';
@@ -46,6 +47,12 @@ export const SurveyStatsPanel = ({ stats, survey }: SurveyStatsPanelProps) => {
 
   useBreadcrumbTrail(breadcrumbTrail);
   useBreadcrumbSegment(stats.survey.id, stats.survey.title);
+
+  const { track: trackRecentSurvey } = useRecentItems('survey');
+
+  useEffect(() => {
+    trackRecentSurvey(stats.survey.id);
+  }, [stats.survey.id, trackRecentSurvey]);
 
   useSubPanelLinks(
     survey

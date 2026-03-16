@@ -33,7 +33,7 @@ test('create wizard: name -> summary -> description -> confirm -> project detail
   await expect(page.getByText(PROJECT_NAME)).toBeVisible();
   await page.getByRole('button', { name: 'Create Project' }).click();
   await expect(page.getByText('Your project has been created!')).toBeVisible({ timeout: 30_000 });
-  await page.getByRole('button', { name: 'Go to project' }).click();
+  await page.getByRole('button', { name: 'Skip for now' }).click();
   await expect(page).toHaveURL(/\/dashboard\/projects\/[0-9a-f-]+/, { timeout: 15_000 });
   await expect(page.getByRole('heading', { name: PROJECT_NAME })).toBeVisible({ timeout: 15_000 });
 });

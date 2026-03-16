@@ -36,7 +36,8 @@
       "description": "Drag to reposition. Scroll to zoom in or out.",
       "zoom": "Zoom",
       "confirm": "Apply",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "remove": "Remove"
     },
     "confirm": {
       "title": "Are you sure?",
@@ -1046,7 +1047,7 @@
           "hint": "Upload a logo or image to help you quickly identify this project. You can always add or change it later.",
           "successMessage": "Your project has been created!",
           "skipLabel": "Skip for now",
-          "doneLabel": "Go to project"
+          "doneLabel": "Let's start!"
         }
       },
       "navigation": {
@@ -1700,7 +1701,11 @@
     "profilePreview": "Profile",
     "askAi": "Ask AI",
     "giveFeedback": "Give Feedback",
-    "shareFeedback": "Share Feedback"
+    "shareFeedback": "Share Feedback",
+    "recentProjects": "Recent",
+    "noRecentProjects": "No recently opened projects",
+    "recentSurveys": "Recent Surveys",
+    "noRecentSurveys": "No recently opened surveys"
   },
   "breadcrumbs": {
     "dashboard": "Dashboard",
@@ -2138,7 +2143,9 @@
       "quickActions": "Quick Actions",
       "pages": "Pages",
       "projects": "Projects",
-      "surveys": "Surveys"
+      "surveys": "Surveys",
+      "recentProjects": "Recent Projects",
+      "recentSurveys": "Recent Surveys"
     },
     "actions": {
       "createProject": "Create Project",

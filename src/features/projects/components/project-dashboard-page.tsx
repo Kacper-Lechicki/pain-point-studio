@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
@@ -30,6 +30,7 @@ import type {
 import { SurveyList } from '@/features/surveys/components/dashboard/survey-list';
 import type { UserSurvey } from '@/features/surveys/types';
 import { useBreadcrumbSegment } from '@/hooks/common/use-breadcrumb';
+import { useRecentItems } from '@/hooks/common/use-recent-items';
 import { useRefresh } from '@/hooks/common/use-refresh';
 import { useSubPanelLinks } from '@/hooks/common/use-sub-panel-items';
 import { getCreateSurveyUrl } from '@/lib/common/urls/survey-urls';
@@ -82,34 +83,40 @@ export function ProjectDashboardPage({
 
   useBreadcrumbSegment(project.id, project.name);
 
+  const { track: trackRecentProject } = useRecentItems('project');
+
+  useEffect(() => {
+    trackRecentProject(project.id);
+  }, [project.id, trackRecentProject]);
+
   const readOnly = isProjectReadOnly(project);
 
-  useSubPanelLinks(
-    [
+  useSubPanelLinks({
+    links: [
       {
         label: t('common.backToProjects'),
         href: ROUTES.dashboard.projects,
         icon: ChevronLeft,
       },
     ],
-    [
-      ...(!readOnly
-        ? [
-            {
-              label: t('projects.detail.createSurvey'),
-              href: getCreateSurveyUrl(project.id),
-              icon: Plus,
-            },
-          ]
-        : []),
+    bottomLinks: !readOnly
+      ? [
+          {
+            label: t('projects.detail.createSurvey'),
+            href: getCreateSurveyUrl(project.id),
+            icon: Plus,
+          },
+        ]
+      : [],
+    footerLinks: [
       {
         label: t('projects.detail.settings'),
         href: '#',
         icon: Settings,
         disabled: true,
       },
-    ]
-  );
+    ],
+  });
 
   const handleInsightCreated = (insight: ProjectInsight) => {
     setInsights((prev) => [...prev, insight]);
