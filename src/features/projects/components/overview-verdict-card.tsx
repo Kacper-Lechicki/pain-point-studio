@@ -28,7 +28,7 @@ const ACTION_ICONS: Record<NextStepAction, LucideIcon> = {
 interface OverviewVerdictCardProps {
   verdict: VerdictResult;
   totalResponses: number;
-  targetResponses: number;
+  responseLimit: number;
   currentPhase: ResearchPhase | null;
   activeSurveys: number;
   totalSurveys: number;
@@ -39,7 +39,7 @@ interface OverviewVerdictCardProps {
 export function OverviewVerdictCard({
   verdict,
   totalResponses,
-  targetResponses,
+  responseLimit,
   currentPhase,
   activeSurveys,
   totalSurveys,
@@ -55,7 +55,7 @@ export function OverviewVerdictCard({
     totalSurveys,
     activeSurveys,
     totalResponses,
-    targetResponses,
+    responseLimit,
     insightCount,
     currentPhase,
   };
@@ -91,7 +91,7 @@ export function OverviewVerdictCard({
           <p className="text-muted-foreground mt-1 text-xs tabular-nums">
             {t('projects.verdict.confidence' as MessageKey, {
               current: totalResponses,
-              target: targetResponses,
+              target: responseLimit,
             })}
           </p>
         </div>

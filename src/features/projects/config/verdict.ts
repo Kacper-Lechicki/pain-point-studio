@@ -13,7 +13,7 @@ export type VerdictStatus =
 
 export interface VerdictResult {
   status: VerdictStatus;
-  /** 0–1 fraction representing data completeness (totalResponses / targetResponses). */
+  /** 0–1 fraction representing data completeness (totalResponses / responseLimit). */
   confidence: number;
   /** i18n key for the one-liner summary. */
   summaryKey: string;

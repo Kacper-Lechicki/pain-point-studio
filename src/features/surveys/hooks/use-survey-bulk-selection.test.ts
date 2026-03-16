@@ -27,7 +27,7 @@ function makeSurvey(overrides: Partial<UserSurvey> = {}): UserSurvey {
     projectId: 'proj1',
     projectName: 'Project 1',
     responseCount: 0,
-    targetResponses: 100,
+    responseLimit: 100,
     lastResponseAt: null,
     recentActivity: [],
     createdAt: '2024-01-01',

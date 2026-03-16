@@ -220,21 +220,36 @@ const AvatarUpload = ({
       )}
 
       <div className="flex flex-col items-center gap-2 sm:items-start">
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={openFilePicker}
-          disabled={isUploading}
-        >
-          {isUploading ? (
-            <Spinner className="size-4" />
-          ) : (
-            <Upload className="size-4" aria-hidden="true" />
-          )}
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={openFilePicker}
+            disabled={isUploading}
+          >
+            {isUploading ? (
+              <Spinner className="size-4" />
+            ) : (
+              <Upload className="size-4" aria-hidden="true" />
+            )}
 
-          {currentUrl ? t('settings.profile.changeAvatar') : t('settings.profile.uploadAvatar')}
-        </Button>
+            {currentUrl ? t('settings.profile.changeAvatar') : t('settings.profile.uploadAvatar')}
+          </Button>
+
+          {currentUrl && (
+            <Button
+              type="button"
+              variant="destructive"
+              size="sm"
+              onClick={() => setShowRemoveConfirm(true)}
+              disabled={isUploading}
+            >
+              <Trash2 className="size-4" aria-hidden="true" />
+              {t('settings.profile.removeAvatar')}
+            </Button>
+          )}
+        </div>
 
         <p className="text-muted-foreground text-center text-xs sm:text-left">
           {t('settings.profile.avatarHint')}

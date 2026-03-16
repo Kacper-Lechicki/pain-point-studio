@@ -5,16 +5,18 @@ import { ROUTES, url } from '../helpers/routes';
 
 const TEST_IMAGE = path.resolve(__dirname, '../fixtures/test-image.png');
 
-function projectUrl(projectId: string) {
-  return url(`${ROUTES.dashboard.projects}/${projectId}`);
+function settingsUrl(projectId: string) {
+  return url(`${ROUTES.dashboard.projects}/${projectId}/settings`);
 }
 
 test('upload project image via crop dialog', async ({ page, testProject: { projectId } }) => {
-  await page.goto(projectUrl(projectId));
+  await page.goto(settingsUrl(projectId));
 
-  const avatarButton = page.getByRole('button', { name: 'Change image' });
-
-  await expect(avatarButton).toBeVisible({ timeout: 15_000 });
+  await expect(
+    page.getByRole('button', { name: /change image|upload image/i }).first()
+  ).toBeVisible({
+    timeout: 15_000,
+  });
 
   const fileInput = page.locator('input[type="file"]');
 
@@ -35,11 +37,13 @@ test('upload does not show error toast (regression)', async ({
   page,
   testProject: { projectId },
 }) => {
-  await page.goto(projectUrl(projectId));
+  await page.goto(settingsUrl(projectId));
 
   const fileInput = page.locator('input[type="file"]');
 
-  await expect(page.getByRole('button', { name: 'Change image' })).toBeVisible({
+  await expect(
+    page.getByRole('button', { name: /change image|upload image/i }).first()
+  ).toBeVisible({
     timeout: 15_000,
   });
 

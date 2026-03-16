@@ -48,7 +48,7 @@ export function ProjectOverviewTab({
 
   const verdict = computeVerdict({
     totalResponses: overviewStats.totalResponses,
-    targetResponses: project.target_responses,
+    responseLimit: project.response_limit,
     insightCount: insights.length,
     findings,
     insights,
@@ -64,7 +64,7 @@ export function ProjectOverviewTab({
         <OverviewVerdictCard
           verdict={verdict}
           totalResponses={overviewStats.totalResponses}
-          targetResponses={project.target_responses}
+          responseLimit={project.response_limit}
           currentPhase={currentPhase}
           activeSurveys={overviewStats.activeSurveys}
           totalSurveys={overviewStats.totalSurveys}
@@ -73,7 +73,7 @@ export function ProjectOverviewTab({
         />
         <ProjectOverviewKpiCards
           overviewStats={overviewStats}
-          targetResponses={project.target_responses}
+          responseLimit={project.response_limit}
         />
         <OverviewResponseTrend timeline={overviewStats.responsesTimeline} />
         <OverviewActivityList items={overviewStats.recentActivity} />

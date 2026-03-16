@@ -249,9 +249,9 @@ export type Database = {
           name: string;
           pre_archive_status: string | null;
           pre_trash_status: string | null;
+          response_limit: number;
           status: string;
           summary: string | null;
-          target_responses: number;
           updated_at: string;
           user_id: string;
         };
@@ -266,9 +266,9 @@ export type Database = {
           name: string;
           pre_archive_status?: string | null;
           pre_trash_status?: string | null;
+          response_limit?: number;
           status?: string;
           summary?: string | null;
-          target_responses?: number;
           updated_at?: string;
           user_id: string;
         };
@@ -283,9 +283,9 @@ export type Database = {
           name?: string;
           pre_archive_status?: string | null;
           pre_trash_status?: string | null;
+          response_limit?: number;
           status?: string;
           summary?: string | null;
-          target_responses?: number;
           updated_at?: string;
           user_id?: string;
         };
@@ -596,6 +596,14 @@ export type Database = {
       get_project_detail_stats: {
         Args: { p_project_id: string; p_user_id: string };
         Returns: Json;
+      };
+      get_project_remaining_capacity: {
+        Args: { p_project_id: string };
+        Returns: number;
+      };
+      get_project_response_count: {
+        Args: { p_project_id: string };
+        Returns: number;
       };
       get_project_surveys_with_counts: {
         Args: { p_project_id: string; p_user_id: string };

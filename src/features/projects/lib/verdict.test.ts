@@ -10,7 +10,7 @@ import { type VerdictInput, computeVerdict } from './verdict';
 function makeInput(overrides: Partial<VerdictInput> = {}): VerdictInput {
   return {
     totalResponses: 0,
-    targetResponses: 30,
+    responseLimit: 30,
     insightCount: 0,
     findings: [],
     insights: [],
@@ -158,18 +158,18 @@ describe('computeVerdict', () => {
     const result = computeVerdict(
       makeInput({
         totalResponses: 50,
-        targetResponses: 30,
+        responseLimit: 30,
       })
     );
 
     expect(result.confidence).toBe(1);
   });
 
-  it('handles targetResponses of 0 gracefully', () => {
+  it('handles responseLimit of 0 gracefully', () => {
     const result = computeVerdict(
       makeInput({
         totalResponses: 10,
-        targetResponses: 0,
+        responseLimit: 0,
       })
     );
 

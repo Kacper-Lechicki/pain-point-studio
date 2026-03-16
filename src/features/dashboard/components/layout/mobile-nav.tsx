@@ -155,6 +155,8 @@ export function MobileNav() {
                 subPanelLinks={subPanelItems?.links}
                 subPanelBottomLinks={subPanelItems?.bottomLinks}
                 subPanelFooterLinks={subPanelItems?.footerLinks}
+                subPanelActions={subPanelItems?.actions}
+                subPanelTitleKey={subPanelItems?.titleKey ?? undefined}
               />
             </motion.div>
           )}

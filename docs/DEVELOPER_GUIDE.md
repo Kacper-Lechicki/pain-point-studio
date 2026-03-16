@@ -161,16 +161,16 @@ src/features/<feature>/
 
 ### Placement Rules
 
-| Kind                                                      | Location                               | Example                                                   |
-| --------------------------------------------------------- | -------------------------------------- | --------------------------------------------------------- |
-| Server action for a feature                               | `features/<feature>/actions/<name>.ts` | `features/projects/actions/create-project.ts`             |
-| Component used by one feature                             | `features/<feature>/components/`       | `features/surveys/components/builder/question-editor.tsx` |
-| Shared UI primitives (Button, Dialog, Table…)             | `src/components/ui/`                   | `components/ui/button.tsx`                                |
-| Shared composite components (UserMenu, PasswordStrength…) | `src/components/shared/`               | `components/shared/rich-editor/`                          |
-| Hook used by one feature                                  | `features/<feature>/hooks/`            | `features/projects/hooks/use-inline-edit.ts`              |
-| Cross-feature hook                                        | `src/hooks/common/`                    | `hooks/common/use-form-action.ts`                         |
-| Pure helper for a feature                                 | `features/<feature>/lib/`              | `features/surveys/lib/calculations.ts`                    |
-| Cross-feature utility                                     | `src/lib/common/`                      | `lib/common/rate-limit.ts`                                |
+| Kind                                                           | Location                               | Example                                                   |
+| -------------------------------------------------------------- | -------------------------------------- | --------------------------------------------------------- |
+| Server action for a feature                                    | `features/<feature>/actions/<name>.ts` | `features/projects/actions/create-project.ts`             |
+| Component used by one feature                                  | `features/<feature>/components/`       | `features/surveys/components/builder/question-editor.tsx` |
+| Shared UI primitives (Button, Dialog, Table…)                  | `src/components/ui/`                   | `components/ui/button.tsx`                                |
+| Shared composite components (UserMenu, SettingsSectionHeader…) | `src/components/shared/`               | `components/shared/settings-section-header.tsx`           |
+| Hook used by one feature                                       | `features/<feature>/hooks/`            | `features/projects/hooks/use-realtime-project.ts`         |
+| Cross-feature hook                                             | `src/hooks/common/`                    | `hooks/common/use-form-action.ts`                         |
+| Pure helper for a feature                                      | `features/<feature>/lib/`              | `features/surveys/lib/calculations.ts`                    |
+| Cross-feature utility                                          | `src/lib/common/`                      | `lib/common/rate-limit.ts`                                |
 
 ### Feature Boundaries
 
@@ -375,7 +375,7 @@ Key settings:
 | Table                        | Purpose                                          | Key Columns                                                                                                                                                            |
 | ---------------------------- | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `profiles`                   | User profile (auto-created on signup)            | `id` (FK → auth.users), `full_name`, `avatar_url`, `pinned_project_id`, `social_links`                                                                                 |
-| `projects`                   | Research projects                                | `id`, `user_id`, `name`, `summary`, `status`, `image_url`, `target_responses`, `deleted_at`, `pre_trash_status`, `pre_archive_status`                                  |
+| `projects`                   | Research projects                                | `id`, `user_id`, `name`, `summary`, `status`, `image_url`, `response_limit` (default 50), `deleted_at`, `pre_trash_status`, `pre_archive_status`                       |
 | `project_notes`              | Rich text notes                                  | `id`, `project_id`, `folder_id`, `title`, `content` (JSON), `is_pinned`, `position`                                                                                    |
 | `project_note_folders`       | Note folder structure                            | `id`, `project_id`, `name`, `position`                                                                                                                                 |
 | `project_insights`           | Research insights (user-created or AI-suggested) | `id`, `project_id`, `type` (strength/opportunity/threat/decision), `title`, `description`, `column`                                                                    |

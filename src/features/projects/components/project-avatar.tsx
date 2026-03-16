@@ -7,7 +7,7 @@ interface ProjectAvatarProps {
   imageUrl: string | null | undefined;
   name: string;
   /** Pixel size — controls both the avatar dimensions and fallback text. */
-  size?: 32 | 48;
+  size?: 32 | 48 | 80;
   className?: string;
 }
 
@@ -20,6 +20,7 @@ export function ProjectAvatar({ imageUrl, name, size = 32, className }: ProjectA
         'shrink-0 rounded-lg',
         size === 32 && 'size-8',
         size === 48 && 'size-12',
+        size === 80 && 'size-20',
         className
       )}
     >
@@ -28,7 +29,8 @@ export function ProjectAvatar({ imageUrl, name, size = 32, className }: ProjectA
         className={cn(
           'bg-muted text-muted-foreground rounded-lg font-semibold',
           size === 32 && 'text-xs',
-          size === 48 && 'text-base'
+          size === 48 && 'text-base',
+          size === 80 && 'text-2xl'
         )}
       >
         {letter}

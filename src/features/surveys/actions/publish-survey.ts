@@ -55,6 +55,24 @@ export const publishSurvey = withProtectedAction<typeof publishSurveySchema, { s
         if (!project || project.status !== 'active') {
           return { error: 'surveys.errors.projectNotActive' };
         }
+
+        // Check project response limit
+        const { data: remaining } = await supabase.rpc('get_project_remaining_capacity', {
+          p_project_id: survey.project_id,
+        });
+
+        if (remaining != null && (remaining as number) <= 0) {
+          return { error: 'surveys.errors.projectLimitReached' };
+        }
+
+        // Cap maxRespondents to remaining project capacity
+        if (
+          data.maxRespondents &&
+          remaining != null &&
+          data.maxRespondents > (remaining as number)
+        ) {
+          data.maxRespondents = remaining as number;
+        }
       }
 
       // Validate end date if provided — must be in the future (compare in UTC).

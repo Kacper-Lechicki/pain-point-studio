@@ -157,7 +157,7 @@ ON CONFLICT DO NOTHING;
 -- ============================================================
 
 -- P1: Fitness Tracker App — MATURE, validated idea (90 days old)
-INSERT INTO public.projects (id, user_id, name, summary, status, target_responses, created_at) VALUES
+INSERT INTO public.projects (id, user_id, name, summary, status, response_limit, created_at) VALUES
   ('b1b2c3d4-0001-4000-8000-000000000001', 'a1b2c3d4-0001-4000-8000-000000000001',
    'Fitness Tracker App',
    'Validating demand for a unified fitness tracking app combining workouts, nutrition, and progress analytics.',
@@ -165,7 +165,7 @@ INSERT INTO public.projects (id, user_id, name, summary, status, target_response
 ON CONFLICT (id) DO NOTHING;
 
 -- P2: Remote Team Pulse — GROWING, collecting data (25 days old)
-INSERT INTO public.projects (id, user_id, name, summary, status, target_responses, created_at) VALUES
+INSERT INTO public.projects (id, user_id, name, summary, status, response_limit, created_at) VALUES
   ('b1b2c3d4-0002-4000-8000-000000000002', 'a1b2c3d4-0001-4000-8000-000000000001',
    'Remote Team Pulse',
    'Exploring whether remote teams need better async check-in tools beyond standups and status updates.',
@@ -173,7 +173,7 @@ INSERT INTO public.projects (id, user_id, name, summary, status, target_response
 ON CONFLICT (id) DO NOTHING;
 
 -- P3: Dev Portfolio Builder — FRESH, idea stage (4 days old)
-INSERT INTO public.projects (id, user_id, name, summary, status, target_responses, created_at) VALUES
+INSERT INTO public.projects (id, user_id, name, summary, status, response_limit, created_at) VALUES
   ('b1b2c3d4-0003-4000-8000-000000000003', 'a1b2c3d4-0001-4000-8000-000000000001',
    'Dev Portfolio Builder',
    'Investigating pain points developers face when creating and maintaining portfolio websites.',
@@ -181,7 +181,7 @@ INSERT INTO public.projects (id, user_id, name, summary, status, target_response
 ON CONFLICT (id) DO NOTHING;
 
 -- P4: AI Recipe Generator — ARCHIVED, failed validation (75 days old)
-INSERT INTO public.projects (id, user_id, name, summary, status, target_responses, archived_at, created_at) VALUES
+INSERT INTO public.projects (id, user_id, name, summary, status, response_limit, archived_at, created_at) VALUES
   ('b1b2c3d4-0004-4000-8000-000000000004', 'a1b2c3d4-0001-4000-8000-000000000001',
    'AI Recipe Generator',
    'AI-powered recipe suggestions based on ingredients you already have at home.',
@@ -189,7 +189,7 @@ INSERT INTO public.projects (id, user_id, name, summary, status, target_response
 ON CONFLICT (id) DO NOTHING;
 
 -- P5: Freelance Invoice Tool — VALIDATED, strong signals (80 days old)
-INSERT INTO public.projects (id, user_id, name, summary, status, target_responses, created_at) VALUES
+INSERT INTO public.projects (id, user_id, name, summary, status, response_limit, created_at) VALUES
   ('b1b2c3d4-0005-4000-8000-000000000005', 'a1b2c3d4-0001-4000-8000-000000000001',
    'Freelance Invoice Tool',
    'Simplifying invoicing, time tracking, and payment collection for solo freelancers and consultants.',
@@ -197,7 +197,7 @@ INSERT INTO public.projects (id, user_id, name, summary, status, target_response
 ON CONFLICT (id) DO NOTHING;
 
 -- P6: Pet Health Tracker — EARLY, first survey just launched (10 days old)
-INSERT INTO public.projects (id, user_id, name, summary, status, target_responses, created_at) VALUES
+INSERT INTO public.projects (id, user_id, name, summary, status, response_limit, created_at) VALUES
   ('b1b2c3d4-0006-4000-8000-000000000006', 'a1b2c3d4-0001-4000-8000-000000000001',
    'Pet Health Tracker',
    'Helping pet owners track vet visits, medications, vaccination schedules, and daily health metrics.',
@@ -205,7 +205,7 @@ INSERT INTO public.projects (id, user_id, name, summary, status, target_response
 ON CONFLICT (id) DO NOTHING;
 
 -- P7: Local Event Discovery — STALLED, mixed signals (50 days old)
-INSERT INTO public.projects (id, user_id, name, summary, status, target_responses, created_at) VALUES
+INSERT INTO public.projects (id, user_id, name, summary, status, response_limit, created_at) VALUES
   ('b1b2c3d4-0007-4000-8000-000000000007', 'a1b2c3d4-0001-4000-8000-000000000001',
    'Local Event Discovery',
    'Hyper-local event discovery platform going beyond Facebook Events for neighborhood happenings.',
@@ -213,7 +213,7 @@ INSERT INTO public.projects (id, user_id, name, summary, status, target_response
 ON CONFLICT (id) DO NOTHING;
 
 -- P8: Sustainable Shopping Assistant — BRAND NEW (1 day old)
-INSERT INTO public.projects (id, user_id, name, summary, status, target_responses, created_at) VALUES
+INSERT INTO public.projects (id, user_id, name, summary, status, response_limit, created_at) VALUES
   ('b1b2c3d4-0008-4000-8000-000000000008', 'a1b2c3d4-0001-4000-8000-000000000001',
    'Sustainable Shopping Assistant',
    'Helping conscious consumers find eco-friendly product alternatives and track their environmental impact.',

@@ -6,6 +6,7 @@ import { PageTransition } from '@/components/ui/page-transition';
 import { DASHBOARD_PAGE_BODY_GAP } from '@/config/layout';
 import { ROUTES } from '@/config/routes';
 import { getAuthUser } from '@/features/auth/actions/get-user';
+import { DashboardPageBack } from '@/features/dashboard/components/layout/dashboard-page-back';
 import { getProject } from '@/features/projects/actions/get-project';
 import { CreateSurveyWizard } from '@/features/surveys/components/builder/create-survey-wizard';
 
@@ -27,17 +28,24 @@ export default async function NewSurveyPage({ params }: NewSurveyPageProps) {
   }
 
   return (
-    <PageTransition>
-      <div className={DASHBOARD_PAGE_BODY_GAP}>
-        <h1 className="text-3xl font-bold">{t('surveys.create.title')}</h1>
-        <p className="text-muted-foreground mt-1 text-sm">{t('surveys.create.description')}</p>
-      </div>
-
-      <CreateSurveyWizard
-        projectId={resolvedParams.id}
-        projectName={projectDetail.project.name}
-        projectStatus={projectDetail.project.status}
+    <>
+      <DashboardPageBack
+        href={`${ROUTES.dashboard.projects}/${resolvedParams.id}`}
+        label={t('common.backToProject')}
       />
-    </PageTransition>
+
+      <PageTransition>
+        <div className={DASHBOARD_PAGE_BODY_GAP}>
+          <h1 className="text-3xl font-bold">{t('surveys.create.title')}</h1>
+          <p className="text-muted-foreground mt-1 text-sm">{t('surveys.create.description')}</p>
+        </div>
+
+        <CreateSurveyWizard
+          projectId={resolvedParams.id}
+          projectName={projectDetail.project.name}
+          projectStatus={projectDetail.project.status}
+        />
+      </PageTransition>
+    </>
   );
 }

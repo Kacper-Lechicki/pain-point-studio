@@ -4,10 +4,11 @@ import { useRef, useState } from 'react';
 
 import dynamic from 'next/dynamic';
 
-import { Camera, Trash2 } from 'lucide-react';
+import { Camera, Trash2, Upload } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
+import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import {
   DropdownMenu,
@@ -36,6 +37,8 @@ interface ProjectImageUploadProps {
   imageUrl: string | null;
   projectName: string;
   onImageChange: (url: string | null) => void;
+  size?: 32 | 48 | 80;
+  showButton?: boolean;
 }
 
 export function ProjectImageUpload({
@@ -44,6 +47,8 @@ export function ProjectImageUpload({
   imageUrl,
   projectName,
   onImageChange,
+  size = 48,
+  showButton,
 }: ProjectImageUploadProps) {
   const t = useTranslations();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -186,7 +191,7 @@ export function ProjectImageUpload({
       disabled={isUploading}
       aria-label={t('projects.detail.changeImage')}
     >
-      <ProjectAvatar imageUrl={imageUrl} name={projectName} size={48} />
+      <ProjectAvatar imageUrl={imageUrl} name={projectName} size={size} />
 
       <span className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/50 opacity-0 transition-opacity md:group-hover:opacity-100">
         {isUploading ? (
@@ -198,43 +203,89 @@ export function ProjectImageUpload({
     </button>
   );
 
+  const avatarWithDropdown = imageUrl ? (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>{avatarButton}</DropdownMenuTrigger>
+
+      <DropdownMenuContent align="start">
+        <DropdownMenuItem onClick={openFilePicker}>
+          <Camera className="size-4" aria-hidden />
+          {t('projects.detail.changeImage')}
+        </DropdownMenuItem>
+
+        <DropdownMenuItem variant="destructive" onClick={() => setShowRemoveConfirm(true)}>
+          <Trash2 className="size-4" aria-hidden />
+          {t('projects.detail.removeImage')}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  ) : (
+    <button
+      type="button"
+      className="group relative cursor-pointer"
+      onClick={openFilePicker}
+      disabled={isUploading}
+      aria-label={t('projects.detail.changeImage')}
+    >
+      <ProjectAvatar imageUrl={imageUrl} name={projectName} size={size} />
+
+      <span className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/50 opacity-0 transition-opacity md:group-hover:opacity-100">
+        {isUploading ? (
+          <Spinner className="size-4 text-white" />
+        ) : (
+          <Camera className="size-4 text-white" aria-hidden />
+        )}
+      </span>
+    </button>
+  );
+
+  const uploadButton = showButton ? (
+    <div className="bg-muted/20 flex flex-col items-center gap-4 rounded-lg border border-dashed p-4 sm:flex-row sm:items-center">
+      {avatarWithDropdown}
+
+      <div className="flex flex-col items-center gap-2 sm:items-start">
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={openFilePicker}
+            disabled={isUploading}
+          >
+            {isUploading ? (
+              <Spinner className="size-4" />
+            ) : (
+              <Upload className="size-4" aria-hidden="true" />
+            )}
+            {imageUrl ? t('projects.detail.changeImage') : t('projects.detail.uploadImage')}
+          </Button>
+
+          {imageUrl && (
+            <Button
+              type="button"
+              variant="destructive"
+              size="sm"
+              onClick={() => setShowRemoveConfirm(true)}
+              disabled={isUploading}
+            >
+              <Trash2 className="size-4" aria-hidden="true" />
+              {t('projects.detail.removeImage')}
+            </Button>
+          )}
+        </div>
+
+        <p className="text-muted-foreground text-center text-xs sm:text-left">
+          {t('projects.settings.projectImageHint')}
+        </p>
+      </div>
+    </div>
+  ) : (
+    avatarWithDropdown
+  );
+
   return (
     <>
-      {imageUrl ? (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>{avatarButton}</DropdownMenuTrigger>
-
-          <DropdownMenuContent align="start">
-            <DropdownMenuItem onClick={openFilePicker}>
-              <Camera className="size-4" aria-hidden />
-              {t('projects.detail.changeImage')}
-            </DropdownMenuItem>
-
-            <DropdownMenuItem variant="destructive" onClick={() => setShowRemoveConfirm(true)}>
-              <Trash2 className="size-4" aria-hidden />
-              {t('projects.detail.removeImage')}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ) : (
-        <button
-          type="button"
-          className="group relative cursor-pointer"
-          onClick={openFilePicker}
-          disabled={isUploading}
-          aria-label={t('projects.detail.changeImage')}
-        >
-          <ProjectAvatar imageUrl={imageUrl} name={projectName} size={48} />
-
-          <span className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/50 opacity-0 transition-opacity md:group-hover:opacity-100">
-            {isUploading ? (
-              <Spinner className="size-4 text-white" />
-            ) : (
-              <Camera className="size-4 text-white" aria-hidden />
-            )}
-          </span>
-        </button>
-      )}
+      {uploadButton}
 
       <input
         ref={fileInputRef}

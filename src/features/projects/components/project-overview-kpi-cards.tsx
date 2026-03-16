@@ -23,12 +23,12 @@ function getCompletionColor(pct: number) {
 
 interface ProjectOverviewKpiCardsProps {
   overviewStats: ProjectOverviewStats;
-  targetResponses?: number | null | undefined;
+  responseLimit?: number | null | undefined;
 }
 
 export function ProjectOverviewKpiCards({
   overviewStats,
-  targetResponses,
+  responseLimit,
 }: ProjectOverviewKpiCardsProps) {
   const t = useTranslations();
 
@@ -81,8 +81,8 @@ export function ProjectOverviewKpiCards({
             </span>
             <span className="text-xl leading-none font-bold tabular-nums">
               {overviewStats.totalResponses}
-              {targetResponses != null && targetResponses > 0 && (
-                <span className="text-muted-foreground text-sm font-bold">/{targetResponses}</span>
+              {responseLimit != null && responseLimit > 0 && (
+                <span className="text-muted-foreground text-sm font-bold">/{responseLimit}</span>
               )}
             </span>
             <div className="mt-1 h-5" />

@@ -30,7 +30,7 @@ import {
   type SurveyMetadataSchema,
   surveyMetadataSchema,
 } from '@/features/surveys/types';
-import { useBreadcrumbSegment } from '@/hooks/common/use-breadcrumb';
+import { useBreadcrumbSegment, useBreadcrumbTrail } from '@/hooks/common/use-breadcrumb';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import type { SubPanelLink } from '@/hooks/common/use-sub-panel-items';
 import { useSubPanelLinks } from '@/hooks/common/use-sub-panel-items';
@@ -75,6 +75,12 @@ export function CreateSurveyWizard({
   const [createdSurveyId, setCreatedSurveyId] = useState<string | null>(null);
 
   useBreadcrumbSegment(projectId, projectName);
+  useBreadcrumbTrail([
+    { label: t('breadcrumbs.dashboard'), href: ROUTES.common.dashboard },
+    { label: t('breadcrumbs.projects'), href: ROUTES.dashboard.projects },
+    { label: projectName, href: `${ROUTES.dashboard.projects}/${projectId}` },
+    { label: t('projects.detail.createSurvey'), href: getCreateSurveyUrl(projectId) },
+  ]);
 
   const isArchived = isProjectArchived(projectStatus);
 
@@ -96,15 +102,21 @@ export function CreateSurveyWizard({
           },
         ]
       : []),
+  ];
+
+  const footerLinks: SubPanelLink[] = [
     {
       label: t('projects.detail.settings'),
-      href: '#',
+      href: `${ROUTES.dashboard.projects}/${projectId}/settings`,
       icon: Settings,
-      disabled: true,
     },
   ];
 
-  useSubPanelLinks(topLinks, bottomLinks);
+  useSubPanelLinks({
+    links: topLinks,
+    bottomLinks,
+    footerLinks,
+  });
 
   const action = useFormAction<{ surveyId: string }>({
     successMessage: 'surveys.create.success' as MessageKey,

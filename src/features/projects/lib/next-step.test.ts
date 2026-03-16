@@ -8,7 +8,7 @@ function makeInput(overrides: Partial<NextStepInput> = {}): NextStepInput {
     totalSurveys: 0,
     activeSurveys: 0,
     totalResponses: 0,
-    targetResponses: 100,
+    responseLimit: 100,
     insightCount: 0,
     currentPhase: null,
     ...overrides,
@@ -38,7 +38,7 @@ describe('computeNextStep', () => {
 
   it('returns share-survey when responses are below 50% of target', () => {
     const result = computeNextStep(
-      makeInput({ totalSurveys: 1, activeSurveys: 1, totalResponses: 49, targetResponses: 100 })
+      makeInput({ totalSurveys: 1, activeSurveys: 1, totalResponses: 49, responseLimit: 100 })
     );
 
     expect(result).toEqual({
@@ -49,7 +49,7 @@ describe('computeNextStep', () => {
 
   it('returns share-survey at exactly 0 responses', () => {
     const result = computeNextStep(
-      makeInput({ totalSurveys: 1, activeSurveys: 1, totalResponses: 0, targetResponses: 100 })
+      makeInput({ totalSurveys: 1, activeSurveys: 1, totalResponses: 0, responseLimit: 100 })
     );
 
     expect(result.action).toBe('share-survey');
@@ -61,7 +61,7 @@ describe('computeNextStep', () => {
         totalSurveys: 1,
         activeSurveys: 1,
         totalResponses: 50,
-        targetResponses: 100,
+        responseLimit: 100,
         insightCount: 0,
       })
     );
@@ -79,7 +79,7 @@ describe('computeNextStep', () => {
         totalSurveys: 1,
         activeSurveys: 1,
         totalResponses: 70,
-        targetResponses: 100,
+        responseLimit: 100,
         insightCount: 3,
       })
     );
@@ -97,7 +97,7 @@ describe('computeNextStep', () => {
         totalSurveys: 1,
         activeSurveys: 1,
         totalResponses: 70,
-        targetResponses: 100,
+        responseLimit: 100,
         insightCount: 2,
       })
     );
@@ -114,7 +114,7 @@ describe('computeNextStep', () => {
         totalSurveys: 1,
         activeSurveys: 1,
         totalResponses: 70,
-        targetResponses: 100,
+        responseLimit: 100,
         insightCount: 0,
       })
     );
@@ -128,7 +128,7 @@ describe('computeNextStep', () => {
         totalSurveys: 1,
         activeSurveys: 1,
         totalResponses: 49,
-        targetResponses: 100,
+        responseLimit: 100,
         insightCount: 5,
       })
     );
@@ -142,7 +142,7 @@ describe('computeNextStep', () => {
         totalSurveys: 3,
         activeSurveys: 2,
         totalResponses: 200,
-        targetResponses: 100,
+        responseLimit: 100,
         insightCount: 10,
       })
     );

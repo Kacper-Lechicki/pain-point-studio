@@ -1,21 +1,13 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Settings } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { SettingsSectionHeader } from '@/components/shared/settings-section-header';
 import {
   Form,
   FormControl,
@@ -26,37 +18,37 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Spinner } from '@/components/ui/spinner';
+import { SubmitButton } from '@/components/ui/submit-button';
 import { Textarea } from '@/components/ui/textarea';
 import { updateProject } from '@/features/projects/actions/update-project';
-import { PROJECT_NAME_MAX_LENGTH, PROJECT_SUMMARY_MAX_LENGTH } from '@/features/projects/config';
+import { ProjectImageUpload } from '@/features/projects/components/project-image-upload';
+import {
+  PROJECT_NAME_MAX_LENGTH,
+  PROJECT_RESPONSE_LIMIT,
+  PROJECT_SUMMARY_MAX_LENGTH,
+} from '@/features/projects/config';
 import { type UpdateProjectInput, updateProjectSchema } from '@/features/projects/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
+import { useUnsavedChangesWarning } from '@/hooks/unsaved-changes-context';
 import type { MessageKey } from '@/i18n/types';
 
-interface EditableProject {
-  id: string;
-  name: string;
-  summary: string | null;
+interface ProjectSettingsFormProps {
+  project: {
+    id: string;
+    user_id: string;
+    name: string;
+    summary: string | null;
+    image_url: string | null;
+  };
+  onSaved?: (data: { name: string; summary: string | undefined; imageUrl?: string | null }) => void;
 }
 
-interface EditProjectDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  project: EditableProject;
-  onSuccess: (data: { name: string; summary: string | undefined }) => void;
-}
-
-export function EditProjectDialog({
-  open,
-  onOpenChange,
-  project,
-  onSuccess,
-}: EditProjectDialogProps) {
+export function ProjectSettingsForm({ project, onSaved }: ProjectSettingsFormProps) {
   const t = useTranslations();
+  const [imageUrl, setImageUrl] = useState(project.image_url);
 
-  const action = useFormAction({
-    successMessage: 'projects.list.edit.success' as MessageKey,
+  const { isLoading, execute } = useFormAction({
+    successMessage: 'projects.settings.saved' as MessageKey,
     unexpectedErrorMessage: 'projects.errors.unexpected' as MessageKey,
   });
 
@@ -75,30 +67,56 @@ export function EditProjectDialog({
       name: project.name,
       summary: project.summary ?? '',
     });
-  }, [project, form]);
+  }, [project.id, project.name, project.summary, form]);
+
+  useUnsavedChangesWarning('project-settings-form', form.formState.isDirty);
+
+  const handleImageChange = (url: string | null) => {
+    setImageUrl(url);
+    onSaved?.({
+      name: form.getValues('name'),
+      summary: form.getValues('summary'),
+      imageUrl: url,
+    });
+  };
 
   async function onSubmit(data: UpdateProjectInput) {
-    const result = await action.execute(updateProject, data);
+    const result = await execute(updateProject, data);
 
     if (result && !result.error) {
-      onSuccess({
+      onSaved?.({
         name: data.name,
         summary: data.summary,
+        imageUrl,
       });
-      onOpenChange(false);
     }
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{t('projects.list.edit.title')}</DialogTitle>
-          <DialogDescription>{t('projects.list.edit.description')}</DialogDescription>
-        </DialogHeader>
+    <section className="space-y-8">
+      <SettingsSectionHeader
+        icon={Settings}
+        title={t('projects.settings.generalTitle')}
+        description={t('projects.settings.generalDescription')}
+      />
+
+      <div className="space-y-6">
+        <ProjectImageUpload
+          projectId={project.id}
+          userId={project.user_id}
+          imageUrl={imageUrl}
+          projectName={project.name}
+          onImageChange={handleImageChange}
+          size={80}
+          showButton
+        />
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form
+            id="project-settings-form"
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4"
+          >
             <FormField
               control={form.control}
               name="name"
@@ -160,21 +178,23 @@ export function EditProjectDialog({
               )}
             />
 
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button type="button" variant="outline">
-                  {t('common.cancel')}
-                </Button>
-              </DialogClose>
+            <div className="space-y-1">
+              <p className="text-sm font-medium">{t('projects.settings.responseLimit')}</p>
+              <p className="text-muted-foreground text-xs">
+                {t('projects.settings.responseLimitDescription', {
+                  limit: PROJECT_RESPONSE_LIMIT,
+                })}
+              </p>
+            </div>
 
-              <Button type="submit" disabled={action.isLoading}>
-                {action.isLoading && <Spinner />}
-                {t('projects.list.edit.submit')}
-              </Button>
-            </DialogFooter>
+            <div className="flex justify-end">
+              <SubmitButton isLoading={isLoading} form="project-settings-form">
+                {t('projects.settings.saveSettings')}
+              </SubmitButton>
+            </div>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </section>
   );
 }

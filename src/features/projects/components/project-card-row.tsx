@@ -149,8 +149,8 @@ export function ProjectCardRow({
             <div className="flex flex-col gap-0.5">
               <span>{t('projects.list.table.responses')}</span>
               <span className="text-foreground font-medium tabular-nums">
-                {project.target_responses
-                  ? `${project.responseCount}/${project.target_responses}`
+                {project.response_limit
+                  ? `${project.responseCount}/${project.response_limit}`
                   : project.responseCount}
               </span>
             </div>

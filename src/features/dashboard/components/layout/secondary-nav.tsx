@@ -12,6 +12,7 @@ import { useProjectsSubNavGroups } from '@/features/dashboard/hooks/use-projects
 import {
   collectSearchParamKeys,
   findDynamicTab,
+  findMostSpecificActiveHref,
   getSubItemHref,
   isSubItemActive,
   resolveDynamicLabel,
@@ -26,27 +27,68 @@ import { cn } from '@/lib/common/utils';
 
 function SecondaryNavSkeleton() {
   return (
-    <>
-      <div className="flex flex-col gap-1.5 px-2 pt-4">
-        <div className="flex min-h-8 items-center gap-2 px-2.5">
-          <div className="bg-sidebar-foreground/10 size-4 shrink-0 animate-pulse rounded" />
-          <div className="bg-sidebar-foreground/10 h-3.5 w-24 animate-pulse rounded" />
-        </div>
+    <div className="flex flex-col gap-1.5 px-2 pt-4">
+      <div className="flex min-h-8 items-center gap-2 px-2.5">
+        <div className="bg-sidebar-foreground/10 size-4 shrink-0 animate-pulse rounded" />
+        <div className="bg-sidebar-foreground/10 h-3.5 w-24 animate-pulse rounded" />
       </div>
 
-      <div className="shrink-0 pt-2">
-        <div className="flex min-h-8 items-center px-3">
-          <div className="bg-sidebar-foreground/10 h-3.5 w-28 animate-pulse rounded" />
-        </div>
+      <div className="flex min-h-8 items-center px-1">
+        <div className="bg-sidebar-foreground/10 h-3.5 w-28 animate-pulse rounded" />
       </div>
 
-      <div className="flex flex-col gap-1.5 px-2 pt-1.5">
-        <div className="flex min-h-8 items-center gap-2 px-2.5">
-          <div className="bg-sidebar-foreground/10 size-4 shrink-0 animate-pulse rounded" />
-          <div className="bg-sidebar-foreground/10 h-3.5 w-32 animate-pulse rounded" />
-        </div>
+      <div className="flex min-h-8 items-center gap-2 px-2.5">
+        <div className="bg-sidebar-foreground/10 size-4 shrink-0 animate-pulse rounded" />
+        <div className="bg-sidebar-foreground/10 h-3.5 w-32 animate-pulse rounded" />
       </div>
-    </>
+    </div>
+  );
+}
+
+const ACTION_VARIANT_CLASSES: Record<string, string> = {
+  destructive:
+    'text-red-600/70 md:hover:text-red-600 md:hover:border-red-500/30 dark:text-red-400/70 dark:md:hover:text-red-400 dark:md:hover:border-red-400/30',
+  warning:
+    'text-amber-700/70 md:hover:text-amber-700 md:hover:border-amber-500/30 dark:text-amber-400/70 dark:md:hover:text-amber-400 dark:md:hover:border-amber-400/30',
+  accent:
+    'text-violet-600/70 md:hover:text-violet-600 md:hover:border-violet-500/30 dark:text-violet-400/70 dark:md:hover:text-violet-400 dark:md:hover:border-violet-400/30',
+};
+
+function SubPanelActionItem({
+  action,
+}: {
+  action: {
+    label: string;
+    icon: React.ComponentType<{ className?: string }>;
+    onClick: () => void;
+    variant?: 'default' | 'destructive' | 'warning' | 'accent';
+    disabled?: boolean;
+  };
+}) {
+  if (action.disabled) {
+    return (
+      <span
+        data-state="inactive"
+        className={cn(SIDEBAR_NAV_ITEM_CLASSES, 'pointer-events-none opacity-50')}
+      >
+        <action.icon className="size-4 shrink-0" aria-hidden />
+        <span className="truncate">{action.label}</span>
+      </span>
+    );
+  }
+
+  const variantClass = action.variant ? ACTION_VARIANT_CLASSES[action.variant] : undefined;
+
+  return (
+    <button
+      type="button"
+      data-state="inactive"
+      className={cn(SIDEBAR_NAV_ITEM_CLASSES, variantClass)}
+      onClick={action.onClick}
+    >
+      <action.icon className="size-4 shrink-0" aria-hidden />
+      <span className="truncate">{action.label}</span>
+    </button>
   );
 }
 
@@ -126,47 +168,54 @@ export function SecondaryNav({ titleKey, groups, parentHref }: SecondaryNavProps
   }
 
   const isDynamicActive = dynamicTab != null && dynamicLabel != null;
+  const enabledBottomLinkHrefs = subPanelItems?.bottomLinks
+    .filter((link) => !link.disabled)
+    .map((link) => link.href);
+  const enabledFooterLinkHrefs = subPanelItems?.footerLinks
+    .filter((link) => !link.disabled)
+    .map((link) => link.href);
+  const activeBottomHref = findMostSpecificActiveHref(pathname, enabledBottomLinkHrefs ?? []);
+  const activeFooterHref = findMostSpecificActiveHref(pathname, enabledFooterLinkHrefs ?? []);
 
   const hasActiveBottomLink =
-    isDynamicActive &&
-    (subPanelItems?.bottomLinks.some((l) => !l.disabled && pathname === l.href) ?? false);
+    isDynamicActive && (activeBottomHref != null || activeFooterHref != null);
 
-  const resolvedTitleKey = isDynamicActive && dynamicTab.titleKey ? dynamicTab.titleKey : titleKey;
+  const hasCustomTitle = isDynamicActive && subPanelItems?.titleKey != null;
+  const resolvedTitleKey = hasCustomTitle
+    ? subPanelItems!.titleKey!
+    : isDynamicActive && dynamicTab.titleKey
+      ? dynamicTab.titleKey
+      : titleKey;
 
   if (isDynamicActive) {
     return (
       <>
-        {subPanelItems && subPanelItems.links.length > 0 && (
-          <div className="flex flex-col gap-1.5 px-2 pt-4">
-            {subPanelItems.links.map((link) => (
-              <SubPanelLinkItem key={link.href} link={link} />
-            ))}
-          </div>
-        )}
+        <nav className="flex flex-1 flex-col gap-1.5 overflow-y-auto px-2 pt-4 pb-4">
+          {subPanelItems &&
+            subPanelItems.links.length > 0 &&
+            subPanelItems.links.map((link) => <SubPanelLinkItem key={link.href} link={link} />)}
 
-        <div className={cn('shrink-0', subPanelItems?.links.length ? 'pt-2' : 'pt-4')}>
-          <div className="flex min-h-8 items-center px-3">
+          <div className="flex min-h-8 items-center px-1">
             <h2 className="text-sidebar-foreground decoration-sidebar-foreground/35 text-sm font-semibold underline underline-offset-4">
               {t(resolvedTitleKey)}
             </h2>
           </div>
-        </div>
-
-        <nav className="flex flex-1 flex-col gap-1.5 overflow-y-auto px-2 pt-1.5 pb-3">
-          <div className="flex flex-col gap-1.5">
-            <Link
-              href={
-                hasActiveBottomLink
-                  ? `${dynamicTab.prefix}/${pathname.slice(dynamicTab.prefix.length + 1).split('/')[0]}`
-                  : pathname
-              }
-              data-state={hasActiveBottomLink ? 'inactive' : 'active'}
-              className={SIDEBAR_NAV_ITEM_CLASSES}
-            >
-              <dynamicTab.icon className="size-4 shrink-0" aria-hidden />
-              <span className="truncate">{dynamicLabel}</span>
-            </Link>
-          </div>
+          {!hasCustomTitle && (
+            <div className="flex flex-col gap-1.5">
+              <Link
+                href={
+                  hasActiveBottomLink
+                    ? `${dynamicTab.prefix}/${pathname.slice(dynamicTab.prefix.length + 1).split('/')[0]}`
+                    : pathname
+                }
+                data-state={hasActiveBottomLink ? 'inactive' : 'active'}
+                className={SIDEBAR_NAV_ITEM_CLASSES}
+              >
+                <dynamicTab.icon className="size-4 shrink-0" aria-hidden />
+                <span className="truncate">{dynamicLabel}</span>
+              </Link>
+            </div>
+          )}
 
           {subPanelItems && subPanelItems.bottomLinks.length > 0 && (
             <div className="flex flex-col gap-1.5">
@@ -174,15 +223,29 @@ export function SecondaryNav({ titleKey, groups, parentHref }: SecondaryNavProps
                 <SubPanelLinkItem
                   key={link.href + link.label}
                   link={link}
-                  isActive={!link.disabled && pathname === link.href}
+                  isActive={!link.disabled && activeBottomHref === link.href}
                 />
               ))}
             </div>
           )}
 
-          {dynamicProjectId && (
+          {subPanelItems && subPanelItems.actions.length > 0 && (
             <div>
-              <div className="text-sidebar-foreground decoration-sidebar-foreground/35 mt-4 mb-1 px-2.5 text-sm font-semibold underline underline-offset-4">
+              <div className="text-sidebar-foreground decoration-sidebar-foreground/35 mt-4 mb-1 px-1 text-sm font-semibold underline underline-offset-4">
+                {t('sidebar.quickActions' as MessageKey)}
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                {subPanelItems.actions.map((action) => (
+                  <SubPanelActionItem key={action.label} action={action} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {!hasCustomTitle && dynamicProjectId && (
+            <div>
+              <div className="text-sidebar-foreground decoration-sidebar-foreground/35 mt-4 mb-1 px-1 text-sm font-semibold underline underline-offset-4">
                 {t('sidebar.recentSurveys' as MessageKey)}
               </div>
 
@@ -214,7 +277,7 @@ export function SecondaryNav({ titleKey, groups, parentHref }: SecondaryNavProps
                 <SubPanelLinkItem
                   key={link.href + link.label}
                   link={link}
-                  isActive={!link.disabled && pathname === link.href}
+                  isActive={!link.disabled && activeFooterHref === link.href}
                 />
               ))}
             </div>
@@ -226,21 +289,18 @@ export function SecondaryNav({ titleKey, groups, parentHref }: SecondaryNavProps
 
   return (
     <>
-      <div className="shrink-0 pt-4">
-        <div className="flex min-h-8 items-center px-3">
+      <nav className="flex flex-1 flex-col gap-1.5 overflow-y-auto px-2 pt-4 pb-4">
+        <div className="flex min-h-8 items-center px-1">
           <h2 className="text-sidebar-foreground decoration-sidebar-foreground/35 text-sm font-semibold underline underline-offset-4">
             {t(resolvedTitleKey)}
           </h2>
         </div>
-      </div>
-
-      <nav className="flex flex-1 flex-col gap-1.5 overflow-y-auto px-2 pt-1.5 pb-3">
         {enhancedGroups.map((group, gi) => (
           <div key={gi}>
             {group.headingKey && (
               <div
                 className={cn(
-                  'text-sidebar-foreground decoration-sidebar-foreground/35 mb-1 px-2.5 text-sm font-semibold underline underline-offset-4',
+                  'text-sidebar-foreground decoration-sidebar-foreground/35 mb-1 px-1 text-sm font-semibold underline underline-offset-4',
                   gi === 0 ? 'mt-0' : 'mt-4'
                 )}
               >
