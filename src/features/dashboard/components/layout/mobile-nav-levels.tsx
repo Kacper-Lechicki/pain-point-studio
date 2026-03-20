@@ -1,5 +1,7 @@
 'use client';
 
+import React from 'react';
+
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { NotebookPen } from 'lucide-react';
 
@@ -91,15 +93,12 @@ function SubNavItems({
         </div>
       ) : (
         groups.map((group, gi) => (
-          <div key={gi}>
+          <React.Fragment key={gi}>
             {group.headingKey && (
-              <div
-                className={cn(
-                  'decoration-muted-foreground/50 mb-1 px-3 text-sm font-semibold underline underline-offset-4',
-                  gi === 0 ? 'mt-0' : 'mt-6'
-                )}
-              >
-                {t(group.headingKey)}
+              <div className="flex min-h-8 items-center px-1">
+                <span className="decoration-muted-foreground/50 text-sm font-semibold underline underline-offset-4">
+                  {t(group.headingKey)}
+                </span>
               </div>
             )}
 
@@ -159,7 +158,7 @@ function SubNavItems({
                 );
               })}
             </div>
-          </div>
+          </React.Fragment>
         ))
       )}
     </nav>
@@ -316,10 +315,8 @@ function MobileSubNavSkeleton() {
         </div>
       </div>
 
-      <div className="shrink-0 pt-2">
-        <div className="flex h-9 items-center px-5">
-          <div className="bg-muted h-3.5 w-28 animate-pulse rounded" />
-        </div>
+      <div className="flex min-h-8 items-center px-3 pt-2">
+        <div className="bg-muted h-3.5 w-28 animate-pulse rounded" />
       </div>
 
       <div className="flex flex-col gap-2 p-2">
@@ -426,12 +423,10 @@ export function MobileNavSubLevel({
         )}
       </div>
 
-      <div className="shrink-0 pt-2">
-        <div className="flex h-9 items-center px-5">
-          <h3 className="decoration-muted-foreground/50 text-sm font-semibold underline underline-offset-4">
-            {t(resolvedTitleKey)}
-          </h3>
-        </div>
+      <div className="flex min-h-8 items-center px-3 pt-2">
+        <h3 className="decoration-muted-foreground/50 text-sm font-semibold underline underline-offset-4">
+          {t(resolvedTitleKey)}
+        </h3>
       </div>
 
       {isDynamicActive ? (
@@ -468,9 +463,11 @@ export function MobileNavSubLevel({
       )}
 
       {isDynamicActive && subPanelActions && subPanelActions.length > 0 && (
-        <div className="px-2 pt-4">
-          <div className="decoration-muted-foreground/50 mb-1 px-3 text-sm font-semibold underline underline-offset-4">
-            {t('sidebar.quickActions' as MessageKey)}
+        <div className="flex flex-col gap-2 px-2 pt-2">
+          <div className="flex min-h-8 items-center px-1">
+            <span className="decoration-muted-foreground/50 text-sm font-semibold underline underline-offset-4">
+              {t('sidebar.quickActions' as MessageKey)}
+            </span>
           </div>
 
           <div className="flex flex-col gap-2" onClick={onNavigate}>
@@ -495,9 +492,11 @@ export function MobileNavSubLevel({
       )}
 
       {isDynamicActive && !hasCustomTitle && dynamicProjectId && (
-        <div className="px-2 pt-4">
-          <div className="decoration-muted-foreground/50 mb-1 px-3 text-sm font-semibold underline underline-offset-4">
-            {t('sidebar.recentSurveys' as MessageKey)}
+        <div className="flex flex-col gap-2 px-2 pt-2">
+          <div className="flex min-h-8 items-center px-1">
+            <span className="decoration-muted-foreground/50 text-sm font-semibold underline underline-offset-4">
+              {t('sidebar.recentSurveys' as MessageKey)}
+            </span>
           </div>
 
           {recentSurveys.length === 0 ? (
