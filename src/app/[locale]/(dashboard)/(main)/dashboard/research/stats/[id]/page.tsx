@@ -3,10 +3,22 @@ import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 
 import { PageTransition } from '@/components/ui/page-transition';
+import { getPageMetadata } from '@/config';
 import { DashboardPageBack } from '@/features/dashboard/components/layout/dashboard-page-back';
 import { getSurveyStats, getUserSurveys } from '@/features/surveys/actions';
 import { SurveyStatsPanel } from '@/features/surveys/components/stats/survey-stats-panel';
 import { getProjectDetailUrl } from '@/lib/common/urls/project-urls';
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const [{ id }, t] = await Promise.all([params, getTranslations()]);
+  const stats = await getSurveyStats(id);
+
+  if (!stats) {
+    return { title: t('metadata.title') };
+  }
+
+  return getPageMetadata(t, 'surveyStats', { name: stats.survey.title });
+}
 
 interface SurveyStatsPageProps {
   params: Promise<{ id: string }>;

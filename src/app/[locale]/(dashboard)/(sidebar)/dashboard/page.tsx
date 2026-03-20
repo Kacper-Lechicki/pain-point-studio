@@ -4,7 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { PageTransition } from '@/components/ui/page-transition';
-import { ROUTES } from '@/config';
+import { ROUTES, getPageMetadata } from '@/config';
 import { getDashboardOverview } from '@/features/dashboard/actions/get-dashboard-overview';
 import { getDashboardStats } from '@/features/dashboard/actions/get-dashboard-stats';
 import { DashboardBento } from '@/features/dashboard/components/bento';
@@ -15,7 +15,7 @@ import Link from '@/i18n/link';
 export async function generateMetadata() {
   const t = await getTranslations();
 
-  return { title: `${t('metadata.pages.dashboard')} | ${t('metadata.title')}` };
+  return getPageMetadata(t, 'dashboard');
 }
 
 interface Props {

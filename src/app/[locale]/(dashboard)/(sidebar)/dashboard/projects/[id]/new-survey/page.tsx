@@ -3,12 +3,24 @@ import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 
 import { PageTransition } from '@/components/ui/page-transition';
+import { getPageMetadata } from '@/config';
 import { DASHBOARD_PAGE_BODY_GAP } from '@/config/layout';
 import { ROUTES } from '@/config/routes';
 import { getAuthUser } from '@/features/auth/actions/get-user';
 import { DashboardPageBack } from '@/features/dashboard/components/layout/dashboard-page-back';
 import { getProject } from '@/features/projects/actions/get-project';
 import { CreateSurveyWizard } from '@/features/surveys/components/builder/create-survey-wizard';
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const [{ id }, t] = await Promise.all([params, getTranslations()]);
+  const projectDetail = await getProject(id);
+
+  if (!projectDetail) {
+    return { title: t('metadata.title') };
+  }
+
+  return getPageMetadata(t, 'projectNewSurvey', { name: projectDetail.project.name });
+}
 
 interface NewSurveyPageProps {
   params: Promise<{ id: string }>;

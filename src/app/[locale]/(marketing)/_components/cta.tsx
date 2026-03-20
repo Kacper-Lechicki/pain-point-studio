@@ -1,9 +1,7 @@
-'use client';
-
 import dynamic from 'next/dynamic';
 
 import { Send } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 
 import { Button } from '@/components/ui/button';
 import { LoadingLink } from '@/components/ui/loading-link';
@@ -18,8 +16,8 @@ const HeroHighlight = dynamic(
   }
 );
 
-const Cta = () => {
-  const t = useTranslations();
+const Cta = async () => {
+  const t = await getTranslations();
 
   const title = t('marketing.cta.title');
   const description = t('marketing.cta.description');

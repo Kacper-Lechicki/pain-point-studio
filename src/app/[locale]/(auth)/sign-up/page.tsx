@@ -2,7 +2,7 @@ import { UserPlus } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
 import { PageTransition } from '@/components/ui/page-transition';
-import { ROUTES } from '@/config';
+import { ROUTES, getPageMetadata } from '@/config';
 import { AuthHeader } from '@/features/auth/components/common/auth-header';
 import { OAuthLinks } from '@/features/auth/components/common/oauth-links';
 import { SignUpForm } from '@/features/auth/components/common/sign-up-form';
@@ -11,10 +11,7 @@ import { TermsText } from '@/features/auth/components/common/terms-text';
 export async function generateMetadata() {
   const t = await getTranslations();
 
-  return {
-    title: `${t('metadata.pages.signUp')} | ${t('metadata.title')}`,
-    description: t('metadata.description'),
-  };
+  return getPageMetadata(t, 'signUp');
 }
 
 export default async function SignUpPage() {

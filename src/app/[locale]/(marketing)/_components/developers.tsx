@@ -1,13 +1,11 @@
-'use client';
-
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 
 import { ScrollReveal } from '@/components/ui/scroll-reveal';
 import { PersonaCard } from '@/features/marketing/components/common/persona-card';
 import { DEVELOPER_PERSONAS } from '@/features/marketing/config';
 
-const Developers = () => {
-  const t = useTranslations();
+const Developers = async () => {
+  const t = await getTranslations();
 
   const title = t('marketing.personas.title');
   const description = t('marketing.personas.description');
@@ -26,10 +24,10 @@ const Developers = () => {
               {DEVELOPER_PERSONAS.map((persona, index) => (
                 <PersonaCard
                   key={`persona-${index}`}
-                  icon={persona.icon}
-                  titleKey={persona.titleKey}
-                  descriptionKey={persona.descriptionKey}
-                  featuresKey={persona.featuresKey}
+                  icon={<persona.icon className="text-foreground size-7" aria-hidden="true" />}
+                  title={t(persona.titleKey)}
+                  description={t(persona.descriptionKey)}
+                  features={t.raw(persona.featuresKey) as string[]}
                 />
               ))}
             </div>

@@ -1,9 +1,38 @@
+import dynamic from 'next/dynamic';
+
 import { BarChart3, Lightbulb, MessageSquare, Share2 } from 'lucide-react';
 
-import { IdeaTrendsChart } from '@/features/marketing/components/charts/idea-trends-chart';
-import { PainPointsChart } from '@/features/marketing/components/charts/pain-points-chart';
-import { QuestionEngagementChart } from '@/features/marketing/components/charts/question-engagement-chart';
-import { ResponsesGrowthChart } from '@/features/marketing/components/charts/responses-growth-chart';
+const IdeaTrendsChart = dynamic(
+  () =>
+    import('@/features/marketing/components/charts/idea-trends-chart').then(
+      (mod) => mod.IdeaTrendsChart
+    ),
+  { ssr: true }
+);
+
+const QuestionEngagementChart = dynamic(
+  () =>
+    import('@/features/marketing/components/charts/question-engagement-chart').then(
+      (mod) => mod.QuestionEngagementChart
+    ),
+  { ssr: true }
+);
+
+const ResponsesGrowthChart = dynamic(
+  () =>
+    import('@/features/marketing/components/charts/responses-growth-chart').then(
+      (mod) => mod.ResponsesGrowthChart
+    ),
+  { ssr: true }
+);
+
+const PainPointsChart = dynamic(
+  () =>
+    import('@/features/marketing/components/charts/pain-points-chart').then(
+      (mod) => mod.PainPointsChart
+    ),
+  { ssr: true }
+);
 
 export interface HowItWorksStep {
   id: number;

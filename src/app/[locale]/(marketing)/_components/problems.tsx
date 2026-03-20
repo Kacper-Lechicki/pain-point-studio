@@ -1,12 +1,10 @@
-'use client';
-
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 
 import { ProblemCard } from '@/features/marketing/components/common/problem-card';
 import { PROBLEMS } from '@/features/marketing/config';
 
-const Problems = () => {
-  const t = useTranslations();
+const Problems = async () => {
+  const t = await getTranslations();
 
   const title = t('marketing.problems.title');
   const description = t('marketing.problems.description');
@@ -24,9 +22,9 @@ const Problems = () => {
             {PROBLEMS.map((problem, index) => (
               <li key={`problem-${index}`}>
                 <ProblemCard
-                  icon={problem.icon}
-                  titleKey={problem.titleKey}
-                  descriptionKey={problem.descriptionKey}
+                  icon={<problem.icon className="text-primary size-6" aria-hidden="true" />}
+                  title={t(problem.titleKey)}
+                  description={t(problem.descriptionKey)}
                 />
               </li>
             ))}

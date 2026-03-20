@@ -2,16 +2,14 @@ import { Mail } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
 import { PageTransition } from '@/components/ui/page-transition';
+import { getPageMetadata } from '@/config';
 import { AuthHeader } from '@/features/auth/components/common/auth-header';
 import { ForgotPasswordForm } from '@/features/auth/components/common/forgot-password-form';
 
 export async function generateMetadata() {
   const t = await getTranslations();
 
-  return {
-    title: `${t('metadata.pages.forgotPassword')} | ${t('metadata.title')}`,
-    description: t('metadata.description'),
-  };
+  return getPageMetadata(t, 'forgotPassword');
 }
 
 export default async function ForgotPasswordPage() {

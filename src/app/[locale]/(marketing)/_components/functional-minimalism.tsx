@@ -1,13 +1,11 @@
-'use client';
-
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 
 import { ScrollReveal } from '@/components/ui/scroll-reveal';
 import { FeatureCard } from '@/features/marketing/components/common/feature-card';
 import { MINIMALISM_FEATURES } from '@/features/marketing/config';
 
-const FunctionalMinimalism = () => {
-  const t = useTranslations();
+const FunctionalMinimalism = async () => {
+  const t = await getTranslations();
 
   const title = t('marketing.functionalMinimalism.title');
   const description = t('marketing.functionalMinimalism.description');
@@ -26,9 +24,9 @@ const FunctionalMinimalism = () => {
               {MINIMALISM_FEATURES.map((feature, index) => (
                 <FeatureCard
                   key={`feature-${index}`}
-                  titleKey={feature.titleKey}
-                  descriptionKey={feature.descriptionKey}
-                  icon={feature.icon}
+                  title={t(feature.titleKey)}
+                  description={t(feature.descriptionKey)}
+                  icon={<feature.icon className="size-6" aria-hidden="true" />}
                 />
               ))}
             </div>
