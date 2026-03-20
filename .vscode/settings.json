@@ -11,5 +11,16 @@
     ["cn\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
   ],
   "javascript.suggest.completeJSDocs": false,
-  "typescript.suggest.completeJSDocs": false
+  "typescript.suggest.completeJSDocs": false,
+
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "explorer.fileNesting.patterns": {
+    "package.json": "pnpm-lock.yaml, .nvmrc, tsconfig.json, tsconfig.tsbuildinfo, next-env.d.ts, next.config.ts, postcss.config.mjs, components.json",
+    "eslint.config.mjs": ".prettierrc, .prettierignore, commitlint.config.mjs, knip.json",
+    "README.md": "LICENSE.md, CLAUDE.md",
+    "playwright.config.ts": "vitest.config.mts, lighthouserc.js",
+    ".env.example": ".env, .env.local, .env.local.example",
+    ".gitignore": ".editorconfig"
+  }
 }

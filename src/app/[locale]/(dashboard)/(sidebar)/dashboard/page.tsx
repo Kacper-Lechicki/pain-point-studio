@@ -9,10 +9,8 @@ import { getDashboardOverview } from '@/features/dashboard/actions/get-dashboard
 import { getDashboardStats } from '@/features/dashboard/actions/get-dashboard-stats';
 import { DashboardBento } from '@/features/dashboard/components/bento';
 import { getProject } from '@/features/projects/actions/get-project';
-import { getProfile } from '@/features/settings/actions/get-profile';
+import { getProfileSummary } from '@/features/settings/actions/get-profile-summary';
 import Link from '@/i18n/link';
-
-export const dynamic = 'force-dynamic';
 
 export async function generateMetadata() {
   const t = await getTranslations();
@@ -31,7 +29,7 @@ export default async function DashboardPage({ searchParams }: Props) {
   const [overview, stats, profile, t] = await Promise.all([
     getDashboardOverview(),
     getDashboardStats(days),
-    getProfile(),
+    getProfileSummary(),
     getTranslations(),
   ]);
 

@@ -21,7 +21,7 @@ export function DashboardContent({ children }: { children: ReactNode }) {
   return (
     <main
       id="main-content"
-      className="min-h-min min-w-0 flex-1 transition-[margin-left] duration-200 ease-in-out"
+      className="flex min-h-min min-w-0 flex-1 flex-col transition-[margin-left] duration-200 ease-in-out"
       style={
         isDesktop
           ? {

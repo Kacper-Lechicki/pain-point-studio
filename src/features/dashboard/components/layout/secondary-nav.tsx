@@ -1,5 +1,7 @@
 'use client';
 
+import React from 'react';
+
 import { useSearchParams } from 'next/navigation';
 
 import { NotebookPen } from 'lucide-react';
@@ -230,9 +232,11 @@ export function SecondaryNav({ titleKey, groups, parentHref }: SecondaryNavProps
           )}
 
           {subPanelItems && subPanelItems.actions.length > 0 && (
-            <div>
-              <div className="text-sidebar-foreground decoration-sidebar-foreground/35 mt-4 mb-1 px-1 text-sm font-semibold underline underline-offset-4">
-                {t('sidebar.quickActions' as MessageKey)}
+            <>
+              <div className="flex min-h-8 items-center px-1">
+                <span className="text-sidebar-foreground decoration-sidebar-foreground/35 text-sm font-semibold underline underline-offset-4">
+                  {t('sidebar.quickActions' as MessageKey)}
+                </span>
               </div>
 
               <div className="flex flex-col gap-1.5">
@@ -240,13 +244,15 @@ export function SecondaryNav({ titleKey, groups, parentHref }: SecondaryNavProps
                   <SubPanelActionItem key={action.label} action={action} />
                 ))}
               </div>
-            </div>
+            </>
           )}
 
           {!hasCustomTitle && dynamicProjectId && (
-            <div>
-              <div className="text-sidebar-foreground decoration-sidebar-foreground/35 mt-4 mb-1 px-1 text-sm font-semibold underline underline-offset-4">
-                {t('sidebar.recentSurveys' as MessageKey)}
+            <>
+              <div className="flex min-h-8 items-center px-1">
+                <span className="text-sidebar-foreground decoration-sidebar-foreground/35 text-sm font-semibold underline underline-offset-4">
+                  {t('sidebar.recentSurveys' as MessageKey)}
+                </span>
               </div>
 
               {recentSurveys.length === 0 ? (
@@ -268,7 +274,7 @@ export function SecondaryNav({ titleKey, groups, parentHref }: SecondaryNavProps
                   ))}
                 </div>
               )}
-            </div>
+            </>
           )}
 
           {subPanelItems && subPanelItems.footerLinks.length > 0 && (
@@ -296,15 +302,12 @@ export function SecondaryNav({ titleKey, groups, parentHref }: SecondaryNavProps
           </h2>
         </div>
         {enhancedGroups.map((group, gi) => (
-          <div key={gi}>
+          <React.Fragment key={gi}>
             {group.headingKey && (
-              <div
-                className={cn(
-                  'text-sidebar-foreground decoration-sidebar-foreground/35 mb-1 px-1 text-sm font-semibold underline underline-offset-4',
-                  gi === 0 ? 'mt-0' : 'mt-4'
-                )}
-              >
-                {t(group.headingKey)}
+              <div className="flex min-h-8 items-center px-1">
+                <span className="text-sidebar-foreground decoration-sidebar-foreground/35 text-sm font-semibold underline underline-offset-4">
+                  {t(group.headingKey)}
+                </span>
               </div>
             )}
 
@@ -367,7 +370,7 @@ export function SecondaryNav({ titleKey, groups, parentHref }: SecondaryNavProps
                 );
               })}
             </div>
-          </div>
+          </React.Fragment>
         ))}
       </nav>
     </>

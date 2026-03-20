@@ -10,13 +10,13 @@ import { Sidebar } from '@/features/dashboard/components/layout/sidebar';
 import { SubPanel } from '@/features/dashboard/components/layout/sub-panel';
 import { SubPanelToggle } from '@/features/dashboard/components/layout/sub-panel-toggle';
 import { isBuilderPath } from '@/features/dashboard/config/layout';
-import type { ProfileData } from '@/features/settings/actions';
+import type { ProfileSummaryData } from '@/features/settings/actions';
 import { CompleteProfileModal } from '@/features/settings/components/complete-profile-modal';
 import { usePathname } from '@/i18n/routing';
 
 interface DashboardLayoutChromeProps {
   children: ReactNode;
-  profile: ProfileData | null;
+  profile: ProfileSummaryData | null;
 }
 
 export function DashboardLayoutChrome({ children, profile }: DashboardLayoutChromeProps) {
@@ -33,11 +33,7 @@ export function DashboardLayoutChrome({ children, profile }: DashboardLayoutChro
         </div>
 
         {needsCompletion && profile && (
-          <CompleteProfileModal
-            roleOptions={profile.roleOptions}
-            currentFullName={profile.fullName}
-            currentRole={profile.role}
-          />
+          <CompleteProfileModal currentFullName={profile.fullName} currentRole={profile.role} />
         )}
       </>
     );
@@ -63,11 +59,7 @@ export function DashboardLayoutChrome({ children, profile }: DashboardLayoutChro
       </div>
 
       {needsCompletion && profile && (
-        <CompleteProfileModal
-          roleOptions={profile.roleOptions}
-          currentFullName={profile.fullName}
-          currentRole={profile.role}
-        />
+        <CompleteProfileModal currentFullName={profile.fullName} currentRole={profile.role} />
       )}
     </>
   );

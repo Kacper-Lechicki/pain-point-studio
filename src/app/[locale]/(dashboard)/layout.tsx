@@ -6,13 +6,13 @@ import { ROUTES } from '@/config';
 import { AuthToast } from '@/features/auth/components/common/auth-toast';
 import { DashboardLayoutChrome } from '@/features/dashboard/components/layout/dashboard-layout-chrome';
 import { SidebarProvider } from '@/features/dashboard/components/layout/sidebar-provider';
-import { getProfile } from '@/features/settings/actions';
+import { getProfileSummary } from '@/features/settings/actions';
 import { BreadcrumbProvider } from '@/hooks/common/use-breadcrumb';
 import { SubPanelItemsProvider } from '@/hooks/common/use-sub-panel-items';
 import { UnsavedChangesProvider } from '@/hooks/unsaved-changes-context';
 
 const DashboardLayout = async ({ children }: { children: ReactNode }) => {
-  const profile = await getProfile();
+  const profile = await getProfileSummary();
 
   if (!profile) {
     redirect(ROUTES.auth.signIn);
