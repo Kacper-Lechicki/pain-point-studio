@@ -11,8 +11,6 @@ import { getProjectsListExtras } from '@/features/projects/actions/get-projects-
 import { ProjectsListPage } from '@/features/projects/components/projects-list-page';
 import Link from '@/i18n/link';
 
-export const dynamic = 'force-dynamic';
-
 export default async function ProjectsPage() {
   const [projects, extras, t] = await Promise.all([
     getProjects(),

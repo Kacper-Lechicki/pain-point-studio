@@ -22,25 +22,29 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { SubmitButton } from '@/components/ui/submit-button';
-import { LookupValue, completeProfile } from '@/features/settings/actions';
+import { completeProfile } from '@/features/settings/actions';
+import { ROLES } from '@/features/settings/config/roles';
 import { CompleteProfileSchema, completeProfileSchema } from '@/features/settings/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import { useRouter } from '@/i18n/routing';
 import type { MessageKey } from '@/i18n/types';
+import { sortOptionsAlphabetically } from '@/lib/common/sort-options';
 
 interface CompleteProfileModalProps {
-  roleOptions: LookupValue[];
   currentFullName: string;
   currentRole: string;
 }
 
-const CompleteProfileModal = ({
-  roleOptions,
-  currentFullName,
-  currentRole,
-}: CompleteProfileModalProps) => {
+const CompleteProfileModal = ({ currentFullName, currentRole }: CompleteProfileModalProps) => {
   const t = useTranslations();
   const router = useRouter();
+
+  const roleOptions = sortOptionsAlphabetically(
+    ROLES.map((r) => ({
+      value: r.value,
+      label: t(r.labelKey as Parameters<typeof t>[0]),
+    }))
+  );
 
   const { isLoading, execute } = useFormAction({
     unexpectedErrorMessage: 'settings.errors.unexpected' as MessageKey,

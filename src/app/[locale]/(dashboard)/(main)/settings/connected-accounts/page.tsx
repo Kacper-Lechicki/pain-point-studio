@@ -5,8 +5,6 @@ import { ROUTES } from '@/config';
 import { getProfile } from '@/features/settings/actions';
 import { ConnectedAccounts } from '@/features/settings/components/connected-accounts';
 
-export const dynamic = 'force-dynamic';
-
 export default async function SettingsConnectedAccountsPage() {
   const profile = await getProfile();
 
