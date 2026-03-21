@@ -65,7 +65,7 @@ test('completed survey shows closed message', async ({ page }, testInfo) => {
   });
 
   try {
-    await page.goto(url(`/r/${slug}`));
+    await page.goto(url(`/r/${slug}`), { waitUntil: 'networkidle' });
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible({ timeout: 15_000 });
     await expect(page.getByRole('button', { name: /start/i })).not.toBeVisible();
   } finally {
@@ -88,7 +88,7 @@ test('cancelled survey shows closed message', async ({ page }, testInfo) => {
   await updateSurveyViaDb(surveyId, { status: 'cancelled' });
 
   try {
-    await page.goto(url(`/r/${slug}`));
+    await page.goto(url(`/r/${slug}`), { waitUntil: 'networkidle' });
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible({ timeout: 15_000 });
     await expect(page.getByRole('button', { name: /start/i })).not.toBeVisible();
   } finally {
@@ -119,7 +119,7 @@ test('archived survey shows closed message', async ({ page }, testInfo) => {
   });
 
   try {
-    await page.goto(url(`/r/${slug}`));
+    await page.goto(url(`/r/${slug}`), { waitUntil: 'networkidle' });
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible({ timeout: 15_000 });
     await expect(page.getByRole('button', { name: /start/i })).not.toBeVisible();
   } finally {

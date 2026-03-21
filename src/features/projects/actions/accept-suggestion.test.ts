@@ -110,6 +110,24 @@ describe('Project Actions – Accept Suggestion', () => {
     expect(result).toHaveProperty('error', 'projects.errors.unexpected');
   });
 
+  it('should insert insight with source set to survey', async () => {
+    const projectChain = chain({ data: { id: PROJECT_ID } });
+    const sortOrderChain = chain({ data: { sort_order: 0 } });
+    const insightChain = chain({ data: { id: INSIGHT_ID } });
+    const upsertChain = chain();
+
+    mockFrom
+      .mockReturnValueOnce(projectChain)
+      .mockReturnValueOnce(sortOrderChain)
+      .mockReturnValueOnce(insightChain)
+      .mockReturnValueOnce(upsertChain);
+
+    const { acceptSuggestion } = await import('./accept-suggestion');
+    await acceptSuggestion(VALID_INPUT);
+
+    expect(insightChain.insert).toHaveBeenCalledWith(expect.objectContaining({ source: 'survey' }));
+  });
+
   it('should return validation error for invalid data', async () => {
     const { acceptSuggestion } = await import('./accept-suggestion');
 

@@ -11,7 +11,7 @@ test('populated dashboard shows greeting and project names', async ({
 }) => {
   await createProjectWithSurveys(userId, 2, 'E2E Dashboard Project A');
   await createProjectViaDb(userId, 'E2E Dashboard Project B');
-  await page.reload();
+  await page.reload({ waitUntil: 'networkidle' });
 
   await expect(page.getByRole('heading', { name: /welcome/i, level: 1 })).toBeVisible({
     timeout: 15_000,
@@ -23,7 +23,7 @@ test('populated dashboard shows greeting and project names', async ({
 
 test('pin and unpin project on dashboard', async ({ page, authenticatedPage: { userId } }) => {
   await createProjectViaDb(userId, 'E2E Pin Project');
-  await page.reload();
+  await page.reload({ waitUntil: 'networkidle' });
   await expect(page.getByText('E2E Pin Project')).toBeVisible({ timeout: 15_000 });
   await page.getByRole('button', { name: 'Pin', exact: true }).click();
 
@@ -43,7 +43,7 @@ test('time filter updates URL period parameter', async ({
   authenticatedPage: { userId },
 }) => {
   await createProjectViaDb(userId, 'E2E Filter Project');
-  await page.reload();
+  await page.reload({ waitUntil: 'networkidle' });
 
   await expect(page.getByRole('heading', { name: /welcome/i, level: 1 })).toBeVisible({
     timeout: 15_000,

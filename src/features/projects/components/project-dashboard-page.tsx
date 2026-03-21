@@ -11,7 +11,6 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { DASHBOARD_PAGE_BODY_GAP_TOP } from '@/config/layout';
 import { ROUTES } from '@/config/routes';
 import type { InsightSuggestionsResult } from '@/features/projects/actions/get-insight-suggestions';
-import type { PendingInsightSurvey } from '@/features/projects/actions/get-pending-insight-surveys';
 import type { ProjectOwner } from '@/features/projects/actions/get-project';
 import type { SurveySignalData } from '@/features/projects/actions/get-project-signals-data';
 import { ProjectDetailHeader } from '@/features/projects/components/project-detail-header';
@@ -49,7 +48,6 @@ interface ProjectDashboardPageProps {
   overviewStats: ProjectOverviewStats;
   signalsData: SurveySignalData[];
   suggestionsData: InsightSuggestionsResult;
-  pendingSurveys: PendingInsightSurvey[];
 }
 
 export function ProjectDashboardPage({
@@ -62,7 +60,6 @@ export function ProjectDashboardPage({
   overviewStats,
   signalsData,
   suggestionsData,
-  pendingSurveys,
 }: ProjectDashboardPageProps) {
   const [insights, setInsights] = useState(initialInsights);
   const router = useRouter();
@@ -179,7 +176,6 @@ export function ProjectDashboardPage({
           overviewStats={overviewStats}
           signalsData={signalsData}
           suggestionsData={suggestionsData}
-          pendingSurveys={pendingSurveys}
           onInsightCreated={handleInsightCreated}
           onInsightUpdated={handleInsightUpdated}
           onInsightDeleted={handleInsightDeleted}

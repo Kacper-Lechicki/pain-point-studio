@@ -109,6 +109,7 @@ export type Database = {
           phase: string | null;
           project_id: string;
           sort_order: number;
+          source: Database['public']['Enums']['insight_source'];
           type: string;
           updated_at: string;
         };
@@ -119,6 +120,7 @@ export type Database = {
           phase?: string | null;
           project_id: string;
           sort_order?: number;
+          source?: Database['public']['Enums']['insight_source'];
           type: string;
           updated_at?: string;
         };
@@ -129,6 +131,7 @@ export type Database = {
           phase?: string | null;
           project_id?: string;
           sort_order?: number;
+          source?: Database['public']['Enums']['insight_source'];
           type?: string;
           updated_at?: string;
         };
@@ -707,6 +710,12 @@ export type Database = {
       };
     };
     Enums: {
+      insight_source:
+        | 'survey'
+        | 'user_interview'
+        | 'competitor_analysis'
+        | 'market_research'
+        | 'own_observation';
       question_type: 'open_text' | 'short_text' | 'multiple_choice' | 'rating_scale' | 'yes_no';
       survey_status: 'draft' | 'active' | 'completed' | 'cancelled' | 'archived' | 'trashed';
     };
@@ -837,6 +846,13 @@ export const Constants = {
   },
   public: {
     Enums: {
+      insight_source: [
+        'survey',
+        'user_interview',
+        'competitor_analysis',
+        'market_research',
+        'own_observation',
+      ],
       question_type: ['open_text', 'short_text', 'multiple_choice', 'rating_scale', 'yes_no'],
       survey_status: ['draft', 'active', 'completed', 'cancelled', 'archived', 'trashed'],
     },

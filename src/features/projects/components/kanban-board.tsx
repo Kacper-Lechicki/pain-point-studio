@@ -18,9 +18,7 @@ import { cn } from '@/lib/common/utils';
 type BoardColumnId = InsightType | 'suggested';
 
 interface KanbanBoardProps {
-  projectId: string;
   insights: ProjectInsight[];
-  onInsightCreated: (insight: ProjectInsight) => void;
   onInsightUpdated: (insight: ProjectInsight) => void;
   onInsightDeleted: (insightId: string) => void;
   onInsightsChanged?: (insights: ProjectInsight[]) => void;
@@ -30,12 +28,13 @@ interface KanbanBoardProps {
   onSuggestionDismissed?: (signature: string) => void;
   visibleTypes?: readonly InsightType[];
   onDragCompleted?: () => void;
+  onAddClick?: (type: InsightType) => void;
+  onEdit?: (insight: ProjectInsight) => void;
+  hasCompletedSurveys?: boolean;
 }
 
 export function KanbanBoard({
-  projectId,
   insights,
-  onInsightCreated,
   onInsightUpdated,
   onInsightDeleted,
   onInsightsChanged,
@@ -45,6 +44,9 @@ export function KanbanBoard({
   onSuggestionDismissed,
   visibleTypes,
   onDragCompleted,
+  onAddClick,
+  onEdit,
+  hasCompletedSurveys,
 }: KanbanBoardProps) {
   const [localInsights, setLocalInsights] = useState(insights);
 
@@ -256,6 +258,7 @@ export function KanbanBoard({
             isDragging={isDragging}
             showPlaceholderAt={(index) => showPlaceholderAt('suggested', index)}
             showPlaceholderAtEnd={showPlaceholderAtEnd('suggested')}
+            hasCompletedSurveys={hasCompletedSurveys}
           />
         )}
         {typesToRender.map((type) => (
@@ -263,8 +266,6 @@ export function KanbanBoard({
             key={type}
             type={type}
             insights={insightsByType[type]}
-            projectId={projectId}
-            onInsightCreated={onInsightCreated}
             onInsightUpdated={onInsightUpdated}
             onInsightDeleted={onInsightDeleted}
             isDropTarget={!!draggedId && hoveredColumn === type}
@@ -274,6 +275,8 @@ export function KanbanBoard({
             isDragging={isDragging}
             showPlaceholderAt={(index) => showPlaceholderAt(type, index)}
             showPlaceholderAtEnd={showPlaceholderAtEnd(type)}
+            onAddClick={onAddClick}
+            onEdit={onEdit}
           />
         ))}
       </div>

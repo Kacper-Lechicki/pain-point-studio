@@ -310,3 +310,32 @@ export async function createCompletedSurveyWithResponses(
 
   return { surveyId, questionIds, title: surveyTitle };
 }
+
+// ---------------------------------------------------------------------------
+// Auth helpers
+// ---------------------------------------------------------------------------
+
+export async function setPendingEmailChange(
+  email: string,
+  password: string,
+  newEmail: string
+): Promise<void> {
+  const { createClient } = await import('@supabase/supabase-js');
+  const { env } = await import('./env');
+
+  const userClient = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_ANON_KEY, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+
+  const { error: signInError } = await userClient.auth.signInWithPassword({ email, password });
+
+  if (signInError) {
+    throw new Error(`[e2e] Failed to sign in for email change: ${signInError.message}`);
+  }
+
+  const { error } = await userClient.auth.updateUser({ email: newEmail });
+
+  if (error) {
+    throw new Error(`[e2e] Failed to set pending email change: ${error.message}`);
+  }
+}

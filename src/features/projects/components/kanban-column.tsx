@@ -1,12 +1,10 @@
 'use client';
 
-import { useState } from 'react';
-
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
-import { InsightInlineForm } from '@/features/projects/components/insight-inline-form';
+import { InsightColumnInfo } from '@/features/projects/components/insight-column-info';
 import { KanbanCard } from '@/features/projects/components/kanban-card';
 import { INSIGHT_COLORS } from '@/features/projects/config/insight-colors';
 import type { InsightType, ProjectInsight } from '@/features/projects/types';
@@ -31,35 +29,35 @@ function DropPlaceholder() {
 interface KanbanColumnProps {
   type: InsightType;
   insights: ProjectInsight[];
-  projectId: string;
-  onInsightCreated: (insight: ProjectInsight) => void;
   onInsightUpdated: (insight: ProjectInsight) => void;
   onInsightDeleted: (insightId: string) => void;
+  onAddClick?: ((type: InsightType) => void) | undefined;
+  onEdit?: ((insight: ProjectInsight) => void) | undefined;
   /** Whether a card from another column is hovering over this column. */
-  isDropTarget?: boolean;
+  isDropTarget?: boolean | undefined;
   /** Whether any drag is happening on the board. */
-  isDragActive?: boolean;
+  isDragActive?: boolean | undefined;
   /** Called when pointer goes down on a card's drag handle. */
-  onDragStart?: (e: React.PointerEvent, insightId: string) => void;
+  onDragStart?: ((e: React.PointerEvent, insightId: string) => void) | undefined;
   /** Returns true if this insight is currently being dragged. */
-  isDragging?: (insightId: string) => boolean;
+  isDragging?: ((insightId: string) => boolean) | undefined;
   /** Returns true if a drop placeholder should be shown at this index. */
-  showPlaceholderAt?: (index: number) => boolean;
+  showPlaceholderAt?: ((index: number) => boolean) | undefined;
   /** Whether to show a placeholder after the last card. */
-  showPlaceholderAtEnd?: boolean;
+  showPlaceholderAtEnd?: boolean | undefined;
   /** Optional custom card renderer (e.g. for mobile cards). */
-  renderCard?: (insight: ProjectInsight) => React.ReactNode;
+  renderCard?: ((insight: ProjectInsight) => React.ReactNode) | undefined;
   /** Called when a card requests moving to another type via submenu. */
-  onMoveToType?: (insightId: string, newType: InsightType) => void;
+  onMoveToType?: ((insightId: string, newType: InsightType) => void) | undefined;
 }
 
 export function KanbanColumn({
   type,
   insights,
-  projectId,
-  onInsightCreated,
   onInsightUpdated,
   onInsightDeleted,
+  onAddClick,
+  onEdit,
   isDropTarget,
   isDragActive,
   onDragStart,
@@ -70,21 +68,7 @@ export function KanbanColumn({
   onMoveToType,
 }: KanbanColumnProps) {
   const t = useTranslations();
-  const [showForm, setShowForm] = useState(false);
   const colors = INSIGHT_COLORS[type];
-
-  const handleAddClick = () => {
-    setShowForm(true);
-  };
-
-  const handleCreated = (insight: ProjectInsight) => {
-    onInsightCreated(insight);
-    setShowForm(false);
-  };
-
-  const handleCancelForm = () => {
-    setShowForm(false);
-  };
 
   return (
     <div
@@ -104,13 +88,14 @@ export function KanbanColumn({
             {t(COLUMN_LABEL_KEYS[type] as MessageKey)}
           </span>
           <span className="text-muted-foreground text-[11px]">{insights.length}</span>
+          <InsightColumnInfo columnKey={type} />
         </div>
 
         <Button
           variant="ghost"
           size="icon-xs"
           className="text-muted-foreground"
-          onClick={handleAddClick}
+          onClick={() => onAddClick?.(type)}
           aria-label={t('projects.insights.addInsight' as MessageKey)}
         >
           <Plus className="size-4" />
@@ -131,6 +116,7 @@ export function KanbanColumn({
                     insight={insight}
                     onUpdated={onInsightUpdated}
                     onDeleted={onInsightDeleted}
+                    onEdit={onEdit}
                     showStripe
                     {...(onMoveToType && { onMoveToType })}
                     {...(onDragStart && {
@@ -145,24 +131,11 @@ export function KanbanColumn({
           {showPlaceholderAtEnd && <DropPlaceholder />}
         </div>
       ) : (
-        !showForm && (
-          <div className="border-border/70 dark:border-border/80 flex items-center justify-center rounded-lg border border-dashed py-10">
-            <span className="text-muted-foreground text-xs">
-              {t('projects.insights.addInsightsHere' as MessageKey)}
-            </span>
-          </div>
-        )
-      )}
-
-      {/* Inline add form */}
-      {showForm && (
-        <InsightInlineForm
-          projectId={projectId}
-          type={type}
-          alwaysOpen
-          onCancel={handleCancelForm}
-          onCreated={handleCreated}
-        />
+        <div className="border-border/70 dark:border-border/80 flex items-center justify-center rounded-lg border border-dashed py-10">
+          <span className="text-muted-foreground max-w-[200px] text-center text-xs">
+            {t(`projects.insights.columnDescriptions.${type}` as MessageKey)}
+          </span>
+        </div>
       )}
     </div>
   );

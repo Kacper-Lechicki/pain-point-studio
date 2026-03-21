@@ -23,16 +23,18 @@ async function ensureSidebarOpen(page: import('@playwright/test').Page) {
 async function ensureSidebarClosed(page: import('@playwright/test').Page) {
   const sidebarDialog = page.getByRole('dialog', { name: 'Questions' });
 
-  await page.waitForTimeout(300);
-
-  if (await sidebarDialog.isVisible().catch(() => false)) {
-    const viewport = page.viewportSize();
-    const x = viewport ? viewport.width - 20 : 350;
-    const y = viewport ? Math.round(viewport.height / 2) : 400;
-
-    await page.mouse.click(x, y);
-    await expect(sidebarDialog).not.toBeVisible({ timeout: 5_000 });
+  try {
+    await sidebarDialog.waitFor({ state: 'visible', timeout: 1_000 });
+  } catch {
+    return;
   }
+
+  const viewport = page.viewportSize();
+  const x = viewport ? viewport.width - 20 : 350;
+  const y = viewport ? Math.round(viewport.height / 2) : 400;
+
+  await page.mouse.click(x, y);
+  await expect(sidebarDialog).not.toBeVisible({ timeout: 5_000 });
 }
 
 test('builder: load, edit, add, switch, delete, and save', async ({

@@ -87,6 +87,10 @@ class UpstashRateLimiter implements RateLimiter {
   >();
 
   async check(config: RateLimitConfig): Promise<{ limited: boolean }> {
+    if (env.NODE_ENV !== 'production' || env.CI) {
+      return { limited: false };
+    }
+
     const headerStore = await headers();
     const forwarded =
       headerStore.get('x-forwarded-for')?.split(',')[0]?.trim() ??

@@ -42,6 +42,7 @@ vi.mock('@/lib/supabase/server', () => ({
 const VALID_INPUT: z.infer<typeof createInsightSchema> = {
   projectId: PROJECT_ID,
   type: 'strength',
+  source: 'own_observation',
   content: 'Most users confirmed the problem exists',
 };
 
@@ -129,6 +130,25 @@ describe('Project Actions – Create Insight', () => {
     expect(result).toEqual({ success: true, data: { insightId: INSIGHT_ID } });
     expect(insightChain.insert).toHaveBeenCalledWith(
       expect.objectContaining({ type: 'opportunity' })
+    );
+  });
+
+  it('should create insight with specified source', async () => {
+    const projectChain = chain({ data: { id: PROJECT_ID } });
+    const sortOrderChain = chain({ data: { sort_order: 0 } });
+    const insightChain = chain({ data: { id: INSIGHT_ID } });
+
+    mockFrom
+      .mockReturnValueOnce(projectChain)
+      .mockReturnValueOnce(sortOrderChain)
+      .mockReturnValueOnce(insightChain);
+
+    const { createInsight } = await import('./create-insight');
+    const result = await createInsight({ ...VALID_INPUT, source: 'user_interview' });
+
+    expect(result).toEqual({ success: true, data: { insightId: INSIGHT_ID } });
+    expect(insightChain.insert).toHaveBeenCalledWith(
+      expect.objectContaining({ source: 'user_interview' })
     );
   });
 

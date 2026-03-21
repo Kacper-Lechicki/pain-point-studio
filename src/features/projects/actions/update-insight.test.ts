@@ -126,6 +126,21 @@ describe('Project Actions – Update Insight', () => {
     expect(updateChain.update).toHaveBeenCalledWith({ type: 'opportunity' });
   });
 
+  it('should update insight source', async () => {
+    const updateChain = chain({ data: { id: INSIGHT_ID } });
+
+    mockFrom.mockReturnValue(updateChain);
+
+    const { updateInsight } = await import('./update-insight');
+
+    await updateInsight({
+      insightId: INSIGHT_ID,
+      source: 'user_interview',
+    });
+
+    expect(updateChain.update).toHaveBeenCalledWith({ source: 'user_interview' });
+  });
+
   it('should return validation error for invalid data', async () => {
     const { updateInsight } = await import('./update-insight');
 

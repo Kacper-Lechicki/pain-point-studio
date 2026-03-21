@@ -18,6 +18,10 @@ export const updateInsight = withProtectedAction<typeof updateInsightSchema>('up
       updatePayload.content = data.content;
     }
 
+    if (data.source !== undefined) {
+      updatePayload.source = data.source;
+    }
+
     if (Object.keys(updatePayload).length === 0) {
       return { error: 'projects.errors.unexpected' };
     }

@@ -38,6 +38,7 @@ export const createInsight = withProtectedAction<typeof createInsightSchema, { i
         .insert({
           project_id: data.projectId,
           type: data.type,
+          source: data.source,
           content: data.content,
           sort_order: nextSortOrder,
         })

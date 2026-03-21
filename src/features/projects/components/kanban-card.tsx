@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 
 import { ArrowRightLeft, GripVertical, Pencil, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -17,12 +17,10 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Textarea } from '@/components/ui/textarea';
 import { deleteInsight } from '@/features/projects/actions/delete-insight';
-import { updateInsight } from '@/features/projects/actions/update-insight';
-import { INSIGHT_CONTENT_MAX_LENGTH } from '@/features/projects/config';
+import { InsightSourceBadge } from '@/features/projects/components/insight-source-badge';
 import { INSIGHT_COLORS, INSIGHT_ICONS } from '@/features/projects/config/insight-colors';
-import type { InsightType, ProjectInsight } from '@/features/projects/types';
+import type { InsightSource, InsightType, ProjectInsight } from '@/features/projects/types';
 import { INSIGHT_TYPES } from '@/features/projects/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import type { MessageKey } from '@/i18n/types';
@@ -32,6 +30,7 @@ interface KanbanCardProps {
   insight: ProjectInsight;
   onUpdated: (insight: ProjectInsight) => void;
   onDeleted: (insightId: string) => void;
+  onEdit?: ((insight: ProjectInsight) => void) | undefined;
   /** Called when pointer goes down on the drag handle. */
   onDragStart?: (e: React.PointerEvent) => void;
   /** Whether this card is currently being dragged. */
@@ -48,6 +47,7 @@ export function KanbanCard({
   insight,
   onUpdated,
   onDeleted,
+  onEdit,
   onDragStart,
   isDragging,
   hideDragHandle,
@@ -55,56 +55,11 @@ export function KanbanCard({
   onMoveToType,
 }: KanbanCardProps) {
   const t = useTranslations();
-  const [isEditing, setIsEditing] = useState(false);
-  const [editContent, setEditContent] = useState(insight.content);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  const updateAction = useFormAction({
-    unexpectedErrorMessage: 'projects.errors.unexpected' as MessageKey,
-  });
 
   const deleteAction = useFormAction({
     unexpectedErrorMessage: 'projects.errors.unexpected' as MessageKey,
   });
-
-  const handleStartEdit = () => {
-    setEditContent(insight.content);
-    setIsEditing(true);
-
-    requestAnimationFrame(() => {
-      textareaRef.current?.focus();
-    });
-  };
-
-  const handleCancelEdit = () => {
-    setIsEditing(false);
-    setEditContent(insight.content);
-  };
-
-  const handleSaveEdit = async () => {
-    const trimmed = editContent.trim();
-
-    if (!trimmed || trimmed === insight.content) {
-      setIsEditing(false);
-
-      return;
-    }
-
-    const original = insight;
-
-    onUpdated({ ...insight, content: trimmed, updated_at: new Date().toISOString() });
-    setIsEditing(false);
-
-    const result = await updateAction.execute(updateInsight, {
-      insightId: insight.id,
-      content: trimmed,
-    });
-
-    if (result?.error) {
-      onUpdated(original);
-    }
-  };
 
   const handleConfirmDelete = async () => {
     const original = insight;
@@ -122,43 +77,6 @@ export function KanbanCard({
   };
 
   const colors = INSIGHT_COLORS[insight.type as InsightType];
-
-  if (isEditing) {
-    return (
-      <div className="bg-card flex flex-col gap-2 rounded-lg border p-2">
-        <Textarea
-          ref={textareaRef}
-          value={editContent}
-          onChange={(e) => setEditContent(e.target.value)}
-          maxLength={INSIGHT_CONTENT_MAX_LENGTH}
-          size="sm"
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-              void handleSaveEdit();
-            }
-
-            if (e.key === 'Escape') {
-              handleCancelEdit();
-            }
-          }}
-        />
-
-        <div className="flex items-center gap-1.5">
-          <Button
-            size="sm"
-            onClick={handleSaveEdit}
-            disabled={updateAction.isLoading || !editContent.trim()}
-          >
-            {t('common.actions.save')}
-          </Button>
-
-          <Button variant="ghost" size="sm" onClick={handleCancelEdit}>
-            {t('common.cancel')}
-          </Button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <>
@@ -185,9 +103,10 @@ export function KanbanCard({
           />
         )}
 
-        <span className="text-foreground min-w-0 flex-1 text-[13px] leading-relaxed">
-          {insight.content}
-        </span>
+        <div className="flex min-w-0 flex-1 flex-col gap-1">
+          <span className="text-foreground text-[13px] leading-relaxed">{insight.content}</span>
+          <InsightSourceBadge source={insight.source as InsightSource} />
+        </div>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -206,7 +125,7 @@ export function KanbanCard({
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={handleStartEdit}>
+            <DropdownMenuItem onClick={() => onEdit?.(insight)}>
               <Pencil className="size-3.5" />
               {t('common.actions.edit')}
             </DropdownMenuItem>

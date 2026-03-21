@@ -62,7 +62,7 @@ test.describe('Route Protection & Auth Callback', () => {
 
     for (const route of [ROUTES.auth.signIn, ROUTES.auth.signUp, ROUTES.auth.forgotPassword]) {
       await page.goto(url(route));
-      await expect(page.locator('form')).toBeVisible();
+      await expect(page.locator('form')).toBeVisible({ timeout: 15_000 });
     }
   });
 

@@ -28,6 +28,7 @@ function makeInsight(type: ProjectInsight['type']): ProjectInsight {
     project_id: crypto.randomUUID(),
     type,
     content: `Test ${type} insight`,
+    source: 'own_observation' as const,
     phase: null,
     sort_order: 0,
     created_at: new Date().toISOString(),
