@@ -8,7 +8,7 @@ import { ROLES } from '@/features/settings/config/roles';
 import { SOCIAL_LINK_TYPES } from '@/features/settings/config/social-link-types';
 import type { SocialLink } from '@/features/settings/types';
 import { sortOptionsAlphabetically } from '@/lib/common/sort-options';
-import { createClient } from '@/lib/supabase/server';
+import { getAuthenticatedClient } from '@/lib/supabase/get-authenticated-client';
 import { mapSupabaseUser } from '@/lib/supabase/user-mapper';
 
 export interface LookupValue {
@@ -40,11 +40,7 @@ export interface ProfileData {
  * Returns null when unauthenticated. Wrapped with React `cache()` for per-request deduplication.
  */
 export const getProfile = cache(async (): Promise<ProfileData | null> => {
-  const supabase = await createClient();
-
-  const {
-    data: { user: rawUser },
-  } = await supabase.auth.getUser();
+  const { user: rawUser, supabase } = await getAuthenticatedClient();
 
   if (!rawUser || !rawUser.email) {
     return null;

@@ -2,7 +2,7 @@
 
 import { cache } from 'react';
 
-import { createClient } from '@/lib/supabase/server';
+import { getAuthenticatedClient } from '@/lib/supabase/get-authenticated-client';
 
 export interface ProfileSummaryData {
   id: string;
@@ -13,11 +13,7 @@ export interface ProfileSummaryData {
 }
 
 export const getProfileSummary = cache(async (): Promise<ProfileSummaryData | null> => {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user, supabase } = await getAuthenticatedClient();
 
   if (!user || !user.email) {
     return null;

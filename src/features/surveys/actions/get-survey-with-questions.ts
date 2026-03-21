@@ -10,7 +10,7 @@ import {
   type SurveyVisibility,
 } from '@/features/surveys/types';
 import type { ResearchPhase } from '@/lib/common/research';
-import { createClient } from '@/lib/supabase/server';
+import { getAuthenticatedClient } from '@/lib/supabase/get-authenticated-client';
 
 interface SurveyBuilderData {
   survey: {
@@ -30,11 +30,7 @@ interface SurveyBuilderData {
 
 export const getSurveyWithQuestions = cache(
   async (surveyId: string): Promise<SurveyBuilderData | null> => {
-    const supabase = await createClient();
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const { user, supabase } = await getAuthenticatedClient();
 
     if (!user) {
       return null;

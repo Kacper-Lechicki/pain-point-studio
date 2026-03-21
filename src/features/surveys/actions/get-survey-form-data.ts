@@ -2,7 +2,7 @@
 
 import { cache } from 'react';
 
-import { createClient } from '@/lib/supabase/server';
+import { getAuthenticatedClient } from '@/lib/supabase/get-authenticated-client';
 
 export interface ProjectOption {
   value: string;
@@ -14,11 +14,7 @@ interface SurveyFormData {
 }
 
 export const getSurveyFormData = cache(async (): Promise<SurveyFormData> => {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user, supabase } = await getAuthenticatedClient();
 
   let projectOptions: ProjectOption[] = [];
 

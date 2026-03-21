@@ -3,10 +3,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock @supabase/ssr
-const mockGetUser = vi.fn().mockResolvedValue({ data: { user: null } });
+const mockGetSession = vi.fn().mockResolvedValue({ data: { session: null } });
 
 const mockCreateServerClient = vi.fn().mockReturnValue({
-  auth: { getUser: mockGetUser },
+  auth: { getSession: mockGetSession },
 });
 
 vi.mock('@supabase/ssr', () => ({
@@ -57,13 +57,13 @@ describe('Supabase Middleware – updateSession', () => {
     );
   });
 
-  it('should call supabase.auth.getUser() to refresh the session', async () => {
+  it('should call supabase.auth.getSession() to check the session', async () => {
     const { updateSession } = await import('./middleware');
     const req = createMockRequest();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await updateSession(req as any);
 
-    expect(mockGetUser).toHaveBeenCalled();
+    expect(mockGetSession).toHaveBeenCalled();
   });
 });

@@ -5,7 +5,7 @@ import { cache } from 'react';
 import { getProjectSignalsData } from '@/features/projects/actions/get-project-signals-data';
 import { generateInsightSuggestions } from '@/features/projects/lib/suggestions';
 import type { InsightSuggestion } from '@/features/projects/types';
-import { createClient } from '@/lib/supabase/server';
+import { getAuthenticatedClient } from '@/lib/supabase/get-authenticated-client';
 
 export interface InsightSuggestionsResult {
   suggestions: InsightSuggestion[];
@@ -25,11 +25,7 @@ const EMPTY_RESULT: InsightSuggestionsResult = {
  */
 export const getInsightSuggestions = cache(
   async (projectId: string): Promise<InsightSuggestionsResult> => {
-    const supabase = await createClient();
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const { user, supabase } = await getAuthenticatedClient();
 
     if (!user) {
       return EMPTY_RESULT;

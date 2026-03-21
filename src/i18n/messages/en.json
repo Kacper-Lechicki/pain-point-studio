@@ -42,6 +42,7 @@
     "descriptions": {
       "home": "Validate product ideas before writing code. A structured research platform for developers to uncover real user pain points.",
       "dashboard": "Overview of your research projects, surveys, and recent activity.",
+      "project": "View project details, surveys, insights, and notes.",
       "projects": "Manage and organize your research projects.",
       "projectNew": "Create a new research project to start validating your product idea.",
       "projectNewSurvey": "Create a new survey for your research project.",
