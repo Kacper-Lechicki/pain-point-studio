@@ -4,12 +4,18 @@ import { getTranslations } from 'next-intl/server';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { PageTransition } from '@/components/ui/page-transition';
-import { ROUTES } from '@/config';
+import { ROUTES, getPageMetadata } from '@/config';
 import { DASHBOARD_PAGE_BODY_GAP_TOP } from '@/config/layout';
 import { getProjects } from '@/features/projects/actions/get-projects';
 import { getProjectsListExtras } from '@/features/projects/actions/get-projects-list-extras';
 import { ProjectsListPage } from '@/features/projects/components/projects-list-page';
 import Link from '@/i18n/link';
+
+export async function generateMetadata() {
+  const t = await getTranslations();
+
+  return getPageMetadata(t, 'projects');
+}
 
 export default async function ProjectsPage() {
   const [projects, extras, t] = await Promise.all([

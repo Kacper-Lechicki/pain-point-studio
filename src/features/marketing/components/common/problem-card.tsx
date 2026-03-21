@@ -1,23 +1,14 @@
 'use client';
 
-import type { LucideIcon } from 'lucide-react';
-import { useTranslations } from 'next-intl';
-
 import { CardBody, CardContainer, CardItem } from '@/components/ui/3d-card';
-import type { MessageKey } from '@/i18n/types';
 
 interface ProblemCardProps {
-  icon: LucideIcon;
-  titleKey: MessageKey;
-  descriptionKey: MessageKey;
+  icon: React.ReactNode;
+  title: string;
+  description: string;
 }
 
-const ProblemCard = ({ icon: Icon, titleKey, descriptionKey }: ProblemCardProps) => {
-  const t = useTranslations();
-
-  const title = t(titleKey);
-  const description = t(descriptionKey);
-
+const ProblemCard = ({ icon, title, description }: ProblemCardProps) => {
   return (
     <CardContainer containerClassName="h-full py-0" className="h-full w-full">
       <CardBody className="card-interactive group/card flex h-full w-full flex-col items-start">
@@ -25,7 +16,7 @@ const ProblemCard = ({ icon: Icon, titleKey, descriptionKey }: ProblemCardProps)
           translateZ="50"
           className="bg-primary/10 ring-ring/10 flex size-12 items-center justify-center rounded-lg ring-1"
         >
-          <Icon className="text-primary size-6" aria-hidden="true" />
+          {icon}
         </CardItem>
 
         <CardItem

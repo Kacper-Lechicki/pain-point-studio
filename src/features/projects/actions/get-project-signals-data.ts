@@ -3,7 +3,7 @@
 import { cache } from 'react';
 
 import type { QuestionType } from '@/features/surveys/types';
-import { createClient } from '@/lib/supabase/server';
+import { getAuthenticatedClient } from '@/lib/supabase/get-authenticated-client';
 
 // ── Public types ──────────────────────────────────────────────────────
 
@@ -34,11 +34,7 @@ export interface SurveySignalData {
  */
 export const getProjectSignalsData = cache(
   async (projectId: string): Promise<SurveySignalData[]> => {
-    const supabase = await createClient();
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const { user, supabase } = await getAuthenticatedClient();
 
     if (!user) {
       return [];

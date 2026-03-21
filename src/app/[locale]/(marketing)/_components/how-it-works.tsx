@@ -1,13 +1,12 @@
-'use client';
-
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 
 import { ScrollReveal } from '@/components/ui/scroll-reveal';
 import { StepCard } from '@/features/marketing/components/common/step-card';
 import { HOW_IT_WORKS_STEPS } from '@/features/marketing/config';
+import type { MessageKey } from '@/i18n/types';
 
-const HowItWorks = () => {
-  const t = useTranslations();
+const HowItWorks = async () => {
+  const t = await getTranslations();
   const [firstStep, ...otherSteps] = HOW_IT_WORKS_STEPS;
 
   const title = t('marketing.howItWorks.title');
@@ -16,6 +15,16 @@ const HowItWorks = () => {
   if (!firstStep) {
     return null;
   }
+
+  const translateStep = (step: (typeof HOW_IT_WORKS_STEPS)[number]) => {
+    const baseKey = `marketing.howItWorks.steps.${step.stepKey}`;
+
+    return {
+      title: t(`${baseKey}.title` as MessageKey),
+      description: t(`${baseKey}.description` as MessageKey),
+      visualLabel: t(`${baseKey}.visualLabel` as MessageKey),
+    };
+  };
 
   return (
     <section className="relative overflow-hidden border-t border-white/5 py-0">
@@ -36,7 +45,11 @@ const HowItWorks = () => {
           <div className="py-20 sm:py-32">
             <div className="container mx-auto px-6 sm:px-4 lg:px-8">
               <ScrollReveal>
-                <StepCard step={firstStep} isReversed={false} />
+                <StepCard
+                  step={firstStep}
+                  isReversed={false}
+                  translations={translateStep(firstStep)}
+                />
               </ScrollReveal>
             </div>
           </div>
@@ -53,7 +66,11 @@ const HowItWorks = () => {
             >
               <div className="container mx-auto px-6 sm:px-4 lg:px-8">
                 <ScrollReveal>
-                  <StepCard step={step} isReversed={isReversed} />
+                  <StepCard
+                    step={step}
+                    isReversed={isReversed}
+                    translations={translateStep(step)}
+                  />
                 </ScrollReveal>
               </div>
             </div>

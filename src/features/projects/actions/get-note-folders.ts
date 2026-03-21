@@ -3,15 +3,11 @@
 import { cache } from 'react';
 
 import type { ProjectNoteFolder } from '@/features/projects/types';
-import { createClient } from '@/lib/supabase/server';
+import { getAuthenticatedClient } from '@/lib/supabase/get-authenticated-client';
 
 /** Fetch all note folders for a project. */
 export const getNoteFolders = cache(async (projectId: string): Promise<ProjectNoteFolder[]> => {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user, supabase } = await getAuthenticatedClient();
 
   if (!user) {
     return [];

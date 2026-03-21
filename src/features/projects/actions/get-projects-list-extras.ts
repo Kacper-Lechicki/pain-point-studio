@@ -3,7 +3,7 @@
 import { cache } from 'react';
 
 import { type ProjectsListExtrasMap, projectExtrasMapSchema } from '@/features/projects/types';
-import { createClient } from '@/lib/supabase/server';
+import { getAuthenticatedClient } from '@/lib/supabase/get-authenticated-client';
 
 export type {
   ProjectListExtras,
@@ -12,11 +12,7 @@ export type {
 } from '@/features/projects/types';
 
 export const getProjectsListExtras = cache(async (): Promise<ProjectsListExtrasMap | null> => {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user, supabase } = await getAuthenticatedClient();
 
   if (!user) {
     return null;

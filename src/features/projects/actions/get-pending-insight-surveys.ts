@@ -2,7 +2,7 @@
 
 import { cache } from 'react';
 
-import { createClient } from '@/lib/supabase/server';
+import { getAuthenticatedClient } from '@/lib/supabase/get-authenticated-client';
 
 export interface PendingInsightSurvey {
   id: string;
@@ -20,11 +20,7 @@ export interface PendingInsightSurvey {
  */
 export const getPendingInsightSurveys = cache(
   async (projectId: string): Promise<PendingInsightSurvey[]> => {
-    const supabase = await createClient();
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const { user, supabase } = await getAuthenticatedClient();
 
     if (!user) {
       return [];

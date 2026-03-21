@@ -6,14 +6,10 @@ import {
   type DashboardStats,
   dashboardStatsSchema,
 } from '@/features/dashboard/types/dashboard-stats';
-import { createClient } from '@/lib/supabase/server';
+import { getAuthenticatedClient } from '@/lib/supabase/get-authenticated-client';
 
 export const getDashboardStats = cache(async (days: number): Promise<DashboardStats | null> => {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user, supabase } = await getAuthenticatedClient();
 
   if (!user) {
     return null;

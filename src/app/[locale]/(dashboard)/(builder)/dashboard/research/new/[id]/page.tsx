@@ -3,6 +3,7 @@ import { notFound, redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 
 import { PageTransition } from '@/components/ui/page-transition';
+import { getPageMetadata } from '@/config';
 import { getSurveyFormData, getSurveyWithQuestions } from '@/features/surveys/actions';
 import { QuestionBuilderPage } from '@/features/surveys/components/builder/question-builder-page';
 import { getSurveyStatsUrl } from '@/lib/common/urls/survey-urls';
@@ -19,9 +20,7 @@ export async function generateMetadata({ params }: Props) {
     return { title: t('metadata.title') };
   }
 
-  return {
-    title: `${t('metadata.pages.surveyBuilder', { name: data.survey.title })} | ${t('metadata.title')}`,
-  };
+  return getPageMetadata(t, 'surveyBuilder', { name: data.survey.title });
 }
 
 export default async function SurveyBuilderRoute({ params }: Props) {

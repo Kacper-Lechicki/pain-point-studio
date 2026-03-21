@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 
 import { PageTransition } from '@/components/ui/page-transition';
-import { ROUTES } from '@/config';
+import { ROUTES, getPageMetadata } from '@/config';
 import { DashboardPageBack } from '@/features/dashboard/components/layout/dashboard-page-back';
 import {
   type InsightSuggestionsResult,
@@ -31,9 +31,7 @@ export async function generateMetadata({ params }: ProjectDetailPageProps) {
     return { title: t('metadata.title') };
   }
 
-  return {
-    title: `${t('metadata.pages.project', { name: data.project.name })} | ${t('metadata.title')}`,
-  };
+  return getPageMetadata(t, 'project', { name: data.project.name });
 }
 
 const EMPTY_OVERVIEW_STATS = {

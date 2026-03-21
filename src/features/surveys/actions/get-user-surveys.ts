@@ -3,14 +3,10 @@
 import { cache } from 'react';
 
 import { type UserSurvey, userSurveysRpcSchema } from '@/features/surveys/types';
-import { createClient } from '@/lib/supabase/server';
+import { getAuthenticatedClient } from '@/lib/supabase/get-authenticated-client';
 
 export const getUserSurveys = cache(async (): Promise<UserSurvey[] | null> => {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user, supabase } = await getAuthenticatedClient();
 
   if (!user) {
     return null;
