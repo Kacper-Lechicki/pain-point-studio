@@ -40,14 +40,13 @@ export const getProjectSignalsData = cache(
       return [];
     }
 
-    // 1. Get completed/cancelled surveys that the user opted in for insights
+    // 1. Get completed surveys for this project
     const { data: surveys, error: surveysError } = await supabase
       .from('surveys')
       .select('id, title, research_phase, status')
       .eq('project_id', projectId)
       .eq('user_id', user.id)
-      .in('status', ['completed', 'cancelled'])
-      .eq('generate_insights', true);
+      .in('status', ['completed']);
 
     if (surveysError || !surveys || surveys.length === 0) {
       return [];

@@ -3,6 +3,7 @@
 import { Lightbulb, Sparkles } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { InsightColumnInfo } from '@/features/projects/components/insight-column-info';
 import { SuggestionCard } from '@/features/projects/components/suggestion-card';
 import { FINDING_THRESHOLDS } from '@/features/projects/config/signals';
 import type { InsightSuggestion, InsightType } from '@/features/projects/types';
@@ -28,6 +29,7 @@ interface SuggestionColumnProps {
   showPlaceholderAtEnd?: boolean;
   /** Optional custom card renderer (e.g. for mobile cards). */
   renderCard?: (suggestion: InsightSuggestion) => React.ReactNode;
+  hasCompletedSurveys?: boolean | undefined;
 }
 
 /** Drop placeholder shown between cards during drag. */
@@ -49,6 +51,7 @@ export function SuggestionColumn({
   showPlaceholderAt,
   showPlaceholderAtEnd,
   renderCard,
+  hasCompletedSurveys,
 }: SuggestionColumnProps) {
   const t = useTranslations();
 
@@ -71,6 +74,7 @@ export function SuggestionColumn({
             {t('projects.suggestions.title' as MessageKey)}
           </span>
           <span className="text-muted-foreground text-[11px]">{suggestions.length}</span>
+          <InsightColumnInfo columnKey="suggested" />
         </div>
       </div>
 
@@ -114,8 +118,12 @@ export function SuggestionColumn({
       ) : (
         !notEnoughResponses && (
           <div className="border-border/70 dark:border-border/80 flex items-center justify-center rounded-lg border border-dashed py-10">
-            <span className="text-muted-foreground text-xs">
-              {t('projects.suggestions.empty' as MessageKey)}
+            <span className="text-muted-foreground max-w-[200px] text-center text-xs">
+              {t(
+                hasCompletedSurveys
+                  ? ('projects.suggestions.allReviewed' as MessageKey)
+                  : ('projects.suggestions.empty' as MessageKey)
+              )}
             </span>
           </div>
         )

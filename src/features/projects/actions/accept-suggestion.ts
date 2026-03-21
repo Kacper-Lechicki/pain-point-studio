@@ -41,6 +41,7 @@ export const acceptSuggestion = withProtectedAction<
       .insert({
         project_id: data.projectId,
         type: data.type,
+        source: 'survey' as const,
         content: data.content,
         sort_order: nextSortOrder,
       })

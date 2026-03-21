@@ -5,7 +5,7 @@ import {
   PROJECT_NAME_MAX_LENGTH,
   PROJECT_SUMMARY_MAX_LENGTH,
 } from '@/features/projects/config';
-import { INSIGHT_TYPES } from '@/features/projects/types/project';
+import { INSIGHT_SOURCES, INSIGHT_TYPES } from '@/features/projects/types/project';
 
 // ── Project schemas ─────────────────────────────────────────────────
 
@@ -69,6 +69,7 @@ export const permanentDeleteProjectForceSchema = z.object({
 export const createInsightSchema = z.object({
   projectId: z.uuid(),
   type: z.enum(INSIGHT_TYPES),
+  source: z.enum(INSIGHT_SOURCES).default('own_observation'),
   content: z
     .string()
     .trim()
@@ -80,6 +81,7 @@ export const createInsightSchema = z.object({
 export const updateInsightSchema = z.object({
   insightId: z.uuid(),
   type: z.enum(INSIGHT_TYPES).optional(),
+  source: z.enum(INSIGHT_SOURCES).optional(),
   content: z
     .string()
     .trim()

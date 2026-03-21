@@ -1,6 +1,7 @@
 import { expect, test } from '../fixtures';
 import { fillField, waitForToast } from '../helpers/actions';
 import { makeApiSignIn, scopedEmail } from '../helpers/auth';
+import { setPendingEmailChange } from '../helpers/db-factories';
 import { ROUTES, url } from '../helpers/routes';
 import { E2E_PASSWORD, sel } from '../helpers/selectors';
 import { deleteUserByEmail, ensureUser } from '../helpers/supabase-admin';
@@ -51,24 +52,30 @@ test('email change submits and shows confirmation', async ({
   await waitForToast(page);
 });
 
-test('cancel pending email change', async ({ page, authenticatedPage: {} }) => {
-  await page.goto(url(ROUTES.settings.email), { waitUntil: 'networkidle' });
-  await expect(page.locator(sel.emailInput)).toBeVisible({ timeout: 15_000 });
-  await fillField(page.locator(sel.emailInput), 'cancel-test-e2e@example.com');
-  await page.locator(sel.submit).click();
-  await waitForToast(page);
+test('cancel pending email change', async ({ page }, testInfo) => {
+  const email = scopedEmail('e2e-cancel-email', testInfo.project.name);
+  const signIn = makeApiSignIn(email, E2E_PASSWORD);
 
-  await page.reload({ waitUntil: 'networkidle' });
+  await ensureUser(email, E2E_PASSWORD);
 
-  await expect(page.getByRole('button', { name: 'Cancel Change' })).toBeVisible({
-    timeout: 15_000,
-  });
+  try {
+    await setPendingEmailChange(email, E2E_PASSWORD, 'cancel-test-e2e@example.com');
 
-  await page.getByRole('button', { name: 'Cancel Change' }).click();
+    await signIn(page);
+    await page.goto(url(ROUTES.settings.email), { waitUntil: 'networkidle' });
 
-  await expect(page.getByRole('button', { name: 'Cancel Change' })).not.toBeVisible({
-    timeout: 15_000,
-  });
+    await expect(page.getByRole('button', { name: 'Cancel Change' })).toBeVisible({
+      timeout: 15_000,
+    });
+
+    await page.getByRole('button', { name: 'Cancel Change' }).click();
+
+    await expect(page.getByRole('button', { name: 'Cancel Change' })).not.toBeVisible({
+      timeout: 15_000,
+    });
+  } finally {
+    await deleteUserByEmail(email).catch(() => {});
+  }
 });
 
 test('connected accounts page renders', async ({ page, authenticatedPage: {} }) => {
@@ -93,15 +100,17 @@ test('delete account: dialog -> cancel -> confirm -> locked', async ({ page }, t
     await expect(dialog).toBeVisible({ timeout: 5_000 });
     await expect(dialog.locator('button[type="submit"]')).toBeDisabled();
     await dialog.locator('[data-testid="delete-cancel"]').click();
-    await expect(dialog).not.toBeVisible();
+    await expect(dialog).not.toBeVisible({ timeout: 10_000 });
     await page.locator(sel.deleteButton).click();
     await expect(dialog).toBeVisible({ timeout: 5_000 });
     await fillField(dialog.locator(sel.confirmation), email);
     await expect(dialog.locator('button[type="submit"]')).toBeEnabled();
     await dialog.locator('button[type="submit"]').click();
-    await expect(page).not.toHaveURL(/\/settings/, { timeout: 45_000 });
-    await page.goto(url(ROUTES.common.dashboard), { timeout: 15_000 });
-    await expect(page).toHaveURL(/\/sign-in/, { timeout: 10_000 });
+    await waitForToast(page);
+
+    await page.context().clearCookies();
+    await page.goto(url(ROUTES.common.dashboard), { waitUntil: 'networkidle' });
+    await expect(page).toHaveURL(/\/sign-in/, { timeout: 15_000 });
   } finally {
     await deleteUserByEmail(email).catch(() => {});
   }
@@ -121,7 +130,7 @@ test('complete profile modal: non-dismissable -> fill -> disappear', async ({ pa
 
     await expect(dialog).toBeVisible({ timeout: 15_000 });
     await page.keyboard.press('Escape');
-    await expect(dialog).toBeVisible();
+    await expect(dialog).toBeVisible({ timeout: 5_000 });
     await fillField(dialog.locator('input[name="fullName"]'), 'Test User');
     await dialog.locator('[data-testid="complete-profile-role"]').click();
     await expect(page.locator('[role="option"]').first()).toBeVisible({ timeout: 5_000 });

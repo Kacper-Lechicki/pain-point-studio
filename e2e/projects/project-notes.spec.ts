@@ -32,12 +32,14 @@ test('pin and unpin note', async ({ page, testProject: { projectId } }) => {
 
   await expect(noteRow).toBeVisible({ timeout: 5_000 });
   await noteMoreBtn(noteRow).click();
+  await expect(page.getByRole('menuitem', { name: /^pin$/i })).toBeVisible({ timeout: 5_000 });
   await page.getByRole('menuitem', { name: /^pin$/i }).click();
   await expect(tabPanel.getByText(/pinned/i)).toBeVisible({ timeout: 5_000 });
 
   const pinnedNote = tabPanel.getByRole('button', { name: /Untitled/ });
 
   await noteMoreBtn(pinnedNote).click();
+  await expect(page.getByRole('menuitem', { name: /unpin/i })).toBeVisible({ timeout: 5_000 });
   await page.getByRole('menuitem', { name: /unpin/i }).click();
 });
 
@@ -60,13 +62,26 @@ test('create folder, move note, delete folder', async ({ page, testProject: { pr
   const noteRow = tabPanel.getByRole('button', { name: /Untitled/ });
 
   await noteMoreBtn(noteRow).click();
+  await expect(page.getByRole('menuitem', { name: /move to folder/i })).toBeVisible({
+    timeout: 5_000,
+  });
   await page.getByRole('menuitem', { name: /move to folder/i }).click();
+  await expect(page.getByRole('menuitem', { name: 'E2E Folder' })).toBeVisible({ timeout: 5_000 });
   await page.getByRole('menuitem', { name: 'E2E Folder' }).click();
 
   const folderBtn = tabPanel.getByRole('button', { name: /E2E Folder/ });
 
+  const folderGroup = folderBtn.locator('..');
+  const folderMenuBtn = folderGroup
+    .locator('button')
+    .filter({ has: page.locator('.lucide-ellipsis') });
+
   await folderBtn.hover();
-  await folderBtn.locator('xpath=following-sibling::button[1]').click();
+  await expect(folderMenuBtn).toBeVisible({ timeout: 5_000 });
+  await folderMenuBtn.click();
+  await expect(page.getByRole('menuitem', { name: /delete folder/i })).toBeVisible({
+    timeout: 5_000,
+  });
   await page.getByRole('menuitem', { name: /delete folder/i }).click();
 
   const dialog = page.locator(sel.alertDialog);
@@ -86,6 +101,9 @@ test('delete note, verify in trash, restore', async ({ page, testProject: { proj
   const noteRow = tabPanel.getByRole('button', { name: /Untitled/ });
 
   await noteMoreBtn(noteRow).click();
+  await expect(page.getByRole('menuitem', { name: /move to trash/i })).toBeVisible({
+    timeout: 5_000,
+  });
   await page.getByRole('menuitem', { name: /move to trash/i }).click();
   await tabPanel.getByRole('button', { name: /trash/i }).click();
 
@@ -93,5 +111,6 @@ test('delete note, verify in trash, restore', async ({ page, testProject: { proj
 
   await expect(trashedNote).toBeVisible({ timeout: 10_000 });
   await noteMoreBtn(trashedNote).click();
+  await expect(page.getByRole('menuitem', { name: /restore/i })).toBeVisible({ timeout: 5_000 });
   await page.getByRole('menuitem', { name: /restore/i }).click();
 });

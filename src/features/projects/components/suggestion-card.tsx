@@ -1,8 +1,9 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 
-import { ArrowRightLeft, GripVertical, Info, Pencil, X } from 'lucide-react';
+import { ArrowRightLeft, GripVertical, Info, X } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
@@ -23,8 +24,6 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Textarea } from '@/components/ui/textarea';
-import { INSIGHT_CONTENT_MAX_LENGTH } from '@/features/projects/config';
 import { INSIGHT_COLORS, INSIGHT_ICONS } from '@/features/projects/config/insight-colors';
 import type { InsightSuggestion, InsightType } from '@/features/projects/types';
 import { INSIGHT_TYPES } from '@/features/projects/types';
@@ -49,73 +48,11 @@ export function SuggestionCard({
   hideDragHandle,
 }: SuggestionCardProps) {
   const t = useTranslations();
-  const [isEditing, setIsEditing] = useState(false);
-  const [editContent, setEditContent] = useState(suggestion.content);
-  const [localContent, setLocalContent] = useState<string | null>(null);
   const [infoOpen, setInfoOpen] = useState(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  const displayContent = localContent ?? suggestion.content;
-
-  const handleStartEdit = () => {
-    setEditContent(displayContent);
-    setIsEditing(true);
-    requestAnimationFrame(() => textareaRef.current?.focus());
-  };
-
-  const handleCancelEdit = () => {
-    setIsEditing(false);
-    setEditContent(displayContent);
-  };
 
   const handleMoveTo = (type: InsightType) => {
-    const content = (isEditing ? editContent.trim() : displayContent) || suggestion.content;
-    setIsEditing(false);
-    onMoveTo(suggestion.signature, type, content);
+    onMoveTo(suggestion.signature, type, suggestion.content);
   };
-
-  if (isEditing) {
-    return (
-      <div className="bg-card flex flex-col gap-2 rounded-lg border p-2">
-        <Textarea
-          ref={textareaRef}
-          value={editContent}
-          onChange={(e) => setEditContent(e.target.value)}
-          maxLength={INSIGHT_CONTENT_MAX_LENGTH}
-          size="sm"
-          placeholder={t('projects.suggestions.editPlaceholder' as MessageKey)}
-          onKeyDown={(e) => {
-            if (e.key === 'Escape') {
-              handleCancelEdit();
-            }
-          }}
-        />
-
-        <div className="flex items-center gap-1.5">
-          <Button size="sm" onClick={handleSaveEdit} disabled={!editContent.trim()}>
-            {t('common.actions.save')}
-          </Button>
-
-          <Button variant="ghost" size="sm" onClick={handleCancelEdit}>
-            {t('common.cancel')}
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
-  function handleSaveEdit() {
-    const trimmed = editContent.trim();
-
-    if (!trimmed || trimmed === suggestion.content) {
-      setIsEditing(false);
-
-      return;
-    }
-
-    setLocalContent(trimmed);
-    setIsEditing(false);
-  }
 
   return (
     <>
@@ -140,9 +77,13 @@ export function SuggestionCard({
           />
         )}
 
-        <span className="text-foreground min-w-0 flex-1 text-[13px] leading-relaxed">
-          {displayContent}
-        </span>
+        <div className="flex min-w-0 flex-1 flex-col gap-1">
+          <span className="text-foreground text-[13px] leading-relaxed">{suggestion.content}</span>
+          <div className="text-muted-foreground flex items-center gap-1">
+            <Sparkles className="size-3" aria-hidden />
+            <span className="text-[11px]">{suggestion.source.surveyTitle}</span>
+          </div>
+        </div>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -164,11 +105,6 @@ export function SuggestionCard({
             <DropdownMenuItem onClick={() => setInfoOpen(true)}>
               <Info className="size-3.5" />
               {t('projects.suggestions.info' as MessageKey)}
-            </DropdownMenuItem>
-
-            <DropdownMenuItem onClick={handleStartEdit}>
-              <Pencil className="size-3.5" />
-              {t('common.actions.edit')}
             </DropdownMenuItem>
 
             <DropdownMenuSub>
@@ -234,7 +170,7 @@ export function SuggestionCard({
               <span className="text-muted-foreground text-[11px] font-medium tracking-wide uppercase">
                 {t('projects.suggestions.infoContent' as MessageKey)}
               </span>
-              <p className="text-foreground text-sm">{displayContent}</p>
+              <p className="text-foreground text-sm">{suggestion.content}</p>
             </div>
           </div>
         </DialogContent>

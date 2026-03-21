@@ -17,8 +17,9 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { SearchInput } from '@/components/ui/search-input';
 import { Separator } from '@/components/ui/separator';
 import { INSIGHT_COLORS } from '@/features/projects/config/insight-colors';
-import type { InsightType } from '@/features/projects/types';
-import { INSIGHT_TYPES } from '@/features/projects/types';
+import { INSIGHT_SOURCE_CONFIG } from '@/features/projects/config/insight-sources';
+import type { InsightSource, InsightType } from '@/features/projects/types';
+import { INSIGHT_SOURCES, INSIGHT_TYPES } from '@/features/projects/types';
 import type { MessageKey } from '@/i18n/types';
 import { cn } from '@/lib/common/utils';
 
@@ -41,6 +42,8 @@ interface KanbanToolbarProps {
   onSearchQueryChange: (query: string) => void;
   typeFilter: InsightType[];
   onTypeFilterChange: (types: InsightType[]) => void;
+  sourceFilter: InsightSource[];
+  onSourceFilterChange: (sources: InsightSource[]) => void;
   sortBy: InsightSortBy;
   onSortByChange: (sort: InsightSortBy) => void;
   typeCounts: Record<InsightType, number>;
@@ -51,12 +54,14 @@ export function KanbanToolbar({
   onSearchQueryChange,
   typeFilter,
   onTypeFilterChange,
+  sourceFilter,
+  onSourceFilterChange,
   sortBy,
   onSortByChange,
   typeCounts,
 }: KanbanToolbarProps) {
   const t = useTranslations();
-  const activeFilterCount = typeFilter.length;
+  const activeFilterCount = typeFilter.length + sourceFilter.length;
   const isFiltered = activeFilterCount > 0;
 
   return (
@@ -127,6 +132,41 @@ export function KanbanToolbar({
             </div>
           </div>
 
+          <Separator />
+
+          <div className="p-2">
+            <p className="text-muted-foreground mb-1 px-2 text-xs font-medium">
+              {t('projects.insights.toolbar.sourceSection' as MessageKey)}
+            </p>
+
+            <div className="flex flex-col">
+              {INSIGHT_SOURCES.map((src) => {
+                const config = INSIGHT_SOURCE_CONFIG[src];
+                const Icon = config.icon;
+                const checked = sourceFilter.includes(src);
+
+                return (
+                  <label key={src} className={FILTER_ITEM_CLASS}>
+                    <Checkbox
+                      checked={checked}
+                      onCheckedChange={() => {
+                        if (checked) {
+                          onSourceFilterChange(sourceFilter.filter((s) => s !== src));
+                        } else {
+                          onSourceFilterChange([...sourceFilter, src]);
+                        }
+                      }}
+                    />
+
+                    <Icon className="text-muted-foreground size-3.5" aria-hidden />
+
+                    <span className="min-w-0 flex-1 truncate">{t(config.label as MessageKey)}</span>
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+
           {isFiltered && (
             <>
               <Separator />
@@ -135,7 +175,10 @@ export function KanbanToolbar({
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => onTypeFilterChange([])}
+                  onClick={() => {
+                    onTypeFilterChange([]);
+                    onSourceFilterChange([]);
+                  }}
                   className="w-full gap-1.5 text-xs"
                 >
                   <X className="size-3" />

@@ -2,28 +2,18 @@
 
 import { useMemo, useState } from 'react';
 
-import { Lightbulb, Plus, SearchX } from 'lucide-react';
+import { SearchX } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { HeroHighlight } from '@/components/ui/hero-highlight';
 import { acceptSuggestion } from '@/features/projects/actions/accept-suggestion';
 import { dismissSuggestion } from '@/features/projects/actions/dismiss-suggestion';
 import type { InsightSuggestionsResult } from '@/features/projects/actions/get-insight-suggestions';
-import type { PendingInsightSurvey } from '@/features/projects/actions/get-pending-insight-surveys';
-import { InsightInlineForm } from '@/features/projects/components/insight-inline-form';
+import { InsightDialog } from '@/features/projects/components/insight-dialog';
+import { InsightsEmptyState } from '@/features/projects/components/insights-empty-state';
 import { KanbanBoard } from '@/features/projects/components/kanban-board';
 import type { InsightSortBy } from '@/features/projects/components/kanban-toolbar';
 import { KanbanToolbar } from '@/features/projects/components/kanban-toolbar';
-import { PendingInsightsBanner } from '@/features/projects/components/pending-insights-banner';
-import type { InsightType, ProjectInsight } from '@/features/projects/types';
+import type { InsightSource, InsightType, ProjectInsight } from '@/features/projects/types';
 import { INSIGHT_TYPES } from '@/features/projects/types';
 import { useFormAction } from '@/hooks/common/use-form-action';
 import type { MessageKey } from '@/i18n/types';
@@ -32,29 +22,38 @@ interface ProjectInsightsTabProps {
   projectId: string;
   insights: ProjectInsight[];
   suggestionsData: InsightSuggestionsResult;
-  pendingSurveys: PendingInsightSurvey[];
   onInsightCreated: (insight: ProjectInsight) => void;
   onInsightUpdated: (insight: ProjectInsight) => void;
   onInsightDeleted: (insightId: string) => void;
   onInsightsChanged: (insights: ProjectInsight[]) => void;
+  onNavigateToTab?: (tab: string) => void;
 }
 
 export function ProjectInsightsTab({
   projectId,
   insights,
   suggestionsData,
-  pendingSurveys,
   onInsightCreated,
   onInsightUpdated,
   onInsightDeleted,
   onInsightsChanged,
+  onNavigateToTab,
 }: ProjectInsightsTabProps) {
   const t = useTranslations();
-  const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogDefaultType, setDialogDefaultType] = useState<InsightType | undefined>(undefined);
+  const [editingInsight, setEditingInsight] = useState<ProjectInsight | undefined>(undefined);
   const [suggestions, setSuggestions] = useState(suggestionsData.suggestions);
+  const [prevSuggestionsData, setPrevSuggestionsData] = useState(suggestionsData);
+
+  if (suggestionsData !== prevSuggestionsData) {
+    setPrevSuggestionsData(suggestionsData);
+    setSuggestions(suggestionsData.suggestions);
+  }
 
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState<InsightType[]>([]);
+  const [sourceFilter, setSourceFilter] = useState<InsightSource[]>([]);
   const [sortBy, setSortBy] = useState<InsightSortBy>('manual');
 
   const typeCounts = useMemo(() => {
@@ -88,6 +87,10 @@ export function ProjectInsightsTab({
       result = result.filter((i) => typeFilter.includes(i.type as InsightType));
     }
 
+    if (sourceFilter.length > 0) {
+      result = result.filter((i) => sourceFilter.includes(i.source as InsightSource));
+    }
+
     if (sortBy !== 'manual') {
       result = [...result].sort((a, b) => {
         switch (sortBy) {
@@ -106,7 +109,7 @@ export function ProjectInsightsTab({
     }
 
     return result;
-  }, [insights, searchQuery, typeFilter, sortBy]);
+  }, [insights, searchQuery, typeFilter, sourceFilter, sortBy]);
 
   const filteredSuggestions = useMemo(() => {
     if (!searchQuery.trim()) {
@@ -118,7 +121,7 @@ export function ProjectInsightsTab({
     return suggestions.filter((s) => s.content.toLowerCase().includes(q));
   }, [suggestions, searchQuery]);
 
-  const isFiltering = searchQuery.trim() !== '' || typeFilter.length > 0;
+  const isFiltering = searchQuery.trim() !== '' || typeFilter.length > 0 || sourceFilter.length > 0;
   const hasNoResults =
     isFiltering && filteredInsights.length === 0 && filteredSuggestions.length === 0;
   const visibleTypes = typeFilter.length > 0 ? typeFilter : INSIGHT_TYPES;
@@ -131,9 +134,24 @@ export function ProjectInsightsTab({
     unexpectedErrorMessage: 'projects.errors.unexpected' as MessageKey,
   });
 
-  const handleInsightCreated = (insight: ProjectInsight) => {
+  const handleAddClick = (type?: InsightType) => {
+    setEditingInsight(undefined);
+    setDialogDefaultType(type);
+    setDialogOpen(true);
+  };
+
+  const handleEdit = (insight: ProjectInsight) => {
+    setEditingInsight(insight);
+    setDialogDefaultType(undefined);
+    setDialogOpen(true);
+  };
+
+  const handleDialogCreated = (insight: ProjectInsight) => {
     onInsightCreated(insight);
-    setAddDialogOpen(false);
+  };
+
+  const handleDialogUpdated = (insight: ProjectInsight) => {
+    onInsightUpdated(insight);
   };
 
   const handleMoveTo = (signature: string, type: InsightType, content: string) => {
@@ -143,6 +161,7 @@ export function ProjectInsightsTab({
       id: crypto.randomUUID(),
       project_id: projectId,
       type,
+      source: 'survey' as const,
       content,
       sort_order: 0,
       phase: null,
@@ -168,68 +187,38 @@ export function ProjectInsightsTab({
     });
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handlePendingDecided = (_surveyId: string, _included: boolean) => {};
-
-  const pendingBanner = pendingSurveys.length > 0 && (
-    <PendingInsightsBanner surveys={pendingSurveys} onDecided={handlePendingDecided} />
-  );
-
   if (insights.length === 0 && suggestions.length === 0) {
     return (
       <div className="flex flex-col gap-4">
-        {pendingBanner}
+        <InsightsEmptyState
+          onAddInsight={() => handleAddClick()}
+          onGoToResearch={onNavigateToTab ? () => onNavigateToTab('surveys') : undefined}
+        />
 
-        <HeroHighlight
-          showDotsOnMobile={false}
-          containerClassName="w-full rounded-lg border border-dashed border-border"
-        >
-          <div className="flex w-full flex-col items-center px-4 py-12 text-center md:py-16">
-            <Lightbulb className="text-muted-foreground size-8" aria-hidden />
-            <p className="text-foreground mt-3 text-base font-medium">
-              {t('projects.insights.emptyTitle' as MessageKey)}
-            </p>
-            <p className="text-muted-foreground mt-1 max-w-sm text-sm">
-              {t('projects.insights.emptyDescription' as MessageKey)}
-            </p>
-            <Button className="mt-4" onClick={() => setAddDialogOpen(true)}>
-              <Plus className="size-3.5" aria-hidden />
-              {t('projects.insights.emptyCta' as MessageKey)}
-            </Button>
-          </div>
-        </HeroHighlight>
-
-        <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>{t('projects.insights.addInsight' as MessageKey)}</DialogTitle>
-              <DialogDescription className="sr-only">
-                {t('projects.insights.emptyDescription' as MessageKey)}
-              </DialogDescription>
-            </DialogHeader>
-
-            <InsightInlineForm
-              projectId={projectId}
-              showTypeSelector
-              alwaysOpen
-              onCancel={() => setAddDialogOpen(false)}
-              onCreated={handleInsightCreated}
-            />
-          </DialogContent>
-        </Dialog>
+        {dialogOpen && (
+          <InsightDialog
+            open
+            onOpenChange={setDialogOpen}
+            projectId={projectId}
+            defaultType={dialogDefaultType}
+            editInsight={editingInsight}
+            onCreated={handleDialogCreated}
+            onUpdated={handleDialogUpdated}
+          />
+        )}
       </div>
     );
   }
 
   return (
     <div className="flex flex-col gap-4">
-      {pendingBanner}
-
       <KanbanToolbar
         searchQuery={searchQuery}
         onSearchQueryChange={setSearchQuery}
         typeFilter={typeFilter}
         onTypeFilterChange={setTypeFilter}
+        sourceFilter={sourceFilter}
+        onSourceFilterChange={setSourceFilter}
         sortBy={sortBy}
         onSortByChange={setSortBy}
         typeCounts={typeCounts}
@@ -247,9 +236,7 @@ export function ProjectInsightsTab({
         </div>
       ) : (
         <KanbanBoard
-          projectId={projectId}
           insights={filteredInsights}
-          onInsightCreated={onInsightCreated}
           onInsightUpdated={onInsightUpdated}
           onInsightDeleted={onInsightDeleted}
           onInsightsChanged={onInsightsChanged}
@@ -259,6 +246,21 @@ export function ProjectInsightsTab({
           onSuggestionDismissed={handleDismissed}
           visibleTypes={visibleTypes as InsightType[]}
           onDragCompleted={() => setSortBy('manual')}
+          onAddClick={handleAddClick}
+          onEdit={handleEdit}
+          hasCompletedSurveys={suggestionsData.totalCompletedResponses > 0}
+        />
+      )}
+
+      {dialogOpen && (
+        <InsightDialog
+          open
+          onOpenChange={setDialogOpen}
+          projectId={projectId}
+          defaultType={dialogDefaultType}
+          editInsight={editingInsight}
+          onCreated={handleDialogCreated}
+          onUpdated={handleDialogUpdated}
         />
       )}
     </div>

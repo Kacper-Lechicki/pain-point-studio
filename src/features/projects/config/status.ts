@@ -76,10 +76,10 @@ export const PROJECT_STATUS_CONFIG: Record<ProjectStatus, ProjectStatusConfig> =
 /** Project state-machine: maps action names to their target status and valid source statuses. */
 export const PROJECT_TRANSITIONS = {
   complete: { method: 'update', toStatus: 'completed', fromStatuses: ['active'] },
-  archive: { method: 'update', toStatus: 'archived', fromStatuses: ['active', 'completed'] },
   reopen: { method: 'update', toStatus: 'active', fromStatuses: ['completed'] },
   /** toStatus is null — the actual status comes from pre_archive_status (resolved in RPC). */
   restore: { method: 'update', toStatus: null, fromStatuses: ['archived'] },
+  archive: { method: 'update', toStatus: 'archived', fromStatuses: ['active', 'completed'] },
   trash: {
     method: 'update',
     toStatus: 'trashed',

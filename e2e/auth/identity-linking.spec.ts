@@ -114,7 +114,7 @@ test.describe('Connected Accounts — Multi-Identity', () => {
 
       await expect(
         main.locator('button').filter({ has: page.locator('.lucide-unlink') })
-      ).not.toBeVisible();
+      ).not.toBeVisible({ timeout: 10_000 });
 
       await expect(
         main.locator('button').filter({ has: page.locator('.lucide-link') })

@@ -110,9 +110,7 @@ export function SurveyActionMenuContent({
     return items.sort((a, b) => a.label.localeCompare(b.label));
   })();
 
-  const sortedActions = [...availableActions].sort((a, b) =>
-    t(`surveys.dashboard.actions.${a}`).localeCompare(t(`surveys.dashboard.actions.${b}`))
-  );
+  const sortedActions = availableActions;
 
   return (
     <DropdownMenuContent align="end">

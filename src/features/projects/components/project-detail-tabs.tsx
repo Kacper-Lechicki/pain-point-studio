@@ -1,6 +1,6 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { type ReactNode, useState } from 'react';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
@@ -8,7 +8,6 @@ import { useTranslations } from 'next-intl';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { InsightSuggestionsResult } from '@/features/projects/actions/get-insight-suggestions';
-import type { PendingInsightSurvey } from '@/features/projects/actions/get-pending-insight-surveys';
 import type { SurveySignalData } from '@/features/projects/actions/get-project-signals-data';
 import { ProjectInsightsTab } from '@/features/projects/components/project-insights-tab';
 import { ProjectNotesTab } from '@/features/projects/components/project-notes-tab';
@@ -38,7 +37,6 @@ interface ProjectDetailTabsProps {
   overviewStats: ProjectOverviewStats;
   signalsData: SurveySignalData[];
   suggestionsData: InsightSuggestionsResult;
-  pendingSurveys: PendingInsightSurvey[];
   onInsightCreated: (insight: ProjectInsight) => void;
   onInsightUpdated: (insight: ProjectInsight) => void;
   onInsightDeleted: (insightId: string) => void;
@@ -58,6 +56,12 @@ function TabCount({ count }: { count: number }) {
   );
 }
 
+function getInitialTab(searchParams: URLSearchParams): TabValue {
+  const raw = searchParams.get('tab');
+
+  return raw && VALID_TABS.includes(raw as TabValue) ? (raw as TabValue) : 'overview';
+}
+
 export function ProjectDetailTabs({
   project,
   surveys,
@@ -68,7 +72,6 @@ export function ProjectDetailTabs({
   overviewStats,
   signalsData,
   suggestionsData,
-  pendingSurveys,
   onInsightCreated,
   onInsightUpdated,
   onInsightDeleted,
@@ -79,21 +82,22 @@ export function ProjectDetailTabs({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const rawTab = searchParams.get('tab');
-  const activeTab: TabValue =
-    rawTab && VALID_TABS.includes(rawTab as TabValue) ? (rawTab as TabValue) : 'overview';
+  const [activeTab, setActiveTab] = useState<TabValue>(() => getInitialTab(searchParams));
 
   const handleTabChange = (value: string) => {
+    const tab = value as TabValue;
+    setActiveTab(tab);
+
     const params = new URLSearchParams(searchParams.toString());
 
-    if (value === 'overview') {
+    if (tab === 'overview') {
       params.delete('tab');
     } else {
-      params.set('tab', value);
+      params.set('tab', tab);
     }
 
     const qs = params.toString();
-    router.replace(`${pathname}${qs ? `?${qs}` : ''}`, { scroll: false });
+    window.history.replaceState(null, '', `${pathname}${qs ? `?${qs}` : ''}`);
   };
 
   const handleCreateSurvey = () => {
@@ -145,11 +149,11 @@ export function ProjectDetailTabs({
           projectId={project.id}
           insights={insights}
           suggestionsData={suggestionsData}
-          pendingSurveys={pendingSurveys}
           onInsightCreated={onInsightCreated}
           onInsightUpdated={onInsightUpdated}
           onInsightDeleted={onInsightDeleted}
           onInsightsChanged={onInsightsChanged}
+          onNavigateToTab={handleTabChange}
         />
       </TabsContent>
 

@@ -192,6 +192,18 @@ describe('rate-limit', () => {
       expect(result.limited).toBe(true);
       expect(mockLimit).not.toHaveBeenCalled();
     });
+
+    it('should skip rate limiting outside production', async () => {
+      mockEnv.NODE_ENV = 'development';
+      mockEnv.UPSTASH_REDIS_REST_URL = 'https://redis.upstash.io';
+      mockEnv.UPSTASH_REDIS_REST_TOKEN = 'test-token';
+
+      const { rateLimit } = await import('./rate-limit');
+      const result = await rateLimit({ key: 'test-dev-upstash', limit: 1, windowSeconds: 60 });
+
+      expect(result.limited).toBe(false);
+      expect(mockLimit).not.toHaveBeenCalled();
+    });
   });
 
   describe('createLimiter fallback', () => {

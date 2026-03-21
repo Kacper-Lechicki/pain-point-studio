@@ -1016,6 +1016,13 @@
       "threat": "Threat",
       "decision": "Decision"
     },
+    "insightSources": {
+      "survey": "Survey",
+      "userInterview": "User Interview",
+      "competitorAnalysis": "Competitor Analysis",
+      "marketResearch": "Market Research",
+      "ownObservation": "Own Observation"
+    },
     "toast": {
       "completed": "Project marked as completed.",
       "archived": "Project archived.",
@@ -1487,29 +1494,49 @@
       "addInsightsHere": "Add insights here",
       "moveTo": "Move to",
       "emptyTitle": "No insights yet",
-      "emptyDescription": "Capture your research findings as strengths, opportunities, threats, and decisions to build your project scorecard.",
-      "emptyCta": "Add First Insight",
+      "emptyDescription": "Insights help you organize findings from your research. Complete a survey to get automatic suggestions, or add your own observations manually.",
+      "emptyCta": "Add Insight",
+      "emptyGoToResearch": "Go to Research",
       "types": {
         "strength": "Strength",
         "opportunity": "Opportunity",
         "threat": "Threat",
         "decision": "Decision"
       },
-      "pending": {
-        "title": "Surveys awaiting review",
-        "description": "These surveys have completed. Choose which ones should contribute to project insights.",
-        "include": "Include",
-        "exclude": "Exclude",
-        "includeAll": "Include all",
-        "responses": "{count, plural, one {# response} other {# responses}}",
-        "included": "Survey included in insights",
-        "excluded": "Survey excluded from insights"
+      "columnDescriptions": {
+        "strength": "Validated positives — what your research confirms works",
+        "opportunity": "Gaps and unmet needs you've discovered",
+        "threat": "Risks, concerns, and negative signals",
+        "decision": "Conclusions and next steps based on your findings"
+      },
+      "columnInfo": {
+        "strength": "Evidence from your research that validates your idea. Strong survey results, positive user feedback, confirmed market demand.",
+        "opportunity": "Gaps in the market, unmet user needs, or areas where competitors fall short. Potential directions worth exploring.",
+        "threat": "Warning signs — negative feedback, strong competition, low engagement, or risks that could undermine your idea.",
+        "decision": "Actions and conclusions drawn from your research. Go/no-go decisions, pivots, feature priorities, target audience changes.",
+        "suggested": "Auto-generated from your survey responses. Review each suggestion and move it to the right category, or dismiss if not relevant."
+      },
+      "contentPlaceholders": {
+        "strength": "e.g. 75% of respondents confirmed the need for...",
+        "opportunity": "e.g. No competitor addresses the problem of...",
+        "threat": "e.g. Market leader is already building a similar...",
+        "decision": "e.g. Based on research, pivot to B2B segment..."
+      },
+      "dialog": {
+        "createTitle": "Add Insight",
+        "editTitle": "Edit Insight",
+        "typeLabel": "Type",
+        "sourceLabel": "Source",
+        "contentLabel": "Content",
+        "discardDescription": "You have unsaved changes. Are you sure you want to discard them?",
+        "discardConfirm": "Discard"
       },
       "toolbar": {
         "searchPlaceholder": "Search insights...",
         "filterLabel": "Filter",
         "clearFilters": "Clear filters",
         "typeSection": "Type",
+        "sourceSection": "Source",
         "sort": {
           "manual": "Manual order",
           "newest": "Newest first",
@@ -1527,8 +1554,8 @@
       "dismiss": "Dismiss",
       "source": "From: {survey}",
       "sourceWithQuestion": "From: {survey} → {question}",
-      "editPlaceholder": "Edit suggestion before moving...",
-      "empty": "No suggestions yet",
+      "empty": "Complete a survey to get automatic suggestions",
+      "allReviewed": "All suggestions have been reviewed",
       "info": "Info",
       "infoTitle": "Suggestion Source",
       "infoSurvey": "Survey",
