@@ -11,11 +11,20 @@ function noteMoreBtn(noteRow: import('@playwright/test').Locator) {
 }
 
 async function createNote(page: import('@playwright/test').Page) {
-  const newNoteBtn = page.getByRole('button', { name: /note title/i });
+  await expect(async () => {
+    const newNoteBtn = page.getByRole('button', { name: /note title/i });
 
-  await expect(newNoteBtn).toBeVisible({ timeout: 10_000 });
-  await newNoteBtn.click();
-  await expect(page.locator('[contenteditable="true"]')).toBeVisible({ timeout: 15_000 });
+    await expect(newNoteBtn).toBeVisible({ timeout: 5_000 });
+    await expect(newNoteBtn).toBeEnabled({ timeout: 3_000 });
+    await newNoteBtn.click();
+
+    const tabPanel = page.getByRole('tabpanel');
+    const noteRow = tabPanel.getByRole('button', { name: /Untitled/ }).first();
+
+    await expect(noteRow).toBeVisible({ timeout: 5_000 });
+    await noteRow.click();
+    await expect(page.locator('[contenteditable="true"]')).toBeVisible({ timeout: 5_000 });
+  }).toPass({ timeout: 20_000 });
 }
 
 test('create note and verify save', async ({ page, testProject: { projectId } }) => {
@@ -100,6 +109,71 @@ test('create folder, move note, delete folder', async ({ page, testProject: { pr
   await expect(dialog).toBeVisible({ timeout: 5_000 });
   await dialog.getByRole('button', { name: /confirm/i }).click();
   await expect(tabPanel.getByText('E2E Folder')).not.toBeVisible({ timeout: 5_000 });
+});
+
+test('note content persists after page reload', async ({ page, testProject: { projectId } }) => {
+  await page.goto(notesUrl(projectId));
+  await expect(page.getByRole('tab', { name: /notes/i })).toBeVisible({ timeout: 15_000 });
+
+  await createNote(page);
+
+  const editor = page.locator('[contenteditable="true"]');
+
+  await editor.click();
+  await page.keyboard.type('Persistence check content', { delay: 30 });
+  await expect(page.getByText(/saved/i)).toBeVisible({ timeout: 10_000 });
+  await page.waitForTimeout(2_000);
+
+  await page.goto(notesUrl(projectId), { waitUntil: 'networkidle' });
+
+  const tabPanel = page.getByRole('tabpanel');
+
+  await expect(tabPanel).toBeVisible({ timeout: 15_000 });
+
+  await expect(async () => {
+    const noteRow = tabPanel.getByRole('button', { name: /Untitled|note/i }).first();
+    await expect(noteRow).toBeVisible({ timeout: 3_000 });
+    await noteRow.click();
+    const editorAfter = page.locator('[contenteditable="true"]');
+    await expect(editorAfter).toContainText('Persistence check', { timeout: 5_000 });
+  }).toPass({ timeout: 20_000 });
+});
+
+test('permanently delete note from trash', async ({ page, testProject: { projectId } }) => {
+  await page.goto(notesUrl(projectId));
+  await expect(page.getByRole('tab', { name: /notes/i })).toBeVisible({ timeout: 15_000 });
+
+  await createNote(page);
+
+  const tabPanel = page.getByRole('tabpanel');
+
+  const noteRow = tabPanel.getByRole('button', { name: /Untitled/ }).first();
+
+  await noteMoreBtn(noteRow).click();
+  await expect(page.getByRole('menuitem', { name: /move to trash/i })).toBeVisible({
+    timeout: 5_000,
+  });
+  await page.getByRole('menuitem', { name: /move to trash/i }).click();
+
+  await expect(async () => {
+    await tabPanel.getByRole('button', { name: /trash/i }).click();
+    const trashedNote = tabPanel.getByRole('button', { name: /Untitled/ }).first();
+    await expect(trashedNote).toBeVisible({ timeout: 3_000 });
+  }).toPass({ timeout: 15_000 });
+
+  const trashedNote = tabPanel.getByRole('button', { name: /Untitled/ }).first();
+
+  await noteMoreBtn(trashedNote).click();
+  await expect(page.getByRole('menuitem', { name: /delete permanently/i })).toBeVisible({
+    timeout: 5_000,
+  });
+  await page.getByRole('menuitem', { name: /delete permanently/i }).click();
+
+  const dialog = page.locator(sel.alertDialog);
+
+  await expect(dialog).toBeVisible({ timeout: 5_000 });
+  await dialog.getByRole('button', { name: /confirm/i }).click();
+  await expect(trashedNote).not.toBeVisible({ timeout: 10_000 });
 });
 
 test('delete note, verify in trash, restore', async ({ page, testProject: { projectId } }) => {

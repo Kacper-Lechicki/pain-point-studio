@@ -100,7 +100,10 @@ const ConnectedAccounts = ({ identities, hasPassword }: ConnectedAccountsProps) 
       />
 
       <div className="space-y-3">
-        <div className="bg-muted/30 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-lg border p-4">
+        <div
+          data-testid="provider-row-password"
+          className="bg-muted/30 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-lg border p-4"
+        >
           <div className="flex min-w-0 items-center gap-3">
             <KeyRound className="size-5 shrink-0" aria-hidden="true" />
 
@@ -137,6 +140,7 @@ const ConnectedAccounts = ({ identities, hasPassword }: ConnectedAccountsProps) 
           return (
             <div
               key={providerConfig.id}
+              data-testid={`provider-row-${providerConfig.id}`}
               className="bg-muted/30 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-lg border p-4"
             >
               <div className="flex min-w-0 items-center gap-3">

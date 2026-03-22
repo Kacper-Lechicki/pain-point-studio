@@ -7,6 +7,7 @@ import {
   generateSlug,
 } from '../helpers/db-factories';
 import { url } from '../helpers/routes';
+import { sel } from '../helpers/selectors';
 
 test.describe('Survey responses tab', () => {
   test('shows responses already present when navigating to responses tab', async ({
@@ -156,5 +157,64 @@ test.describe('Survey responses tab', () => {
     } finally {
       await respondentContext.close();
     }
+  });
+
+  test('clicking response row opens detail dialog with answer', async ({
+    page,
+    testProject: { userId, projectId },
+  }) => {
+    const { surveyId, questionIds } = await createSurveyWithQuestions(
+      userId,
+      { status: 'active', projectId },
+      1
+    );
+
+    const responseId = await createResponseViaDb(surveyId, 'completed');
+    await createAnswerViaDb(responseId, questionIds[0]!, { text: 'Detail view answer' });
+
+    await page.goto(url(`/dashboard/research/stats/${surveyId}?tab=responses`));
+    await expect(page.locator('table tbody tr')).toHaveCount(1, { timeout: 15_000 });
+    await page.locator('table tbody tr').first().click();
+
+    const dialog = page.locator(sel.dialog);
+
+    await expect(dialog).toBeVisible({ timeout: 10_000 });
+    await expect(dialog.getByText('Detail view answer')).toBeVisible({ timeout: 10_000 });
+  });
+
+  test('export dialog opens from stats header menu', async ({
+    page,
+    testProject: { userId, projectId },
+  }) => {
+    const { surveyId, questionIds } = await createSurveyWithQuestions(
+      userId,
+      { status: 'active', projectId },
+      1
+    );
+
+    const responseId = await createResponseViaDb(surveyId, 'completed');
+    await createAnswerViaDb(responseId, questionIds[0]!, { answer: 'Export test' });
+
+    await page.goto(url(`/dashboard/research/stats/${surveyId}`));
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible({ timeout: 15_000 });
+
+    await expect(async () => {
+      await page.keyboard.press('Escape');
+      await page
+        .locator(`${sel.alertDialog}, [role="menu"]`)
+        .first()
+        .waitFor({ state: 'hidden', timeout: 3_000 })
+        .catch(() => {});
+      await page.getByRole('button', { name: /more actions/i }).click();
+      const exportItem = page.getByRole('menuitem', { name: /export/i });
+      await expect(exportItem).toBeVisible({ timeout: 3_000 });
+      await exportItem.click();
+    }).toPass({ timeout: 15_000 });
+
+    const dialog = page.locator(sel.dialog);
+
+    await expect(dialog).toBeVisible({ timeout: 10_000 });
+    await expect(dialog.getByText(/csv spreadsheet/i)).toBeVisible();
+    await expect(dialog.getByText(/json data/i)).toBeVisible();
   });
 });

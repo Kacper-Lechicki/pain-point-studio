@@ -26,19 +26,19 @@ test.describe('Sign-Up', () => {
 
     try {
       await page.goto(url(ROUTES.auth.signUp), { waitUntil: 'networkidle' });
-      await expect(page.locator(sel.submit)).toBeVisible({ timeout: 15_000 });
-      await fillField(page.locator(sel.emailInput), 'test@example.com');
-      await fillField(page.locator(sel.passwordInput), 'weak');
-      await page.locator(sel.submit).click();
-      await expect(page).toHaveURL(/\/sign-up/);
-      await deleteUserByEmail(signupEmail).catch(() => {});
-      await page.goto(url(ROUTES.auth.signUp), { waitUntil: 'networkidle', timeout: 15_000 });
 
       const submitBtn = page
         .locator('form')
         .filter({ has: page.locator(sel.emailInput) })
         .locator('button[type="submit"]');
 
+      await expect(submitBtn).toBeVisible({ timeout: 15_000 });
+      await fillField(page.locator(sel.emailInput), 'test@example.com');
+      await fillField(page.locator(sel.passwordInput), 'weak');
+      await submitBtn.click();
+      await expect(page).toHaveURL(/\/sign-up/);
+      await deleteUserByEmail(signupEmail).catch(() => {});
+      await page.goto(url(ROUTES.auth.signUp), { waitUntil: 'networkidle', timeout: 15_000 });
       await expect(submitBtn).toBeEnabled({ timeout: 5_000 });
       await fillField(page.locator(sel.emailInput), signupEmail);
       await fillField(page.locator(sel.passwordInput), 'StrongPass1!');

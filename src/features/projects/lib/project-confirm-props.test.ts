@@ -14,7 +14,7 @@ describe('getProjectConfirmDialogProps', () => {
     { action: 'reopen', variant: 'success' },
     { action: 'restore', variant: 'success' },
     { action: 'trash', variant: 'destructive' },
-    { action: 'restoreTrash', variant: 'success' },
+    { action: 'restoreTrash', variant: 'default' },
     { action: 'permanentDelete', variant: 'destructive' },
   ];
 
