@@ -25,7 +25,7 @@ export function useSurveyRow(
 
   const flags = deriveSurveyFlags(survey.status);
   const { isDraft, isActive, isCompleted, isCancelled, isArchived, isTrashed } = flags;
-  const hasShareableLink = (isActive || isCompleted || isCancelled) && !!survey.slug;
+  const hasShareableLink = isActive && !!survey.slug;
   const canExport = !isDraft && !isArchived;
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const handleExport = () => setExportDialogOpen(true);

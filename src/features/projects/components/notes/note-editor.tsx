@@ -20,6 +20,7 @@ interface NoteEditorProps {
   editable: boolean;
   onContentChange: (json: JSONContent) => void;
   onBack?: () => void;
+  onFocus?: () => void;
 }
 
 export function NoteEditor({
@@ -30,6 +31,7 @@ export function NoteEditor({
   editable,
   onContentChange,
   onBack,
+  onFocus,
 }: NoteEditorProps) {
   const t = useTranslations('projects.detail.notes');
   const isDesktop = useBreakpoint('md');
@@ -60,7 +62,10 @@ export function NoteEditor({
   }
 
   return (
-    <div className="bg-background dark:bg-input/30 relative flex h-full min-h-0 flex-1 flex-col rounded-md">
+    <div
+      className="bg-background dark:bg-input/30 relative flex h-full min-h-0 flex-1 flex-col rounded-md"
+      onClick={onFocus}
+    >
       {!isDesktop && (
         <div className="flex shrink-0 items-center px-1 py-1.5">
           {onBack && (

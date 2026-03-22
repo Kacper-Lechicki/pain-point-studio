@@ -16,10 +16,6 @@ vi.mock('@/features/projects/lib/note-helpers', () => ({
   extractTitleFromTiptap: (...args: unknown[]) => mockExtractTitle(...args),
 }));
 
-vi.mock('@/features/projects/config', () => ({
-  NOTE_CONTENT_DEBOUNCE_MS: 500,
-}));
-
 const sampleContent: JSONContent = {
   type: 'doc',
   content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Hello' }] }],
@@ -50,20 +46,18 @@ describe('useNoteAutoSave', () => {
     expect(result.current.saveStatus).toBe('pending');
   });
 
-  it('transitions to saving then saved after debounce', async () => {
+  it('saves after debounce delay', async () => {
     const { result } = renderHook(() => useNoteAutoSave({ noteId: 'n1' }));
 
     act(() => result.current.handleContentChange(sampleContent));
 
     expect(result.current.saveStatus).toBe('pending');
 
-    // Advance past debounce and flush async save
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(500);
+      await vi.advanceTimersByTimeAsync(300);
     });
 
     expect(result.current.saveStatus).toBe('saved');
-
     expect(mockUpdateProjectNote).toHaveBeenCalledWith({
       noteId: 'n1',
       content: sampleContent,
@@ -78,7 +72,7 @@ describe('useNoteAutoSave', () => {
     act(() => result.current.handleContentChange(sampleContent));
 
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(500);
+      await vi.advanceTimersByTimeAsync(300);
     });
 
     expect(result.current.saveStatus).toBe('failed');
@@ -90,18 +84,16 @@ describe('useNoteAutoSave', () => {
     act(() => result.current.handleContentChange({ type: 'doc', content: [] }));
 
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(200);
+      await vi.advanceTimersByTimeAsync(100);
     });
 
     act(() => result.current.handleContentChange(sampleContent));
 
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(500);
+      await vi.advanceTimersByTimeAsync(300);
     });
 
     expect(result.current.saveStatus).toBe('saved');
-
-    // Only one save call, with the last content
     expect(mockUpdateProjectNote).toHaveBeenCalledTimes(1);
     expect(mockUpdateProjectNote).toHaveBeenCalledWith({
       noteId: 'n1',
@@ -129,7 +121,7 @@ describe('useNoteAutoSave', () => {
     act(() => result.current.handleContentChange(sampleContent));
 
     act(() => {
-      vi.advanceTimersByTime(500);
+      vi.advanceTimersByTime(300);
     });
 
     expect(mockUpdateProjectNote).not.toHaveBeenCalled();
@@ -143,7 +135,7 @@ describe('useNoteAutoSave', () => {
     act(() => result.current.handleContentChange(sampleContent));
 
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(500);
+      await vi.advanceTimersByTimeAsync(300);
     });
 
     expect(onTitleExtracted).toHaveBeenCalledWith('n1', 'Extracted Title');
@@ -157,7 +149,7 @@ describe('useNoteAutoSave', () => {
     unmount();
 
     act(() => {
-      vi.advanceTimersByTime(500);
+      vi.advanceTimersByTime(300);
     });
 
     expect(mockUpdateProjectNote).not.toHaveBeenCalled();

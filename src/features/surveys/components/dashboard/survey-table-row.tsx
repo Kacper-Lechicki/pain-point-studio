@@ -206,7 +206,7 @@ export function SurveyTableRow({
 
       {row.confirmDialogProps && <ConfirmDialog {...row.confirmDialogProps} />}
 
-      {!isProjectContext && row.hasShareableLink && row.shareUrl && (
+      {row.hasShareableLink && row.shareUrl && (
         <SurveyShareDialog
           open={row.shareDialogOpen}
           onOpenChange={row.setShareDialogOpen}

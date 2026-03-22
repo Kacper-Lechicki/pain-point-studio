@@ -15,6 +15,7 @@ import { WizardStepLayout } from '@/components/shared/wizard-step-layout';
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -243,6 +244,7 @@ export function CreateProjectWizard({ userId }: CreateProjectWizardProps) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t('projects.create.summaryLabel')}</FormLabel>
+                      <FormDescription>{t('projects.create.summaryHelper')}</FormDescription>
 
                       <FormControl>
                         <Textarea
@@ -325,11 +327,17 @@ export function CreateProjectWizard({ userId }: CreateProjectWizardProps) {
                   ) : null}
 
                   {!isTiptapEmpty(description) ? (
-                    <div className="flex flex-col gap-1">
+                    <div className="flex flex-col gap-2">
                       <span className="text-xs font-medium underline">
                         {t('projects.create.steps.description.label')}
                       </span>
-                      <RichEditor content={description ?? null} editable={false} />
+                      <div className="border-border/70 rounded-lg border border-dashed">
+                        <RichEditor
+                          content={description ?? null}
+                          editable={false}
+                          className="border-none bg-transparent shadow-none dark:bg-transparent [&>div>div]:pt-0"
+                        />
+                      </div>
                     </div>
                   ) : null}
                 </div>

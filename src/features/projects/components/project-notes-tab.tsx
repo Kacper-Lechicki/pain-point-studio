@@ -1,7 +1,5 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-
 import type { JSONContent } from '@tiptap/react';
 
 import { NoteEditor } from '@/features/projects/components/notes/note-editor';
@@ -22,7 +20,6 @@ interface ProjectNotesTabProps {
 export function ProjectNotesTab({ project, initialNotes, initialFolders }: ProjectNotesTabProps) {
   const archived = isProjectArchived(project);
   const isDesktop = useBreakpoint('md');
-  const autoCreatedRef = useRef(false);
 
   const state = useNotesState({
     projectId: project.id,
@@ -34,11 +31,10 @@ export function ProjectNotesTab({ project, initialNotes, initialFolders }: Proje
     selectedNoteId,
     noteContent,
     isLoadingContent,
-    activeNotes,
     handleContentChange: handleStateContentChange,
     handleTitleExtracted,
-    handleCreateNote,
     setSelectedNoteId,
+    ensureSelectedVisible,
   } = state;
 
   const { saveStatus, handleContentChange: handleAutoSaveChange } = useNoteAutoSave({
@@ -50,15 +46,6 @@ export function ProjectNotesTab({ project, initialNotes, initialFolders }: Proje
     handleStateContentChange(json);
     handleAutoSaveChange(json);
   };
-
-  const activeNotesLength = activeNotes.length;
-
-  useEffect(() => {
-    if (!archived && activeNotesLength === 0 && !autoCreatedRef.current) {
-      autoCreatedRef.current = true;
-      void handleCreateNote();
-    }
-  }, [archived, activeNotesLength, handleCreateNote]);
 
   const handleBack = () => {
     setSelectedNoteId(null);
@@ -78,6 +65,7 @@ export function ProjectNotesTab({ project, initialNotes, initialFolders }: Proje
           editable={!archived}
           onContentChange={handleEditorChange}
           onBack={handleBack}
+          onFocus={ensureSelectedVisible}
         />
       }
       showEditor={showEditor}

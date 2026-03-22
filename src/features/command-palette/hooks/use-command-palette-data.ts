@@ -35,7 +35,7 @@ export function useCommandPaletteData(open: boolean) {
         const [projectsData, surveysData] = await Promise.all([getProjects(), getUserSurveys()]);
 
         if (!cancelled) {
-          setProjects(projectsData ?? []);
+          setProjects((projectsData ?? []).filter((p) => p.status !== 'trashed'));
           setSurveys(surveysData ?? []);
         }
       } finally {

@@ -1,6 +1,6 @@
 'use client';
 
-import { ClipboardList, Plus } from 'lucide-react';
+import { FlaskConical, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
@@ -15,7 +15,7 @@ export function BuilderEmptyState() {
     <div className="flex flex-1 flex-col items-center px-4 py-6 sm:px-8 sm:py-8">
       <div className="mx-auto w-full max-w-3xl">
         <EmptyState
-          icon={ClipboardList}
+          icon={FlaskConical}
           title={t('title')}
           description={t('description')}
           accent="cyan"

@@ -77,7 +77,7 @@ export function StatusBadge({
       </button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent>
           <DialogHeader>
             <DialogTitle className="sr-only">{dialogBadgeLabel}</DialogTitle>
 

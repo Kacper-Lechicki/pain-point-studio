@@ -28,19 +28,16 @@ test.describe('Connected Accounts — Multi-Identity', () => {
 
       await expect(main).toBeVisible({ timeout: 15_000 });
 
-      const rows = main.locator('.rounded-lg.border');
+      const githubRow = main.locator('[data-testid="provider-row-github"]');
 
-      await expect(rows).toHaveCount(3, { timeout: 10_000 });
-
-      const githubRow = rows.filter({ has: page.locator('.lucide-github') });
-
+      await expect(githubRow).toBeVisible({ timeout: 10_000 });
       await expect(githubRow).toContainText(email);
 
-      const googleRow = rows.nth(2);
+      const googleRow = main.locator('[data-testid="provider-row-google"]');
 
       await expect(googleRow).toBeVisible();
 
-      const unlinkBtn = githubRow.locator('button').filter({ has: page.locator('.lucide-unlink') });
+      const unlinkBtn = githubRow.getByRole('button', { name: /disconnect/i });
 
       await expect(unlinkBtn).toBeVisible();
       await expect(unlinkBtn).toBeEnabled();
@@ -63,13 +60,9 @@ test.describe('Connected Accounts — Multi-Identity', () => {
 
       await expect(main).toBeVisible({ timeout: 15_000 });
 
-      const githubRow = main.locator('.rounded-lg.border').filter({
-        has: page.locator('.lucide-github'),
-      });
+      const githubRow = main.locator('[data-testid="provider-row-github"]');
 
-      const unlinkBtn = githubRow.locator('button').filter({
-        has: page.locator('.lucide-unlink'),
-      });
+      const unlinkBtn = githubRow.getByRole('button', { name: /disconnect/i });
 
       await expect(unlinkBtn).toBeEnabled({ timeout: 5_000 });
       await unlinkBtn.click();
@@ -81,14 +74,11 @@ test.describe('Connected Accounts — Multi-Identity', () => {
       await waitForToast(page);
       await page.reload({ waitUntil: 'networkidle' });
 
-      const githubRowAfter = page
-        .getByRole('main')
-        .locator('.rounded-lg.border')
-        .filter({ has: page.locator('.lucide-github') });
+      const githubRowAfter = page.getByRole('main').locator('[data-testid="provider-row-github"]');
 
-      await expect(
-        githubRowAfter.locator('button').filter({ has: page.locator('.lucide-unlink') })
-      ).not.toBeVisible({ timeout: 10_000 });
+      await expect(githubRowAfter.getByRole('button', { name: /disconnect/i })).not.toBeVisible({
+        timeout: 10_000,
+      });
     } finally {
       await deleteUserByEmail(email).catch(() => {});
     }
@@ -108,17 +98,19 @@ test.describe('Connected Accounts — Multi-Identity', () => {
 
       await expect(main).toBeVisible({ timeout: 15_000 });
 
-      const rows = main.locator('.rounded-lg.border');
+      const githubRow = main.locator('[data-testid="provider-row-github"]');
+      const googleRow = main.locator('[data-testid="provider-row-google"]');
 
-      await expect(rows).toHaveCount(3, { timeout: 10_000 });
+      await expect(githubRow).toBeVisible({ timeout: 10_000 });
+      await expect(googleRow).toBeVisible();
 
-      await expect(
-        main.locator('button').filter({ has: page.locator('.lucide-unlink') })
-      ).not.toBeVisible({ timeout: 10_000 });
+      await expect(main.getByRole('button', { name: /disconnect/i })).not.toBeVisible({
+        timeout: 10_000,
+      });
 
-      await expect(
-        main.locator('button').filter({ has: page.locator('.lucide-link') })
-      ).toHaveCount(2, { timeout: 5_000 });
+      await expect(main.getByRole('button', { name: /connect/i })).toHaveCount(2, {
+        timeout: 5_000,
+      });
     } finally {
       await deleteUserByEmail(email).catch(() => {});
     }

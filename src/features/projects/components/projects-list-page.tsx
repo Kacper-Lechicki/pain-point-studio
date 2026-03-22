@@ -78,6 +78,7 @@ export function ProjectsListPage({ projects, extras }: ProjectsListPageProps) {
     setLocalProjects,
     selectedId: null,
     setSelected: () => {},
+    onServerRefresh: () => router.refresh(),
   });
 
   const {

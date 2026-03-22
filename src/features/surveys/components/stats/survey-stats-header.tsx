@@ -7,11 +7,7 @@ import { useTranslations } from 'next-intl';
 
 import { SurveyStatusBadge } from '@/components/shared/survey-status-badge';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { RefreshRealtimeButton } from '@/components/ui/refresh-realtime-button';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { SurveyActionMenuContent } from '@/features/surveys/components/dashboard/survey-action-menu';
@@ -100,16 +96,14 @@ export function SurveyStatsHeader({
                 </Button>
               </DropdownMenuTrigger>
 
-              <DropdownMenuContent align="end">
-                <SurveyActionMenuContent
-                  surveyId={surveyId}
-                  flags={flags}
-                  availableActions={availableActions}
-                  onShare={onShare}
-                  onExport={canExport ? () => setExportDialogOpen(true) : undefined}
-                  handleActionClick={onActionClick}
-                />
-              </DropdownMenuContent>
+              <SurveyActionMenuContent
+                surveyId={surveyId}
+                flags={flags}
+                availableActions={availableActions}
+                onShare={onShare}
+                onExport={canExport ? () => setExportDialogOpen(true) : undefined}
+                handleActionClick={onActionClick}
+              />
             </DropdownMenu>
           </div>
         </div>

@@ -72,7 +72,7 @@ export function ActivityInfoTrigger({
       </button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent>
           <DialogHeader>
             <DialogTitle className={useBadgeLayout ? 'sr-only' : undefined}>
               {t(titleKey as MessageKey)}

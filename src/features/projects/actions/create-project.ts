@@ -17,6 +17,7 @@ export const createProject = withProtectedAction<typeof createProjectSchema, { p
         .select('id')
         .eq('user_id', user.id)
         .ilike('name', data.name)
+        .neq('status', 'trashed')
         .maybeSingle();
 
       if (existing) {

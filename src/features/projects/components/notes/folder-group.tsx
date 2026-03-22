@@ -2,7 +2,7 @@
 
 import { type KeyboardEvent, useRef, useState } from 'react';
 
-import { ChevronRight, Folder, GripVertical, MoreHorizontal } from 'lucide-react';
+import { ChevronRight, Folder, MoreHorizontal } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
@@ -10,7 +10,6 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { FolderContextMenu } from '@/features/projects/components/notes/folder-context-menu';
 import { NoteListItem } from '@/features/projects/components/notes/note-list-item';
 import { SortableNoteList } from '@/features/projects/components/notes/sortable-note-list';
-import type { DragHandleProps } from '@/features/projects/components/notes/sortable-note-list';
 import type { ProjectNoteFolder, ProjectNoteMeta } from '@/features/projects/types';
 import { cn } from '@/lib/common/utils';
 
@@ -34,7 +33,9 @@ interface FolderGroupProps {
   onRenameFolder: (folderId: string, name: string) => void;
   onDeleteFolder: (folderId: string) => void;
   onReorderNotes: (noteIds: string[]) => void;
-  dragHandleProps?: DragHandleProps | null;
+  isDropTarget?: boolean;
+  onNoteDragStart?: ((noteId: string) => void) | undefined;
+  onNoteDragEnd?: ((noteId: string, reordered: boolean) => void) | undefined;
 }
 
 export function FolderGroup({
@@ -49,7 +50,9 @@ export function FolderGroup({
   onRenameFolder,
   onDeleteFolder,
   onReorderNotes,
-  dragHandleProps,
+  isDropTarget = false,
+  onNoteDragStart,
+  onNoteDragEnd,
 }: FolderGroupProps) {
   const t = useTranslations('projects.detail.notes');
   const [isRenaming, setIsRenaming] = useState(false);
@@ -57,9 +60,7 @@ export function FolderGroup({
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const renameInputRef = useRef<HTMLInputElement>(null);
 
-  const handleToggle = () => {
-    onToggleExpand(folder.id);
-  };
+  const handleToggle = () => onToggleExpand(folder.id);
 
   const handleStartRename = () => {
     setRenameValue(folder.name);
@@ -90,90 +91,75 @@ export function FolderGroup({
     }
   };
 
-  const handleConfirmDelete = () => {
-    onDeleteFolder(folder.id);
-    setConfirmDeleteOpen(false);
-  };
-
   return (
-    <div>
-      {/* Folder header */}
-      <div className="group flex items-center gap-0.5 px-1">
-        {dragHandleProps && (
-          <span
-            className="text-muted-foreground flex shrink-0 cursor-grab touch-none opacity-0 transition-opacity active:cursor-grabbing md:group-hover:opacity-100"
-            onPointerDown={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              dragHandleProps.onPointerDown(e);
-              e.currentTarget.setPointerCapture(e.pointerId);
-            }}
-            role="button"
-            tabIndex={-1}
-          >
-            <GripVertical className="size-3" aria-hidden />
-          </span>
+    <div data-drop-folder={folder.id}>
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={handleToggle}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleToggle();
+          }
+        }}
+        className={cn(
+          'group md:hover:bg-accent/30 flex w-full cursor-pointer items-center gap-1.5 px-2.5 py-1.5 text-sm transition-colors',
+          isDropTarget && 'bg-primary/10'
+        )}
+      >
+        <ChevronRight
+          className={cn(
+            'text-muted-foreground size-3 shrink-0 transition-transform',
+            isExpanded && 'rotate-90'
+          )}
+        />
+        <Folder className="text-muted-foreground size-3.5 shrink-0" />
+
+        {isRenaming ? (
+          <input
+            ref={renameInputRef}
+            type="text"
+            value={renameValue}
+            onChange={(e) => setRenameValue(e.target.value)}
+            onKeyDown={handleRenameKeyDown}
+            onBlur={handleRenameSubmit}
+            onClick={(e) => e.stopPropagation()}
+            className="bg-accent min-w-0 flex-1 rounded px-1 py-0 text-sm outline-none"
+          />
+        ) : (
+          <span className="min-w-0 truncate">{folder.name}</span>
         )}
 
-        <button
-          type="button"
-          onClick={handleToggle}
-          className={cn(
-            'flex min-w-0 flex-1 items-center gap-1.5 rounded-md px-1.5 py-1.5 text-sm transition-colors',
-            'md:hover:bg-accent/50'
-          )}
-        >
-          <ChevronRight
-            className={cn(
-              'text-muted-foreground size-3 shrink-0 transition-transform',
-              isExpanded && 'rotate-90'
-            )}
-          />
-          <Folder className="text-muted-foreground size-3.5 shrink-0" />
-
-          {isRenaming ? (
-            <input
-              ref={renameInputRef}
-              type="text"
-              value={renameValue}
-              onChange={(e) => setRenameValue(e.target.value)}
-              onKeyDown={handleRenameKeyDown}
-              onBlur={handleRenameSubmit}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-accent min-w-0 flex-1 rounded px-1 py-0 text-sm outline-none"
-            />
-          ) : (
-            <span className="min-w-0 truncate">{folder.name}</span>
-          )}
-
-          {notes.length > 0 && !isRenaming && (
-            <span className="text-muted-foreground/70 text-xs tabular-nums">({notes.length})</span>
-          )}
-        </button>
+        {notes.length > 0 && !isRenaming && (
+          <span className="text-muted-foreground/70 text-xs tabular-nums">({notes.length})</span>
+        )}
 
         {!isArchived && !isRenaming && (
-          <FolderContextMenu
-            onRename={handleStartRename}
-            onDelete={() => setConfirmDeleteOpen(true)}
+          <div
+            className="ml-auto shrink-0 opacity-0 md:group-hover:opacity-100"
+            onClick={(e) => e.stopPropagation()}
           >
-            <Button
-              variant="ghost"
-              size="icon-xs"
-              className="text-muted-foreground opacity-0 md:group-hover:opacity-100"
+            <FolderContextMenu
+              onRename={handleStartRename}
+              onDelete={() => setConfirmDeleteOpen(true)}
             >
-              <MoreHorizontal className="size-3.5" />
-            </Button>
-          </FolderContextMenu>
+              <Button variant="ghost" size="icon-xs" className="text-muted-foreground">
+                <MoreHorizontal className="size-3.5" />
+              </Button>
+            </FolderContextMenu>
+          </div>
         )}
       </div>
 
-      {/* Folder notes with D&D */}
       {isExpanded && (
-        <div className="pl-4">
+        <div>
           <SortableNoteList
             notes={notes}
             onReorder={onReorderNotes}
             disabled={isArchived}
+            onNoteDragStart={onNoteDragStart}
+            onNoteDragEnd={onNoteDragEnd}
             renderNote={(note, noteDragHandleProps, noteDragging) => (
               <NoteListItem
                 note={note}
@@ -191,7 +177,10 @@ export function FolderGroup({
       <ConfirmDialog
         open={confirmDeleteOpen}
         onOpenChange={setConfirmDeleteOpen}
-        onConfirm={handleConfirmDelete}
+        onConfirm={() => {
+          onDeleteFolder(folder.id);
+          setConfirmDeleteOpen(false);
+        }}
         title={t('confirmDeleteFolder')}
         description={t('confirmDeleteFolderDescription')}
         variant="destructive"

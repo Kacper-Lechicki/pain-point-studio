@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
-import { ClipboardList } from 'lucide-react';
+import { FlaskConical } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
@@ -233,7 +233,7 @@ export const SurveyList = ({
 
       {filteredSurveys.length === 0 ? (
         <EmptyState
-          icon={ClipboardList}
+          icon={FlaskConical}
           title={
             searchQuery.trim()
               ? t('surveys.dashboard.emptySearch.title', { query: searchQuery })

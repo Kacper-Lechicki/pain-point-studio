@@ -52,12 +52,12 @@ function ClipboardInput({
         {...props}
       />
 
-      <div className="absolute top-0 right-0 h-full">
+      <div className="absolute inset-y-0 right-0 flex items-center">
         <Button
           type="button"
           variant="ghost"
           size="icon"
-          className="h-full px-3 md:hover:bg-transparent"
+          className="h-full px-3 md:hover:border-transparent md:hover:bg-transparent"
           onClick={handleCopy}
           aria-label={copied ? resolvedCopiedLabel : resolvedCopyLabel}
         >

@@ -3,7 +3,7 @@
 import React from 'react';
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { NotebookPen } from 'lucide-react';
+import { FlaskConical } from 'lucide-react';
 
 import {
   SIDEBAR_NAV_ACTIVE,
@@ -510,7 +510,7 @@ export function MobileNavSubLevel({
                   {
                     label: survey.label,
                     href: getSurveyStatsUrl(survey.id),
-                    icon: NotebookPen,
+                    icon: FlaskConical,
                   },
                   pathname === getSurveyStatsUrl(survey.id)
                 )

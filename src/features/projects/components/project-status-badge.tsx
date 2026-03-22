@@ -1,4 +1,5 @@
 import { StatusBadge } from '@/components/ui/status-badge';
+import { PROJECT_TRASH_RETENTION_DAYS } from '@/features/projects/config/constraints';
 import { PROJECT_STATUS_CONFIG } from '@/features/projects/config/status';
 import type { ProjectStatus } from '@/features/projects/types';
 
@@ -18,6 +19,9 @@ export function ProjectStatusBadge({ status, className }: ProjectStatusBadgeProp
       variant={config.badge.variant}
       badgeClassName={config.badge.className}
       className={className}
+      {...(status === 'trashed' && {
+        descriptionValues: { days: PROJECT_TRASH_RETENTION_DAYS },
+      })}
     />
   );
 }

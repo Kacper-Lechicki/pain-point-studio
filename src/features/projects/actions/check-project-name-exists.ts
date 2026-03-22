@@ -25,7 +25,8 @@ export const checkProjectNameExists = withProtectedAction<typeof schema, { exist
         .from('projects')
         .select('id')
         .eq('user_id', user.id)
-        .ilike('name', data.name);
+        .ilike('name', data.name)
+        .neq('status', 'trashed');
 
       if (data.excludeProjectId) {
         query = query.neq('id', data.excludeProjectId);

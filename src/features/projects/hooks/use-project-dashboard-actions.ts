@@ -119,6 +119,10 @@ export function useProjectDashboardActions({ initialProject }: UseProjectDashboa
       setProject(initialProject);
     } else {
       toast.success(t(PROJECT_TOAST_KEY[confirmAction]));
+
+      if (confirmAction === 'restoreTrash') {
+        router.refresh();
+      }
     }
   };
 

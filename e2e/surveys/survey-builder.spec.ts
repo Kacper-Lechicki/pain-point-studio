@@ -110,6 +110,51 @@ test('builder: edit metadata panel and save', async ({ page, testSurvey: { surve
   await expect(page.locator(sel.titleInput)).toBeHidden({ timeout: 10_000 });
 });
 
+test('builder: publish disabled when no valid questions', async ({
+  page,
+  testSurvey: { surveyId },
+}) => {
+  await page.goto(builderUrl(surveyId), { waitUntil: 'networkidle' });
+  await expect(page.locator(sel.questionInput)).toBeVisible({ timeout: 15_000 });
+
+  await ensureSidebarOpen(page);
+
+  await page.getByRole('button', { name: 'Question actions' }).last().click();
+  await page.getByRole('menuitem', { name: 'Delete question' }).click();
+
+  const dialog = page.locator(sel.alertDialog);
+
+  await expect(dialog).toBeVisible({ timeout: 5_000 });
+  await dialog.getByRole('button', { name: 'Delete question' }).click();
+  await ensureSidebarClosed(page);
+
+  const publishBtn = page.getByRole('button', { name: 'Publish' });
+
+  await expect(publishBtn).toBeDisabled({ timeout: 5_000 });
+});
+
+test('builder: save draft re-enables on further edits', async ({
+  page,
+  testSurvey: { surveyId },
+}) => {
+  await page.goto(builderUrl(surveyId), { waitUntil: 'networkidle' });
+  await expect(page.locator(sel.questionInput)).toBeVisible({ timeout: 15_000 });
+
+  await page.locator(sel.questionInput).clear();
+  await page.locator(sel.questionInput).pressSequentially('First edit', { delay: 30 });
+
+  const saveBtn = page.getByRole('button', { name: 'Save Draft' });
+
+  await expect(saveBtn).toBeEnabled({ timeout: 10_000 });
+  await saveBtn.click();
+  await waitForToast(page);
+  await expect(saveBtn).toBeDisabled({ timeout: 5_000 });
+
+  await page.locator(sel.questionInput).clear();
+  await page.locator(sel.questionInput).pressSequentially('Second edit', { delay: 30 });
+  await expect(saveBtn).toBeEnabled({ timeout: 10_000 });
+});
+
 test('builder: full publish flow', async ({ page, testSurvey: { surveyId } }) => {
   await page.goto(builderUrl(surveyId), { waitUntil: 'networkidle' });
   await expect(page.locator(sel.questionInput)).toBeVisible({ timeout: 15_000 });

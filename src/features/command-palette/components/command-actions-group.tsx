@@ -1,6 +1,6 @@
 'use client';
 
-import { FolderPlus, NotebookPen } from 'lucide-react';
+import { FlaskConical, FolderPlus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { CommandGroup, CommandItem } from '@/components/ui/command';
@@ -30,7 +30,7 @@ export function CommandActionsGroup({ onClose, onCreateSurvey }: CommandActionsG
       </CommandItem>
 
       <CommandItem value={t('actions.createSurvey')} onSelect={onCreateSurvey}>
-        <NotebookPen />
+        <FlaskConical />
         {t('actions.createSurvey')}
       </CommandItem>
     </CommandGroup>

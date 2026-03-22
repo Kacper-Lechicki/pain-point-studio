@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react';
 
-import { ClipboardList, Plus } from 'lucide-react';
+import { FlaskConical, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
@@ -30,7 +30,7 @@ export function ProjectSurveysTab({
   if (!hasSurveys) {
     return (
       <EmptyState
-        icon={ClipboardList}
+        icon={FlaskConical}
         title={t('projects.detail.empty.noSurveys')}
         description={t('projects.detail.empty.noSurveysDescription')}
         accent="cyan"

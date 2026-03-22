@@ -5,10 +5,11 @@ import { useEffect, useRef, useState } from 'react';
 import type { JSONContent } from '@tiptap/react';
 
 import { updateProjectNote } from '@/features/projects/actions/update-project-note';
-import { NOTE_CONTENT_DEBOUNCE_MS } from '@/features/projects/config';
 import { extractTitleFromTiptap } from '@/features/projects/lib/note-helpers';
 
 export type SaveStatus = 'idle' | 'pending' | 'saving' | 'saved' | 'failed';
+
+const SAVE_DELAY_MS = 300;
 
 interface UseNoteAutoSaveOptions {
   noteId: string | null;
@@ -24,38 +25,33 @@ export function useNoteAutoSave({
   noteId,
   onTitleExtracted,
 }: UseNoteAutoSaveOptions): UseNoteAutoSaveReturn {
-  // Track noteId changes to reset state
   const [trackedNoteId, setTrackedNoteId] = useState(noteId);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
 
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const noteIdRef = useRef(noteId);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const saveCounterRef = useRef(0);
 
-  // When noteId changes from parent, reset tracked state
   if (noteId !== trackedNoteId) {
     setTrackedNoteId(noteId);
     setSaveStatus('idle');
   }
 
-  // Track the latest noteId for async callbacks
   useEffect(() => {
     noteIdRef.current = noteId;
   }, [noteId]);
 
-  // Clear pending timers when noteId changes
   useEffect(() => {
     return () => {
       if (timerRef.current) {
         clearTimeout(timerRef.current);
-        timerRef.current = null;
       }
     };
   }, [noteId]);
 
-  const save = async (json: JSONContent, targetNoteId: string) => {
+  const save = async (json: JSONContent, targetNoteId: string, saveId: number) => {
     setSaveStatus('saving');
 
-    // Optimistically extract title and update sidebar
     const title = extractTitleFromTiptap(json);
     onTitleExtracted?.(targetNoteId, title);
 
@@ -64,16 +60,11 @@ export function useNoteAutoSave({
       content: json,
     });
 
-    // Only update status if we're still on the same note
-    if (noteIdRef.current !== targetNoteId) {
+    if (noteIdRef.current !== targetNoteId || saveCounterRef.current !== saveId) {
       return;
     }
 
-    if (result.success) {
-      setSaveStatus('saved');
-    } else {
-      setSaveStatus('failed');
-    }
+    setSaveStatus(result.success ? 'saved' : 'failed');
   };
 
   const handleContentChange = (json: JSONContent) => {
@@ -87,18 +78,11 @@ export function useNoteAutoSave({
       clearTimeout(timerRef.current);
     }
 
-    setSaveStatus('pending');
-    timerRef.current = setTimeout(() => save(json, targetNoteId), NOTE_CONTENT_DEBOUNCE_MS);
-  };
+    const saveId = ++saveCounterRef.current;
 
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
-    };
-  }, []);
+    setSaveStatus('pending');
+    timerRef.current = setTimeout(() => void save(json, targetNoteId, saveId), SAVE_DELAY_MS);
+  };
 
   return { saveStatus, handleContentChange };
 }

@@ -54,7 +54,7 @@ export function ProjectDetailHeader({
   const actions = getAvailableActions(project.status as ProjectStatus);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-4">
       {isProjectArchived(project) && (
         <ProjectStatusBanner
           icon={Archive}

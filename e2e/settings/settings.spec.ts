@@ -40,6 +40,34 @@ test('update password successfully', async ({ page, authenticatedPage: {} }) => 
   await expect(page).toHaveURL(/\/settings\/password/);
 });
 
+test('wrong current password shows error toast', async ({ page, authenticatedPage: {} }) => {
+  await page.goto(url(ROUTES.settings.password), { waitUntil: 'networkidle' });
+  await expect(page.locator(sel.passwordInput)).toBeVisible({ timeout: 15_000 });
+
+  await fillField(page.locator(sel.currentPassword), 'WrongPassword1!');
+  await fillField(page.locator(sel.passwordInput), 'NewE2ePass1!');
+  await fillField(page.locator(sel.confirmPassword), 'NewE2ePass1!');
+  await page.locator(sel.passwordSubmit).click();
+  await expect(page.locator(sel.toast).first()).toBeVisible({ timeout: 10_000 });
+  await expect(page).toHaveURL(/\/settings\/password/);
+});
+
+test('update bio in profile settings', async ({ page, authenticatedPage: {} }) => {
+  await page.goto(url(ROUTES.settings.profile), { waitUntil: 'networkidle' });
+
+  const main = page.getByRole('main');
+
+  await expect(main.locator(sel.bio)).toBeVisible({ timeout: 15_000 });
+  await fillField(main.locator(sel.bio), 'E2E bio content for testing.');
+  await main.locator(sel.profileSubmit).click();
+  await waitForToast(page);
+
+  await page.reload({ waitUntil: 'networkidle' });
+  await expect(main.locator(sel.bio)).toHaveValue('E2E bio content for testing.', {
+    timeout: 15_000,
+  });
+});
+
 test('email change submits and shows confirmation', async ({
   page,
   authenticatedPage: { email },

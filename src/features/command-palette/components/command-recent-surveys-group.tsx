@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 
-import { NotebookPen } from 'lucide-react';
+import { FlaskConical } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { CommandGroup, CommandItem } from '@/components/ui/command';
@@ -33,7 +33,7 @@ export function CommandRecentSurveysGroup({ onClose }: CommandRecentSurveysGroup
             router.push(getSurveyStatsUrl(item.id));
           }}
         >
-          <NotebookPen />
+          <FlaskConical />
           {item.label}
         </CommandItem>
       ))}

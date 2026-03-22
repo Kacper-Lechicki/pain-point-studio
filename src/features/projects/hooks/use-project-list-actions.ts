@@ -85,12 +85,14 @@ interface UseProjectListActionsParams {
   setLocalProjects: React.Dispatch<React.SetStateAction<ProjectWithMetrics[]>>;
   selectedId: string | null;
   setSelected: (id: string | null) => void;
+  onServerRefresh?: () => void;
 }
 
 export function useProjectListActions({
   setLocalProjects,
   selectedId,
   setSelected,
+  onServerRefresh,
 }: UseProjectListActionsParams) {
   const t = useTranslations();
 
@@ -179,6 +181,10 @@ export function useProjectListActions({
       );
     } else {
       toast.success(t(PROJECT_TOAST_KEY[action]));
+
+      if (action === 'restoreTrash') {
+        onServerRefresh?.();
+      }
     }
   };
 
