@@ -17,7 +17,7 @@ const ACTION_VARIANT: Record<ProjectAction, ConfirmVariant> = {
   reopen: 'success',
   restore: 'success',
   trash: 'destructive',
-  restoreTrash: 'success',
+  restoreTrash: 'default',
   permanentDelete: 'destructive',
 };
 

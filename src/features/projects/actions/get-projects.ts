@@ -18,7 +18,6 @@ export const getProjects = cache(async (): Promise<ProjectWithMetrics[] | null> 
     .from('projects')
     .select('*')
     .eq('user_id', user.id)
-    .neq('status', 'trashed')
     .order('created_at', { ascending: false });
 
   if (projectsError) {

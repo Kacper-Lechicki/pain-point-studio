@@ -1050,7 +1050,10 @@
     "empty": {
       "title": "No projects yet",
       "description": "Create your first project to organize research around a specific idea or product.",
-      "cta": "New Project"
+      "cta": "New Project",
+      "trashedTitle": "All projects are in the trash",
+      "trashedDescription": "Your projects have been moved to trash. Create a new project or restore existing ones from their detail pages.",
+      "trashedCta": "New Project"
     },
     "create": {
       "title": "New Project",
@@ -1141,7 +1144,8 @@
         "progress": "Progress",
         "updated": "Updated",
         "activity": "Activity",
-        "deletedInDays": "Permanently deleted {days, plural, one {in 1 day} other {in # days}}"
+        "deletedInDays": "Permanently deleted {days, plural, one {in 1 day} other {in # days}}",
+        "deletedInDaysShort": "{days, plural, one {# day left} other {# days left}}"
       },
       "card": {
         "surveys": "{count, plural, one {# survey} other {# surveys}}",

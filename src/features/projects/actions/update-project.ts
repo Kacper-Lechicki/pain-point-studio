@@ -27,6 +27,7 @@ export const updateProject = withProtectedAction<typeof updateProjectSchema>('up
       .eq('user_id', user.id)
       .ilike('name', data.name)
       .neq('id', data.projectId)
+      .neq('status', 'trashed')
       .maybeSingle();
 
     if (existing) {

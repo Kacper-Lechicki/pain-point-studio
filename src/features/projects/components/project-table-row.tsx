@@ -103,30 +103,28 @@ export function ProjectTableRow({
       </TableCell>
 
       <TableCell className="text-muted-foreground border-border/30 min-w-0 border-l px-5 py-3 text-xs tabular-nums">
-        {project.status === 'trashed' ? (
-          <Badge
-            variant="secondary"
-            className="text-muted-foreground border-border bg-muted/90 inline-flex w-fit items-center gap-1 px-2 py-0.5 text-[11px] font-medium"
-          >
-            <Trash2 className="size-3 shrink-0" aria-hidden />
-            <span className="truncate">
-              {t('projects.list.table.deletedInDays', {
-                days:
-                  daysUntilExpiry(project.deleted_at ?? null, PROJECT_TRASH_RETENTION_DAYS) ??
-                  PROJECT_TRASH_RETENTION_DAYS,
-              })}
-            </span>
-          </Badge>
-        ) : project.response_limit ? (
-          `${project.responseCount}/${project.response_limit}`
-        ) : (
-          project.responseCount
-        )}
+        {project.status === 'trashed'
+          ? '—'
+          : project.response_limit
+            ? `${project.responseCount}/${project.response_limit}`
+            : project.responseCount}
       </TableCell>
 
       <TableCell className="text-muted-foreground border-border/30 hidden min-w-0 border-l px-3 py-3 md:table-cell">
         {project.status === 'trashed' ? (
-          '—'
+          <div className="flex w-full justify-center">
+            <Badge
+              variant="secondary"
+              className="text-muted-foreground border-border bg-muted/90 inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-medium whitespace-nowrap"
+            >
+              <Trash2 className="size-3 shrink-0" aria-hidden />
+              {t('projects.list.table.deletedInDaysShort', {
+                days:
+                  daysUntilExpiry(project.deleted_at ?? null, PROJECT_TRASH_RETENTION_DAYS) ??
+                  PROJECT_TRASH_RETENTION_DAYS,
+              })}
+            </Badge>
+          </div>
         ) : (
           <div className="w-full">
             <ActivitySparkline data={extras?.sparkline ?? []} fillWidth className="h-7 w-full" />
