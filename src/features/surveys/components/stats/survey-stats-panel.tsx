@@ -118,7 +118,7 @@ export const SurveyStatsPanel = ({ stats, survey }: SurveyStatsPanelProps) => {
   } = useSurveyAction(stats.survey.id, onStatusChange, t);
 
   const { isActive } = deriveSurveyFlags(currentStatus);
-  const hasShareableLink = !!shareUrl;
+  const hasShareableLink = isActive && !!shareUrl;
 
   return (
     <main className="flex min-w-0 flex-col gap-3" aria-label={stats.survey.title}>

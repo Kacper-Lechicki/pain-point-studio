@@ -75,7 +75,7 @@ export function ExportDialog({ open, onOpenChange, surveyId, surveyTitle }: Expo
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{t('exportTitle')}</DialogTitle>
           <DialogDescription className="sr-only">{t('exportTitle')}</DialogDescription>

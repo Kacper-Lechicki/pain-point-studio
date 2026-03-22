@@ -93,7 +93,7 @@ export function NoteListItem({
         }
       }}
       className={cn(
-        'group flex min-h-10 cursor-pointer items-center gap-2 border-l-2 pr-2 pl-4 text-sm transition-colors md:min-h-9',
+        'group flex min-h-10 cursor-pointer items-center gap-1.5 border-l-2 pr-2.5 pl-2.5 text-sm transition-colors md:min-h-9',
         isSelected ? 'border-primary bg-accent/50' : 'md:hover:bg-accent/30 border-transparent',
         isDragging && 'opacity-50',
         className
@@ -113,7 +113,9 @@ export function NoteListItem({
         >
           <GripVertical className="size-4" aria-hidden />
         </span>
-      ) : null}
+      ) : (
+        <span className="size-4 shrink-0" />
+      )}
 
       <span
         className={cn(

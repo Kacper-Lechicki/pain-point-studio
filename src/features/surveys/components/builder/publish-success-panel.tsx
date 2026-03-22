@@ -1,6 +1,6 @@
 'use client';
 
-import { CheckCircle2, ClipboardList, Plus } from 'lucide-react';
+import { CheckCircle2, FlaskConical, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
@@ -85,7 +85,7 @@ export function PublishSuccessPanel({
 
             <Button variant="ghost" size="sm" asChild>
               <Link href={`${getProjectDetailUrl(projectId)}?tab=surveys`} replace>
-                <ClipboardList className="size-3.5" />
+                <FlaskConical className="size-3.5" />
                 {t('surveys.publish.backToSurveys')}
               </Link>
             </Button>

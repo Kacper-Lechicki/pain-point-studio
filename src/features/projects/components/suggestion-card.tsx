@@ -7,6 +7,7 @@ import { Sparkles } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import {
   Dialog,
   DialogContent,
@@ -49,6 +50,7 @@ export function SuggestionCard({
 }: SuggestionCardProps) {
   const t = useTranslations();
   const [infoOpen, setInfoOpen] = useState(false);
+  const [confirmDismissOpen, setConfirmDismissOpen] = useState(false);
 
   const handleMoveTo = (type: InsightType) => {
     onMoveTo(suggestion.signature, type, suggestion.content);
@@ -129,10 +131,7 @@ export function SuggestionCard({
 
             <DropdownMenuSeparator />
 
-            <DropdownMenuItem
-              variant="destructive"
-              onClick={() => onDismissed(suggestion.signature)}
-            >
+            <DropdownMenuItem variant="destructive" onClick={() => setConfirmDismissOpen(true)}>
               <X className="size-3.5" />
               {t('projects.suggestions.dismiss' as MessageKey)}
             </DropdownMenuItem>
@@ -141,7 +140,7 @@ export function SuggestionCard({
       </div>
 
       <Dialog open={infoOpen} onOpenChange={setInfoOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent>
           <DialogHeader>
             <DialogTitle>{t('projects.suggestions.infoTitle' as MessageKey)}</DialogTitle>
             <DialogDescription className="sr-only">
@@ -175,6 +174,19 @@ export function SuggestionCard({
           </div>
         </DialogContent>
       </Dialog>
+
+      <ConfirmDialog
+        open={confirmDismissOpen}
+        onOpenChange={setConfirmDismissOpen}
+        onConfirm={() => {
+          onDismissed(suggestion.signature);
+          setConfirmDismissOpen(false);
+        }}
+        title={t('projects.suggestions.dismissTitle' as MessageKey)}
+        description={t('projects.suggestions.dismissDescription' as MessageKey)}
+        confirmLabel={t('projects.suggestions.dismiss' as MessageKey)}
+        variant="destructive"
+      />
     </>
   );
 }

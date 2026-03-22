@@ -96,6 +96,31 @@ export function useNotesState({ projectId, initialNotes, initialFolders }: UseNo
     };
   }, [selectedNoteId]);
 
+  const expandFolderForNote = (noteId: string) => {
+    const note = notes.find((n) => n.id === noteId);
+
+    if (note?.folder_id && !expandedFolderIds.includes(note.folder_id)) {
+      setExpandedFolderIds([...expandedFolderIds, note.folder_id]);
+    }
+  };
+
+  const selectNote = (noteId: string | null) => {
+    setSelectedNoteId(noteId);
+
+    if (noteId) {
+      expandFolderForNote(noteId);
+    }
+  };
+
+  const [revealTrigger, setRevealTrigger] = useState(0);
+
+  const ensureSelectedVisible = () => {
+    if (selectedNoteId) {
+      expandFolderForNote(selectedNoteId);
+      setRevealTrigger((n) => n + 1);
+    }
+  };
+
   // ── Derived data ──────────────────────────────────────────────────
 
   const activeNotes = notes.filter((n) => !n.deleted_at);
@@ -387,7 +412,9 @@ export function useNotesState({ projectId, initialNotes, initialFolders }: UseNo
     getNotesByFolder,
 
     // Setters
-    setSelectedNoteId,
+    setSelectedNoteId: selectNote,
+    ensureSelectedVisible,
+    revealTrigger,
     setSearchQuery,
     setNoteContent,
 

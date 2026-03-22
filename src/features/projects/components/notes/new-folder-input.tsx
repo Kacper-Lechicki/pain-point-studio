@@ -1,19 +1,26 @@
 'use client';
 
-import { type KeyboardEvent, useRef, useState } from 'react';
+import { type KeyboardEvent, type RefObject, useRef, useState } from 'react';
 
 import { FolderPlus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/common/utils';
+import { Input } from '@/components/ui/input';
 
-interface NewFolderInputProps {
-  onCreate: (name: string) => Promise<string | null>;
+interface NewFolderState {
+  isExpanded: boolean;
+  expand: () => void;
+  inputProps: {
+    ref: RefObject<HTMLInputElement | null>;
+    value: string;
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onKeyDown: (e: KeyboardEvent) => void;
+    onBlur: () => void;
+  };
 }
 
-export function NewFolderInput({ onCreate }: NewFolderInputProps) {
-  const t = useTranslations('projects.detail.notes');
+export function useNewFolder(onCreate: (name: string) => Promise<string | null>): NewFolderState {
   const [isExpanded, setIsExpanded] = useState(false);
   const [value, setValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
@@ -42,7 +49,7 @@ export function NewFolderInput({ onCreate }: NewFolderInputProps) {
     }
   };
 
-  const handleExpand = () => {
+  const expand = () => {
     setIsExpanded(true);
     requestAnimationFrame(() => inputRef.current?.focus());
   };
@@ -55,29 +62,41 @@ export function NewFolderInput({ onCreate }: NewFolderInputProps) {
     }
   };
 
-  if (!isExpanded) {
-    return (
-      <Button variant="ghost" size="icon-xs" onClick={handleExpand} aria-label={t('newFolder')}>
-        <FolderPlus className="size-3.5" />
-      </Button>
-    );
-  }
+  return {
+    isExpanded,
+    expand,
+    inputProps: {
+      ref: inputRef,
+      value,
+      onChange: (e: React.ChangeEvent<HTMLInputElement>) => setValue(e.target.value),
+      onKeyDown: handleKeyDown,
+      onBlur: handleBlur,
+    },
+  };
+}
+
+export function NewFolderButton({ onClick }: { onClick: () => void }) {
+  const t = useTranslations('projects.detail.notes');
 
   return (
-    <input
-      ref={inputRef}
-      type="text"
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
-      onKeyDown={handleKeyDown}
-      onBlur={handleBlur}
-      placeholder={t('folderNamePlaceholder')}
-      className={cn(
-        'bg-accent/50 w-28 rounded px-1.5 py-0.5 text-xs outline-none',
-        'placeholder:text-muted-foreground',
-        'focus:ring-ring/50 focus:ring-1'
-      )}
-      onClick={(e) => e.stopPropagation()}
-    />
+    <Button variant="ghost" size="icon-xs" onClick={onClick} aria-label={t('newFolder')}>
+      <FolderPlus className="size-3.5" />
+    </Button>
+  );
+}
+
+export function NewFolderField({ inputProps }: { inputProps: NewFolderState['inputProps'] }) {
+  const t = useTranslations('projects.detail.notes');
+
+  return (
+    <div className="px-2.5 pb-1">
+      <Input
+        {...inputProps}
+        type="text"
+        placeholder={t('folderNamePlaceholder')}
+        size="sm"
+        onClick={(e) => e.stopPropagation()}
+      />
+    </div>
   );
 }

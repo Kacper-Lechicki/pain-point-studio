@@ -132,7 +132,7 @@ export function SurveyActionMenuContent({
 
       {sortedActions.length > 0 && (
         <>
-          <DropdownMenuSeparator />
+          {primaryItems.length > 0 && <DropdownMenuSeparator />}
           {sortedActions.map((action) => {
             const ui = SURVEY_ACTION_UI[action];
             const Icon = ui.icon;

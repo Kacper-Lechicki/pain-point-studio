@@ -27,6 +27,8 @@ interface SortableListProps<T extends { id: string }> {
   placeholderClassName?: string | undefined;
   ghostClassName?: string | undefined;
   ghostMinWidth?: number | undefined;
+  onDragStart?: ((itemId: string) => void) | undefined;
+  onDragEnd?: ((itemId: string, reordered: boolean) => void) | undefined;
 }
 
 export function SortableList<T extends { id: string }>({
@@ -39,6 +41,8 @@ export function SortableList<T extends { id: string }>({
   placeholderClassName = 'border-primary/50 bg-primary/5 min-h-10 shrink-0 rounded-lg border border-dashed md:min-h-9',
   ghostClassName = 'bg-background pointer-events-none fixed top-0 left-0 z-50 flex items-center rounded-lg px-2 shadow-lg',
   ghostMinWidth = 200,
+  onDragStart,
+  onDragEnd,
 }: SortableListProps<T>) {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -55,6 +59,8 @@ export function SortableList<T extends { id: string }>({
     containerRef,
     itemIdAttribute,
     onReorder,
+    onDragStart,
+    onDragEnd,
   });
 
   return (
@@ -122,6 +128,8 @@ interface SortableNoteListProps {
     isDragging: boolean
   ) => React.ReactNode;
   disabled?: boolean;
+  onNoteDragStart?: ((noteId: string) => void) | undefined;
+  onNoteDragEnd?: ((noteId: string, reordered: boolean) => void) | undefined;
 }
 
 export function SortableNoteList({
@@ -129,6 +137,8 @@ export function SortableNoteList({
   onReorder,
   renderNote,
   disabled,
+  onNoteDragStart,
+  onNoteDragEnd,
 }: SortableNoteListProps) {
   const t = useTranslations('projects.detail.notes');
 
@@ -139,6 +149,8 @@ export function SortableNoteList({
       onReorder={onReorder}
       renderItem={renderNote}
       disabled={disabled}
+      onDragStart={onNoteDragStart}
+      onDragEnd={onNoteDragEnd}
       renderGhost={(note) => {
         const displayTitle = note.title || t('untitled');
         const hasTitle = !!note.title;
@@ -159,11 +171,10 @@ export function SortableNoteList({
               {displayTitle}
             </span>
             <span className="text-muted-foreground shrink-0 text-xs">{dateStr}</span>
-            <span className="size-9 shrink-0" />
           </>
         );
       }}
-      ghostClassName="bg-background pointer-events-none fixed top-0 left-0 z-50 flex min-h-10 items-center gap-2 rounded-lg px-2 shadow-lg md:min-h-9"
+      ghostClassName="bg-background pointer-events-none fixed top-0 left-0 z-50 flex min-h-10 items-center gap-1.5 rounded-lg border pl-2.5 pr-2.5 shadow-lg md:min-h-9"
     />
   );
 }

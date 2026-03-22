@@ -1,6 +1,7 @@
 import { expect, test } from '../fixtures';
 import { createCompletedSurveyWithResponses } from '../helpers/db-factories';
 import { ROUTES, url } from '../helpers/routes';
+import { sel } from '../helpers/selectors';
 
 function projectInsightsUrl(projectId: string) {
   return url(`${ROUTES.dashboard.projects}/${projectId}?tab=insights`);
@@ -81,6 +82,11 @@ test('dismiss suggestion → card disappears', async ({
 
   await expect(dismissItem).toBeVisible({ timeout: 5_000 });
   await dismissItem.click();
+
+  const confirmDialog = page.locator(sel.alertDialog);
+
+  await expect(confirmDialog).toBeVisible({ timeout: 5_000 });
+  await confirmDialog.getByRole('button', { name: /dismiss/i }).click();
 
   await expect(suggestedColumn.locator('[data-insight-id]')).toHaveCount(initialCount - 1, {
     timeout: 10_000,

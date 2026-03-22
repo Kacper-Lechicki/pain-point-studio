@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowRight, ClipboardList, Lightbulb, Rocket, Send, Share2 } from 'lucide-react';
+import { ArrowRight, FlaskConical, Lightbulb, Rocket, Send, Share2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -17,7 +17,7 @@ import type { ResearchPhase } from '@/features/projects/types';
 import type { MessageKey } from '@/i18n/types';
 
 const ACTION_ICONS: Record<NextStepAction, LucideIcon> = {
-  'create-survey': ClipboardList,
+  'create-survey': FlaskConical,
   'activate-survey': Rocket,
   'share-survey': Share2,
   'review-findings': Lightbulb,

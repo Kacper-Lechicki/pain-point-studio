@@ -11,6 +11,10 @@ interface UseSortableListOptions {
   itemIdAttribute: string;
   /** Called with the new order of ids when a drop completes. */
   onReorder: (newIds: string[]) => void;
+  /** Called when a drag starts. */
+  onDragStart?: ((itemId: string) => void) | undefined;
+  /** Called when a drag ends. `reordered` is true if the item was dropped back inside the list with a new position. */
+  onDragEnd?: ((itemId: string, reordered: boolean) => void) | undefined;
 }
 
 interface UseSortableListResult {
@@ -74,7 +78,7 @@ function computeDropIndex(
 }
 
 export function useSortableList(options: UseSortableListOptions): UseSortableListResult {
-  const { itemIds, containerRef, itemIdAttribute, onReorder } = options;
+  const { itemIds, containerRef, itemIdAttribute, onReorder, onDragStart, onDragEnd } = options;
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [placeholderIndex, setPlaceholderIndex] = useState<number | null>(null);
   const [ghostPosition, setGhostPosition] = useState<{ x: number; y: number } | null>(null);
@@ -90,6 +94,14 @@ export function useSortableList(options: UseSortableListOptions): UseSortableLis
   useEffect(() => {
     itemIdsRef.current = itemIds;
   }, [itemIds]);
+
+  const onDragStartRef = useRef(onDragStart);
+  const onDragEndRef = useRef(onDragEnd);
+
+  useEffect(() => {
+    onDragStartRef.current = onDragStart;
+    onDragEndRef.current = onDragEnd;
+  });
 
   const handlePointerMoveRef = useRef<(e: PointerEvent) => void>(() => {});
   const handlePointerUpRef = useRef<() => void>(() => {});
@@ -120,6 +132,7 @@ export function useSortableList(options: UseSortableListOptions): UseSortableLis
 
     setDraggedId(itemId);
     setPlaceholderIndex(placeholderIndexRef.current);
+    onDragStartRef.current?.(itemId);
   };
 
   useEffect(() => {
@@ -142,8 +155,8 @@ export function useSortableList(options: UseSortableListOptions): UseSortableLis
         const isInside =
           e.clientX >= rect.left &&
           e.clientX <= rect.right &&
-          e.clientY >= rect.top - 40 &&
-          e.clientY <= rect.bottom + 40;
+          e.clientY >= rect.top - 4 &&
+          e.clientY <= rect.bottom + 4;
 
         if (isInside) {
           insideContainerRef.current = true;
@@ -185,7 +198,8 @@ export function useSortableList(options: UseSortableListOptions): UseSortableLis
         rafIdRef.current = null;
       }
 
-      // Only reorder if pointer is inside the container
+      let wasReordered = false;
+
       if (insideContainerRef.current) {
         const ids = itemIdsRef.current;
         const fromIndex = ids.indexOf(currentDraggedId);
@@ -198,8 +212,11 @@ export function useSortableList(options: UseSortableListOptions): UseSortableLis
 
           reordered.splice(insertAt, 0, removed!);
           onReorder(reordered);
+          wasReordered = true;
         }
       }
+
+      onDragEndRef.current?.(currentDraggedId, wasReordered);
 
       setDraggedId(null);
       setPlaceholderIndex(null);

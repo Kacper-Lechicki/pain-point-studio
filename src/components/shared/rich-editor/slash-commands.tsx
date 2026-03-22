@@ -184,7 +184,7 @@ function SlashCommandList({ items, command, ref }: SlashCommandListProps) {
 
   if (items.length === 0) {
     return (
-      <div className="bg-popover text-popover-foreground rounded-md border p-1 shadow-md">
+      <div className="bg-popover text-popover-foreground w-64 rounded-md border p-1 shadow-md">
         <p className="text-muted-foreground py-6 text-center text-sm">No results</p>
       </div>
     );
@@ -193,7 +193,7 @@ function SlashCommandList({ items, command, ref }: SlashCommandListProps) {
   return (
     <div
       ref={containerRef}
-      className="bg-popover text-popover-foreground z-50 max-h-[280px] overflow-y-auto rounded-md border p-1 shadow-md"
+      className="bg-popover text-popover-foreground z-50 max-h-[280px] w-64 overflow-y-auto rounded-md border p-1 shadow-md"
     >
       {items.map((item, index) => {
         const Icon = item.icon;

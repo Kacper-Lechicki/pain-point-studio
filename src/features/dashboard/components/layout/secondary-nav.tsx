@@ -4,7 +4,7 @@ import React from 'react';
 
 import { useSearchParams } from 'next/navigation';
 
-import { NotebookPen } from 'lucide-react';
+import { FlaskConical } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { SIDEBAR_NAV_ITEM_CLASSES } from '@/features/dashboard/config/nav-styles';
@@ -267,7 +267,7 @@ export function SecondaryNav({ titleKey, groups, parentHref }: SecondaryNavProps
                       link={{
                         label: survey.label,
                         href: getSurveyStatsUrl(survey.id),
-                        icon: NotebookPen,
+                        icon: FlaskConical,
                       }}
                       isActive={pathname === getSurveyStatsUrl(survey.id)}
                     />

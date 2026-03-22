@@ -1,6 +1,6 @@
 'use client';
 
-import { CheckCircle, ClipboardList, MessageSquare } from 'lucide-react';
+import { CheckCircle, FlaskConical, MessageSquare } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { KpiCard } from '@/features/dashboard/components/bento/kpi-card';
@@ -88,7 +88,7 @@ export function DashboardKpiCards({ stats, projectCount, periodDays }: Dashboard
         delta={activeSurveysDelta}
         showZeroWhenNoData={hasComparisonPeriod}
         subtitle={surveysSubtitle}
-        icon={ClipboardList}
+        icon={FlaskConical}
         accent="violet"
       />
       <KpiCard

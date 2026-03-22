@@ -10,13 +10,22 @@ function noteMoreBtn(noteRow: import('@playwright/test').Locator) {
   return noteRow.getByRole('button').last();
 }
 
+async function createNote(page: import('@playwright/test').Page) {
+  const newNoteBtn = page.getByRole('button', { name: /note title/i });
+
+  await expect(newNoteBtn).toBeVisible({ timeout: 10_000 });
+  await newNoteBtn.click();
+  await expect(page.locator('[contenteditable="true"]')).toBeVisible({ timeout: 15_000 });
+}
+
 test('create note and verify save', async ({ page, testProject: { projectId } }) => {
   await page.goto(notesUrl(projectId));
   await expect(page.getByRole('tab', { name: /notes/i })).toBeVisible({ timeout: 15_000 });
 
+  await createNote(page);
+
   const editor = page.locator('[contenteditable="true"]');
 
-  await expect(editor).toBeVisible({ timeout: 10_000 });
   await editor.click();
   await page.keyboard.type('E2E test note content', { delay: 30 });
   await expect(page.getByText(/saved/i)).toBeVisible({ timeout: 10_000 });
@@ -25,7 +34,8 @@ test('create note and verify save', async ({ page, testProject: { projectId } })
 test('pin and unpin note', async ({ page, testProject: { projectId } }) => {
   await page.goto(notesUrl(projectId));
   await expect(page.getByRole('tab', { name: /notes/i })).toBeVisible({ timeout: 15_000 });
-  await expect(page.locator('[contenteditable="true"]')).toBeVisible({ timeout: 10_000 });
+
+  await createNote(page);
 
   const tabPanel = page.getByRole('tabpanel');
   const noteRow = tabPanel.getByRole('button', { name: /Untitled/ });
@@ -46,7 +56,8 @@ test('pin and unpin note', async ({ page, testProject: { projectId } }) => {
 test('create folder, move note, delete folder', async ({ page, testProject: { projectId } }) => {
   await page.goto(notesUrl(projectId));
   await expect(page.getByRole('tab', { name: /notes/i })).toBeVisible({ timeout: 15_000 });
-  await expect(page.locator('[contenteditable="true"]')).toBeVisible({ timeout: 10_000 });
+
+  await createNote(page);
 
   const tabPanel = page.getByRole('tabpanel');
 
@@ -94,7 +105,8 @@ test('create folder, move note, delete folder', async ({ page, testProject: { pr
 test('delete note, verify in trash, restore', async ({ page, testProject: { projectId } }) => {
   await page.goto(notesUrl(projectId));
   await expect(page.getByRole('tab', { name: /notes/i })).toBeVisible({ timeout: 15_000 });
-  await expect(page.locator('[contenteditable="true"]')).toBeVisible({ timeout: 10_000 });
+
+  await createNote(page);
 
   const tabPanel = page.getByRole('tabpanel');
 

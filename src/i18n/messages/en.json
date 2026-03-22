@@ -1335,7 +1335,10 @@
         "edit": "Edit",
         "saveChanges": "Save changes",
         "cancel": "Cancel",
-        "editingMode": "Editing…"
+        "editingMode": "Editing…",
+        "discardTitle": "Discard changes?",
+        "discardDescription": "You have unsaved changes. Are you sure you want to discard them?",
+        "discard": "Discard"
       },
       "tabs": {
         "overview": "Overview",
@@ -1550,8 +1553,10 @@
     },
     "suggestions": {
       "title": "Suggested",
-      "minResponsesBanner": "More responses means better suggestions. Aim for at least {min}.",
+      "minResponsesBanner": "Suggestions are generated automatically based on completed surveys.",
       "dismiss": "Dismiss",
+      "dismissTitle": "Dismiss suggestion?",
+      "dismissDescription": "This suggestion will be hidden. It won't appear again unless new data supports it.",
       "source": "From: {survey}",
       "sourceWithQuestion": "From: {survey} → {question}",
       "empty": "Complete a survey to get automatic suggestions",

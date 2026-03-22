@@ -9,6 +9,7 @@ import { useTranslations } from 'next-intl';
 import { RichEditor } from '@/components/shared/rich-editor/rich-editor';
 import { isTiptapEmpty } from '@/components/shared/rich-editor/utils';
 import { Button } from '@/components/ui/button';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { updateProjectDescription } from '@/features/projects/actions/update-project-description';
 import { isProjectArchived } from '@/features/projects/lib/project-helpers';
 import type { Project } from '@/features/projects/types';
@@ -30,6 +31,8 @@ export function ProjectAboutCard({ project }: ProjectAboutCardProps) {
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const [expanded, setExpanded] = useState(false);
   const [overflows, setOverflows] = useState(false);
+  const [dirty, setDirty] = useState(false);
+  const [confirmDiscardOpen, setConfirmDiscardOpen] = useState(false);
 
   const [content, setContent] = useState<JSONContent | null>(
     (project.description as JSONContent | null) ?? null
@@ -59,6 +62,7 @@ export function ProjectAboutCard({ project }: ProjectAboutCardProps) {
 
   const handleDraftChange = (json: JSONContent) => {
     draftRef.current = json;
+    setDirty(true);
   };
 
   const handleSave = async () => {
@@ -79,6 +83,7 @@ export function ProjectAboutCard({ project }: ProjectAboutCardProps) {
       setContent(json);
       setSaveStatus('saved');
       setEditing(false);
+      setDirty(false);
 
       if (savedFadeRef.current) {
         clearTimeout(savedFadeRef.current);
@@ -90,10 +95,20 @@ export function ProjectAboutCard({ project }: ProjectAboutCardProps) {
     }
   };
 
-  const handleCancel = () => {
+  const handleCancelClick = () => {
+    if (dirty) {
+      setConfirmDiscardOpen(true);
+    } else {
+      handleDiscard();
+    }
+  };
+
+  const handleDiscard = () => {
     draftRef.current = content;
     setEditing(false);
     setSaveStatus('idle');
+    setDirty(false);
+    setConfirmDiscardOpen(false);
   };
 
   useEffect(() => {
@@ -146,33 +161,45 @@ export function ProjectAboutCard({ project }: ProjectAboutCardProps) {
 
   if (editing) {
     return (
-      <div className="flex min-h-0 min-w-0 flex-col gap-2">
-        {header}
-        <RichEditor
-          content={content}
-          onChange={handleDraftChange}
-          placeholder={t('placeholder')}
-          editable
-          autoFocus
-          showHint
-          className="bg-transparent shadow-none dark:bg-transparent [&_.tiptap]:max-h-[400px] [&_.tiptap]:overflow-y-auto"
-        />
-        <div className="flex items-center justify-end gap-2 pt-1">
-          {saveStatus === 'saving' && (
-            <span className="text-muted-foreground text-xs">{t('saving')}</span>
-          )}
-          {saveStatus === 'failed' && (
-            <span className="text-destructive text-xs">{t('failed')}</span>
-          )}
-          <Button variant="ghost" size="sm" onClick={handleCancel}>
-            <X className="size-3.5" />
-            {t('cancel')}
-          </Button>
-          <Button size="sm" onClick={handleSave} disabled={saveStatus === 'saving'}>
-            {t('saveChanges')}
-          </Button>
+      <>
+        <div className="flex min-h-0 min-w-0 flex-col gap-2">
+          {header}
+          <RichEditor
+            content={content}
+            onChange={handleDraftChange}
+            placeholder={t('placeholder')}
+            editable
+            autoFocus
+            showHint
+            className="bg-transparent shadow-none dark:bg-transparent [&_.tiptap]:max-h-[400px] [&_.tiptap]:overflow-y-auto"
+          />
+          <div className="flex items-center justify-end gap-2 pt-1">
+            {saveStatus === 'saving' && (
+              <span className="text-muted-foreground text-xs">{t('saving')}</span>
+            )}
+            {saveStatus === 'failed' && (
+              <span className="text-destructive text-xs">{t('failed')}</span>
+            )}
+            <Button variant="ghost" size="sm" onClick={handleCancelClick}>
+              <X className="size-3.5" />
+              {t('cancel')}
+            </Button>
+            <Button size="sm" onClick={handleSave} disabled={saveStatus === 'saving'}>
+              {t('saveChanges')}
+            </Button>
+          </div>
         </div>
-      </div>
+
+        <ConfirmDialog
+          open={confirmDiscardOpen}
+          onOpenChange={setConfirmDiscardOpen}
+          onConfirm={handleDiscard}
+          title={t('discardTitle')}
+          description={t('discardDescription')}
+          confirmLabel={t('discard')}
+          variant="destructive"
+        />
+      </>
     );
   }
 
