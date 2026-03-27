@@ -1,6 +1,8 @@
 'use client';
 
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
+
+import { usePathname, useSearchParams } from 'next/navigation';
 
 import { useTranslations } from 'next-intl';
 
@@ -14,6 +16,12 @@ import { ResponsesTab } from './responses-tab';
 type TabValue = 'overview' | 'responses' | 'questions';
 
 const VALID_TABS: TabValue[] = ['overview', 'responses', 'questions'];
+
+function getInitialTab(searchParams: URLSearchParams): TabValue {
+  const raw = searchParams.get('tab');
+
+  return raw && VALID_TABS.includes(raw as TabValue) ? (raw as TabValue) : 'overview';
+}
 
 function TabCount({ count }: { count: number }) {
   return (
@@ -35,25 +43,25 @@ interface SurveyStatsTabsProps {
 
 export function SurveyStatsTabs({ stats, refreshTrigger }: SurveyStatsTabsProps) {
   const t = useTranslations('surveys.stats');
-  const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const rawTab = searchParams.get('tab');
-  const activeTab: TabValue =
-    rawTab && VALID_TABS.includes(rawTab as TabValue) ? (rawTab as TabValue) : 'overview';
+  const [activeTab, setActiveTab] = useState<TabValue>(() => getInitialTab(searchParams));
 
   const handleTabChange = (value: string) => {
+    const tab = value as TabValue;
+    setActiveTab(tab);
+
     const params = new URLSearchParams(searchParams.toString());
 
-    if (value === 'overview') {
+    if (tab === 'overview') {
       params.delete('tab');
     } else {
-      params.set('tab', value);
+      params.set('tab', tab);
     }
 
     const qs = params.toString();
-    router.replace(`${pathname}${qs ? `?${qs}` : ''}`, { scroll: false });
+    window.history.replaceState(null, '', `${pathname}${qs ? `?${qs}` : ''}`);
   };
 
   return (

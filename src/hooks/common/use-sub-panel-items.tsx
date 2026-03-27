@@ -27,11 +27,13 @@ interface SubPanelItemsContextValue {
   footerLinks: SubPanelLink[];
   actions: SubPanelAction[];
   titleKey: MessageKey | null;
+  relatedProjectId: string | null;
   setLinks: (links: SubPanelLink[]) => void;
   setBottomLinks: (links: SubPanelLink[]) => void;
   setFooterLinks: (links: SubPanelLink[]) => void;
   setActions: (actions: SubPanelAction[]) => void;
   setTitleKey: (key: MessageKey | null) => void;
+  setRelatedProjectId: (id: string | null) => void;
 }
 
 const SubPanelItemsContext = createContext<SubPanelItemsContextValue | null>(null);
@@ -42,6 +44,7 @@ export function SubPanelItemsProvider({ children }: { children: ReactNode }) {
   const [footerLinks, setFooterLinksRaw] = useState<SubPanelLink[]>([]);
   const [actions, setActionsRaw] = useState<SubPanelAction[]>([]);
   const [titleKey, setTitleKeyRaw] = useState<MessageKey | null>(null);
+  const [relatedProjectId, setRelatedProjectIdRaw] = useState<string | null>(null);
 
   const setLinks = (next: SubPanelLink[]) => {
     setLinksRaw(next);
@@ -63,17 +66,23 @@ export function SubPanelItemsProvider({ children }: { children: ReactNode }) {
     setTitleKeyRaw(key);
   };
 
+  const setRelatedProjectId = (id: string | null) => {
+    setRelatedProjectIdRaw(id);
+  };
+
   const value: SubPanelItemsContextValue = {
     links,
     bottomLinks,
     footerLinks,
     actions,
     titleKey,
+    relatedProjectId,
     setLinks,
     setBottomLinks,
     setFooterLinks,
     setActions,
     setTitleKey,
+    setRelatedProjectId,
   };
 
   return <SubPanelItemsContext.Provider value={value}>{children}</SubPanelItemsContext.Provider>;
@@ -85,6 +94,7 @@ interface UseSubPanelLinksOptions {
   footerLinks?: SubPanelLink[];
   actions?: SubPanelAction[];
   titleKey?: MessageKey;
+  relatedProjectId?: string;
 }
 
 export function useSubPanelLinks(
@@ -97,6 +107,7 @@ export function useSubPanelLinks(
   const setFooterLinks = ctx?.setFooterLinks;
   const setActions = ctx?.setActions;
   const setTitleKey = ctx?.setTitleKey;
+  const setRelatedProjectId = ctx?.setRelatedProjectId;
 
   const isOptions = !Array.isArray(linksOrOptions);
   const resolvedLinks = isOptions ? linksOrOptions.links : linksOrOptions;
@@ -104,6 +115,7 @@ export function useSubPanelLinks(
   const resolvedFooterLinks = isOptions ? linksOrOptions.footerLinks : undefined;
   const resolvedActions = isOptions ? linksOrOptions.actions : undefined;
   const resolvedTitleKey = isOptions ? linksOrOptions.titleKey : undefined;
+  const resolvedRelatedProjectId = isOptions ? linksOrOptions.relatedProjectId : undefined;
 
   const key = resolvedLinks.map((l) => `${l.href}:${l.label}`).join('|');
   const bottomKey = resolvedBottomLinks?.map((l) => `${l.href}:${l.label}`).join('|') ?? '';
@@ -111,7 +123,14 @@ export function useSubPanelLinks(
   const actionsKey = resolvedActions?.map((a) => `${a.label}:${a.variant ?? ''}`).join('|') ?? '';
 
   useEffect(() => {
-    if (!setLinks || !setBottomLinks || !setFooterLinks || !setActions || !setTitleKey) {
+    if (
+      !setLinks ||
+      !setBottomLinks ||
+      !setFooterLinks ||
+      !setActions ||
+      !setTitleKey ||
+      !setRelatedProjectId
+    ) {
       return;
     }
 
@@ -120,6 +139,7 @@ export function useSubPanelLinks(
     setFooterLinks(resolvedFooterLinks ?? []);
     setActions(resolvedActions ?? []);
     setTitleKey(resolvedTitleKey ?? null);
+    setRelatedProjectId(resolvedRelatedProjectId ?? null);
 
     return () => {
       setLinks([]);
@@ -127,6 +147,7 @@ export function useSubPanelLinks(
       setFooterLinks([]);
       setActions([]);
       setTitleKey(null);
+      setRelatedProjectId(null);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- key captures link identity
   }, [
@@ -135,11 +156,13 @@ export function useSubPanelLinks(
     footerKey,
     actionsKey,
     resolvedTitleKey,
+    resolvedRelatedProjectId,
     setLinks,
     setBottomLinks,
     setFooterLinks,
     setActions,
     setTitleKey,
+    setRelatedProjectId,
   ]);
 }
 

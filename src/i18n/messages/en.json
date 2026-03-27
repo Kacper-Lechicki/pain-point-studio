@@ -1798,6 +1798,8 @@
     "noRecentProjects": "No recently opened projects",
     "recentSurveys": "Recent Surveys",
     "noRecentSurveys": "No recently opened surveys",
+    "otherSurveys": "Other Surveys",
+    "noOtherSurveys": "No other surveys in this project",
     "quickActions": "Quick Actions"
   },
   "breadcrumbs": {
