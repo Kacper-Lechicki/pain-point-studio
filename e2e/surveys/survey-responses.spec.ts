@@ -9,6 +9,8 @@ import {
 import { url } from '../helpers/routes';
 import { sel } from '../helpers/selectors';
 
+const responseListItem = '[role="button"][aria-label^="Response #"]';
+
 test.describe('Survey responses tab', () => {
   test('shows responses already present when navigating to responses tab', async ({
     page,
@@ -27,9 +29,9 @@ test.describe('Survey responses tab', () => {
 
     await page.goto(url(`/dashboard/research/stats/${surveyId}?tab=responses`));
 
-    const tableRows = page.locator('table tbody tr');
+    const items = page.locator(responseListItem);
 
-    await expect(tableRows).toHaveCount(2, { timeout: 15_000 });
+    await expect(items).toHaveCount(2, { timeout: 15_000 });
   });
 
   test('new response appears in real-time via Supabase realtime', async ({
@@ -59,8 +61,8 @@ test.describe('Survey responses tab', () => {
         .getByRole('button', { name: 'Refresh data' })
         .click()
         .catch(() => {});
-      const rows = page.locator('table tbody tr');
-      await expect(rows).toHaveCount(1, { timeout: 3_000 });
+      const items = page.locator(responseListItem);
+      await expect(items).toHaveCount(1, { timeout: 3_000 });
     }).toPass({ timeout: 20_000 });
 
     await expect(page.getByText('Completed').first()).toBeVisible();
@@ -80,7 +82,7 @@ test.describe('Survey responses tab', () => {
 
     await createAnswerViaDb(firstResponse, questionIds[0]!, { answer: 'First' });
     await page.goto(url(`/dashboard/research/stats/${surveyId}?tab=responses`));
-    await expect(page.locator('table tbody tr')).toHaveCount(1, { timeout: 15_000 });
+    await expect(page.locator(responseListItem)).toHaveCount(1, { timeout: 15_000 });
     await waitForRealtimeConnected(page);
 
     const secondResponse = await createResponseViaDb(surveyId, 'completed');
@@ -92,8 +94,8 @@ test.describe('Survey responses tab', () => {
         .getByRole('button', { name: 'Refresh data' })
         .click()
         .catch(() => {});
-      const rows = page.locator('table tbody tr');
-      await expect(rows).toHaveCount(2, { timeout: 3_000 });
+      const items = page.locator(responseListItem);
+      await expect(items).toHaveCount(2, { timeout: 3_000 });
     }).toPass({ timeout: 20_000 });
   });
 
@@ -149,8 +151,8 @@ test.describe('Survey responses tab', () => {
           .getByRole('button', { name: 'Refresh data' })
           .click()
           .catch(() => {});
-        const rows = page.locator('table tbody tr');
-        await expect(rows).toHaveCount(1, { timeout: 3_000 });
+        const items = page.locator(responseListItem);
+        await expect(items).toHaveCount(1, { timeout: 3_000 });
       }).toPass({ timeout: 25_000 });
 
       await expect(page.getByText('Completed').first()).toBeVisible();
@@ -159,7 +161,7 @@ test.describe('Survey responses tab', () => {
     }
   });
 
-  test('clicking response row opens detail dialog with answer', async ({
+  test('clicking response item shows detail with answer', async ({
     page,
     testProject: { userId, projectId },
   }) => {
@@ -173,13 +175,10 @@ test.describe('Survey responses tab', () => {
     await createAnswerViaDb(responseId, questionIds[0]!, { text: 'Detail view answer' });
 
     await page.goto(url(`/dashboard/research/stats/${surveyId}?tab=responses`));
-    await expect(page.locator('table tbody tr')).toHaveCount(1, { timeout: 15_000 });
-    await page.locator('table tbody tr').first().click();
+    await expect(page.locator(responseListItem)).toHaveCount(1, { timeout: 15_000 });
+    await page.locator(responseListItem).first().click();
 
-    const dialog = page.locator(sel.dialog);
-
-    await expect(dialog).toBeVisible({ timeout: 10_000 });
-    await expect(dialog.getByText('Detail view answer')).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText('Detail view answer')).toBeVisible({ timeout: 10_000 });
   });
 
   test('export dialog opens from stats header menu', async ({

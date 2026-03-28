@@ -303,6 +303,7 @@ interface MobileNavSubLevelProps {
   subPanelFooterLinks?: SubPanelLink[] | undefined;
   subPanelActions?: SubPanelAction[] | undefined;
   subPanelTitleKey?: MessageKey | undefined;
+  subPanelRelatedProjectId?: string | undefined;
 }
 
 function MobileSubNavSkeleton() {
@@ -342,6 +343,7 @@ export function MobileNavSubLevel({
   subPanelFooterLinks,
   subPanelActions,
   subPanelTitleKey,
+  subPanelRelatedProjectId,
 }: MobileNavSubLevelProps) {
   const parentHref = selectedItem.activePrefix ?? selectedItem.href;
   const isProjectsNav = selectedItem.subNav?.titleKey === 'sidebar.projects';
@@ -352,10 +354,15 @@ export function MobileNavSubLevel({
     dynamicTab != null && dynamicTab.prefix === '/dashboard/projects'
       ? pathname.slice(dynamicTab.prefix.length + 1).split('/')[0]
       : undefined;
+  const effectiveProjectId = dynamicProjectId ?? subPanelRelatedProjectId ?? undefined;
+  const isSurveyContext = !dynamicProjectId && !!subPanelRelatedProjectId;
   const { items: recentSurveys } = useRecentItems('survey', {
     limit: 10,
-    projectId: dynamicProjectId,
+    projectId: effectiveProjectId,
   });
+  const visibleSurveys = isSurveyContext
+    ? recentSurveys.filter((s) => pathname !== getSurveyStatsUrl(s.id))
+    : recentSurveys;
 
   const isDynamicPending =
     dynamicTab != null && (dynamicLabel == null || !subPanelLinks || subPanelLinks.length === 0);
@@ -491,21 +498,27 @@ export function MobileNavSubLevel({
         </div>
       )}
 
-      {isDynamicActive && !hasCustomTitle && dynamicProjectId && (
+      {isDynamicActive && !hasCustomTitle && effectiveProjectId && (
         <div className="flex flex-col gap-2 px-2 pt-2">
           <div className="flex min-h-8 items-center px-1">
             <span className="decoration-muted-foreground/50 text-sm font-semibold underline underline-offset-4">
-              {t('sidebar.recentSurveys' as MessageKey)}
+              {t(
+                (isSurveyContext ? 'sidebar.otherSurveys' : 'sidebar.recentSurveys') as MessageKey
+              )}
             </span>
           </div>
 
-          {recentSurveys.length === 0 ? (
+          {visibleSurveys.length === 0 ? (
             <p className="text-muted-foreground/60 px-3 py-1 text-xs">
-              {t('sidebar.noRecentSurveys' as MessageKey)}
+              {t(
+                (isSurveyContext
+                  ? 'sidebar.noOtherSurveys'
+                  : 'sidebar.noRecentSurveys') as MessageKey
+              )}
             </p>
           ) : (
             <div className="flex flex-col gap-2">
-              {recentSurveys.map((survey) =>
+              {visibleSurveys.map((survey) =>
                 renderSubPanelLink(
                   {
                     label: survey.label,

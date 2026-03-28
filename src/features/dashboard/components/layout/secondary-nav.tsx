@@ -156,10 +156,18 @@ export function SecondaryNav({ titleKey, groups, parentHref }: SecondaryNavProps
       ? pathname.slice(dynamicTab.prefix.length + 1).split('/')[0]
       : undefined;
 
+  const surveyProjectId = subPanelItems?.relatedProjectId ?? undefined;
+  const effectiveProjectId = dynamicProjectId ?? surveyProjectId;
+  const isSurveyContext = !dynamicProjectId && !!surveyProjectId;
+
   const { items: recentSurveys } = useRecentItems('survey', {
     limit: 10,
-    projectId: dynamicProjectId,
+    projectId: effectiveProjectId,
   });
+
+  const visibleSurveys = isSurveyContext
+    ? recentSurveys.filter((s) => pathname !== getSurveyStatsUrl(s.id))
+    : recentSurveys;
 
   const isDynamicPending =
     dynamicTab != null &&
@@ -247,21 +255,29 @@ export function SecondaryNav({ titleKey, groups, parentHref }: SecondaryNavProps
             </>
           )}
 
-          {!hasCustomTitle && dynamicProjectId && (
+          {!hasCustomTitle && effectiveProjectId && (
             <>
               <div className="flex min-h-8 items-center px-1">
                 <span className="text-sidebar-foreground decoration-sidebar-foreground/35 text-sm font-semibold underline underline-offset-4">
-                  {t('sidebar.recentSurveys' as MessageKey)}
+                  {t(
+                    (isSurveyContext
+                      ? 'sidebar.otherSurveys'
+                      : 'sidebar.recentSurveys') as MessageKey
+                  )}
                 </span>
               </div>
 
-              {recentSurveys.length === 0 ? (
+              {visibleSurveys.length === 0 ? (
                 <p className="text-sidebar-foreground/40 px-2.5 py-1 text-xs">
-                  {t('sidebar.noRecentSurveys' as MessageKey)}
+                  {t(
+                    (isSurveyContext
+                      ? 'sidebar.noOtherSurveys'
+                      : 'sidebar.noRecentSurveys') as MessageKey
+                  )}
                 </p>
               ) : (
                 <div className="flex flex-col gap-1.5">
-                  {recentSurveys.map((survey) => (
+                  {visibleSurveys.map((survey) => (
                     <SubPanelLinkItem
                       key={survey.id}
                       link={{

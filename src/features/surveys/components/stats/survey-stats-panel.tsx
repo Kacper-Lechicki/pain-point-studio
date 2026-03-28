@@ -12,7 +12,12 @@ import { ROUTES } from '@/config/routes';
 import { SurveyShareDialog } from '@/features/surveys/components/dashboard/survey-share-dialog';
 import { SurveyStatsHeader } from '@/features/surveys/components/stats/survey-stats-header';
 import { SurveyStatsTabs } from '@/features/surveys/components/stats/survey-stats-tabs';
-import { deriveSurveyFlags, getAvailableActions } from '@/features/surveys/config/survey-status';
+import type { SurveyAction } from '@/features/surveys/config/survey-status';
+import {
+  SURVEY_ACTION_UI,
+  deriveSurveyFlags,
+  getAvailableActions,
+} from '@/features/surveys/config/survey-status';
 import {
   useRealtimeResponses,
   useSurveyAction,
@@ -23,7 +28,9 @@ import type { SurveyStatus } from '@/features/surveys/types';
 import { useBreadcrumbSegment, useBreadcrumbTrail } from '@/hooks/common/use-breadcrumb';
 import { useRecentItems } from '@/hooks/common/use-recent-items';
 import { useRefresh } from '@/hooks/common/use-refresh';
+import type { SubPanelAction } from '@/hooks/common/use-sub-panel-items';
 import { useSubPanelLinks } from '@/hooks/common/use-sub-panel-items';
+import type { MessageKey } from '@/i18n/types';
 import { getProjectDetailUrl } from '@/lib/common/urls/project-urls';
 import { getSurveyStatsUrl } from '@/lib/common/urls/survey-urls';
 
@@ -34,6 +41,7 @@ interface SurveyStatsPanelProps {
 
 export const SurveyStatsPanel = ({ stats, survey }: SurveyStatsPanelProps) => {
   const t = useTranslations();
+  const router = useRouter();
   const { isRefreshing, refresh, lastSyncedAt, markSynced } = useRefresh();
 
   const breadcrumbTrail = [
@@ -54,18 +62,6 @@ export const SurveyStatsPanel = ({ stats, survey }: SurveyStatsPanelProps) => {
     trackRecentSurvey(stats.survey.id);
   }, [stats.survey.id, trackRecentSurvey]);
 
-  useSubPanelLinks(
-    survey
-      ? [
-          {
-            label: t('common.backToProject'),
-            href: getProjectDetailUrl(survey.projectId),
-            icon: ChevronLeft,
-          },
-        ]
-      : []
-  );
-
   const initialIsActive = deriveSurveyFlags(stats.survey.status).isActive;
 
   const { isConnected: isRealtimeConnected } = useRealtimeResponses(
@@ -74,13 +70,13 @@ export const SurveyStatsPanel = ({ stats, survey }: SurveyStatsPanelProps) => {
     initialIsActive
   );
 
-  const router = useRouter();
   const { shareUrl, shareDialogOpen, setShareDialogOpen, handleShare } = useSurveyCardActions(
     stats.survey.slug
   );
 
   const [optimisticStatus, setOptimisticStatus] = useState<SurveyStatus | null>(null);
   const currentStatus = optimisticStatus ?? stats.survey.status;
+
   const flags = useMemo(
     () => ({
       ...deriveSurveyFlags(currentStatus),
@@ -89,6 +85,7 @@ export const SurveyStatsPanel = ({ stats, survey }: SurveyStatsPanelProps) => {
     }),
     [currentStatus, shareUrl, stats.questions?.length]
   );
+
   const availableActions = useMemo(() => getAvailableActions(currentStatus), [currentStatus]);
 
   const onStatusChange = useMemo(
@@ -117,6 +114,31 @@ export const SurveyStatsPanel = ({ stats, survey }: SurveyStatsPanelProps) => {
     isPending: isActionPending,
   } = useSurveyAction(stats.survey.id, onStatusChange, t);
 
+  const quickActions: SubPanelAction[] = availableActions.map((action) => {
+    const ui = SURVEY_ACTION_UI[action];
+
+    return {
+      label: t(`surveys.dashboard.actions.${action}` as MessageKey),
+      icon: ui.icon,
+      onClick: () => handleActionClick(action as SurveyAction),
+      variant: ui.menuItemVariant ?? 'default',
+    };
+  });
+
+  useSubPanelLinks({
+    links: survey
+      ? [
+          {
+            label: t('common.backToProject'),
+            href: getProjectDetailUrl(survey.projectId),
+            icon: ChevronLeft,
+          },
+        ]
+      : [],
+    actions: quickActions,
+    ...(survey?.projectId ? { relatedProjectId: survey.projectId } : {}),
+  });
+
   const { isActive } = deriveSurveyFlags(currentStatus);
   const hasShareableLink = isActive && !!shareUrl;
 
@@ -141,7 +163,6 @@ export const SurveyStatsPanel = ({ stats, survey }: SurveyStatsPanelProps) => {
 
       <SurveyStatsTabs
         stats={stats}
-        survey={survey}
         shareUrl={shareUrl}
         onShare={handleShare}
         refreshTrigger={lastSyncedAt}

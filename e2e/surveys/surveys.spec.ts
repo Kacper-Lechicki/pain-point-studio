@@ -129,7 +129,7 @@ test('stats page loads with overview structure', async ({
 
   await page.goto(url(`${ROUTES.dashboard.researchStats}/${surveyId}`));
   await expect(page.getByRole('heading', { name: surveyTitle })).toBeVisible({ timeout: 15_000 });
-  await expect(page.getByText('Under construction')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Get started' })).toBeVisible();
   await page.getByRole('tab', { name: /Questions/ }).click();
   await expect(page.getByText('E2E Test Question 1')).toBeVisible({ timeout: 10_000 });
   await expect(page.getByText('E2E Test Question 2')).toBeVisible();
