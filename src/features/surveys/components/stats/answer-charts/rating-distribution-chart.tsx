@@ -106,7 +106,7 @@ export const RatingDistributionChart = ({ answers, config }: RatingDistributionC
         </div>
       </div>
 
-      <div className="flex items-end gap-1">
+      <div className="flex min-w-0 items-end gap-1 overflow-x-auto">
         {bars.map((bar) => {
           const barHeight = maxBarCount > 0 ? (bar.count / maxBarCount) * 100 : 0;
           const hasCount = bar.count > 0;
@@ -114,7 +114,7 @@ export const RatingDistributionChart = ({ answers, config }: RatingDistributionC
           const pct = total > 0 ? Math.round((bar.count / total) * 100) : 0;
 
           return (
-            <div key={bar.rating} className="flex flex-1 flex-col items-center gap-1">
+            <div key={bar.rating} className="flex min-w-[28px] flex-1 flex-col items-center gap-1">
               <div className="flex h-40 w-full flex-col items-center justify-end gap-1">
                 {hasCount && (
                   <span className="text-foreground text-[11px] font-semibold tabular-nums">

@@ -1031,6 +1031,17 @@ INSERT INTO public.project_insights (id, project_id, type, content) VALUES
 ON CONFLICT (id) DO NOTHING;
 
 -- ============================================================
+-- PII encryption key for local development.
+-- In production this is set manually via Supabase Dashboard → Vault.
+-- This key is used by encrypt_pii() / decrypt_pii() to protect
+-- contact names and emails at rest.
+-- ============================================================
+SELECT vault.create_secret(
+  'local-dev-pii-key-do-not-use-in-production',
+  'pii_encryption_key'
+);
+
+-- ============================================================
 -- pg_cron jobs: schedule background maintenance tasks.
 -- In production these must be created manually via Dashboard → SQL Editor
 -- (similar to the auth trigger — cron.schedule runs as postgres role).

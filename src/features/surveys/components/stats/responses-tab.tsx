@@ -1,25 +1,19 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { Inbox } from 'lucide-react';
+import { ChevronLeft, Inbox } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
-import { ListPagination } from '@/components/ui/list-pagination';
-import { Skeleton } from '@/components/ui/skeleton';
 import { useResponseList } from '@/features/surveys/hooks/use-response-list';
-import type {
-  ResponseSortBy,
-  SurveyResponseListItem,
-} from '@/features/surveys/types/response-list';
+import type { SurveyResponseListItem } from '@/features/surveys/types/response-list';
 import { useBreakpoint } from '@/hooks/common/use-breakpoint';
-import type { PerPage } from '@/hooks/common/use-pagination';
-import { cn } from '@/lib/common/utils';
 
-import { ResponseCardRow } from './response-card-row';
-import { ResponseDetailDialog } from './response-detail-dialog';
-import { ResponsesTable } from './responses-table';
+import { ResponseDetailPane } from './response-detail-pane';
+import { ResponseListPane } from './response-list-pane';
+import { ResponseStatusBadge } from './response-status-badge';
 import { ResponsesToolbar } from './responses-toolbar';
 
 interface ResponsesTabProps {
@@ -28,29 +22,11 @@ interface ResponsesTabProps {
   refreshTrigger?: number | undefined;
 }
 
-function CardListSkeleton() {
-  return (
-    <div className="flex min-w-0 flex-col gap-2">
-      {Array.from({ length: 5 }).map((_, i) => (
-        <div key={i} className="border-border/50 bg-card flex flex-col gap-3 rounded-lg border p-3">
-          <div className="flex items-center gap-2">
-            <Skeleton className="h-4 w-6" />
-            <Skeleton className="h-5 w-20" />
-          </div>
-          <div className="grid grid-cols-3 gap-x-4">
-            <Skeleton className="h-8 w-full" />
-            <Skeleton className="h-8 w-full" />
-            <Skeleton className="h-8 w-full" />
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 export function ResponsesTab({ surveyId, totalResponses, refreshTrigger }: ResponsesTabProps) {
   const t = useTranslations('surveys.stats');
-  const isMd = useBreakpoint('md');
+  const isLg = useBreakpoint('lg');
+  const detailRef = useRef<HTMLDivElement>(null);
+
   const {
     items,
     totalCount,
@@ -64,57 +40,48 @@ export function ResponsesTab({ surveyId, totalResponses, refreshTrigger }: Respo
     setDateRange,
     setSort,
     setPage,
-    setPerPage,
     clearFilters,
   } = useResponseList({ surveyId, refreshTrigger });
 
   const [selectedResponse, setSelectedResponse] = useState<SurveyResponseListItem | null>(null);
-  const [detailOpen, setDetailOpen] = useState(false);
+  const [showMobileDetail, setShowMobileDetail] = useState(false);
 
-  const handleRowClick = (response: SurveyResponseListItem) => {
-    setSelectedResponse(response);
-    setDetailOpen(true);
-  };
+  const itemIds = items.map((i) => i.id).join(',');
 
-  const handleNavigate = (direction: 'prev' | 'next') => {
-    if (!selectedResponse) {
-      return;
-    }
+  useEffect(() => {
+    setSelectedResponse((prev) => {
+      if (items.length === 0) {
+        return prev;
+      }
 
-    const currentIndex = items.findIndex((item) => item.id === selectedResponse.id);
+      const stillPresent = items.some((i) => i.id === prev?.id);
 
-    if (currentIndex === -1) {
-      return;
-    }
+      return stillPresent ? prev : (items[0] ?? null);
+    });
 
-    const newIndex = direction === 'prev' ? currentIndex - 1 : currentIndex + 1;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [itemIds]);
 
-    const next = items[newIndex];
+  const handleSelect = useCallback(
+    (response: SurveyResponseListItem) => {
+      setSelectedResponse(response);
 
-    if (newIndex >= 0 && newIndex < items.length && next) {
-      setSelectedResponse(next);
-    }
-  };
-
-  const handleSortByColumn = useCallback(
-    (key: ResponseSortBy) => {
-      if (key === filters.sortBy) {
-        setSort(key, filters.sortDir === 'asc' ? 'desc' : 'asc');
-      } else {
-        setSort(key, 'desc');
+      if (!isLg) {
+        setShowMobileDetail(true);
       }
     },
-    [filters.sortBy, filters.sortDir, setSort]
+    [isLg]
   );
+
+  useEffect(() => {
+    if (selectedResponse && isLg) {
+      detailRef.current?.focus();
+    }
+  }, [selectedResponse, isLg]);
 
   const currentIndex = selectedResponse
     ? items.findIndex((item) => item.id === selectedResponse.id)
     : -1;
-
-  const perPage = filters.perPage as PerPage;
-  const totalPages = Math.max(1, Math.ceil(totalCount / perPage));
-  const startIndex = (filters.page - 1) * perPage;
-  const endIndex = Math.min(startIndex + perPage, totalCount);
 
   if (totalResponses === 0) {
     return (
@@ -130,6 +97,8 @@ export function ResponsesTab({ surveyId, totalResponses, refreshTrigger }: Respo
 
   const showLoading = (!hasLoaded || isLoading) && items.length === 0;
   const showEmpty = hasLoaded && !isLoading && items.length === 0;
+  const totalPages = Math.max(1, Math.ceil(totalCount / filters.perPage));
+  const startIndex = (filters.page - 1) * filters.perPage;
 
   return (
     <div className="space-y-4">
@@ -148,66 +117,69 @@ export function ResponsesTab({ surveyId, totalResponses, refreshTrigger }: Respo
         <div className="border-border/50 text-muted-foreground rounded-lg border py-12 text-center text-sm">
           {t('responseList.noResults')}
         </div>
-      ) : showLoading ? (
-        isMd ? (
-          <ResponsesTable
-            items={[]}
-            isLoading
-            onRowClick={handleRowClick}
-            sortBy={filters.sortBy}
-            sortDir={filters.sortDir}
-            onSortByColumn={handleSortByColumn}
+      ) : isLg ? (
+        <div className="border-border/50 flex h-[600px] overflow-hidden rounded-lg border">
+          <ResponseListPane
+            items={items}
+            totalCount={totalCount}
+            selectedId={selectedResponse?.id ?? null}
+            isLoading={showLoading}
+            hasLoaded={hasLoaded}
+            startIndex={startIndex}
+            page={filters.page}
+            totalPages={totalPages}
+            onSelect={handleSelect}
+            onPageChange={setPage}
           />
-        ) : (
-          <CardListSkeleton />
-        )
-      ) : isMd ? (
-        <ResponsesTable
-          items={items}
-          isLoading={isLoading}
-          onRowClick={handleRowClick}
-          sortBy={filters.sortBy}
-          sortDir={filters.sortDir}
-          onSortByColumn={handleSortByColumn}
-        />
+
+          <div className="flex min-h-0 flex-1 flex-col outline-none" ref={detailRef} tabIndex={-1}>
+            <ResponseDetailPane
+              selectedId={selectedResponse?.id ?? null}
+              selectedMeta={selectedResponse}
+            />
+          </div>
+        </div>
       ) : (
-        <div
-          className={cn(
-            'flex min-w-0 flex-col gap-2 transition-opacity',
-            isLoading && 'opacity-60'
+        <div className="border-border/50 flex h-[500px] flex-col overflow-hidden rounded-lg border">
+          {showMobileDetail && selectedResponse ? (
+            <>
+              <div className="border-border flex shrink-0 items-center gap-2 border-b px-4 py-3">
+                <Button variant="ghost" size="icon-sm" onClick={() => setShowMobileDetail(false)}>
+                  <ChevronLeft className="size-4" />
+                </Button>
+
+                <span className="flex-1 text-sm font-semibold">
+                  {t('responseList.detailTitle')} #{currentIndex + 1}
+                </span>
+
+                <ResponseStatusBadge status={selectedResponse.status} />
+              </div>
+
+              <div className="min-h-0 flex-1">
+                <ResponseDetailPane
+                  selectedId={selectedResponse.id}
+                  selectedMeta={selectedResponse}
+                  compact
+                  hideHeader
+                />
+              </div>
+            </>
+          ) : (
+            <ResponseListPane
+              items={items}
+              totalCount={totalCount}
+              selectedId={selectedResponse?.id ?? null}
+              isLoading={showLoading}
+              hasLoaded={hasLoaded}
+              startIndex={startIndex}
+              page={filters.page}
+              totalPages={totalPages}
+              onSelect={handleSelect}
+              onPageChange={setPage}
+            />
           )}
-          role="list"
-        >
-          {items.map((item, index) => (
-            <ResponseCardRow key={item.id} item={item} index={index} onRowClick={handleRowClick} />
-          ))}
         </div>
       )}
-
-      <ListPagination
-        page={filters.page}
-        totalPages={totalPages}
-        perPage={perPage}
-        totalItems={totalCount}
-        startIndex={startIndex}
-        endIndex={endIndex}
-        canGoNext={filters.page < totalPages}
-        canGoPrev={filters.page > 1}
-        onPageChange={setPage}
-        onPerPageChange={(pp) => setPerPage(pp)}
-        onNextPage={() => setPage(filters.page + 1)}
-        onPrevPage={() => setPage(filters.page - 1)}
-      />
-
-      <ResponseDetailDialog
-        open={detailOpen}
-        onOpenChange={setDetailOpen}
-        responseId={selectedResponse?.id ?? null}
-        responseMeta={selectedResponse}
-        canNavigatePrev={currentIndex > 0}
-        canNavigateNext={currentIndex < items.length - 1}
-        onNavigate={handleNavigate}
-      />
     </div>
   );
 }
