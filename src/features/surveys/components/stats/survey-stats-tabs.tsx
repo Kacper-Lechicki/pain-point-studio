@@ -7,7 +7,7 @@ import { usePathname, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import type { SurveyStats, UserSurvey } from '@/features/surveys/types';
+import type { SurveyStats } from '@/features/surveys/types';
 
 import { OverviewTab } from './overview-tab';
 import { QuestionsTab } from './questions-tab';
@@ -34,14 +34,18 @@ function TabCount({ count }: { count: number }) {
 
 interface SurveyStatsTabsProps {
   stats: SurveyStats;
-  survey: UserSurvey | null;
   shareUrl: string | null;
   onShare: () => void;
   /** Timestamp that changes on each realtime sync — forwarded to ResponsesTab. */
   refreshTrigger?: number | undefined;
 }
 
-export function SurveyStatsTabs({ stats, refreshTrigger }: SurveyStatsTabsProps) {
+export function SurveyStatsTabs({
+  stats,
+  shareUrl,
+  onShare,
+  refreshTrigger,
+}: SurveyStatsTabsProps) {
   const t = useTranslations('surveys.stats');
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -79,7 +83,7 @@ export function SurveyStatsTabs({ stats, refreshTrigger }: SurveyStatsTabsProps)
       </TabsList>
 
       <TabsContent value="overview" className="pt-5">
-        <OverviewTab />
+        <OverviewTab stats={stats} shareUrl={shareUrl} onShare={onShare} />
       </TabsContent>
 
       <TabsContent value="responses" className="pt-5">

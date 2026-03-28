@@ -163,7 +163,6 @@ export const SurveyStatsPanel = ({ stats, survey }: SurveyStatsPanelProps) => {
 
       <SurveyStatsTabs
         stats={stats}
-        survey={survey}
         shareUrl={shareUrl}
         onShare={handleShare}
         refreshTrigger={lastSyncedAt}

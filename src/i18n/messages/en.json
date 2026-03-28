@@ -555,9 +555,31 @@
         "noEndDate": "No end date",
         "noStartDate": "Not started"
       },
-      "overviewUnderConstruction": {
-        "title": "Under construction",
-        "description": "We're redesigning this tab to give you better insights. Check back soon!"
+      "overview": {
+        "views": "Views",
+        "responses": "Responses",
+        "completion": "Completion",
+        "avgTime": "Avg. time",
+        "ofMax": "/ {max}",
+        "responseTrend": "Responses over time",
+        "deviceSplit": "Devices",
+        "desktop": "Desktop",
+        "mobile": "Mobile",
+        "noDeviceData": "No device data yet",
+        "noTrendData": "No response data yet",
+        "funnel": "Completion funnel",
+        "funnelStarted": "Started",
+        "funnelCompleted": "Completed",
+        "funnelQuestion": "Q{number} answered",
+        "alertLowCompletion": "Completion rate is {rate}% — consider shortening your survey",
+        "alertApproachingCap": "{current} of {max} respondent cap reached",
+        "setupTitle": "Get started",
+        "setupDescription": "Complete these steps to start collecting responses.",
+        "setupAddQuestions": "Add questions to your survey",
+        "setupPublish": "Publish your survey",
+        "setupShare": "Share your survey link",
+        "setupCollect": "Collect responses",
+        "setupCopyLink": "Copy link"
       },
       "overviewEmpty": {
         "title": "No responses yet",
