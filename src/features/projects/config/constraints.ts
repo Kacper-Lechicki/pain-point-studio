@@ -17,10 +17,6 @@ export const PROJECT_IMAGE_MAX_SIZE = IMAGE_MAX_SIZE;
 export const PROJECT_IMAGE_ACCEPTED_TYPES = IMAGE_ACCEPTED_TYPES;
 export const PROJECT_IMAGE_DIMENSION = 256;
 
-// ── Insight constraints ─────────────────────────────────────────────
-
-export const INSIGHT_CONTENT_MAX_LENGTH = 500;
-
 // ── Notes constraints ───────────────────────────────────────────────
 
 export const NOTE_TITLE_MAX_LENGTH = 200;

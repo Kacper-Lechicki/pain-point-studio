@@ -12,7 +12,7 @@ import { ProjectOverviewKpiCards } from '@/features/projects/components/project-
 import { deriveProjectPhase, isProjectArchived } from '@/features/projects/lib/project-helpers';
 import { generateFindings } from '@/features/projects/lib/signals';
 import { computeVerdict } from '@/features/projects/lib/verdict';
-import type { Project, ProjectInsight, ProjectOverviewStats } from '@/features/projects/types';
+import type { Project, ProjectOverviewStats } from '@/features/projects/types';
 import type { UserSurvey } from '@/features/surveys/types';
 
 const OverviewResponseTrend = dynamic(
@@ -28,7 +28,6 @@ const OverviewResponseTrend = dynamic(
 interface ProjectOverviewTabProps {
   project: Project;
   surveys: UserSurvey[];
-  insights: ProjectInsight[];
   overviewStats: ProjectOverviewStats;
   signalsData: SurveySignalData[];
 }
@@ -36,7 +35,6 @@ interface ProjectOverviewTabProps {
 export function ProjectOverviewTab({
   project,
   surveys,
-  insights,
   overviewStats,
   signalsData,
 }: ProjectOverviewTabProps) {
@@ -49,9 +47,7 @@ export function ProjectOverviewTab({
   const verdict = computeVerdict({
     totalResponses: overviewStats.totalResponses,
     responseLimit: project.response_limit,
-    insightCount: insights.length,
     findings,
-    insights,
   });
 
   return (
@@ -68,7 +64,6 @@ export function ProjectOverviewTab({
           currentPhase={currentPhase}
           activeSurveys={overviewStats.activeSurveys}
           totalSurveys={overviewStats.totalSurveys}
-          insightCount={insights.length}
           isArchived={isArchived}
         />
         <ProjectOverviewKpiCards

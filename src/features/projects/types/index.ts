@@ -5,4 +5,3 @@ export * from './project';
 export * from './project-list-extras';
 export * from './project-with-metrics';
 export * from './schemas';
-export * from './suggestion';

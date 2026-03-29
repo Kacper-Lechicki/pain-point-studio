@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowRight, FlaskConical, Lightbulb, Rocket, Send, Share2 } from 'lucide-react';
+import { FlaskConical, Rocket, Send, Share2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -20,8 +20,6 @@ const ACTION_ICONS: Record<NextStepAction, LucideIcon> = {
   'create-survey': FlaskConical,
   'activate-survey': Rocket,
   'share-survey': Share2,
-  'review-findings': Lightbulb,
-  'make-decision': ArrowRight,
   continue: Send,
 };
 
@@ -32,7 +30,6 @@ interface OverviewVerdictCardProps {
   currentPhase: ResearchPhase | null;
   activeSurveys: number;
   totalSurveys: number;
-  insightCount: number;
   isArchived: boolean;
 }
 
@@ -43,7 +40,6 @@ export function OverviewVerdictCard({
   currentPhase,
   activeSurveys,
   totalSurveys,
-  insightCount,
   isArchived,
 }: OverviewVerdictCardProps) {
   const t = useTranslations();
@@ -56,7 +52,6 @@ export function OverviewVerdictCard({
     activeSurveys,
     totalResponses,
     responseLimit,
-    insightCount,
     currentPhase,
   };
 

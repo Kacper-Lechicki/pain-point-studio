@@ -7,15 +7,12 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import type { InsightSuggestionsResult } from '@/features/projects/actions/get-insight-suggestions';
 import type { SurveySignalData } from '@/features/projects/actions/get-project-signals-data';
-import { ProjectInsightsTab } from '@/features/projects/components/project-insights-tab';
 import { ProjectNotesTab } from '@/features/projects/components/project-notes-tab';
 import { ProjectOverviewTab } from '@/features/projects/components/project-overview-tab';
 import { ProjectSurveysTab } from '@/features/projects/components/project-surveys-tab';
 import type {
   Project,
-  ProjectInsight,
   ProjectNoteFolder,
   ProjectNoteMeta,
   ProjectOverviewStats,
@@ -23,24 +20,18 @@ import type {
 import type { UserSurvey } from '@/features/surveys/types';
 import { getCreateSurveyUrl } from '@/lib/common/urls/survey-urls';
 
-type TabValue = 'overview' | 'surveys' | 'insights' | 'notes';
+type TabValue = 'overview' | 'surveys' | 'notes';
 
-const VALID_TABS: TabValue[] = ['overview', 'surveys', 'insights', 'notes'];
+const VALID_TABS: TabValue[] = ['overview', 'surveys', 'notes'];
 
 interface ProjectDetailTabsProps {
   project: Project;
   surveys: UserSurvey[];
   surveyListSlot: ReactNode;
-  insights: ProjectInsight[];
   notesMeta: ProjectNoteMeta[];
   noteFolders: ProjectNoteFolder[];
   overviewStats: ProjectOverviewStats;
   signalsData: SurveySignalData[];
-  suggestionsData: InsightSuggestionsResult;
-  onInsightCreated: (insight: ProjectInsight) => void;
-  onInsightUpdated: (insight: ProjectInsight) => void;
-  onInsightDeleted: (insightId: string) => void;
-  onInsightsChanged: (insights: ProjectInsight[]) => void;
 }
 
 function TabCount({ count }: { count: number }) {
@@ -66,16 +57,10 @@ export function ProjectDetailTabs({
   project,
   surveys,
   surveyListSlot,
-  insights,
   notesMeta,
   noteFolders,
   overviewStats,
   signalsData,
-  suggestionsData,
-  onInsightCreated,
-  onInsightUpdated,
-  onInsightDeleted,
-  onInsightsChanged,
 }: ProjectDetailTabsProps) {
   const t = useTranslations();
   const router = useRouter();
@@ -114,10 +99,6 @@ export function ProjectDetailTabs({
           {t('projects.detail.tabs.research')}
           <TabCount count={surveys.length} />
         </TabsTrigger>
-        <TabsTrigger value="insights">
-          {t('projects.detail.tabs.insights')}
-          <TabCount count={insights.length} />
-        </TabsTrigger>
         <TabsTrigger value="notes">
           {t('projects.detail.tabs.notes')}
           <TabCount count={activeNotesCount} />
@@ -128,7 +109,6 @@ export function ProjectDetailTabs({
         <ProjectOverviewTab
           project={project}
           surveys={surveys}
-          insights={insights}
           overviewStats={overviewStats}
           signalsData={signalsData}
         />
@@ -142,19 +122,6 @@ export function ProjectDetailTabs({
         >
           {surveyListSlot}
         </ProjectSurveysTab>
-      </TabsContent>
-
-      <TabsContent value="insights" className="pt-5">
-        <ProjectInsightsTab
-          projectId={project.id}
-          insights={insights}
-          suggestionsData={suggestionsData}
-          onInsightCreated={onInsightCreated}
-          onInsightUpdated={onInsightUpdated}
-          onInsightDeleted={onInsightDeleted}
-          onInsightsChanged={onInsightsChanged}
-          onNavigateToTab={handleTabChange}
-        />
       </TabsContent>
 
       <TabsContent value="notes" className="pt-5">

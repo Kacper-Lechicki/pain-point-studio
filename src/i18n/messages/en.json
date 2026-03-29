@@ -41,7 +41,7 @@
     "descriptions": {
       "home": "Validate product ideas before writing code. A structured research platform for developers to uncover real user pain points.",
       "dashboard": "Overview of your research projects, surveys, and recent activity.",
-      "project": "View project details, surveys, insights, and notes.",
+      "project": "View project details, surveys, and notes.",
       "projects": "Manage and organize your research projects.",
       "projectNew": "Create a new research project to start validating your product idea.",
       "projectNewSurvey": "Create a new survey for your research project.",
@@ -1033,19 +1033,6 @@
     "aria": {
       "sparklineResponses": "{total} responses in the last 14 days"
     },
-    "insightTypes": {
-      "strength": "Strength",
-      "opportunity": "Opportunity",
-      "threat": "Threat",
-      "decision": "Decision"
-    },
-    "insightSources": {
-      "survey": "Survey",
-      "userInterview": "User Interview",
-      "competitorAnalysis": "Competitor Analysis",
-      "marketResearch": "Market Research",
-      "ownObservation": "Own Observation"
-    },
     "toast": {
       "completed": "Project marked as completed.",
       "archived": "Project archived.",
@@ -1371,7 +1358,6 @@
         "overview": "Overview",
         "surveys": "Surveys",
         "research": "Research",
-        "insights": "Insights",
         "notes": "Notes"
       },
       "kpi": {
@@ -1464,9 +1450,9 @@
         "description": "Create your first survey to start seeing analytics and insights here.",
         "noSurveys": "No surveys yet",
         "noSurveysDescription": "Create a survey to start collecting responses from your target audience.",
-        "noInsights": "Signals will appear automatically as you collect survey responses. You can also add manual notes.",
-        "noInsightsTitle": "No insights yet",
-        "noInsightsDescription": "Signals appear automatically from survey responses. You can also add manual notes to track your findings."
+        "noInsights": "Signals will appear automatically as you collect survey responses.",
+        "noInsightsTitle": "No signals yet",
+        "noInsightsDescription": "Signals appear automatically from survey responses."
       }
     },
     "validation": {
@@ -1515,68 +1501,7 @@
       "addNote": "Add note",
       "noteBadge": "note",
       "contentPlaceholder": "Write your observation or decision...",
-      "confirmDeleteTitle": "Delete insight?",
-      "confirmDeleteDescription": "This insight will be permanently deleted.",
       "selectType": "Type"
-    },
-    "insights": {
-      "addInsight": "Add Insight",
-      "addInsightsHere": "Add insights here",
-      "moveTo": "Move to",
-      "emptyTitle": "No insights yet",
-      "emptyDescription": "Insights help you organize findings from your research. Complete a survey to get automatic suggestions, or add your own observations manually.",
-      "emptyCta": "Add Insight",
-      "emptyGoToResearch": "Go to Research",
-      "types": {
-        "strength": "Strength",
-        "opportunity": "Opportunity",
-        "threat": "Threat",
-        "decision": "Decision"
-      },
-      "columnDescriptions": {
-        "strength": "Validated positives — what your research confirms works",
-        "opportunity": "Gaps and unmet needs you've discovered",
-        "threat": "Risks, concerns, and negative signals",
-        "decision": "Conclusions and next steps based on your findings"
-      },
-      "columnInfo": {
-        "strength": "Evidence from your research that validates your idea. Strong survey results, positive user feedback, confirmed market demand.",
-        "opportunity": "Gaps in the market, unmet user needs, or areas where competitors fall short. Potential directions worth exploring.",
-        "threat": "Warning signs — negative feedback, strong competition, low engagement, or risks that could undermine your idea.",
-        "decision": "Actions and conclusions drawn from your research. Go/no-go decisions, pivots, feature priorities, target audience changes.",
-        "suggested": "Auto-generated from your survey responses. Review each suggestion and move it to the right category, or dismiss if not relevant."
-      },
-      "contentPlaceholders": {
-        "strength": "e.g. 75% of respondents confirmed the need for...",
-        "opportunity": "e.g. No competitor addresses the problem of...",
-        "threat": "e.g. Market leader is already building a similar...",
-        "decision": "e.g. Based on research, pivot to B2B segment..."
-      },
-      "dialog": {
-        "createTitle": "Add Insight",
-        "editTitle": "Edit Insight",
-        "typeLabel": "Type",
-        "sourceLabel": "Source",
-        "contentLabel": "Content",
-        "discardDescription": "You have unsaved changes. Are you sure you want to discard them?",
-        "discardConfirm": "Discard"
-      },
-      "toolbar": {
-        "searchPlaceholder": "Search insights...",
-        "filterLabel": "Filter",
-        "clearFilters": "Clear filters",
-        "typeSection": "Type",
-        "sourceSection": "Source",
-        "sort": {
-          "manual": "Manual order",
-          "newest": "Newest first",
-          "oldest": "Oldest first",
-          "updated": "Recently updated",
-          "alphabetical": "Alphabetical"
-        },
-        "noResults": "No matching insights",
-        "noResultsDescription": "Try adjusting your search or filters."
-      }
     },
     "suggestions": {
       "title": "Suggested",
@@ -1676,8 +1601,7 @@
     },
     "keyFindings": {
       "sectionLabel": "Key Findings",
-      "empty": "No findings yet. Collect survey responses or add insights to see key findings here.",
-      "viewAll": "View all insights",
+      "empty": "No findings yet. Collect survey responses to see key findings here.",
       "autoBadge": "auto",
       "yesNo": "{percent}% said yes to \"{question}\"",
       "rating": "Avg {avg}/{max} for \"{question}\"",
@@ -1689,8 +1613,6 @@
       "createSurvey": "Create your first survey to start collecting data.",
       "activateSurvey": "You have draft surveys ready. Activate one to start collecting responses.",
       "shareSurvey": "Share your active survey to get more responses and strengthen your data.",
-      "reviewFindings": "You have enough responses to review. Check your findings and add insights.",
-      "makeDecision": "You have solid data and insights. Time to make a go/no-go decision.",
       "continue": "Keep collecting responses to build even stronger confidence."
     },
     "compactStats": {
@@ -1721,7 +1643,7 @@
         "deleteProject": "Delete Project",
         "deleteDescription": "Permanently delete this project and all its data. This cannot be undone.",
         "deleteConfirmTitle": "Permanently delete project?",
-        "deleteConfirmDescription": "This will permanently delete the project, all its surveys, questions, responses, insights, and notes. This action cannot be undone.",
+        "deleteConfirmDescription": "This will permanently delete the project, all its surveys, questions, responses, and notes. This action cannot be undone.",
         "deleteConfirmLabel": "Type \"{name}\" to confirm",
         "deleteConfirmPlaceholder": "Project name",
         "deleteButton": "Delete Project Forever",
