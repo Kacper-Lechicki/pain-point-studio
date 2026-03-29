@@ -9,7 +9,7 @@ import { OverviewActivityList } from '@/features/projects/components/overview-ac
 import { OverviewVerdictCard } from '@/features/projects/components/overview-verdict-card';
 import { ProjectAboutCard } from '@/features/projects/components/project-about-card';
 import { ProjectOverviewKpiCards } from '@/features/projects/components/project-overview-kpi-cards';
-import { deriveProjectPhase, isProjectArchived } from '@/features/projects/lib/project-helpers';
+import { deriveProjectPhase, isProjectReadOnly } from '@/features/projects/lib/project-helpers';
 import { generateFindings } from '@/features/projects/lib/signals';
 import { computeVerdict } from '@/features/projects/lib/verdict';
 import type { Project, ProjectOverviewStats } from '@/features/projects/types';
@@ -38,7 +38,7 @@ export function ProjectOverviewTab({
   overviewStats,
   signalsData,
 }: ProjectOverviewTabProps) {
-  const isArchived = isProjectArchived(project);
+  const isArchived = isProjectReadOnly(project);
 
   const currentPhase = deriveProjectPhase(surveys.map((s) => ({ researchPhase: s.researchPhase })));
 

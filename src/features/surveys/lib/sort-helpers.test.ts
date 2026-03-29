@@ -21,8 +21,6 @@ function makeSurvey(overrides: Partial<UserSurvey> = {}): UserSurvey {
     startsAt: null,
     endsAt: null,
     maxRespondents: null,
-    archivedAt: null,
-    cancelledAt: null,
     completedAt: null,
     createdAt: '2024-01-01T00:00:00Z',
     updatedAt: '2024-01-02T00:00:00Z',
@@ -33,7 +31,6 @@ function makeSurvey(overrides: Partial<UserSurvey> = {}): UserSurvey {
     researchPhase: null,
     deletedAt: null,
     preTrashStatus: null,
-    previousStatus: null,
     ...overrides,
   };
 }

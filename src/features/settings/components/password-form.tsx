@@ -88,6 +88,11 @@ const PasswordForm = ({ hasPassword }: PasswordFormProps) => {
         }
       />
 
+      <Alert variant="info" className="text-xs">
+        <Info className="size-3.5" />
+        <AlertDescription>{hintContent}</AlertDescription>
+      </Alert>
+
       <Form {...form}>
         <form id="password-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           {hasPassword && (
@@ -147,11 +152,6 @@ const PasswordForm = ({ hasPassword }: PasswordFormProps) => {
           </div>
         </form>
       </Form>
-
-      <Alert variant="info" className="text-xs">
-        <Info className="size-3.5" />
-        <AlertDescription>{hintContent}</AlertDescription>
-      </Alert>
     </section>
   );
 };

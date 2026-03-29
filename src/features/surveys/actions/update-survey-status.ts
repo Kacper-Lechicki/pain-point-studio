@@ -12,53 +12,9 @@ import { withProtectedAction } from '@/lib/common/with-protected-action';
 
 const TIMESTAMP_COLUMNS: Partial<Record<SurveyStatus, string>> = {
   completed: 'completed_at',
-  cancelled: 'cancelled_at',
-  archived: 'archived_at',
 };
 
 // ── Helpers ──────────────────────────────────────────────────────────
-
-/** Verifies the survey's parent project is active. Returns an error key if not. */
-async function requireActiveProject(
-  supabase: SupabaseClient,
-  projectId: string | null
-): Promise<string | null> {
-  if (!projectId) {
-    return null;
-  }
-
-  const { data: project } = await supabase
-    .from('projects')
-    .select('status')
-    .eq('id', projectId)
-    .maybeSingle();
-
-  if (!project || project.status !== 'active') {
-    return 'surveys.errors.projectNotActive';
-  }
-
-  return null;
-}
-
-/** Verifies the project has remaining response capacity. Returns error key if at limit. */
-async function requireProjectCapacity(
-  supabase: SupabaseClient,
-  projectId: string | null
-): Promise<string | null> {
-  if (!projectId) {
-    return null;
-  }
-
-  const { data: remaining } = await supabase.rpc('get_project_remaining_capacity', {
-    p_project_id: projectId,
-  });
-
-  if (remaining != null && (remaining as number) <= 0) {
-    return 'surveys.errors.projectLimitReached';
-  }
-
-  return null;
-}
 
 /**
  * After a failed update (0 rows affected), re-query the survey to determine
@@ -80,7 +36,6 @@ async function diagnoseUpdateFailure(
     return 'surveys.errors.unexpected';
   }
 
-  // Survey exists but status didn't match → conflict (stale data)
   return 'surveys.errors.conflict';
 }
 
@@ -111,107 +66,7 @@ function createStatusAction(action: SurveyAction) {
         return { success: true };
       }
 
-      // ── Reopen (completed/cancelled → active) ──────────────────
-      if (action === 'reopen') {
-        // Fetch survey to verify project is active before reactivating
-        const { data: survey } = await supabase
-          .from('surveys')
-          .select('project_id')
-          .eq('id', data.surveyId)
-          .eq('user_id', user.id)
-          .in('status', [...transition.fromStatuses])
-          .maybeSingle();
-
-        if (!survey) {
-          return { error: await diagnoseUpdateFailure(supabase, data.surveyId, user.id) };
-        }
-
-        const projectError = await requireActiveProject(supabase, survey.project_id);
-
-        if (projectError) {
-          return { error: projectError };
-        }
-
-        const capacityError = await requireProjectCapacity(supabase, survey.project_id);
-
-        if (capacityError) {
-          return { error: capacityError };
-        }
-
-        const { data: row, error } = await supabase
-          .from('surveys')
-          .update({
-            status: 'active' as SurveyStatus,
-            completed_at: null,
-            cancelled_at: null,
-            generate_insights: null,
-          })
-          .eq('id', data.surveyId)
-          .eq('user_id', user.id)
-          .in('status', [...transition.fromStatuses])
-          .select('id')
-          .maybeSingle();
-
-        if (error || !row) {
-          return { error: await diagnoseUpdateFailure(supabase, data.surveyId, user.id) };
-        }
-
-        return { success: true };
-      }
-
-      // ── Restore (archived → previous_status) ──────────────────
-      if (action === 'restore') {
-        const { data: current } = await supabase
-          .from('surveys')
-          .select('previous_status, project_id')
-          .eq('id', data.surveyId)
-          .eq('user_id', user.id)
-          .eq('status', 'archived')
-          .maybeSingle();
-
-        if (!current) {
-          return { error: await diagnoseUpdateFailure(supabase, data.surveyId, user.id) };
-        }
-
-        // Restoring to an active state requires the parent project to be active
-        const projectError = await requireActiveProject(supabase, current.project_id);
-
-        if (projectError) {
-          return { error: projectError };
-        }
-
-        // If restoring to active, check project capacity
-        const restoredStatus = (current.previous_status || 'draft') as SurveyStatus;
-
-        if (restoredStatus === 'active') {
-          const capacityError = await requireProjectCapacity(supabase, current.project_id);
-
-          if (capacityError) {
-            return { error: capacityError };
-          }
-        }
-
-        const { data: row, error } = await supabase
-          .from('surveys')
-          .update({
-            status: restoredStatus,
-            archived_at: null,
-            previous_status: null,
-          })
-          .eq('id', data.surveyId)
-          .eq('user_id', user.id)
-          .eq('status', 'archived')
-          .select('id')
-          .maybeSingle();
-
-        if (error || !row) {
-          return { error: await diagnoseUpdateFailure(supabase, data.surveyId, user.id) };
-        }
-
-        return { success: true };
-      }
-
-      // ── Trash (any → trashed) ──────────────────────────────────
+      // ── Trash (draft/active/completed → trashed) ───────────────
       if (action === 'trash') {
         const { data: current } = await supabase
           .from('surveys')
@@ -225,15 +80,31 @@ function createStatusAction(action: SurveyAction) {
           return { error: await diagnoseUpdateFailure(supabase, data.surveyId, user.id) };
         }
 
+        // If trashing an active survey, complete it first
+        if (current.status === 'active') {
+          await supabase
+            .from('surveys')
+            .update({
+              status: 'completed' as SurveyStatus,
+              completed_at: new Date().toISOString(),
+            })
+            .eq('id', data.surveyId)
+            .eq('user_id', user.id)
+            .eq('status', 'active');
+        }
+
+        const preTrashStatus = current.status === 'active' ? 'completed' : current.status;
+
         const { data: row, error } = await supabase
           .from('surveys')
           .update({
             status: 'trashed' as SurveyStatus,
             deleted_at: new Date().toISOString(),
-            pre_trash_status: current.status,
+            pre_trash_status: preTrashStatus,
           })
           .eq('id', data.surveyId)
           .eq('user_id', user.id)
+          .in('status', [preTrashStatus])
           .select('id')
           .maybeSingle();
 
@@ -258,23 +129,7 @@ function createStatusAction(action: SurveyAction) {
           return { error: await diagnoseUpdateFailure(supabase, data.surveyId, user.id) };
         }
 
-        // Restoring from trash requires the parent project to be active
-        const projectError = await requireActiveProject(supabase, current.project_id);
-
-        if (projectError) {
-          return { error: projectError };
-        }
-
-        // If restoring to active, check project capacity
         const restoredTrashStatus = (current.pre_trash_status || 'draft') as SurveyStatus;
-
-        if (restoredTrashStatus === 'active') {
-          const capacityError = await requireProjectCapacity(supabase, current.project_id);
-
-          if (capacityError) {
-            return { error: capacityError };
-          }
-        }
 
         const { data: row, error } = await supabase
           .from('surveys')
@@ -296,7 +151,7 @@ function createStatusAction(action: SurveyAction) {
         return { success: true };
       }
 
-      // ── Standard update transitions (complete, cancel, archive) ─
+      // ── Standard update transition (complete) ──────────────────
       const toStatus = 'toStatus' in transition ? transition.toStatus : null;
 
       if (!toStatus) {
@@ -305,28 +160,10 @@ function createStatusAction(action: SurveyAction) {
 
       const updatePayload: Record<string, unknown> = { status: toStatus };
 
-      // Set timestamp column for the target status
       const tsCol = TIMESTAMP_COLUMNS[toStatus as SurveyStatus];
 
       if (tsCol) {
         updatePayload[tsCol] = new Date().toISOString();
-      }
-
-      // Archive: save current status as previous_status for restore
-      if (action === 'archive') {
-        const { data: current } = await supabase
-          .from('surveys')
-          .select('status')
-          .eq('id', data.surveyId)
-          .eq('user_id', user.id)
-          .in('status', [...transition.fromStatuses])
-          .maybeSingle();
-
-        if (!current) {
-          return { error: await diagnoseUpdateFailure(supabase, data.surveyId, user.id) };
-        }
-
-        updatePayload.previous_status = current.status;
       }
 
       let query = supabase
@@ -353,10 +190,6 @@ function createStatusAction(action: SurveyAction) {
 }
 
 export const completeSurvey = createStatusAction('complete');
-export const cancelSurvey = createStatusAction('cancel');
-export const reopenSurvey = createStatusAction('reopen');
-export const archiveSurvey = createStatusAction('archive');
-export const restoreSurvey = createStatusAction('restore');
 export const trashSurvey = createStatusAction('trash');
 export const restoreTrashSurvey = createStatusAction('restoreTrash');
 export const permanentDeleteSurvey = createStatusAction('permanentDelete');

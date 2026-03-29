@@ -30,8 +30,8 @@ export function useProjectListState(
       return false;
     }
 
-    // When no filter active, hide trashed and archived projects from default view
-    if (statusFilter.length === 0 && (p.status === 'trashed' || p.status === 'archived')) {
+    // When no filter active, hide trashed projects from default view
+    if (statusFilter.length === 0 && p.status === 'trashed') {
       return false;
     }
 
@@ -81,7 +81,6 @@ export function useProjectListState(
     const counts: Record<string, number> = {
       active: 0,
       completed: 0,
-      archived: 0,
       trashed: 0,
     };
 
@@ -95,8 +94,8 @@ export function useProjectListState(
   })();
 
   const kpiStatuses = (() => {
-    // Show active, completed, archived in KPI (not trashed)
-    const order: ProjectStatusFilter[] = ['active', 'completed', 'archived'];
+    // Show active and completed in KPI (not trashed)
+    const order: ProjectStatusFilter[] = ['active', 'completed'];
 
     return order.filter((s) => (statusCounts[s] ?? 0) > 0);
   })();

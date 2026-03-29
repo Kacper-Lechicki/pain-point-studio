@@ -38,7 +38,7 @@ export const SurveyFlow = ({ survey, responseId, slug }: SurveyFlowProps) => {
       const status = await checkSurveyStatus(survey.id);
 
       if (status && status !== 'active') {
-        setClosedReason(status === 'cancelled' ? 'cancelled' : 'completed');
+        setClosedReason('completed');
         clearInterval(interval);
       }
     }, POLL_INTERVAL_MS);

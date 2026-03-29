@@ -30,7 +30,6 @@ interface SurveyStatsHeaderProps {
   /** Same flags as list menu: Export/Edit/Publish visibility. */
   flags: {
     isDraft: boolean;
-    isArchived: boolean;
     isTrashed: boolean;
     hasShareableLink: boolean;
     questionCount: number;
@@ -57,7 +56,7 @@ export function SurveyStatsHeader({
   const t = useTranslations();
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
 
-  const canExport = !flags.isDraft && !flags.isArchived;
+  const canExport = !flags.isDraft;
 
   return (
     <>

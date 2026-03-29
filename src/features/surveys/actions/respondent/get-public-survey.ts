@@ -15,27 +15,19 @@ const getPublicSurveyCached = cache(async (slug: string): Promise<PublicSurveyDa
   const { data: survey } = await supabase
     .from('surveys')
     .select(
-      'id, title, description, status, starts_at, ends_at, max_respondents, completed_at, cancelled_at, project_id'
+      'id, title, description, status, starts_at, ends_at, max_respondents, completed_at, project_id'
     )
     .eq('slug', slug)
-    .in('status', ['active', 'completed', 'cancelled'])
+    .in('status', ['active', 'completed'])
     .single();
 
   if (!survey) {
     return null;
   }
 
-  // Completed and cancelled surveys are only accessible for SURVEY_RETENTION_DAYS
-  if (survey.status === 'completed' || survey.status === 'cancelled') {
-    const closedAt =
-      survey.status === 'completed'
-        ? survey.completed_at
-          ? new Date(survey.completed_at)
-          : null
-        : survey.cancelled_at
-          ? new Date(survey.cancelled_at)
-          : null;
-
+  // Completed surveys are only accessible for SURVEY_RETENTION_DAYS
+  if (survey.status === 'completed') {
+    const closedAt = survey.completed_at ? new Date(survey.completed_at) : null;
     const retentionCutoff = new Date(Date.now() - SURVEY_RETENTION_DAYS * 24 * 60 * 60 * 1000);
 
     if (!closedAt || closedAt < retentionCutoff) {
@@ -52,9 +44,6 @@ const getPublicSurveyCached = cache(async (slug: string): Promise<PublicSurveyDa
   if (survey.status === 'completed') {
     isAcceptingResponses = false;
     closedReason = 'completed';
-  } else if (survey.status === 'cancelled') {
-    isAcceptingResponses = false;
-    closedReason = 'cancelled';
   } else if (survey.status === 'active') {
     // Active survey — check time limits
     if (survey.starts_at && new Date(survey.starts_at) > now) {

@@ -24,7 +24,6 @@ interface SurveyTableRowProps {
   isSelected: boolean;
   onSelect: (surveyId: string) => void;
   row: ReturnType<typeof useSurveyRow>;
-  archivedLayout?: boolean;
   isProjectContext?: boolean | undefined;
   isBulkSelected?: boolean | undefined;
   onToggleBulkSelect?: ((id: string) => void) | undefined;
@@ -35,7 +34,6 @@ export function SurveyTableRow({
   isSelected,
   onSelect,
   row,
-  archivedLayout = false,
   isProjectContext,
   isBulkSelected,
   onToggleBulkSelect,
@@ -45,7 +43,6 @@ export function SurveyTableRow({
       surveyId={survey.id}
       flags={{
         isDraft: row.isDraft,
-        isArchived: row.isArchived,
         isTrashed: row.isTrashed,
         hasShareableLink: row.hasShareableLink,
         questionCount: survey.questionCount,
@@ -115,71 +112,49 @@ export function SurveyTableRow({
           )}
         </TableCell>
 
-        {archivedLayout ? (
-          <>
-            <TableCell className="text-muted-foreground border-border/30 min-w-0 truncate border-l text-xs tabular-nums">
-              {survey.questionCount}
-            </TableCell>
+        <>
+          <TableCell className="border-border/30 min-w-0 border-l text-center">
+            <SurveyStatusBadge status={survey.status} deletedAt={survey.deletedAt} />
+          </TableCell>
 
-            <TableCell className="text-muted-foreground border-border/30 min-w-0 truncate border-l text-xs">
-              {row.archivedAtLabel ?? '—'}
-            </TableCell>
+          <TableCell className="text-muted-foreground border-border/30 min-w-0 truncate border-l text-xs tabular-nums">
+            {row.isTrashed || row.isDraft
+              ? '—'
+              : survey.maxRespondents != null
+                ? `${survey.completedCount}/${survey.maxRespondents}`
+                : survey.completedCount}
+          </TableCell>
 
-            <TableCell className="text-muted-foreground border-border/30 min-w-0 truncate border-l text-xs tabular-nums">
-              {row.autoDeleteDays != null
-                ? row.t('surveys.dashboard.detailPanel.inDays', { days: row.autoDeleteDays })
-                : '—'}
-            </TableCell>
-          </>
-        ) : (
-          <>
-            <TableCell className="border-border/30 min-w-0 border-l text-center">
-              <SurveyStatusBadge status={survey.status} deletedAt={survey.deletedAt} />
-            </TableCell>
-
-            <TableCell className="text-muted-foreground border-border/30 min-w-0 truncate border-l text-xs tabular-nums">
+          {!isProjectContext && (
+            <TableCell className="text-muted-foreground border-border/30 hidden min-w-0 truncate border-l text-xs tabular-nums lg:table-cell">
               {row.isTrashed || row.isDraft
                 ? '—'
-                : survey.maxRespondents != null
-                  ? `${survey.completedCount}/${survey.maxRespondents}`
-                  : survey.completedCount}
+                : survey.avgQuestionCompletion != null
+                  ? `${Math.round(survey.avgQuestionCompletion)}%`
+                  : '—'}
             </TableCell>
+          )}
 
-            {!isProjectContext && (
-              <TableCell className="text-muted-foreground border-border/30 hidden min-w-0 truncate border-l text-xs tabular-nums lg:table-cell">
-                {row.isTrashed || row.isDraft
-                  ? '—'
-                  : survey.avgQuestionCompletion != null
-                    ? `${Math.round(survey.avgQuestionCompletion)}%`
-                    : '—'}
-              </TableCell>
+          <TableCell
+            className={cn(
+              'text-muted-foreground border-border/30 hidden min-w-0 truncate border-l pr-4 pl-3 text-xs',
+              isProjectContext ? 'lg:table-cell' : 'xl:table-cell'
             )}
+          >
+            {row.isTrashed || row.isDraft ? '—' : (row.lastResponseLabel ?? '—')}
+          </TableCell>
 
-            <TableCell
-              className={cn(
-                'text-muted-foreground border-border/30 hidden min-w-0 truncate border-l pr-4 pl-3 text-xs',
-                isProjectContext ? 'lg:table-cell' : 'xl:table-cell'
-              )}
-            >
-              {row.isTrashed || row.isDraft
-                ? '—'
-                : row.isArchived
-                  ? (row.archivedAtLabel ?? '—')
-                  : (row.lastResponseLabel ?? '—')}
-            </TableCell>
-
-            <TableCell
-              className={cn(
-                'border-border/30 hidden min-w-0 overflow-hidden border-l text-center',
-                isProjectContext ? 'xl:table-cell' : '2xl:table-cell'
-              )}
-            >
-              <div className="flex min-w-0 justify-center overflow-hidden">
-                <ActivityCell survey={survey} row={row} />
-              </div>
-            </TableCell>
-          </>
-        )}
+          <TableCell
+            className={cn(
+              'border-border/30 hidden min-w-0 overflow-hidden border-l text-center',
+              isProjectContext ? 'xl:table-cell' : '2xl:table-cell'
+            )}
+          >
+            <div className="flex min-w-0 justify-center overflow-hidden">
+              <ActivityCell survey={survey} row={row} />
+            </div>
+          </TableCell>
+        </>
 
         <TableCell
           className={cn('p-0', isProjectContext ? 'w-12' : 'w-10')}

@@ -181,11 +181,11 @@ INSERT INTO public.projects (id, user_id, name, summary, status, response_limit,
 ON CONFLICT (id) DO NOTHING;
 
 -- P4: AI Recipe Generator — ARCHIVED, failed validation (75 days old)
-INSERT INTO public.projects (id, user_id, name, summary, status, response_limit, archived_at, created_at) VALUES
+INSERT INTO public.projects (id, user_id, name, summary, status, response_limit, completed_at, created_at) VALUES
   ('b1b2c3d4-0004-4000-8000-000000000004', 'a1b2c3d4-0001-4000-8000-000000000001',
    'AI Recipe Generator',
    'AI-powered recipe suggestions based on ingredients you already have at home.',
-   'archived', 30, now() - interval '15 days', now() - interval '75 days')
+   'completed', 30, now() - interval '15 days', now() - interval '75 days')
 ON CONFLICT (id) DO NOTHING;
 
 -- P5: Freelance Invoice Tool — VALIDATED, strong signals (80 days old)
@@ -536,12 +536,12 @@ INSERT INTO public.surveys (id, user_id, project_id, title, description, visibil
    now() - interval '40 days', now() - interval '22 days', now() - interval '22 days', 34, now() - interval '45 days')
 ON CONFLICT (id) DO NOTHING;
 
--- S12: Willingness to pay (cancelled — low engagement)
-INSERT INTO public.surveys (id, user_id, project_id, title, description, visibility, status, slug, research_phase, starts_at, cancelled_at, view_count, created_at) VALUES
+-- S12: Willingness to pay (completed — low engagement)
+INSERT INTO public.surveys (id, user_id, project_id, title, description, visibility, status, slug, research_phase, starts_at, completed_at, view_count, created_at) VALUES
   ('c1b2c3d4-000c-4000-8000-00000000000c', 'a1b2c3d4-0001-4000-8000-000000000001', 'b1b2c3d4-0007-4000-8000-000000000007',
    'Would you pay for better event discovery?',
    'Testing willingness to pay for a premium local event discovery experience.',
-   'public', 'cancelled', 'event-pay', 'validation',
+   'public', 'completed', 'event-pay', 'validation',
    now() - interval '18 days', now() - interval '10 days', 8, now() - interval '20 days')
 ON CONFLICT (id) DO NOTHING;
 

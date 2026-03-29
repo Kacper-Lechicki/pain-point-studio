@@ -6,7 +6,7 @@ import { IMAGE_ACCEPTED_TYPES, IMAGE_MAX_SIZE } from '@/config/uploads';
 export const PROJECT_TRASH_RETENTION_DAYS = 30;
 
 export const PROJECT_NAME_MAX_LENGTH = 100;
-export const PROJECT_SUMMARY_MAX_LENGTH = 300;
+export const PROJECT_SUMMARY_MAX_LENGTH = 280;
 
 /** Maximum responses per project (plan limit). Must match DB default + migration. */
 export const PROJECT_RESPONSE_LIMIT = 50;

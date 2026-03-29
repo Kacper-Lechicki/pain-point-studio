@@ -10,21 +10,13 @@ interface StatusChangeResult {
 
 /**
  * Resolves the target status for an action, handling dynamic targets
- * (restore → previousStatus, restoreTrash → preTrashStatus).
+ * (restoreTrash → preTrashStatus).
  * Returns `null` for actions that remove the survey (permanentDelete).
  */
 function resolveTargetStatus(action: string, survey: UserSurvey): SurveyStatus | null {
   switch (action) {
     case 'complete':
       return 'completed';
-    case 'cancel':
-      return 'cancelled';
-    case 'reopen':
-      return 'active';
-    case 'archive':
-      return 'archived';
-    case 'restore':
-      return (survey.previousStatus as SurveyStatus) ?? 'draft';
     case 'trash':
       return 'trashed';
     case 'restoreTrash':
@@ -47,7 +39,7 @@ export function applyOptimisticStatusChange(
   surveys: UserSurvey[],
   surveyId: string,
   action: string,
-  /** Statuses that should trigger deselection when transitioned to (e.g. 'archived'). */
+  /** Statuses that should trigger deselection when transitioned to (e.g. 'trashed'). */
   deselectOnStatuses: readonly string[] = []
 ): StatusChangeResult {
   const survey = surveys.find((s) => s.id === surveyId);

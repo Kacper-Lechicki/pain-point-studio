@@ -24,11 +24,13 @@ vi.mock('@/lib/common/rate-limit', () => ({
 
 const mockGetUser = vi.fn();
 const mockFrom = vi.fn();
+const mockRpc = vi.fn();
 
 vi.mock('@/lib/supabase/server', () => ({
   createClient: vi.fn().mockResolvedValue({
     auth: { getUser: mockGetUser },
     from: mockFrom,
+    rpc: mockRpc,
   }),
 }));
 
@@ -39,7 +41,6 @@ vi.mock('@/features/surveys/config/survey-status', () => ({
 const ID1 = '00000000-0000-4000-8000-000000000001';
 const ID2 = '00000000-0000-4000-8000-000000000002';
 const PROJECT_A = '00000000-0000-4000-8000-000000000010';
-const PROJECT_B = '00000000-0000-4000-8000-000000000011';
 
 // ── Tests ────────────────────────────────────────────────────────────
 
@@ -57,14 +58,12 @@ describe('Survey Actions – Bulk Change Survey Status', () => {
           {
             id: ID1,
             status: 'active',
-            previous_status: null,
             pre_trash_status: null,
             project_id: PROJECT_A,
           },
           {
             id: ID2,
             status: 'active',
-            previous_status: null,
             pre_trash_status: null,
             project_id: PROJECT_A,
           },
@@ -111,14 +110,12 @@ describe('Survey Actions – Bulk Change Survey Status', () => {
           {
             id: ID1,
             status: 'completed',
-            previous_status: null,
             pre_trash_status: null,
             project_id: PROJECT_A,
           },
           {
             id: ID2,
             status: 'active',
-            previous_status: null,
             pre_trash_status: null,
             project_id: PROJECT_A,
           },
@@ -146,14 +143,12 @@ describe('Survey Actions – Bulk Change Survey Status', () => {
           {
             id: ID1,
             status: 'trashed',
-            previous_status: null,
             pre_trash_status: 'draft',
             project_id: PROJECT_A,
           },
           {
             id: ID2,
             status: 'trashed',
-            previous_status: null,
             pre_trash_status: 'active',
             project_id: PROJECT_A,
           },
@@ -163,8 +158,8 @@ describe('Survey Actions – Bulk Change Survey Status', () => {
 
     // Calls 2-3: per-survey deletes
     mockFrom
-      .mockReturnValueOnce(chain({ data: null, error: null }))
-      .mockReturnValueOnce(chain({ data: null, error: null }));
+      .mockReturnValueOnce(chain({ data: { id: ID1 }, error: null }))
+      .mockReturnValueOnce(chain({ data: { id: ID2 }, error: null }));
 
     const { bulkChangeSurveyStatus } = await import('./bulk-change-survey-status');
     const result = await bulkChangeSurveyStatus({
@@ -175,44 +170,6 @@ describe('Survey Actions – Bulk Change Survey Status', () => {
     expect(result).toEqual({
       success: true,
       data: { total: 2, failed: 0, failedIds: [] },
-    });
-  });
-
-  it('should fail surveys whose project is not active when action requires it (reopen)', async () => {
-    // Call 1: fetch surveys — both need reopen, different projects
-    mockFrom.mockReturnValueOnce(
-      chain({
-        data: [
-          {
-            id: ID1,
-            status: 'completed',
-            previous_status: null,
-            pre_trash_status: null,
-            project_id: PROJECT_A,
-          },
-          {
-            id: ID2,
-            status: 'completed',
-            previous_status: null,
-            pre_trash_status: null,
-            project_id: PROJECT_B,
-          },
-        ],
-      })
-    );
-
-    // Call 2: fetch active projects — only PROJECT_A is active
-    mockFrom.mockReturnValueOnce(chain({ data: [{ id: PROJECT_A }] }));
-
-    // Call 3: update for ID1 (ID2 skipped — its project is not active)
-    mockFrom.mockReturnValueOnce(chain({ data: { id: ID1 }, error: null }));
-
-    const { bulkChangeSurveyStatus } = await import('./bulk-change-survey-status');
-    const result = await bulkChangeSurveyStatus({ surveyIds: [ID1, ID2], action: 'reopen' });
-
-    expect(result).toEqual({
-      success: true,
-      data: { total: 2, failed: 1, failedIds: [ID2] },
     });
   });
 
@@ -230,14 +187,12 @@ describe('Survey Actions – Bulk Change Survey Status', () => {
           {
             id: ID1,
             status: 'trashed',
-            previous_status: null,
             pre_trash_status: null,
             project_id: PROJECT_A,
           },
           {
             id: ID2,
             status: 'trashed',
-            previous_status: null,
             pre_trash_status: null,
             project_id: PROJECT_A,
           },

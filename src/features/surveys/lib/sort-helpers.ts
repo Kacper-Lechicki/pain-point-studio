@@ -8,7 +8,7 @@ export function getDefaultSortDir(key: string): 'asc' | 'desc' {
 
 /**
  * Returns a comparator for common survey sort keys, or `undefined` for
- * list-specific keys (lastResponse, activity, archivedAt, etc.)
+ * list-specific keys (lastResponse, activity, etc.)
  */
 export function getSurveyComparator(
   key: string,

@@ -79,17 +79,20 @@ function TabsTrigger({ className, ...props }: React.ComponentProps<typeof TabsPr
 function TabsContent({
   className,
   children,
+  forceMount,
   ...props
 }: React.ComponentProps<typeof TabsPrimitive.Content>) {
   const prefersReducedMotion = useReducedMotion();
+  const skipAnimation = prefersReducedMotion || forceMount;
 
   return (
     <TabsPrimitive.Content
       data-slot="tabs-content"
       className={cn('flex-1 outline-none', className)}
+      {...(forceMount ? { forceMount: true } : {})}
       {...props}
     >
-      {prefersReducedMotion ? (
+      {skipAnimation ? (
         children
       ) : (
         <motion.div

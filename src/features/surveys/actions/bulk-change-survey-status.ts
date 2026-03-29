@@ -7,19 +7,7 @@ import type { SurveyStatus } from '@/features/surveys/types';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
 
-/** Actions that require the parent project to be active. */
-const ACTIONS_REQUIRING_ACTIVE_PROJECT = new Set<string>(['reopen', 'restore', 'restoreTrash']);
-
-const BULK_ACTIONS = [
-  'complete',
-  'cancel',
-  'reopen',
-  'archive',
-  'restore',
-  'trash',
-  'restoreTrash',
-  'permanentDelete',
-] as const;
+const BULK_ACTIONS = ['complete', 'trash', 'restoreTrash', 'permanentDelete'] as const;
 
 const bulkChangeSurveyStatusSchema = z.object({
   surveyIds: z.array(z.uuid()).min(1).max(50),
@@ -28,8 +16,7 @@ const bulkChangeSurveyStatusSchema = z.object({
 
 function buildUpdatePayload(
   action: (typeof BULK_ACTIONS)[number],
-  currentStatus: string,
-  previousStatus: string | null,
+  currentStatus: SurveyStatus,
   preTrashStatus: string | null
 ): Record<string, unknown> | null {
   const now = new Date().toISOString();
@@ -37,20 +24,12 @@ function buildUpdatePayload(
   switch (action) {
     case 'complete':
       return { status: 'completed', completed_at: now };
-    case 'cancel':
-      return { status: 'cancelled', cancelled_at: now };
-    case 'reopen':
-      return { status: 'active', completed_at: null, cancelled_at: null };
-    case 'archive':
-      return { status: 'archived', archived_at: now, previous_status: currentStatus };
-    case 'restore':
-      return { status: previousStatus || 'draft', archived_at: null, previous_status: null };
     case 'trash':
       return { status: 'trashed', deleted_at: now, pre_trash_status: currentStatus };
     case 'restoreTrash':
       return { status: preTrashStatus || 'draft', deleted_at: null, pre_trash_status: null };
     case 'permanentDelete':
-      return null; // Handled as delete, not update
+      return null;
   }
 }
 
@@ -69,7 +48,7 @@ export const bulkChangeSurveyStatus = withProtectedAction<
   action: async ({ data, user, supabase }) => {
     const { data: surveys } = await supabase
       .from('surveys')
-      .select('id, status, previous_status, pre_trash_status, project_id')
+      .select('id, status, pre_trash_status, project_id')
       .in('id', data.surveyIds)
       .eq('user_id', user.id);
 
@@ -77,66 +56,86 @@ export const bulkChangeSurveyStatus = withProtectedAction<
       return { error: 'surveys.errors.unexpected' };
     }
 
-    // Pre-check: if action requires active project, fetch project statuses
-    let activeProjectIds: Set<string> | null = null;
-
-    if (ACTIONS_REQUIRING_ACTIVE_PROJECT.has(data.action)) {
-      const projectIds = [...new Set(surveys.map((s) => s.project_id).filter(Boolean))] as string[];
-
-      if (projectIds.length > 0) {
-        const { data: projects } = await supabase
-          .from('projects')
-          .select('id')
-          .in('id', projectIds)
-          .eq('status', 'active');
-
-        activeProjectIds = new Set((projects ?? []).map((p) => p.id));
-      } else {
-        activeProjectIds = new Set();
-      }
-    }
-
     const total = data.surveyIds.length;
     let successCount = 0;
     const failedIds: string[] = [];
 
     for (const survey of surveys) {
-      if (!canTransition(survey.status as SurveyStatus, data.action as SurveyAction)) {
+      let effectiveStatus = survey.status as SurveyStatus;
+
+      // For trash action on active surveys, complete first then trash
+      if (data.action === 'trash' && survey.status === 'active') {
+        const { error: completeError } = await supabase
+          .from('surveys')
+          .update({
+            status: 'completed' as SurveyStatus,
+            completed_at: new Date().toISOString(),
+          })
+          .eq('id', survey.id)
+          .eq('user_id', user.id)
+          .eq('status', 'active');
+
+        if (completeError) {
+          failedIds.push(survey.id);
+          continue;
+        }
+
+        effectiveStatus = 'completed' as SurveyStatus;
+      }
+
+      if (
+        data.action !== 'trash' &&
+        !canTransition(survey.status as SurveyStatus, data.action as SurveyAction)
+      ) {
         failedIds.push(survey.id);
         continue;
       }
 
-      // Skip if action requires active project but project isn't active
-      if (activeProjectIds && survey.project_id && !activeProjectIds.has(survey.project_id)) {
+      if (
+        data.action === 'trash' &&
+        !canTransition(survey.status as SurveyStatus, data.action as SurveyAction) &&
+        survey.status !== 'active'
+      ) {
         failedIds.push(survey.id);
         continue;
       }
 
       const updatePayload = buildUpdatePayload(
         data.action,
-        survey.status,
-        survey.previous_status,
+        effectiveStatus,
         survey.pre_trash_status
       );
 
-      let error: { message: string } | null = null;
+      let mutationError: { message: string } | null = null;
+      let affected: { id: string } | null = null;
 
       if (updatePayload === null) {
-        // permanentDelete: hard delete
-        ({ error } = await supabase
+        const result = await supabase
           .from('surveys')
           .delete()
           .eq('id', survey.id)
-          .eq('user_id', user.id));
+          .eq('user_id', user.id)
+          .eq('status', survey.status)
+          .select('id')
+          .maybeSingle();
+
+        mutationError = result.error;
+        affected = result.data;
       } else {
-        ({ error } = await supabase
+        const result = await supabase
           .from('surveys')
           .update(updatePayload)
           .eq('id', survey.id)
-          .eq('user_id', user.id));
+          .eq('user_id', user.id)
+          .eq('status', effectiveStatus)
+          .select('id')
+          .maybeSingle();
+
+        mutationError = result.error;
+        affected = result.data;
       }
 
-      if (error) {
+      if (mutationError || !affected) {
         failedIds.push(survey.id);
         continue;
       }

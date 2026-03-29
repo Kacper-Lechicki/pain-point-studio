@@ -73,60 +73,6 @@ test('completed survey shows closed message', async ({ page }, testInfo) => {
   }
 });
 
-test('cancelled survey shows closed message', async ({ page }, testInfo) => {
-  const email = scopedEmail('e2e-respondent-cancelled', testInfo.project.name);
-  const userId = await ensureUser(email, E2E_PASSWORD);
-  const projectId = await createProjectViaDb(userId, 'E2E Respondent Cancelled');
-  const slug = generateSlug();
-
-  const { surveyId } = await createSurveyWithQuestions(
-    userId,
-    { status: 'active', slug, projectId },
-    1
-  );
-
-  await updateSurveyViaDb(surveyId, { status: 'cancelled' });
-
-  try {
-    await page.goto(url(`/r/${slug}`), { waitUntil: 'networkidle' });
-    await expect(page.getByRole('heading', { level: 1 })).toBeVisible({ timeout: 15_000 });
-    await expect(page.getByRole('button', { name: /start/i })).not.toBeVisible();
-  } finally {
-    await deleteUserByEmail(email).catch(() => {});
-  }
-});
-
-test('archived survey shows closed message', async ({ page }, testInfo) => {
-  const email = scopedEmail('e2e-respondent-archived', testInfo.project.name);
-  const userId = await ensureUser(email, E2E_PASSWORD);
-  const projectId = await createProjectViaDb(userId, 'E2E Respondent Archived');
-  const slug = generateSlug();
-
-  const { surveyId } = await createSurveyWithQuestions(
-    userId,
-    { status: 'active', slug, projectId },
-    1
-  );
-
-  await updateSurveyViaDb(surveyId, {
-    status: 'completed',
-    completed_at: new Date().toISOString(),
-  });
-
-  await updateSurveyViaDb(surveyId, {
-    status: 'archived',
-    archived_at: new Date().toISOString(),
-  });
-
-  try {
-    await page.goto(url(`/r/${slug}`), { waitUntil: 'networkidle' });
-    await expect(page.getByRole('heading', { level: 1 })).toBeVisible({ timeout: 15_000 });
-    await expect(page.getByRole('button', { name: /start/i })).not.toBeVisible();
-  } finally {
-    await deleteUserByEmail(email).catch(() => {});
-  }
-});
-
 test('trashed survey shows closed message', async ({ page }, testInfo) => {
   const email = scopedEmail('e2e-respondent-trashed', testInfo.project.name);
   const userId = await ensureUser(email, E2E_PASSWORD);

@@ -7,14 +7,7 @@ import type { ProjectStatus } from '@/features/projects/types';
 import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
 
-const STATUS_ACTIONS = [
-  'complete',
-  'archive',
-  'reopen',
-  'restore',
-  'trash',
-  'restoreTrash',
-] as const;
+const STATUS_ACTIONS = ['complete', 'trash', 'restoreTrash', 'permanentDelete'] as const;
 
 const bulkChangeProjectStatusSchema = z.object({
   projectIds: z.array(z.uuid()).min(1).max(50),

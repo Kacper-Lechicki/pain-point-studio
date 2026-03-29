@@ -10,7 +10,7 @@ import { useSessionState } from '@/hooks/common/use-session-state';
 
 // ── Module-level constants ──────────────────────────────────────────
 
-/** When no status filter: hide archived and trashed. When a status filter is active: allow only surveys matching the filter (including trashed/archived if selected). */
+/** When no status filter: hide trashed. When a status filter is active: allow only surveys matching the filter (including trashed if selected). */
 function getBasePreFilter(
   isProjectCtx: boolean
 ): (s: UserSurvey, statusFilter: SurveyStatusFilter[]) => boolean {
@@ -25,7 +25,7 @@ function getBasePreFilter(
       return !flags.isTrashed;
     }
 
-    return !flags.isArchived && !flags.isTrashed;
+    return !flags.isTrashed;
   };
 }
 
@@ -96,17 +96,10 @@ export function useSurveyListFilters(surveys: UserSurvey[], options?: UseSurveyL
 
   const statusCounts = (() => {
     const counts: Record<string, number> = isProjectCtx
-      ? { active: 0, draft: 0, completed: 0, cancelled: 0, archived: 0, trashed: 0 }
-      : { active: 0, draft: 0, completed: 0, cancelled: 0, trashed: 0 };
+      ? { active: 0, draft: 0, completed: 0, trashed: 0 }
+      : { active: 0, draft: 0, completed: 0, trashed: 0 };
 
     for (const s of surveys) {
-      const flags = deriveSurveyFlags(s.status);
-
-      // In dashboard (non-project), exclude only archived from counts so trashed appears in filter.
-      if (!isProjectCtx && flags.isArchived) {
-        continue;
-      }
-
       if (s.status in counts) {
         const current = counts[s.status];
 
@@ -130,7 +123,7 @@ export function useSurveyListFilters(surveys: UserSurvey[], options?: UseSurveyL
     for (const s of surveys) {
       const flags = deriveSurveyFlags(s.status);
 
-      if (flags.isArchived || flags.isTrashed) {
+      if (flags.isTrashed) {
         continue;
       }
 
@@ -169,9 +162,7 @@ export function useSurveyListFilters(surveys: UserSurvey[], options?: UseSurveyL
   };
 
   const kpiStatuses = (() => {
-    const order: SurveyStatusFilter[] = isProjectCtx
-      ? ['active', 'draft', 'completed', 'cancelled', 'archived']
-      : ['active', 'draft', 'completed', 'cancelled'];
+    const order: SurveyStatusFilter[] = ['active', 'draft', 'completed'];
 
     return order.filter((s) => (statusCounts[s] ?? 0) > 0);
   })();

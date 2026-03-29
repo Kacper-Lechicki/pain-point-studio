@@ -12,7 +12,7 @@
 
 An idea validation platform for developers. It enables a structured research process — from hypothesis to first feedback — in hours instead of weeks. 70% of side projects fail because they don't solve a real problem. PPS fixes that by providing:
 
-- **Project management** — organize research ideas with status tracking (active → completed → archived)
+- **Project management** — organize research ideas with status tracking (active → completed)
 - **Survey builder** — create multi-question surveys with 5 question types (open text, short text, multiple choice, rating scale, yes/no)
 - **Respondent collection** — public survey links (`/r/[slug]`) with fingerprint-based duplicate prevention
 - **Analytics** — completion rates, response timelines, per-question breakdowns
@@ -311,37 +311,35 @@ Generic state machine in `src/lib/common/status-machine.ts` shared by projects a
 - **Transition map** — Defines valid actions with source statuses and target statuses
 - **Action UI config** — Icon, button class, menu item variant, optional confirmation dialog
 
-**Project statuses:** `active` → `completed` → `archived` → `trashed`
+**Project statuses:** `active` → `completed` (readonly) → `trashed`
 
-| Action            | From                        | To                     | Method |
-| ----------------- | --------------------------- | ---------------------- | ------ |
-| `complete`        | active                      | completed              | update |
-| `archive`         | active, completed           | archived               | update |
-| `reopen`          | completed                   | active                 | update |
-| `restore`         | archived                    | _(pre_archive_status)_ | update |
-| `trash`           | active, completed, archived | trashed                | update |
-| `restoreTrash`    | trashed                     | _(pre_trash_status)_   | update |
-| `permanentDelete` | trashed                     | —                      | delete |
+| Action            | From              | To                   | Method |
+| ----------------- | ----------------- | -------------------- | ------ |
+| `complete`        | active            | completed            | update |
+| `trash`           | active, completed | trashed              | update |
+| `restoreTrash`    | trashed           | _(pre_trash_status)_ | update |
+| `permanentDelete` | trashed           | —                    | delete |
 
-**Survey statuses:** `draft` → `active` → `completed` / `cancelled` → `archived` → `trashed`
+**Survey statuses:** `draft` → `active` → `completed` (readonly) → `trashed`
 
-| Action            | From                                          | To                     | Method |
-| ----------------- | --------------------------------------------- | ---------------------- | ------ |
-| `complete`        | active                                        | completed              | update |
-| `cancel`          | active                                        | cancelled              | update |
-| `reopen`          | completed, cancelled                          | active                 | update |
-| `archive`         | completed, cancelled, draft                   | archived               | update |
-| `restore`         | archived                                      | _(pre_archive_status)_ | update |
-| `trash`           | draft, active, completed, cancelled, archived | trashed                | update |
-| `restoreTrash`    | trashed                                       | _(pre_trash_status)_   | update |
-| `permanentDelete` | trashed                                       | —                      | delete |
+| Action            | From                     | To                   | Method |
+| ----------------- | ------------------------ | -------------------- | ------ |
+| `complete`        | active                   | completed            | update |
+| `trash`           | draft, active, completed | trashed              | update |
+| `restoreTrash`    | trashed                  | _(pre_trash_status)_ | update |
+| `permanentDelete` | trashed                  | —                    | delete |
 
-**Soft-delete lifecycle:** When trashing, the current status is saved in `pre_trash_status` (or `pre_archive_status` for archiving). Restoring reads this field to return to the original state. A database cron job hard-deletes records where `deleted_at` is older than 30 days.
+**Key behaviors:**
+
+- **Completed = readonly** — no editing, no new surveys in completed projects. Can view, export, trash.
+- **Trashing active surveys** completes them first (irreversible), then trashes.
+- **Cascade:** completing a project completes its active surveys. Trashing a project completes active surveys, then trashes everything.
+- **Soft-delete lifecycle:** When trashing, the current status is saved in `pre_trash_status`. Restoring reads this field to return to the original state. A database cron job hard-deletes records where `deleted_at` is older than 30 days.
 
 ### i18n System
 
 - **Configuration:** `src/i18n/constants.ts` defines `locales` (`['en']`) and `defaultLocale` (`'en'`)
-- **Messages:** `src/i18n/messages/en.json` — single file with nested keys (e.g. `projects.detail.archivedBanner`)
+- **Messages:** `src/i18n/messages/en.json` — single file with nested keys (e.g. `projects.detail.completedBanner`)
 - **Server usage:** `const t = await getTranslations()` from `next-intl/server`
 - **Client usage:** `const t = useTranslations()` from `next-intl` (requires `'use client'`)
 - **Pathnames:** `src/i18n/pathnames.ts` maps route names to locale-specific paths
@@ -388,7 +386,7 @@ Key settings:
 
 ```sql
 question_type: 'open_text' | 'short_text' | 'multiple_choice' | 'rating_scale' | 'yes_no'
-survey_status: 'draft' | 'active' | 'completed' | 'cancelled' | 'archived' | 'trashed'
+survey_status: 'draft' | 'active' | 'completed' | 'trashed'
 ```
 
 ### RPC Functions (39 total)
@@ -440,7 +438,7 @@ survey_status: 'draft' | 'active' | 'completed' | 'cancelled' | 'archived' | 'tr
 - `get_dashboard_overview(p_user_id)` — User's projects with active survey counts
 - `get_dashboard_stats(p_user_id, p_days)` — KPIs: total responses, completion rate, timeline, recent activity
 - `upsert_recent_item(p_item_id, p_item_type)` — Fire-and-forget upsert into `user_recent_items`. Auto-trims to 5 per item type.
-- `get_recent_items(p_item_type, p_limit, p_project_id)` — Returns recent items with fresh labels (joins projects/surveys). Filters out trashed/cancelled items. Optional project filter for surveys.
+- `get_recent_items(p_item_type, p_limit, p_project_id)` — Returns recent items with fresh labels (joins projects/surveys). Filters out trashed items. Optional project filter for surveys.
 
 **Other:**
 

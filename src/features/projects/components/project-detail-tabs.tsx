@@ -1,9 +1,10 @@
 'use client';
 
-import { type ReactNode, useState } from 'react';
+import { type ReactNode, useRef, useState } from 'react';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
+import { FlaskConical, LayoutDashboard, StickyNote } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -67,6 +68,7 @@ export function ProjectDetailTabs({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  const tabsListRef = useRef<HTMLDivElement>(null);
   const [activeTab, setActiveTab] = useState<TabValue>(() => getInitialTab(searchParams));
 
   const handleTabChange = (value: string) => {
@@ -83,6 +85,10 @@ export function ProjectDetailTabs({
 
     const qs = params.toString();
     window.history.replaceState(null, '', `${pathname}${qs ? `?${qs}` : ''}`);
+
+    requestAnimationFrame(() => {
+      tabsListRef.current?.scrollIntoView({ block: 'nearest', behavior: 'instant' });
+    });
   };
 
   const handleCreateSurvey = () => {
@@ -93,19 +99,24 @@ export function ProjectDetailTabs({
 
   return (
     <Tabs value={activeTab} onValueChange={handleTabChange}>
-      <TabsList variant="line">
-        <TabsTrigger value="overview">{t('projects.detail.tabs.overview')}</TabsTrigger>
+      <TabsList ref={tabsListRef} variant="line">
+        <TabsTrigger value="overview">
+          <LayoutDashboard />
+          {t('projects.detail.tabs.overview')}
+        </TabsTrigger>
         <TabsTrigger value="surveys">
+          <FlaskConical />
           {t('projects.detail.tabs.research')}
           <TabCount count={surveys.length} />
         </TabsTrigger>
         <TabsTrigger value="notes">
+          <StickyNote />
           {t('projects.detail.tabs.notes')}
           <TabCount count={activeNotesCount} />
         </TabsTrigger>
       </TabsList>
 
-      <TabsContent value="overview" className="pt-5">
+      <TabsContent forceMount value="overview" className="pt-5 data-[state=inactive]:hidden">
         <ProjectOverviewTab
           project={project}
           surveys={surveys}
@@ -114,7 +125,7 @@ export function ProjectDetailTabs({
         />
       </TabsContent>
 
-      <TabsContent value="surveys" className="pt-5">
+      <TabsContent forceMount value="surveys" className="pt-5 data-[state=inactive]:hidden">
         <ProjectSurveysTab
           project={project}
           hasSurveys={surveys.length > 0}
@@ -124,7 +135,7 @@ export function ProjectDetailTabs({
         </ProjectSurveysTab>
       </TabsContent>
 
-      <TabsContent value="notes" className="pt-5">
+      <TabsContent forceMount value="notes" className="pt-5 data-[state=inactive]:hidden">
         <ProjectNotesTab project={project} initialNotes={notesMeta} initialFolders={noteFolders} />
       </TabsContent>
     </Tabs>

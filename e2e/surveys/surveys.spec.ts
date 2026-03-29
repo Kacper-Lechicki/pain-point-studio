@@ -42,56 +42,32 @@ test('create survey: empty state -> wizard -> verify in list', async ({
 
   await page.getByRole('button', { name: 'Create Survey' }).click();
   await expect(page).toHaveURL(/\/dashboard\/research\/new\/[0-9a-f-]+/, { timeout: 30_000 });
-  await page.goto(projectSurveysUrl(projectId));
-  await expect(listItem(page, SURVEY_TITLE)).toBeVisible({ timeout: 15_000 });
+  await expect(async () => {
+    await page.goto(projectSurveysUrl(projectId), { waitUntil: 'networkidle' });
+    await expect(listItem(page, SURVEY_TITLE)).toBeVisible({ timeout: 5_000 });
+  }).toPass({ timeout: 25_000 });
 });
 
-test('survey lifecycle: complete -> archive -> restore -> trash', async ({
+test('survey lifecycle: complete -> trash -> restore', async ({
   page,
   testProject: { projectId, userId },
 }) => {
   const surveyTitle = `E2E Lifecycle ${Date.now()}`;
 
   await createSurveyWithQuestions(userId, { title: surveyTitle, status: 'active', projectId }, 2);
-  await page.goto(projectSurveysUrl(projectId));
+
+  await expect(async () => {
+    await page.goto(projectSurveysUrl(projectId), { waitUntil: 'networkidle' });
+    await expect(listItem(page, surveyTitle)).toBeVisible({ timeout: 5_000 });
+  }).toPass({ timeout: 25_000 });
 
   const row = listItem(page, surveyTitle);
 
   await executeMenuAction(page, row, 'Complete', 'Complete');
-  await waitForToastCycle(page);
-  await executeMenuAction(page, row, 'Archive', 'Archive');
-  await waitForToastCycle(page);
-  await executeMenuAction(page, row, 'Restore', 'Restore');
   await waitForToastCycle(page);
   await executeMenuAction(page, row, 'Move to Trash', 'Move to Trash');
   await waitForToast(page);
   await expect(row).not.toBeVisible({ timeout: 10_000 });
-});
-
-test('cancel active survey', async ({ page, testProject: { projectId, userId } }) => {
-  const surveyTitle = `E2E Cancel ${Date.now()}`;
-
-  await createSurveyWithQuestions(userId, { title: surveyTitle, status: 'active', projectId }, 1);
-  await page.goto(projectSurveysUrl(projectId));
-
-  const row = listItem(page, surveyTitle);
-
-  await executeMenuAction(page, row, 'Cancel', 'Cancel survey');
-  await waitForToast(page);
-});
-
-test('reopen completed survey', async ({ page, testProject: { projectId, userId } }) => {
-  const surveyTitle = `E2E Reopen ${Date.now()}`;
-
-  await createSurveyWithQuestions(userId, { title: surveyTitle, status: 'active', projectId }, 1);
-  await page.goto(projectSurveysUrl(projectId));
-
-  const row = listItem(page, surveyTitle);
-
-  await executeMenuAction(page, row, 'Complete', 'Complete');
-  await waitForToastCycle(page);
-  await executeMenuAction(page, row, 'Reopen', 'Reopen');
-  await waitForToast(page);
 });
 
 test('restore trashed survey from detail', async ({ page, testProject: { projectId, userId } }) => {

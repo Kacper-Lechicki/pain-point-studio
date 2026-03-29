@@ -166,7 +166,6 @@ export type Database = {
       };
       projects: {
         Row: {
-          archived_at: string | null;
           completed_at: string | null;
           created_at: string;
           deleted_at: string | null;
@@ -174,7 +173,6 @@ export type Database = {
           id: string;
           image_url: string | null;
           name: string;
-          pre_archive_status: string | null;
           pre_trash_status: string | null;
           response_limit: number;
           status: string;
@@ -183,7 +181,6 @@ export type Database = {
           user_id: string;
         };
         Insert: {
-          archived_at?: string | null;
           completed_at?: string | null;
           created_at?: string;
           deleted_at?: string | null;
@@ -191,7 +188,6 @@ export type Database = {
           id?: string;
           image_url?: string | null;
           name: string;
-          pre_archive_status?: string | null;
           pre_trash_status?: string | null;
           response_limit?: number;
           status?: string;
@@ -200,7 +196,6 @@ export type Database = {
           user_id: string;
         };
         Update: {
-          archived_at?: string | null;
           completed_at?: string | null;
           created_at?: string;
           deleted_at?: string | null;
@@ -208,7 +203,6 @@ export type Database = {
           id?: string;
           image_url?: string | null;
           name?: string;
-          pre_archive_status?: string | null;
           pre_trash_status?: string | null;
           response_limit?: number;
           status?: string;
@@ -365,8 +359,6 @@ export type Database = {
       };
       surveys: {
         Row: {
-          archived_at: string | null;
-          cancelled_at: string | null;
           completed_at: string | null;
           created_at: string;
           deleted_at: string | null;
@@ -376,7 +368,6 @@ export type Database = {
           id: string;
           max_respondents: number | null;
           pre_trash_status: string | null;
-          previous_status: Database['public']['Enums']['survey_status'] | null;
           project_id: string;
           research_phase: string | null;
           slug: string | null;
@@ -389,8 +380,6 @@ export type Database = {
           visibility: string;
         };
         Insert: {
-          archived_at?: string | null;
-          cancelled_at?: string | null;
           completed_at?: string | null;
           created_at?: string;
           deleted_at?: string | null;
@@ -400,7 +389,6 @@ export type Database = {
           id?: string;
           max_respondents?: number | null;
           pre_trash_status?: string | null;
-          previous_status?: Database['public']['Enums']['survey_status'] | null;
           project_id: string;
           research_phase?: string | null;
           slug?: string | null;
@@ -413,8 +401,6 @@ export type Database = {
           visibility?: string;
         };
         Update: {
-          archived_at?: string | null;
-          cancelled_at?: string | null;
           completed_at?: string | null;
           created_at?: string;
           deleted_at?: string | null;
@@ -424,7 +410,6 @@ export type Database = {
           id?: string;
           max_respondents?: number | null;
           pre_trash_status?: string | null;
-          previous_status?: Database['public']['Enums']['survey_status'] | null;
           project_id?: string;
           research_phase?: string | null;
           slug?: string | null;
@@ -635,7 +620,7 @@ export type Database = {
     };
     Enums: {
       question_type: 'open_text' | 'short_text' | 'multiple_choice' | 'rating_scale' | 'yes_no';
-      survey_status: 'draft' | 'active' | 'completed' | 'cancelled' | 'archived' | 'trashed';
+      survey_status: 'draft' | 'active' | 'completed' | 'trashed';
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -765,7 +750,7 @@ export const Constants = {
   public: {
     Enums: {
       question_type: ['open_text', 'short_text', 'multiple_choice', 'rating_scale', 'yes_no'],
-      survey_status: ['draft', 'active', 'completed', 'cancelled', 'archived', 'trashed'],
+      survey_status: ['draft', 'active', 'completed', 'trashed'],
     },
   },
 } as const;

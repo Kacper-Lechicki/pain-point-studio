@@ -10,9 +10,6 @@ const t = (key: string) => key;
 describe('getProjectConfirmDialogProps', () => {
   const actions: { action: ProjectAction; variant: string }[] = [
     { action: 'complete', variant: 'accent' },
-    { action: 'archive', variant: 'warning' },
-    { action: 'reopen', variant: 'success' },
-    { action: 'restore', variant: 'success' },
     { action: 'trash', variant: 'destructive' },
     { action: 'restoreTrash', variant: 'default' },
     { action: 'permanentDelete', variant: 'destructive' },

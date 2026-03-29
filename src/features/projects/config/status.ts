@@ -1,4 +1,4 @@
-import { Archive, CheckCircle2, Pencil, RotateCcw, Trash2, Trophy } from 'lucide-react';
+import { CheckCircle2, Pencil, RotateCcw, Trash2, Trophy } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 import { COMPACT_ACTION_COLORS } from '@/components/ui/action-button-styles';
@@ -47,17 +47,6 @@ export const PROJECT_STATUS_CONFIG: Record<ProjectStatus, ProjectStatusConfig> =
     },
     kpiColor: 'text-violet-600 dark:text-violet-400',
   },
-  archived: {
-    labelKey: 'projects.list.status.archived',
-    descriptionKey: 'projects.statusInfo.archived',
-    ariaLabelKey: 'projects.statusInfo.ariaLabel',
-    icon: Archive,
-    badge: {
-      variant: 'outline',
-      className: 'border-amber-500/25 bg-amber-500/15 text-amber-700 dark:text-amber-400',
-    },
-    kpiColor: 'text-amber-600 dark:text-amber-400',
-  },
   trashed: {
     labelKey: 'projects.list.status.trashed',
     descriptionKey: 'projects.statusInfo.trashed',
@@ -76,14 +65,10 @@ export const PROJECT_STATUS_CONFIG: Record<ProjectStatus, ProjectStatusConfig> =
 /** Project state-machine: maps action names to their target status and valid source statuses. */
 export const PROJECT_TRANSITIONS = {
   complete: { method: 'update', toStatus: 'completed', fromStatuses: ['active'] },
-  reopen: { method: 'update', toStatus: 'active', fromStatuses: ['completed'] },
-  /** toStatus is null — the actual status comes from pre_archive_status (resolved in RPC). */
-  restore: { method: 'update', toStatus: null, fromStatuses: ['archived'] },
-  archive: { method: 'update', toStatus: 'archived', fromStatuses: ['active', 'completed'] },
   trash: {
     method: 'update',
     toStatus: 'trashed',
-    fromStatuses: ['active', 'completed', 'archived'],
+    fromStatuses: ['active', 'completed'],
   },
   restoreTrash: { method: 'update', toStatus: null, fromStatuses: ['trashed'] },
   permanentDelete: { method: 'delete', fromStatuses: ['trashed'] },
@@ -118,19 +103,6 @@ export const PROJECT_ACTION_UI: Record<ProjectAction | 'edit', ProjectActionUICo
     icon: Trophy,
     buttonClassName: COMPACT_ACTION_COLORS.complete,
     menuItemVariant: 'accent',
-  },
-  archive: {
-    icon: Archive,
-    buttonClassName: COMPACT_ACTION_COLORS.archive,
-    menuItemVariant: 'warning',
-  },
-  reopen: {
-    icon: RotateCcw,
-    buttonClassName: COMPACT_ACTION_COLORS.restore,
-  },
-  restore: {
-    icon: RotateCcw,
-    buttonClassName: COMPACT_ACTION_COLORS.restore,
   },
   trash: {
     icon: Trash2,

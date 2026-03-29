@@ -1,4 +1,4 @@
-import { Archive, Ban, CheckCircle2, CircleDot, FilePen, RotateCcw, Trash2 } from 'lucide-react';
+import { CheckCircle2, CircleDot, FilePen, RotateCcw, Trash2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 import { COMPACT_ACTION_COLORS } from '@/components/ui/action-button-styles';
@@ -57,30 +57,6 @@ export const SURVEY_STATUS_CONFIG: Record<SurveyStatus, StatusConfig> = {
     },
     kpiColor: 'text-violet-600 dark:text-violet-400',
   },
-  cancelled: {
-    labelKey: 'surveys.dashboard.status.cancelled',
-    descriptionKey: 'surveys.dashboard.statusInfo.cancelled',
-    ariaLabelKey: 'surveys.dashboard.statusInfo.ariaLabel',
-    icon: Ban,
-    badge: {
-      variant: 'outline',
-      className: 'bg-red-500/15 text-red-700 dark:text-red-400 border-red-500/25',
-      showPulseDot: false,
-    },
-    kpiColor: 'text-red-600 dark:text-red-400',
-  },
-  archived: {
-    labelKey: 'surveys.dashboard.status.archived',
-    descriptionKey: 'surveys.dashboard.statusInfo.archived',
-    ariaLabelKey: 'surveys.dashboard.statusInfo.ariaLabel',
-    icon: Archive,
-    badge: {
-      variant: 'outline',
-      className: 'bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/25',
-      showPulseDot: false,
-    },
-    kpiColor: 'text-foreground',
-  },
   trashed: {
     labelKey: 'surveys.dashboard.status.trashed',
     descriptionKey: 'surveys.dashboard.statusInfo.trashed',
@@ -100,18 +76,10 @@ export const SURVEY_STATUS_CONFIG: Record<SurveyStatus, StatusConfig> = {
 /** Survey state-machine: maps action names to their target status and valid source statuses. */
 export const SURVEY_TRANSITIONS = {
   complete: { method: 'update', toStatus: 'completed', fromStatuses: ['active'] },
-  cancel: { method: 'update', toStatus: 'cancelled', fromStatuses: ['active'] },
-  reopen: { method: 'update', toStatus: 'active', fromStatuses: ['completed', 'cancelled'] },
-  archive: {
-    method: 'update',
-    toStatus: 'archived',
-    fromStatuses: ['completed', 'cancelled', 'draft'],
-  },
-  restore: { method: 'update', toStatus: null, fromStatuses: ['archived'] },
   trash: {
     method: 'update',
     toStatus: 'trashed',
-    fromStatuses: ['draft', 'active', 'completed', 'cancelled', 'archived'],
+    fromStatuses: ['draft', 'active', 'completed'],
   },
   restoreTrash: { method: 'update', toStatus: null, fromStatuses: ['trashed'] },
   permanentDelete: { method: 'delete', fromStatuses: ['trashed'] },
@@ -136,8 +104,6 @@ export interface SurveyStatusFlags {
   isDraft: boolean;
   isActive: boolean;
   isCompleted: boolean;
-  isCancelled: boolean;
-  isArchived: boolean;
   isTrashed: boolean;
 }
 
@@ -147,8 +113,6 @@ export function deriveSurveyFlags(status: SurveyStatus): SurveyStatusFlags {
     isDraft: status === 'draft',
     isActive: status === 'active',
     isCompleted: status === 'completed',
-    isCancelled: status === 'cancelled',
-    isArchived: status === 'archived',
     isTrashed: status === 'trashed',
   };
 }
@@ -181,48 +145,6 @@ export const SURVEY_ACTION_UI: Record<SurveyAction, ActionUIConfig> = {
       titleKey: 'confirm.completeTitle',
       descriptionKey: 'confirm.completeDescription',
       variant: 'accent',
-    },
-  },
-  cancel: {
-    icon: Ban,
-    toastKey: 'toast.cancelled',
-    buttonClassName: COMPACT_ACTION_COLORS.destructive,
-    menuItemVariant: 'destructive',
-    confirm: {
-      titleKey: 'confirm.cancelTitle',
-      descriptionKey: 'confirm.cancelDescription',
-      variant: 'destructive',
-    },
-  },
-  reopen: {
-    icon: RotateCcw,
-    toastKey: 'toast.reopened',
-    buttonClassName: COMPACT_ACTION_COLORS.restore,
-    confirm: {
-      titleKey: 'confirm.reopenTitle',
-      descriptionKey: 'confirm.reopenDescription',
-      variant: 'default',
-    },
-  },
-  archive: {
-    icon: Archive,
-    toastKey: 'toast.archived',
-    buttonClassName: COMPACT_ACTION_COLORS.archive,
-    menuItemVariant: 'warning',
-    confirm: {
-      titleKey: 'confirm.archiveTitle',
-      descriptionKey: 'confirm.archiveDescription',
-      variant: 'warning',
-    },
-  },
-  restore: {
-    icon: RotateCcw,
-    toastKey: 'toast.restored',
-    buttonClassName: COMPACT_ACTION_COLORS.restore,
-    confirm: {
-      titleKey: 'confirm.restoreTitle',
-      descriptionKey: 'confirm.restoreDescription',
-      variant: 'default',
     },
   },
   trash: {

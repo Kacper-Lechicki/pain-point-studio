@@ -65,7 +65,8 @@ test.describe('Survey responses tab', () => {
       await expect(items).toHaveCount(1, { timeout: 3_000 });
     }).toPass({ timeout: 20_000 });
 
-    await expect(page.getByText('Completed').first()).toBeVisible();
+    const responsesPanel = page.locator('[data-slot="tabs-content"][data-state="active"]');
+    await expect(responsesPanel.getByText('Completed').first()).toBeVisible();
   });
 
   test('multiple responses accumulate in real-time', async ({
@@ -155,7 +156,8 @@ test.describe('Survey responses tab', () => {
         await expect(items).toHaveCount(1, { timeout: 3_000 });
       }).toPass({ timeout: 25_000 });
 
-      await expect(page.getByText('Completed').first()).toBeVisible();
+      const activePanel = page.locator('[data-slot="tabs-content"][data-state="active"]');
+      await expect(activePanel.getByText('Completed').first()).toBeVisible();
     } finally {
       await respondentContext.close();
     }
@@ -178,7 +180,8 @@ test.describe('Survey responses tab', () => {
     await expect(page.locator(responseListItem)).toHaveCount(1, { timeout: 15_000 });
     await page.locator(responseListItem).first().click();
 
-    await expect(page.getByText('Detail view answer')).toBeVisible({ timeout: 10_000 });
+    const activePanel = page.locator('[data-slot="tabs-content"][data-state="active"]');
+    await expect(activePanel.getByText('Detail view answer')).toBeVisible({ timeout: 10_000 });
   });
 
   test('export dialog opens from stats header menu', async ({

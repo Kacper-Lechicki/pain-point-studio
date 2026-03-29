@@ -1,7 +1,7 @@
 import type { Tables } from '@/lib/supabase/types';
 
 /** All project lifecycle statuses as a const tuple (source of truth). */
-export const PROJECT_STATUSES = ['active', 'completed', 'archived', 'trashed'] as const;
+export const PROJECT_STATUSES = ['active', 'completed', 'trashed'] as const;
 
 export type ProjectStatus = (typeof PROJECT_STATUSES)[number];
 

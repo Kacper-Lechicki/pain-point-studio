@@ -50,10 +50,10 @@ export function SurveyDetailPanel({
   );
 
   const flags = deriveSurveyFlags(survey.status);
-  const { isDraft, isActive, isArchived, isTrashed } = flags;
-  const showActiveDetails = !isDraft && !isArchived;
+  const { isDraft, isActive, isTrashed } = flags;
+  const showActiveDetails = !isDraft;
   const hasShareableLink = isActive && !!shareUrl;
-  const canExport = !isDraft && !isArchived;
+  const canExport = !isDraft;
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const sparklineColor = getSparklineColor(survey.recentActivity);
 
@@ -89,7 +89,6 @@ export function SurveyDetailPanel({
               surveyId={survey.id}
               flags={{
                 isDraft,
-                isArchived,
                 isTrashed,
                 hasShareableLink,
                 questionCount: survey.questionCount,

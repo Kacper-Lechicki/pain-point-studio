@@ -11,6 +11,7 @@ import { getProjectNotes } from '@/features/projects/actions/get-project-notes';
 import { getProjectOverviewStats } from '@/features/projects/actions/get-project-overview-stats';
 import { getProjectSignalsData } from '@/features/projects/actions/get-project-signals-data';
 import { ProjectDashboardPage } from '@/features/projects/components/project-dashboard-page';
+import type { ProjectOverviewStats } from '@/features/projects/types';
 import { getProjectSurveys } from '@/features/surveys/actions';
 
 interface ProjectDetailPageProps {
@@ -28,7 +29,7 @@ export async function generateMetadata({ params }: ProjectDetailPageProps) {
   return getPageMetadata(t, 'project', { name: data.project.name });
 }
 
-const EMPTY_OVERVIEW_STATS = {
+const EMPTY_OVERVIEW_STATS: ProjectOverviewStats = {
   totalSurveys: 0,
   activeSurveys: 0,
   totalResponses: 0,

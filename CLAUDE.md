@@ -73,7 +73,13 @@ Auth session refresh, route protection (protected by default — public routes a
 
 ### Status machine
 
-Generic machine in `src/lib/common/status-machine.ts`, configs in `src/features/{projects,surveys}/config/`. Soft-delete: `trashed` status + `deleted_at` + `pre_trash_status`, cron purges after 30 days.
+Generic machine in `src/lib/common/status-machine.ts`, configs in `src/features/{projects,surveys}/config/`.
+
+- **Projects**: `active → completed → (readonly)`. Trash from any status. No reopen.
+- **Surveys**: `draft → active → completed → (readonly)`. Trash from any status. Trashing an active survey completes it first (irreversible).
+- **Completed = readonly**: no editing, no new surveys in completed projects. Can view, export, trash.
+- **Soft-delete**: `trashed` status + `deleted_at` + `pre_trash_status`, cron purges after 30 days.
+- **Cascade**: completing a project completes active surveys. Trashing a project completes active surveys then trashes everything.
 
 ## Conventions
 

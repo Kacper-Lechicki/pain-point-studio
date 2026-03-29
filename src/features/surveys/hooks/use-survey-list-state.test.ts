@@ -60,8 +60,6 @@ function makeSurvey(id: string, title: string): UserSurvey {
     startsAt: null,
     endsAt: null,
     maxRespondents: null,
-    archivedAt: null,
-    cancelledAt: null,
     completedAt: null,
     createdAt: '2025-01-01T00:00:00Z',
     updatedAt: '2025-01-15T00:00:00Z',
@@ -72,7 +70,6 @@ function makeSurvey(id: string, title: string): UserSurvey {
     researchPhase: null,
     deletedAt: null,
     preTrashStatus: null,
-    previousStatus: null,
   };
 }
 

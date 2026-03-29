@@ -13,9 +13,6 @@ export interface ProjectConfirmDialogProps {
 /** Maps each project action to its matching confirm button variant. */
 const ACTION_VARIANT: Record<ProjectAction, ConfirmVariant> = {
   complete: 'accent',
-  archive: 'warning',
-  reopen: 'success',
-  restore: 'success',
   trash: 'destructive',
   restoreTrash: 'default',
   permanentDelete: 'destructive',

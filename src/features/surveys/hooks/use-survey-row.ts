@@ -24,16 +24,11 @@ export function useSurveyRow(
   );
 
   const flags = deriveSurveyFlags(survey.status);
-  const { isDraft, isActive, isCompleted, isCancelled, isArchived, isTrashed } = flags;
+  const { isDraft, isActive, isCompleted, isTrashed } = flags;
   const hasShareableLink = isActive && !!survey.slug;
-  const canExport = !isDraft && !isArchived;
+  const canExport = !isDraft;
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const handleExport = () => setExportDialogOpen(true);
-
-  const archivedAtLabel =
-    isArchived && (survey.archivedAt ?? survey.updatedAt)
-      ? format.relativeTime(new Date(survey.archivedAt ?? survey.updatedAt), now)
-      : null;
 
   const sparklineColor = getSparklineColor(survey.recentActivity);
   const updatedAtLabel = format.relativeTime(new Date(survey.updatedAt), now);
@@ -45,25 +40,13 @@ export function useSurveyRow(
 
   const availableActions = getAvailableActions(survey.status);
 
-  const autoDeleteDays = isArchived
-    ? daysUntilExpiry(survey.archivedAt, SURVEY_RETENTION_DAYS)
-    : null;
-
   const trashedPurgeDays = isTrashed
     ? daysUntilExpiry(survey.deletedAt ?? null, TRASH_RETENTION_DAYS)
     : null;
 
-  const linkExpiryDays = (() => {
-    if (isCompleted) {
-      return daysUntilExpiry(survey.completedAt, SURVEY_RETENTION_DAYS);
-    }
-
-    if (isCancelled) {
-      return daysUntilExpiry(survey.cancelledAt, SURVEY_RETENTION_DAYS);
-    }
-
-    return null;
-  })();
+  const linkExpiryDays = isCompleted
+    ? daysUntilExpiry(survey.completedAt, SURVEY_RETENTION_DAYS)
+    : null;
 
   return {
     t,
@@ -72,16 +55,12 @@ export function useSurveyRow(
     isDraft,
     isActive,
     isCompleted,
-    isCancelled,
-    isArchived,
     isTrashed,
     hasShareableLink,
-    archivedAtLabel,
     sparklineColor,
     updatedAtLabel,
     lastResponseLabel,
     availableActions,
-    autoDeleteDays,
     trashedPurgeDays,
     linkExpiryDays,
     handleActionClick,

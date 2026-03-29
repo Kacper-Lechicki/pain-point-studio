@@ -18,9 +18,6 @@ import type { MessageKey } from '@/i18n/types';
 
 const PROJECT_TOAST_KEY: Record<ProjectAction, MessageKey> = {
   complete: 'projects.toast.completed' as MessageKey,
-  archive: 'projects.toast.archived' as MessageKey,
-  reopen: 'projects.toast.reopened' as MessageKey,
-  restore: 'projects.toast.restored' as MessageKey,
   trash: 'projects.toast.trashed' as MessageKey,
   restoreTrash: 'projects.toast.restoredFromTrash' as MessageKey,
   permanentDelete: 'projects.toast.permanentlyDeleted' as MessageKey,
@@ -41,24 +38,6 @@ function applyOptimisticListUpdate(
   switch (action) {
     case 'complete':
       return { ...p, status: 'completed', completed_at: now, updated_at: now };
-    case 'archive':
-      return {
-        ...p,
-        status: 'archived',
-        archived_at: now,
-        pre_archive_status: p.status,
-        updated_at: now,
-      };
-    case 'reopen':
-      return { ...p, status: 'active', completed_at: null, updated_at: now };
-    case 'restore':
-      return {
-        ...p,
-        status: p.pre_archive_status || 'active',
-        archived_at: null,
-        pre_archive_status: null,
-        updated_at: now,
-      };
     case 'trash':
       return {
         ...p,
@@ -169,11 +148,9 @@ export function useProjectListActions({
             ? {
                 ...p,
                 status: project.status,
-                archived_at: project.archived_at,
                 completed_at: project.completed_at,
                 deleted_at: project.deleted_at,
                 pre_trash_status: project.pre_trash_status,
-                pre_archive_status: project.pre_archive_status,
                 updated_at: project.updated_at,
               }
             : p

@@ -22,7 +22,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { ROUTES } from '@/config/routes';
-import { isProjectArchived } from '@/features/projects/lib/project-helpers';
+import { isProjectReadOnly } from '@/features/projects/lib/project-helpers';
 import { createSurveyDraft } from '@/features/surveys/actions';
 import { SURVEY_DESCRIPTION_MAX_LENGTH, SURVEY_TITLE_MAX_LENGTH } from '@/features/surveys/config';
 import {
@@ -82,7 +82,7 @@ export function CreateSurveyWizard({
     { label: t('projects.detail.createSurvey'), href: getCreateSurveyUrl(projectId) },
   ]);
 
-  const isArchived = isProjectArchived(projectStatus);
+  const isArchived = isProjectReadOnly(projectStatus);
 
   const topLinks: SubPanelLink[] = [
     {

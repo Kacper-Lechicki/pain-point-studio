@@ -19,7 +19,6 @@ interface SurveyActionMenuContentProps {
   surveyId: string;
   flags: {
     isDraft: boolean;
-    isArchived: boolean;
     isTrashed: boolean;
     hasShareableLink: boolean;
     questionCount: number;
@@ -47,7 +46,7 @@ export function SurveyActionMenuContent({
   detailsLabelKey = 'details',
 }: SurveyActionMenuContentProps) {
   const t = useTranslations();
-  const { isDraft, isArchived, isTrashed, hasShareableLink, questionCount } = flags;
+  const { isDraft, isTrashed, hasShareableLink, questionCount } = flags;
   const canPublish = isDraft && questionCount >= QUESTIONS_MIN;
 
   const primaryItems = (() => {
@@ -77,7 +76,7 @@ export function SurveyActionMenuContent({
       });
     }
 
-    if (!isDraft && !isArchived && onExport) {
+    if (!isDraft && onExport) {
       items.push({
         kind: 'button',
         key: 'export',

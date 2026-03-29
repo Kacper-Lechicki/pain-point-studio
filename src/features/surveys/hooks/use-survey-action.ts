@@ -6,12 +6,8 @@ import type { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 import {
-  archiveSurvey,
-  cancelSurvey,
   completeSurvey,
   permanentDeleteSurvey,
-  reopenSurvey,
-  restoreSurvey,
   restoreTrashSurvey,
   trashSurvey,
 } from '@/features/surveys/actions';
@@ -25,10 +21,6 @@ type T = ReturnType<typeof useTranslations>;
 const ACTION_FN: Record<SurveyAction, (data: { surveyId: string }) => Promise<ActionResult<void>>> =
   {
     complete: completeSurvey,
-    cancel: cancelSurvey,
-    reopen: reopenSurvey,
-    archive: archiveSurvey,
-    restore: restoreSurvey,
     trash: trashSurvey,
     restoreTrash: restoreTrashSurvey,
     permanentDelete: permanentDeleteSurvey,
@@ -38,14 +30,7 @@ const ACTION_FN: Record<SurveyAction, (data: { surveyId: string }) => Promise<Ac
 
 type ConfirmableAction = Extract<
   SurveyAction,
-  | 'complete'
-  | 'cancel'
-  | 'reopen'
-  | 'archive'
-  | 'restore'
-  | 'trash'
-  | 'restoreTrash'
-  | 'permanentDelete'
+  'complete' | 'trash' | 'restoreTrash' | 'permanentDelete'
 >;
 
 export function isConfirmable(action: SurveyAction): action is ConfirmableAction {

@@ -25,8 +25,6 @@ function makeSurvey(overrides: Partial<UserSurvey> = {}): UserSurvey {
     startsAt: null,
     endsAt: null,
     maxRespondents: null,
-    archivedAt: null,
-    cancelledAt: null,
     completedAt: null,
     createdAt: '2024-01-01T00:00:00Z',
     updatedAt: '2024-01-02T00:00:00Z',
@@ -37,7 +35,6 @@ function makeSurvey(overrides: Partial<UserSurvey> = {}): UserSurvey {
     researchPhase: null,
     deletedAt: null,
     preTrashStatus: null,
-    previousStatus: null,
     ...overrides,
   };
 }
@@ -140,15 +137,8 @@ describe('computeHint', () => {
     expect(JSON.parse(hint!.text).key).toBe('surveys.dashboard.hints.noResponsesCollected');
   });
 
-  it('should return warning for cancelled survey', () => {
-    const hint = computeHint(makeSurvey({ status: 'cancelled' }), t as never);
-
-    expect(hint!.severity).toBe('warning');
-    expect(JSON.parse(hint!.text).key).toBe('surveys.dashboard.hints.withdrawn');
-  });
-
-  it('should return null for archived survey', () => {
-    const hint = computeHint(makeSurvey({ status: 'archived' }), t as never);
+  it('should return null for trashed survey', () => {
+    const hint = computeHint(makeSurvey({ status: 'trashed' }), t as never);
     expect(hint).toBeNull();
   });
 });

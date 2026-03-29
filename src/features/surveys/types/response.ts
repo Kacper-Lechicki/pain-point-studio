@@ -30,13 +30,7 @@ export const submitResponseSchema = z.object({
  * All possible reasons a survey is not accepting responses (source of truth).
  * Defined here (not in index.ts) to avoid circular module dependency.
  */
-export const CLOSED_REASONS = [
-  'completed',
-  'expired',
-  'max_reached',
-  'cancelled',
-  'not_started',
-] as const;
+export const CLOSED_REASONS = ['completed', 'expired', 'max_reached', 'not_started'] as const;
 
 export type ClosedReason = (typeof CLOSED_REASONS)[number];
 

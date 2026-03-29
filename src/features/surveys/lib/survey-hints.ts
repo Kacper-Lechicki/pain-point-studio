@@ -20,7 +20,7 @@ export function computeHint(
   t: ReturnType<typeof useTranslations>
 ): CardHint | null {
   const now = new Date();
-  const { isDraft, isActive, isCompleted, isCancelled } = deriveSurveyFlags(survey.status);
+  const { isDraft, isActive, isCompleted } = deriveSurveyFlags(survey.status);
 
   if (isDraft) {
     if (survey.questionCount === 0) {
@@ -97,10 +97,6 @@ export function computeHint(
     }
 
     return { severity: 'info', text: t('surveys.dashboard.hints.noResponsesCollected') };
-  }
-
-  if (isCancelled) {
-    return { severity: 'warning', text: t('surveys.dashboard.hints.withdrawn') };
   }
 
   return null;

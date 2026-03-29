@@ -66,7 +66,6 @@ const ACTIVE_SURVEY = {
   ends_at: null,
   max_respondents: null,
   completed_at: null,
-  cancelled_at: null,
 };
 
 const QUESTION_ROWS = [
@@ -177,37 +176,6 @@ describe('getPublicSurvey', () => {
       ...ACTIVE_SURVEY,
       status: 'completed',
       completed_at: daysAgo(20),
-    });
-
-    const { getPublicSurvey } = await import('./get-public-survey');
-    const result = await getPublicSurvey('test-slug');
-
-    expect(result).toBeNull();
-  });
-
-  it('should return cancelled survey with closedReason="cancelled" within retention window', async () => {
-    setupMocks({
-      ...ACTIVE_SURVEY,
-      status: 'cancelled',
-      cancelled_at: daysAgo(3),
-    });
-
-    const { getPublicSurvey } = await import('./get-public-survey');
-    const result = await getPublicSurvey('test-slug');
-
-    expect(result).toEqual(
-      expect.objectContaining({
-        isAcceptingResponses: false,
-        closedReason: 'cancelled',
-      })
-    );
-  });
-
-  it('should return null for cancelled survey outside retention window', async () => {
-    setupMocks({
-      ...ACTIVE_SURVEY,
-      status: 'cancelled',
-      cancelled_at: daysAgo(15),
     });
 
     const { getPublicSurvey } = await import('./get-public-survey');

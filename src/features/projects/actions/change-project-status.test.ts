@@ -60,7 +60,7 @@ describe('Project Actions – Change Project Status', () => {
     mockRpc.mockResolvedValue({ data: null, error: { message: 'fail' } });
 
     const { changeProjectStatus } = await import('./change-project-status');
-    const result = await changeProjectStatus({ projectId: PROJECT_ID, action: 'archive' });
+    const result = await changeProjectStatus({ projectId: PROJECT_ID, action: 'complete' });
 
     expect(result).toHaveProperty('error', 'projects.errors.unexpected');
   });
@@ -69,7 +69,7 @@ describe('Project Actions – Change Project Status', () => {
     mockRpc.mockResolvedValue({ data: { error: 'some.error.key' }, error: null });
 
     const { changeProjectStatus } = await import('./change-project-status');
-    const result = await changeProjectStatus({ projectId: PROJECT_ID, action: 'reopen' });
+    const result = await changeProjectStatus({ projectId: PROJECT_ID, action: 'trash' });
 
     expect(result).toEqual({ error: 'some.error.key' });
   });

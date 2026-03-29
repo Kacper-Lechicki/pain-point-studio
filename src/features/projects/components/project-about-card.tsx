@@ -11,7 +11,7 @@ import { isTiptapEmpty } from '@/components/shared/rich-editor/utils';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { updateProjectDescription } from '@/features/projects/actions/update-project-description';
-import { isProjectArchived } from '@/features/projects/lib/project-helpers';
+import { isProjectReadOnly } from '@/features/projects/lib/project-helpers';
 import type { Project } from '@/features/projects/types';
 import { cn } from '@/lib/common/utils';
 
@@ -25,7 +25,7 @@ interface ProjectAboutCardProps {
 
 export function ProjectAboutCard({ project }: ProjectAboutCardProps) {
   const t = useTranslations('projects.detail.about');
-  const archived = isProjectArchived(project);
+  const archived = isProjectReadOnly(project);
 
   const [editing, setEditing] = useState(false);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');

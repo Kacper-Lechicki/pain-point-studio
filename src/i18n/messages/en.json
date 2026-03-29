@@ -753,8 +753,6 @@
         "active": "Active",
         "draft": "Draft",
         "completed": "Completed",
-        "cancelled": "Cancelled",
-        "archived": "Archived",
         "trashed": "Trashed"
       },
       "statusInfo": {
@@ -762,8 +760,6 @@
         "draft": "This survey is still being designed. Add questions and configure settings before publishing.",
         "active": "This survey is live and collecting responses from participants.",
         "completed": "Data collection is finished. Results are available for review.",
-        "cancelled": "This survey was withdrawn before completion. Existing responses are preserved but will not be included in project evaluation.",
-        "archived": "This survey has been archived and will be automatically deleted after the retention period. Responses from archived surveys are not included in project evaluation.",
         "trashed": "This survey is in the trash and will be permanently deleted in {days} days."
       },
       "filters": {
@@ -772,8 +768,6 @@
         "active": "Active",
         "draft": "Drafts",
         "completed": "Completed",
-        "cancelled": "Cancelled",
-        "archived": "Archived",
         "trashed": "Trashed",
         "statusSection": "Status",
         "projectSection": "Project",
@@ -839,10 +833,6 @@
         "publish": "Publish",
         "quickPreview": "Quick preview",
         "complete": "Complete",
-        "cancel": "Cancel survey",
-        "reopen": "Reopen",
-        "archive": "Archive",
-        "restore": "Restore",
         "trash": "Move to Trash",
         "restoreTrash": "Restore",
         "permanentDelete": "Delete Forever",
@@ -908,15 +898,7 @@
       },
       "confirm": {
         "completeTitle": "Complete survey",
-        "completeDescription": "The survey will stop accepting new responses. Respondents currently filling it out will be immediately blocked. The survey link will remain accessible for 14 days showing a completion notice, then expire. All collected responses are preserved. You can reopen the survey later to resume collecting responses, or archive it.",
-        "cancelTitle": "Cancel survey",
-        "cancelDescription": "The survey will be withdrawn and stop accepting new responses. Respondents currently filling it out will be immediately blocked. The survey link will remain accessible for 14 days showing a withdrawal notice, then expire. All collected responses are preserved. You can reopen the survey later, or archive it.",
-        "reopenTitle": "Reopen survey?",
-        "reopenDescription": "The survey will be reopened and start accepting new responses again. All previously collected responses are preserved.",
-        "archiveTitle": "Archive survey",
-        "archiveDescription": "The survey will be moved to the archive and hidden from the main list. If the survey is active, respondents currently filling it out will be immediately blocked. All collected responses are preserved. You can restore it to its previous status at any time.",
-        "restoreTitle": "Restore survey",
-        "restoreDescription": "The survey will be restored to its previous status. All collected responses are preserved.",
+        "completeDescription": "The survey will stop accepting new responses. Respondents currently filling it out will be immediately blocked. The survey link will remain accessible for 14 days showing a completion notice, then expire. All collected responses are preserved.",
         "trashTitle": "Move to trash?",
         "trashDescription": "The survey will be moved to trash and permanently deleted after 30 days. Respondents currently filling it out will be immediately blocked. All collected responses will be deleted with it. You can restore it from trash before then.",
         "restoreTrashTitle": "Restore from trash?",
@@ -928,10 +910,6 @@
         "duplicated": "Survey duplicated as draft.",
         "actionFailed": "Something went wrong. Please try again.",
         "completed": "Survey marked as completed.",
-        "cancelled": "Survey cancelled.",
-        "reopened": "Survey reopened.",
-        "archived": "Survey archived.",
-        "restored": "Survey restored.",
         "trashed": "Survey moved to trash.",
         "restoredFromTrash": "Survey restored from trash.",
         "permanentlyDeleted": "Survey permanently deleted."
@@ -993,40 +971,6 @@
         "title": "No surveys found for \"{query}\"",
         "description": "Try a different search term or clear the search."
       }
-    },
-    "archive": {
-      "title": "Archive",
-      "description": "Archived surveys are stored indefinitely. Restore a survey to return it to its previous status.",
-      "retentionNotice": "Archived surveys are stored indefinitely and can be restored at any time.",
-      "search": {
-        "placeholder": "Search archived surveys..."
-      },
-      "sort": {
-        "label": "Sort by",
-        "updated": "Last edited",
-        "created": "Date created",
-        "title": "Alphabetical",
-        "status": "Status",
-        "questions": "Questions",
-        "archivedAt": "Archived at",
-        "autoDeletes": "Auto-deletes"
-      },
-      "actions": {
-        "restore": "Restore",
-        "moreActions": "More actions",
-        "viewAnalytics": "View analytics"
-      },
-      "toast": {
-        "restored": "Survey restored."
-      },
-      "empty": {
-        "title": "No archived surveys",
-        "description": "Surveys you archive will appear here. They are kept for 14 days before permanent deletion."
-      },
-      "emptySearch": {
-        "title": "No archived surveys found for \"{query}\"",
-        "description": "Try a different search term or clear the search."
-      }
     }
   },
   "projects": {
@@ -1035,9 +979,6 @@
     },
     "toast": {
       "completed": "Project marked as completed.",
-      "archived": "Project archived.",
-      "reopened": "Project reopened.",
-      "restored": "Project restored.",
       "trashed": "Project moved to trash.",
       "restoredFromTrash": "Project restored from trash.",
       "permanentlyDeleted": "Project permanently deleted."
@@ -1120,7 +1061,6 @@
       "status": {
         "active": "Active",
         "completed": "Completed",
-        "archived": "Archived",
         "trashed": "Trash"
       },
       "search": {
@@ -1186,9 +1126,6 @@
         "moreActions": "More actions",
         "edit": "Edit",
         "complete": "Complete",
-        "archive": "Archive",
-        "reopen": "Reopen",
-        "restore": "Restore",
         "trash": "Move to Trash",
         "restoreTrash": "Restore",
         "permanentDelete": "Delete Forever",
@@ -1198,15 +1135,6 @@
         "completeTitle": "Complete project?",
         "completeDescription": "This project will be marked as completed. It becomes read-only — reopen it to make changes. Active surveys will be automatically completed, and respondents currently filling them out will be immediately blocked.",
         "completeAction": "Complete",
-        "archiveTitle": "Archive project?",
-        "archiveDescription": "This project will be moved to the archive and hidden from the default list. Active and draft surveys will be archived, and respondents currently filling them out will be immediately blocked. All collected responses are preserved. You can restore the project later.",
-        "archiveAction": "Archive",
-        "reopenTitle": "Reopen project?",
-        "reopenDescription": "This project will be reopened for active research.",
-        "reopenAction": "Reopen",
-        "restoreTitle": "Restore project?",
-        "restoreDescription": "This project will be restored to its previous status.",
-        "restoreAction": "Restore",
         "trashTitle": "Move to trash?",
         "trashDescription": "This project will be moved to trash and permanently deleted after 30 days. All surveys in this project will also be moved to trash. You can restore everything from trash before then.",
         "trashAction": "Move to Trash",
@@ -1243,7 +1171,6 @@
       "ariaLabel": "Status info: {status}",
       "active": "This project is active and accepting new surveys. You can add surveys, collect responses, and track validation progress.",
       "completed": "This project's research is complete. It's read-only — reopen it to make changes.",
-      "archived": "This project has been archived. Active surveys were cancelled when archived. All collected responses are preserved. You can restore the project at any time.",
       "trashed": "This project is in the trash and will be permanently deleted in {days} days."
     },
     "detail": {
@@ -1260,8 +1187,7 @@
           "total": "Total",
           "active": "Active",
           "completed": "Completed",
-          "draft": "Draft",
-          "cancelled": "Cancelled"
+          "draft": "Draft"
         },
         "toolbar": {
           "filter": "Filter",
@@ -1303,7 +1229,6 @@
       "detailsLabel": "Details",
       "created": "Created",
       "updated": "Last edited",
-      "archivedAt": "Archived at",
       "surveysLabel": "Surveys",
       "actionsLabel": "Actions",
       "context": "Context",
@@ -1316,7 +1241,6 @@
       "completedSurveys": "Completed",
       "draftSurveys": "Drafts",
       "completedBanner": "Research complete. Reopen to make changes.",
-      "archivedBanner": "This project is archived.",
       "trashedBanner": "In trash. Will be permanently deleted on {date}.",
       "contextBadge": "Project",
       "contextBadgeDescription": "A project groups related surveys and insights around a single problem or idea you want to validate. It tracks your research progress from initial hypothesis through data collection to a final verdict.",
@@ -1568,8 +1492,6 @@
       "active": "active",
       "draft": "draft",
       "completed": "completed",
-      "cancelled": "cancelled",
-      "archived": "archived",
       "last7d": "7d",
       "responseTrend": "Responses Over Time",
       "noResponses": "No responses yet",
@@ -1723,7 +1645,6 @@
     "allProjects": "All projects",
     "newProject": "New project",
     "research": "Research",
-    "standaloneResearch": "Standalone research",
     "surveys": "Surveys",
     "allSurveys": "All surveys",
     "newSurvey": "New survey",
@@ -1735,7 +1656,6 @@
     "hideSubpanel": "Hide secondary panel",
     "projectDetails": "Project Details",
     "surveyDetails": "Survey Details",
-    "askAi": "Ask AI",
     "giveFeedback": "Give Feedback",
     "shareFeedback": "Share Feedback",
     "recentProjects": "Recent",

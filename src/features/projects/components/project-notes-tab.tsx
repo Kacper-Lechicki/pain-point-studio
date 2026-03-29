@@ -7,7 +7,7 @@ import { NotesLayout } from '@/features/projects/components/notes/notes-layout';
 import { NotesSidebar } from '@/features/projects/components/notes/notes-sidebar';
 import { useNoteAutoSave } from '@/features/projects/hooks/use-note-auto-save';
 import { useNotesState } from '@/features/projects/hooks/use-notes-state';
-import { isProjectArchived } from '@/features/projects/lib/project-helpers';
+import { isProjectReadOnly } from '@/features/projects/lib/project-helpers';
 import type { Project, ProjectNoteFolder, ProjectNoteMeta } from '@/features/projects/types';
 import { useBreakpoint } from '@/hooks/common/use-breakpoint';
 
@@ -18,7 +18,7 @@ interface ProjectNotesTabProps {
 }
 
 export function ProjectNotesTab({ project, initialNotes, initialFolders }: ProjectNotesTabProps) {
-  const archived = isProjectArchived(project);
+  const archived = isProjectReadOnly(project);
   const isDesktop = useBreakpoint('md');
 
   const state = useNotesState({

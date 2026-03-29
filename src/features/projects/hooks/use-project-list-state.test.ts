@@ -52,11 +52,9 @@ function makeProject(id: string, name: string, status = 'active'): ProjectWithMe
     status,
     user_id: 'user-1',
     response_limit: 0,
-    archived_at: null,
     completed_at: null,
     deleted_at: null,
     pre_trash_status: null,
-    pre_archive_status: null,
     created_at: '2025-01-01T00:00:00Z',
     updated_at: '2025-01-15T00:00:00Z',
     surveyCount: 3,
@@ -119,18 +117,18 @@ describe('useProjectListState', () => {
   it('should filter by status', () => {
     const projects = [
       makeProject('1', 'Active One', 'active'),
-      makeProject('2', 'Archived One', 'archived'),
+      makeProject('2', 'Completed One', 'completed'),
       makeProject('3', 'Active Two', 'active'),
     ];
 
     const { result } = renderHook(() => useProjectListState(projects));
 
     act(() => {
-      result.current.setStatusFilter(['archived']);
+      result.current.setStatusFilter(['completed']);
     });
 
     expect(result.current.filteredProjects).toHaveLength(1);
-    expect(result.current.filteredProjects[0]!.name).toBe('Archived One');
+    expect(result.current.filteredProjects[0]!.name).toBe('Completed One');
   });
 
   it('should reset page to 1 when search query changes', () => {

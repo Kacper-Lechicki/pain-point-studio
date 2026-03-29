@@ -93,7 +93,6 @@ export async function createProjectWithStatus(
 
   const statusFields: Record<string, Record<string, unknown>> = {
     completed: { status: 'completed', completed_at: now },
-    archived: { status: 'archived', archived_at: now, pre_archive_status: 'active' },
     trashed: { status: 'trashed', deleted_at: now, pre_trash_status: 'active' },
   };
 
