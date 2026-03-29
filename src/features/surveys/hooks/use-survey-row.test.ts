@@ -68,8 +68,6 @@ function makeSurvey(overrides: Partial<UserSurvey> = {}): UserSurvey {
     startsAt: null,
     endsAt: null,
     maxRespondents: null,
-    archivedAt: null,
-    cancelledAt: null,
     completedAt: null,
     createdAt: '2025-01-01T00:00:00Z',
     updatedAt: '2025-01-15T08:00:00Z',
@@ -80,7 +78,6 @@ function makeSurvey(overrides: Partial<UserSurvey> = {}): UserSurvey {
     researchPhase: null,
     deletedAt: null,
     preTrashStatus: null,
-    previousStatus: null,
     ...overrides,
   };
 }
@@ -101,8 +98,6 @@ describe('useSurveyRow', () => {
     expect(result.current.isActive).toBe(true);
     expect(result.current.isDraft).toBe(false);
     expect(result.current.isCompleted).toBe(false);
-    expect(result.current.isCancelled).toBe(false);
-    expect(result.current.isArchived).toBe(false);
   });
 
   it('should derive correct flags for a draft survey', () => {
@@ -134,20 +129,15 @@ describe('useSurveyRow', () => {
     expect(result.current.hasShareableLink).toBe(false);
   });
 
-  it('should compute canExport for non-draft non-archived surveys', () => {
+  it('should compute canExport for non-draft surveys', () => {
     const active = makeSurvey({ status: 'active' });
     const draft = makeSurvey({ status: 'draft' });
-    const archived = makeSurvey({ status: 'archived' });
 
     const { result: activeResult } = renderHook(() => useSurveyRow(active, NOW, onStatusChange));
     const { result: draftResult } = renderHook(() => useSurveyRow(draft, NOW, onStatusChange));
-    const { result: archivedResult } = renderHook(() =>
-      useSurveyRow(archived, NOW, onStatusChange)
-    );
 
     expect(activeResult.current.canExport).toBe(true);
     expect(draftResult.current.canExport).toBe(false);
-    expect(archivedResult.current.canExport).toBe(false);
   });
 
   it('should compute updatedAtLabel via formatter', () => {
@@ -172,29 +162,8 @@ describe('useSurveyRow', () => {
     expect(result.current.lastResponseLabel).toBeNull();
   });
 
-  it('should compute autoDeleteDays for archived surveys', () => {
-    const survey = makeSurvey({ status: 'archived', archivedAt: '2025-01-10T00:00:00Z' });
-    const { result } = renderHook(() => useSurveyRow(survey, NOW, onStatusChange));
-
-    expect(result.current.autoDeleteDays).toBe(10);
-  });
-
-  it('should return null autoDeleteDays for non-archived surveys', () => {
-    const survey = makeSurvey({ status: 'active' });
-    const { result } = renderHook(() => useSurveyRow(survey, NOW, onStatusChange));
-
-    expect(result.current.autoDeleteDays).toBeNull();
-  });
-
   it('should compute linkExpiryDays for completed surveys', () => {
     const survey = makeSurvey({ status: 'completed', completedAt: '2025-01-10T00:00:00Z' });
-    const { result } = renderHook(() => useSurveyRow(survey, NOW, onStatusChange));
-
-    expect(result.current.linkExpiryDays).toBe(10);
-  });
-
-  it('should compute linkExpiryDays for cancelled surveys', () => {
-    const survey = makeSurvey({ status: 'cancelled', cancelledAt: '2025-01-10T00:00:00Z' });
     const { result } = renderHook(() => useSurveyRow(survey, NOW, onStatusChange));
 
     expect(result.current.linkExpiryDays).toBe(10);
@@ -207,28 +176,11 @@ describe('useSurveyRow', () => {
     expect(result.current.linkExpiryDays).toBeNull();
   });
 
-  it('should return archivedAtLabel for archived surveys', () => {
-    const survey = makeSurvey({
-      status: 'archived',
-      archivedAt: '2025-01-10T00:00:00Z',
-    });
-    const { result } = renderHook(() => useSurveyRow(survey, NOW, onStatusChange));
-
-    expect(result.current.archivedAtLabel).toBe('2 hours ago');
-  });
-
-  it('should return null archivedAtLabel for non-archived surveys', () => {
-    const survey = makeSurvey({ status: 'active' });
-    const { result } = renderHook(() => useSurveyRow(survey, NOW, onStatusChange));
-
-    expect(result.current.archivedAtLabel).toBeNull();
-  });
-
   it('should return available actions from survey status config', () => {
     const survey = makeSurvey({ status: 'active' });
     const { result } = renderHook(() => useSurveyRow(survey, NOW, onStatusChange));
 
-    expect(result.current.availableActions).toEqual(expect.arrayContaining(['complete', 'cancel']));
+    expect(result.current.availableActions).toEqual(expect.arrayContaining(['complete', 'trash']));
   });
 
   it('should expose shareUrl from useSurveyCardActions', () => {

@@ -9,7 +9,6 @@ const SAFE_REDIRECT_PREFIXES = [
   ROUTES.common.settings,
   ROUTES.settings.connectedAccounts,
   ROUTES.auth.updatePassword,
-  ROUTES.profile.preview,
 ] as const;
 
 function getSafeRedirectPath(next: string | null, locale: string, fallback: string): string {

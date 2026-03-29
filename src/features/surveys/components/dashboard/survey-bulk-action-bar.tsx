@@ -14,14 +14,6 @@ import type { MessageKey } from '@/i18n/types';
 const BULK_BUTTON_COLORS: Record<BulkSurveyAction, string> = {
   complete:
     'border-violet-500 text-violet-600 md:hover:bg-violet-500/10 dark:text-violet-400 dark:md:hover:bg-violet-500/10',
-  cancel:
-    'border-red-500 text-red-600 md:hover:bg-red-500/10 dark:text-red-400 dark:md:hover:bg-red-500/10',
-  reopen:
-    'border-emerald-500 text-emerald-600 md:hover:bg-emerald-500/10 dark:text-emerald-400 dark:md:hover:bg-emerald-500/10',
-  archive:
-    'border-amber-500 text-amber-600 md:hover:bg-amber-500/10 dark:text-amber-400 dark:md:hover:bg-amber-500/10',
-  restore:
-    'border-emerald-500 text-emerald-600 md:hover:bg-emerald-500/10 dark:text-emerald-400 dark:md:hover:bg-emerald-500/10',
   trash:
     'border-red-500 text-red-600 md:hover:bg-red-500/10 dark:text-red-400 dark:md:hover:bg-red-500/10',
   restoreTrash:

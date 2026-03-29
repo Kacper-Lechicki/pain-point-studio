@@ -81,6 +81,11 @@ const EmailForm = ({ currentEmail, pendingEmail, emailChangeConfirmStatus }: Ema
         description={t('settings.email.description')}
       />
 
+      <Alert variant="info" className="text-xs">
+        <Info className="size-3.5" />
+        <AlertDescription>{t('settings.email.doubleConfirmHint')}</AlertDescription>
+      </Alert>
+
       {pendingEmail && (
         <div className="border-primary/30 bg-primary/5 rounded-lg border px-4 py-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
@@ -146,11 +151,6 @@ const EmailForm = ({ currentEmail, pendingEmail, emailChangeConfirmStatus }: Ema
           </form>
         </Form>
       )}
-
-      <Alert variant="info" className="text-xs">
-        <Info className="size-3.5" />
-        <AlertDescription>{t('settings.email.doubleConfirmHint')}</AlertDescription>
-      </Alert>
     </section>
   );
 };

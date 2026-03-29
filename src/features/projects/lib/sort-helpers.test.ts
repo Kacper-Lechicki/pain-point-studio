@@ -16,11 +16,9 @@ function makeProject(overrides: Partial<ProjectWithMetrics> = {}): ProjectWithMe
     status: 'active',
     user_id: 'user-1',
     response_limit: 0,
-    archived_at: null,
     completed_at: null,
     deleted_at: null,
     pre_trash_status: null,
-    pre_archive_status: null,
     created_at: '2025-01-01T00:00:00Z',
     updated_at: '2025-01-02T00:00:00Z',
     surveyCount: 0,
@@ -83,7 +81,7 @@ describe('getProjectComparator', () => {
   const b = makeProject({
     id: 'b',
     name: 'Beta',
-    status: 'archived',
+    status: 'completed',
     surveyCount: 5,
     activeSurveyCount: 2,
     responseCount: 20,
@@ -102,7 +100,7 @@ describe('getProjectComparator', () => {
   });
 
   it('should sort by status ascending', () => {
-    // 'active' < 'archived' alphabetically
+    // 'active' < 'completed' alphabetically
     const cmp = getProjectComparator('status', 'asc');
     expect(cmp(a, b)).toBeLessThan(0);
   });

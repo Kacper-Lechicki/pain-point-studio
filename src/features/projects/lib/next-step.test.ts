@@ -9,7 +9,6 @@ function makeInput(overrides: Partial<NextStepInput> = {}): NextStepInput {
     activeSurveys: 0,
     totalResponses: 0,
     responseLimit: 100,
-    insightCount: 0,
     currentPhase: null,
     ...overrides,
   };
@@ -55,51 +54,17 @@ describe('computeNextStep', () => {
     expect(result.action).toBe('share-survey');
   });
 
-  it('returns review-findings when at 50% but no insights', () => {
+  it('returns share-survey at exactly 49% of target', () => {
     const result = computeNextStep(
-      makeInput({
-        totalSurveys: 1,
-        activeSurveys: 1,
-        totalResponses: 50,
-        responseLimit: 100,
-        insightCount: 0,
-      })
+      makeInput({ totalSurveys: 1, activeSurveys: 1, totalResponses: 49, responseLimit: 100 })
     );
 
-    expect(result).toEqual({
-      action: 'review-findings',
-      labelKey: 'projects.nextStep.reviewFindings',
-      tab: 'insights',
-    });
+    expect(result.action).toBe('share-survey');
   });
 
-  it('returns make-decision when responses >= 70% of target and insights >= 3', () => {
+  it('returns continue when responses reach 50% of target', () => {
     const result = computeNextStep(
-      makeInput({
-        totalSurveys: 1,
-        activeSurveys: 1,
-        totalResponses: 70,
-        responseLimit: 100,
-        insightCount: 3,
-      })
-    );
-
-    expect(result).toEqual({
-      action: 'make-decision',
-      labelKey: 'projects.nextStep.makeDecision',
-      tab: 'insights',
-    });
-  });
-
-  it('returns continue when responses >= 50% but insights < 3 and > 0', () => {
-    const result = computeNextStep(
-      makeInput({
-        totalSurveys: 1,
-        activeSurveys: 1,
-        totalResponses: 70,
-        responseLimit: 100,
-        insightCount: 2,
-      })
+      makeInput({ totalSurveys: 1, activeSurveys: 1, totalResponses: 50, responseLimit: 100 })
     );
 
     expect(result).toEqual({
@@ -108,45 +73,11 @@ describe('computeNextStep', () => {
     });
   });
 
-  it('returns review-findings at exactly 70% responses but 0 insights', () => {
+  it('returns continue when responses are well above threshold', () => {
     const result = computeNextStep(
-      makeInput({
-        totalSurveys: 1,
-        activeSurveys: 1,
-        totalResponses: 70,
-        responseLimit: 100,
-        insightCount: 0,
-      })
+      makeInput({ totalSurveys: 3, activeSurveys: 2, totalResponses: 200, responseLimit: 100 })
     );
 
-    expect(result.action).toBe('review-findings');
-  });
-
-  it('returns share-survey at exactly 49% of target', () => {
-    const result = computeNextStep(
-      makeInput({
-        totalSurveys: 1,
-        activeSurveys: 1,
-        totalResponses: 49,
-        responseLimit: 100,
-        insightCount: 5,
-      })
-    );
-
-    expect(result.action).toBe('share-survey');
-  });
-
-  it('returns make-decision when well above threshold', () => {
-    const result = computeNextStep(
-      makeInput({
-        totalSurveys: 3,
-        activeSurveys: 2,
-        totalResponses: 200,
-        responseLimit: 100,
-        insightCount: 10,
-      })
-    );
-
-    expect(result.action).toBe('make-decision');
+    expect(result.action).toBe('continue');
   });
 });

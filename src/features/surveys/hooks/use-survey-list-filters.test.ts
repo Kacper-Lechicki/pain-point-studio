@@ -21,8 +21,6 @@ vi.mock('@/features/surveys/config/survey-status', () => ({
     isDraft: status === 'draft',
     isActive: status === 'active',
     isCompleted: status === 'completed',
-    isCancelled: status === 'cancelled',
-    isArchived: status === 'archived',
     isTrashed: status === 'trashed',
   }),
 }));
@@ -54,7 +52,7 @@ describe('useSurveyListFilters', () => {
     makeSurvey({ id: 's1', status: 'active', projectId: 'proj1', projectName: 'Project A' }),
     makeSurvey({ id: 's2', status: 'draft', projectId: null, projectName: null }),
     makeSurvey({ id: 's3', status: 'completed', projectId: 'proj1', projectName: 'Project A' }),
-    makeSurvey({ id: 's4', status: 'archived', projectId: 'proj2', projectName: 'Project B' }),
+    makeSurvey({ id: 's4', status: 'completed', projectId: 'proj2', projectName: 'Project B' }),
     makeSurvey({ id: 's5', status: 'trashed', projectId: null, projectName: null }),
   ];
 
@@ -63,12 +61,12 @@ describe('useSurveyListFilters', () => {
   });
 
   describe('preFilter (dashboard context)', () => {
-    it('hides archived and trashed when no status filter is active', () => {
+    it('hides trashed when no status filter is active', () => {
       const { result } = renderHook(() => useSurveyListFilters(surveys));
 
       const visible = surveys.filter(result.current.preFilter);
 
-      expect(visible.map((s) => s.id)).toEqual(['s1', 's2', 's3']);
+      expect(visible.map((s) => s.id)).toEqual(['s1', 's2', 's3', 's4']);
     });
 
     it('shows only matching status when filter is active', () => {
@@ -93,7 +91,7 @@ describe('useSurveyListFilters', () => {
   });
 
   describe('preFilter (project context)', () => {
-    it('hides only trashed when no status filter (archived visible)', () => {
+    it('hides only trashed when no status filter', () => {
       const { result } = renderHook(() => useSurveyListFilters(surveys, { projectContext: true }));
 
       const visible = surveys.filter(result.current.preFilter);
@@ -138,27 +136,24 @@ describe('useSurveyListFilters', () => {
   });
 
   describe('statusCounts', () => {
-    it('counts statuses excluding archived in dashboard context', () => {
+    it('counts all statuses in dashboard context', () => {
       const { result } = renderHook(() => useSurveyListFilters(surveys));
 
       expect(result.current.statusCounts).toEqual({
         active: 1,
         draft: 1,
-        completed: 1,
-        cancelled: 0,
+        completed: 2,
         trashed: 1,
       });
     });
 
-    it('includes archived count in project context', () => {
+    it('counts all statuses in project context', () => {
       const { result } = renderHook(() => useSurveyListFilters(surveys, { projectContext: true }));
 
       expect(result.current.statusCounts).toEqual({
         active: 1,
         draft: 1,
-        completed: 1,
-        cancelled: 0,
-        archived: 1,
+        completed: 2,
         trashed: 1,
       });
     });
@@ -180,13 +175,13 @@ describe('useSurveyListFilters', () => {
       expect(result.current.projectOptions).toEqual([]);
     });
 
-    it('excludes archived and trashed surveys from project options', () => {
+    it('excludes trashed surveys from project options', () => {
       const { result } = renderHook(() => useSurveyListFilters(surveys));
 
-      // proj2 only has s4 (archived) → excluded
+      // proj2 has s4 (completed) → included
       const proj2 = result.current.projectOptions.find((o) => o.id === 'proj2');
 
-      expect(proj2).toBeUndefined();
+      expect(proj2).toEqual({ id: 'proj2', name: 'Project B', count: 1 });
     });
   });
 
@@ -194,14 +189,13 @@ describe('useSurveyListFilters', () => {
     it('returns statuses that have counts > 0 in dashboard context', () => {
       const { result } = renderHook(() => useSurveyListFilters(surveys));
 
-      // active: 1, draft: 1, completed: 1 → all > 0, cancelled: 0 → excluded
       expect(result.current.kpiStatuses).toEqual(['active', 'draft', 'completed']);
     });
 
-    it('includes archived in project context when count > 0', () => {
+    it('returns statuses that have counts > 0 in project context', () => {
       const { result } = renderHook(() => useSurveyListFilters(surveys, { projectContext: true }));
 
-      expect(result.current.kpiStatuses).toContain('archived');
+      expect(result.current.kpiStatuses).toEqual(['active', 'draft', 'completed']);
     });
   });
 

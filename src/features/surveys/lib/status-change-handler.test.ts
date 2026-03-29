@@ -21,8 +21,6 @@ function makeSurvey(overrides: Partial<UserSurvey> = {}): UserSurvey {
     startsAt: null,
     endsAt: null,
     maxRespondents: null,
-    archivedAt: null,
-    cancelledAt: null,
     completedAt: null,
     createdAt: '2024-01-01T00:00:00Z',
     updatedAt: '2024-01-02T00:00:00Z',
@@ -33,7 +31,6 @@ function makeSurvey(overrides: Partial<UserSurvey> = {}): UserSurvey {
     researchPhase: null,
     deletedAt: null,
     preTrashStatus: null,
-    previousStatus: null,
     ...overrides,
   };
 }
@@ -66,28 +63,12 @@ describe('applyOptimisticStatusChange', () => {
     expect(result.updatedSurveys[0]?.status).toBe('completed');
   });
 
-  it('should update status to "cancelled" on cancel action', () => {
+  it('should update status to "trashed" on trash action', () => {
     const surveys = [makeSurvey({ id: 'a', status: 'active' })];
 
-    const result = applyOptimisticStatusChange(surveys, 'a', 'cancel');
+    const result = applyOptimisticStatusChange(surveys, 'a', 'trash');
 
-    expect(result.updatedSurveys[0]?.status).toBe('cancelled');
-  });
-
-  it('should update status to "archived" on archive action', () => {
-    const surveys = [makeSurvey({ id: 'a', status: 'completed' })];
-
-    const result = applyOptimisticStatusChange(surveys, 'a', 'archive');
-
-    expect(result.updatedSurveys[0]?.status).toBe('archived');
-  });
-
-  it('should update status to "draft" on restore action', () => {
-    const surveys = [makeSurvey({ id: 'a', status: 'archived' })];
-
-    const result = applyOptimisticStatusChange(surveys, 'a', 'restore');
-
-    expect(result.updatedSurveys[0]?.status).toBe('draft');
+    expect(result.updatedSurveys[0]?.status).toBe('trashed');
   });
 
   it('should update updatedAt timestamp', () => {
@@ -112,15 +93,15 @@ describe('applyOptimisticStatusChange', () => {
   it('should return shouldDeselect false when target status is not in deselectOnStatuses', () => {
     const surveys = [makeSurvey({ id: 'a', status: 'active' })];
 
-    const result = applyOptimisticStatusChange(surveys, 'a', 'complete', ['archived']);
+    const result = applyOptimisticStatusChange(surveys, 'a', 'complete', ['trashed']);
 
     expect(result.shouldDeselect).toBe(false);
   });
 
   it('should return shouldDeselect true when target status is in deselectOnStatuses', () => {
-    const surveys = [makeSurvey({ id: 'a', status: 'completed' })];
+    const surveys = [makeSurvey({ id: 'a', status: 'active' })];
 
-    const result = applyOptimisticStatusChange(surveys, 'a', 'archive', ['archived']);
+    const result = applyOptimisticStatusChange(surveys, 'a', 'trash', ['trashed']);
 
     expect(result.shouldDeselect).toBe(true);
   });

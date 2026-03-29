@@ -17,8 +17,6 @@ export const userSurveySchema = z.object({
   startsAt: z.string().nullable(),
   endsAt: z.string().nullable(),
   maxRespondents: z.number().nullable(),
-  archivedAt: z.string().nullable(),
-  cancelledAt: z.string().nullable(),
   completedAt: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
@@ -29,7 +27,6 @@ export const userSurveySchema = z.object({
   researchPhase: z.string().nullable().optional().default(null),
   deletedAt: z.string().nullable().optional().default(null),
   preTrashStatus: z.string().nullable().optional().default(null),
-  previousStatus: z.string().nullable().optional().default(null),
 });
 
 export const userSurveysRpcSchema = z.array(userSurveySchema);
@@ -49,8 +46,6 @@ export interface UserSurvey {
   startsAt: string | null;
   endsAt: string | null;
   maxRespondents: number | null;
-  archivedAt: string | null;
-  cancelledAt: string | null;
   completedAt: string | null;
   createdAt: string;
   updatedAt: string;
@@ -61,5 +56,4 @@ export interface UserSurvey {
   researchPhase: string | null;
   deletedAt: string | null;
   preTrashStatus: string | null;
-  previousStatus: string | null;
 }

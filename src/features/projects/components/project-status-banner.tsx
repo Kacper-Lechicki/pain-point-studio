@@ -7,8 +7,8 @@ interface ProjectStatusBannerProps {
   icon: LucideIcon;
   colorClass: string;
   message: string;
-  actionLabel: string;
-  onAction: () => void;
+  actionLabel?: string | undefined;
+  onAction?: (() => void) | undefined;
 }
 
 export function ProjectStatusBanner({
@@ -22,9 +22,11 @@ export function ProjectStatusBanner({
     <div className={cn('flex items-center gap-2 rounded-lg px-3 py-2', colorClass)}>
       <Icon className="size-4 shrink-0" aria-hidden />
       <span className="text-muted-foreground flex-1 text-sm">{message}</span>
-      <Button variant="outline" size="sm" onClick={onAction}>
-        {actionLabel}
-      </Button>
+      {actionLabel && onAction && (
+        <Button variant="outline" size="sm" onClick={onAction}>
+          {actionLabel}
+        </Button>
+      )}
     </div>
   );
 }

@@ -11,12 +11,8 @@ export type { UserSurvey } from '@/features/surveys/types';
 export { publishSurvey } from './publish-survey';
 export { saveSurveyQuestions } from './save-survey-questions';
 export {
-  archiveSurvey,
-  cancelSurvey,
   completeSurvey,
   permanentDeleteSurvey,
-  reopenSurvey,
-  restoreSurvey,
   restoreTrashSurvey,
   trashSurvey,
 } from './update-survey-status';

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 import { useRouter } from 'next/navigation';
 
@@ -10,7 +10,6 @@ import { useTranslations } from 'next-intl';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { DASHBOARD_PAGE_BODY_GAP_TOP } from '@/config/layout';
 import { ROUTES } from '@/config/routes';
-import type { InsightSuggestionsResult } from '@/features/projects/actions/get-insight-suggestions';
 import type { ProjectOwner } from '@/features/projects/actions/get-project';
 import type { SurveySignalData } from '@/features/projects/actions/get-project-signals-data';
 import { ProjectDetailHeader } from '@/features/projects/components/project-detail-header';
@@ -22,7 +21,6 @@ import { useRealtimeProject } from '@/features/projects/hooks/use-realtime-proje
 import { isProjectReadOnly } from '@/features/projects/lib/project-helpers';
 import type {
   Project,
-  ProjectInsight,
   ProjectNoteFolder,
   ProjectNoteMeta,
   ProjectOverviewStats,
@@ -42,26 +40,21 @@ interface ProjectDashboardPageProps {
   project: Project;
   owner: ProjectOwner | null;
   surveys: UserSurvey[];
-  insights: ProjectInsight[];
   notesMeta: ProjectNoteMeta[];
   noteFolders: ProjectNoteFolder[];
   overviewStats: ProjectOverviewStats;
   signalsData: SurveySignalData[];
-  suggestionsData: InsightSuggestionsResult;
 }
 
 export function ProjectDashboardPage({
   project: initialProject,
   owner,
   surveys,
-  insights: initialInsights,
   notesMeta,
   noteFolders,
   overviewStats,
   signalsData,
-  suggestionsData,
 }: ProjectDashboardPageProps) {
-  const [insights, setInsights] = useState(initialInsights);
   const router = useRouter();
 
   const { isRefreshing, refresh, lastSyncedAt, markSynced } = useRefresh();
@@ -123,22 +116,6 @@ export function ProjectDashboardPage({
     actions: quickActions,
   });
 
-  const handleInsightCreated = (insight: ProjectInsight) => {
-    setInsights((prev) => [...prev, insight]);
-  };
-
-  const handleInsightUpdated = (updated: ProjectInsight) => {
-    setInsights((prev) => prev.map((i) => (i.id === updated.id ? updated : i)));
-  };
-
-  const handleInsightDeleted = (insightId: string) => {
-    setInsights((prev) => prev.filter((i) => i.id !== insightId));
-  };
-
-  const handleInsightsChanged = (newInsights: ProjectInsight[]) => {
-    setInsights(newInsights);
-  };
-
   const totalResponses = surveys.reduce((sum, s) => sum + s.completedCount, 0);
 
   const surveyListSlot = (
@@ -170,16 +147,10 @@ export function ProjectDashboardPage({
           project={project}
           surveys={surveys}
           surveyListSlot={surveyListSlot}
-          insights={insights}
           notesMeta={notesMeta}
           noteFolders={noteFolders}
           overviewStats={overviewStats}
           signalsData={signalsData}
-          suggestionsData={suggestionsData}
-          onInsightCreated={handleInsightCreated}
-          onInsightUpdated={handleInsightUpdated}
-          onInsightDeleted={handleInsightDeleted}
-          onInsightsChanged={handleInsightsChanged}
         />
       </div>
 

@@ -56,7 +56,6 @@ export function SurveyListRow({
       isSelected={isSelected}
       onSelect={onSelect}
       row={row}
-      archivedLayout={archivedLayout}
       isProjectContext={isProjectContext}
       isBulkSelected={isBulkSelected}
       onToggleBulkSelect={onToggleBulkSelect}

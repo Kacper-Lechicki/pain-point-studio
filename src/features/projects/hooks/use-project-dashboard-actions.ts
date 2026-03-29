@@ -20,9 +20,6 @@ import type { MessageKey } from '@/i18n/types';
 
 const PROJECT_TOAST_KEY: Record<ProjectAction, MessageKey> = {
   complete: 'projects.toast.completed' as MessageKey,
-  archive: 'projects.toast.archived' as MessageKey,
-  reopen: 'projects.toast.reopened' as MessageKey,
-  restore: 'projects.toast.restored' as MessageKey,
   trash: 'projects.toast.trashed' as MessageKey,
   restoreTrash: 'projects.toast.restoredFromTrash' as MessageKey,
   permanentDelete: 'projects.toast.permanentlyDeleted' as MessageKey,
@@ -38,24 +35,6 @@ function applyOptimisticUpdate(prev: Project, action: ProjectAction): Project {
   switch (action) {
     case 'complete':
       return { ...prev, status: 'completed', completed_at: now, updated_at: now };
-    case 'archive':
-      return {
-        ...prev,
-        status: 'archived',
-        archived_at: now,
-        pre_archive_status: prev.status,
-        updated_at: now,
-      };
-    case 'reopen':
-      return { ...prev, status: 'active', completed_at: null, updated_at: now };
-    case 'restore':
-      return {
-        ...prev,
-        status: prev.pre_archive_status || 'active',
-        archived_at: null,
-        pre_archive_status: null,
-        updated_at: now,
-      };
     case 'trash':
       return {
         ...prev,

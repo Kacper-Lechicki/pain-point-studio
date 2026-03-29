@@ -27,9 +27,6 @@ export const PATHNAMES = {
   '/settings/danger-zone': {
     en: '/settings/danger-zone',
   },
-  '/profile/preview': {
-    en: '/profile/preview',
-  },
   '/dashboard/projects': {
     en: '/dashboard/projects',
   },

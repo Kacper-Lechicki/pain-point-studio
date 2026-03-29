@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { usePathname, useSearchParams } from 'next/navigation';
 
+import { LayoutDashboard, ListChecks, MessageSquareText } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -50,6 +51,7 @@ export function SurveyStatsTabs({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  const tabsListRef = useRef<HTMLDivElement>(null);
   const [activeTab, setActiveTab] = useState<TabValue>(() => getInitialTab(searchParams));
 
   const handleTabChange = (value: string) => {
@@ -66,27 +68,36 @@ export function SurveyStatsTabs({
 
     const qs = params.toString();
     window.history.replaceState(null, '', `${pathname}${qs ? `?${qs}` : ''}`);
+
+    requestAnimationFrame(() => {
+      tabsListRef.current?.scrollIntoView({ block: 'nearest', behavior: 'instant' });
+    });
   };
 
   return (
     <Tabs value={activeTab} onValueChange={handleTabChange}>
-      <TabsList variant="line">
-        <TabsTrigger value="overview">{t('tabs.overview')}</TabsTrigger>
+      <TabsList ref={tabsListRef} variant="line">
+        <TabsTrigger value="overview">
+          <LayoutDashboard />
+          {t('tabs.overview')}
+        </TabsTrigger>
         <TabsTrigger value="responses">
+          <MessageSquareText />
           {t('tabs.responses')}
           <TabCount count={stats.totalResponses} />
         </TabsTrigger>
         <TabsTrigger value="questions">
+          <ListChecks />
           {t('tabs.questions')}
           <TabCount count={stats.questions.length} />
         </TabsTrigger>
       </TabsList>
 
-      <TabsContent value="overview" className="pt-5">
+      <TabsContent forceMount value="overview" className="pt-5 data-[state=inactive]:hidden">
         <OverviewTab stats={stats} shareUrl={shareUrl} onShare={onShare} />
       </TabsContent>
 
-      <TabsContent value="responses" className="pt-5">
+      <TabsContent forceMount value="responses" className="pt-5 data-[state=inactive]:hidden">
         <ResponsesTab
           surveyId={stats.survey.id}
           totalResponses={stats.totalResponses}
@@ -94,7 +105,7 @@ export function SurveyStatsTabs({
         />
       </TabsContent>
 
-      <TabsContent value="questions" className="pt-5">
+      <TabsContent forceMount value="questions" className="pt-5 data-[state=inactive]:hidden">
         <QuestionsTab questions={stats.questions} hasResponses={stats.completedResponses > 0} />
       </TabsContent>
     </Tabs>

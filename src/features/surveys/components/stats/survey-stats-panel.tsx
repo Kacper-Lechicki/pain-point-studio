@@ -92,9 +92,6 @@ export const SurveyStatsPanel = ({ stats, survey }: SurveyStatsPanelProps) => {
     () => (_surveyId: string, action: string) => {
       const statusMap: Partial<Record<string, SurveyStatus>> = {
         complete: 'completed',
-        cancel: 'cancelled',
-        reopen: 'active',
-        archive: 'archived',
         trash: 'trashed',
       };
       const next = statusMap[action];

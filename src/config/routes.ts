@@ -30,9 +30,6 @@ export const ROUTES = {
     projects: '/dashboard/projects' as AppRoute,
     projectNew: '/dashboard/projects/new' as AppRoute,
   },
-  profile: {
-    preview: '/profile/preview' as AppRoute,
-  },
   survey: {
     /** Base path for public respondent routes — not an AppRoute. Used as `/r/[slug]`. */
     respond: '/r',

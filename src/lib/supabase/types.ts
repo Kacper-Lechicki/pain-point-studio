@@ -28,38 +28,6 @@ export type Database = {
   };
   public: {
     Tables: {
-      insight_suggestion_actions: {
-        Row: {
-          action: string;
-          created_at: string;
-          id: string;
-          project_id: string;
-          signature: string;
-        };
-        Insert: {
-          action: string;
-          created_at?: string;
-          id?: string;
-          project_id: string;
-          signature: string;
-        };
-        Update: {
-          action?: string;
-          created_at?: string;
-          id?: string;
-          project_id?: string;
-          signature?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'insight_suggestion_actions_project_id_fkey';
-            columns: ['project_id'];
-            isOneToOne: false;
-            referencedRelation: 'projects';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
       profiles: {
         Row: {
           avatar_url: string;
@@ -95,50 +63,6 @@ export type Database = {
           {
             foreignKeyName: 'profiles_pinned_project_id_fkey';
             columns: ['pinned_project_id'];
-            isOneToOne: false;
-            referencedRelation: 'projects';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
-      project_insights: {
-        Row: {
-          content: string;
-          created_at: string;
-          id: string;
-          phase: string | null;
-          project_id: string;
-          sort_order: number;
-          source: Database['public']['Enums']['insight_source'];
-          type: string;
-          updated_at: string;
-        };
-        Insert: {
-          content: string;
-          created_at?: string;
-          id?: string;
-          phase?: string | null;
-          project_id: string;
-          sort_order?: number;
-          source?: Database['public']['Enums']['insight_source'];
-          type: string;
-          updated_at?: string;
-        };
-        Update: {
-          content?: string;
-          created_at?: string;
-          id?: string;
-          phase?: string | null;
-          project_id?: string;
-          sort_order?: number;
-          source?: Database['public']['Enums']['insight_source'];
-          type?: string;
-          updated_at?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'project_insights_project_id_fkey';
-            columns: ['project_id'];
             isOneToOne: false;
             referencedRelation: 'projects';
             referencedColumns: ['id'];
@@ -242,7 +166,6 @@ export type Database = {
       };
       projects: {
         Row: {
-          archived_at: string | null;
           completed_at: string | null;
           created_at: string;
           deleted_at: string | null;
@@ -250,7 +173,6 @@ export type Database = {
           id: string;
           image_url: string | null;
           name: string;
-          pre_archive_status: string | null;
           pre_trash_status: string | null;
           response_limit: number;
           status: string;
@@ -259,7 +181,6 @@ export type Database = {
           user_id: string;
         };
         Insert: {
-          archived_at?: string | null;
           completed_at?: string | null;
           created_at?: string;
           deleted_at?: string | null;
@@ -267,7 +188,6 @@ export type Database = {
           id?: string;
           image_url?: string | null;
           name: string;
-          pre_archive_status?: string | null;
           pre_trash_status?: string | null;
           response_limit?: number;
           status?: string;
@@ -276,7 +196,6 @@ export type Database = {
           user_id: string;
         };
         Update: {
-          archived_at?: string | null;
           completed_at?: string | null;
           created_at?: string;
           deleted_at?: string | null;
@@ -284,7 +203,6 @@ export type Database = {
           id?: string;
           image_url?: string | null;
           name?: string;
-          pre_archive_status?: string | null;
           pre_trash_status?: string | null;
           response_limit?: number;
           status?: string;
@@ -441,8 +359,6 @@ export type Database = {
       };
       surveys: {
         Row: {
-          archived_at: string | null;
-          cancelled_at: string | null;
           completed_at: string | null;
           created_at: string;
           deleted_at: string | null;
@@ -452,7 +368,6 @@ export type Database = {
           id: string;
           max_respondents: number | null;
           pre_trash_status: string | null;
-          previous_status: Database['public']['Enums']['survey_status'] | null;
           project_id: string;
           research_phase: string | null;
           slug: string | null;
@@ -465,8 +380,6 @@ export type Database = {
           visibility: string;
         };
         Insert: {
-          archived_at?: string | null;
-          cancelled_at?: string | null;
           completed_at?: string | null;
           created_at?: string;
           deleted_at?: string | null;
@@ -476,7 +389,6 @@ export type Database = {
           id?: string;
           max_respondents?: number | null;
           pre_trash_status?: string | null;
-          previous_status?: Database['public']['Enums']['survey_status'] | null;
           project_id: string;
           research_phase?: string | null;
           slug?: string | null;
@@ -489,8 +401,6 @@ export type Database = {
           visibility?: string;
         };
         Update: {
-          archived_at?: string | null;
-          cancelled_at?: string | null;
           completed_at?: string | null;
           created_at?: string;
           deleted_at?: string | null;
@@ -500,7 +410,6 @@ export type Database = {
           id?: string;
           max_respondents?: number | null;
           pre_trash_status?: string | null;
-          previous_status?: Database['public']['Enums']['survey_status'] | null;
           project_id?: string;
           research_phase?: string | null;
           slug?: string | null;
@@ -710,14 +619,8 @@ export type Database = {
       };
     };
     Enums: {
-      insight_source:
-        | 'survey'
-        | 'user_interview'
-        | 'competitor_analysis'
-        | 'market_research'
-        | 'own_observation';
       question_type: 'open_text' | 'short_text' | 'multiple_choice' | 'rating_scale' | 'yes_no';
-      survey_status: 'draft' | 'active' | 'completed' | 'cancelled' | 'archived' | 'trashed';
+      survey_status: 'draft' | 'active' | 'completed' | 'trashed';
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -846,15 +749,8 @@ export const Constants = {
   },
   public: {
     Enums: {
-      insight_source: [
-        'survey',
-        'user_interview',
-        'competitor_analysis',
-        'market_research',
-        'own_observation',
-      ],
       question_type: ['open_text', 'short_text', 'multiple_choice', 'rating_scale', 'yes_no'],
-      survey_status: ['draft', 'active', 'completed', 'cancelled', 'archived', 'trashed'],
+      survey_status: ['draft', 'active', 'completed', 'trashed'],
     },
   },
 } as const;

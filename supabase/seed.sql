@@ -181,11 +181,11 @@ INSERT INTO public.projects (id, user_id, name, summary, status, response_limit,
 ON CONFLICT (id) DO NOTHING;
 
 -- P4: AI Recipe Generator — ARCHIVED, failed validation (75 days old)
-INSERT INTO public.projects (id, user_id, name, summary, status, response_limit, archived_at, created_at) VALUES
+INSERT INTO public.projects (id, user_id, name, summary, status, response_limit, completed_at, created_at) VALUES
   ('b1b2c3d4-0004-4000-8000-000000000004', 'a1b2c3d4-0001-4000-8000-000000000001',
    'AI Recipe Generator',
    'AI-powered recipe suggestions based on ingredients you already have at home.',
-   'archived', 30, now() - interval '15 days', now() - interval '75 days')
+   'completed', 30, now() - interval '15 days', now() - interval '75 days')
 ON CONFLICT (id) DO NOTHING;
 
 -- P5: Freelance Invoice Tool — VALIDATED, strong signals (80 days old)
@@ -536,12 +536,12 @@ INSERT INTO public.surveys (id, user_id, project_id, title, description, visibil
    now() - interval '40 days', now() - interval '22 days', now() - interval '22 days', 34, now() - interval '45 days')
 ON CONFLICT (id) DO NOTHING;
 
--- S12: Willingness to pay (cancelled — low engagement)
-INSERT INTO public.surveys (id, user_id, project_id, title, description, visibility, status, slug, research_phase, starts_at, cancelled_at, view_count, created_at) VALUES
+-- S12: Willingness to pay (completed — low engagement)
+INSERT INTO public.surveys (id, user_id, project_id, title, description, visibility, status, slug, research_phase, starts_at, completed_at, view_count, created_at) VALUES
   ('c1b2c3d4-000c-4000-8000-00000000000c', 'a1b2c3d4-0001-4000-8000-000000000001', 'b1b2c3d4-0007-4000-8000-000000000007',
    'Would you pay for better event discovery?',
    'Testing willingness to pay for a premium local event discovery experience.',
-   'public', 'cancelled', 'event-pay', 'validation',
+   'public', 'completed', 'event-pay', 'validation',
    now() - interval '18 days', now() - interval '10 days', 8, now() - interval '20 days')
 ON CONFLICT (id) DO NOTHING;
 
@@ -976,58 +976,6 @@ INSERT INTO public.survey_answers (id, response_id, question_id, value) VALUES
   ('f1000000-0127-4000-8000-000000000127', 'e1000000-1201-4000-8000-000000000041', 'd1000000-1202-4000-8000-000000000036', '{"selected": ["Nothing"]}'),
   ('f1000000-0128-4000-8000-000000000128', 'e1000000-1202-4000-8000-000000000042', 'd1000000-1201-4000-8000-000000000035', '{"answer": "false"}'),
   ('f1000000-0129-4000-8000-000000000129', 'e1000000-1202-4000-8000-000000000042', 'd1000000-1202-4000-8000-000000000036', '{"selected": ["$1–$3/month"]}')
-ON CONFLICT (id) DO NOTHING;
-
--- ============================================================
--- PROJECT INSIGHTS
--- ============================================================
-
--- P1: Fitness Tracker App — mature project with multiple insights
-INSERT INTO public.project_insights (id, project_id, type, content) VALUES
-  ('11000000-0001-4000-8000-000000000001', 'b1b2c3d4-0001-4000-8000-000000000001', 'strength',
-   '80% of respondents actively track fitness — confirms existing habit and market demand.'),
-  ('11000000-0002-4000-8000-000000000002', 'b1b2c3d4-0001-4000-8000-000000000001', 'opportunity',
-   'Current solutions score just 2.0/5 satisfaction — massive gap in the market for a simpler experience.'),
-  ('11000000-0003-4000-8000-000000000003', 'b1b2c3d4-0001-4000-8000-000000000001', 'strength',
-   '83% would use a combined workout + nutrition app — strong signal for the unified approach.'),
-  ('11000000-0004-4000-8000-000000000004', 'b1b2c3d4-0001-4000-8000-000000000001', 'decision',
-   '$5–9/month price point shows strongest traction. Run targeted pricing page test next.')
-ON CONFLICT (id) DO NOTHING;
-
--- P2: Remote Team Pulse — early observation
-INSERT INTO public.project_insights (id, project_id, type, content) VALUES
-  ('11000000-0005-4000-8000-000000000005', 'b1b2c3d4-0002-4000-8000-000000000002', 'opportunity',
-   'Most standup tools focus on managers, not individual contributors. Could be a positioning angle.')
-ON CONFLICT (id) DO NOTHING;
-
--- P4: AI Recipe Generator — archived with failure insights
-INSERT INTO public.project_insights (id, project_id, type, content) VALUES
-  ('11000000-0006-4000-8000-000000000006', 'b1b2c3d4-0004-4000-8000-000000000004', 'threat',
-   'Only 50% cook regularly and struggle to decide — the problem exists but is not painful enough to pay for.'),
-  ('11000000-0007-4000-8000-000000000007', 'b1b2c3d4-0004-4000-8000-000000000004', 'decision',
-   'Archived project after weak validation. Only 4 responses in 25 days, no dominant feature preference.')
-ON CONFLICT (id) DO NOTHING;
-
--- P5: Freelance Invoice Tool — validated with strong signals
-INSERT INTO public.project_insights (id, project_id, type, content) VALUES
-  ('11000000-0008-4000-8000-000000000008', 'b1b2c3d4-0005-4000-8000-000000000005', 'strength',
-   '67% of freelancers have no dedicated invoicing tool — huge underserved market.'),
-  ('11000000-0009-4000-8000-000000000009', 'b1b2c3d4-0005-4000-8000-000000000005', 'strength',
-   'Average pain score 4.17/5 — invoicing is a genuine, deeply felt pain point.'),
-  ('11000000-0010-4000-8000-000000000010', 'b1b2c3d4-0005-4000-8000-000000000005', 'opportunity',
-   'Payment reminders is the #1 requested feature. Build MVP around automated follow-ups.'),
-  ('11000000-0011-4000-8000-000000000011', 'b1b2c3d4-0005-4000-8000-000000000005', 'decision',
-   'Strong validation across both surveys. Ready to start MVP — focus on invoicing + payment reminders first.')
-ON CONFLICT (id) DO NOTHING;
-
--- P7: Local Event Discovery — stalled with mixed signals
-INSERT INTO public.project_insights (id, project_id, type, content) VALUES
-  ('11000000-0012-4000-8000-000000000012', 'b1b2c3d4-0007-4000-8000-000000000007', 'threat',
-   'Average satisfaction 3.0/5 with current solutions — people are mildly dissatisfied but not desperate.'),
-  ('11000000-0013-4000-8000-000000000013', 'b1b2c3d4-0007-4000-8000-000000000007', 'threat',
-   'Both respondents to the pricing survey said they would not pay. Cancelled survey due to low engagement.'),
-  ('11000000-0014-4000-8000-000000000014', 'b1b2c3d4-0007-4000-8000-000000000007', 'decision',
-   'Unclear market fit. Consider pivoting to B2B (event organizers) instead of consumer discovery.')
 ON CONFLICT (id) DO NOTHING;
 
 -- ============================================================

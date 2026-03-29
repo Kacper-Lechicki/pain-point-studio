@@ -39,8 +39,6 @@ const SURVEYS: UserSurvey[] = [
     startsAt: null,
     endsAt: null,
     maxRespondents: null,
-    archivedAt: null,
-    cancelledAt: null,
     completedAt: null,
     createdAt: '',
     updatedAt: '',
@@ -51,7 +49,6 @@ const SURVEYS: UserSurvey[] = [
     researchPhase: null,
     deletedAt: null,
     preTrashStatus: null,
-    previousStatus: null,
   },
   {
     id: 'survey-2',
@@ -68,8 +65,6 @@ const SURVEYS: UserSurvey[] = [
     startsAt: null,
     endsAt: null,
     maxRespondents: null,
-    archivedAt: null,
-    cancelledAt: null,
     completedAt: null,
     createdAt: '',
     updatedAt: '',
@@ -80,7 +75,6 @@ const SURVEYS: UserSurvey[] = [
     researchPhase: null,
     deletedAt: null,
     preTrashStatus: null,
-    previousStatus: null,
   },
 ];
 

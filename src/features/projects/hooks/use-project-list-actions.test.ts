@@ -58,7 +58,6 @@ function makeProject(overrides: Partial<ProjectWithMetrics> = {}): ProjectWithMe
     surveyCount: 0,
     totalResponses: 0,
     activeSurveys: 0,
-    insightCount: 0,
     latestActivity: null,
     ...overrides,
   } as ProjectWithMetrics;

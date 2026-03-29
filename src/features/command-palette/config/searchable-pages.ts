@@ -1,5 +1,4 @@
 import {
-  CircleUserRound,
   FolderKanban,
   Home,
   KeyRound,
@@ -45,15 +44,6 @@ export const SEARCHABLE_PAGES: SearchablePage[] = [
     icon: Plus,
     href: ROUTES.dashboard.projectNew,
     keywords: ['create project', 'add project'],
-  },
-
-  // Profile
-  {
-    id: 'profile-preview',
-    labelKey: 'sidebar.profilePreview',
-    icon: CircleUserRound,
-    href: ROUTES.profile.preview,
-    keywords: ['profile', 'preview'],
   },
 
   // Settings

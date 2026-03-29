@@ -13,16 +13,12 @@ const SEGMENT_KEYS: Record<string, string> = {
   research: 'research',
   projects: 'projects',
   settings: 'settings',
-  profile: 'profile',
-  preview: 'preview',
   new: 'new',
   create: 'create',
   archive: 'archive',
 };
 
-const COLLAPSED_PATHS: Record<string, string> = {
-  'profile/preview': 'profile',
-};
+const COLLAPSED_PATHS: Record<string, string> = {};
 
 interface Crumb {
   label: string;

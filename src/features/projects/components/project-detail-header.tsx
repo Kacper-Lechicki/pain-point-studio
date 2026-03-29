@@ -1,6 +1,6 @@
 'use client';
 
-import { Archive, EllipsisVertical, Trash2, Trophy } from 'lucide-react';
+import { EllipsisVertical, Lock, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
@@ -19,11 +19,7 @@ import { ProjectStatusBadge } from '@/features/projects/components/project-statu
 import { ProjectStatusBanner } from '@/features/projects/components/project-status-banner';
 import type { ProjectAction } from '@/features/projects/config/status';
 import { PROJECT_ACTION_UI, getAvailableActions } from '@/features/projects/config/status';
-import {
-  isProjectArchived,
-  isProjectCompleted,
-  isProjectTrashed,
-} from '@/features/projects/lib/project-helpers';
+import { isProjectCompleted, isProjectTrashed } from '@/features/projects/lib/project-helpers';
 import type { Project, ProjectStatus } from '@/features/projects/types';
 import type { MessageKey } from '@/i18n/types';
 
@@ -55,23 +51,11 @@ export function ProjectDetailHeader({
 
   return (
     <div className="flex flex-col gap-4">
-      {isProjectArchived(project) && (
-        <ProjectStatusBanner
-          icon={Archive}
-          colorClass="bg-muted [&>svg]:text-muted-foreground"
-          message={t('projects.detail.archivedBanner')}
-          actionLabel={t('projects.list.actions.restore')}
-          onAction={() => onAction('restore')}
-        />
-      )}
-
       {isProjectCompleted(project) && (
         <ProjectStatusBanner
-          icon={Trophy}
+          icon={Lock}
           colorClass="bg-violet-500/10 [&>svg]:text-violet-600 dark:[&>svg]:text-violet-400"
           message={t('projects.detail.completedBanner')}
-          actionLabel={t('projects.list.actions.reopen')}
-          onAction={() => onAction('reopen')}
         />
       )}
 

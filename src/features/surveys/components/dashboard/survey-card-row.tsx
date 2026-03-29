@@ -43,7 +43,6 @@ export function SurveyCardRow({
       surveyId={survey.id}
       flags={{
         isDraft: row.isDraft,
-        isArchived: row.isArchived,
         isTrashed: row.isTrashed,
         hasShareableLink: row.hasShareableLink,
         questionCount: survey.questionCount,

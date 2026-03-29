@@ -31,7 +31,6 @@
       "settingsConnectedAccounts": "Connected Accounts",
       "settingsDangerZone": "Danger Zone",
       "settingsAccount": "Account Settings",
-      "profilePreview": "Profile Preview",
       "surveyRespond": "{name}",
       "signIn": "Sign In",
       "signUp": "Create Account",
@@ -42,7 +41,7 @@
     "descriptions": {
       "home": "Validate product ideas before writing code. A structured research platform for developers to uncover real user pain points.",
       "dashboard": "Overview of your research projects, surveys, and recent activity.",
-      "project": "View project details, surveys, insights, and notes.",
+      "project": "View project details, surveys, and notes.",
       "projects": "Manage and organize your research projects.",
       "projectNew": "Create a new research project to start validating your product idea.",
       "projectNewSurvey": "Create a new survey for your research project.",
@@ -54,7 +53,6 @@
       "settingsPassword": "Update your account password.",
       "settingsConnectedAccounts": "Manage linked OAuth providers like Google and GitHub.",
       "settingsDangerZone": "Delete your account and all associated data.",
-      "profilePreview": "Preview how your researcher profile appears to others.",
       "signIn": "Sign in to Pain Point Studio to continue your research.",
       "signUp": "Create a free account and start validating your product ideas.",
       "forgotPassword": "Reset your Pain Point Studio password.",
@@ -103,7 +101,6 @@
     "startResearch": "Start Your First Research",
     "seeHowItWorks": "See How It Works",
     "settings": "Settings",
-    "profile": "Profile",
     "goBack": "Go Back",
     "backToProjects": "All Projects",
     "backToProject": "Project Details",
@@ -756,8 +753,6 @@
         "active": "Active",
         "draft": "Draft",
         "completed": "Completed",
-        "cancelled": "Cancelled",
-        "archived": "Archived",
         "trashed": "Trashed"
       },
       "statusInfo": {
@@ -765,8 +760,6 @@
         "draft": "This survey is still being designed. Add questions and configure settings before publishing.",
         "active": "This survey is live and collecting responses from participants.",
         "completed": "Data collection is finished. Results are available for review.",
-        "cancelled": "This survey was withdrawn before completion. Existing responses are preserved but will not be included in project evaluation.",
-        "archived": "This survey has been archived and will be automatically deleted after the retention period. Responses from archived surveys are not included in project evaluation.",
         "trashed": "This survey is in the trash and will be permanently deleted in {days} days."
       },
       "filters": {
@@ -775,8 +768,6 @@
         "active": "Active",
         "draft": "Drafts",
         "completed": "Completed",
-        "cancelled": "Cancelled",
-        "archived": "Archived",
         "trashed": "Trashed",
         "statusSection": "Status",
         "projectSection": "Project",
@@ -842,10 +833,6 @@
         "publish": "Publish",
         "quickPreview": "Quick preview",
         "complete": "Complete",
-        "cancel": "Cancel survey",
-        "reopen": "Reopen",
-        "archive": "Archive",
-        "restore": "Restore",
         "trash": "Move to Trash",
         "restoreTrash": "Restore",
         "permanentDelete": "Delete Forever",
@@ -911,15 +898,7 @@
       },
       "confirm": {
         "completeTitle": "Complete survey",
-        "completeDescription": "The survey will stop accepting new responses. Respondents currently filling it out will be immediately blocked. The survey link will remain accessible for 14 days showing a completion notice, then expire. All collected responses are preserved. You can reopen the survey later to resume collecting responses, or archive it.",
-        "cancelTitle": "Cancel survey",
-        "cancelDescription": "The survey will be withdrawn and stop accepting new responses. Respondents currently filling it out will be immediately blocked. The survey link will remain accessible for 14 days showing a withdrawal notice, then expire. All collected responses are preserved. You can reopen the survey later, or archive it.",
-        "reopenTitle": "Reopen survey?",
-        "reopenDescription": "The survey will be reopened and start accepting new responses again. All previously collected responses are preserved.",
-        "archiveTitle": "Archive survey",
-        "archiveDescription": "The survey will be moved to the archive and hidden from the main list. If the survey is active, respondents currently filling it out will be immediately blocked. All collected responses are preserved. You can restore it to its previous status at any time.",
-        "restoreTitle": "Restore survey",
-        "restoreDescription": "The survey will be restored to its previous status. All collected responses are preserved.",
+        "completeDescription": "The survey will stop accepting new responses. Respondents currently filling it out will be immediately blocked. The survey link will remain accessible for 14 days showing a completion notice, then expire. All collected responses are preserved.",
         "trashTitle": "Move to trash?",
         "trashDescription": "The survey will be moved to trash and permanently deleted after 30 days. Respondents currently filling it out will be immediately blocked. All collected responses will be deleted with it. You can restore it from trash before then.",
         "restoreTrashTitle": "Restore from trash?",
@@ -931,10 +910,6 @@
         "duplicated": "Survey duplicated as draft.",
         "actionFailed": "Something went wrong. Please try again.",
         "completed": "Survey marked as completed.",
-        "cancelled": "Survey cancelled.",
-        "reopened": "Survey reopened.",
-        "archived": "Survey archived.",
-        "restored": "Survey restored.",
         "trashed": "Survey moved to trash.",
         "restoredFromTrash": "Survey restored from trash.",
         "permanentlyDeleted": "Survey permanently deleted."
@@ -996,64 +971,14 @@
         "title": "No surveys found for \"{query}\"",
         "description": "Try a different search term or clear the search."
       }
-    },
-    "archive": {
-      "title": "Archive",
-      "description": "Archived surveys are stored indefinitely. Restore a survey to return it to its previous status.",
-      "retentionNotice": "Archived surveys are stored indefinitely and can be restored at any time.",
-      "search": {
-        "placeholder": "Search archived surveys..."
-      },
-      "sort": {
-        "label": "Sort by",
-        "updated": "Last edited",
-        "created": "Date created",
-        "title": "Alphabetical",
-        "status": "Status",
-        "questions": "Questions",
-        "archivedAt": "Archived at",
-        "autoDeletes": "Auto-deletes"
-      },
-      "actions": {
-        "restore": "Restore",
-        "moreActions": "More actions",
-        "viewAnalytics": "View analytics"
-      },
-      "toast": {
-        "restored": "Survey restored."
-      },
-      "empty": {
-        "title": "No archived surveys",
-        "description": "Surveys you archive will appear here. They are kept for 14 days before permanent deletion."
-      },
-      "emptySearch": {
-        "title": "No archived surveys found for \"{query}\"",
-        "description": "Try a different search term or clear the search."
-      }
     }
   },
   "projects": {
     "aria": {
       "sparklineResponses": "{total} responses in the last 14 days"
     },
-    "insightTypes": {
-      "strength": "Strength",
-      "opportunity": "Opportunity",
-      "threat": "Threat",
-      "decision": "Decision"
-    },
-    "insightSources": {
-      "survey": "Survey",
-      "userInterview": "User Interview",
-      "competitorAnalysis": "Competitor Analysis",
-      "marketResearch": "Market Research",
-      "ownObservation": "Own Observation"
-    },
     "toast": {
       "completed": "Project marked as completed.",
-      "archived": "Project archived.",
-      "reopened": "Project reopened.",
-      "restored": "Project restored.",
       "trashed": "Project moved to trash.",
       "restoredFromTrash": "Project restored from trash.",
       "permanentlyDeleted": "Project permanently deleted."
@@ -1136,7 +1061,6 @@
       "status": {
         "active": "Active",
         "completed": "Completed",
-        "archived": "Archived",
         "trashed": "Trash"
       },
       "search": {
@@ -1202,9 +1126,6 @@
         "moreActions": "More actions",
         "edit": "Edit",
         "complete": "Complete",
-        "archive": "Archive",
-        "reopen": "Reopen",
-        "restore": "Restore",
         "trash": "Move to Trash",
         "restoreTrash": "Restore",
         "permanentDelete": "Delete Forever",
@@ -1214,15 +1135,6 @@
         "completeTitle": "Complete project?",
         "completeDescription": "This project will be marked as completed. It becomes read-only — reopen it to make changes. Active surveys will be automatically completed, and respondents currently filling them out will be immediately blocked.",
         "completeAction": "Complete",
-        "archiveTitle": "Archive project?",
-        "archiveDescription": "This project will be moved to the archive and hidden from the default list. Active and draft surveys will be archived, and respondents currently filling them out will be immediately blocked. All collected responses are preserved. You can restore the project later.",
-        "archiveAction": "Archive",
-        "reopenTitle": "Reopen project?",
-        "reopenDescription": "This project will be reopened for active research.",
-        "reopenAction": "Reopen",
-        "restoreTitle": "Restore project?",
-        "restoreDescription": "This project will be restored to its previous status.",
-        "restoreAction": "Restore",
         "trashTitle": "Move to trash?",
         "trashDescription": "This project will be moved to trash and permanently deleted after 30 days. All surveys in this project will also be moved to trash. You can restore everything from trash before then.",
         "trashAction": "Move to Trash",
@@ -1259,7 +1171,6 @@
       "ariaLabel": "Status info: {status}",
       "active": "This project is active and accepting new surveys. You can add surveys, collect responses, and track validation progress.",
       "completed": "This project's research is complete. It's read-only — reopen it to make changes.",
-      "archived": "This project has been archived. Active surveys were cancelled when archived. All collected responses are preserved. You can restore the project at any time.",
       "trashed": "This project is in the trash and will be permanently deleted in {days} days."
     },
     "detail": {
@@ -1276,8 +1187,7 @@
           "total": "Total",
           "active": "Active",
           "completed": "Completed",
-          "draft": "Draft",
-          "cancelled": "Cancelled"
+          "draft": "Draft"
         },
         "toolbar": {
           "filter": "Filter",
@@ -1319,7 +1229,6 @@
       "detailsLabel": "Details",
       "created": "Created",
       "updated": "Last edited",
-      "archivedAt": "Archived at",
       "surveysLabel": "Surveys",
       "actionsLabel": "Actions",
       "context": "Context",
@@ -1332,7 +1241,6 @@
       "completedSurveys": "Completed",
       "draftSurveys": "Drafts",
       "completedBanner": "Research complete. Reopen to make changes.",
-      "archivedBanner": "This project is archived.",
       "trashedBanner": "In trash. Will be permanently deleted on {date}.",
       "contextBadge": "Project",
       "contextBadgeDescription": "A project groups related surveys and insights around a single problem or idea you want to validate. It tracks your research progress from initial hypothesis through data collection to a final verdict.",
@@ -1374,7 +1282,6 @@
         "overview": "Overview",
         "surveys": "Surveys",
         "research": "Research",
-        "insights": "Insights",
         "notes": "Notes"
       },
       "kpi": {
@@ -1467,9 +1374,9 @@
         "description": "Create your first survey to start seeing analytics and insights here.",
         "noSurveys": "No surveys yet",
         "noSurveysDescription": "Create a survey to start collecting responses from your target audience.",
-        "noInsights": "Signals will appear automatically as you collect survey responses. You can also add manual notes.",
-        "noInsightsTitle": "No insights yet",
-        "noInsightsDescription": "Signals appear automatically from survey responses. You can also add manual notes to track your findings."
+        "noInsights": "Signals will appear automatically as you collect survey responses.",
+        "noInsightsTitle": "No signals yet",
+        "noInsightsDescription": "Signals appear automatically from survey responses."
       }
     },
     "validation": {
@@ -1518,68 +1425,7 @@
       "addNote": "Add note",
       "noteBadge": "note",
       "contentPlaceholder": "Write your observation or decision...",
-      "confirmDeleteTitle": "Delete insight?",
-      "confirmDeleteDescription": "This insight will be permanently deleted.",
       "selectType": "Type"
-    },
-    "insights": {
-      "addInsight": "Add Insight",
-      "addInsightsHere": "Add insights here",
-      "moveTo": "Move to",
-      "emptyTitle": "No insights yet",
-      "emptyDescription": "Insights help you organize findings from your research. Complete a survey to get automatic suggestions, or add your own observations manually.",
-      "emptyCta": "Add Insight",
-      "emptyGoToResearch": "Go to Research",
-      "types": {
-        "strength": "Strength",
-        "opportunity": "Opportunity",
-        "threat": "Threat",
-        "decision": "Decision"
-      },
-      "columnDescriptions": {
-        "strength": "Validated positives — what your research confirms works",
-        "opportunity": "Gaps and unmet needs you've discovered",
-        "threat": "Risks, concerns, and negative signals",
-        "decision": "Conclusions and next steps based on your findings"
-      },
-      "columnInfo": {
-        "strength": "Evidence from your research that validates your idea. Strong survey results, positive user feedback, confirmed market demand.",
-        "opportunity": "Gaps in the market, unmet user needs, or areas where competitors fall short. Potential directions worth exploring.",
-        "threat": "Warning signs — negative feedback, strong competition, low engagement, or risks that could undermine your idea.",
-        "decision": "Actions and conclusions drawn from your research. Go/no-go decisions, pivots, feature priorities, target audience changes.",
-        "suggested": "Auto-generated from your survey responses. Review each suggestion and move it to the right category, or dismiss if not relevant."
-      },
-      "contentPlaceholders": {
-        "strength": "e.g. 75% of respondents confirmed the need for...",
-        "opportunity": "e.g. No competitor addresses the problem of...",
-        "threat": "e.g. Market leader is already building a similar...",
-        "decision": "e.g. Based on research, pivot to B2B segment..."
-      },
-      "dialog": {
-        "createTitle": "Add Insight",
-        "editTitle": "Edit Insight",
-        "typeLabel": "Type",
-        "sourceLabel": "Source",
-        "contentLabel": "Content",
-        "discardDescription": "You have unsaved changes. Are you sure you want to discard them?",
-        "discardConfirm": "Discard"
-      },
-      "toolbar": {
-        "searchPlaceholder": "Search insights...",
-        "filterLabel": "Filter",
-        "clearFilters": "Clear filters",
-        "typeSection": "Type",
-        "sourceSection": "Source",
-        "sort": {
-          "manual": "Manual order",
-          "newest": "Newest first",
-          "oldest": "Oldest first",
-          "updated": "Recently updated",
-          "alphabetical": "Alphabetical"
-        },
-        "noResults": "No matching insights",
-        "noResultsDescription": "Try adjusting your search or filters."
-      }
     },
     "suggestions": {
       "title": "Suggested",
@@ -1646,8 +1492,6 @@
       "active": "active",
       "draft": "draft",
       "completed": "completed",
-      "cancelled": "cancelled",
-      "archived": "archived",
       "last7d": "7d",
       "responseTrend": "Responses Over Time",
       "noResponses": "No responses yet",
@@ -1679,8 +1523,7 @@
     },
     "keyFindings": {
       "sectionLabel": "Key Findings",
-      "empty": "No findings yet. Collect survey responses or add insights to see key findings here.",
-      "viewAll": "View all insights",
+      "empty": "No findings yet. Collect survey responses to see key findings here.",
       "autoBadge": "auto",
       "yesNo": "{percent}% said yes to \"{question}\"",
       "rating": "Avg {avg}/{max} for \"{question}\"",
@@ -1692,8 +1535,6 @@
       "createSurvey": "Create your first survey to start collecting data.",
       "activateSurvey": "You have draft surveys ready. Activate one to start collecting responses.",
       "shareSurvey": "Share your active survey to get more responses and strengthen your data.",
-      "reviewFindings": "You have enough responses to review. Check your findings and add insights.",
-      "makeDecision": "You have solid data and insights. Time to make a go/no-go decision.",
       "continue": "Keep collecting responses to build even stronger confidence."
     },
     "compactStats": {
@@ -1724,7 +1565,7 @@
         "deleteProject": "Delete Project",
         "deleteDescription": "Permanently delete this project and all its data. This cannot be undone.",
         "deleteConfirmTitle": "Permanently delete project?",
-        "deleteConfirmDescription": "This will permanently delete the project, all its surveys, questions, responses, insights, and notes. This action cannot be undone.",
+        "deleteConfirmDescription": "This will permanently delete the project, all its surveys, questions, responses, and notes. This action cannot be undone.",
         "deleteConfirmLabel": "Type \"{name}\" to confirm",
         "deleteConfirmPlaceholder": "Project name",
         "deleteButton": "Delete Project Forever",
@@ -1804,7 +1645,6 @@
     "allProjects": "All projects",
     "newProject": "New project",
     "research": "Research",
-    "standaloneResearch": "Standalone research",
     "surveys": "Surveys",
     "allSurveys": "All surveys",
     "newSurvey": "New survey",
@@ -1816,8 +1656,6 @@
     "hideSubpanel": "Hide secondary panel",
     "projectDetails": "Project Details",
     "surveyDetails": "Survey Details",
-    "profilePreview": "Profile",
-    "askAi": "Ask AI",
     "giveFeedback": "Give Feedback",
     "shareFeedback": "Share Feedback",
     "recentProjects": "Recent",
@@ -1833,8 +1671,6 @@
     "research": "Research",
     "surveys": "Surveys",
     "settings": "Settings",
-    "profile": "Profile",
-    "preview": "Preview",
     "new": "New",
     "create": "Create",
     "archive": "Archive",
@@ -2212,48 +2048,6 @@
       "rateLimitExceeded": "Too many attempts. Please wait a moment and try again.",
       "socialLinkDomainMismatch": "URL doesn't match the selected platform.",
       "unexpected": "Something went wrong. Please try again."
-    }
-  },
-  "profile": {
-    "preview": {
-      "title": "Profile Preview",
-      "description": "A summary of your account and research activity."
-    },
-    "memberSince": "Member since {date}",
-    "empty": {
-      "fullName": "No name set",
-      "role": "No role set",
-      "bio": "No bio yet."
-    },
-    "sections": {
-      "socialLinks": "Social Links"
-    },
-    "journey": {
-      "title": "Research Journey",
-      "nextGoal": "Next goal",
-      "achieved": "Achieved",
-      "milestones": {
-        "joined": "Joined Pain Point Studio",
-        "first_project": "Created first project",
-        "first_survey": "Published first survey",
-        "first_response": "Received first response",
-        "responses_10": "Collected 10 responses",
-        "responses_50": "Collected 50 responses",
-        "responses_100": "Collected 100 responses",
-        "responses_500": "Collected 500 responses",
-        "responses_1000": "Collected 1,000 responses"
-      },
-      "short": {
-        "joined": "Joined",
-        "first_project": "1st project",
-        "first_survey": "1st survey",
-        "first_response": "1st response",
-        "responses_10": "10 responses",
-        "responses_50": "50 responses",
-        "responses_100": "100 responses",
-        "responses_500": "500 responses",
-        "responses_1000": "1K responses"
-      }
     }
   },
   "commandPalette": {

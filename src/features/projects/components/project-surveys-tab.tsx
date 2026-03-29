@@ -7,7 +7,7 @@ import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
-import { isProjectArchived } from '@/features/projects/lib/project-helpers';
+import { isProjectReadOnly } from '@/features/projects/lib/project-helpers';
 import type { Project } from '@/features/projects/types';
 
 interface ProjectSurveysTabProps {
@@ -24,7 +24,7 @@ export function ProjectSurveysTab({
   children,
 }: ProjectSurveysTabProps) {
   const t = useTranslations();
-  const isArchived = isProjectArchived(project);
+  const isArchived = isProjectReadOnly(project);
   const effectiveCreateSurvey = !isArchived ? onCreateSurvey : undefined;
 
   if (!hasSurveys) {

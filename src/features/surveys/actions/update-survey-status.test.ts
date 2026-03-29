@@ -1,5 +1,5 @@
 // @vitest-environment node
-/** Tests for survey lifecycle status transitions (complete, cancel, archive, restore, delete). */
+/** Tests for survey lifecycle status transitions (complete, trash, restoreTrash, permanentDelete). */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // ── Mocks ────────────────────────────────────────────────────────────
@@ -88,57 +88,6 @@ describe('Survey status actions', () => {
       const result = await completeSurvey({ surveyId: SURVEY_ID });
 
       expect(result).toHaveProperty('error', 'surveys.errors.unexpected');
-    });
-  });
-
-  describe('cancelSurvey', () => {
-    it('should return success when update returns a row', async () => {
-      mockFrom.mockReturnValue(chain({ data: { id: SURVEY_ID } }));
-
-      const { cancelSurvey } = await import('./update-survey-status');
-      const result = await cancelSurvey({ surveyId: SURVEY_ID });
-
-      expect(result).toEqual({ success: true });
-    });
-  });
-
-  describe('archiveSurvey', () => {
-    it('should return success when select and update succeed', async () => {
-      const selectChain = chain({ data: { status: 'draft' } });
-      const updateChain = chain({ data: { id: SURVEY_ID } });
-
-      let callCount = 0;
-
-      mockFrom.mockImplementation(() => {
-        callCount++;
-
-        return callCount === 1 ? selectChain : updateChain;
-      });
-
-      const { archiveSurvey } = await import('./update-survey-status');
-      const result = await archiveSurvey({ surveyId: SURVEY_ID });
-
-      expect(result).toEqual({ success: true });
-    });
-  });
-
-  describe('restoreSurvey', () => {
-    it('should return success when update and delete succeed', async () => {
-      const updateChain = chain({ data: { id: SURVEY_ID } });
-      const deleteChain = chain({ data: null, error: null });
-
-      mockFrom.mockImplementation((table: string) => {
-        if (table === 'survey_responses') {
-          return deleteChain;
-        }
-
-        return updateChain;
-      });
-
-      const { restoreSurvey } = await import('./update-survey-status');
-      const result = await restoreSurvey({ surveyId: SURVEY_ID });
-
-      expect(result).toEqual({ success: true });
     });
   });
 

@@ -1,20 +1,19 @@
 'use client';
 
-import { Archive, CalendarClock, CalendarX2, FolderKanban, Users } from 'lucide-react';
+import { CalendarClock, CalendarX2, FolderKanban, Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { SurveyStatusBadge } from '@/components/shared/survey-status-badge';
 import { MetricRow, SectionLabel } from '@/components/ui/metric-display';
 import { ExpiryMetricRow } from '@/features/surveys/components/dashboard/expiry-metric-row';
 import { SURVEY_STATUS_CONFIG } from '@/features/surveys/config/survey-status';
-import type { SurveyStatusFlags } from '@/features/surveys/config/survey-status';
 import type { UserSurvey } from '@/features/surveys/types';
 import Link from '@/i18n/link';
 import { getProjectDetailUrl } from '@/lib/common/urls/project-urls';
 
 interface SurveyDetailInfoProps {
   survey: UserSurvey;
-  flags: SurveyStatusFlags;
+  flags: { isCompleted: boolean };
   showActiveDetails: boolean;
   formatDate: (iso: string) => string;
 }
@@ -26,7 +25,7 @@ export function SurveyDetailInfo({
   formatDate,
 }: SurveyDetailInfoProps) {
   const t = useTranslations();
-  const { isCompleted, isCancelled, isArchived } = flags;
+  const { isCompleted } = flags;
 
   return (
     <div>
@@ -82,28 +81,6 @@ export function SurveyDetailInfo({
           <ExpiryMetricRow
             timestampAt={survey.completedAt}
             labelKey="surveys.dashboard.detailPanel.linkExpires"
-          />
-        )}
-
-        {isCancelled && (
-          <ExpiryMetricRow
-            timestampAt={survey.cancelledAt}
-            labelKey="surveys.dashboard.detailPanel.linkExpires"
-          />
-        )}
-
-        {isArchived && survey.archivedAt && (
-          <MetricRow
-            icon={Archive}
-            label={t('surveys.dashboard.detailPanel.archivedAt')}
-            value={formatDate(survey.archivedAt)}
-          />
-        )}
-
-        {isArchived && (
-          <ExpiryMetricRow
-            timestampAt={survey.archivedAt}
-            labelKey="surveys.dashboard.detailPanel.autoDeletes"
           />
         )}
       </div>

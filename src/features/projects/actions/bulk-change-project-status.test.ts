@@ -85,7 +85,7 @@ describe('Project Actions – Bulk Change Project Status', () => {
     mockFrom.mockReturnValueOnce(chain({ data: [] }));
 
     const { bulkChangeProjectStatus } = await import('./bulk-change-project-status');
-    const result = await bulkChangeProjectStatus({ projectIds: [ID1, ID2], action: 'archive' });
+    const result = await bulkChangeProjectStatus({ projectIds: [ID1, ID2], action: 'complete' });
 
     expect(result).toEqual({
       error: 'projects.errors.bulkAllFailed',
@@ -139,7 +139,7 @@ describe('Project Actions – Bulk Change Project Status', () => {
       .mockResolvedValueOnce({ data: { success: true }, error: null });
 
     const { bulkChangeProjectStatus } = await import('./bulk-change-project-status');
-    const result = await bulkChangeProjectStatus({ projectIds: [ID1, ID2], action: 'reopen' });
+    const result = await bulkChangeProjectStatus({ projectIds: [ID1, ID2], action: 'trash' });
 
     expect(result).toEqual({
       success: true,

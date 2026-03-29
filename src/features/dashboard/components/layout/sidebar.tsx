@@ -10,7 +10,6 @@ import { DASHBOARD_FOOTER_HEIGHT_CLASS } from '@/features/dashboard/config/layou
 import {
   SIDEBAR_BOTTOM_ITEM,
   SIDEBAR_GIVE_FEEDBACK_ITEM,
-  SIDEBAR_PROFILE_ITEM,
 } from '@/features/dashboard/config/navigation';
 import { cn } from '@/lib/common/utils';
 
@@ -43,11 +42,6 @@ export function Sidebar() {
         <SidebarNavList isExpanded={isExpanded} />
 
         <div className={cn('mt-auto flex flex-col gap-1.5 pt-4', !isExpanded && 'items-center')}>
-          <SidebarItem
-            {...SIDEBAR_PROFILE_ITEM}
-            isExpanded={isExpanded}
-            hasSubNav={!!SIDEBAR_PROFILE_ITEM.subNav}
-          />
           <SidebarItem
             {...SIDEBAR_BOTTOM_ITEM}
             isExpanded={isExpanded}

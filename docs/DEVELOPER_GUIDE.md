@@ -12,11 +12,11 @@
 
 An idea validation platform for developers. It enables a structured research process — from hypothesis to first feedback — in hours instead of weeks. 70% of side projects fail because they don't solve a real problem. PPS fixes that by providing:
 
-- **Project management** — organize research ideas with status tracking (active → completed → archived)
+- **Project management** — organize research ideas with status tracking (active → completed)
 - **Survey builder** — create multi-question surveys with 5 question types (open text, short text, multiple choice, rating scale, yes/no)
 - **Respondent collection** — public survey links (`/r/[slug]`) with fingerprint-based duplicate prevention
-- **Analytics** — completion rates, response timelines, per-question breakdowns, auto-generated insights
-- **Notes & insights** — rich text notes, AI-suggested insights from survey data, kanban board for organizing findings
+- **Analytics** — completion rates, response timelines, per-question breakdowns
+- **Notes** — rich text notes with folder organization for tracking research findings
 
 ### Tech Stack
 
@@ -142,7 +142,7 @@ All domain code lives under `src/features/`. 8 features, each self-contained wit
 | `dashboard`       | Overview bento grid, layout shell (sidebar, navbar, sub-panel), recent items tracking         | `components/layout/`, `components/bento/`, `actions/get-recent-items.ts`, `actions/track-recent-item.ts`, `hooks/use-projects-sub-nav-groups.ts` |
 | `marketing`       | Landing page sections, charts, public content                                                 | `components/layout/`, `components/charts/`, `config/`                                                                                            |
 | `profile`         | Public profile preview and research journey                                                   | `components/profile-header.tsx`, `components/research-journey.tsx`                                                                               |
-| `projects`        | Project CRUD, notes (rich text + folders), insights (AI-suggested), overview stats, kanban    | `actions/`, `components/project-dashboard-page.tsx`, `hooks/use-kanban-board.ts`                                                                 |
+| `projects`        | Project CRUD, notes (rich text + folders), overview stats                                     | `actions/`, `components/project-dashboard-page.tsx`                                                                                              |
 | `settings`        | Profile editing, email change, password change, connected accounts, account deletion          | `actions/`, `components/profile-form.tsx`, `components/avatar-upload.tsx`                                                                        |
 | `surveys`         | Survey builder (question editor), respondent flow (public), analytics (stats, charts, export) | `actions/`, `components/builder/`, `components/respondent/`, `components/stats/`                                                                 |
 
@@ -311,37 +311,35 @@ Generic state machine in `src/lib/common/status-machine.ts` shared by projects a
 - **Transition map** — Defines valid actions with source statuses and target statuses
 - **Action UI config** — Icon, button class, menu item variant, optional confirmation dialog
 
-**Project statuses:** `active` → `completed` → `archived` → `trashed`
+**Project statuses:** `active` → `completed` (readonly) → `trashed`
 
-| Action            | From                        | To                     | Method |
-| ----------------- | --------------------------- | ---------------------- | ------ |
-| `complete`        | active                      | completed              | update |
-| `archive`         | active, completed           | archived               | update |
-| `reopen`          | completed                   | active                 | update |
-| `restore`         | archived                    | _(pre_archive_status)_ | update |
-| `trash`           | active, completed, archived | trashed                | update |
-| `restoreTrash`    | trashed                     | _(pre_trash_status)_   | update |
-| `permanentDelete` | trashed                     | —                      | delete |
+| Action            | From              | To                   | Method |
+| ----------------- | ----------------- | -------------------- | ------ |
+| `complete`        | active            | completed            | update |
+| `trash`           | active, completed | trashed              | update |
+| `restoreTrash`    | trashed           | _(pre_trash_status)_ | update |
+| `permanentDelete` | trashed           | —                    | delete |
 
-**Survey statuses:** `draft` → `active` → `completed` / `cancelled` → `archived` → `trashed`
+**Survey statuses:** `draft` → `active` → `completed` (readonly) → `trashed`
 
-| Action            | From                                          | To                     | Method |
-| ----------------- | --------------------------------------------- | ---------------------- | ------ |
-| `complete`        | active                                        | completed              | update |
-| `cancel`          | active                                        | cancelled              | update |
-| `reopen`          | completed, cancelled                          | active                 | update |
-| `archive`         | completed, cancelled, draft                   | archived               | update |
-| `restore`         | archived                                      | _(pre_archive_status)_ | update |
-| `trash`           | draft, active, completed, cancelled, archived | trashed                | update |
-| `restoreTrash`    | trashed                                       | _(pre_trash_status)_   | update |
-| `permanentDelete` | trashed                                       | —                      | delete |
+| Action            | From                     | To                   | Method |
+| ----------------- | ------------------------ | -------------------- | ------ |
+| `complete`        | active                   | completed            | update |
+| `trash`           | draft, active, completed | trashed              | update |
+| `restoreTrash`    | trashed                  | _(pre_trash_status)_ | update |
+| `permanentDelete` | trashed                  | —                    | delete |
 
-**Soft-delete lifecycle:** When trashing, the current status is saved in `pre_trash_status` (or `pre_archive_status` for archiving). Restoring reads this field to return to the original state. A database cron job hard-deletes records where `deleted_at` is older than 30 days.
+**Key behaviors:**
+
+- **Completed = readonly** — no editing, no new surveys in completed projects. Can view, export, trash.
+- **Trashing active surveys** completes them first (irreversible), then trashes.
+- **Cascade:** completing a project completes its active surveys. Trashing a project completes active surveys, then trashes everything.
+- **Soft-delete lifecycle:** When trashing, the current status is saved in `pre_trash_status`. Restoring reads this field to return to the original state. A database cron job hard-deletes records where `deleted_at` is older than 30 days.
 
 ### i18n System
 
 - **Configuration:** `src/i18n/constants.ts` defines `locales` (`['en']`) and `defaultLocale` (`'en'`)
-- **Messages:** `src/i18n/messages/en.json` — single file with nested keys (e.g. `projects.detail.archivedBanner`)
+- **Messages:** `src/i18n/messages/en.json` — single file with nested keys (e.g. `projects.detail.completedBanner`)
 - **Server usage:** `const t = await getTranslations()` from `next-intl/server`
 - **Client usage:** `const t = useTranslations()` from `next-intl` (requires `'use client'`)
 - **Pathnames:** `src/i18n/pathnames.ts` maps route names to locale-specific paths
@@ -370,31 +368,26 @@ Key settings:
 
 ### Schema Overview
 
-11 tables with Row Level Security. All in `public` schema. Extensions: `pgcrypto`, `supabase_vault`, `uuid-ossp`, `pg_cron`, `pg_net`.
+9 tables with Row Level Security. All in `public` schema. Extensions: `pgcrypto`, `supabase_vault`, `uuid-ossp`, `pg_cron`, `pg_net`.
 
-| Table                        | Purpose                                          | Key Columns                                                                                                                                                                |
-| ---------------------------- | ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `profiles`                   | User profile (auto-created on signup)            | `id` (FK → auth.users), `full_name`, `avatar_url`, `pinned_project_id`, `social_links`                                                                                     |
-| `projects`                   | Research projects                                | `id`, `user_id`, `name`, `summary`, `status`, `image_url`, `response_limit` (default 50), `deleted_at`, `pre_trash_status`, `pre_archive_status`                           |
-| `project_notes`              | Rich text notes                                  | `id`, `project_id`, `folder_id`, `title`, `content` (JSON), `is_pinned`, `position`                                                                                        |
-| `project_note_folders`       | Note folder structure                            | `id`, `project_id`, `name`, `position`                                                                                                                                     |
-| `project_insights`           | Research insights (user-created or AI-suggested) | `id`, `project_id`, `type` (strength/opportunity/threat/decision), `title`, `description`, `column`, `source` (`insight_source` enum, NOT NULL, default `own_observation`) |
-| `insight_suggestion_actions` | Tracks dismissed/accepted AI suggestions         | `id`, `project_id`, `suggestion_hash`, `action`                                                                                                                            |
-| `surveys`                    | Survey definitions                               | `id`, `user_id`, `project_id`, `title`, `description`, `slug`, `status`, `visibility`, `max_respondents`, `deadline`, `research_phase`                                     |
-| `survey_questions`           | Questions in surveys                             | `id`, `survey_id`, `text`, `type` (question_type enum), `required`, `description`, `config` (JSON), `position`                                                             |
-| `survey_responses`           | Response sessions                                | `id`, `survey_id`, `fingerprint`, `device_type`, `status` (in_progress/completed/abandoned), `started_at`, `completed_at`, `contact_name`, `contact_email`, `feedback`     |
-| `survey_answers`             | Individual answers                               | `id`, `response_id`, `question_id`, `value` (JSON)                                                                                                                         |
-| `user_recent_items`          | Recently visited projects/surveys per user       | `id`, `user_id`, `item_id`, `item_type` (project/survey), `visited_at`. Unique on `(user_id, item_id)`.                                                                    |
+| Table                  | Purpose                                    | Key Columns                                                                                                                                                            |
+| ---------------------- | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `profiles`             | User profile (auto-created on signup)      | `id` (FK → auth.users), `full_name`, `avatar_url`, `pinned_project_id`, `social_links`                                                                                 |
+| `projects`             | Research projects                          | `id`, `user_id`, `name`, `summary`, `status`, `image_url`, `response_limit` (default 50), `deleted_at`, `pre_trash_status`, `pre_archive_status`                       |
+| `project_notes`        | Rich text notes                            | `id`, `project_id`, `folder_id`, `title`, `content` (JSON), `is_pinned`, `position`                                                                                    |
+| `project_note_folders` | Note folder structure                      | `id`, `project_id`, `name`, `position`                                                                                                                                 |
+| `surveys`              | Survey definitions                         | `id`, `user_id`, `project_id`, `title`, `description`, `slug`, `status`, `visibility`, `max_respondents`, `deadline`, `research_phase`                                 |
+| `survey_questions`     | Questions in surveys                       | `id`, `survey_id`, `text`, `type` (question_type enum), `required`, `description`, `config` (JSON), `position`                                                         |
+| `survey_responses`     | Response sessions                          | `id`, `survey_id`, `fingerprint`, `device_type`, `status` (in_progress/completed/abandoned), `started_at`, `completed_at`, `contact_name`, `contact_email`, `feedback` |
+| `survey_answers`       | Individual answers                         | `id`, `response_id`, `question_id`, `value` (JSON)                                                                                                                     |
+| `user_recent_items`    | Recently visited projects/surveys per user | `id`, `user_id`, `item_id`, `item_type` (project/survey), `visited_at`. Unique on `(user_id, item_id)`.                                                                |
 
 ### Database Enums
 
 ```sql
 question_type: 'open_text' | 'short_text' | 'multiple_choice' | 'rating_scale' | 'yes_no'
-survey_status: 'draft' | 'active' | 'completed' | 'cancelled' | 'archived' | 'trashed'
-insight_source: 'survey' | 'user_interview' | 'competitor_analysis' | 'market_research' | 'own_observation'
+survey_status: 'draft' | 'active' | 'completed' | 'trashed'
 ```
-
-> `surveys.generate_insights` still exists in the database but is no longer queried. AI suggestions now auto-generate from all completed surveys for the project.
 
 ### RPC Functions (39 total)
 
@@ -445,7 +438,7 @@ insight_source: 'survey' | 'user_interview' | 'competitor_analysis' | 'market_re
 - `get_dashboard_overview(p_user_id)` — User's projects with active survey counts
 - `get_dashboard_stats(p_user_id, p_days)` — KPIs: total responses, completion rate, timeline, recent activity
 - `upsert_recent_item(p_item_id, p_item_type)` — Fire-and-forget upsert into `user_recent_items`. Auto-trims to 5 per item type.
-- `get_recent_items(p_item_type, p_limit, p_project_id)` — Returns recent items with fresh labels (joins projects/surveys). Filters out trashed/cancelled items. Optional project filter for surveys.
+- `get_recent_items(p_item_type, p_limit, p_project_id)` — Returns recent items with fresh labels (joins projects/surveys). Filters out trashed items. Optional project filter for surveys.
 
 **Other:**
 

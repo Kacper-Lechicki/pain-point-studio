@@ -99,6 +99,18 @@ const ConnectedAccounts = ({ identities, hasPassword }: ConnectedAccountsProps) 
         description={t('settings.connectedAccounts.description')}
       />
 
+      {!canUnlink && oauthIdentities.length > 0 && (
+        <Alert variant="info" className="text-xs">
+          <Info className="size-3.5" />
+
+          <AlertDescription>
+            {hasPassword
+              ? t('settings.connectedAccounts.cannotUnlinkOnlyOAuth')
+              : t('settings.connectedAccounts.cannotUnlinkHint')}
+          </AlertDescription>
+        </Alert>
+      )}
+
       <div className="space-y-3">
         <div
           data-testid="provider-row-password"
@@ -204,18 +216,6 @@ const ConnectedAccounts = ({ identities, hasPassword }: ConnectedAccountsProps) 
           );
         })}
       </div>
-
-      {!canUnlink && oauthIdentities.length > 0 && (
-        <Alert variant="info" className="text-xs">
-          <Info className="size-3.5" />
-
-          <AlertDescription>
-            {hasPassword
-              ? t('settings.connectedAccounts.cannotUnlinkOnlyOAuth')
-              : t('settings.connectedAccounts.cannotUnlinkHint')}
-          </AlertDescription>
-        </Alert>
-      )}
 
       <ConfirmDialog
         open={unlinkTarget !== null}

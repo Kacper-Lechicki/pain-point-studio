@@ -6,12 +6,8 @@ import type { SurveyAction } from '@/features/surveys/config/survey-status';
 import { isConfirmable } from './use-survey-action';
 
 vi.mock('@/features/surveys/actions', () => ({
-  archiveSurvey: vi.fn(),
-  cancelSurvey: vi.fn(),
   completeSurvey: vi.fn(),
   permanentDeleteSurvey: vi.fn(),
-  reopenSurvey: vi.fn(),
-  restoreSurvey: vi.fn(),
   restoreTrashSurvey: vi.fn(),
   trashSurvey: vi.fn(),
 }));
@@ -19,22 +15,6 @@ vi.mock('@/features/surveys/actions', () => ({
 describe('isConfirmable', () => {
   it('should return true for complete', () => {
     expect(isConfirmable('complete' as SurveyAction)).toBe(true);
-  });
-
-  it('should return true for cancel', () => {
-    expect(isConfirmable('cancel' as SurveyAction)).toBe(true);
-  });
-
-  it('should return true for reopen', () => {
-    expect(isConfirmable('reopen' as SurveyAction)).toBe(true);
-  });
-
-  it('should return true for archive', () => {
-    expect(isConfirmable('archive' as SurveyAction)).toBe(true);
-  });
-
-  it('should return true for restore', () => {
-    expect(isConfirmable('restore' as SurveyAction)).toBe(true);
   });
 
   it('should return true for trash', () => {

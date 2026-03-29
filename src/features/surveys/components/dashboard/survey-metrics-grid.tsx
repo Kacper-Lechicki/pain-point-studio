@@ -1,6 +1,6 @@
 'use client';
 
-import { Archive, Clock, Pencil, Trash2 } from 'lucide-react';
+import { Clock, Pencil, Trash2 } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { ActivityInfoTrigger } from '@/features/surveys/components/dashboard/activity-info-trigger';
@@ -16,10 +16,10 @@ const ACTIVITY_BADGE_BASE =
 interface SurveyMetricsGridProps {
   survey: UserSurvey;
   row: ReturnType<typeof useSurveyRow>;
-  archivedLayout: boolean;
+  archivedLayout?: boolean;
 }
 
-export function SurveyMetricsGrid({ survey, row, archivedLayout }: SurveyMetricsGridProps) {
+export function SurveyMetricsGrid({ survey, row }: SurveyMetricsGridProps) {
   if (row.isDraft) {
     return (
       <>
@@ -110,68 +110,6 @@ export function SurveyMetricsGrid({ survey, row, archivedLayout }: SurveyMetrics
     );
   }
 
-  if (row.isArchived || archivedLayout) {
-    return (
-      <>
-        <div className="flex min-w-0 flex-col gap-0.5">
-          <span>{row.t('surveys.dashboard.table.completion')}</span>
-          <span className="text-foreground font-medium tabular-nums">
-            {survey.avgQuestionCompletion != null
-              ? `${Math.round(survey.avgQuestionCompletion)}%`
-              : '—'}
-          </span>
-        </div>
-        <div className="flex min-w-0 flex-col gap-0.5">
-          <span>{row.t('surveys.dashboard.table.archivedAt')}</span>
-          <span className="text-foreground font-medium">{row.archivedAtLabel ?? '—'}</span>
-        </div>
-        <div className="min-w-0" />
-        <div className="flex min-w-0 flex-col gap-0.5">
-          <span>{row.t('surveys.dashboard.table.activity')}</span>
-          {row.autoDeleteDays != null ? (
-            <ActivityInfoTrigger
-              titleKey="surveys.dashboard.activityInfo.autoDeletesTitle"
-              descriptionKey="surveys.dashboard.activityInfo.autoDeletesInDays"
-              descriptionValues={{ days: row.autoDeleteDays }}
-              className="flex min-w-0"
-              dialogBadgeLabel={
-                <>
-                  <Archive className="size-3.5 shrink-0" aria-hidden />
-                  <span className="line-clamp-2 min-w-0 overflow-hidden leading-tight text-ellipsis">
-                    {row.t('surveys.dashboard.detailPanel.inDays', {
-                      days: row.autoDeleteDays,
-                    })}
-                  </span>
-                </>
-              }
-              dialogBadgeClassName={cn(
-                ACTIVITY_BADGE_BASE,
-                'tabular-nums text-amber-700 dark:text-amber-400'
-              )}
-            >
-              <Badge
-                variant="secondary"
-                className={cn(
-                  ACTIVITY_BADGE_BASE,
-                  'text-amber-700 tabular-nums dark:text-amber-400'
-                )}
-              >
-                <Archive className="size-3.5 shrink-0" aria-hidden />
-                <span className="line-clamp-2 min-w-0 overflow-hidden leading-tight text-ellipsis">
-                  {row.t('surveys.dashboard.detailPanel.inDays', {
-                    days: row.autoDeleteDays,
-                  })}
-                </span>
-              </Badge>
-            </ActivityInfoTrigger>
-          ) : (
-            <span className="text-foreground font-medium tabular-nums">—</span>
-          )}
-        </div>
-      </>
-    );
-  }
-
   return (
     <>
       <div className="flex min-w-0 flex-col gap-0.5">
@@ -201,7 +139,7 @@ export function SurveyMetricsGrid({ survey, row, archivedLayout }: SurveyMetrics
       </div>
       <div className="flex min-w-0 flex-col gap-0.5">
         <span>{row.t('surveys.dashboard.table.activity')}</span>
-        {row.isCompleted || row.isCancelled ? (
+        {row.isCompleted ? (
           row.linkExpiryDays != null ? (
             <ActivityInfoTrigger
               titleKey="surveys.dashboard.activityInfo.linkExpiresTitle"

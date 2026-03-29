@@ -1,11 +1,6 @@
 import { z } from 'zod';
 
-import {
-  INSIGHT_CONTENT_MAX_LENGTH,
-  PROJECT_NAME_MAX_LENGTH,
-  PROJECT_SUMMARY_MAX_LENGTH,
-} from '@/features/projects/config';
-import { INSIGHT_SOURCES, INSIGHT_TYPES } from '@/features/projects/types/project';
+import { PROJECT_NAME_MAX_LENGTH, PROJECT_SUMMARY_MAX_LENGTH } from '@/features/projects/config';
 
 // ── Project schemas ─────────────────────────────────────────────────
 
@@ -61,46 +56,4 @@ export const updateProjectImageSchema = z.object({
 export const permanentDeleteProjectForceSchema = z.object({
   projectId: z.uuid(),
   confirmation: z.string().trim().min(1, 'projects.errors.fieldRequired'),
-});
-
-// ── Insight schemas ─────────────────────────────────────────────────
-
-/** Schema for creating a new manual insight/note. */
-export const createInsightSchema = z.object({
-  projectId: z.uuid(),
-  type: z.enum(INSIGHT_TYPES),
-  source: z.enum(INSIGHT_SOURCES).default('own_observation'),
-  content: z
-    .string()
-    .trim()
-    .min(1, 'projects.errors.fieldRequired')
-    .max(INSIGHT_CONTENT_MAX_LENGTH, 'projects.errors.contentTooLong'),
-});
-
-/** Schema for updating an existing insight/note. */
-export const updateInsightSchema = z.object({
-  insightId: z.uuid(),
-  type: z.enum(INSIGHT_TYPES).optional(),
-  source: z.enum(INSIGHT_SOURCES).optional(),
-  content: z
-    .string()
-    .trim()
-    .min(1, 'projects.errors.fieldRequired')
-    .max(INSIGHT_CONTENT_MAX_LENGTH, 'projects.errors.contentTooLong')
-    .optional(),
-});
-
-/** Schema for reordering insights within a column. */
-export const reorderInsightsSchema = z.object({
-  insightIds: z.array(z.uuid()),
-});
-
-/** Schema for moving an insight to a different column (type change + reorder). */
-export const moveInsightSchema = z.object({
-  insightId: z.uuid(),
-  newType: z.enum(INSIGHT_TYPES),
-  /** Ordered IDs of all insights in the TARGET column after the move. */
-  targetColumnInsightIds: z.array(z.uuid()),
-  /** Ordered IDs of all insights remaining in the SOURCE column after removal. */
-  sourceColumnInsightIds: z.array(z.uuid()),
 });

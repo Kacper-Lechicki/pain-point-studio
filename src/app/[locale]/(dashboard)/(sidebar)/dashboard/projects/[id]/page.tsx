@@ -5,17 +5,13 @@ import { getTranslations } from 'next-intl/server';
 import { PageTransition } from '@/components/ui/page-transition';
 import { ROUTES, getPageMetadata } from '@/config';
 import { DashboardPageBack } from '@/features/dashboard/components/layout/dashboard-page-back';
-import {
-  type InsightSuggestionsResult,
-  getInsightSuggestions,
-} from '@/features/projects/actions/get-insight-suggestions';
 import { getNoteFolders } from '@/features/projects/actions/get-note-folders';
 import { getProject } from '@/features/projects/actions/get-project';
-import { getProjectInsights } from '@/features/projects/actions/get-project-insights';
 import { getProjectNotes } from '@/features/projects/actions/get-project-notes';
 import { getProjectOverviewStats } from '@/features/projects/actions/get-project-overview-stats';
 import { getProjectSignalsData } from '@/features/projects/actions/get-project-signals-data';
 import { ProjectDashboardPage } from '@/features/projects/components/project-dashboard-page';
+import type { ProjectOverviewStats } from '@/features/projects/types';
 import { getProjectSurveys } from '@/features/surveys/actions';
 
 interface ProjectDetailPageProps {
@@ -33,7 +29,7 @@ export async function generateMetadata({ params }: ProjectDetailPageProps) {
   return getPageMetadata(t, 'project', { name: data.project.name });
 }
 
-const EMPTY_OVERVIEW_STATS = {
+const EMPTY_OVERVIEW_STATS: ProjectOverviewStats = {
   totalSurveys: 0,
   activeSurveys: 0,
   totalResponses: 0,
@@ -59,28 +55,14 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
     notFound();
   }
 
-  const EMPTY_SUGGESTIONS: InsightSuggestionsResult = {
-    suggestions: [],
-    totalCompletedResponses: 0,
-  };
-
-  const [
-    insightsResult,
-    statsResult,
-    surveysResult,
-    notesResult,
-    foldersResult,
-    signalsResult,
-    suggestionsResult,
-  ] = await Promise.allSettled([
-    getProjectInsights(id),
-    getProjectOverviewStats(id),
-    getProjectSurveys(id),
-    getProjectNotes(id),
-    getNoteFolders(id),
-    getProjectSignalsData(id),
-    getInsightSuggestions(id),
-  ]);
+  const [statsResult, surveysResult, notesResult, foldersResult, signalsResult] =
+    await Promise.allSettled([
+      getProjectOverviewStats(id),
+      getProjectSurveys(id),
+      getProjectNotes(id),
+      getNoteFolders(id),
+      getProjectSignalsData(id),
+    ]);
 
   return (
     <>
@@ -91,12 +73,10 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
           project={data.project}
           owner={data.owner}
           surveys={settled(surveysResult, []) ?? []}
-          insights={settled(insightsResult, []) ?? []}
           notesMeta={settled(notesResult, []) ?? []}
           noteFolders={settled(foldersResult, []) ?? []}
           overviewStats={settled(statsResult, null) ?? EMPTY_OVERVIEW_STATS}
           signalsData={settled(signalsResult, [])}
-          suggestionsData={settled(suggestionsResult, EMPTY_SUGGESTIONS)}
         />
       </PageTransition>
     </>

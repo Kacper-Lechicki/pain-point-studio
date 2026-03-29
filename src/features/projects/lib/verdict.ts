@@ -1,18 +1,14 @@
 import { FINDING_THRESHOLDS } from '@/features/projects/config/signals';
 import type { VerdictResult } from '@/features/projects/config/verdict';
-import type { Finding, ProjectInsight } from '@/features/projects/types';
+import type { Finding } from '@/features/projects/types';
 
 // ── Input ────────────────────────────────────────────────────────────
 
 export interface VerdictInput {
   totalResponses: number;
   responseLimit: number;
-  /** Count of manually-created insights (from the Insights tab). */
-  insightCount: number;
   /** Auto-generated findings from survey data. */
   findings: Finding[];
-  /** Manual insights with type info for sentiment analysis. */
-  insights: ProjectInsight[];
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────
@@ -39,13 +35,13 @@ function countNegativeFindings(findings: Finding[]): number {
 // ── Main ─────────────────────────────────────────────────────────────
 
 /**
- * Compute a verdict for a project based on response completeness, insights,
- * and auto-generated findings. Pure function — no side-effects.
+ * Compute a verdict for a project based on response completeness and
+ * auto-generated findings. Pure function — no side-effects.
  *
  * MVP heuristic; intentionally simple and interpretable.
  */
 export function computeVerdict(input: VerdictInput): VerdictResult {
-  const { totalResponses, responseLimit, insightCount, findings, insights } = input;
+  const { totalResponses, responseLimit, findings } = input;
 
   // ── No data ─────────────────────────────────────────
   if (totalResponses === 0) {
@@ -53,7 +49,7 @@ export function computeVerdict(input: VerdictInput): VerdictResult {
   }
 
   const confidence = Math.min(totalResponses / Math.max(responseLimit, 1), 1);
-  const totalSignals = findings.length + insightCount;
+  const totalSignals = findings.length;
 
   // ── Early exploration (little data) ─────────────────
   if (confidence < 0.3) {
@@ -66,11 +62,10 @@ export function computeVerdict(input: VerdictInput): VerdictResult {
 
   // ── Enough signals to analyse ───────────────────────
   if (totalSignals >= 3) {
-    const threatCount = insights.filter((i) => i.type === 'threat').length;
     const negativeFindings = countNegativeFindings(findings);
 
     // Strong validation
-    if (confidence >= 0.9 && threatCount === 0 && negativeFindings === 0) {
+    if (confidence >= 0.9 && negativeFindings === 0) {
       return {
         status: 'validated',
         confidence,
@@ -79,7 +74,7 @@ export function computeVerdict(input: VerdictInput): VerdictResult {
     }
 
     // Strong invalidation
-    if (confidence >= 0.9 && (threatCount >= 2 || negativeFindings >= 3)) {
+    if (confidence >= 0.9 && negativeFindings >= 3) {
       return {
         status: 'invalidated',
         confidence,
@@ -88,7 +83,7 @@ export function computeVerdict(input: VerdictInput): VerdictResult {
     }
 
     // Some concerns
-    if (threatCount > 0 || negativeFindings > 0) {
+    if (negativeFindings > 0) {
       return {
         status: 'needs-attention',
         confidence,

@@ -11,13 +11,6 @@ import {
 import { ROUTES } from '@/config/routes';
 import type { NavItem, SubNavItem } from '@/features/dashboard/config/navigation';
 
-/** Profile preview link shown in the sidebar above Settings. */
-export const PROFILE_NAV_ITEM: NavItem = {
-  labelKey: 'sidebar.profilePreview',
-  icon: CircleUserRound,
-  href: ROUTES.profile.preview,
-};
-
 const USER_SETTINGS_SUB_NAV_ITEMS: SubNavItem[] = [
   { labelKey: 'settings.nav.profile', icon: CircleUserRound, href: ROUTES.settings.profile },
   { labelKey: 'settings.nav.email', icon: Mail, href: ROUTES.settings.email },

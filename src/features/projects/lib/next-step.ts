@@ -1,20 +1,10 @@
 import type { ResearchPhase } from '@/features/projects/types';
 
-// ── Types ────────────────────────────────────────────────────────────
-
-export type NextStepAction =
-  | 'create-survey'
-  | 'activate-survey'
-  | 'share-survey'
-  | 'review-findings'
-  | 'make-decision'
-  | 'continue';
+export type NextStepAction = 'create-survey' | 'activate-survey' | 'share-survey' | 'continue';
 
 interface NextStepResult {
   action: NextStepAction;
-  /** i18n key for the CTA description. */
   labelKey: string;
-  /** Optional tab or route to link to. */
   tab?: string;
 }
 
@@ -23,20 +13,12 @@ export interface NextStepInput {
   activeSurveys: number;
   totalResponses: number;
   responseLimit: number;
-  insightCount: number;
   currentPhase: ResearchPhase | null;
 }
 
-// ── Main ─────────────────────────────────────────────────────────────
-
-/**
- * Determine the single most relevant next action for a project.
- * Returns exactly one CTA based on the project's current state.
- */
 export function computeNextStep(input: NextStepInput): NextStepResult {
-  const { totalSurveys, activeSurveys, totalResponses, responseLimit, insightCount } = input;
+  const { totalSurveys, activeSurveys, totalResponses, responseLimit } = input;
 
-  // No surveys yet — first step is to create one
   if (totalSurveys === 0) {
     return {
       action: 'create-survey',
@@ -45,7 +27,6 @@ export function computeNextStep(input: NextStepInput): NextStepResult {
     };
   }
 
-  // Has drafts but nothing active
   if (activeSurveys === 0) {
     return {
       action: 'activate-survey',
@@ -54,7 +35,6 @@ export function computeNextStep(input: NextStepInput): NextStepResult {
     };
   }
 
-  // Active surveys but below halfway to target
   if (totalResponses < responseLimit * 0.5) {
     return {
       action: 'share-survey',
@@ -62,25 +42,6 @@ export function computeNextStep(input: NextStepInput): NextStepResult {
     };
   }
 
-  // Enough responses but no insights yet
-  if (insightCount === 0) {
-    return {
-      action: 'review-findings',
-      labelKey: 'projects.nextStep.reviewFindings',
-      tab: 'insights',
-    };
-  }
-
-  // Has insights and good data — time to decide
-  if (totalResponses >= responseLimit * 0.7 && insightCount >= 3) {
-    return {
-      action: 'make-decision',
-      labelKey: 'projects.nextStep.makeDecision',
-      tab: 'insights',
-    };
-  }
-
-  // Default: keep going
   return {
     action: 'continue',
     labelKey: 'projects.nextStep.continue',

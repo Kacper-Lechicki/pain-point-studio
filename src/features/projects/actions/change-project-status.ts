@@ -6,14 +6,7 @@ import { RATE_LIMITS } from '@/lib/common/rate-limit-presets';
 import { withProtectedAction } from '@/lib/common/with-protected-action';
 
 /** Actions that can be handled by this generic status-change action. */
-const STATUS_ACTIONS = [
-  'complete',
-  'archive',
-  'reopen',
-  'restore',
-  'trash',
-  'restoreTrash',
-] as const;
+const STATUS_ACTIONS = ['complete', 'trash', 'restoreTrash'] as const;
 
 const changeProjectStatusSchema = z.object({
   projectId: z.uuid(),
