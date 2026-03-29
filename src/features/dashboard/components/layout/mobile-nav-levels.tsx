@@ -18,7 +18,6 @@ import {
   SIDEBAR_BOTTOM_ITEM,
   SIDEBAR_GIVE_FEEDBACK_ITEM,
   SIDEBAR_NAV,
-  SIDEBAR_PROFILE_ITEM,
 } from '@/features/dashboard/config/navigation';
 import { useProjectsSubNavGroups } from '@/features/dashboard/hooks/use-projects-sub-nav-groups';
 import {
@@ -269,7 +268,7 @@ export function MobileNavMainLevel({ pathname, t, onItemClick, onClose }: Mobile
       </nav>
 
       <div className="mt-auto flex flex-col gap-2 px-2 pt-4 pb-6">
-        {[SIDEBAR_PROFILE_ITEM, SIDEBAR_BOTTOM_ITEM, SIDEBAR_GIVE_FEEDBACK_ITEM].map((item) => {
+        {[SIDEBAR_BOTTOM_ITEM, SIDEBAR_GIVE_FEEDBACK_ITEM].map((item) => {
           const isActive =
             pathname === (item.activePrefix ?? item.href) ||
             (item.activePrefix != null && pathname.startsWith(item.activePrefix + '/'));

@@ -47,7 +47,7 @@ Pain Point Studio — a developer research platform for idea validation. Next.js
 
 ### Feature-based structure (`src/features/`)
 
-8 features: `auth`, `command-palette`, `dashboard`, `marketing`, `profile`, `projects`, `settings`, `surveys`. Each may contain: `actions/`, `components/`, `config/`, `hooks/`, `lib/`, `types/`.
+7 features: `auth`, `command-palette`, `dashboard`, `marketing`, `projects`, `settings`, `surveys`. Each may contain: `actions/`, `components/`, `config/`, `hooks/`, `lib/`, `types/`.
 
 - Feature-scoped code → `src/features/<feature>/`
 - Shared UI primitives → `src/components/ui/`

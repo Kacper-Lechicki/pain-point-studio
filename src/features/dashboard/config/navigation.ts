@@ -114,7 +114,6 @@ export const SIDEBAR_NAV: NavGroup[] = [
   },
 ];
 
-export { PROFILE_NAV_ITEM as SIDEBAR_PROFILE_ITEM } from '@/features/dashboard/config/navigation-settings';
 export { USER_SETTINGS_NAV_ITEM as SIDEBAR_BOTTOM_ITEM } from '@/features/dashboard/config/navigation-settings';
 export { GIVE_FEEDBACK_NAV_ITEM as SIDEBAR_GIVE_FEEDBACK_ITEM } from '@/features/dashboard/config/navigation-settings';
 

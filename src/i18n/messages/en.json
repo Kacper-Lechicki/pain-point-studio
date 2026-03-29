@@ -31,7 +31,6 @@
       "settingsConnectedAccounts": "Connected Accounts",
       "settingsDangerZone": "Danger Zone",
       "settingsAccount": "Account Settings",
-      "profilePreview": "Profile Preview",
       "surveyRespond": "{name}",
       "signIn": "Sign In",
       "signUp": "Create Account",
@@ -54,7 +53,6 @@
       "settingsPassword": "Update your account password.",
       "settingsConnectedAccounts": "Manage linked OAuth providers like Google and GitHub.",
       "settingsDangerZone": "Delete your account and all associated data.",
-      "profilePreview": "Preview how your researcher profile appears to others.",
       "signIn": "Sign in to Pain Point Studio to continue your research.",
       "signUp": "Create a free account and start validating your product ideas.",
       "forgotPassword": "Reset your Pain Point Studio password.",
@@ -103,7 +101,6 @@
     "startResearch": "Start Your First Research",
     "seeHowItWorks": "See How It Works",
     "settings": "Settings",
-    "profile": "Profile",
     "goBack": "Go Back",
     "backToProjects": "All Projects",
     "backToProject": "Project Details",
@@ -1816,7 +1813,6 @@
     "hideSubpanel": "Hide secondary panel",
     "projectDetails": "Project Details",
     "surveyDetails": "Survey Details",
-    "profilePreview": "Profile",
     "askAi": "Ask AI",
     "giveFeedback": "Give Feedback",
     "shareFeedback": "Share Feedback",
@@ -1833,8 +1829,6 @@
     "research": "Research",
     "surveys": "Surveys",
     "settings": "Settings",
-    "profile": "Profile",
-    "preview": "Preview",
     "new": "New",
     "create": "Create",
     "archive": "Archive",
@@ -2212,48 +2206,6 @@
       "rateLimitExceeded": "Too many attempts. Please wait a moment and try again.",
       "socialLinkDomainMismatch": "URL doesn't match the selected platform.",
       "unexpected": "Something went wrong. Please try again."
-    }
-  },
-  "profile": {
-    "preview": {
-      "title": "Profile Preview",
-      "description": "A summary of your account and research activity."
-    },
-    "memberSince": "Member since {date}",
-    "empty": {
-      "fullName": "No name set",
-      "role": "No role set",
-      "bio": "No bio yet."
-    },
-    "sections": {
-      "socialLinks": "Social Links"
-    },
-    "journey": {
-      "title": "Research Journey",
-      "nextGoal": "Next goal",
-      "achieved": "Achieved",
-      "milestones": {
-        "joined": "Joined Pain Point Studio",
-        "first_project": "Created first project",
-        "first_survey": "Published first survey",
-        "first_response": "Received first response",
-        "responses_10": "Collected 10 responses",
-        "responses_50": "Collected 50 responses",
-        "responses_100": "Collected 100 responses",
-        "responses_500": "Collected 500 responses",
-        "responses_1000": "Collected 1,000 responses"
-      },
-      "short": {
-        "joined": "Joined",
-        "first_project": "1st project",
-        "first_survey": "1st survey",
-        "first_response": "1st response",
-        "responses_10": "10 responses",
-        "responses_50": "50 responses",
-        "responses_100": "100 responses",
-        "responses_500": "500 responses",
-        "responses_1000": "1K responses"
-      }
     }
   },
   "commandPalette": {

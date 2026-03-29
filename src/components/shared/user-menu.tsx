@@ -110,13 +110,6 @@ const UserMenu = () => {
           </DropdownMenuItem>
 
           <DropdownMenuItem asChild>
-            <Link href={ROUTES.profile.preview}>
-              <UserIcon className="size-4" aria-hidden="true" />
-              {t('common.profile')}
-            </Link>
-          </DropdownMenuItem>
-
-          <DropdownMenuItem asChild>
             <Link href={ROUTES.settings.profile}>
               <Settings className="size-4" aria-hidden="true" />
               {t('common.settings')}

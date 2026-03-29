@@ -86,10 +86,6 @@ function isNarrowPath(pathname: string): boolean {
     return true;
   }
 
-  if (path === ROUTES.profile.preview) {
-    return true;
-  }
-
   const projectSettingsMatch = /^\/dashboard\/projects\/[^/]+\/settings(\/|$)/.test(path);
 
   if (projectSettingsMatch) {
